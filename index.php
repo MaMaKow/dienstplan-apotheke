@@ -1,0 +1,25 @@
+<html>
+	<head>
+	</head>
+	<body>
+		<p>Dies wird ein Navigationsmenü für die Dienstplanung</p>
+		<table border=0>
+			<tr>
+				<td>
+					<a href=woche-out.php>Wochenansicht</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href=tag-out.php>Tagesansicht</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href=mitarbeiter-out.php>Personenansicht</a>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
+

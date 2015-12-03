@@ -1,0 +1,61 @@
+<?php
+//require 'funktionen.php';
+//Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
+if ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
+{
+	$datenempfang="Die Daten wurden empfangen.<br>\n";
+	foreach ( $_POST['Dienstplan'] as $plan => $inhalt ) 
+	{
+		$Dienstplanung[$plan]=$inhalt;
+	}
+//	echo "<pre>";	var_export($Dienstplanung);    	echo "</pre>"; // Hier kann der übergebene Datensatz zu Debugging-Zwecken angesehen werden.
+	foreach(array_keys($Dienstplanung) as $tag ) //Hier sollte eigentlich nur ein einziger Tag ankommen. Oder wir bauen es auch in die Woche ein.
+	{
+		$datum=$Dienstplanung[$tag]['Datum'][0];
+		$datum=strtotime('+7 day', strtotime($datum));
+		$datum=date('Y-m-d', $datum);
+		$abfrage="SELECT COUNT(*) FROM `Dienstplan` WHERE `Datum` = '$datum' AND `Mandant` = '$mandant'"; 
+		echo "$tag $abfrage<br>\n";
+		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+		$row = mysqli_fetch_row($ergebnis); 
+		if ($row[0] == 0) //Wenn in dem Tag noch gar nichts eingetragen ist.
+		{
+			
+			foreach($Dienstplanung[$tag]['VK'] as $key => $VK) //Die einzelnen Zeilen im Dienstplan
+			{
+				if ( !empty($VK) ) //Wir ignorieren die nicht ausgefüllten Felder
+				{
+					list($VK)=explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
+					$dienstbeginn=$Dienstplanung[$tag]["Dienstbeginn"][$key];
+					$dienstende=$Dienstplanung[$tag]["Dienstende"][$key];
+					$mittagsbeginn=$Dienstplanung[$tag]["Mittagsbeginn"][$key]; if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
+					$mittagsende=$Dienstplanung[$tag]["Mittagsende"][$key]; if(empty($Mittagsende)){$Mittagsende="0:00";}
+		//			$kommentar='Noch nicht eingebaut'
+					if (isset($mittagsbeginn) && isset($mittagsende))
+					{
+						$sekunden=strtotime($dienstende)-strtotime($dienstbeginn);
+						$mittagspause=strtotime($mittagsende)-strtotime($mittagsbeginn);
+						$sekunden=$sekunden-$mittagspause;
+						$stunden=$sekunden/3600;
+					}
+					else
+					{
+						$sekunden=strtotime($dienstende)-strtotime($dienstbeginn);
+						$stunden=$sekunden/3600;
+					}
+					$abfrage="INSERT INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant) 
+						VALUES ('$VK', '$datum', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$mandant')";  
+//					echo "<pre>";	var_export($Dienstplanung);    	echo "</pre>"; // Hier kann der übergebene Datensatz zu Debugging-Zwecken angesehen werden.
+//					echo "$abfrage<br>\n";
+					$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+					$Datenübertragung="Die Daten wurden in die Datenbank eingetragen.<br>\n";
+				}
+			}
+		}
+		else
+		{
+			echo "Dieser Tag ist bereits gefüllt. Es wurde nicht kopiert.<br>\n";
+		}
+	}
+}
+?>
