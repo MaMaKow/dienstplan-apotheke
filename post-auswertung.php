@@ -94,14 +94,14 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		fclose($myfile);
 		$histogrammCSV="";
 		//Und jetzt erraten wir noch die geschätzen Packungen, die wir an diesem Tag pro Stunde abverkaufen.
-		$lines=file('../pep/pep_monatimjahr.csv');
+		$lines=file('./pep/pep_monatimjahr.csv');
 		foreach($lines as $key => $value)
 		{
 			list($Monatimjahr['monat'][], $Monatimjahr['min'][], $Monatimjahr['median'][], $Monatimjahr['max'][])=explode(", ", $value);
 		}
 		$durchschnittsmonat=calculate_percentile($Monatimjahr['median'],50);
 		$faktorMonatimjahr=$Monatimjahr['median'][date('n', strtotime($datum))-1]/$durchschnittsmonat;
-		$lines=file('../pep/pep_monatstag.csv');
+		$lines=file('./pep/pep_monatstag.csv');
 		foreach($lines as $key => $value)
 		{
 			list($Tagimmonat['tag'][], $Tagimmonat['min'][], $Tagimmonat['median'][], $Tagimmonat['max'][])=explode(", ", $value);
@@ -109,7 +109,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		$durchschnittstag=calculate_percentile($Tagimmonat['median'],50);
 
 		$faktorTagimmonat=$Tagimmonat['median'][date('n', strtotime($datum))-1]/$durchschnittstag;
-		$datei="../pep/pep_wochentag";
+		$datei="./pep/pep_wochentag";
 		$datei.=date("w", strtotime($datum))+1;
 		$datei.=".csv";
 		$lines=file($datei);
