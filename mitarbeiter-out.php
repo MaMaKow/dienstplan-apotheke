@@ -37,7 +37,15 @@ else
 {
 	$auswahlMitarbeiter=1;
 }
+require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+if (isset($_GET['datum'])) // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
+{
+	$montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
+	$montagsDifferenzString="-".$montagsDifferenz." day";
+	$datum=strtotime($montagsDifferenzString, strtotime($datum));
+	$datum=date('Y-m-d', $datum);
+}
 require 'db-lesen-woche-mitarbeiter.php'; //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-feiertag.php';
 
@@ -57,46 +65,12 @@ $planAnzahl=max($PlanAnzahl);
 ?>
 <html moznomarginboxes>
 	<head>
-		<style type=text/css>
-			@page 
-			{
-				margin: 0.5cm;
-				size: landscape;
-			}
-			@media print
-			{    
-				.no-print, .no-print *
-				{
-					display: none !important;
-				}
-			}
-			table, th, td 
-			{
-				border: 1px solid; 
-				border-collapse: collapse;
-				font-size : 120%;
-				font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
-			}
- 			td
-			{
-				width: 20%;
-				white-space: nowrap; vertical-align: top;
-			}
-}			.overlay 
-			{
-				position: absolute;
-				top:50%;
-				left: 50%;
-				transform: translateX(-50%) translateY(-50%);
-				text-align: center;
-				z-index: 10;
-				background-color: rgba(255,60,60,0.8); /*dim the background*/
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
-echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
+echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
+//echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
 $RückwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $RückwärtsButton;

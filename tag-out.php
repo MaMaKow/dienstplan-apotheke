@@ -1,13 +1,9 @@
 <?php
 require 'default.php';
 require 'db-verbindung.php';
+#Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
-
-
-//header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1 Damit die Bilder nach einer Änderung sofort korrekt angezeigt werden, dürfen sie nicht im Cache landen.
-//header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-#Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
@@ -23,7 +19,7 @@ $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 
 
-
+require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 //require 'db-lesen-tag.php'; //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
@@ -42,35 +38,11 @@ $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 ?>
 <html>
 	<head>
-		<style type=text/css>
-			@page 
-			{
-				margin: 0.5cm;
-				size: landscape;
-			}
-			@media print
-			{    
-				.no-print, .no-print *
-				{
-					display: none !important;
-				}
-			}
- 			td {white-space: nowrap;}
-			.overlay 
-			{
-				position: absolute;
-				top:50%;
-				left: 50%;
-				transform: translateX(-50%) translateY(-50%);
-				text-align: center;
-				z-index: 10;
-				background-color: rgba(255,60,60,0.8); /*dim the background*/
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
-echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
+echo "<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "<form id=myform method=post>\n";
 $RückwärtsButton="\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $RückwärtsButton;
@@ -115,9 +87,9 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile="";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{ 
-			echo "				<td><b>";
+			$zeile.="\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
-			$zeile.="</b> ";
+			$zeile.="</a></b> ";
 		}
 		//Dienstbeginn
 		if (isset($Dienstplan[$i]["VK"][$j])) 
@@ -223,12 +195,7 @@ echo "<tr><td></td></tr>";
 echo "	</table>\n";
 //echo $submitButton; Kein Schreibrecht in der Leseversion
 echo "</form>\n";
-//	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-//	echo "<pre>";	var_export($_POST);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-//	echo "<pre>";	var_export($VKmax);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-//	echo "<pre>";	var_export($MitarbeiterDifferenz);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-//	echo "<pre>";	var_export($MarienplatzMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-
+	
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 if (isset($Fehlermeldung))
 {
@@ -237,6 +204,10 @@ if (isset($Fehlermeldung))
 		echo "		<div class=overlay><H1>".$fehler."<H1></div>";
 	}
 }
+//echo "<pre>";	var_export($_GET);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+
+
+
 		?>
 	</body>
 </html>

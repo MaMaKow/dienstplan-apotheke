@@ -23,17 +23,17 @@ for ($j=0; $j<$planAnzahl; $j++)
 	{//Mitarbeiter
 		$zeile="";
 		echo "\t\t\t\t\t<td align=left>";
-		$zeile.="<b>";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{ 
+			$zeile.="<b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
 //			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
-			$zeile.="</b>&nbsp/&nbsp";
+			$zeile.="</a></b> / ";
 			$zeile.=$Dienstplan[$i]["Stunden"][$j];
-			$zeile.="&nbsph";
+			$zeile.=" ";
 		}
 		//Dienstbeginn
-		$zeile.="&nbsp <br> ";
+		$zeile.=" <br> ";
 		if (isset($Dienstplan[$i]["VK"][$j])) 
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));

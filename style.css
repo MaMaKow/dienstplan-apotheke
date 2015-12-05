@@ -1,0 +1,50 @@
+@page 
+{
+	margin: 0.5cm;
+	size: landscape;
+}
+@media print
+{    
+	.no-print, .no-print *
+	{
+	/*Elemente die nicht gedruckt werden sollen.*/
+		display: none !important;
+	}
+}
+body
+{
+	background-color: #D0E0F0;
+}
+table, th, td
+{
+	white-space: nowrap;
+	vertical-align: top;
+	font-size : 120%;
+	font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
+	border: 1px solid; 
+	border-collapse: collapse;
+	padding:0 1.0em 0 0;
+}
+td
+{
+	width: 20%;
+	white-space: nowrap; vertical-align: top;
+}
+a:link
+{
+	text-decoration: none;
+}
+a:hover
+{
+	text-decoration: underline;
+}
+.overlay 
+{
+	position: absolute;
+	top:50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	text-align: center;
+	z-index: 10;
+	background-color: rgba(255,60,60,0.8); /*leicht roter Hintergrund*/
+}

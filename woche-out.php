@@ -24,6 +24,7 @@ $datum=date('Y-m-d', $datum);
 
 
 
+require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
@@ -53,6 +54,10 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 					display: none !important;
 				}
 			}
+			body
+			{
+				background-color: #D0E0F0;
+			}
  			td 
 			{
 				white-space: nowrap;
@@ -60,6 +65,14 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 				font-family: "Helvetica", sans-serif;
 				font-size: 1.0em;
 				padding:0 1.0em 0 0;
+			}
+			a:link
+			{
+				text-decoration: none;
+			}
+			a:hover
+			{
+				text-decoration: underline;
 			}
 			.overlay 
 			{
@@ -73,40 +86,41 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 			}
 		</style>
 	</head>
-	<body bgcolor=#D0E0F0>
+	<body>
 <?php
 echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
-$RückwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $RückwärtsButton;
-$VorwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $VorwärtsButton;
+$RückwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
+echo $RückwärtsButton;
+$VorwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
+echo $VorwärtsButton;
 //$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton; Dies ist die Leseversion
-//echo "\t\t\t<table border=0 rules=groups style=width:99%>\n";
 echo "\t\t\t<table border=0 rules=groups>\n";
-
-
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
+	$zeile.="<a href=tag-out.php?datum=".$Dienstplan[$i]["Datum"][0].">";
 	echo "\t\t\t\t\t<td>";
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
-	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
+	$zeile.=strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 	if(isset($feiertag)){echo " ".$feiertag." ";}
 	if(isset($notdienst)){echo " NOTDIENST ";}
-	echo "</td>\n";
-}	
-echo "\t\t\t\t</tr><tr>\n";
+//	echo "</td>\n";
+	echo "<br>\n";
+//}	
+//echo "\t\t\t\t</tr><tr>\n";
 
-for ($i=0; $i<count($Dienstplan); $i++)
-{//Wochentag
+//for ($i=0; $i<count($Dienstplan); $i++)
+//{//Wochentag
 	$zeile="";
-	echo "\t\t\t\t\t<td style=width:20%>";
+//	echo "\t\t\t\t\t<td style=width:20%>";
 	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
-	echo "</td>\n";
+	echo "</td></a>\n";
 }
 echo "\t\t\t\t</tr></thead><tbody>";
 
@@ -123,6 +137,7 @@ echo "\t\t\t\t</tbody><tfoot>\n";
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i=0; $i<count($Dienstplan); $i++)
 {
+	if (!isset($Dienstplan[$i]['VK'])) {break;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	unset($Urlauber, $Kranke);
 	$tag=($Dienstplan[$i]['Datum'][0]);
 	require 'db-lesen-abwesenheit.php';
@@ -201,21 +216,23 @@ echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=5>\n";
 for ($tag=0; $tag<count($Dienstplan); $tag++)
 {
+	if (!isset($Dienstplan[$tag]['Stunden'])) {break;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	foreach($Dienstplan[$tag]['Stunden'] as $key => $stunden)
 	{
 		$Stunden[$Dienstplan[$tag]['VK'][$key]][]=$stunden;
 	}
 }
-if(count($Dienstplan[0]['VK'])>1 || count($Dienstplan[1]['VK'])>1  || count($Dienstplan[2]['VK'])>1) //An leeren Wochen soll nicht gerechnet werden. 
+
+if(isset($Dienstplan[0]['VK'][2]) || isset($Dienstplan[1]['VK'][2])  || isset($Dienstplan[2]['VK'][2])) //An leeren Wochen soll nicht gerechnet werden. 
 {
 	echo "<b>Wochenstunden</b><tr>";
 	ksort($Stunden);
-	$i=1;$j=1; //Zahler für den Stunden-Array (wir wollen nach je 3 Elementen einen Umbruch)
+	$i=0;$j=1; //Zahler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
 	foreach($Stunden as $mitarbeiter => $stunden)
 	{
 		$k=$j*5; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
 		if($mitarbeiter>$k){$i++;}
-		if($i>=2)
+		if($i>=1)
 		{
 			echo "</tr><tr>";
 			$i=0;$j++;
@@ -245,7 +262,7 @@ echo "\t\t</form>\n";
 
 
 
-//echo "<pre>";	var_export($Filialplan);    	echo "</pre>";
+//echo "<pre>";	var_export($Stunden);    	echo "</pre>";
 
 ?>
 	</body>
