@@ -3,5 +3,5 @@
 echo "Wir bearbeiten $1."
 pwd
 /usr/local/bin/gnuplot Mitarbeiter.gnuplot && echo "gnuplot war erfolgreich" 
-convert -rotate 90 mitarbeiter.png mitarbeiter_$1.png && echo "Das Bild wurde gedreht."
+convert -rotate 90 tmp/mitarbeiter.png images/mitarbeiter_$1.png && echo "Das Bild wurde gedreht."
 echo "Das Script ist am Ende."

@@ -56,7 +56,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 				$dienstplanCSV.=", ".$mandant."\n";  
 		}
 		}
-		$filename = "Dienstplan.csv";
+		$filename = "tmp/Dienstplan.csv";
 		$myfile = fopen($filename, "w") or die("Unable to open file!");
 		fwrite($myfile, $dienstplanCSV);
 		fclose($myfile);
@@ -88,12 +88,12 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 			$anwesende=$anwesende-$mittagende;
 			$histogrammCSV.=date('H:i', $zeit).", ".$anwesende."\n";
 		}
-		$filename = "Histogramm.csv";
+		$filename = "tmp/Histogramm.csv";
 		$myfile = fopen($filename, "w") or die("Unable to open file!");
 		fwrite($myfile, $histogrammCSV);
 		fclose($myfile);
 		$histogrammCSV="";
-		//Und jetzt erraten wir noch die geschätzen Packungen, die wir an diesem Tag pro Stunde abverkaufen.
+		//Und jetzt erraten wir noch die geschätzen Packungen, die wir an diesem Tag pro Zeit abverkaufen.
 		$lines=file('./pep/pep_monatimjahr.csv');
 		foreach($lines as $key => $value)
 		{
@@ -125,7 +125,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 			$erwartungCSV.=$Wochentag['uhrzeit'][$key].", ".$tageszeitmedian*$faktorTagimmonat*$faktorMonatimjahr."\n";
 		}
 		
-		$filename = "Erwartung.csv";
+		$filename = "tmp/Erwartung.csv";
 		$myfile = fopen($filename, "w") or die("Unable to open file!");
 		fwrite($myfile, $erwartungCSV);
 		fclose($myfile);
@@ -134,6 +134,8 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 //			echo "<pre>";	var_export($anwesende);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 		$command=('./Histogramm_image.sh '.escapeshellcmd($datum));
 		exec($command, $kommandoErgebnis);
+		//debug DEBUG to do: Die Dateien im tmp/ könnten wir anschließend alle wieder löschen.
+		//debug DEBUG to do: EinEindeutige Unique Namen! Wenn gleichtzeitig mehrere Mitarbeiter zugreifen, werden mehrere Dateien mit dem gleichen Namen erzeugt. Das kann zu Fehlern führen.
 	}
 }
 elseif ( isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])  )

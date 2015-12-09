@@ -231,7 +231,6 @@ foreach(array_keys($Dienstplan) as $tag )
 				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn);
 				$stunden=$sekunden/3600;
 			}
-//			schreiben_ics ($vk, $datum, $dienstbeginn, $dienstende);
 			//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
 			if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 			if(empty($mittagsende)){$mittagsende="0:00";}
@@ -245,14 +244,14 @@ foreach(array_keys($Dienstplan) as $tag )
 		}
 	}
 }
-$filename = "Mitarbeiter.csv";
+$filename = "tmp/Mitarbeiter.csv";
 $myfile = fopen($filename, "w") or die("Unable to open file!");
 fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
 $dienstplanCSV="";
 $command=('./Mitarbeiter_image.sh '.escapeshellcmd($Dienstplan[0]["Datum"][0]).'_'.escapeshellcmd($vk));
 exec($command, $kommandoErgebnis);
-echo "<img src=mitarbeiter_".$Dienstplan[0]['Datum'][0]."_".$vk.".png?".filemtime("mitarbeiter_".$Dienstplan[0]['Datum'][0]."_".$vk.".png")." style=width:70%;><br>"; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+echo "<img src=images/mitarbeiter_".$Dienstplan[0]['Datum'][0]."_".$vk.".png?".filemtime("images/mitarbeiter_".$Dienstplan[0]['Datum'][0]."_".$vk.".png")." style=width:70%;><br>"; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 
 
 

@@ -3,5 +3,5 @@
 echo "Wir bearbeiten $1."
 /usr/local/bin/gnuplot Histogramm.gnuplot && echo "gnuplot war erfolgreich" 
 #convert -rotate 90 histogramm.png histogramm_$1.png && echo "Das Bild wurde gedreht."
-mv histogramm.png histogramm_$1.png && echo "Das Bild wurde umbenannt."
+mv tmp/histogramm.png images/histogramm_$1.png && echo "Das Bild wurde umbenannt."
 echo "Das Script ist am Ende."

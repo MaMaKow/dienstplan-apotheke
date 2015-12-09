@@ -2,5 +2,5 @@
 #Ich gehe davon aus, dass die Variable $1 den Datums-Parameter enthält.
 echo "Wir bearbeiten $1."
 /usr/local/bin/gnuplot Dienstplan.gnuplot && echo "gnuplot war erfolgreich" 
-convert -rotate 90 dienstplan.png dienstplan_$1.png && echo "Das Bild wurde gedreht."
+convert -rotate 90 tmp/dienstplan.png images/dienstplan_$1.png && echo "Das Bild wurde gedreht."
 echo "Das Script ist am Ende."

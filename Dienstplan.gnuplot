@@ -1,5 +1,5 @@
 #pwd
-cd "/var/www/html/apotheke/dienstplan"
+#cd "/var/www/html/apotheke/dienstplan"
 set terminal png size 800, 1800 enhanced font 'Verdana,20'
 set datafile separator ","
 set style fill solid 0.5
@@ -19,10 +19,10 @@ set timefmt "%H:%M"
 set yrange ["7:00":"21:00"]; set y2range ["7:00":"21:00"]
 
 
-set output "dienstplan.png"
-plot 	"Dienstplan.csv" using 0:5 with boxes lc rgb "green" notitle,\
-	"Dienstplan.csv" using 0:7 with boxes lc rgb "grey"  notitle,\
-	"Dienstplan.csv" using 0:6 with boxes lc rgb "green" notitle,\
-	"Dienstplan.csv" using 0:4 with boxes lc rgb "white" notitle,\
-	"Dienstplan.csv" using 0:4:1 with labels left rotate notitle,\
-	"Dienstplan.csv" using 0:5:8 with labels left rotate notitle
+set output "tmp/dienstplan.png"
+plot 	"tmp/Dienstplan.csv" using 0:5 with boxes lc rgb "green" notitle,\
+	"tmp/Dienstplan.csv" using 0:7 with boxes lc rgb "grey"  notitle,\
+	"tmp/Dienstplan.csv" using 0:6 with boxes lc rgb "green" notitle,\
+	"tmp/Dienstplan.csv" using 0:4 with boxes lc rgb "white" notitle,\
+	"tmp/Dienstplan.csv" using 0:4:1 with labels left rotate notitle,\
+	"tmp/Dienstplan.csv" using 0:5:8 with labels left rotate notitle

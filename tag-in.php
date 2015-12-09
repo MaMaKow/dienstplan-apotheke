@@ -80,11 +80,11 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
-if ( file_exists("dienstplan_".$datum.".png") )
+if ( file_exists("images/dienstplan_".$datum.".png") )
 {
 echo "<td align=center valign=top rowspan=30 style=width:800px>";
-echo "<img src=dienstplan_".$datum.".png?".filemtime('dienstplan_'.$datum.'.png')." style=width:90%;><br>"; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-echo "<img src=histogramm_".$datum.".png?".filemtime('dienstplan_'.$datum.'.png')." style=width:90%;></td>";
+echo "<img src=images/dienstplan_".$datum.".png?".filemtime('images/dienstplan_'.$datum.'.png')." style=width:90%;><br>"; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+echo "<img src=images/histogramm_".$datum.".png?".filemtime('images/dienstplan_'.$datum.'.png')." style=width:90%;></td>";//Daher hängen wir das Änderungsdatum an.
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
 echo "			</tr><tr>\n";

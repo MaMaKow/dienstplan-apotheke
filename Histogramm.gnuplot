@@ -22,6 +22,6 @@ set timefmt "%H:%M"
 set xrange ["7:00":"21:00"]; #set y2range ["7:00":"21:00"]
 set yrange [1:]
 
-set output "histogramm.png"
-plot 	"Histogramm.csv" 	using 1:2 with steps lc rgb "green" 		lw 8 notitle,\
-	"Erwartung.csv"		using 1:2 with filledcurves x1 lc rgb "red" 	lw 6 notitle axes x1y2
+set output "tmp/histogramm.png"
+plot 	"tmp/Histogramm.csv" 	using 1:2 with steps lc rgb "green" 		lw 8 notitle,\
+	"tmp/Erwartung.csv"		using 1:2 with filledcurves x1 lc rgb "red" 	lw 6 notitle axes x1y2

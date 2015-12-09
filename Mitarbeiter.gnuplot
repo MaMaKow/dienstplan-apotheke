@@ -19,10 +19,10 @@ set timefmt "%H:%M"
 set yrange ["7:00":"21:00"]; set y2range ["7:00":"21:00"]
 
 
-set output "mitarbeiter.png"
-plot 	"Mitarbeiter.csv" using 0:5 with boxes lc rgb "green" notitle,\
-	"Mitarbeiter.csv" using 0:7 with boxes lc rgb "grey"  notitle,\
-	"Mitarbeiter.csv" using 0:6 with boxes lc rgb "green" notitle,\
-	"Mitarbeiter.csv" using 0:4 with boxes lc rgb "white" notitle,\
-	"Mitarbeiter.csv" using 0:4:1 with labels left rotate notitle,\
-	"Mitarbeiter.csv" using 0:5:8 with labels left rotate notitle
+set output "tmp/mitarbeiter.png"
+plot 	"tmp/Mitarbeiter.csv" using 0:5 with boxes lc rgb "green" notitle,\
+	"tmp/Mitarbeiter.csv" using 0:7 with boxes lc rgb "grey"  notitle,\
+	"tmp/Mitarbeiter.csv" using 0:6 with boxes lc rgb "green" notitle,\
+	"tmp/Mitarbeiter.csv" using 0:4 with boxes lc rgb "white" notitle,\
+	"tmp/Mitarbeiter.csv" using 0:4:1 with labels left rotate notitle,\
+	"tmp/Mitarbeiter.csv" using 0:5:8 with labels left rotate notitle
