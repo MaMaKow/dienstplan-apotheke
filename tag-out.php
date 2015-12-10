@@ -53,7 +53,7 @@ echo "			<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
-	echo "				<td>";
+	echo "				<td width=20%>";
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
@@ -65,9 +65,9 @@ if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
 //echo "<td align=center valign=top rowspan=60 style=width:800px>";
 echo "<td align=center valign=top rowspan=60 >";
-echo "<img src=dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m".$mandant."_'.$datum.'.png')." style=width:90%;><br>"; 
+echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;><br>"; 
 //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-echo "<img src=histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m".$mandant."_'.$datum.'.png')." style=width:90%;></td>";
+echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;></td>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
 echo "			</tr><tr>\n";
