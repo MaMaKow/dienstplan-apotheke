@@ -1,8 +1,5 @@
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
-*.ics
-*.png
-#*.csv #Im Pep-Verzeichnis befinden sich relevante csv Dateien.
 tmp/
 
 # Temporäre Dateien #
