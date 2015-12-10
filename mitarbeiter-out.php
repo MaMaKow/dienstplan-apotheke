@@ -98,7 +98,7 @@ echo "\t\t\t\t<tr>\n";
 for ($tag=0; $tag<count($Dienstplan); $tag++)
 {//Datum
 	$zeile="";
-	echo "\t\t\t\t\t<td>";
+	echo "\t\t\t\t\t<td width=14%>";
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$tag."][Datum][0] value=".$Dienstplan[$tag]["Datum"][0].">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$tag]["Datum"][0]));
 	echo $zeile;

@@ -11,6 +11,8 @@ $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
+//Hole eine Liste aller Mandanten (Filialen)
+require 'db-lesen-mandant.php';
 
 
 $datenübertragung="";
@@ -58,7 +60,16 @@ $VKmax=max(array_keys($Mitarbeiter));
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
-echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
+echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br><b>". $Mandant[$mandant] ."</b><br>\n";
+echo "<form id=mandantenformular method=post><select style=font-size:150% name=mandant onchange=this.form.submit()><option value=".$mandant.">".$Mandant[$mandant]."</option>";
+foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
+{
+	if ($key!=$mandant)
+	{
+		echo "<option value=".$key.">".$value."</option>";
+	}
+}
+echo "</select></form>";
 if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "<form id=myform method=post>\n";
 $rückwärtsButton="\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärtsButton;
@@ -80,12 +91,12 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
-if ( file_exists("images/dienstplan_".$datum.".png") )
+if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
 echo "<td align=center valign=top rowspan=30 style=width:800px>";
-echo "<img src=images/dienstplan_".$datum.".png?".filemtime('images/dienstplan_'.$datum.'.png')." style=width:90%;><br>"; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-echo "<img src=images/histogramm_".$datum.".png?".filemtime('images/dienstplan_'.$datum.'.png')." style=width:90%;></td>";//Daher hängen wir das Änderungsdatum an.
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
+echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;><br>"; 
+//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern. Daher hängen wir das Änderungsdatum an.
+echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;></td>";
 }
 echo "			</tr><tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)

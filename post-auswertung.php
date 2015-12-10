@@ -1,6 +1,10 @@
 <?php
 require 'funktionen.php';
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
+if ( isset($_POST['mandant']))
+{
+	$mandant=htmlspecialchars($_POST['mandant']);
+}
 if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 {
 	$datenempfang="Die Daten wurden empfangen.<br>\n";
@@ -61,7 +65,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		fwrite($myfile, $dienstplanCSV);
 		fclose($myfile);
 		$dienstplanCSV="";
-		$command=('./Dienstplan_image.sh '.escapeshellcmd($datum));
+		$command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
 		exec($command, $kommandoErgebnis);
 //		echo "<pre>";	var_export($kommandoErgebnis);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 		
@@ -132,7 +136,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		$erwartungCSV="";
 //		echo "<pre>";	var_export($Erwartung);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 //			echo "<pre>";	var_export($anwesende);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-		$command=('./Histogramm_image.sh '.escapeshellcmd($datum));
+		$command=('./Histogramm_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
 		exec($command, $kommandoErgebnis);
 		//debug DEBUG to do: Die Dateien im tmp/ könnten wir anschließend alle wieder löschen.
 		//debug DEBUG to do: EinEindeutige Unique Namen! Wenn gleichtzeitig mehrere Mitarbeiter zugreifen, werden mehrere Dateien mit dem gleichen Namen erzeugt. Das kann zu Fehlern führen.
