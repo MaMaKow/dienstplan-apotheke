@@ -53,7 +53,7 @@ echo "			<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
-	echo "				<td width=20%>";
+	echo "				<td>";
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
@@ -63,8 +63,8 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }	
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
-//echo "<td align=center valign=top rowspan=60 style=width:800px>";
-echo "<td align=center valign=top rowspan=60 >";
+echo "<td align=center valign=top rowspan=60 style=width:800px>";
+//echo "<td align=center valign=top rowspan=60>";
 echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;><br>"; 
 //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;></td>";

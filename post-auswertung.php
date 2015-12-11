@@ -5,6 +5,10 @@ if ( isset($_POST['mandant']))
 {
 	$mandant=htmlspecialchars($_POST['mandant']);
 }
+if ( isset($_POST['datum']))
+{
+	$datum=htmlspecialchars($_POST['datum']);
+}
 if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 {
 	$datenempfang="Die Daten wurden empfangen.<br>\n";
@@ -20,7 +24,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		$abfrage="DELETE FROM `Dienstplan`
 			WHERE `Datum` = '$datum'
 			AND `Mandant` = '$mandant'
-			;";
+			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
 		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 		foreach($Dienstplanung[$tag]['VK'] as $key => $VK) //Die einzelnen Zeilen im Dienstplan
 		{

@@ -1,7 +1,7 @@
 <?php
 require 'default.php';
 require 'db-verbindung.php';
-$mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
+$mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
 
 
@@ -60,31 +60,37 @@ $VKmax=max(array_keys($Mitarbeiter));
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
-echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br><b>". $Mandant[$mandant] ."</b><br>\n";
-echo "<form id=mandantenformular method=post><select style=font-size:150% name=mandant onchange=this.form.submit()><option value=".$mandant.">".$Mandant[$mandant]."</option>";
+echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><b>". $Mandant[$mandant] ."</b><br>\n";
+echo "\t\t<form id=mandantenformular method=post>\n";
+echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
+echo "\t\t\t<select style=font-size:150% name=mandant onchange=this.form.submit()>\n";
+echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
 	{
-		echo "<option value=".$key.">".$value."</option>";
+		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
 	}
 }
-echo "</select></form>";
+echo "\t\t\t</select>\n\t\t</form>\n";
 if ( isset($datenübertragung) ) {echo $datenübertragung;}
-echo "<form id=myform method=post>\n";
-$rückwärtsButton="\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärtsButton;
-$vorwärtsButton="\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $vorwärtsButton;
-$copyButton="\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copyButton;
-$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton;
-echo "<div id=wochenAuswahl><input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">";
-echo "<input type=submit name=tagesAuswahl value=Anzeigen></div>";
-echo "	<table border=2 style=width:99%>\n";
-echo "			<tr>\n";
+echo "\t\t<form id=myform method=post>\n";
+$rückwärtsButton="\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärtsButton;
+$vorwärtsButton="\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $vorwärtsButton;
+$copyButton="\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copyButton;
+$submitButton="\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submitButton";
+echo "\t\t\t<div id=wochenAuswahl>\n";
+echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+echo "\t\t\t</div>\n";
+echo "\t\t\t<table border=2 style=width:99%>\n";
+echo "\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
-	echo "				<td>";
-	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
+	echo "\t\t\t\t\t<td>";
+	$zeile.="<input type=hidden name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
+	$zeile.="<input type=hidden name=mandant value=".$mandant.">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 	if(isset($feiertag)){echo " ".$feiertag." ";}
@@ -93,16 +99,16 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }	
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
-echo "<td align=center valign=top rowspan=30 style=width:800px>";
+echo "\t\t\t\t\t<td align=center valign=top rowspan=30 style=width:800px>";
 echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;><br>"; 
 //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern. Daher hängen wir das Änderungsdatum an.
-echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;></td>";
+echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;></td>\n";
 }
-echo "			</tr><tr>\n";
+echo "\t\t\t\t</tr><tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Wochentag
 	$zeile="";
-	echo "				<td style=width:30%>";
+	echo "\t\t\t\t\t<td style=width:30%>";
 	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 	echo "</td>\n";
@@ -110,11 +116,11 @@ for ($i=0; $i<count($Dienstplan); $i++)
 for ($j=0; $j<$VKcount; $j++)
 {
 	if(isset($feiertag) && !isset($notdienst)){break 1;}
-	echo "			</tr><tr>\n";
+	echo "\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
 		$zeile="";
-		echo "				<td align=right>";
+		echo "\t\t\t\t\t<td align=right>";
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1)."><option>";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{ 
@@ -155,13 +161,13 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile.=">";
 		echo $zeile;
 		
-		echo "				</td>\n";
+		echo "</td>\n";
 	}
-	echo "			</tr><tr>\n";
+	echo "\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
 		$zeile="";
-		echo "				<td align=right>";
+		echo "\t\t\t\t\t<td align=right>";
 		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
@@ -175,10 +181,10 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile.=">";
 		
 		echo $zeile;
-		echo "</td>";
+		echo "</td>\n";
 	}
 }
-echo "			</tr>\n";
+echo "\t\t\t\t</tr>";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 require 'pruefe-abwesenheit.php';
@@ -188,11 +194,11 @@ if (isset($Urlauber))
 }
 if (isset($Kranke))
 {
-	echo "\t\t<tr><td align=right>Krank</td><td>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>";
+	echo "\t\t<tr><td align=right>Krank</td><td>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
 }
-echo "\t</table>\n";
-echo "\t$submitButton";
-echo "</form>\n";
+echo "\t\t\t</table>\n";
+echo "$submitButton";
+echo "\t\t</form>\n";
 //	echo "<pre>";	var_export($MarienplatzMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
@@ -205,6 +211,6 @@ if (isset($Fehlermeldung))
 	}
 	echo "</div>";
 }
-echo "</body>";
+echo "\t</body>\n";
+echo "</html>";
 ?>
-
