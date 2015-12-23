@@ -29,7 +29,6 @@ $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht 
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
-require 'pruefe-abwesenheit.php';
 
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.

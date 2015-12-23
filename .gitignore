@@ -1,6 +1,8 @@
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
 tmp/
+*.png
+*.ics
 
 # Temporäre Dateien #
 #####################
