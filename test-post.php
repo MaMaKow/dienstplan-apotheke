@@ -1,0 +1,9 @@
+<html>
+	<body>
+		<pre>
+			<?php
+				var_dump($_POST);
+			?>
+		</pre>
+	</body>
+</html>

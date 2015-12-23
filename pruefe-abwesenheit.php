@@ -66,7 +66,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 			{
 				$fehler.=$Mitarbeiter[$arbeiter].", ";
 			}
-			$fehler.=".";
+			$fehler.=".\n";
 			$Fehlermeldung[]=$fehler;
 		}
 	}

@@ -5,8 +5,6 @@ $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Ma
 $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
 
 
-//header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1 Damit die Bilder nach einer Änderung sofort korrekt angezeigt werden, dürfen sie nicht im Cache landen.
-//header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 
 //Hole eine Liste aller Mitarbeiter
@@ -26,6 +24,7 @@ $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woch
 
 
 
+require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 //require 'db-lesen-tag.php'; //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
@@ -36,6 +35,8 @@ $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht 
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter));
 
+//Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
+require 'pruefe-abwesenheit.php';
 
 
 
@@ -44,22 +45,22 @@ $VKmax=max(array_keys($Mitarbeiter));
 ?>
 <html>
 	<head>
-		<style type=text/css>
- 			td {white-space: nowrap;}
-			.overlay 
-			{
-				position: absolute;
-				top:50%;
-				left: 50%;
-				transform: translateX(-50%) translateY(-50%);
-				text-align: center;
-				z-index: 10;
-				background-color: rgba(255,60,60,0.8); /*dim the background*/
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
+//Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
+if (isset($Fehlermeldung))
+{
+	echo "		<div class=overlay><H1>";
+	foreach($Fehlermeldung as $fehler)
+	{
+		echo "		<H1>".$fehler."</H1>";
+	}
+	echo "</div>";
+}
+
+//Hier beginnt die Normale Ausgabe.
 echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><b>". $Mandant[$mandant] ."</b><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
@@ -75,10 +76,14 @@ foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filial
 echo "\t\t\t</select>\n\t\t</form>\n";
 if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
-$rückwärtsButton="\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärtsButton;
-$vorwärtsButton="\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $vorwärtsButton;
-$copyButton="\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copyButton;
-$submitButton="\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submitButton";
+//echo "\t\t<form id=myform method=post action=test-post.php>\n";
+echo "\t\t\t<div id=navigationsElemente>";
+$rückwärtsButton="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärtsButton;
+$vorwärtsButton="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $vorwärtsButton;
+$copyButton="\t\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copyButton;
+$submitButton="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submitButton";
+echo "\t\t\t\t<a href=tag-out.php?datum=".$datum.">[Lesen]</a>\n";
+echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
 echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
@@ -187,7 +192,6 @@ for ($j=0; $j<$VKcount; $j++)
 echo "\t\t\t\t</tr>";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-require 'pruefe-abwesenheit.php';
 if (isset($Urlauber))
 {
 	echo "\t\t<tr><td align=right>Urlaub</td><td>"; foreach($Urlauber as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
@@ -201,16 +205,6 @@ echo "$submitButton";
 echo "\t\t</form>\n";
 //	echo "<pre>";	var_export($MarienplatzMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
-//Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-if (isset($Fehlermeldung))
-{
-	echo "		<div class=overlay><H1>";
-	foreach($Fehlermeldung as $fehler)
-	{
-		echo "		<H1>".$fehler."<H1>";
-	}
-	echo "</div>";
-}
 echo "\t</body>\n";
 echo "</html>";
 ?>

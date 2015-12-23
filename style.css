@@ -27,7 +27,7 @@ table, th, td
 }
 td
 {
-	width: 20%;
+/*	width: 20%;*/
 	white-space: nowrap; vertical-align: top;
 }
 a:link
@@ -40,11 +40,15 @@ a:hover
 }
 .overlay 
 {
-	position: absolute;
-	top:50%;
+/*	position: absolute;*/
+	position: relative;
+/*	top:50%;
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
 	text-align: center;
 	z-index: 10;
+*/
+	top:0;
 	background-color: rgba(255,60,60,0.8); /*leicht roter Hintergrund*/
+	z-index: 10;
 }

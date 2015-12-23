@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<meta charset=UTF-8>
 	</head>
 	<body>
 		<p>Dies wird ein Navigationsmenü für die Dienstplanung</p>
@@ -17,6 +18,11 @@
 			<tr>
 				<td>
 					<a href=mitarbeiter-out.php>Personenansicht</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href=stunden-out.php>Überstunden</a>
 				</td>
 			</tr>
 		</table>

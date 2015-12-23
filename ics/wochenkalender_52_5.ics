@@ -1,0 +1,34 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Dr. Martin Mandelkow/martin-mandelkow.de//Apotheke am Marienplatz//DE
+BEGIN:VEVENT
+UID:2015-12-21-5@martin-mandelkow.de
+DTSTAMP:20151215T225946Z
+LAST-MODIFIED:20151215T225946Z
+ORGANIZER;CN=Dr. Martin Mandelkow:MAILTO:dienstplan@martin-mandelkow.de
+DTSTART;TZID=Europe/Berlin:20151221T103000
+DTEND;TZID=Europe/Berlin:20151221T173000
+SUMMARY:Apotheke am Marienplatz
+DESCRIPTION:Kalenderdatei für VK 5 (Mandelkow) beinhaltet den Dienstplan für die Apotheke am Marienplatz.
+END:VEVENT
+BEGIN:VEVENT
+UID:2015-12-22-5@martin-mandelkow.de
+DTSTAMP:20151215T225946Z
+LAST-MODIFIED:20151215T225946Z
+ORGANIZER;CN=Dr. Martin Mandelkow:MAILTO:dienstplan@martin-mandelkow.de
+DTSTART;TZID=Europe/Berlin:20151222T113000
+DTEND;TZID=Europe/Berlin:20151222T190000
+SUMMARY:Apotheke am Marienplatz
+DESCRIPTION:Kalenderdatei für VK 5 (Mandelkow) beinhaltet den Dienstplan für die Apotheke am Marienplatz.
+END:VEVENT
+BEGIN:VEVENT
+UID:2015-12-24-5@martin-mandelkow.de
+DTSTAMP:20151215T225946Z
+LAST-MODIFIED:20151215T225946Z
+ORGANIZER;CN=Dr. Martin Mandelkow:MAILTO:dienstplan@martin-mandelkow.de
+DTSTART;TZID=Europe/Berlin:20151224T080000
+DTEND;TZID=Europe/Berlin:20151224T130000
+SUMMARY:Apotheke am Marienplatz
+DESCRIPTION:Kalenderdatei für VK 5 (Mandelkow) beinhaltet den Dienstplan für die Apotheke am Marienplatz.
+END:VEVENT
+END:VCALENDAR
