@@ -98,7 +98,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	$zeile.="<input type=hidden name=mandant value=".$mandant.">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
-	if(isset($feiertag)){echo " ".$feiertag." ";}
+	if(!empty($feiertag)){echo " ".$feiertag." ";}
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
