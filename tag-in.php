@@ -120,7 +120,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }
 for ($j=0; $j<$VKcount; $j++)
 {
-	if(isset($feiertag) && !isset($notdienst)){break 1;}
+	if(!empty($feiertag) && !isset($notdienst)){break 1;}
 	echo "\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
