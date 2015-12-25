@@ -1,7 +1,7 @@
 <?php
 //Die Variable $datum muss hierzu bereits mit dem korrekten Wert gefüllt sein.
 //Der Zugang zu Datenbank muss bereits bestehen.
-	$feiertag="";
+	unset ($feiertag);
 	$sqlDatum=date('Y-m-d', strtotime($datum));
 	$abfrage="SELECT * 
 		FROM `Feiertage` 

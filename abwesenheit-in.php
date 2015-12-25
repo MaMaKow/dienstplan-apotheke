@@ -92,7 +92,7 @@ require 'default.php';
 					$datum=date('Y-m-d', $tag);
 //					echo "$datum<br>\n";
 					require "db-lesen-feiertag.php";
-					if (!empty($feiertag))
+					if (isset($feiertag))
 					{
 						echo "$feiertag ist ein Feiertag ($datum).<br>\n";
 						--$_POST['tage'];

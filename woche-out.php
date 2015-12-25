@@ -16,16 +16,13 @@ $dienstplanCSV="";
 
 //$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
 $heute=date('Y-m-d');
-$datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
+$datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
+require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
+require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 $montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
 $montagsDifferenzString="-".$montagsDifferenz." day";
 $datum=strtotime($montagsDifferenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum);
-
-
-
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
@@ -127,7 +124,7 @@ echo "\t\t\t\t</tr></thead><tbody>";
 
 require 'schreiben-tabelle.php';
 schreiben_tabelle($Dienstplan);
-if (!empty($Filialplan))
+if (!empty($Filialplan[0]["VK"][0]))
 {
 	echo "</tbody><tbody><tr><td colspan=$tage>Marienplatz in der Helenenstraße</td></tr>";
 	schreiben_tabelle($Filialplan);

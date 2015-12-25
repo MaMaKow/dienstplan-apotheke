@@ -17,11 +17,9 @@ $dienstplanCSV="";
 //$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
 $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-
-
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-//require 'db-lesen-tag.php'; //Lesen der in der Datenbank gespeicherten Daten.
+$tag=$datum; //Wird von zeichne-histogramm.php benötigt.
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
 
@@ -51,7 +49,6 @@ if (isset($Fehlermeldung))
 	<body bgcolor=#D0E0F0>
 <?php
 echo "<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
-if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "<form id=myform method=post>\n";
 $RückwärtsButton="\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $RückwärtsButton;
 $VorwärtsButton="\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $VorwärtsButton;
@@ -71,6 +68,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
+require "zeichne-histogramm.php";
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
 echo "<td align=center valign=top rowspan=60 style=width:800px>";
@@ -91,7 +89,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }
 for ($j=0; $j<$VKcount; $j++)
 {
-	if(!empty($feiertag) && !isset($notdienst)){break 1;}
+	if(isset($feiertag) && !isset($notdienst)){break 1;}
 	echo "			</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter

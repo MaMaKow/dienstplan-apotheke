@@ -98,7 +98,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	$zeile.="<input type=hidden name=mandant value=".$mandant.">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
-	if(!empty($feiertag)){echo " ".$feiertag." ";}
+	if(isset($feiertag)){echo " ".$feiertag." ";}
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
@@ -120,7 +120,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }
 for ($j=0; $j<$VKcount; $j++)
 {
-	if(!empty($feiertag) && !isset($notdienst)){break 1;}
+	if(isset($feiertag) && !isset($notdienst)){break 1;}
 	echo "\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter

@@ -25,6 +25,11 @@
 					<a href=stunden-out.php>Überstunden</a>
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<a href=abwesenheit-out.php>Urlaub</a>
+				</td>
+			</tr>
 		</table>
 	</body>
 </html>
