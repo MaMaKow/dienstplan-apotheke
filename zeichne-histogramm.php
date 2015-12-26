@@ -2,17 +2,18 @@
 		//Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
 		//Zunächst müssen wir festlegen, wie groß die Zeitsprünge im Diagramm werden.
 		$zeitAbstand=5*60; //5 Minuten
-//		echo "<pre>";	var_export($Dienstplanung);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-		if (!empty($Dienstplanung[$tag]["Dienstbeginn"][0]))
+//		echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+		if (!isset($tag)) {$tag=0;} //Beim Aufruf aus tag-out wird kein Tag übergeben. Beim Aufruf aus der Auswertung, wird ein $tag übergeben.
+		if (!empty($Dienstplan[$tag]["Dienstbeginn"][0]))
 		{
-			$tagesBeginn=strtotime(min(array_filter(array_values($Dienstplanung[$tag]["Dienstbeginn"]))));
-			$tagesEnde=strtotime(max(array_values($Dienstplanung[$tag]["Dienstende"])));
+			$tagesBeginn=strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"]))));
+			$tagesEnde=strtotime(max(array_values($Dienstplan[$tag]["Dienstende"])));
 //			echo "Wir beginnen bei $tagesBeginn und enden nach Schritten von $zeitAbstand bei $tagesEnde.";
 			for ($dienstzeit=$tagesBeginn; $dienstzeit<=$tagesEnde; $dienstzeit=$dienstzeit+$zeitAbstand){$Dienstzeiten[]=$dienstzeit;}
-			$DienstEnden=array_map('strtotime', $Dienstplanung[$tag]["Dienstende"]);
-			$DienstBeginne=array_map('strtotime', $Dienstplanung[$tag]["Dienstbeginn"]);
-			$MittagsEnden=array_map('strtotime', $Dienstplanung[$tag]["Mittagsende"]);
-			$MittagsBeginne=array_map('strtotime', $Dienstplanung[$tag]["Mittagsbeginn"]);
+			$DienstEnden=array_map('strtotime', $Dienstplan[$tag]["Dienstende"]);
+			$DienstBeginne=array_map('strtotime', $Dienstplan[$tag]["Dienstbeginn"]);
+			$MittagsEnden=array_map('strtotime', $Dienstplan[$tag]["Mittagsende"]);
+			$MittagsBeginne=array_map('strtotime', $Dienstplan[$tag]["Mittagsbeginn"]);
 			$histogrammCSV="";
 			foreach($Dienstzeiten as $zeit)
 			{
@@ -78,5 +79,11 @@
 			exec($command, $kommandoErgebnis);
 			//debug DEBUG to do: Die Dateien im tmp/ könnten wir anschließend alle wieder löschen.
 			//debug DEBUG to do: EinEindeutige Unique Namen! Wenn gleichtzeitig mehrere Mitarbeiter zugreifen, werden mehrere Dateien mit dem gleichen Namen erzeugt. Das kann zu Fehlern führen.
+			//echo "<pre>";	var_export($kommandoErgebnis);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 		}
+		else
+		{
+//			echo "<br>Kein Dienstplan gefunden beim Zeichnen des Histogramms.<br>\n";
+		}
+
 ?>

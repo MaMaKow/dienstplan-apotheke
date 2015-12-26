@@ -9,7 +9,7 @@ require 'db-lesen-mitarbeiter.php';
 
 $datenübertragung="";
 $dienstplanCSV="";
-
+$tage=7;
 
 
 //$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
@@ -167,7 +167,7 @@ echo "\t\t\t\t<tfoot>\n";
 
 echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t<tr>\n";
-echo "\t\t\t\t\t<td colspan=5>\n";
+echo "\t\t\t\t\t<td colspan=$tage>\n";
 for ($tag=0; $tag<count($Dienstplan); $tag++)
 {
 	foreach($Dienstplan[$tag]['Stunden'] as $key => $stunden)

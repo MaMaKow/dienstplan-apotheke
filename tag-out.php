@@ -19,9 +19,9 @@ $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$tag=$datum; //Wird von zeichne-histogramm.php benötigt.
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
+require "zeichne-histogramm.php";
 
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
@@ -68,7 +68,6 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
-require "zeichne-histogramm.php";
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
 echo "<td align=center valign=top rowspan=60 style=width:800px>";

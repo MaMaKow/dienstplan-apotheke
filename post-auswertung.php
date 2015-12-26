@@ -15,27 +15,27 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 //	$datum=$_POST['Dienstplan'][0]['Datum'][0];
 	foreach ( $_POST['Dienstplan'] as $plan => $inhalt ) 
 	{
-		$Dienstplanung[$plan]=$inhalt;
+		$Dienstplan[$plan]=$inhalt;
 	}
-//	echo "<pre>";	var_export($Dienstplanung);    	echo "</pre>"; // Hier kann der übergebene Datensatz zu Debugging-Zwecken angesehen werden.
-	foreach(array_keys($Dienstplanung) as $tag ) //Hier sollte eigentlich nur ein einziger Tag ankommen.
+//	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der übergebene Datensatz zu Debugging-Zwecken angesehen werden.
+	foreach(array_keys($Dienstplan) as $tag ) //Hier sollte eigentlich nur ein einziger Tag ankommen.
 	{
-		$datum=$Dienstplanung[$tag]['Datum'][0];
+		$datum=$Dienstplan[$tag]['Datum'][0];
 		$abfrage="DELETE FROM `Dienstplan`
 			WHERE `Datum` = '$datum'
 			AND `Mandant` = '$mandant'
 			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
 		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 //		echo "$abfrage<br>\n";
-		foreach($Dienstplanung[$tag]['VK'] as $key => $VK) //Die einzelnen Zeilen im Dienstplan
+		foreach($Dienstplan[$tag]['VK'] as $key => $VK) //Die einzelnen Zeilen im Dienstplan
 		{
 			if ( !empty($VK) ) //Wir ignorieren die nicht ausgefüllten Felder
 			{
 				list($VK)=explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
-				$dienstbeginn=$Dienstplanung[$tag]["Dienstbeginn"][$key];
-				$dienstende=$Dienstplanung[$tag]["Dienstende"][$key];
-				$mittagsbeginn=$Dienstplanung[$tag]["Mittagsbeginn"][$key]; if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
-				$mittagsende=$Dienstplanung[$tag]["Mittagsende"][$key]; if(empty($Mittagsende)){$Mittagsende="0:00";}
+				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$key];
+				$dienstende=$Dienstplan[$tag]["Dienstende"][$key];
+				$mittagsbeginn=$Dienstplan[$tag]["Mittagsbeginn"][$key]; if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
+				$mittagsende=$Dienstplan[$tag]["Mittagsende"][$key]; if(empty($Mittagsende)){$Mittagsende="0:00";}
 	//			$kommentar='Noch nicht eingebaut'
 				if (isset($mittagsbeginn) && isset($mittagsende))
 				{
