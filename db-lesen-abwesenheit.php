@@ -5,8 +5,8 @@
 
 //function db_lesen_abwesenheit()
 //{
-	global $tag, $verbindung;
-	$sqlDatum=date('Y-m-d', strtotime($tag));
+	global $datum, $verbindung;
+	$sqlDatum=date('Y-m-d', strtotime($datum));
 	$abfrage="SELECT * 
 		FROM `Abwesenheit` 
 		WHERE `Beginn` <= '$sqlDatum' AND `Ende` >= '$sqlDatum';"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.

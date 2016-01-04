@@ -39,7 +39,7 @@ $myfile = fopen($filename, "w") or die("Unable to open file!");
 fwrite($myfile, $textICS);
 fclose($myfile);
 $textICS="";
-echo "<button type=button onclick=location='$filename'>Download ics Kalender Datei</button>\n";
+echo "<button type=button class=no-print onclick=location='$filename'>Download ics Kalender Datei</button>\n";
 //echo "<pre>\n"; var_dump($Dienstplan); echo "</pre>";
 }
 ?>

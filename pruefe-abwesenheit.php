@@ -3,8 +3,8 @@
 for ($i=0; $i<count($Dienstplan); $i++)
 {
 	unset($Urlauber, $Kranke);
-	$tag=$Dienstplan[$i]['Datum'][0];
-	require_once 'db-lesen-abwesenheit.php';
+	$datum=$Dienstplan[$i]['Datum'][0];
+	require 'db-lesen-abwesenheit.php';
 	if(isset($Dienstplan[$i]['VK']))
 	{
 	$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);

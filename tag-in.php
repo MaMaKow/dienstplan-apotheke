@@ -12,7 +12,6 @@ require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
 
-
 $datenübertragung="";
 $dienstplanCSV="";
 
@@ -30,7 +29,16 @@ require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
 require 'db-lesen-feiertag.php';
+require_once 'db-lesen-abwesenheit.php';
 
+if(empty($Dienstplan[0]['VK'][0]))
+{
+	//Wir wollen eine automatische Dienstplanfindung beginnen.
+	//Mal sehen, wie viel die Maschine selbst gestalten kann.
+	$Fehlermeldung[]="Kein Plan in der Datenbank dies is ein Vorschlag!";
+//	unset ($Dienstplan);
+	require_once 'plane-tag.php';
+}
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter));
@@ -204,6 +212,7 @@ echo "\t\t\t</table>\n";
 echo "$submitButton";
 echo "\t\t</form>\n";
 //	echo "<pre>";	var_export($MarienplatzMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 echo "\t</body>\n";
 echo "</html>";
