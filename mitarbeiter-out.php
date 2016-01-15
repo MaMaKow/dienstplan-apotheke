@@ -22,23 +22,24 @@ $datum=date('Y-m-d', $datum);
 
 
 
+require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
+require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if(isset($_POST['submitAuswahlMitarbeiter']))
 {
 	$auswahlMitarbeiter=$_POST['auswahlMitarbeiter'];
 	$Plan=$_POST['Dienstplan'];
 	$datum=$Plan[0]['Datum'][0];
-	echo $datum;
+	//echo $datum;
 }
 elseif (isset($_POST['submitWocheRückwärts']) OR isset($_POST['submitWocheVorwärts']))
 {
 	$auswahlMitarbeiter=$_POST['auswahlMitarbeiter'];
 }
-else
+elseif(!isset($auswahlMitarbeiter))
 {
 	$auswahlMitarbeiter=1;
 }
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+
 if (isset($_GET['datum'])) // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
 {
 	$montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
@@ -71,7 +72,6 @@ $planAnzahl=max($PlanAnzahl);
 <?php
 echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 //echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
-if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
 $RückwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $RückwärtsButton;
 $VorwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $VorwärtsButton;

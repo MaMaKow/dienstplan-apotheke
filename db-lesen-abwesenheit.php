@@ -14,11 +14,12 @@
 	while($row = mysqli_fetch_object($ergebnis))
 	{
 		$Abwesende[]=$row->VK;
+		$AbwesenheitsGrund[$row->VK]=$row->Grund;
 		if ($row->Grund=="Urlaub")
 		{
 			$Urlauber[]=$row->VK;
 		}
-		elseif ($row->Grund=="Krankheit")
+		elseif ( preg_match('/Krank/i', $row->Grund) ) //Auch Krank mit Kind sollte hier enthalten sein. //Außerdem suchen wir Case insensitive krank=Krank=kRaNk
 		{
 			$Kranke[]=$row->VK;
 		}

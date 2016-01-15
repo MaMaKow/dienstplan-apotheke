@@ -27,7 +27,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href=abwesenheit-out.php>Urlaub</a>
+					<a href=abwesenheit-out.php>Urlaub, Krankheit, Abwesenheit</a>
 				</td>
 			</tr>
 		</table>

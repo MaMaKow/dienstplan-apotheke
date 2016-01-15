@@ -38,10 +38,10 @@ require 'default.php';
 			{
 				$tablebody.= "\t\t\t<tr>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-				$tablebody.= "$row->Beginn";
+				$tablebody.= date('d.m.Y', strtotime($row->Beginn));
 				$tablebody.= "\n\t\t\t\t</td>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-				$tablebody.= "$row->Ende";
+				$tablebody.= date('d.m.Y', strtotime($row->Ende));
 				$tablebody.= "\n\t\t\t\t</td>\n";
 				if($i == $numberOfRows)
 				{

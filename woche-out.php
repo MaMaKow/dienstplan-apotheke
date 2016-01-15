@@ -26,7 +26,6 @@ $datum=date('Y-m-d', $datum);
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
-require 'db-lesen-feiertag.php'; //DEBUG debug ! Diese Funktion prüft nur für einen einzigen Tag. Nur $datum wird aufgerufen.
 
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
@@ -38,50 +37,7 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 ?>
 <html moznomarginboxes> <!-- Wir wollen beim Ausdrucken keinen Header mit auf dem Papier. -->
 	<head>
-		<style type=text/css>
-			@page 
-			{
-				margin: 0.5cm;
-				size: landscape;
-			}
-			@media print
-			{    
-				.no-print, .no-print *
-				{
-					display: none !important;
-				}
-			}
-			body
-			{
-				background-color: #D0E0F0;
-			}
- 			td 
-			{
-				white-space: nowrap;
-				vertical-align: top;
-				font-family: "Helvetica", sans-serif;
-				font-size: 1.0em;
-				padding:0 1.0em 0 0;
-			}
-			a:link
-			{
-				text-decoration: none;
-			}
-			a:hover
-			{
-				text-decoration: underline;
-			}
-			.overlay 
-			{
-				position: absolute;
-				top:50%;
-				left: 50%;
-				transform: translateX(-50%) translateY(-50%);
-				text-align: center;
-				z-index: 10;
-				background-color: rgba(255,60,60,0.8); /*leicht roter Hintergrund*/
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body>
 <?php
@@ -104,6 +60,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.=strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
+	require 'db-lesen-feiertag.php'; //DEBUG debug ! Diese Funktion prüft nur für einen einzigen Tag. Nur $datum wird aufgerufen.
 	if(isset($feiertag)){echo " ".$feiertag." ";}
 	if(isset($notdienst)){echo " NOTDIENST ";}
 //	echo "</td>\n";
@@ -124,7 +81,7 @@ echo "\t\t\t\t</tr></thead><tbody>";
 
 require 'schreiben-tabelle.php';
 schreiben_tabelle($Dienstplan);
-if (!empty($Filialplan[0]["VK"][0]))
+if (!empty(array_column($Filialplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 {
 	echo "</tbody><tbody><tr><td colspan=$tage>Marienplatz in der Helenenstraße</td></tr>";
 	schreiben_tabelle($Filialplan);
@@ -206,21 +163,31 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 }
 echo "\t\t\t\t</tr>\n";
-
+echo "\t\t\t</table>\n";
+echo "\t\t\t<table border=0 rules=groups>\n";
 
 //Nun folgt die Liste der Wochenstunden.
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=5>\n";
 for ($tag=0; $tag<count($Dienstplan); $tag++)
 {
-	if (!isset($Dienstplan[$tag]['Stunden'])) {break;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
+	if (!isset($Dienstplan[$tag]['Stunden'])) {continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	foreach($Dienstplan[$tag]['Stunden'] as $key => $stunden)
 	{
 		$Stunden[$Dienstplan[$tag]['VK'][$key]][]=$stunden;
 	}
 }
+for ($tag=0; $tag<count($Filialplan); $tag++)
+{
+	if (!isset($Filialplan[$tag]['Stunden'])) {continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
+	foreach($Filialplan[$tag]['Stunden'] as $key => $stunden)
+	{
+		$Stunden[$Filialplan[$tag]['VK'][$key]][]=$stunden;
+	}
+}
 
-if(isset($Dienstplan[0]['VK'][2]) || isset($Dienstplan[1]['VK'][2])  || isset($Dienstplan[2]['VK'][2])) //An leeren Wochen soll nicht gerechnet werden. 
+//if(isset($Dienstplan[0]['VK'][2]) || isset($Dienstplan[1]['VK'][2])  || isset($Dienstplan[2]['VK'][2]) || isset($Dienstplan[3]['VK'][2]) || isset($Dienstplan[4]['VK'][2]) || isset($Dienstplan[5]['VK'][2])) //An leeren Wochen soll nicht gerechnet werden. 
+if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 {
 	echo "<b>Wochenstunden</b><tr>";
 	ksort($Stunden);
@@ -235,17 +202,6 @@ if(isset($Dienstplan[0]['VK'][2]) || isset($Dienstplan[1]['VK'][2])  || isset($D
 			$i=0;$j++;
 		}
 		echo "<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden)."</td>";
-	
-/*		reset($Stunden);
-		end($Stunden); if ($mitarbeiter === key($Stunden))
-		{
-	//        echo 'LAST ELEMENT!';
-		}
-		else
-		{
-			echo "; ";
-		}
-*/
 	}
 	echo "</tr>";
 }
@@ -259,7 +215,7 @@ echo "\t\t</form>\n";
 
 
 
-//echo "<pre>";	var_export($Stunden);    	echo "</pre>";
+//echo "<pre>";	var_export($Urlauber);    	echo "</pre>";
 
 ?>
 	</body>

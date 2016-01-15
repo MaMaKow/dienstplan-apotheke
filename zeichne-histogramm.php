@@ -5,17 +5,35 @@
 		$zeitAbstand=5*60; //5 Minuten
 		if (!isset($tag)) {$tag=0;} //Beim Aufruf aus tag-out wird kein Tag übergeben. Beim Aufruf aus der Auswertung, wird ein $tag übergeben.
 		$faktorArbeitskraft=6; //Wie viele Packungen schafft ein Mitarbeiter pro Zeiteinheit (?halbe Stunde?)?
-		if (!empty($Dienstplan[$tag]["Dienstbeginn"][0]))
+		if (!empty($Dienstplan[$tag]["Dienstbeginn"]))
 		{
+			//Im folgenden Suchen wir die Approbierten, die heute anwesend sind. Sie werden im $ApprobiertenPlan gespeichert.
+			$Spalten=array_keys($Dienstplan[$tag]);
+			foreach($Dienstplan[$tag]["VK"] as $key => $value)
+			{
+				if ( array_search($value, array_keys($ApprobierteMitarbeiter)) !== false )
+				{
+					foreach($Spalten as $spalte)
+					{
+						$ApprobiertenDienstplan[$tag][$spalte][$key]=$Dienstplan[$tag][$spalte][$key];
+					}
+				}
+			}
+//			echo "<pre>";	var_export($ApprobiertenDienstplan);    	echo "</pre>"; 
 			$tagesBeginn=strtotime('8:00:00');
 			$tagesEnde=strtotime('20:00:00');
-//			$tagesBeginn=strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"]))));
-//			$tagesEnde=strtotime(max(array_values($Dienstplan[$tag]["Dienstende"])));
+			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...)
+			$tagesBeginn=min($tagesBeginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
+			$tagesEnde=max($tagesEnde, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
 			//Wenn die Funktion bereits aufgerufen wurde, ist dieser Wert bereits gesetzt.
 			if(empty($Dienstzeiten[0]))
 			{
 				for ($dienstzeit=$tagesBeginn; $dienstzeit<=$tagesEnde; $dienstzeit=$dienstzeit+$zeitAbstand){$Dienstzeiten[]=$dienstzeit;}
 			}
+			$ApprobiertenDienstEnden=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Dienstende"]);
+			$ApprobiertenDienstBeginne=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Dienstbeginn"]);
+			$ApprobiertenMittagsEnden=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsende"]);
+			$ApprobiertenMittagsBeginne=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsbeginn"]);
 			$DienstEnden=array_map('strtotime', $Dienstplan[$tag]["Dienstende"]);
 			$DienstBeginne=array_map('strtotime', $Dienstplan[$tag]["Dienstbeginn"]);
 			$MittagsEnden=array_map('strtotime', $Dienstplan[$tag]["Mittagsende"]);
@@ -26,6 +44,16 @@
 				//Die folgende Umschreibung von $zeit auf eine globale $dienstzeit ist notwendig, um innerhalb der array-filter Funtion darauf per global zugreifen zu können.
 				global $dienstzeit;
 				$dienstzeit=$zeit;
+				//Wir zählen die Approbierten Mitarbeiter
+				$approbiertenGekommene=count(array_filter(array_filter($ApprobiertenDienstBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
+				$approbiertenGegangene=count(array_filter(array_filter($ApprobiertenDienstEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
+				$approbiertenMittagende=count(array_filter(array_filter($ApprobiertenMittagsBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+				$approbiertenGemittagte=count(array_filter(array_filter($ApprobiertenMittagsEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+				$approbiertenMittagende=$approbiertenMittagende-$approbiertenGemittagte;
+				$approbiertenAnwesende=$approbiertenGekommene-$approbiertenGegangene;
+				$approbiertenAnwesende=$approbiertenAnwesende-$approbiertenMittagende;
+				$ApprobiertenAnwesende[$dienstzeit]=$approbiertenAnwesende;
+				//Und jetzt noch mal für alle Mitarbeiter
 				$gekommene=count(array_filter(array_filter($DienstBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
 				$gegangene=count(array_filter(array_filter($DienstEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
 				$mittagende=count(array_filter(array_filter($MittagsBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
@@ -108,6 +136,7 @@
 		else
 		{
 			echo "<br>Kein Dienstplan gefunden beim Zeichnen des Histogramms.<br>\n";
+//			echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 		}
 
 ?>

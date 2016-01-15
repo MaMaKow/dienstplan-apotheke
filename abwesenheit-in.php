@@ -8,17 +8,7 @@ require 'default.php';
 			function confirmDelete(link)
 			{
 				var r = confirm("Diesen Datensatz wirklich löschen?");
-				if (r == true) 
-				{
-				//	alert("You pressed OK!");
-				//	alert(link);
-					window.location.replace(link); //Wechselt automatisch heraus aus der Eingabemaske.
-				}
-				else
-				{
-				//	alert("You pressed Cancel!");
-					return false;
-				}
+				return r;
 			} 
 			function leavePage()
 			{
@@ -73,16 +63,19 @@ require 'default.php';
 			}
 
 			//Wir löschen Datensätze, wenn dies befohlen wird.
-			if(isset($_GET['command']) and isset($_GET['vk']) and isset($_GET['beginn']))
+			if(isset($_POST['loeschen']) )
 			{
-				$auswahlMitarbeiter=$_GET['vk']; //Wir übernehmen den VK aus dem GET Anteil, weil wir keine POST-Variablen bekommen. Daher heißt der übergebene Parameter hier auch vk und nicht auswahlMitarbeiter. 
-				if($_GET['command'] == "delete")
+				foreach($_POST['loeschen'] as $vk => $Beginne)
 				{
-					$abfrage="DELETE FROM `Abwesenheit`
-						WHERE `VK` = ".$_GET['vk']." AND `Beginn` = '".$_GET['beginn']."'";
-//					echo "$abfrage";
-					$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+					foreach($Beginne as $beginn => $X)
+					{
+						$abfrage="DELETE FROM `Abwesenheit`
+						WHERE `VK` = '$vk' AND `Beginn` = '$beginn'";
+				//		echo "$abfrage";
+						$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+					}
 				}
+				$auswahlMitarbeiter=$vk;
 			}
 			//Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
 			if(isset($_POST['submitStunden']) and isset($_POST['auswahlMitarbeiter']) and isset($_POST['beginn']) and isset($_POST['ende']) and isset($_POST['tage']) and isset($_POST['grund']))
@@ -116,10 +109,10 @@ require 'default.php';
 			{
 				$tablebody.= "\t\t\t<tr>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-				$tablebody.= "$row->Beginn <a class=no-print align=right href=javascript:void(); title='Diesen Datensatz löschen' onClick=confirmDelete('?command=delete&vk=$row->VK&beginn=$row->Beginn')>[x]</a>";
+				$tablebody.= date('d.m.Y', strtotime($row->Beginn))." <input class=no-print type=submit name=loeschen[$vk][$row->Beginn] value='X' title='Diesen Datensatz löschen'>";
 				$tablebody.= "\n\t\t\t\t</td>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-				$tablebody.= "$row->Ende";
+				$tablebody.= date('d.m.Y', strtotime($row->Ende));
 				$tablebody.= "\n\t\t\t\t</td>\n";
 				if($i == $numberOfRows)
 				{
@@ -160,8 +153,10 @@ for ($vk=1; $vk<$VKmax+1; $vk++)
 }
 echo "\t\t\t</select>\n";
 $submitButton="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submitButton; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+echo "\t\t</form>\n";
 echo "\t\t\t<H1>".$Mitarbeiter[$auswahlMitarbeiter]."</H1>\n";
 echo "<a class=no-print href=abwesenheit-out.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Lesen]</a>";
+echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 			echo "\t\t<table border=1>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n
@@ -180,7 +175,10 @@ echo "<a class=no-print href=abwesenheit-out.php?auswahlMitarbeiter=$auswahlMita
 				\t\t\t</tr>\n";
 //Ausgabe 
 			echo "$tablebody";
+			echo "\t\t</form>\n";
 //Eingabe. Der Saldo wird natürlich berechnet.
+			echo "\t\t<form method=POST>\n";
+			echo "<input type=hidden name=auswahlMitarbeiter value=$auswahlMitarbeiter>";
 			echo "\t\t\t<tr class=no-print>\n";
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
 			echo "<input type=date onchange=updateTage() id=beginn name=beginn>";
@@ -193,13 +191,13 @@ echo "<a class=no-print href=abwesenheit-out.php?auswahlMitarbeiter=$auswahlMita
 			echo "$datalist";
 			echo "\n\t\t\t\t</td>\n";
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
-			echo "<input readonly type=number id=tage name=tage title='Feiertage werden erst im nächsten Schritt abgezogen.'>";
+			echo "<input readonly type=number id=tage name=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>";
 			echo "\n\t\t\t\t</td>\n";
 			echo "\n\t\t\t</tr>\n";
 			echo "\t\t</table>\n";
 			echo "<input type=submit class=no-print name=submitStunden value='Eintragen'>";
 			echo "\t</form>";
-//		echo "<pre>"; var_dump($_POST); echo "</pre>";
+//echo "<pre>"; var_dump($_POST); echo "</pre>";
 		?>
 	</body>
 </html>

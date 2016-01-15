@@ -16,11 +16,18 @@
 				//Wir legen im folgenden den VK als ersten Key fest. Dies muss später weider zurück übersetzt werden. Es ist aber notwendig um die verschiedenen Spalten zueinander zu führen.
 				$KonstanterWunschplan="$wunschUhrzeit[0]";
 //			echo "$row->VK, $spalte, $KonstanterWunschplan<br>\n";
-				$Dienstplan[$tag][$spalte][$position]=$KonstanterWunschplan;
 				$Dienstplan[$tag]['VK'][$position]=$row->VK;
+				$Dienstplan[$tag]['Datum'][$position]=$datum;
 				//Die folgenden zwei Zeilen sind problematisch. Aber die Funktion zeiche-histogramm braucht vorhandene Werte im Array. Vielleicht bauen wir dort eine Prüfung ein. Dann können wir das hier entfernen. debug DEBUG
-				$Dienstplan[$tag]['Mittagsbeginn'][$position]=null;
-				$Dienstplan[$tag]['Mittagsende'][$position]=null;
+				if(!isset($Dienstplan[$tag]['Mittagsbeginn'][$position]))
+				{
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=null;
+				}
+				if(!isset($Dienstplan[$tag]['Mittagsende'][$position]))
+				{
+					$Dienstplan[$tag]['Mittagsende'][$position]=null;
+				}
+				$Dienstplan[$tag][$spalte][$position]=$KonstanterWunschplan;
 			}
 		}
 	}
@@ -38,7 +45,7 @@
 	while($row = mysqli_fetch_object($ergebnis))
 	{
 		//Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
-		if(array_search($row->VK, $Abwesende) !== false){continue;}
+		if( isset($Abwesende) AND array_search($row->VK, $Abwesende) !== false){continue;}
 
 		$Wunschplan[$tag]['Datum'][]=$datum;
 		$Wunschplan[$tag]['VK'][]=$row->VK;
@@ -93,7 +100,12 @@
 		foreach($MandantenMitarbeiter as $vk => $nachname)
 		{	
 			//Wer krank oder im Urlaub ist, der erscheint hier nicht.
-			if(array_search($vk, $Abwesende) === false)
+			if( isset($Abwesende) AND array_search($vk, $Abwesende) === true)
+			{
+				//nächster bitte
+				continue;
+			}
+			else
 			{
 				//Hier müssen noch die Mitarbeiter raus, die längst im Plan stehen.
 				if( array_search($vk, $Dienstplan[$tag]['VK']) !== false ) //Array-Search kann '0' zurück geben als Index. Das wird von if als false ausgewertet. Das wollen wir nicht.
@@ -180,9 +192,16 @@
 		global $Mitarbeiter, $MandantenMitarbeiter, $AusbildungMitarbeiter, $StundenMitarbeiter, $MittagMitarbeiter;
 		$Dienstplan[$tag]['VK'][]=$vorschlag;
 		$position=max(array_keys($Dienstplan[$tag]['VK']));
+		$Dienstplan[$tag]['Datum'][$position]=$datum;
 		$Dienstplan[$tag]['Dienstbeginn'][$position]=date('H:i', $uhrzeit);
-		$Dienstplan[$tag]['Mittagsbeginn'][$position]=null;
-		$Dienstplan[$tag]['Mittagsende'][$position]=null;
+		if(!isset($Dienstplan[$tag]['Mittagsbeginn'][$position]))
+		{
+			$Dienstplan[$tag]['Mittagsbeginn'][$position]=null;
+		}
+		if(!isset($Dienstplan[$tag]['Mittagsende'][$position]))
+		{
+			$Dienstplan[$tag]['Mittagsende'][$position]=null;
+		}
 		if(array_search($vorschlag, $Wunschplan[$tag]['VK']) === false  OR  empty($Wunschplan[$tag]['Stunden'][array_search($vorschlag, $Wunschplan[$tag]['VK'])]))
 		{
 			$sollMinuten=round($StundenMitarbeiter[$vorschlag] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
@@ -238,9 +257,53 @@
 	}
 //		echo "<pre>"; var_export($Wunschplan); echo "</pre>";
 //Jetzt sortieren wir unser Ergebnis fein säuberlich, damit wir es auch lesen können.
-if(!empty($Dienstplan[$tag]['VK'][0]))
-{
-	array_multisort($Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
-}
+	if(!empty($Dienstplan[$tag]['VK']))
+	{
+		array_multisort($Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
+	}
+
+
+
+	$BesetzteMittagsBeginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
+	$BesetzteMittagsEnden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
+	//Hier entsteht die Mittagspausenvergabe.
+	$pausenStart=strtotime('11:30:00');
+	if( !empty($Dienstplan[$tag]['VK']) ) //Haben wir überhaupt einen Dienstplan?
+	{
+		foreach($Dienstplan[$tag]['VK'] as $position => $vk) //Die einzelnen Zeilen im Dienstplan
+		{
+			if ( !empty($vk) AND empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND empty($Dienstplan[$tag]['Mittagsende'][$position]) )
+			{
+				//Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
+				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$position];
+				$dienstende=$Dienstplan[$tag]["Dienstende"][$position];
+				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$MittagMitarbeiter[$vk]*60;
+				if( $sekunden >= 6*3600 )
+				{
+					//Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
+					$pausenEnde=$pausenStart+$MittagMitarbeiter[$vk]*60;
+					if(array_search($pausenStart, $BesetzteMittagsBeginne)!==false OR array_search($pausenEnde, $BesetzteMittagsEnden)!==false)
+					{
+						//Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
+						$pausenStart+=1800;
+						$pausenEnde+=1800;
+					}
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', $pausenStart);
+					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', $pausenEnde);
+					$pausenStart=$pausenEnde;
+				}
+			}
+			elseif ( !empty($vk) AND !empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND empty($Dienstplan[$tag]['Mittagsende'][$position]) )
+			{
+					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', strtotime('- '.$MittagMitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsbeginn'][$position]));
+			}
+			elseif ( !empty($vk) AND empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND !empty($Dienstplan[$tag]['Mittagsende'][$position]) )
+			{
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', strtotime('+ '.$MittagMitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsende'][$position]));
+			}
+		}
+
+	}
+
 ?>
 </pre>

@@ -2,16 +2,16 @@
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i=0; $i<count($Dienstplan); $i++)
 {
-	unset($Urlauber, $Kranke);
+	unset($Urlauber, $Kranke, $Abwesende);
 	$datum=$Dienstplan[$i]['Datum'][0];
 	require 'db-lesen-abwesenheit.php';
 	if(isset($Dienstplan[$i]['VK']))
 	{
-	$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);
+		$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);
 	}
 	else
 	{
-		break;
+		continue;
 	}
 	if (isset($Urlauber))
 	{
@@ -51,6 +51,26 @@ for ($i=0; $i<count($Dienstplan); $i++)
 			foreach($ArbeitendeKranke as $arbeitenderKranker)
 			{
 				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderKranker]." ist krank und sollte der Arbeit fern bleiben.";
+			}
+		}
+	}
+	if (isset($Abwesende))
+	{
+		foreach($Abwesende as $abwesender)
+		{
+			foreach($EingesetzteMitarbeiter as $anwesender)
+			{
+				if ($abwesender==$anwesender)
+				{
+					$ArbeitendeAbwesende[]=$anwesender;
+				}
+			}
+		}
+		if (isset($ArbeitendeAbwesende))
+		{
+			foreach($ArbeitendeAbwesende as $arbeitenderAbwesender)
+			{
+				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderAbwesender]." ist abwesend (".$AbwesenheitsGrund[$arbeitenderAbwesender].") und sollte der Arbeit fern bleiben.";
 			}
 		}
 	}

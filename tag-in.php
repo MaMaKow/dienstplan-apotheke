@@ -57,6 +57,7 @@ require 'pruefe-abwesenheit.php';
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
+require 'navigation.php';
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 if (isset($Fehlermeldung))
 {
@@ -69,10 +70,11 @@ if (isset($Fehlermeldung))
 }
 
 //Hier beginnt die Normale Ausgabe.
-echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><b>". $Mandant[$mandant] ."</b><br>\n";
+echo "<div class=no-image>\n";
+echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><div class=only-print><b>". $Mandant[$mandant] ."</b></div><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
-echo "\t\t\t<select style=font-size:150% name=mandant onchange=this.form.submit()>\n";
+echo "\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
 echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
@@ -87,7 +89,7 @@ echo "\t\t<form id=myform method=post>\n";
 //echo "\t\t<form id=myform method=post action=test-post.php>\n";
 echo "\t\t\t<div id=navigationsElemente>";
 $rückwärtsButton="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärtsButton;
-$vorwärtsButton="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $vorwärtsButton;
+$vorwärtsButton="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";echo $vorwärtsButton;
 $copyButton="\t\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copyButton;
 $submitButton="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submitButton";
 echo "\t\t\t\t<a href=tag-out.php?datum=".$datum.">[Lesen]</a>\n";
@@ -96,7 +98,7 @@ echo "\t\t\t<div id=wochenAuswahl>\n";
 echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</div>\n";
-echo "\t\t\t<table border=2 style=width:99%>\n";
+echo "\t\t\t<table border=2>\n";
 echo "\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
@@ -110,18 +112,11 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
-if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
-{
-echo "\t\t\t\t\t<td align=center valign=top rowspan=30 style=width:800px>";
-echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;><br>"; 
-//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern. Daher hängen wir das Änderungsdatum an.
-echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;></td>\n";
-}
 echo "\t\t\t\t</tr><tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Wochentag
 	$zeile="";
-	echo "\t\t\t\t\t<td style=width:30%>";
+	echo "\t\t\t\t\t<td>";
 	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 	echo "</td>\n";
@@ -158,14 +153,15 @@ for ($j=0; $j<$VKcount; $j++)
 					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
 			}
 		}
-		$zeile.="</select>";
+		$zeile.="</select>\n";
 		//Dienstbeginn
-		$zeile.=" <input type=time size=1 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
+		$zeile.="\t\t\t\t\t\t<input type=hidden name=Dienstplan[".$i."][Datum][".$j."] value=".$Dienstplan[0]["Datum"][0].">\n";
+		$zeile.="\t\t\t\t\t\t<input type=time step=1800 size=1 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j])) 
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=1 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
+		$zeile.="> bis <input type=time step=1800 size=1 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
 		//Dienstende
 		if (isset($Dienstplan[$i]["VK"][$j])) 
 		{
@@ -181,12 +177,12 @@ for ($j=0; $j<$VKcount; $j++)
 	{//Mittagspause
 		$zeile="";
 		echo "\t\t\t\t\t<td align=right>";
-		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
+		$zeile.=" Pause: <input type=time step=1800 size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=1 name=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
+		$zeile.="> bis <input type=time step=1800 size=1 name=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
@@ -202,15 +198,29 @@ echo "\t\t\t\t</tr>";
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 if (isset($Urlauber))
 {
-	echo "\t\t<tr><td align=right>Urlaub</td><td>"; foreach($Urlauber as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
+	echo "\t\t<tr><td><b>Urlaub</b><br>"; foreach($Urlauber as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
 }
 if (isset($Kranke))
 {
-	echo "\t\t<tr><td align=right>Krank</td><td>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
+	echo "\t\t<tr><td><b>Krank</b><br>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
 }
 echo "\t\t\t</table>\n";
 echo "$submitButton";
 echo "\t\t</form>\n";
+echo "</div>";
+if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
+{
+echo "<div class=above-image>";
+echo "<div class=image>";
+//echo "<td align=center valign=top rowspan=60>";
+echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>"; 
+//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+//echo "</div>";
+//echo "<div class=image>";
+echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>";
+echo "</div>";
+//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
+}
 //	echo "<pre>";	var_export($MarienplatzMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 //	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 

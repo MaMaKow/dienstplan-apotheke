@@ -122,7 +122,7 @@ require 'default.php';
 			{
 				$tablebody.= "\t\t\t<tr>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-				$tablebody.= "$row->Datum <a align=right href=javascript:void(); title='Diesen Datensatz löschen' onClick=confirmDelete('?command=delete&vk=$row->VK&datum=$row->Datum')>[x]</a>";
+				$tablebody.= date('d.m.Y', strtotime($row->Datum))." <a align=right href=javascript:void(); title='Diesen Datensatz löschen' onClick=confirmDelete('?command=delete&vk=$row->VK&datum=$row->Datum')>[x]</a>";
 				$tablebody.= "\n\t\t\t\t</td>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
 				$tablebody.= "$row->Grund";

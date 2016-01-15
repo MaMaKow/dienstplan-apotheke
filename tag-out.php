@@ -48,6 +48,8 @@ if (isset($Fehlermeldung))
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
+require 'navigation.php';
+echo "<div class=no-image>\n";
 echo "<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 echo "<form id=myform method=post>\n";
 $RückwärtsButton="\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $RückwärtsButton;
@@ -68,15 +70,6 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
-if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
-{
-echo "<td align=center valign=top rowspan=60 style=width:800px>";
-//echo "<td align=center valign=top rowspan=60>";
-echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;><br>"; 
-//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:90%;></td>";
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
-}
 echo "			</tr><tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Wochentag
@@ -138,9 +131,24 @@ for ($j=0; $j<$VKcount; $j++)
 echo "			</tr>\n";
 
 echo "<tr><td></td></tr>";
-echo "	</table>\n";
+echo "\t</table>\n";
 //echo $submitButton; Kein Schreibrecht in der Leseversion
 echo "</form>\n";
+echo "</div>\n";
+if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
+{
+echo "<div class=above-image>";
+echo "<div class=image>";
+//echo "<td align=center valign=top rowspan=60>";
+echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>"; 
+//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+//echo "</div>";
+//echo "<div class=image>";
+echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>";
+echo "</div>";
+echo "</div>";
+//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
+}
 	
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
