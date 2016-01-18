@@ -46,22 +46,22 @@ if (isset($Fehlermeldung))
 	<head>
 		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
-	<body bgcolor=#D0E0F0>
+	<body>
 <?php
 require 'navigation.php';
-echo "<div class=no-image>\n";
-echo "<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
-echo "<form id=myform method=post>\n";
-$RückwärtsButton="\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $RückwärtsButton;
-$VorwärtsButton="\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $VorwärtsButton;
-echo "<a href=tag-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>";
+echo "\t\t<div class=no-image>\n";
+echo "\t\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
+echo "\t\t\t<form id=myform method=post>\n";
+$RückwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $RückwärtsButton;
+$VorwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $VorwärtsButton;
+echo "\t\t\t\t<a href=tag-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
 //$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton; Leseversion
-echo "	<table border=0 >\n";
-echo "			<tr>\n";
+echo "\t\t\t\t<table border=0 >\n";
+echo "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
-	echo "				<td>";
+	echo "\t\t\t\t\t\t<td>";
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
@@ -70,11 +70,11 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td>\n";
 }	
-echo "			</tr><tr>\n";
+echo "\t\t\t\t\t</tr><tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Wochentag
 	$zeile="";
-	echo "				<td>";
+	echo "\t\t\t\t\t\t<td>";
 	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 	echo "</td>\n";
@@ -82,13 +82,13 @@ for ($i=0; $i<count($Dienstplan); $i++)
 for ($j=0; $j<$VKcount; $j++)
 {
 	if(isset($feiertag) && !isset($notdienst)){break 1;}
-	echo "			</tr><tr>\n";
+	echo "\t\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
 		$zeile="";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{ 
-			$zeile.="\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
+			$zeile.="\t\t\t\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.="</a></b> ";
 		}
@@ -104,15 +104,18 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
 		echo $zeile;
-		echo "				</td>\n";
+		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
+		{ 
+		echo "</td>\n";
+		}
 	}
-	echo "			</tr><tr>\n";
+	echo "\t\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
 		$zeile="";
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
-			echo "				<td>&nbsp ";
+			echo "\t\t\t\t\t\t<td>&nbsp ";
 		}
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
@@ -125,28 +128,32 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
 		echo $zeile;
-		echo "</td>";
+		if (isset($Dienstplan[$i]["VK"][$j]))
+		{
+			echo "</td>\n";
+		}
 	}
 }
-echo "			</tr>\n";
+echo "\t\t\t\t\t</tr>\n";
 
-echo "<tr><td></td></tr>";
-echo "\t</table>\n";
+echo "\t\t\t\t\t<tr><td></td></tr>\n";
+echo "\t\t\t\t</table>\n";
 //echo $submitButton; Kein Schreibrecht in der Leseversion
-echo "</form>\n";
-echo "</div>\n";
+echo "\t\t\t</form>\n";
+echo "\t\t</div>\n";
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
-echo "<div class=above-image>";
-echo "<div class=image>";
+echo "\t\t<div class=above-image>\n";
+echo "\t\t\t<div class=image>\n";
 //echo "<td align=center valign=top rowspan=60>";
-echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>"; 
+echo "\t\t\t\t<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>\n"; 
 //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 //echo "</div>";
 //echo "<div class=image>";
-echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>";
-echo "</div>";
-echo "</div>";
+echo "\t\t\t\t<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>\n";
+echo "\t\t\t</div>\n";
+echo "\t\t</div>\n";
+require 'contact-form.php';
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
 	

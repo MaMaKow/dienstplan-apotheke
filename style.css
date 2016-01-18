@@ -48,6 +48,12 @@ a:hover
 	float: left;
 	clear: both;
 }
+.foot
+{
+	display: inline-block;
+	float: left;
+	clear: both;
+}
 .no-image
 {
 	position: relative;
@@ -66,8 +72,9 @@ img
 {
 	position: relative;
 	float: left;
+	overflow:auto;
 	width: 60%;
-	max-height: 60%;
+/*	max-height: 60%;*/
 }
 .overlay 
 {
