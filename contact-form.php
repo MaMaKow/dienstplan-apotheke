@@ -13,24 +13,47 @@
 			<tr><td>Kontaktadresse</td><td><input style=width:320px type="email" name=email value=""></td></tr>
 		</table>
 		<input type="hidden" name=dienstplan value="<?php var_export($Dienstplan)?>">
-		<input type="submit" value="Absenden">
+		<input type="submit" name=submitContactForm value="Absenden">
 		<p><!--Nur damit der Submit-Button nicht ganz am unteren Seitenrand klebt.-->
 	</form>
-</div>
 <?php
-	if(isset($_POST['nachricht']))
+	$empfaenger = 'dienstplan@martin-mandelkow.de';
+	$betreff = 'Dienstplan hat einen Kommentar';
+	$nachricht = "";
+	$trace = debug_backtrace();
+	$nachricht.= $trace[0]['file'];
+	$nachricht.= "\n\n";
+	if( isset($_POST['VK']) )
 	{
-		$empfaenger = 'martin-kreimann@googlemail.com';
-		$betreff = 'Dienstplan hat einen Kommentar';
-		$nachricht = $_POST['nachricht'];
+		$nachricht.= "Die Nachricht stammt von:";
+		$nachricht.= $_POST['VK'];
+		$nachricht.= "\n\n";
+	}
+	if( isset($_POST['nachricht']) )
+	{
+		$nachricht.= "<<<Nachricht<<<\n";
+		$nachricht.= $_POST['nachricht'];
 		$nachricht.= "\n";
+		$nachricht.= ">>>   >>>\n";
+		$nachricht.= "\n\n";
+	}
+	if( isset($_POST['dienstplan']) )
+	{
+		$nachricht.= "<<<Dienstplan<<<\n";
 		$nachricht.= $_POST['dienstplan'];
-		$header = 'From: feedback@martin-mandelkow.de' . "\r\n" .
-		    'Reply-To: refeedback@martin-mandelkow.de' . "\r\n" .
-		    'X-Mailer: PHP/' . phpversion();
-		
+		$nachricht.= "\n";
+		$nachricht.= ">>>   >>>";
+		$nachricht.= "\n\n";
+	}
+	$header = 'From: apache@martin-mandelkow.de' . "\r\n" ;
+	if( isset($_POST['email'])  )
+	{
+		$header.= 'Reply-To: '.$_POST['email'] . "\r\n" ;
+	}
+	$header.= 'X-Mailer: PHP/' . phpversion();
+	if(isset($_POST['submitContactForm']))
+	{
 		$versendet=mail($empfaenger, $betreff, $nachricht, $header);
-		echo "<div class=foot>";
 		if ($versendet)
 		{
 			echo "Die Nachricht wurde versendet. Vielen Dank!";
@@ -39,7 +62,7 @@
 		{
 			echo "Fehler beim Versendet der Nachricht. Das tut mir Leid.";
 		}
-		echo "</div>";
 	}
 ?>
+</div>
 <a name=bottom>
