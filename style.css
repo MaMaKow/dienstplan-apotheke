@@ -15,6 +15,11 @@
 	{
 		display: block;
 	}
+	.page-break
+	{
+		display: block;
+		page-break-before: always;
+	}
 }
 body
 {

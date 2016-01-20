@@ -1,4 +1,4 @@
-<div class=foot>
+<div class="foot no-print">
 	<script>
 		function unhideContactForm()
 		{

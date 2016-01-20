@@ -41,8 +41,8 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 	</head>
 	<body>
 <?php
-echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
-if ( isset($datenübertragung) ) {echo $datenübertragung;}
+echo "\t\t<div class=no-print>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
+//if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
 $RückwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
 echo $RückwärtsButton;
@@ -50,30 +50,20 @@ $VorwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwä
 echo $VorwärtsButton;
 //$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton; Dies ist die Leseversion
 echo "\t\t\t<table border=0 rules=groups>\n";
+//echo "\t\t\t\t<div class=stretch-on-print>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
-	$zeile="";
-	$zeile.="<a href=tag-out.php?datum=".$Dienstplan[$i]["Datum"][0].">";
 	echo "\t\t\t\t\t<td>";
-	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
-	$zeile.=strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
-	echo $zeile;
+	echo "<a href=tag-out.php?datum=".$Dienstplan[$i]["Datum"][0].">";
+	echo strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
+	echo " \n";
+	echo "<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
+	echo strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
 	require 'db-lesen-feiertag.php'; //DEBUG debug ! Diese Funktion prüft nur für einen einzigen Tag. Nur $datum wird aufgerufen.
 	if(isset($feiertag)){echo " ".$feiertag." ";}
 	if(isset($notdienst)){echo " NOTDIENST ";}
-//	echo "</td>\n";
-	echo "<br>\n";
-//}	
-//echo "\t\t\t\t</tr><tr>\n";
-
-//for ($i=0; $i<count($Dienstplan); $i++)
-//{//Wochentag
-	$zeile="";
-//	echo "\t\t\t\t\t<td style=width:20%>";
-	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
-	echo $zeile;
 	echo "</td></a>\n";
 }
 echo "\t\t\t\t</tr></thead><tbody>";
@@ -86,7 +76,9 @@ if (!empty(array_column($Filialplan, 'VK'))) //array_column durchsucht alle Tage
 	echo "</tbody><tbody><tr><td colspan=$tage>Marienplatz in der Helenenstraße</td></tr>";
 	schreiben_tabelle($Filialplan);
 }
-echo "\t\t\t\t</tbody><tfoot>\n";
+echo "\t\t\t\t</tbody>\n";
+//echo "\t\t\t\t</div>\n";
+echo "\t\t\t\t<tfoot><tr class=page-break></tr>\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i=0; $i<count($Dienstplan); $i++)
@@ -211,6 +203,7 @@ echo "\t\t\t\t</tfoot>\n";
 echo "\t\t\t</table>\n";
 // echo $submitButton;
 echo "\t\t</form>\n";
+require 'contact-form.php';
 
 
 
