@@ -31,7 +31,7 @@ $Dienstplan=db_lesen_tage($tage, $mandant);
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 
-if(empty($Dienstplan[0]['VK'][0]))
+if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 )
 {
 	//Wir wollen eine automatische Dienstplanfindung beginnen.
 	//Mal sehen, wie viel die Maschine selbst gestalten kann.
@@ -39,6 +39,19 @@ if(empty($Dienstplan[0]['VK'][0]))
 //	unset ($Dienstplan);
 	require_once 'plane-tag.php';
 }
+if( !empty($Dienstplan[0]['VK'][0]) AND isset($ApprobiertenAnwesende) )
+{
+	require 'pruefe-dienstplan.php';
+}
+else
+{
+	echo "Dienstplan konnte nicht überprüft werden.";
+}
+
+
+
+
+
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter));

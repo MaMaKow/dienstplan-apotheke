@@ -30,10 +30,13 @@
 			{
 				for ($dienstzeit=$tagesBeginn; $dienstzeit<=$tagesEnde; $dienstzeit=$dienstzeit+$zeitAbstand){$Dienstzeiten[]=$dienstzeit;}
 			}
-			$ApprobiertenDienstEnden=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Dienstende"]);
-			$ApprobiertenDienstBeginne=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Dienstbeginn"]);
-			$ApprobiertenMittagsEnden=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsende"]);
-			$ApprobiertenMittagsBeginne=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsbeginn"]);
+			if ( isset($ApprobiertenDienstplan) )
+			{
+				$ApprobiertenDienstEnden=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Dienstende"]);
+				$ApprobiertenDienstBeginne=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Dienstbeginn"]);
+				$ApprobiertenMittagsEnden=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsende"]);
+				$ApprobiertenMittagsBeginne=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsbeginn"]);
+			}
 			$DienstEnden=array_map('strtotime', $Dienstplan[$tag]["Dienstende"]);
 			$DienstBeginne=array_map('strtotime', $Dienstplan[$tag]["Dienstbeginn"]);
 			$MittagsEnden=array_map('strtotime', $Dienstplan[$tag]["Mittagsende"]);
@@ -44,15 +47,20 @@
 				//Die folgende Umschreibung von $zeit auf eine globale $dienstzeit ist notwendig, um innerhalb der array-filter Funtion darauf per global zugreifen zu können.
 				global $dienstzeit;
 				$dienstzeit=$zeit;
-				//Wir zählen die Approbierten Mitarbeiter
-				$approbiertenGekommene=count(array_filter(array_filter($ApprobiertenDienstBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
-				$approbiertenGegangene=count(array_filter(array_filter($ApprobiertenDienstEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
-				$approbiertenMittagende=count(array_filter(array_filter($ApprobiertenMittagsBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-				$approbiertenGemittagte=count(array_filter(array_filter($ApprobiertenMittagsEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-				$approbiertenMittagende=$approbiertenMittagende-$approbiertenGemittagte;
-				$approbiertenAnwesende=$approbiertenGekommene-$approbiertenGegangene;
-				$approbiertenAnwesende=$approbiertenAnwesende-$approbiertenMittagende;
-				$ApprobiertenAnwesende[$dienstzeit]=$approbiertenAnwesende;
+				if ( isset($ApprobiertenDienstplan) )
+				{
+					//Wir zählen die Approbierten Mitarbeiter
+					//Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
+					$approbiertenGekommene=count(array_filter(array_filter($ApprobiertenDienstBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); 
+					//Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
+					$approbiertenGegangene=count(array_filter(array_filter($ApprobiertenDienstEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); 
+					$approbiertenMittagende=count(array_filter(array_filter($ApprobiertenMittagsBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$approbiertenGemittagte=count(array_filter(array_filter($ApprobiertenMittagsEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$approbiertenMittagende=$approbiertenMittagende-$approbiertenGemittagte;
+					$approbiertenAnwesende=$approbiertenGekommene-$approbiertenGegangene;
+					$approbiertenAnwesende=$approbiertenAnwesende-$approbiertenMittagende;
+					$ApprobiertenAnwesende[$dienstzeit]=$approbiertenAnwesende;
+				}
 				//Und jetzt noch mal für alle Mitarbeiter
 				$gekommene=count(array_filter(array_filter($DienstBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
 				$gegangene=count(array_filter(array_filter($DienstEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
