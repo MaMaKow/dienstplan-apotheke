@@ -70,6 +70,8 @@ $planAnzahl=max($PlanAnzahl);
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
+require 'navigation.php';
+echo "<div class=no-image>\n";
 echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 //echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 echo "\t\t<form id=myform method=post>\n";
@@ -205,6 +207,7 @@ echo "\t\t\t\t</tfoot>\n";
 echo "\t\t\t</table>\n";
 // echo $submitButton;
 echo "\t\t</form>\n";
+echo "</div>\n";
 foreach(array_keys($Dienstplan) as $tag ) 
 {
 	$datum=$Dienstplan[$tag]["Datum"][0];

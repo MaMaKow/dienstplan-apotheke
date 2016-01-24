@@ -41,21 +41,23 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 	</head>
 	<body>
 <?php
-echo "\t\t<div class=no-print>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
+require 'navigation.php';
+echo "\t\t<div class='no-image'>\n";
+echo "\t\t\t<div class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
 //if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
-$RückwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
+$RückwärtsButton="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
 echo $RückwärtsButton;
-$VorwärtsButton="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
+$VorwärtsButton="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
 echo $VorwärtsButton;
 //$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton; Dies ist die Leseversion
-echo "\t\t\t<table border=0 rules=groups>\n";
+echo "\t\t\t\t<table border=0 rules=groups>\n";
 //echo "\t\t\t\t<div class=stretch-on-print>\n";
-echo "\t\t\t\t<thead>\n";
-echo "\t\t\t\t<tr>\n";
+echo "\t\t\t\t\t<thead>\n";
+echo "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
-	echo "\t\t\t\t\t<td>";
+	echo "\t\t\t\t\t\t<td>";
 	echo "<a href=tag-out.php?datum=".$Dienstplan[$i]["Datum"][0].">";
 	echo strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo " \n";
@@ -66,7 +68,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td></a>\n";
 }
-echo "\t\t\t\t</tr></thead><tbody>";
+echo "\t\t\t\t\t</tr></thead><tbody>";
 
 
 require 'schreiben-tabelle.php';
@@ -76,9 +78,9 @@ if (!empty(array_column($Filialplan, 'VK'))) //array_column durchsucht alle Tage
 	echo "</tbody><tbody><tr><td colspan=$tage>Marienplatz in der Helenenstraße</td></tr>";
 	schreiben_tabelle($Filialplan);
 }
-echo "\t\t\t\t</tbody>\n";
+echo "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t<tfoot><tr class=page-break></tr>\n";
+echo "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i=0; $i<count($Dienstplan); $i++)
@@ -139,28 +141,28 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	//Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
 	if (isset($Urlauber))
 	{
-		echo "\t\t\t\t<td align=left><b>Urlaub</b><br>"; foreach($Urlauber as $value){echo $Mitarbeiter[$value]."<br>";};
+		echo "\t\t\t\t\t<td align=left><b>Urlaub</b><br>"; foreach($Urlauber as $value){echo $Mitarbeiter[$value]."<br>";};
 	}
 	else
 	{
-		echo "\t\t\t\t\t<td>";
+		echo "\t\t\t\t\t\t<td>";
 	}
 	if (isset($Kranke))
 	{
-		echo "\t<br><b>Krank</b><br>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td>\n";
+		echo "\t\t<br><b>Krank</b><br>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td>\n";
 	}
 	else
 	{
 		echo "</td>\n";
 	}
 }
-echo "\t\t\t\t</tr>\n";
-echo "\t\t\t</table>\n";
-echo "\t\t\t<table border=0 rules=groups>\n";
+echo "\t\t\t\t\t</tr>\n";
+echo "\t\t\t\t</table>\n";
+echo "\t\t\t\t<table border=0 rules=groups>\n";
 
 //Nun folgt die Liste der Wochenstunden.
-echo "\t\t\t\t<tr>\n";
-echo "\t\t\t\t\t<td colspan=5>\n";
+echo "\t\t\t\t\t<tr>\n";
+echo "\t\t\t\t\t\t<td colspan=5>\n";
 for ($tag=0; $tag<count($Dienstplan); $tag++)
 {
 	if (!isset($Dienstplan[$tag]['Stunden'])) {continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
@@ -197,12 +199,13 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 	}
 	echo "</tr>";
 }
-echo "\t\t\t\t\t</td>\n";
-echo "\t\t\t\t</tr>\n";
-echo "\t\t\t\t</tfoot>\n";
-echo "\t\t\t</table>\n";
+echo "\t\t\t\t\t\t</td>\n";
+echo "\t\t\t\t\t</tr>\n";
+echo "\t\t\t\t\t</tfoot>\n";
+echo "\t\t\t\t</table>\n";
 // echo $submitButton;
-echo "\t\t</form>\n";
+echo "\t\t\t</form>\n";
+echo "</div>\n";
 require 'contact-form.php';
 
 

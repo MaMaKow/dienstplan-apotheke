@@ -20,8 +20,18 @@
 				}
 			}
 //			echo "<pre>";	var_export($ApprobiertenDienstplan);    	echo "</pre>"; 
-			$tagesBeginn=strtotime('8:00:00');
-			$tagesEnde=strtotime('20:00:00');
+			if( date('N', strtotime($datum)) < 6 )
+			{
+				//On mondays and saturdays the day starts 
+				//DEBUG debug in a future version this should be read from a database with all the single opening and closing times.
+				$tagesBeginn=strtotime('8:00:00');
+				$tagesEnde=strtotime('20:00:00');
+			}
+			elseif( date('N', strtotime($datum)) == 6 ) //saturday
+			{
+				$tagesBeginn=strtotime('9:00:00');
+				$tagesEnde=strtotime('18:00:00');
+			}
 			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...)
 			$tagesBeginn=min($tagesBeginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
 			$tagesEnde=max($tagesEnde, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));

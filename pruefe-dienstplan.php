@@ -1,11 +1,19 @@
 <?php
-	//Wir überprüfen ob zu jeder Zeit Approbierte anwesend sind.
-	//Diese Funktion sollte in eine extra Datei geschoben werden, zusammen mit anderen Tests. debug DEBUG!
-	foreach ($ApprobiertenAnwesende as $zeit => $anwesende)
+	if( isset($ApprobiertenAnwesende) AND isset($tagesEnde) )
 	{
-		if ($anwesende == 0 AND $zeit != strtotime("20:00"))
+		//Wir überprüfen ob zu jeder Zeit Approbierte anwesend sind.
+		//Diese Funktion sollte in eine extra Datei geschoben werden, zusammen mit anderen Tests. debug DEBUG!
+		foreach ($ApprobiertenAnwesende as $zeit => $anwesendeApprobierte)
 		{
-			$Fehlermeldung[]="Um ".date('H:i', $zeit)." Uhr ist kein Approbierter anwesend.";
+			if ($anwesendeApprobierte == 0 AND $zeit != $tagesEnde)
+			{
+				$Fehlermeldung[]="Um ".date('H:i', $zeit)." Uhr ist kein Approbierter anwesend.";
+				break 1; //We avoid to flood everything with errors fpr every 5 minutes in which noone is there.
+			}
 		}
+	}
+	else
+	{
+		echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.";
 	}
 ?>

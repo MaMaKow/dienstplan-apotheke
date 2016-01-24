@@ -1,11 +1,25 @@
+/*
+Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizard.asp
+#BDE682, foreground, light green
+#73AC22, contrast, strong green
+#FEFEFF, background, white
+#B4B4B4, ?,  grey
+*/
 @page 
 {
 	margin: 0.5cm;
 	size: landscape;
 }
-.only-print {display: none;}
+.only-print 
+{
+	display: none;
+}
 @media print
 {    
+	a
+	{
+		color: #000000;
+	}
 	.no-print, .no-print *
 	{
 	/*Elemente die nicht gedruckt werden sollen.*/
@@ -23,7 +37,7 @@
 }
 body
 {
-	background-color: #D0E0F0;
+	background-color: #FEFEFF;
 }
 table, th, td
 {
@@ -39,26 +53,33 @@ td
 {
 	white-space: nowrap; vertical-align: top;
 }
-a:link
+a
 {
 	text-decoration: none;
+	color: #73AC22;
 }
 a:hover
 {
 	text-decoration: underline;
 }
-.head
+.head 
 {
     	display: inline-block;
 	float: left;
 	clear: both;
+	background-color: #BDE682;
+	width: 100%;
 }
+
 .foot
 {
 	display: inline-block;
 	float: left;
 	clear: both;
+/*	background-color: #BDE682;*/
+	width: 100%;
 }
+
 .no-image
 {
 	position: relative;
@@ -78,7 +99,7 @@ img
 	position: relative;
 	float: left;
 	overflow:auto;
-	width: 60%;
+/*	width: 60%;*/
 /*	max-height: 60%;*/
 }
 .overlay 
@@ -87,7 +108,7 @@ img
 	top:0;*/
 	float: left;
 	clear: both;
-	background-color: rgba(255,60,60,0.8); /*leicht roter Hintergrund*/
+	background-color: #73AC22;
 	z-index: 10;
 }
 ul {
@@ -98,17 +119,17 @@ ul {
 }
 li {
 	float: left;
-	border: 1px solid navy;
+	border: 1px solid #73AC22;
 }
 
 li a {
     	display: inline-block;
 	text-align:center;
-	background-color: #EFFFFF;
+	background-color: #BDE682;
     	color: #000;
     	padding: 8px 8px 8px 8px;
 } 
 li a:hover {
-	background-color: #11F;
+	background-color: #73AC22;
 	color: #FFFFFF;
 }

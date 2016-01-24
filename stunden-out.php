@@ -7,6 +7,8 @@ require 'default.php';
 	</head>
 	<body>
 		<?php
+require 'navigation.php';
+echo "<div class=no-image>\n";
 			require 'db-verbindung.php';
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';
@@ -36,25 +38,25 @@ require 'default.php';
 			while ($row=mysqli_fetch_object($ergebnis))
 			{
 				$tablebody.= "\t\t\t<tr>\n";
-				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
+				$tablebody.= "\t\t\t\t<td>";
 				$tablebody.= date('d.m.Y', strtotime($row->Datum));
-				$tablebody.= "\n\t\t\t\t</td>\n";
-				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
+				$tablebody.= "</td>\n";
+				$tablebody.= "\t\t\t\t<td>";
 				$tablebody.= "$row->Grund";
-				$tablebody.= "\n\t\t\t\t</td>\n";
-				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
+				$tablebody.= "</td>\n";
+				$tablebody.= "\t\t\t\t<td>";
 				$tablebody.= "$row->Stunden";
-				$tablebody.= "\n\t\t\t\t</td>\n";
+				$tablebody.= "</td>\n";
 				if($i == $numberOfRows)
 				{
-					$tablebody.= "\t\t\t\t<td id=saldoAlt>\n\t\t\t\t\t";
+					$tablebody.= "\t\t\t\t<td id=saldoAlt>";
 				}
 				else
 				{
-					$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
+					$tablebody.= "\t\t\t\t<td>";
 				}
 				$tablebody.= "$row->Saldo"; $saldo=$row->Saldo; //Wir tragen den Saldo mit uns fort.
-				$tablebody.= "\n\t\t\t\t</td>\n";
+				$tablebody.= "</td>\n";
 				$tablebody.= "\n\t\t\t</tr>\n";
 				$i++;
 			}
@@ -71,28 +73,25 @@ for ($vk=1; $vk<$VKmax+1; $vk++)
 		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
 	}
 }
-echo "\t\t\t</select>\n";
-$submitButton="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submitButton; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo "\t\t\t<H1>".$Mitarbeiter[$auswahlMitarbeiter]."</H1>\n";
-echo "<a class=no-print href=stunden-in.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Bearbeiten]</a>";
-			echo "\t\t<table border=1>\n";
+				echo "\t\t\t</select>\n";
+				$submitButton="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submitButton; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+				echo "\t\t\t<H1>".$Mitarbeiter[$auswahlMitarbeiter]."</H1>\n";
+				echo "\t\t\t<a class=no-print href=stunden-in.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Bearbeiten]</a>\n";
+				echo "\t\t<table border=1>\n";
 //Überschrift
-			echo "\t\t\t<tr>\n
-				\t\t\t\t<td>\n
-				\t\t\t\t\tDatum\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
-				\t\t\t\t\tGrund\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
-				\t\t\t\t\tStunden\n\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
-				\t\t\t\t\tSaldo\n
-				\t\t\t\t</td>\n
-				\t\t\t</tr>\n";
+				echo "\t\t\t<tr>\n".
+				"\t\t\t\t<td>Datum</td>\n".
+				"\t\t\t\t<td>Grund</td>\n".
+				"\t\t\t\t<td>Stunden</td>\n".
+				"\t\t\t\t<td>Saldo</td>\n".
+				"\t\t\t</tr>\n";
 //Ausgabe 
 			echo "$tablebody";
-//		echo "<pre>"; var_dump($_POST); echo "</pre>";
+			echo "\t\t</table>\n";
+			echo "\t</form>\n";
+//			echo "<pre>"; var_dump($_POST); echo "</pre>";
+			echo "</div>\n";
+			require 'contact-form.php';
 		?>
 	</body>
 </html>

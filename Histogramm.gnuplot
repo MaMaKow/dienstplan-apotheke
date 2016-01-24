@@ -1,4 +1,4 @@
-set terminal png size 1800, 800 enhanced font 'Verdana,20'
+set terminal png size 680, 350 crop enhanced font 'Verdana,12'
 set datafile separator ","
 #set style fill solid 0.5
 #set boxwidth 0.9 
@@ -24,5 +24,5 @@ set yrange [1:]
 set link y2 via y*6 inverse y/6  #Dies legt fest, wie viele Packungen ein Mitarbeiter pro 30 Minuten abarbeiten kann.
 
 set output "tmp/histogramm.png"
-plot 	"tmp/Histogramm.csv" 	using 1:2 with steps lc rgb "green" 		lw 8 notitle,\
+plot 	"tmp/Histogramm.csv" 	using 1:2 with steps lc rgb "green" 		lw 5 notitle,\
 	"tmp/Erwartung.csv"		using 1:2 with filledcurves x1 lc rgb "red" 	lw 6 notitle axes x1y2

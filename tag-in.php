@@ -39,7 +39,7 @@ if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 )
 //	unset ($Dienstplan);
 	require_once 'plane-tag.php';
 }
-if( !empty($Dienstplan[0]['VK'][0]) AND isset($ApprobiertenAnwesende) )
+if( !empty($Dienstplan[0]['VK'][0]) )
 {
 	require 'pruefe-dienstplan.php';
 }

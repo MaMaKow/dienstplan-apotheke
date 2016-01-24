@@ -1,9 +1,11 @@
 <html>
 	<head>
 		<meta charset=UTF-8>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body>
 		<p>Dies wird ein Navigationsmenü für die Dienstplanung</p>
+		<H1>
 		<table border=0>
 			<tr>
 				<td>
@@ -31,6 +33,7 @@
 				</td>
 			</tr>
 		</table>
+		</H1>
 	</body>
 </html>
 
