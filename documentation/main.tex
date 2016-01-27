@@ -1,0 +1,121 @@
+\documentclass[10pt,a4paper,titlepage,oneside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[hidelinks]{hyperref}
+\author{Dr. Martin Mandelkow}
+\title{Handbuch Apotheken-Dienstplan}
+\begin{document}
+\maketitle
+\tableofcontents\pagebreak 
+\section{Copyright}
+Die Software ist bis auf Weiteres vollständiges Eigentum von Dr. Martin Mandelkow.
+Eventuell wird in der Zukunft eine Version unter einer Creative Commons Lizenz CC-BY-SA veröffentlicht werden.
+\section{Einführung}
+Das Ziel dieser Software ist es - mit möglichst wenig Aufwand, Fehlern und Zeit - Dienstpläne zu gestalten, die für Mitarbeiter, Patienten und die Apothekenkeitung optimal sind.
+Dabei werden Aufwand im Abverkauf, stetige Anwesenheit von Approbierten und Abwesenheitszeiten (z.B. Urlaub, Krankheit) berücksichtigt. Mittagspausen werden explizit vorgegeben.
+Es ist vorgesehen, dass es einen Grundplan gibt, nach dem alle Mitarbeiter eingesetzt werden. Dieser soll die persönlichen Wünsche der Mitarbeiter berücksichtigen.
+%Dazu gibt es einen Wunschplan. Dieser ist Interessant für Abweichungen vom üblichen Plan bei Urlaub und Abwesenheit.
+
+Dieser Dienstplan enthält bisher folgende Ansichten:
+\begin{itemize}
+	\item Tag
+	\item Woche
+	\item Personen
+	\item Stunden
+	\item Abwesenheit
+\end{itemize}
+
+Außer für die Personenansicht gibt es jeweils eine Bearbeitungs-Version.
+Die Bearbeitungsversionen können und dürfen nur durch dafür bestimmte Mitarbeiter genutzt werden. Derzeit ist das ausschließlich Dr. Mandelkow.
+
+Das Programm basiert auf einer MYSQL-Datenbank und einem PHP-Frontend.
+Es werden HTML5-Elemente und CSS genutzt.
+
+
+\section{Kontakt und Unterstützung}
+Ich stehe jederzeit gerne für Fragen zur Verfügung.
+Außerhalb der regulären Arbeitszeit bin ich unter der Adresse \href{mailto:dienstplan@martin-mandelkow.de}{dienstplan@martin-mandelkow.de} zu erreichen.
+
+
+\section{Benutzung des Dienstplanes}
+\subsection{Zugang}
+Der Zugang zum Dienstplanprogramm erfolgt über die Domain martin-mandelkow.de unter der URL \url{https://martin-mandelkow.de/apotheke/dienstplan}.
+Derzeit gibt es einen gemeinsamen Zugang für alle Mitarbeiter.
+\begin{itemize}
+	\item User Name: Mitarbeiter
+	\item Password: GrosseFreude
+\end{itemize}
+
+Der Server kommuniziert ausschließlich verschlüsselt über das HTTPS Protokoll.
+Die Zugangsverwaltung erfolgt derzeit über den Apache Server mittels htaccess.
+Das Anlegen neuer Benutzer kann mit \texttt{htpasswd -c /var/www/.htpasswd \emph{Benutzer}}
+erfolgen. Welche Benutzer welche Rechte haben, wird in der Datei \texttt{/etc/httpd/conf/httpd.conf} festgelegt:
+\begin{verbatim}
+<Directory /var/www/html/apotheke>
+<Files *-in.php>
+    AuthType basic
+    AuthName "Nur fuer Administratoren"
+    AuthUserFile /var/www/.htpasswd
+    Require user Mandelkow Kreimann
+</Files>
+AuthBasicProvider file
+AuthUserFile /var/www/.htpasswd
+AuthGroupFile /dev/null
+AuthName "Dieser Bereich ist passwortgeschuetzt fuer Mitarbeiter."
+AuthType Basic
+require valid-user
+</Directory>
+\end{verbatim}
+
+
+\subsection{Tag}
+Die Tagesansicht besteht aus einer Tabelle mit den Informationen,
+\begin{itemize}
+	\item VK-Nummer
+	\item Nachname
+	\item Dienstbeginn und Dienstende
+	\item Mittagsbeginn und Mittagsende (wenn vorhanden)
+\end{itemize} 
+und zwei Abbildungen. Die obere Abbildung zeigt die Informationen der Tabelle in Form eines Balkendiagrammes. Zusätzlich ist die Gesamtstundenzahl des Tages für jeden Mitarbeiter angegeben. Im darunter liegenden Bild finden sich zwei Histogramme. In roter Farbe ist der erwartete Arbeitsaufwand im Verkauf dargestellt. Hierzu werden die Faktoren Monat, Tag im Monat, Wochentag und Uhrzeit berücksichtigt. Die Erfassung der Daten erfolgt aus der PEP-Exportfunktion der ASYS-Software. Derzeit muss eine solche Datei manuell über einen sicheren Transport (z.B. SFTP) zum Server transportiert werden.
+
+Die Anzahl der vorhandenen Mitarbeiter wird durch die grüne Linie wiedergegeben. In der Darstellung wird durchgehend ein Mitarbeiter abgezogen. So ist für Ware, Telefon und sonstige Arbeiten im Backoffice immer eine Person vorgesehen.
+\subsection{Woche}
+\subsection{Mitarbeiter}
+\subsection{Stunden}
+\subsection{Stunden}
+\subsection{Offline}
+Zu allen Informationen liegen auch offline Versionen in der Apotheke vor.
+An der Pinnwand sollte der aktuelle Wochenplan und der Plan der folgenden Woche zu finden sein. Auch die Tagesansichten der aktuellen Woche inklusive Samstag werden dort ausgehängt. Über den Abholern befindet sich eine rote Box mit der Aufschrift "Arbeitszeitverschiebungen". In ihr werden Überstunden und deren Abbau eingeschrieben.
+Hinten bei den Spinten hängt ein Jahresplan, auf dem die Urlaubszeiten eingetragen wurden.
+
+
+\section{Systemvorraussetzungen}
+	\begin{itemize}
+		\item HTTP-Server (z.B. Apache)
+		\item PHP 5.5
+		\item MYSQL 4.1
+		\item Gnuplot 5.0
+	\end{itemize}
+
+
+\section{To Do}
+\begin{itemize}
+	\item Sichere Upload-Funktion für PEP-Dateien.
+	\item Eventuell eine PHP-Rechteverwaltung für Benutzer
+	\item PHP-Interface für Mitarbeiterverwaltung (wird derzeit per phpmyadmin durchgeführt)
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+\end{document}

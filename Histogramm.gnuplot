@@ -21,7 +21,7 @@ set timefmt "%H:%M"
 #set format y "%H:%M"
 set xrange ["7:00":"21:00"]; #set y2range ["7:00":"21:00"]
 set yrange [1:]
-set link y2 via y*6 inverse y/6  #Dies legt fest, wie viele Packungen ein Mitarbeiter pro 30 Minuten abarbeiten kann.
+set link y2 via y-1*6 inverse y/6-1  #Dies legt fest, wie viele Packungen ein Mitarbeiter pro 30 Minuten abarbeiten kann.
 
 set output "tmp/histogramm.png"
 plot 	"tmp/Histogramm.csv" 	using 1:2 with steps lc rgb "green" 		lw 5 notitle,\

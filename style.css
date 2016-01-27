@@ -5,35 +5,9 @@ Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
 */
-@page 
-{
-	margin: 0.5cm;
-	size: landscape;
-}
 .only-print 
 {
 	display: none;
-}
-@media print
-{    
-	a
-	{
-		color: #000000;
-	}
-	.no-print, .no-print *
-	{
-	/*Elemente die nicht gedruckt werden sollen.*/
-		display: none !important;
-	}
-  	.only-print 
-	{
-		display: block;
-	}
-	.page-break
-	{
-		display: block;
-		page-break-before: always;
-	}
 }
 body
 {

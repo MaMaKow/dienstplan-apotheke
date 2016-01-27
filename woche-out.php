@@ -37,7 +37,8 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 ?>
 <html moznomarginboxes> <!-- Wir wollen beim Ausdrucken keinen Header mit auf dem Papier. -->
 	<head>
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="style.css" media="all">
+		<link rel="stylesheet" type="text/css" href="print.css" media="print" />
 	</head>
 	<body>
 <?php
@@ -63,7 +64,8 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	echo " \n";
 	echo "<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	echo strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
-	require 'db-lesen-feiertag.php'; //DEBUG debug ! Diese Funktion prüft nur für einen einzigen Tag. Nur $datum wird aufgerufen.
+	$datum=($Dienstplan[$i]['Datum'][0]);
+	require 'db-lesen-feiertag.php'; 
 	if(isset($feiertag)){echo " ".$feiertag." ";}
 	if(isset($notdienst)){echo " NOTDIENST ";}
 	echo "</td></a>\n";
@@ -87,7 +89,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 {
 	if (!isset($Dienstplan[$i]['VK'])) {break;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	unset($Urlauber, $Kranke);
-	$tag=($Dienstplan[$i]['Datum'][0]);
+	$datum=($Dienstplan[$i]['Datum'][0]);
 	require 'db-lesen-abwesenheit.php';
 	$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);
 	if (isset($Urlauber))

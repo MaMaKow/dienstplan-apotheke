@@ -5,6 +5,17 @@ images/
 *.png
 *.ics
 
+
+# Dateien, die von Latex erzeugt werden. #
+##########################################
+*.aux
+*.log
+*.bak
+*.bbl
+*.blg
+*.out
+*.toc
+
 # Temporäre Dateien #
 #####################
 *.*~

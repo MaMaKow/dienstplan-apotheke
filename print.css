@@ -1,0 +1,23 @@
+@page 
+{
+	margin: 0.5cm;
+	size: landscape;
+}
+a, body
+{
+	color: #000000; /*!important;*/ 
+}
+.no-print, .no-print *
+{
+	/*Elemente die nicht gedruckt werden sollen.*/
+	display: none !important;
+}
+.only-print 
+{
+	display: block;
+}
+.page-break
+{
+	display: block;
+	page-break-before: always;
+}

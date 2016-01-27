@@ -62,7 +62,8 @@
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="style.css" media="all">
+		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
 	<body>
 		<?php

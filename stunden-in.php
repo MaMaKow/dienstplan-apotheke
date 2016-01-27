@@ -3,7 +3,8 @@ require 'default.php';
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="style.css" media="all">
+		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 		<script>"use strict";
 			function confirmDelete(link)
 			{

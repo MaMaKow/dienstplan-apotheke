@@ -66,7 +66,8 @@ require 'pruefe-abwesenheit.php';
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="style.css" media="all">
+		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
 	<body bgcolor=#D0E0F0>
 <?php
