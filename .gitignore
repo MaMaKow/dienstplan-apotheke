@@ -15,6 +15,7 @@ images/
 *.blg
 *.out
 *.toc
+*.tks
 
 # Temporäre Dateien #
 #####################

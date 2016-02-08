@@ -32,6 +32,11 @@
 				$tagesBeginn=strtotime('9:00:00');
 				$tagesEnde=strtotime('18:00:00');
 			}
+			elseif( date('N', strtotime($datum)) == 7 ) //sunday
+			{
+				$tagesBeginn=strtotime('12:00:00');
+				$tagesEnde=strtotime('18:00:00');
+			}
 			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...)
 			$tagesBeginn=min($tagesBeginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
 			$tagesEnde=max($tagesEnde, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
