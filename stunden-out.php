@@ -81,10 +81,10 @@ for ($vk=1; $vk<$VKmax+1; $vk++)
 				echo "\t\t<table border=1>\n";
 //Überschrift
 				echo "\t\t\t<tr>\n".
-				"\t\t\t\t<td>Datum</td>\n".
-				"\t\t\t\t<td>Grund</td>\n".
-				"\t\t\t\t<td>Stunden</td>\n".
-				"\t\t\t\t<td>Saldo</td>\n".
+				"\t\t\t\t<th>Datum</th>\n".
+				"\t\t\t\t<th>Grund</th>\n".
+				"\t\t\t\t<th>Stunden</th>\n".
+				"\t\t\t\t<th>Saldo</th>\n".
 				"\t\t\t</tr>\n";
 //Ausgabe 
 			echo "$tablebody";

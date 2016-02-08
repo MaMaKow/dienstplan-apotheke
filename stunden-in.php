@@ -147,6 +147,8 @@ require 'default.php';
 
 
 //Hier beginnt die Ausgabe
+require 'navigation.php';
+echo "<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahlMitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
 echo "\t\t\t\t<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter." ".$Mitarbeiter[$auswahlMitarbeiter]."</option>,\n";
@@ -164,17 +166,17 @@ echo "<a href=stunden-out.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Lesen]</a>
 			echo "\t\t<table border=1>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tDatum\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tGrund\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tStunden\n\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tSaldo\n
-				\t\t\t\t</td>\n
+				\t\t\t\t</th>\n
 				\t\t\t</tr>\n";
 //Ausgabe 
 			echo "$tablebody";
@@ -202,6 +204,7 @@ echo "<a href=stunden-out.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Lesen]</a>
 			echo "<input type=submit name=submitStunden value='Eintragen'>";
 			echo "\t</form>";
 //		echo "<pre>"; var_dump($_POST); echo "</pre>";
+			echo "</div>\n";
 		?>
 	</body>
 </html>

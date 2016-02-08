@@ -4,13 +4,8 @@ require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
 
-
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 
 $datenübertragung="";
 $dienstplanCSV="";
@@ -25,13 +20,16 @@ $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woch
 
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-//require 'db-lesen-tag.php'; //Lesen der in der Datenbank gespeicherten Daten.
+//Hole eine Liste aller Mitarbeiter
+require 'db-lesen-mitarbeiter.php';
+//Hole eine Liste aller Mandanten (Filialen)
+require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 
-if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 )
+if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 ) //Samstag und Sonntag planen wir nicht.
 {
 	//Wir wollen eine automatische Dienstplanfindung beginnen.
 	//Mal sehen, wie viel die Maschine selbst gestalten kann.
@@ -48,6 +46,11 @@ else
 	echo "Dienstplan konnte nicht überprüft werden.";
 }
 
+require 'db-lesen-notdienst.php';
+if(isset($notdienst['mandant']))
+{
+	$Warnmeldung[]="An den Notdienst denken!";
+}
 
 
 
@@ -75,10 +78,19 @@ require 'navigation.php';
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 if (isset($Fehlermeldung))
 {
-	echo "		<div class=overlay><H1>";
+	echo "		<div class=errormsg><H1>";
 	foreach($Fehlermeldung as $fehler)
 	{
 		echo "		<H1>".$fehler."</H1>";
+	}
+	echo "</div>";
+}
+if (isset($Warnmeldung))
+{
+	echo "		<div class=warningmsg><H1>";
+	foreach($Warnmeldung as $warnung)
+	{
+		echo "		<H1>".$warnung."</H1>";
 	}
 	echo "</div>";
 }
@@ -120,19 +132,19 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	echo "\t\t\t\t\t<td>";
 	$zeile.="<input type=hidden name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.="<input type=hidden name=mandant value=".$mandant.">";
-	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
+	$zeile.=strftime('%d.%m. ', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
-	if(isset($feiertag)){echo " ".$feiertag." ";}
-	if(isset($notdienst)){echo " NOTDIENST ";}
-	echo "</td>\n";
-}	
-echo "\t\t\t\t</tr><tr>\n";
-for ($i=0; $i<count($Dienstplan); $i++)
-{//Wochentag
+//Wochentag
 	$zeile="";
-	echo "\t\t\t\t\t<td>";
-	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
+	$zeile.=strftime('%A ', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
+	require 'db-lesen-feiertag.php';
+	if(isset($feiertag)){echo " ".$feiertag." ";}
+	require 'db-lesen-notdienst.php';
+	if(isset($notdienst['mandant']))
+	{
+		echo "<br>NOTDIENST<br>".$Mitarbeiter[$notdienst['vk']]." / ". $Mandant[$notdienst['mandant']];
+	}
 	echo "</td>\n";
 }
 for ($j=0; $j<$VKcount; $j++)
@@ -170,12 +182,12 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile.="</select>\n";
 		//Dienstbeginn
 		$zeile.="\t\t\t\t\t\t<input type=hidden name=Dienstplan[".$i."][Datum][".$j."] value=".$Dienstplan[0]["Datum"][0].">\n";
-		$zeile.="\t\t\t\t\t\t<input type=time step=1800 size=1 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
+		$zeile.="\t\t\t\t\t\t<input type=time size=1 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j])) 
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time step=1800 size=1 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
+		$zeile.="> bis <input type=time size=1 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
 		//Dienstende
 		if (isset($Dienstplan[$i]["VK"][$j])) 
 		{
@@ -191,12 +203,12 @@ for ($j=0; $j<$VKcount; $j++)
 	{//Mittagspause
 		$zeile="";
 		echo "\t\t\t\t\t<td align=right>";
-		$zeile.=" Pause: <input type=time step=1800 size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
+		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time step=1800 size=1 name=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
+		$zeile.="> bis <input type=time size=1 name=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
@@ -235,7 +247,7 @@ echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('image
 echo "</div>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
-//	echo "<pre>";	var_export($MarienplatzMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//	echo "<pre>";	var_export($MandantenMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 //	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 echo "\t</body>\n";

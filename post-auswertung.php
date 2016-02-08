@@ -4,6 +4,10 @@ require 'funktionen.php';
 if ( isset($_POST['mandant']))
 {
 	$mandant=htmlspecialchars($_POST['mandant']);
+	if ( $mandant==2 )
+	{
+		$filiale=1; //debug DEBUG Hier wird jetzt hard coded, dass die Helenenstraße die Hauptfiliale zum Marienplatz ist. Das könnte man in einem wirklich großen Verbund noch anders klären. Zu Beispiel könnte man die Mutter separat kennzeichnen.
+	}
 }
 if ( isset($_POST['datum']))
 {

@@ -208,7 +208,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	//Jetzt schauen wir, ob sonst alle da sind.
 	if (count($Dienstplan)>3)
 	{
-		$MitarbeiterDifferenz=array_diff(array_keys($MarienplatzMitarbeiter), $EingesetzteMitarbeiter);
+		$MitarbeiterDifferenz=array_diff(array_keys($MandantenMitarbeiter), $EingesetzteMitarbeiter);
 		if(isset($Abwesende)){$MitarbeiterDifferenz=array_diff($MitarbeiterDifferenz, $Abwesende);}
 		if (!empty($MitarbeiterDifferenz))
 		{
@@ -233,7 +233,7 @@ if (isset($Kranke))
 echo "	</table>\n";
 echo $submitButton;
 echo "</form>\n";
-//	echo "<pre>";	var_export($MarienplatzMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//	echo "<pre>";	var_export($MandantenMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 /*

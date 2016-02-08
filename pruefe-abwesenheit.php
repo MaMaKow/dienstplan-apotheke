@@ -74,10 +74,11 @@ for ($i=0; $i<count($Dienstplan); $i++)
 			}
 		}
 	}
+
 	//Jetzt schauen wir, ob sonst alle da sind.
 	if (count($EingesetzteMitarbeiter)>3)
 	{
-		$MitarbeiterDifferenz=array_diff(array_keys($MarienplatzMitarbeiter), $EingesetzteMitarbeiter);
+		$MitarbeiterDifferenz=array_diff(array_keys($MandantenMitarbeiter), $EingesetzteMitarbeiter);
 		if(isset($Abwesende)){$MitarbeiterDifferenz=array_diff($MitarbeiterDifferenz, $Abwesende);}
 		if (!empty($MitarbeiterDifferenz))
 		{

@@ -259,13 +259,17 @@
 //Jetzt sortieren wir unser Ergebnis fein säuberlich, damit wir es auch lesen können.
 	if(!empty($Dienstplan[$tag]['VK']))
 	{
-		array_multisort($Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
+		//array_multisort($Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
+		//Es scheint, dass die Funktion in der Zeile hierüber nicht funktioniert, wie erwartet.
+		$SortOrder=array_map('strtotime', $Dienstplan[$tag]['Dienstbeginn']);
+		array_multisort($SortOrder, $Dienstplan[$tag]['Dienstbeginn']);
+		//Das hier drüber scheint zu funktionieren.
 	}
 
 
 
 	$BesetzteMittagsBeginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
-	$BesetzteMittagsEnden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
+	$BesetzteMittagsEnden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen jemand mit dem Essen fertig ist.
 	//Hier entsteht die Mittagspausenvergabe.
 	$pausenStart=strtotime('11:30:00');
 	if( !empty($Dienstplan[$tag]['VK']) ) //Haben wir überhaupt einen Dienstplan?

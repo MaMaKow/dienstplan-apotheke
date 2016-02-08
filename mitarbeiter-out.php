@@ -7,12 +7,11 @@ require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreibe
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 
-$datenübertragung="";
+//$datenübertragung="";
 $dienstplanCSV="";
 $tage=7;
 
 
-//$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
 $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 $montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
@@ -102,6 +101,7 @@ for ($tag=0; $tag<count($Dienstplan); $tag++)
 {//Datum
 	$zeile="";
 	echo "\t\t\t\t\t<td width=14%>";
+	echo "<a href=tag-out.php?datum=".$Dienstplan[$tag]["Datum"][0].">";
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$tag."][Datum][0] value=".$Dienstplan[$tag]["Datum"][0].">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$tag]["Datum"][0]));
 	echo $zeile;
@@ -118,7 +118,7 @@ echo "\t\t\t\t<br>\n";
 //	echo "\t\t\t\t\t<td>";
 	$zeile.=strftime('%A', strtotime( $Dienstplan[$tag]["Datum"][0]));
 	echo $zeile;
-	echo "</td>\n";
+	echo "</a></td>\n";
 }
 for ($j=0; $j<$planAnzahl; $j++)
 {
@@ -157,7 +157,7 @@ for ($j=0; $j<$planAnzahl; $j++)
 		}
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Stunden"][$j] > 0 )
 		{
-			$zeile.="<br>".$Dienstplan[$i]["Stunden"][$j]." Stunden";
+			$zeile.="<br><a href=stunden-out.php?auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">".$Dienstplan[$i]["Stunden"][$j]." Stunden";
 		}
 		$zeile.="";
 		
@@ -171,7 +171,8 @@ echo "\t\t\t\t<tfoot>\n";
 echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
-for ($tag=0; $tag<count($Dienstplan); $tag++)
+//for ($tag=0; $tag<count($Dienstplan); $tag++)
+for ($tag=0; $tag<5; $tag++) // Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
 {
 	foreach($Dienstplan[$tag]['Stunden'] as $key => $stunden)
 	{
@@ -183,23 +184,13 @@ ksort($Stunden);
 $i=1;$j=1; //Zahler für den Stunden-Array (wir wollen nach je x Elementen einen Umbruch)
 foreach($Stunden as $mitarbeiter => $stunden)
 {
-	$k=$j*5; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
-	if($mitarbeiter>$k){$i++;}
-	if($i>=2)
-	{
-		echo "<br>";
-		$i=0;$j++;
-	}
-	reset($Stunden);
 	echo array_sum($stunden);
-
-	end($Stunden); if ($mitarbeiter === key($Stunden))
+	echo " / ";
+	echo $StundenMitarbeiter[$mitarbeiter];
+	if ( $StundenMitarbeiter[$mitarbeiter] != array_sum($stunden))
 	{
-//        echo 'LAST ELEMENT!';
-	}
-	else
-	{
-		echo "; ";
+		$differenz=array_sum($stunden)-$StundenMitarbeiter[$mitarbeiter];
+		echo " <b>( ".$differenz." )</b>";
 	}
 }
 echo "\t\t\t\t\t</td>\n";
@@ -238,7 +229,7 @@ foreach(array_keys($Dienstplan) as $tag )
 			//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
 			if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 			if(empty($mittagsende)){$mittagsende="0:00";}
-			setlocale (LC_ALL, 'de_DE');
+			//setlocale (LC_ALL, 'de_DE'); //Dies arbeitet nicht so wie erwartet. Es sollte aus monday Montag machen. Aber es hat zu 7,5 statt 7.5 geführt bei den Stunden, und Montag erscheint auch ganz ohne diesen Befehl. Warum auch immer,...
 			$dienstplanCSV.=strftime('%A', strtotime($datum)).", $vk, $datum";
 			$dienstplanCSV.=", ".$dienstbeginn;
 			$dienstplanCSV.=", ".$dienstende;

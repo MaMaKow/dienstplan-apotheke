@@ -142,6 +142,8 @@ require 'default.php';
 
 
 //Hier beginnt die Ausgabe
+require 'navigation.php';
+echo "<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahlMitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
 echo "\t\t\t\t<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter." ".$Mitarbeiter[$auswahlMitarbeiter]."</option>,\n";
@@ -161,18 +163,18 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 			echo "\t\t<table border=1>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tBeginn\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tEnde\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tGrund\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tTage\n
-				\t\t\t\t</td>\n
+				\t\t\t\t</th>\n
 				\t\t\t</tr>\n";
 //Ausgabe 
 			echo "$tablebody";
@@ -199,6 +201,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 			echo "<input type=submit class=no-print name=submitStunden value='Eintragen'>";
 			echo "\t</form>";
 //echo "<pre>"; var_dump($_POST); echo "</pre>";
+			echo "</div>\n";
 		?>
 	</body>
 </html>

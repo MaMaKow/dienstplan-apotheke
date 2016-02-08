@@ -87,18 +87,18 @@ echo "<a class=no-print href=abwesenheit-in.php?auswahlMitarbeiter=$auswahlMitar
 			echo "\t\t<table border=1>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tBeginn\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tEnde\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tGrund\n
-				\t\t\t\t</td>\n
-				\t\t\t\t<td>\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th>\n
 				\t\t\t\t\tTage\n
-				\t\t\t\t</td>\n
+				\t\t\t\t</th>\n
 				\t\t\t</tr>\n";
 //Ausgabe 
 			echo "$tablebody";
