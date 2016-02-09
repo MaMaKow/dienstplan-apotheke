@@ -40,7 +40,7 @@ echo "<div class=no-image>\n";
 			{
 				$tablebody.= "\t\t\t<tr>\n";
 				$tablebody.= "\t\t\t\t<td>";
-				$tablebody.= date('d.m.Y', strtotime($row->Datum));
+				$tablebody.= "<a href=tag-out.php?datum=".date('Y-m-d', strtotime($row->Datum)).">".date('d.m.Y', strtotime($row->Datum))."</a>";
 				$tablebody.= "</td>\n";
 				$tablebody.= "\t\t\t\t<td>";
 				$tablebody.= "$row->Grund";

@@ -119,7 +119,9 @@
 					if($posPos===false) 
 					{
 						//Es liegen keinerlei Wünsche vor. Wir sollten in der Datenbank welche eintragen, auch wenn es ein egal ist.
-						$MitarbeiterOptionen[]=$vk;
+						continue;
+						//Es wird nur automatisch eingeplant, wer auch einen Eintrag im Grundplan hat.
+						//$MitarbeiterOptionen[]=$vk;
 					}
 					elseif($Grundplan[$tag]['Dienstbeginn'][$posPos] === null)
 					{
