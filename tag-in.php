@@ -20,8 +20,12 @@ $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woch
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
+require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+create_cookie("mandant", $mandant); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+
+
 //Hole erneut eine Liste aller Mitarbeiter debug DEBUG Post-Auswertung braucht dies und dies braucht POST-Auswertung!
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
@@ -71,10 +75,11 @@ require 'pruefe-abwesenheit.php';
 ?>
 <html>
 	<head>
+		<meta charset=UTF-8>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
-	<body bgcolor=#D0E0F0>
+	<body>
 <?php
 require 'navigation.php';
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.

@@ -234,18 +234,16 @@
 	}
 
 	$versuche=0;
-//	global $uhrzeit;
+	/*Es sollten immer mindestens zwei Personen anwesend sein, damit man auch mal aufs Klo gehen kann, einen Anruf annehmen kann usw,...*/
+	$min_anwesende=2;
 	for($uhrzeit=strtotime('8:00:00'); $uhrzeit<strtotime('20:00:00'); $versuche++)
 	{
-	//	echo "Versuch $versuche <br>\n";
-//		if(++$versuche > 100){break;} // Dies soll unauflösbare Schleifen vermeiden. Es ist noch nicht der Weisheit letzter Schluss. Insbesondere braucht es eine Option um kritische Punkte einfach zu überspringen. Vielleicht mit $uhrzeit=strtotime('+ 30 minutes', $uhrzeit)
-		if($versuche > 5){$uhrzeit=strtotime('+ 30 minutes', $uhrzeit); $versuche-=2; continue;} // Dies soll unauflösbare Schleifen vermeiden.  
-		$sollAnwesende=2;
-		//zeichne-histogramm enthält bereits den notwendigen Code, um anwesende Mitarbeiter durchzuzählen und Bedarfe zu ermitteln.
+		/*Damit wir keine Endlosschleife bauen, versuchen wir nur einige Male einen geeigneten Mitarbeiter zu finden, bevor wir zur nächsten Urzeit weiter schreiten.*/
+		if($versuche > 3){$uhrzeit=strtotime('+ 30 minutes', $uhrzeit); $versuche-=2; continue;} 
+		/*zeichne-histogramm.php enthält bereits den notwendigen Code, um anwesende Mitarbeiter durchzuzählen und Bedarfe zu ermitteln.*/
 		$histogrammNoPrint=true; require 'zeichne-histogramm.php';
-		//Auch wenn rechnerisch nur 1 oder null Anwesende reichen würden, so müssen doch immer mindestens zwei Leute da sein, damit man mal pullern gehen kann oder ans Telefon.
 		if(!isset($SollAnwesende[$uhrzeit])){echo "Fehler bei der Bestimmung der Anwesenheit.<br>\n"; break;}//Irgendetwas stimmt mit der Berechnung der Anwesenheit nicht. Das passiert zum Beispiel an Sonntagen, weil dort niemand Vorlieben hat. :-)
-		$sollAnwesende=max($sollAnwesende, $SollAnwesende[$uhrzeit]);
+		$sollAnwesende=max($min_anwesende, $SollAnwesende[$uhrzeit]);
 		if($sollAnwesende > $Anwesende[$uhrzeit])
 		{
 			mache_vorschlag($uhrzeit);
@@ -258,13 +256,24 @@
 		}
 	}
 //		echo "<pre>"; var_export($Grundplan); echo "</pre>";
-//Jetzt sortieren wir unser Ergebnis fein säuberlich, damit wir es auch lesen können.
+	/*Jetzt sortieren wir unser Ergebnis fein säuberlich, damit wir es auch lesen können.*/
 	if(!empty($Dienstplan[$tag]['VK']))
 	{
 		//array_multisort($Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
 		//Es scheint, dass die Funktion in der Zeile hierüber nicht funktioniert, wie erwartet.
-		$SortOrder=array_map('strtotime', $Dienstplan[$tag]['Dienstbeginn']);
-		array_multisort($SortOrder, $Dienstplan[$tag]['Dienstbeginn']);
+		/*Um die Reihenfolge vernünftig zu sortieren, rechnen wir zunächst in Unix-Sekunden um.*/
+		$Sort_order=array_map('strtotime', $Dienstplan[$tag]['Dienstbeginn']);
+		/*Dann sortieren wir ALLE Elemente des Arrays nach der soeben ermittelten Reihenfolge.
+		Wenn dabei zwei Dienstbeginne  gleich sind, so besteht de Gefahr, dass etwas vertauscht wird.
+		Dafür habe ich noch keine Lösung. debug DEBUG*/
+		foreach(array_keys($Dienstplan[$tag]) as $spalte )
+		{
+//			echo "$spalte<br>\n";
+			/*Die Reihenfolge muss erhalten werden, damit sie bei den anderen Durchläufen noch so zur Verfügung steht.
+			Deshalb nutzen wir eine temporäre Variable.*/
+			$Sort_order_here=$Sort_order;
+			array_multisort($Sort_order_here, $Dienstplan[$tag][$spalte]);
+		}
 		//Das hier drüber scheint zu funktionieren.
 	}
 

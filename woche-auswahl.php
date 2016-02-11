@@ -3,6 +3,7 @@ $heute=date('Y-m-d')
 ?>
 <html>
 	<head>
+		<meta charset=UTF-8>
 	</head>
 	<body>
 		<form method=POST action=woche-in.php>

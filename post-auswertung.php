@@ -90,28 +90,24 @@ elseif ( isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0][
 	$datum=$_POST['Dienstplan'][0]['Datum'][0];
 	$datum=strtotime('+1 week', strtotime($datum));
 	$datum=date('Y-m-d', $datum);
-	$datenempfang="Tag wurde geblättert.<br>\n";
 }
 elseif ( isset($_POST['submitWocheRückwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])  )
 {
 	$datum=$_POST['Dienstplan'][0]['Datum'][0];
 	$datum=strtotime('-1 week', strtotime($datum));
 	$datum=date('Y-m-d', $datum);
-	$datenempfang="Tag wurde geblättert.<br>\n";
 }
 elseif ( isset($_POST['submitVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])  )
 {
 	$datum=$_POST['Dienstplan'][0]['Datum'][0];
 	$datum=strtotime('+1 day', strtotime($datum));
 	$datum=date('Y-m-d', $datum);
-	$datenempfang="Tag wurde geblättert.<br>\n";
 }
 elseif ( isset($_POST['submitRückwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])  )
 {
 	$datum=$_POST['Dienstplan'][0]['Datum'][0];
 	$datum=strtotime('-1 day', strtotime($datum));
 	$datum=date('Y-m-d', $datum);
-	$datenempfang="Tag wurde geblättert.<br>\n";
 }
 elseif ( isset($_POST['wochenAuswahl']) && isset($_POST['woche'])  )
 {
@@ -120,17 +116,14 @@ elseif ( isset($_POST['wochenAuswahl']) && isset($_POST['woche'])  )
 	$montagsDifferenzString="-".$montagsDifferenz." day";
 	$datum=strtotime($montagsDifferenzString, strtotime($datum));
 	$datum=date('Y-m-d', $datum);
-	$datenempfang="Das Formular wartet auf Eingabe.<br>\n";
 }
 elseif ( isset($_POST['tagesAuswahl']) && isset($_POST['tag'])  )
 {
 	$datum=$_POST['tag'];
-	$datenempfang="Das Formular wartet auf Eingabe.<br>\n";
 }
 elseif ( isset($_POST['tagesAuswahl']) && isset($_POST['woche'])  )
 {
 	$datum=$_POST['woche'];
-	$datenempfang="Das Formular wartet auf Eingabe.<br>\n";
 }
 elseif ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
 {
@@ -138,6 +131,6 @@ require 'copy-paste.php';
 }
 else
 {
-	$datenempfang="Das Formular wartet auf Eingabe.<br>\n";
+	//Es gibt nichts im $_POST mit dem wir etwas anfangen können.
 }
 ?>

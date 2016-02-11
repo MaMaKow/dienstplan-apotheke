@@ -42,6 +42,7 @@ $VKmax=max(array_keys($Mitarbeiter));
 ?>
 <html>
 	<head>
+		<meta charset=UTF-8>
 		<style type=text/css>
  			td {white-space: nowrap;}
 			.overlay 
