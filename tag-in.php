@@ -2,7 +2,8 @@
 require 'default.php';
 require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
-$tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
+$filiale=2;	//Am unteren Rand werden auch unsere Mitarbeiter in dieser Filale angezeigt.
+$tage=1;	//Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 
@@ -32,6 +33,8 @@ require 'db-lesen-mitarbeiter.php';
 require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
+/*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
+$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']'); 
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 

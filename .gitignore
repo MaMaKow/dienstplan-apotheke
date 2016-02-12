@@ -1,3 +1,10 @@
+# Konfigurationsdateien, die für jeden Nutzer individuell sind  	#
+# Diese Daten sind zudem geheim, weil sie das Passwort enthalten. 	#
+#########################################################################
+config/
+
+
+
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
 tmp/
