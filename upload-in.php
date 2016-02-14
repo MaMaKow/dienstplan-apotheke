@@ -11,6 +11,8 @@
 	<body>
 
 		<?php
+			require 'navigation.php';
+			echo "<p style=height:5em></p>";
 			if(isset($_POST["submit"]))
 			{
 				define ('SITE_ROOT', realpath(dirname(__FILE__)));
@@ -44,7 +46,7 @@
 					{
 			        		$Warnmeldung[]="The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
 			        		$Warnmeldung[]="It will be processed in the background.";
-						$command="./pep.sh ".$database_user." ".$database_password." ".$database_name." >> tmp/pep.log &";
+						$command="./pep.sh ".$config['database_user']." ".$config['database_password']." ".$config['database_name']." >> tmp/pep.log &";
 						exec($command);
 				    	}
 					else
@@ -73,11 +75,12 @@
 				echo "\t\t</div>";
 			}
 		?>
-
-		<form action="upload-in.php" method="post" enctype="multipart/form-data">
-			Eine PEP-Datei zum Hochladen auswählen:<br>
-			<input type="file" name="fileToUpload" id="fileToUpload"><br>
-			<input type="submit" value="Upload" name="submit"><br>
-		</form>
+		<div class=no-image>
+			<form action="upload-in.php" method="post" enctype="multipart/form-data">
+				Eine PEP-Datei zum Hochladen auswählen:<br>
+				<input type="file" name="fileToUpload" id="fileToUpload"><br>
+				<input type="submit" value="Upload" name="submit"><br>
+			</form>
+		</div>
 	</body>
 </html>
