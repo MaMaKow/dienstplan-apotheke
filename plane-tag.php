@@ -266,14 +266,15 @@
 		/*Dann sortieren wir ALLE Elemente des Arrays nach der soeben ermittelten Reihenfolge.
 		Wenn dabei zwei Dienstbeginne  gleich sind, so besteht de Gefahr, dass etwas vertauscht wird.
 		Dafür habe ich noch keine Lösung. debug DEBUG*/
-		foreach(array_keys($Dienstplan[$tag]) as $spalte )
+		array_multisort($Sort_order, $Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
+/*		foreach(array_keys($Dienstplan[$tag]) as $spalte )
 		{
-//			echo "$spalte<br>\n";
-			/*Die Reihenfolge muss erhalten werden, damit sie bei den anderen Durchläufen noch so zur Verfügung steht.
-			Deshalb nutzen wir eine temporäre Variable.*/
+			//Die Reihenfolge muss erhalten werden, damit sie bei den anderen Durchläufen noch so zur Verfügung steht.
+			// Deshalb nutzen wir eine temporäre Variable.
 			$Sort_order_here=$Sort_order;
 			array_multisort($Sort_order_here, $Dienstplan[$tag][$spalte]);
 		}
+*/
 		//Das hier drüber scheint zu funktionieren.
 	}
 

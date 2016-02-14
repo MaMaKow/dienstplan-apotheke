@@ -8,7 +8,7 @@
 			if ($anwesendeApprobierte == 0 AND $zeit != $tagesEnde)
 			{
 				$Fehlermeldung[]="Um ".date('H:i', $zeit)." Uhr ist kein Approbierter anwesend.";
-				break 1; //We avoid to flood everything with errors fpr every 5 minutes in which noone is there.
+				break 1; //We avoid to flood everything with errors for every 5 minutes in which noone is there.
 			}
 		}
 	}
