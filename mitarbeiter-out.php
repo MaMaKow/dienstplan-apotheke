@@ -44,7 +44,7 @@ if (isset($auswahlMitarbeiter))
 	create_cookie("auswahlMitarbeiter", $auswahlMitarbeiter); 
 }
 
-if (isset($_GET['datum'])) // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
+if (isset($datum)) // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
 {
 	$montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
 	$montagsDifferenzString="-".$montagsDifferenz." day";
