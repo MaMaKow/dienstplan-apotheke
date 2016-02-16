@@ -1,5 +1,4 @@
 <?php
-//require 'funktionen.php';
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
 if ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
 {

@@ -59,9 +59,18 @@ require 'default.php';
 			{
 				$auswahlMitarbeiter=$_GET['auswahlMitarbeiter'];
 			}
+			elseif(isset($_COOKIE['auswahlMitarbeiter']))
+			{
+				$auswahlMitarbeiter=$_COOKIE['auswahlMitarbeiter'];
+			}
 			else
 			{
 					$auswahlMitarbeiter=1;
+			}
+
+			if (isset($auswahlMitarbeiter))
+			{
+				create_cookie("auswahlMitarbeiter", $auswahlMitarbeiter); 
 			}
 
 			//Wir löschen Datensätze, wenn dies befohlen wird.

@@ -19,8 +19,17 @@ $dienstplanCSV="";
 //$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
 $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
+require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+if (isset($mandant))
+{
+	create_cookie("mandant", $mandant); 
+}
+if (isset($datum))
+{
+	create_cookie("datum", $datum); 
+}
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
 require "zeichne-histogramm.php";
@@ -29,16 +38,6 @@ $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht 
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
-
-
-//Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-if (isset($Fehlermeldung))
-{
-	foreach($Fehlermeldung as $fehler)
-	{
-		echo "\t\t<div class=overlay><H1>".$fehler."<H1></div>\n";
-	}
-}
 
 
 
@@ -175,7 +174,6 @@ if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 	echo "\t\t\t</div>\n";
 	echo "\t\t</div>\n";
 	require 'contact-form.php';
-	//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
 	
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.

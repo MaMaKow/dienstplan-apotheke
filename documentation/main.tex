@@ -96,7 +96,8 @@ Außerhalb der regulären Arbeitszeit bin ich unter der Adresse \href{mailto:die
 
 
 \section{Benutzung des Dienstplanes}
-\subsection{Zugang}
+\subsection{Ausgabe zum Lesen}
+\subsubsection{Zugang}
 Der Zugang zum Dienstplanprogramm erfolgt über die Domain martin-mandelkow.de unter der URL \url{https://martin-mandelkow.de/apotheke/dienstplan}.
 Derzeit gibt es einen gemeinsamen Zugang für alle Mitarbeiter.
 \begin{itemize}
@@ -106,7 +107,7 @@ Derzeit gibt es einen gemeinsamen Zugang für alle Mitarbeiter.
 
 
 
-\subsubsection{Technisches}
+\paragraph{Technisches}
 \begin{sloppypar}Der Server kommuniziert ausschließlich verschlüsselt über das HTTPS Protokoll.
 Die Zugangsverwaltung erfolgt derzeit über den Apache Server mittels htaccess.
 Das Anlegen neuer Benutzer kann mit \mbox{\texttt{htpasswd -c /var/www/.htpasswd \emph{Benutzer}}}
@@ -134,7 +135,7 @@ require valid-user
 
 
 
-\subsection{Tag}
+\subsubsection{Tag}
 Die Tagesansicht besteht aus einer Tabelle mit den Informationen,
 \begin{itemize}
 	\item VK-Nummer
@@ -160,7 +161,7 @@ Als Navigationsmöglichkeiten sind lediglich die Schalter für einen Tag vor ode
 
 
 
-\subsection{Woche}
+\subsubsection{Woche}
 Die Wochenansicht besteht aus einer Tabelle (Abb. \ref{fig:Wochenansicht}).
 Für jeden Wochentag von Montag bis Freitag gibt es eine Spalte. In jeder Spalte sind die Mitarbeiter in der Reihenfolge des Dienstbeginns eingetragen.
 \begin{figure}[h]
@@ -182,7 +183,7 @@ Auch in dieser Ansicht kann jeweils eine Woche vor und zurück geblättert werde
 
 
 
-\subsection{Mitarbeiter}
+\subsubsection{Mitarbeiter}
 In der Mitarbeiteransicht kann der Stundenplan eines einzelnen Mitarbeiters betrachtet werden.
 In der Tabelle sind die Dienstzeiten der gesamten Woche von Montag bis Sonntag eingetragen.
 Die Summe der Wochenstunden von Montag bis Freitag wird mit den Sollstunden verglichen. Eine Beachtung der Abwesenheit durch Urlaub oder Krankheit ist noch in Planung. %debug DEBUG
@@ -198,13 +199,13 @@ Und darunter befindet sich ein Button, mit dem der Stundenplan als Kalenderdatei
 
 
 
-\subsubsection{Technisches}
+\paragraph{Technisches}
 Die Datei hat das Format iCalendar (*.ics). Dies ist ein Datenformat zum Austausch von Kalenderinhalten. Es kann von den meisten gängigen Kalenderverwaltungsprogrammen (z.B. Google Kalender / Android Kalender, Microsoft Outlook, Blackberry Kalender Apps und iOS-Kalender) importiert werden.
 
 
 
 
-\subsection{Stunden}
+\subsubsection{Stunden}
 Die Überstunden werden in einer Tabelle für jeden Mitarbeiter angezeigt (Abb. \ref{fig:Stunden}).
 Die Reihenfolge orientiert sich \emph{nicht} am Datum der Überstunden, sondern am Datum der Eintragung (unsichtbar). Das ist notwendig um das Saldo der Stunden korrekt zu addieren und zu subtrahieren.
 
@@ -219,7 +220,7 @@ Derzeit verwalte ich die Stunden der Apotheke am Marienplatz. Ich habe keinen Ü
 %Debug DEBUG Diese Formulierung ist sehr persönlich.
 
 
-\subsection{Abwesenheit}
+\subsubsection{Abwesenheit}
 Abwesenheitstage werden für jeden Mitarbeiter einzeln in einer Tabelle angezeigt (Abb. \ref{fig:Abwesenheit}).
 Als Abwesenheit werden derzeit ausschließliche volle Tage gewertet. Es ist noch nicht möglich, einzutragen, dass jemand um 11 Uhr einen Zahnarzt-Termin hat und danach wieder zur Verfügung steht.
 
@@ -237,17 +238,24 @@ An einem bestimmten Tag kann nur eine Abwesenheit pro Mitarbeiter starten. Aller
 
 
 
-\subsection{Offline}
+\subsubsection{Offline}
 Zu allen Informationen liegen auch offline Versionen in der Apotheke vor.
 An der Pinnwand sollte der aktuelle Wochenplan und der Plan der folgenden Woche zu finden sein. Auch die Tagesansichten der aktuellen Woche inklusive Samstag werden dort ausgehängt. Über den Abholern befindet sich eine rote Box mit der Aufschrift "Arbeitszeitverschiebungen". In ihr werden Überstunden und deren Abbau eingeschrieben.
 Hinten bei den Spinten hängt ein Jahresplan, auf dem die Urlaubszeiten eingetragen wurden.
 
 
+\subsection{Eingabe zum Schreiben}
+\subsubsection{Zugang}
+Der Zugang zu den Eingabe-Masken liegt derzeit nur für Dr. Martin Mandelkow vor. Eine Vertretung sollte jedoch in Zukunft bestimmt werden.
 
-
-
-
-
+\subsubsection{Tag}
+\subsubsection{Woche}
+\subsubsection{Mitarbeiter}
+\subsubsection{Stunden}
+\subsubsection{Abwesenheit}
+Die Abwesenheitszeiten werden in dem roten Kästchen mit der Bezeichnung Arbeitszeitverschiebungen verwaltet. DOrt kann jedermann seine Überstunden eintragen. Jede Eintragung sollte durch einen Zweiten abgezeichnet werden (Vier-Augen-Prinzip).
+\subsubsection{Upload}
+Um die Daten des zu erwartenden Arbeitsaufwandes aktuell zu halten, sollte in regelmäßigen Abständen z.B. quartalsweise eine PEP-Datei in ASYS exportiert werden und zum Server hochgeladen werden.
 
 
 

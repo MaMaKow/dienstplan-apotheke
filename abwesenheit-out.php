@@ -14,11 +14,19 @@
 	{
 		$auswahlMitarbeiter=$_GET['auswahlMitarbeiter'];
 	}
+	elseif(isset($_COOKIE['auswahlMitarbeiter']))
+	{
+		$auswahlMitarbeiter=$_COOKIE['auswahlMitarbeiter'];
+	}
 	else
 	{
 			$auswahlMitarbeiter=1;
 	}
-		$vk=$auswahlMitarbeiter;
+	if (isset($auswahlMitarbeiter))
+	{
+		create_cookie("auswahlMitarbeiter", $auswahlMitarbeiter); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+	}
+	$vk=$auswahlMitarbeiter;
 	$abfrage="SELECT * FROM `Abwesenheit`
 		WHERE `VK` = ".$vk."
 		ORDER BY `Beginn` ASC

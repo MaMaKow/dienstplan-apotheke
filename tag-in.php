@@ -24,8 +24,14 @@ require 'db-lesen-mitarbeiter.php';
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-create_cookie("mandant", $mandant); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
-
+if (isset($mandant))
+{
+	create_cookie("mandant", $mandant); 
+}
+if (isset($datum))
+{
+	create_cookie("datum", $datum); 
+}
 
 //Hole erneut eine Liste aller Mitarbeiter debug DEBUG Post-Auswertung braucht dies und dies braucht POST-Auswertung!
 require 'db-lesen-mitarbeiter.php';

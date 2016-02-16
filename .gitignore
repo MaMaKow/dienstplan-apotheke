@@ -11,7 +11,7 @@ tmp/
 images/
 *.png
 *.ics
-
+*.csv
 
 # Dateien, die von Latex erzeugt werden. #
 ##########################################

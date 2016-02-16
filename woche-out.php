@@ -13,12 +13,21 @@ $dienstplanCSV="";
 //$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
 $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
+require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 $montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
 $montagsDifferenzString="-".$montagsDifferenz." day";
 $datum=strtotime($montagsDifferenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum);
+if (isset($datum))
+{
+	create_cookie("datum", $datum); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+}
+if (isset($mandant))
+{
+	create_cookie("mandant", $mandant); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+}
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
@@ -179,7 +188,7 @@ echo "\t\t\t\t\t</tr>\n";
 echo "\t\t\t\t</table>\n";
 echo "\t\t\t\t<table border=0 rules=groups>\n";
 
-//Nun folgt die Liste der Wochenstunden.
+//Wir zeichnen jetzt die Wochenstunden der Mitarbeiter. In dieser Ansicht werden ausschließlich die Tage Montag bis Freitag betrachtet. Dies ist ein Unterschied zur Mitarbeiteransicht. Dort werden alle Wochentage berücksichtigt.
 echo "\t\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t\t<td colspan=5>\n";
 for ($tag=0; $tag<count($Dienstplan); $tag++)
@@ -199,14 +208,15 @@ for ($tag=0; $tag<count($Filialplan); $tag++)
 	}
 }
 
-//if(isset($Dienstplan[0]['VK'][2]) || isset($Dienstplan[1]['VK'][2])  || isset($Dienstplan[2]['VK'][2]) || isset($Dienstplan[3]['VK'][2]) || isset($Dienstplan[4]['VK'][2]) || isset($Dienstplan[5]['VK'][2])) //An leeren Wochen soll nicht gerechnet werden. 
+//An leeren Wochen soll nicht gerechnet werden. 
 if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 {
 	echo "<b>Wochenstunden</b><tr>";
 	ksort($Stunden);
-	$i=0;$j=1; //Zahler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
+	$i=0;$j=1; //Zähler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
 	foreach($Stunden as $mitarbeiter => $stunden)
 	{
+		if ( array_key_exists($mitarbeiter, $MandantenMitarbeiter)===false ){continue; /*Wir zeigen nur die Stunden von Mitarbeitern, die auch in den Mandanten gehören.*/}
 		$k=$j*5; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
 		if($mitarbeiter>$k){$i++;}
 		if($i>=1)

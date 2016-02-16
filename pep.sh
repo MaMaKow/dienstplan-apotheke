@@ -1,6 +1,6 @@
 #Dieses Script soll die Daten aus dem PEP-Modul von Asys in die Datenbank 'Apotheke' einfügen.
 
-date | tee pep2.log #Das PHP-Script leitet den Output in die Datei "tmp/pep.log" um. Dort können wir dann sehen, welcher Eintrag zu welchem Datum gehört.
+date #Das PHP-Script leitet den Output in die Datei "tmp/pep.log" um. Dort können wir dann sehen, welcher Eintrag zu welchem Datum gehört.
 
 #Das Passwort und die sonstigen Datanbank-Daten werden von php an dieses Script übergeben.
 database_user=""
@@ -11,9 +11,9 @@ database_password="$2"
 database_name="$3"
 if [ "$database_user" != "" ] && [ "$database_password" != "" ] && [ "$database_name" != "" ]
 then
-	echo "Alle Daten vorhanden." | tee pep2.log
+	echo "Alle Daten vorhanden."
 else
-	echo "Es fehlen Zugangsdaten zur Datenbank." | tee pep2.log
+	echo "Es fehlen Zugangsdaten zur Datenbank."
 	exit 1
 fi
 
@@ -33,3 +33,9 @@ do
 		$pepdatei \
 	&& rm $pepdatei && rm $asydatei 
 done
+
+cd pep
+php pep-monatimjahr.php
+php pep-monatstag.php
+php pep-wochentag.php
+cd ..

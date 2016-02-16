@@ -21,6 +21,7 @@ $datum=date('Y-m-d', $datum);
 
 
 
+require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if(isset($_POST['submitAuswahlMitarbeiter']))
@@ -37,6 +38,10 @@ elseif (isset($_POST['submitWocheRückwärts']) OR isset($_POST['submitWocheVorw
 elseif(!isset($auswahlMitarbeiter))
 {
 	$auswahlMitarbeiter=1;
+}
+if (isset($auswahlMitarbeiter))
+{
+	create_cookie("auswahlMitarbeiter", $auswahlMitarbeiter); 
 }
 
 if (isset($_GET['datum'])) // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
@@ -69,7 +74,7 @@ $planAnzahl=max($PlanAnzahl);
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
-	<body bgcolor=#D0E0F0>
+	<body>
 <?php
 require 'navigation.php';
 echo "<div class=no-image>\n";
@@ -169,7 +174,7 @@ for ($j=0; $j<$planAnzahl; $j++)
 echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t<tfoot>\n";
 
-echo "\t\t\t\t</tr>\n";
+echo "\t\t\t\t</tr>\n"; //debug DEBUG THis one seems to be bulshit. There is a </tr> a few lines above before the start of this <tfoot>
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)
@@ -201,6 +206,8 @@ echo "\t\t\t</table>\n";
 // echo $submitButton;
 echo "\t\t</form>\n";
 echo "</div>\n";
+
+//Jetzt wird ein Bild gezeichnet, dass den Stundenplan des Mitarbeiters wiedergibt.
 foreach(array_keys($Dienstplan) as $tag ) 
 {
 	$datum=$Dienstplan[$tag]["Datum"][0];
@@ -230,7 +237,7 @@ foreach(array_keys($Dienstplan) as $tag )
 			//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
 			if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 			if(empty($mittagsende)){$mittagsende="0:00";}
-			//setlocale (LC_ALL, 'de_DE'); //Dies arbeitet nicht so wie erwartet. Es sollte aus monday Montag machen. Aber es hat zu 7,5 statt 7.5 geführt bei den Stunden, und Montag erscheint auch ganz ohne diesen Befehl. Warum auch immer,...
+			//In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
 			$dienstplanCSV.=strftime('%A', strtotime($datum)).", $vk, $datum";
 			$dienstplanCSV.=", ".$dienstbeginn;
 			$dienstplanCSV.=", ".$dienstende;
