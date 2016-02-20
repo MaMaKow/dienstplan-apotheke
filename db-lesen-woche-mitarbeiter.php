@@ -5,7 +5,7 @@
 for ($i=0; $i<$tage; $i++)
 {
 	$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));
-	$abfrage='SELECT * 
+	$abfrage='SELECT *
 		FROM `Dienstplan`
 		WHERE `Datum` = "'.$tag.'"
 			AND `VK`="'.$auswahlMitarbeiter.'"

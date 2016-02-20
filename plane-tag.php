@@ -1,4 +1,3 @@
-<pre>
 <?php
 
 	function finde_konstanten($spalte) //Spalte ist Dienstbeginn, Dienstende, oder eine andere Spalte der Tabelle mit den Wunschzeiten
@@ -6,16 +5,16 @@
 		global $row, $datum, $tag, $position;
 		global $Dienstplan;//Die Variable wird heir global gesetzt, damit sie außerhab später zur Verfügung steht.
 		$oderOptionen=explode('|', $row->$spalte); //Nur das erste Argument wird bisher genutzt. Das ist natürlich halbherzig debug DEBUG!
-//		$undOptionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
+		//$undOptionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
 		preg_match('/[<>=!]+/', $oderOptionen[0], $vergleichsOperator);
 		preg_match('/[^<>=!]+/', $oderOptionen[0], $wunschUhrzeit);
 		if(isset($vergleichsOperator[0]))
 		{
 			if($vergleichsOperator[0]=="=")
 			{
-				//Wir legen im folgenden den VK als ersten Key fest. Dies muss später weider zurück übersetzt werden. Es ist aber notwendig um die verschiedenen Spalten zueinander zu führen.
+				//Wir legen im folgenden den VK als ersten Key fest. Dies muss später wieder zurück übersetzt werden. Es ist aber notwendig um die verschiedenen Spalten zueinander zu führen.
 				$KonstanterGrundplan="$wunschUhrzeit[0]";
-//			echo "$row->VK, $spalte, $KonstanterGrundplan<br>\n";
+				//echo "$row->VK, $spalte, $KonstanterGrundplan<br>\n";
 				$Dienstplan[$tag]['VK'][$position]=$row->VK;
 				$Dienstplan[$tag]['Datum'][$position]=$datum;
 				//Die folgenden zwei Zeilen sind problematisch. Aber die Funktion zeiche-histogramm braucht vorhandene Werte im Array. Vielleicht bauen wir dort eine Prüfung ein. Dann können wir das hier entfernen. debug DEBUG
@@ -58,16 +57,16 @@
 			$Grundplan[$tag]['Mittagsbeginn'][]=$row->Mittagsbeginn;
 			$Grundplan[$tag]['Mittagsende'][]=$row->Mittagsende;
 			$Grundplan[$tag]['Stunden'][]=$row->Stunden;
-	
+
 			//Wir setzten eine feste Referenz für den Ausgabe-Array zum Wumschplan-Array.
 			$position=max(array_keys($Grundplan[$tag]['VK']));
-	
+
 			//Alle festen Zeiten werden jetzt bereits definiert. Alles weitere wird später aufgefüllt.
 			finde_konstanten('Dienstbeginn');
 			finde_konstanten('Dienstende');
 			finde_konstanten('Mittagsbeginn');
 			finde_konstanten('Mittagsende');
-	
+
 			if(empty($Grundplan[$tag]['Stunden'][$position]))
 			{
 				$sollMinuten=round($StundenMitarbeiter[$row->VK] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
@@ -78,7 +77,7 @@
 				$sollMinuten=$row->Stunden*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
 				$sollMinuten+=$MittagMitarbeiter[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
 			}
-	
+
 			if(empty($Dienstplan[$tag]['Dienstbeginn'][$position]) && !empty($Dienstplan[$tag]['Dienstende'][$position])) //Wenn nur Dienstende feststeht, legen wir jetzt den Dienstbeginn fest.
 			{
 				$Dienstplan[$tag]['Dienstbeginn'][$position]=date('H:i', strtotime('- '.$sollMinuten.' minutes', strtotime($Dienstplan[$tag]['Dienstende'][$position])));
@@ -93,12 +92,12 @@
 
 	function mache_vorschlag($uhrzeit)
 	{
-//debug DEBUG Vermutlich ist es cleverer, die $MitarbeiterOptionen gleich auf die Mitarbeiter zu begrenzen, die auch wirklich können. Dann sparen wir und zahlreiche Versuche.
+		//debug DEBUG Vermutlich ist es cleverer, die $MitarbeiterOptionen gleich auf die Mitarbeiter zu begrenzen, die auch wirklich können. Dann sparen wir und zahlreiche Versuche.
 		global $datum, $tag, $Dienstplan, $Grundplan, $Abwesende;
 		global $Mitarbeiter, $MandantenMitarbeiter, $AusbildungMitarbeiter, $StundenMitarbeiter, $MittagMitarbeiter;
 		//Eine Liste der zur Verfügung stehenden Mitarbeiter holen:
 		foreach($MandantenMitarbeiter as $vk => $nachname)
-		{	
+		{
 			//Wer krank oder im Urlaub ist, der erscheint hier nicht.
 			if( isset($Abwesende) AND array_search($vk, $Abwesende) !== false)
 			{
@@ -116,7 +115,7 @@
 				else
 				{
 					$posPos=array_search($vk, $Grundplan[$tag]['VK']);
-					if($posPos===false) 
+					if($posPos===false)
 					{
 						//Es liegen keinerlei Wünsche vor. Wir sollten in der Datenbank welche eintragen, auch wenn es ein egal ist.
 						continue;
@@ -133,7 +132,7 @@
 					{
 						//Wir prüfen jetzt, ob ein Dienstbeginn denn auch gewünscht wäre.
 						$oderOptionen=explode('|', $Grundplan[$tag]['Dienstbeginn'][$posPos]); //Nur das erste Argument wird bisher genutzt. Das ist natürlich halbherzig debug DEBUG!
-//							$undOptionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
+						//$undOptionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
 						preg_match('/[<>=!]+/', $oderOptionen[0], $vergleichsOperator);
 						preg_match('/[^<>=!]+/', $oderOptionen[0], $wunschUhrzeit); $wunschUhrzeit=strtotime($wunschUhrzeit[0]);
 						if(isset($vergleichsOperator[0]))
@@ -186,7 +185,7 @@
 		$vorschlag = $MitarbeiterOptionen[mt_rand(0, count($MitarbeiterOptionen) - 1)];
 		akzeptiere_vorschlag($vorschlag);
 	}
-	
+
 	function akzeptiere_vorschlag($vorschlag)
 	{
 		global $uhrzeit, $versuche;
@@ -213,14 +212,14 @@
 		{
 			preg_match('/[0-9.]+/', $Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])], $wunschStunden);
 
-//		echo "<pre> "; var_export($Grundplan[$tag]['VK']); echo "</pre>";
-//		echo "<pre> "; var_export($Grundplan[$tag]['Stunden']); echo "</pre>";
-//		echo "<pre> "; var_export($Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])]); echo "</pre>";
-//		echo "<pre> "; var_export($wunschStunden); echo "</pre>";
+			//		echo "<pre> "; var_export($Grundplan[$tag]['VK']); echo "</pre>";
+			//		echo "<pre> "; var_export($Grundplan[$tag]['Stunden']); echo "</pre>";
+			//		echo "<pre> "; var_export($Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])]); echo "</pre>";
+			//		echo "<pre> "; var_export($wunschStunden); echo "</pre>";
 			$sollMinuten=$wunschStunden[0]*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
 
 			$sollMinuten+=$MittagMitarbeiter[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
-//			echo "Wir sind bei ".$Mitarbeiter[$vorschlag]." und es werden $sollMinuten zur weiteren Verwendung berechnet.<br>\n";
+			//			echo "Wir sind bei ".$Mitarbeiter[$vorschlag]." und es werden $sollMinuten zur weiteren Verwendung berechnet.<br>\n";
 		}
 
 		if(empty($Dienstplan[$tag]['Dienstbeginn'][$position]) && !empty($Dienstplan[$tag]['Dienstende'][$position])) //Wenn nur Dienstende feststeht, legen wir jetzt den Dienstbeginn fest.
@@ -239,7 +238,7 @@
 	for($uhrzeit=strtotime('8:00:00'); $uhrzeit<strtotime('20:00:00'); $versuche++)
 	{
 		/*Damit wir keine Endlosschleife bauen, versuchen wir nur einige Male einen geeigneten Mitarbeiter zu finden, bevor wir zur nächsten Urzeit weiter schreiten.*/
-		if($versuche > 3){$uhrzeit=strtotime('+ 30 minutes', $uhrzeit); $versuche-=2; continue;} 
+		if($versuche > 3){$uhrzeit=strtotime('+ 30 minutes', $uhrzeit); $versuche-=2; continue;}
 		/*zeichne-histogramm.php enthält bereits den notwendigen Code, um anwesende Mitarbeiter durchzuzählen und Bedarfe zu ermitteln.*/
 		$histogrammNoPrint=true; require 'zeichne-histogramm.php';
 		if(!isset($SollAnwesende[$uhrzeit])){echo "Fehler bei der Bestimmung der Anwesenheit.<br>\n"; break;}//Irgendetwas stimmt mit der Berechnung der Anwesenheit nicht. Das passiert zum Beispiel an Sonntagen, weil dort niemand Vorlieben hat. :-)
@@ -250,12 +249,12 @@
 		}
 		else
 		{
-//			echo "Ausreichend Leute anwesend.<br>\n";
+			//			echo "Ausreichend Leute anwesend.<br>\n";
 			$uhrzeit=strtotime('+ 30 minutes', $uhrzeit); //Wir gehen noch mal einen Schritt weiter.
 			$versuche=0;
 		}
 	}
-//		echo "<pre>"; var_export($Grundplan); echo "</pre>";
+	//		echo "<pre>"; var_export($Grundplan); echo "</pre>";
 	/*Jetzt sortieren wir unser Ergebnis fein säuberlich, damit wir es auch lesen können.*/
 	if(!empty($Dienstplan[$tag]['VK']))
 	{
@@ -267,14 +266,14 @@
 		Wenn dabei zwei Dienstbeginne  gleich sind, so besteht de Gefahr, dass etwas vertauscht wird.
 		Dafür habe ich noch keine Lösung. debug DEBUG*/
 		array_multisort($Sort_order, $Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
-/*		foreach(array_keys($Dienstplan[$tag]) as $spalte )
+		/*		foreach(array_keys($Dienstplan[$tag]) as $spalte )
 		{
 			//Die Reihenfolge muss erhalten werden, damit sie bei den anderen Durchläufen noch so zur Verfügung steht.
 			// Deshalb nutzen wir eine temporäre Variable.
 			$Sort_order_here=$Sort_order;
 			array_multisort($Sort_order_here, $Dienstplan[$tag][$spalte]);
 		}
-*/
+		*/
 		//Das hier drüber scheint zu funktionieren.
 	}
 
@@ -321,4 +320,3 @@
 
 	}
 ?>
-</pre>

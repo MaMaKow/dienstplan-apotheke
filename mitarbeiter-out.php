@@ -41,7 +41,7 @@ elseif(!isset($auswahlMitarbeiter))
 }
 if (isset($auswahlMitarbeiter))
 {
-	create_cookie("auswahlMitarbeiter", $auswahlMitarbeiter); 
+	create_cookie("auswahlMitarbeiter", $auswahlMitarbeiter);
 }
 
 if (isset($datum)) // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
@@ -60,7 +60,7 @@ $VKmax=max(array_keys($Mitarbeiter));
 foreach($Dienstplan as $key => $Dienstplantag)
 {
 	$PlanAnzahl[]=(count($Dienstplantag['VK']));
-} 
+}
 $planAnzahl=max($PlanAnzahl);
 
 
@@ -114,7 +114,7 @@ for ($tag=0; $tag<count($Dienstplan); $tag++)
 	if(isset($feiertag)){echo " ".$feiertag." ";}
 	if(isset($notdienst)){echo " NOTDIENST ";}
 //	echo "</td>\n";
-//}	
+//}
 //echo "\t\t\t\t</tr><tr>\n";
 echo "\t\t\t\t<br>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)
@@ -135,19 +135,19 @@ for ($j=0; $j<$planAnzahl; $j++)
 		$zeile="";
 		echo "\t\t\t\t\t<td align=right>&nbsp";
 		//Dienstbeginn
-		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Dienstbeginn"][$j] > 0 ) 
+		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Dienstbeginn"][$j] > 0 )
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 		}
 		//Dienstende
-		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Dienstende"][$j] > 0 ) 
+		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Dienstende"][$j] > 0 )
 		{
 			$zeile.=" bis ";
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
 		$zeile.="";
 		echo $zeile;
-		
+
 		//Mittagspause
 		$zeile="";
 		echo "<br>\n\t\t\t\t";
@@ -166,7 +166,7 @@ for ($j=0; $j<$planAnzahl; $j++)
 			$zeile.="<br><a href=stunden-out.php?auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">".$Dienstplan[$i]["Stunden"][$j]." Stunden";
 		}
 		$zeile.="";
-		
+
 		echo $zeile;
 		echo "</td>\n";
 	}
@@ -208,12 +208,12 @@ echo "\t\t</form>\n";
 echo "</div>\n";
 
 //Jetzt wird ein Bild gezeichnet, dass den Stundenplan des Mitarbeiters wiedergibt.
-foreach(array_keys($Dienstplan) as $tag ) 
+foreach(array_keys($Dienstplan) as $tag )
 {
 	$datum=$Dienstplan[$tag]["Datum"][0];
 	foreach($Dienstplan[$tag]['VK'] as $key => $vk) //Die einzelnen Zeilen im Dienstplan
 	{
-		if ( !empty($vk) ) //Wir ignorieren die nicht ausgefüllten Felder
+		if ( !empty($vk) AND $Dienstplan[$tag]["Dienstbeginn"][$key]!="-") //Wir ignorieren die nicht ausgefüllten Felder
 		{
 		//	list($vk)=explode(' ', $vk); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
 			$vk=$auswahlMitarbeiter;
@@ -238,12 +238,12 @@ foreach(array_keys($Dienstplan) as $tag )
 			if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 			if(empty($mittagsende)){$mittagsende="0:00";}
 			//In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
-			$dienstplanCSV.=strftime('%A', strtotime($datum)).", $vk, $datum";
+			$dienstplanCSV.="\" ".strftime('%A', strtotime($datum))."\"".", $vk, ".strftime('%w', strtotime($datum));
 			$dienstplanCSV.=", ".$dienstbeginn;
 			$dienstplanCSV.=", ".$dienstende;
 			$dienstplanCSV.=", ".$mittagsbeginn;
-			$dienstplanCSV.=", ".$mittagsende;  
-			$dienstplanCSV.=", ".$stunden."\n";  
+			$dienstplanCSV.=", ".$mittagsende;
+			$dienstplanCSV.=",\" ".$stunden." \"\n";
 		}
 	}
 }
@@ -267,4 +267,3 @@ schreiben_ics ($Dienstplan); //Schreibt die Daten aus dem Dienstplan (alle Tage,
 ?>
 	</body>
 <html>
-
