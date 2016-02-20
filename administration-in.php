@@ -13,6 +13,7 @@
 			<ul>
 				<li><a href=/phpmyadmin>PhpMyAdmin</a></li>
 				<li><a href=upload-in.php>PEP-Upload</a></li>
+				<li><a href=logout.php>Logout</a></li>
 			</ul>
 		</div>
 	</body>
