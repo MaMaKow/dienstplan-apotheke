@@ -40,13 +40,20 @@ foreach ($Grundplan as $wochentag => $value) {
          $mittagsbeginn = $Grundplan[$wochentag]["Mittagsbeginn"][$key];
          $mittagsende = $Grundplan[$wochentag]["Mittagsende"][$key];
          $kommentar = $Grundplan[$wochentag]["Kommentar"][$key];
-         if (isset($mittagsbeginn) && isset($mittagsende)) {
+         if (!empty($mittagsbeginn) && !empty($mittagsende)) {
              $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
              $mittagspause = strtotime($mittagsende) - strtotime($mittagsbeginn);
              $sekunden = $sekunden - $mittagspause;
              $stunden = round($sekunden / 3600, 1);
          } else {
              $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
+             //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
+             if ($sekunden - $MittagMitarbeiter[$VK] * 60 >= 6 * 3600) {
+                 $mittagspause = $MittagMitarbeiter[$VK] * 60;
+                 $sekunden = $sekunden - $mittagspause;
+             } else {
+                 //Keine Mittagspause
+                 }
              $stunden = round($sekunden / 3600, 1);
          }
          $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)

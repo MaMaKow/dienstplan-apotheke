@@ -97,17 +97,17 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
         $Grundplan[$wochentag]['Mandant'][] = $row->Mandant;
     }
     //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
-    // if ( !isset($Grundplan[$wochentag]) )
-    // {
-    // 	$Grundplan[$wochentag]["Wochentag"][]=$wochentag;
-    // 	$Grundplan[$wochentag]["VK"][]="$auswahlMitarbeiter";
-    // 	$Grundplan[$wochentag]["Dienstbeginn"][]="-";
-    // 	$Grundplan[$wochentag]["Dienstende"][]="-";
-    // 	$Grundplan[$wochentag]["Mittagsbeginn"][]="-";
-    // 	$Grundplan[$wochentag]["Mittagsende"][]="-";
-    // 	$Grundplan[$wochentag]["Stunden"][]="-";
-    // 	$Grundplan[$wochentag]["Kommentar"][]="-";
-    // }
+     if ( !isset($Grundplan[$wochentag]) )
+     {
+     	$Grundplan[$wochentag]["Wochentag"][]=$wochentag;
+    	$Grundplan[$wochentag]["VK"][]="$auswahlMitarbeiter";
+    	$Grundplan[$wochentag]["Dienstbeginn"][]=null;
+    	$Grundplan[$wochentag]["Dienstende"][]=null;
+      $Grundplan[$wochentag]["Mittagsbeginn"][]=null;
+    	$Grundplan[$wochentag]["Mittagsende"][]=null;
+    	$Grundplan[$wochentag]["Stunden"][]=null;
+    	$Grundplan[$wochentag]["Kommentar"][]=null;
+    }
     //Wir machen aus den Nummern 1 bis 7 wieder Wochentage
     // Wir wollen den Anfang der Woche und von dort aus unseren Tag
     $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
@@ -282,8 +282,11 @@ echo "\t\t\t\t\t<td colspan=$tage>\n";
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.
-for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
+foreach ($Grundplan as $wochentag => $value) {
     // Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
+    if ($wochentag>=6) {
+      continue 1;
+    }
     foreach ($Grundplan[$wochentag]['Stunden'] as $key => $stunden) {
         $Stunden[$auswahlMitarbeiter][] = $stunden;
     }
