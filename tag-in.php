@@ -13,7 +13,6 @@ $dienstplanCSV="";
 
 
 
-//$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
 $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 
@@ -26,11 +25,11 @@ require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if (isset($mandant))
 {
-	create_cookie("mandant", $mandant); 
+	create_cookie("mandant", $mandant);
 }
 if (isset($datum))
 {
-	create_cookie("datum", $datum); 
+	create_cookie("datum", $datum);
 }
 
 //Hole erneut eine Liste aller Mitarbeiter debug DEBUG Post-Auswertung braucht dies und dies braucht POST-Auswertung!
@@ -40,7 +39,7 @@ require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
-$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']'); 
+$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 
@@ -50,7 +49,7 @@ if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 ) //Samsta
 	//Mal sehen, wie viel die Maschine selbst gestalten kann.
 	$Fehlermeldung[]="Kein Plan in der Datenbank dies is ein Vorschlag!";
 //	unset ($Dienstplan);
-	require_once 'plane-tag.php';
+	require_once 'plane-tag-grundplan.php';
 }
 if( !empty($Dienstplan[0]['VK'][0]) )
 {
@@ -173,7 +172,7 @@ for ($j=0; $j<$VKcount; $j++)
 		echo "\t\t\t\t\t<td align=right>";
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1)."><option>";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
-		{ 
+		{
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 		}
 		$zeile.="</option>";
@@ -199,19 +198,19 @@ for ($j=0; $j<$VKcount; $j++)
 		//Dienstbeginn
 		$zeile.="\t\t\t\t\t\t<input type=hidden name=Dienstplan[".$i."][Datum][".$j."] value=".$Dienstplan[0]["Datum"][0].">\n";
 		$zeile.="\t\t\t\t\t\t<input type=time size=1 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
-		if (isset($Dienstplan[$i]["VK"][$j])) 
+		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 		}
 		$zeile.="> bis <input type=time size=1 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
 		//Dienstende
-		if (isset($Dienstplan[$i]["VK"][$j])) 
+		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
 		$zeile.=">";
 		echo $zeile;
-		
+
 		echo "</td>\n";
 	}
 	echo "\t\t\t\t</tr><tr>\n";
@@ -230,7 +229,7 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
 		$zeile.=">";
-		
+
 		echo $zeile;
 		echo "</td>\n";
 	}
@@ -255,7 +254,7 @@ if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 echo "<div class=above-image>";
 echo "<div class=image>";
 //echo "<td align=center valign=top rowspan=60>";
-echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>"; 
+echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>";
 //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 //echo "</div>";
 //echo "<div class=image>";
@@ -264,7 +263,7 @@ echo "</div>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
 //	echo "<pre>";	var_export($MandantenMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-//	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+	//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 echo "\t</body>\n";
 echo "</html>";
