@@ -35,11 +35,11 @@
 
 
 	//Hier entsteht die Mittagspausenvergabe.
-	$BesetzteMittagsBeginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
-	$BesetzteMittagsEnden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen jemand mit dem Essen fertig ist.
-	$pausenStart=strtotime('11:30:00');
 	if( !empty($Dienstplan[$tag]['VK']) ) //Haben wir überhaupt einen Dienstplan?
 	{
+		$BesetzteMittagsBeginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
+		$BesetzteMittagsEnden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen jemand mit dem Essen fertig ist.
+		$pausenStart=strtotime('11:30:00');
 		foreach($Dienstplan[$tag]['VK'] as $position => $vk) //Die einzelnen Zeilen im Dienstplan
 		{
 			if ( !empty($vk) AND empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND empty($Dienstplan[$tag]['Mittagsende'][$position]) )
