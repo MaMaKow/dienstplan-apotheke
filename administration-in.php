@@ -11,6 +11,8 @@
 		<p style=height:5em></p>
 		<div>
 			<ul>
+				<li><a href=grundplan-tag-in.php>Grundplan Tagesansicht</a></li>
+				<li><a href=grundplan-vk-in.php>Grundplan Mitarbeiteransicht</a></li>
 				<li><a href=/phpmyadmin>PhpMyAdmin</a></li>
 				<li><a href=upload-in.php>PEP-Upload</a></li>
 				<li><a href=logout.php>Logout</a></li>
