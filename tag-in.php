@@ -53,6 +53,7 @@ if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 ) //Samsta
 }
 if( !empty($Dienstplan[0]['VK'][0]) )
 {
+	require "zeichne-histogramm.php";
 	require 'pruefe-dienstplan.php';
 }
 else

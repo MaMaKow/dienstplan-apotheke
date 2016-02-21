@@ -19,6 +19,8 @@
 			$Dienstplan[$tag]['Dienstbeginn'][]=$row->Dienstbeginn;
 			$Dienstplan[$tag]['Dienstende'][]=$row->Dienstende;
 			$Dienstplan[$tag]['Mittagsbeginn'][]=$row->Mittagsbeginn;
+			//echo $Mitarbeiter[$row->VK].": ".$row->Mittagsbeginn."<br>\n";
+			//TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
 			$Dienstplan[$tag]['Mittagsende'][]=$row->Mittagsende;
 			$Dienstplan[$tag]['Stunden'][]=$row->Stunden;
 		}
@@ -33,6 +35,7 @@
 		array_multisort($Sort_order, $Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
 	}
 
+//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 	//Hier entsteht die Mittagspausenvergabe.
 	if( !empty($Dienstplan[$tag]['VK']) ) //Haben wir überhaupt einen Dienstplan?
@@ -42,14 +45,17 @@
 		$pausenStart=strtotime('11:30:00');
 		foreach($Dienstplan[$tag]['VK'] as $position => $vk) //Die einzelnen Zeilen im Dienstplan
 		{
-			if ( !empty($vk) AND empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND empty($Dienstplan[$tag]['Mittagsende'][$position]) )
+			//echo "Mittag für $Mitarbeiter[$vk]?<br>\n";
+			if ( !empty($vk) AND !($Dienstplan[$tag]['Mittagsbeginn'][$position]>0) AND !($Dienstplan[$tag]['Mittagsende'][$position]>0) )
 			{
+				//echo "Mittag ist noch nicht definiert<br>\n";
 				//Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
 				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$position];
 				$dienstende=$Dienstplan[$tag]["Dienstende"][$position];
 				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$MittagMitarbeiter[$vk]*60;
 				if( $sekunden >= 6*3600 )
 				{
+					//echo "Mehr als 6 Stunden, also gibt es Mittag!";
 					//Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
 					$pausenEnde=$pausenStart+$MittagMitarbeiter[$vk]*60;
 					if(array_search($pausenStart, $BesetzteMittagsBeginne)!==false OR array_search($pausenEnde, $BesetzteMittagsEnden)!==false)
