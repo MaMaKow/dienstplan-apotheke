@@ -107,8 +107,8 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     } else {
         $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
                 //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                if ($sekunden - $MittagMitarbeiter[$auswahlMitarbeiter] * 60 >= 6 * 3600) {
-                    $mittagspause = $MittagMitarbeiter[$auswahlMitarbeiter] * 60;
+                if ($sekunden - $MittagMitarbeiter[$row->VK] * 60 >= 6 * 3600) {
+                    $mittagspause = $MittagMitarbeiter[$row->VK] * 60;
                     $sekunden = $sekunden - $mittagspause;
                 } else {
                     $mittagspause = false;
@@ -119,8 +119,9 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Pause'][] = $mittagspause / 60;
     $Grundplan[$wochentag]['Kommentar'][] = $row->Kommentar;
     $Grundplan[$wochentag]['Mandant'][] = $row->Mandant;
-        //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
-        $dienstplanCSV .= $Mitarbeiter[$row->VK].", $row->VK, $wochentag";
+
+    //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
+    $dienstplanCSV .= $Mitarbeiter[$row->VK].", $row->VK, $wochentag";
     $dienstplanCSV .= ', '.$row->Dienstbeginn;
     $dienstplanCSV .= ', '.$row->Dienstende;
     $dienstplanCSV .= ', '.$row->Mittagsbeginn;
