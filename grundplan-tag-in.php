@@ -186,7 +186,7 @@ require 'navigation.php';
 //Hier beginnt die Normale Ausgabe.
 echo "\t\t<div class=no-image>\n";
 echo "\t\t\t<form id=mandantenformular method=post>\n";
-//echo "\t\t\t\t<input type=hidden name=wochentag value=".$Grundplan[$wochentag]["Wochentag"][0].">\n";
+echo "\t\t\t\t<input type=hidden name=wochentag value=".$Grundplan[$wochentag]["Wochentag"][0].">\n";
 echo "\t\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $key => $value) {
@@ -201,7 +201,7 @@ echo "\t\t\t\t</select>\n\t\t\t</form>\n";
 
 //Auswahl des Wochentages
 echo "\t\t\t<form id=wochentagformular method=post>\n";
-//echo "\t\t\t\t<input type=hidden name=mandant value=".$Grundplan[$wochentag]["Mandant"][0].">\n";
+echo "\t\t\t\t<input type=hidden name=mandant value=".$Grundplan[$wochentag]["Mandant"][0].">\n";
 echo "\t\t\t\t<select class=no-print style=font-size:150% name=wochentag onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
 foreach ($Wochentage as $key => $value) {
