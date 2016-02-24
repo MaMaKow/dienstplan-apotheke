@@ -6,9 +6,16 @@
 //function db_lesen_abwesenheit()
 //{
 	global $datum, $verbindung;
-	$sqlDatum=date('Y-m-d', strtotime($datum));
-	$abfrage="SELECT * 
-		FROM `Abwesenheit` 
+	unset($Urlauber, $Kranke, $Abwesende);
+//Im folgenden prüfen wir, ob $datum bereis als UNIX timestamp vorliegt. Wenn es ein Timestamp ist, können wir direkt in 'Y-m-d' umrechnen. Wenn nicht, dann wandeln wir vorher um.
+	if (is_numeric($datum) && (int)$datum == $datum) {
+		$sqlDatum=date('Y-m-d', $datum);
+	} else {
+		$sqlDatum=date('Y-m-d', strtotime($datum));
+	}
+
+	$abfrage="SELECT *
+		FROM `Abwesenheit`
 		WHERE `Beginn` <= '$sqlDatum' AND `Ende` >= '$sqlDatum';"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.
 	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 	while($row = mysqli_fetch_object($ergebnis))

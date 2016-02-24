@@ -5,7 +5,7 @@ Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
 */
-.only-print 
+.only-print
 {
 	display: none;
 }
@@ -36,7 +36,7 @@ a:hover
 {
 	text-decoration: underline;
 }
-.head 
+.head
 {
     	display: inline-block;
 	float: left;
@@ -76,7 +76,7 @@ img
 /*	width: 60%;*/
 /*	max-height: 60%;*/
 }
-.overlay 
+.overlay
 {
 	position: relative;
 	top:0;
@@ -85,7 +85,7 @@ img
 	background-color: #73AC22;
 	z-index: 10;
 }
-.errormsg 
+.errormsg
 {
 	position: relative;
 	top:0;
@@ -94,7 +94,7 @@ img
 	background-color: #73AC22;
 	z-index: 10;
 }
-.warningmsg 
+.warningmsg
 {
 	position: relative;
 	top:0;
@@ -120,8 +120,11 @@ li a {
 	background-color: #BDE682;
     	color: #000;
     	padding: 8px 8px 8px 8px;
-} 
+}
 li a:hover {
 	background-color: #73AC22;
 	color: #FFFFFF;
+}
+tr.wochenende {
+    background-color: #B4B4B4;
 }

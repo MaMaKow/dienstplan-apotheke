@@ -1,18 +1,18 @@
-@page 
+@page
 {
 	margin: 0.5cm;
 	size: landscape;
 }
 a, body
 {
-	color: #000000; /*!important;*/ 
+	color: #000000; /*!important;*/
 }
 .no-print, .no-print *
 {
 	/*Elemente die nicht gedruckt werden sollen.*/
 	display: none !important;
 }
-.only-print 
+.only-print
 {
 	display: block;
 }
@@ -20,4 +20,7 @@ a, body
 {
 	display: block;
 	page-break-before: always;
+}
+tr.wochenende {
+    -webkit-print-color-adjust: exact;
 }
