@@ -27,6 +27,8 @@ images/
 # Temporäre Dateien #
 #####################
 *.*~
+*.autosave
+
 
 # Compiled source #
 ###################
