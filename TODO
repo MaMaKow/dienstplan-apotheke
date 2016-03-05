@@ -1,0 +1,16 @@
+This is a TODO list.
+* stunden-in.php javascript/php/mysql mit entweder Punkt oder Komma
+* tag-in.php mit Kommentar (+- unhide/hide)
+* tag-in.php mit Markieren des Ware-Menschen? Vielleicht über den Kommentar?
+* grundplan-tag-in.php Wo ist das Mittag?
+* grundplan-vk-in.php Mehr Eingaben, alles als Input!
+* woche-out.php Wochenstunden Umbruch nach 5(/7) Tagen statt nach nVK
+* woche-out.php Gesamtstunden berücksichtigen Urllaub(Abwesenheit), Feiertage für die Gesamtstunden.
+* abwesenheit-in.php Vorausfüllen
+
+* MarienplatzMitarbeiter überall in Mandanten_Mitarbeiter ändern!
+* Alle Variablen-Namen mit underscore_zeichen statt GrossSchreibung
+
+
+- database Ware-Termine / Ware-PEP
+- database PEP-Information in der Datenbank / PEP-xxx.php tragen in diese Datenbank ein. Average statt Median.
