@@ -2,9 +2,10 @@
 
 //Abruf der gespeicherten Daten aus der Datenbank
 //$tag=$datum;
+$start_datum=$datum;
 for ($i=0; $i<$tage; $i++)
 {
-	$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));
+	$tag=date('Y-m-d', strtotime("+$i days", strtotime($start_datum)));
 	$abfrage='SELECT *
 		FROM `Dienstplan`
 		WHERE `Datum` = "'.$tag.'"
