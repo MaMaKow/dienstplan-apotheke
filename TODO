@@ -1,4 +1,8 @@
 This is a TODO list.
+<<<<<<< HEAD
+=======
+* mitarbeiter-out.php mit Abwesenheit
+>>>>>>> 0f87b8c2475b5f0abac616b8d9bb0345e9a2c238
 * stunden-in.php javascript/php/mysql mit entweder Punkt oder Komma
 * tag-in.php mit Kommentar (+- unhide/hide)
 * tag-in.php mit Markieren des Ware-Menschen? Vielleicht über den Kommentar?
