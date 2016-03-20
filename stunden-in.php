@@ -10,7 +10,7 @@ require 'default.php';
 			function confirmDelete(link)
 			{
 				var r = confirm("Diesen Datensatz wirklich löschen?");
-				if (r == true) 
+				if (r == true)
 				{
 				//	alert("You pressed OK!");
 				//	alert(link);
@@ -21,19 +21,19 @@ require 'default.php';
 				//	alert("You pressed Cancel!");
 					return false;
 				}
-			} 
+			}
 			function leavePage()
 			{
 				window.location.replace("https://www.google.de"); //Wechselt automatisch heraus aus der Eingabemaske.
 			}
 			window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
-			function updatesaldo() 
+			function updatesaldo()
 			{
 				//Wir lesen die Objekte aus dem HTML code.
 				var stundenInputId		= document.getElementById("stunden");
 				var stundenSaldoId		= document.getElementById("saldoAlt");
 				var stundenSaldoNeuId		= document.getElementById("saldoNeu");
-				
+
 				//Wir entnehmen die vorhandenen Werte.
 				var stundenSaldoValue		= Number(stundenSaldoId.innerHTML);
 				var stundenInputArray		= stundenInputId.value.split(":");
@@ -59,11 +59,14 @@ require 'default.php';
 					{
 						stundenInputValue		= stundenInputValue + stundenInputHour;
 					}
+					stundenInputId.value = stundenInputValue;
 				}
 				else
 				{
 					//Die Stunden sind eine Ganzzahl oder eine Kommazahl.
 					//Wir entnehmen die vorhandenen Werte.
+					//Wir brauchen die Kommazahl mit einem Punkt, nicht mit einem Komma.
+					stundenInputId.value = stundenInputId.value.replace(/,/g, '.')
 					var stundenInputValue		= Number(stundenInputId.value);
 				}
 				var ergebnis		 	= stundenInputValue + stundenSaldoValue;
@@ -116,7 +119,7 @@ require 'default.php';
 			if(isset($_POST['submitStunden']) and isset($_POST['auswahlMitarbeiter']) and isset($_POST['datum']) and isset($_POST['stunden']) and isset($_POST['saldo']) and isset($_POST['grund']))
 			{
 					$abfrage="INSERT INTO `Stunden`
-						(VK, Datum, Stunden, Saldo, Grund) 	
+						(VK, Datum, Stunden, Saldo, Grund)
 						VALUES (".$_POST['auswahlMitarbeiter'].", '". $_POST['datum']."', ". $_POST['stunden'].", ". $_POST['saldo'].", '". $_POST['grund']."')";
 					$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 			}
@@ -187,7 +190,7 @@ echo "<a href=stunden-out.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Lesen]</a>
 				\t\t\t\t\tSaldo\n
 				\t\t\t\t</th>\n
 				\t\t\t</tr>\n";
-//Ausgabe 
+//Ausgabe
 			echo "$tablebody";
 //Eingabe. Der Saldo wird natürlich berechnet.
 			echo "\t\t\t<tr>\n";
