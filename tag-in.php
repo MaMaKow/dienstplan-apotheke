@@ -84,6 +84,31 @@ require 'pruefe-abwesenheit.php';
 ?>
 <html>
 	<head>
+		<script>
+		function unhide_kommentar() {
+			var kommentar_input = document.getElementsByClassName("kommentar_input")
+			for (var i = 0; i < kommentar_input.length; i++) {
+				kommentar_input[i].style.display = "inline";
+			}
+			var kommentar_ersatz = document.getElementsByClassName("kommentar_ersatz")
+			for (var i = 0; i < kommentar_ersatz.length; i++) {
+				kommentar_ersatz[i].style.display = "none";
+			}
+			//document.getElementById("mittagspause").style.display = "inline";
+			//document.getElementById("mittagspause").type = "text";
+		}
+		function rehide_kommentar()  {
+			var kommentar_input = document.getElementsByClassName("kommentar_input")
+			for (var i = 0; i < kommentar_input.length; i++) {
+				kommentar_input[i].style.display = "none";
+			}
+			var kommentar_ersatz = document.getElementsByClassName("kommentar_ersatz")
+			for (var i = 0; i < kommentar_ersatz.length; i++) {
+				kommentar_ersatz[i].style.display = "inline";
+			}
+		}
+		</script>
+
 		<meta charset=UTF-8>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
@@ -219,6 +244,8 @@ for ($j=0; $j<$VKcount; $j++)
 	{//Mittagspause
 		$zeile="";
 		echo "\t\t\t\t\t<td align=right>";
+		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar()>K+</a></div>";
+		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar()>K-</a></div>";
 		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
@@ -230,7 +257,12 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
 		$zeile.=">";
-
+		$zeile.="<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[".$i."][Kommentar][".$j."] value=";
+		if (isset($Dienstplan[$i]["Kommentar"][$j]))
+		{
+			$zeile.= $Dienstplan[$i]["Kommentar"][$j];
+		}
+		$zeile.="></div>";
 		echo $zeile;
 		echo "</td>\n";
 	}
@@ -264,7 +296,7 @@ echo "</div>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
 //	echo "<pre>";	var_export($MandantenMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-	//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 echo "\t</body>\n";
 echo "</html>";

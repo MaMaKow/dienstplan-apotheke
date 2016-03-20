@@ -16,7 +16,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 {
 	$datenempfang="Die Daten wurden empfangen.<br>\n";
 //	$datum=$_POST['Dienstplan'][0]['Datum'][0];
-	foreach ( $_POST['Dienstplan'] as $plan => $inhalt ) 
+	foreach ( $_POST['Dienstplan'] as $plan => $inhalt )
 	{
 		$Dienstplan[$plan]=$inhalt;
 	}
@@ -37,6 +37,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 				list($VK)=explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
 				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$key];
 				$dienstende=$Dienstplan[$tag]["Dienstende"][$key];
+				$kommentar=$Dienstplan[$tag]["Kommentar"][$key];
 				$mittagsbeginn=$Dienstplan[$tag]["Mittagsbeginn"][$key]; if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
 				$mittagsende=$Dienstplan[$tag]["Mittagsende"][$key]; if(empty($Mittagsende)){$Mittagsende="0:00";}
 	//			$kommentar='Noch nicht eingebaut'
@@ -52,22 +53,22 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 					$sekunden=strtotime($dienstende)-strtotime($dienstbeginn);
 					$stunden=$sekunden/3600;
 				}
-				$abfrage="REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant) 
-					VALUES ('$VK', '$datum', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$mandant')";  
+				$abfrage="REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar)
+					VALUES ('$VK', '$datum', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$mandant', '$kommentar')";
 				$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 //				echo "$abfrage<br>\n";
 				$Datenübertragung="Die Daten wurden in die Datenbank eingetragen.<br>\n";
 				//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
-	
+
 				if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 				if(empty($mittagsende)){$mittagsende="0:00";}
 				$dienstplanCSV.=$Mitarbeiter[$VK].", $VK, $datum";
 				$dienstplanCSV.=", ".$dienstbeginn;
 				$dienstplanCSV.=", ".$dienstende;
 				$dienstplanCSV.=", ".$mittagsbeginn;
-				$dienstplanCSV.=", ".$mittagsende;  
-				$dienstplanCSV.=", ".$stunden;  
-				$dienstplanCSV.=", ".$mandant."\n";  
+				$dienstplanCSV.=", ".$mittagsende;
+				$dienstplanCSV.=", ".$stunden;
+				$dienstplanCSV.=", ".$mandant."\n";
 
 			}
 		}
