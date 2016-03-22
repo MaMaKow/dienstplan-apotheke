@@ -90,8 +90,18 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	echo "<input type=hidden name=mandant value=".$mandant.">";
 	echo strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
 	$datum=($Dienstplan[$i]['Datum'][0]);
-	require 'db-lesen-feiertag.php'; 
+	require 'db-lesen-feiertag.php';
 	if(isset($feiertag)){echo " ".$feiertag." ";}
+	if (isset($feiertag) AND date('N', strtotime($datum))<6) {
+		foreach ($MandantenMitarbeiter as $vk => $nachname) {
+			if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
+					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $StundenMitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+			} else {
+					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+			}
+		}
+	}
+
 	require 'db-lesen-notdienst.php';
 	if(isset($notdienst)){echo "<br> NOTDIENST ";}
 	echo "</td></a>\n";
@@ -113,10 +123,23 @@ echo "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i=0; $i<count($Dienstplan); $i++)
 {
-	if (!isset($Dienstplan[$i]['VK'])) {break;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-	unset($Urlauber, $Kranke);
 	$datum=($Dienstplan[$i]['Datum'][0]);
+	unset($Urlauber, $Kranke);
 	require 'db-lesen-abwesenheit.php';
+	require 'db-lesen-feiertag.php';
+	if (!isset($Dienstplan[$i]['VK'])) {break;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
+	foreach ($Abwesende as $key => $vk) {
+		if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
+				//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
+				if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
+						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $StundenMitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+				} else {
+						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+				}
+		}
+	}
+
+
 	$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);
 	if (isset($Urlauber))
 	{
@@ -208,7 +231,7 @@ for ($tag=0; $tag<count($Filialplan); $tag++)
 	}
 }
 
-//An leeren Wochen soll nicht gerechnet werden. 
+//An leeren Wochen soll nicht gerechnet werden.
 if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 {
 	echo "<b>Wochenstunden</b><tr>";
@@ -226,12 +249,23 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 		}
 		echo "<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden);
 		echo " / ";
-		echo $StundenMitarbeiter[$mitarbeiter];
-		if ( $StundenMitarbeiter[$mitarbeiter] != array_sum($stunden))
-		{
-			$differenz=array_sum($stunden)-$StundenMitarbeiter[$mitarbeiter];
-			echo " <b>( ".$differenz." )</b>";
+		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
+				echo $bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter];
+		} else {
+				echo $StundenMitarbeiter[$mitarbeiter];
 		}
+		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
+				if ($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter] != array_sum($stunden)) {
+						$differenz = array_sum($stunden) - $bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter];
+						echo ' <b>( '.$differenz.' )</b>';
+					}
+				} else {
+						if ($StundenMitarbeiter[$mitarbeiter] != array_sum($stunden)) {
+								$differenz = array_sum($stunden) - $StundenMitarbeiter[$mitarbeiter];
+								echo ' <b>( '.$differenz.' )</b>';
+						}
+				}
+
 		echo "</td>";
 	}
 	echo "</tr>";
@@ -253,4 +287,3 @@ require 'contact-form.php';
 ?>
 	</body>
 <html>
-
