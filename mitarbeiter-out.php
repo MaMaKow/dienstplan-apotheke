@@ -121,7 +121,7 @@ echo "\t\t\t\t<br>\n";
     echo '</a>';
     if (array_search($auswahlMitarbeiter, $Abwesende) !== false) {
         echo '<br>'.$AbwesenheitsGrund[$auswahlMitarbeiter];
-        if (!isset($feiertag)) {
+        if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter])) {
                 $bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter] = $StundenMitarbeiter[$auswahlMitarbeiter] - $StundenMitarbeiter[$auswahlMitarbeiter] / 5;
