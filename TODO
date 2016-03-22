@@ -1,6 +1,4 @@
 This is a TODO list.
-* tag-in.php mit Markieren des Ware-Menschen? Vielleicht über den Kommentar?
-* grundplan-tag-in.php Wo ist das Mittag?
 * grundplan-vk-in.php Mehr Eingaben, alles als Input!
 * woche-out.php Wochenstunden Umbruch nach 5(/7) Tagen statt nach nVK
 * woche-out.php Gesamtstunden berücksichtigen Urllaub(Abwesenheit), Feiertage für die Gesamtstunden.
@@ -12,3 +10,8 @@ This is a TODO list.
 
 - database Ware-Termine / Ware-PEP
 - database PEP-Information in der Datenbank / PEP-xxx.php tragen in diese Datenbank ein. Average statt Median.
+
+
+* tag-in.php mit Markieren des Ware-Menschen? Vielleicht über den Kommentar?
+
+* grundplan-tag-in.php Wo ist das Mittag? //Ich denke, es ist da. Wo ist das Problem?
