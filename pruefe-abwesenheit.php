@@ -27,10 +27,10 @@ for ($i=0; $i<count($Dienstplan); $i++)
 		}
 		if (isset($ArbeitendeUrlauber))
 		{
-		
+
 			foreach($ArbeitendeUrlauber as $arbeitenderUrlauber)
 			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderUrlauber]." ist im Urlaub und sollte nicht arbeiten.";
+				//$Fehlermeldung[]=$Mitarbeiter[$arbeitenderUrlauber]." ist im Urlaub und sollte nicht im Dienstplan sein.";
 			}
 		}
 	}
@@ -50,7 +50,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 		{
 			foreach($ArbeitendeKranke as $arbeitenderKranker)
 			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderKranker]." ist krank und sollte der Arbeit fern bleiben.";
+				//$Fehlermeldung[]=$Mitarbeiter[$arbeitenderKranker]." ist krank und sollte nicht im Dienstplan sein.";
 			}
 		}
 	}
@@ -70,7 +70,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 		{
 			foreach($ArbeitendeAbwesende as $arbeitenderAbwesender)
 			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderAbwesender]." ist abwesend (".$AbwesenheitsGrund[$arbeitenderAbwesender].") und sollte der Arbeit fern bleiben.";
+				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderAbwesender]." ist abwesend (".$AbwesenheitsGrund[$arbeitenderAbwesender].") und sollte nicht im Dienstplan stehen.";
 			}
 		}
 	}
@@ -97,4 +97,3 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 }
 ?>
-

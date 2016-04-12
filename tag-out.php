@@ -24,11 +24,11 @@ require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if (isset($mandant))
 {
-	create_cookie("mandant", $mandant); 
+	create_cookie("mandant", $mandant);
 }
 if (isset($datum))
 {
-	create_cookie("datum", $datum); 
+	create_cookie("datum", $datum);
 }
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
@@ -85,7 +85,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	$zeile.=strftime('%d.%m. ', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 //	echo "</td>\n";
-//}	
+//}
 //echo "\t\t\t\t\t</tr><tr>\n";
 //for ($i=0; $i<count($Dienstplan); $i++)
 //{//Wochentag
@@ -101,31 +101,32 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }
 for ($j=0; $j<$VKcount; $j++)
 {
-	if(isset($feiertag) && !isset($notdienst)){break 1;}
+	//TODO The following line will prevent planning on hollidays. The problem ist, that we work might emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
+	//if(isset($feiertag) && !isset($notdienst)){break 1;}
 	echo "\t\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
 		$zeile="";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
-		{ 
+		{
 			$zeile.="\t\t\t\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.="</a></b> ";
 		}
 		//Dienstbeginn
-		if (isset($Dienstplan[$i]["VK"][$j])) 
+		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 			$zeile.=" - ";
 		}
 		//Dienstende
-		if (isset($Dienstplan[$i]["VK"][$j])) 
+		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
 		echo $zeile;
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
-		{ 
+		{
 		echo "</td>\n";
 		}
 	}
@@ -166,7 +167,7 @@ if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 	echo "\t\t<div class=above-image>\n";
 	echo "\t\t\t<div class=image>\n";
 	//echo "<td align=center valign=top rowspan=60>";
-	echo "\t\t\t\t<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>\n"; 
+	echo "\t\t\t\t<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>\n";
 	//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 	//echo "</div>";
 	//echo "<div class=image>";
@@ -175,7 +176,7 @@ if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 	echo "\t\t</div>\n";
 	require 'contact-form.php';
 }
-	
+
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 		?>

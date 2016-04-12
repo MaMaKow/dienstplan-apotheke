@@ -43,7 +43,7 @@ $Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 
-if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 ) //Samstag und Sonntag planen wir nicht.
+if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 AND !isset($feiertag)) //Samstag und Sonntag planen wir nicht.
 {
 	//Wir wollen eine automatische Dienstplanfindung beginnen.
 	//Mal sehen, wie viel die Maschine selbst gestalten kann.
@@ -190,7 +190,8 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }
 for ($j=0; $j<$VKcount; $j++)
 {
-	if(isset($feiertag) && !isset($notdienst)){break 1;}
+	//TODO The following line will prevent planning on hollidays. The problem ist, that we work might emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
+	//if(isset($feiertag) && !isset($notdienst)){break 1;}
 	echo "\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter

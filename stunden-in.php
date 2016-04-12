@@ -35,7 +35,11 @@ require 'default.php';
 				var stundenSaldoNeuId		= document.getElementById("saldoNeu");
 
 				//Wir entnehmen die vorhandenen Werte.
-				var stundenSaldoValue		= Number(stundenSaldoId.innerHTML);
+				if ( stundenSaldoId != null) { //For new Coworkers there is no value set. Therefore we start with 0.
+					var stundenSaldoValue		= Number(stundenSaldoId.innerHTML);
+				}else {
+					var stundenSaldoValue		= 0;
+				}
 				var stundenInputArray		= stundenInputId.value.split(":");
 				if (stundenInputArray[1]) //Wenn es einen Doppelpunkt gibt.
 				{
@@ -155,6 +159,10 @@ require 'default.php';
 				$tablebody.= "\n\t\t\t\t</td>\n";
 				$tablebody.= "\n\t\t\t</tr>\n";
 				$i++;
+			}
+
+			if (empty($saldo)) {
+				$saldo=0;
 			}
 
 

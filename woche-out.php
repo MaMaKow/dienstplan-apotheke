@@ -91,7 +91,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	echo strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
 	$datum=($Dienstplan[$i]['Datum'][0]);
 	require 'db-lesen-feiertag.php';
-	if(isset($feiertag)){echo " ".$feiertag." ";}
+	if(isset($feiertag)){echo " <br>".$feiertag." ";}
 	if (isset($feiertag) AND date('N', strtotime($datum))<6) {
 		foreach ($MandantenMitarbeiter as $vk => $nachname) {
 			if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
@@ -127,7 +127,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	unset($Urlauber, $Kranke);
 	require 'db-lesen-abwesenheit.php';
 	require 'db-lesen-feiertag.php';
-	if (!isset($Dienstplan[$i]['VK'])) {break;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
+	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	foreach ($Abwesende as $key => $vk) {
 		if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
 				//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
@@ -138,57 +138,6 @@ for ($i=0; $i<count($Dienstplan); $i++)
 				}
 		}
 	}
-
-
-	$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);
-	if (isset($Urlauber))
-	{
-		foreach($Urlauber as $urlauber)
-		{
-			$pattern="/$urlauber/";
-			$ArbeitendeUrlauber=preg_grep($pattern, $EingesetzteMitarbeiter);
-		}
-		if (isset($ArbeitendeUrlauber))
-		{
-			foreach($ArbeitendeUrlauber as $arbeitenderUrlauber)
-			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderUrlauber]." ist im Urlaub und sollte nicht arbeiten.";
-			}
-		}
-	}
-	if (isset($Kranke))
-	{
-		foreach($Kranke as $kranker)
-		{
-			$pattern="/$kranker/";
-			$ArbeitendeKranke=preg_grep($pattern, $EingesetzteMitarbeiter);
-		}
-		if (isset($ArbeitendeKranke))
-		{
-			foreach($ArbeitendeKranke as $arbeitenderKranker)
-			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderKranker]." ist krank und sollte der Arbeit fern bleiben.";
-			}
-		}
-	}
-
-	//Jetzt schauen wir, ob sonst alle da sind.
-	if (count($Dienstplan)>3)
-	{
-		$MitarbeiterDifferenz=array_diff(array_keys($MandantenMitarbeiter), $EingesetzteMitarbeiter);
-		if(isset($Abwesende)){$MitarbeiterDifferenz=array_diff($MitarbeiterDifferenz, $Abwesende);}
-		if (!empty($MitarbeiterDifferenz))
-		{
-			$fehler="Es sind folgende Mitarbeiter nicht eingesetzt: ";
-			foreach($MitarbeiterDifferenz as $arbeiter)
-			{
-				$fehler.=$Mitarbeiter[$arbeiter].", ";
-			}
-			$fehler.=".";
-			$Fehlermeldung[]=$fehler;
-		}
-	}
-
 	//Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
 	if (isset($Urlauber))
 	{
@@ -240,12 +189,11 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 	foreach($Stunden as $mitarbeiter => $stunden)
 	{
 		if ( array_key_exists($mitarbeiter, $MandantenMitarbeiter)===false ){continue; /*Wir zeigen nur die Stunden von Mitarbeitern, die auch in den Mandanten gehören.*/}
-		$k=$j*5; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
-		if($mitarbeiter>$k){$i++;}
-		if($i>=1)
+		$i++; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
+		if($i>=$tage)
 		{
 			echo "</tr><tr>";
-			$i=0;$j++;
+			$i=0;//$j++;
 		}
 		echo "<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden);
 		echo " / ";
