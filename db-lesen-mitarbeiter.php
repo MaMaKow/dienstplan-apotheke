@@ -1,5 +1,6 @@
 <?php
 //Hole eine Liste aller Mitarbeiter
+unset($MandantenMitarbeiter);
 $abfrage='SELECT *
 	FROM `Mitarbeiter`
 	ORDER BY `VK` ASC
@@ -13,12 +14,6 @@ while($row = mysqli_fetch_object($ergebnis))
 		$StundenMitarbeiter[$row->VK]=$row->Arbeitswochenstunden;
 		$MittagMitarbeiter[$row->VK]=$row->Mittag;
 		$AusbildungMitarbeiter[$row->VK]=$row->Ausbildung;
-/*
-		if ($row->Mandant==1 && $row->Stunden>10) //Welche Mitarbeiter sind immer da?
-		{
-			$MarienplatzMitarbeiter[$row->VK]=$row->Nachname;
-		}
-*/
 		if (isset($mandant) && $row->Mandant==$mandant && $row->Stunden>10) //Welche Mitarbeiter sind immer da?
 		{
 			$MandantenMitarbeiter[$row->VK]=$row->Nachname;
