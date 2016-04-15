@@ -74,6 +74,10 @@ $RückwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Rüc
 $VorwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $VorwärtsButton;
 echo "\t\t\t\t<a href=tag-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
 //$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton; Leseversion
+echo "\t\t\t<div id=wochenAuswahl>\n";
+echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+echo "\t\t\t</div>\n";
 echo "\t\t\t\t<table border=0 >\n";
 echo "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
