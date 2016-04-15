@@ -4,7 +4,7 @@ require 'db-verbindung.php';
 
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $filiale=2;	//Am unteren Rand werden auch unsere Mitarbeiter in dieser Filale angezeigt.
-$tage=5;	//Dies ist eine Wochenansicht ohne Wochenende
+$tage=6;	//Dies ist eine Wochenansicht ohne Wochenende
 
 $datenübertragung="";
 $dienstplanCSV="";
