@@ -81,12 +81,17 @@ require 'navigation.php';
 echo "\t\t<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahlMitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-echo "\t\t\t\t<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter." ".$Mitarbeiter[$auswahlMitarbeiter]."</option>,\n";
+//echo "\t\t\t\t<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter." ".$Mitarbeiter[$auswahlMitarbeiter]."</option>,\n";
 for ($vk=1; $vk<$VKmax+1; $vk++)
 {
 	if(isset($Mitarbeiter[$vk]))
 	{
-		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+		if ($vk == $auswahlMitarbeiter) {
+			echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+		} else {
+			echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+		}
+
 	}
 }
 echo "\t\t\t</select>\n";
@@ -109,7 +114,7 @@ echo "<a class=no-print href=abwesenheit-in.php?auswahlMitarbeiter=$auswahlMitar
 				\t\t\t\t\tTage\n
 				\t\t\t\t</th>\n
 				\t\t\t</tr>\n";
-//Ausgabe 
+//Ausgabe
 			echo "$tablebody";
 			echo "\t\t</table>\n";
 			echo "\t</form>";

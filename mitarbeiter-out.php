@@ -3,9 +3,6 @@ require 'default.php';
 require 'db-verbindung.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
 
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
-
 //$datenübertragung="";
 $dienstplanCSV = '';
 $tage = 7;
@@ -33,13 +30,17 @@ if (isset($auswahlMitarbeiter)) {
     create_cookie('auswahlMitarbeiter', $auswahlMitarbeiter);
 }
 
-if (isset($datum)) {// Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
+if (isset($datum)) {
+    // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
     $montagsDifferenz = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
     $montagsDifferenzString = '-'.$montagsDifferenz.' day';
     $datum = strtotime($montagsDifferenzString, strtotime($datum));
     $datum = date('Y-m-d', $datum);
 }
-require 'db-lesen-woche-mitarbeiter.php'; //Lesen der in der Datenbank gespeicherten Daten.
+//Hole eine Liste aller Mitarbeiter
+require 'db-lesen-mitarbeiter.php';
+//Lesen der in der Datenbank gespeicherten Daten.
+require 'db-lesen-woche-mitarbeiter.php';
 require 'db-lesen-feiertag.php';
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
@@ -70,10 +71,14 @@ $VorwärtsButton = "\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorw
 $zeile = '<br>';
 //$zeile.="<select name=auswahlMitarbeiter class=no-print onChange=this.form.submit()>";
 $zeile .= "<select name=auswahlMitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-$zeile .= "<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter.' '.$Mitarbeiter[$auswahlMitarbeiter].'</option>,';
+//$zeile .= "<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter.' '.$Mitarbeiter[$auswahlMitarbeiter].'</option>,';
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {
-        $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
+        if ($vk == $auswahlMitarbeiter) {
+            $zeile .= "<option value=$vk selected>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
+        } else {
+            $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
+        }
     }
 }
 $zeile .= '</select>';
@@ -121,7 +126,7 @@ echo "\t\t\t\t<br>\n";
     echo '</a>';
     if (array_search($auswahlMitarbeiter, $Abwesende) !== false) {
         echo '<br>'.$AbwesenheitsGrund[$auswahlMitarbeiter];
-        if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
+        if (!isset($feiertag) and date('N', strtotime($datum)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter])) {
                 $bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter] = $StundenMitarbeiter[$auswahlMitarbeiter] - $StundenMitarbeiter[$auswahlMitarbeiter] / 5;
@@ -179,7 +184,8 @@ echo "\t\t\t\t</tr>\n"; //debug DEBUG THis one seems to be bulshit. There is a <
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)
-for ($tag = 0; $tag < 5; ++$tag) {// Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
+for ($tag = 0; $tag < 5; ++$tag) {
+    // Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
     foreach ($Dienstplan[$tag]['Stunden'] as $key => $stunden) {
         $Stunden[$Dienstplan[$tag]['VK'][$key]][] = $stunden;
     }
@@ -188,22 +194,22 @@ echo 'Wochenstunden ';
 ksort($Stunden);
 $i = 1;$j = 1; //Zahler für den Stunden-Array (wir wollen nach je x Elementen einen Umbruch)
 foreach ($Stunden as $mitarbeiter => $stunden) {
-    echo array_sum($stunden);
+    echo round(array_sum($stunden), 1);
     echo ' / ';
     if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-        echo $bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter];
+        echo round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
     } else {
-        echo $StundenMitarbeiter[$mitarbeiter];
+        echo round($StundenMitarbeiter[$mitarbeiter], 1);
     }
     if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-        if ($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter] != array_sum($stunden)) {
-            $differenz = array_sum($stunden) - $bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter];
+        if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
+            $differenz = round(array_sum($stunden), 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
             echo ' <b>( '.$differenz.' )</b>';
-        } else {
-            if ($StundenMitarbeiter[$mitarbeiter] != array_sum($stunden)) {
-                $differenz = array_sum($stunden) - $StundenMitarbeiter[$mitarbeiter];
-                echo ' <b>( '.$differenz.' )</b>';
-            }
+        }
+    } else {
+        if (round($StundenMitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
+            $differenz = round(array_sum($stunden), 1) - round($StundenMitarbeiter[$mitarbeiter], 1);
+            echo ' <b>( '.$differenz.' )</b>';
         }
     }
 }

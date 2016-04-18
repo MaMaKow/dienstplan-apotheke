@@ -163,7 +163,8 @@ echo "\t\t\t\t<table border=0 rules=groups>\n";
 //Wir zeichnen jetzt die Wochenstunden der Mitarbeiter. In dieser Ansicht werden ausschließlich die Tage Montag bis Freitag betrachtet. Dies ist ein Unterschied zur Mitarbeiteransicht. Dort werden alle Wochentage berücksichtigt.
 echo "\t\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t\t<td colspan=5>\n";
-for ($tag=0; $tag<count($Dienstplan); $tag++)
+// TODO: $tag<5; should be a configurable variable. It might be 6 or seven in other pharmacies.
+for ($tag=0; $tag<5; $tag++)
 {
 	if (!isset($Dienstplan[$tag]['Stunden'])) {continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	foreach($Dienstplan[$tag]['Stunden'] as $key => $stunden)
@@ -171,7 +172,7 @@ for ($tag=0; $tag<count($Dienstplan); $tag++)
 		$Stunden[$Dienstplan[$tag]['VK'][$key]][]=$stunden;
 	}
 }
-for ($tag=0; $tag<count($Filialplan); $tag++)
+for ($tag=0; $tag<5; $tag++)
 {
 	if (!isset($Filialplan[$tag]['Stunden'])) {continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	foreach($Filialplan[$tag]['Stunden'] as $key => $stunden)
@@ -198,18 +199,18 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 		echo "<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden);
 		echo " / ";
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-				echo $bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter];
+				echo round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
 		} else {
-				echo $StundenMitarbeiter[$mitarbeiter];
+				echo round($StundenMitarbeiter[$mitarbeiter], 1);
 		}
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-				if ($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter] != array_sum($stunden)) {
-						$differenz = array_sum($stunden) - $bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter];
+				if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
+						$differenz = round(array_sum($stunden), 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
 						echo ' <b>( '.$differenz.' )</b>';
 					}
 				} else {
-						if ($StundenMitarbeiter[$mitarbeiter] != array_sum($stunden)) {
-								$differenz = array_sum($stunden) - $StundenMitarbeiter[$mitarbeiter];
+						if (round($StundenMitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
+								$differenz = round(array_sum($stunden), 1) - round($StundenMitarbeiter[$mitarbeiter], 1);
 								echo ' <b>( '.$differenz.' )</b>';
 						}
 				}

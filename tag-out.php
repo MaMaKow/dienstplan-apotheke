@@ -5,8 +5,6 @@ require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
 
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
 
@@ -30,6 +28,9 @@ if (isset($datum))
 {
 	create_cookie("datum", $datum);
 }
+//Hole eine Liste aller Mitarbeiter
+require 'db-lesen-mitarbeiter.php';
+
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
 require "zeichne-histogramm.php";
@@ -60,12 +61,14 @@ echo "\t\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V'
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
 echo "\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
-echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
+//echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
 	{
 		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
+	}else {
+		echo "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
 	}
 }
 echo "\t\t\t</select>\n\t\t</form>\n";
@@ -74,7 +77,7 @@ $RückwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Rüc
 $VorwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $VorwärtsButton;
 echo "\t\t\t\t<a href=tag-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
 //$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton; Leseversion
-echo "\t\t\t<div id=wochenAuswahl>\n";
+echo "\t\t\t<div id=wochenAuswahl class=no-print>\n";
 echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</div>\n";
