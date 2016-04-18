@@ -19,10 +19,20 @@
 					}
 				}
 			}
-//			echo "<pre>";	var_export($ApprobiertenDienstplan);    	echo "</pre>"; 
+			foreach($Dienstplan[$tag]["VK"] as $key => $value)
+			{
+				if ( array_search($value, array_keys($Wareneingang_Mitarbeiter)) !== false )
+				{
+					foreach($Spalten as $spalte)
+					{
+						$Wareneingang_dienstplan[$tag][$spalte][$key]=$Dienstplan[$tag][$spalte][$key];
+					}
+				}
+			}
+//			echo "<pre>";	var_export($ApprobiertenDienstplan);    	echo "</pre>";
 			if( date('N', strtotime($datum)) < 6 )
 			{
-				//On mondays and saturdays the day starts 
+				//On mondays and saturdays the day starts
 				//DEBUG debug in a future version this should be read from a database with all the single opening and closing times.
 				$tagesBeginn=strtotime('8:00:00');
 				$tagesEnde=strtotime('20:00:00');
@@ -52,6 +62,13 @@
 				$ApprobiertenMittagsEnden=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsende"]);
 				$ApprobiertenMittagsBeginne=array_map('strtotime', $ApprobiertenDienstplan[$tag]["Mittagsbeginn"]);
 			}
+			if ( isset($Wareneingang_dienstplan) )
+			{
+				$Wareneingang_Dienst_Enden=array_map('strtotime', $Wareneingang_dienstplan[$tag]["Dienstende"]);
+				$Wareneingang_Dienst_Beginne=array_map('strtotime', $Wareneingang_dienstplan[$tag]["Dienstbeginn"]);
+				$Wareneingang_Mittags_Enden=array_map('strtotime', $Wareneingang_dienstplan[$tag]["Mittagsende"]);
+				$Wareneingang_Mittags_Beginne=array_map('strtotime', $Wareneingang_dienstplan[$tag]["Mittagsbeginn"]);
+			}
 			$DienstEnden=array_map('strtotime', $Dienstplan[$tag]["Dienstende"]);
 			$DienstBeginne=array_map('strtotime', $Dienstplan[$tag]["Dienstbeginn"]);
 			$MittagsEnden=array_map('strtotime', $Dienstplan[$tag]["Mittagsende"]);
@@ -62,13 +79,27 @@
 				//Die folgende Umschreibung von $zeit auf eine globale $dienstzeit ist notwendig, um innerhalb der array-filter Funtion darauf per global zugreifen zu können.
 				global $dienstzeit;
 				$dienstzeit=$zeit;
+				if ( isset($Wareneingang_dienstplan) )
+				{
+					//Wir zählen die Approbierten Mitarbeiter
+					//Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
+					$wareneingang_Gekommene=count(array_filter(array_filter($Wareneingang_Dienst_Beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					//Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
+					$wareneingang_Gegangene=count(array_filter(array_filter($Wareneingang_Dienst_Enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$wareneingang_Mittagende=count(array_filter(array_filter($Wareneingang_Mittags_Beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$wareneingang_Gemittagte=count(array_filter(array_filter($Wareneingang_Mittags_Enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$wareneingang_Mittagende=$wareneingang_Mittagende-$wareneingang_Gemittagte;
+					$wareneingang_Anwesende=$wareneingang_Gekommene-$wareneingang_Gegangene;
+					$wareneingang_Anwesende=$wareneingang_Anwesende-$wareneingang_Mittagende;
+					$Wareneingang_Anwesende[$dienstzeit]=$wareneingang_Anwesende;
+				}
 				if ( isset($ApprobiertenDienstplan) )
 				{
 					//Wir zählen die Approbierten Mitarbeiter
 					//Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
-					$approbiertenGekommene=count(array_filter(array_filter($ApprobiertenDienstBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); 
+					$approbiertenGekommene=count(array_filter(array_filter($ApprobiertenDienstBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
 					//Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
-					$approbiertenGegangene=count(array_filter(array_filter($ApprobiertenDienstEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); 
+					$approbiertenGegangene=count(array_filter(array_filter($ApprobiertenDienstEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
 					$approbiertenMittagende=count(array_filter(array_filter($ApprobiertenMittagsBeginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
 					$approbiertenGemittagte=count(array_filter(array_filter($ApprobiertenMittagsEnden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
 					$approbiertenMittagende=$approbiertenMittagende-$approbiertenGemittagte;
@@ -101,7 +132,7 @@
 			//Falls diese Funktion bereits zuvor aufgerufen wurde, haben wir den Wert schon.
 			if(empty($Erwartung['uhrzeit'][0]))
 			{
-				
+
 				$lines=file('./pep/pep_monatimjahr.csv');
 				foreach($lines as $key => $value)
 				{
@@ -115,7 +146,7 @@
 					list($Tagimmonat['tag'][], $Tagimmonat['min'][], $Tagimmonat['median'][], $Tagimmonat['max'][])=explode(", ", $value);
 				}
 				$durchschnittstag=calculate_percentile($Tagimmonat['median'],50);
-		
+
 				$faktorTagimmonat=$Tagimmonat['median'][date('n', strtotime($datum))-1]/$durchschnittstag;
 				$datei="./pep/pep_wochentag";
 				$datei.=date("w", strtotime($datum))+1;
@@ -133,7 +164,7 @@
 					$SollAnwesende[strtotime($Wochentag['uhrzeit'][$key])]=round($tageszeitmedian*$faktorTagimmonat*$faktorMonatimjahr/$faktorArbeitskraft+1,0);
 					$erwartungCSV.=$Wochentag['uhrzeit'][$key].", ".$tageszeitmedian*$faktorTagimmonat*$faktorMonatimjahr."\n";
 				}
-				
+
 				if(!isset($histogrammNoPrint))
 				{
 					$filename = "tmp/Erwartung.csv";
@@ -147,7 +178,7 @@
 			if(!isset($histogrammNoPrint))
 			{
 				$command=('./Histogramm_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
-				exec($command, $kommandoErgebnis);			
+				exec($command, $kommandoErgebnis);
 			//debug DEBUG to do: Die Dateien im tmp/ könnten wir anschließend alle wieder löschen.
 			//debug DEBUG to do: EinEindeutige Unique Namen! Wenn gleichtzeitig mehrere Mitarbeiter zugreifen, werden mehrere Dateien mit dem gleichen Namen erzeugt. Das kann zu Fehlern führen.
 			}

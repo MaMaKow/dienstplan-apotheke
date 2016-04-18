@@ -142,12 +142,14 @@ echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><div class=only
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
 echo "\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
-echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
+//echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
 	{
 		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
+	}else {
+		echo "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
 	}
 }
 echo "\t\t\t</select>\n\t\t</form>\n";
@@ -197,12 +199,9 @@ for ($j=0; $j<$VKcount; $j++)
 	{//Mitarbeiter
 		$zeile="";
 		echo "\t\t\t\t\t<td align=right>";
-		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1)."><option>";
-		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
-		{
-			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
-		}
-		$zeile.="</option>";
+		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1).">";
+		$zeile.="<option></option>";
+
 		for ($k=1; $k<$VKmax+1; $k++)
 		{
 			if (isset($Dienstplan[$i]["VK"][$j]))
@@ -211,9 +210,9 @@ for ($j=0; $j<$VKcount; $j++)
 				{
 					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
 				}
-				else
+				elseif ( isset($Mitarbeiter[$k]) )
 				{
-					$zeile.="<option></option>,"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
+					$zeile.="<option selected>".$k." ".$Mitarbeiter[$k]."</option>,"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
 				}
 			}
 			elseif ( isset($Mitarbeiter[$k]) )
