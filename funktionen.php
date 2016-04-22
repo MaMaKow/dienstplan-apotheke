@@ -3,10 +3,10 @@
 	{
 		if ( isset($cookie_name) AND isset($cookie_value) )
 		{
-			setcookie($cookie_name, $cookie_value, time() + (86400 * 1), "/"); // 86400 = 1 day
+			setcookie($cookie_name, $cookie_value, time() + (86400 * 7), "/"); // 86400 = 1 day
 		}
-	}	
-	
+	}
+
 	function calculate_percentile($arr,$perc) {
 	    sort($arr);
 	    $count = count($arr); //total numbers in array
