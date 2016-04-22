@@ -1,6 +1,6 @@
 <?php
 //Argumente hinter dem .. sind optional.
-function db_lesen_tage($tage, $mandant, $VKmandant='[0-9]*') 
+function db_lesen_tage($tage, $mandant, $VKmandant='[0-9]*')
 {
 global $datum, $verbindungi, $Mitarbeiter;
 	//Abruf der gespeicherten Daten aus der Datenbank
@@ -32,12 +32,12 @@ global $datum, $verbindungi, $Mitarbeiter;
 			$dienstplanCSV.=", ".$row->Dienstbeginn;
 			$dienstplanCSV.=", ".$row->Dienstende;
 			$dienstplanCSV.=", ".$row->Mittagsbeginn;
-			$dienstplanCSV.=", ".$row->Mittagsende;  
-			$dienstplanCSV.=", ".$row->Stunden;  
-			$dienstplanCSV.=", ".$row->Mandant."\n";  
+			$dienstplanCSV.=", ".$row->Mittagsende;
+			$dienstplanCSV.=", ".$row->Stunden;
+			$dienstplanCSV.=", ".$row->Mandant."\n";
 		}
 		$filename = "tmp/Dienstplan.csv";
-		$myfile = fopen($filename, "w") or die("Unable to open file!");
+		$myfile = fopen($filename, "w") or die("Unable to open file!\n");
 		fwrite($myfile, $dienstplanCSV);
 		fclose($myfile);
 		$dienstplanCSV="";

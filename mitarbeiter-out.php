@@ -103,9 +103,9 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $datum = date('Y-m-d', strtoti
     echo $zeile;
     if (isset($feiertag)) {
         echo ' '.$feiertag.' ';
-        if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter])) {
+        if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter]) and date('N', strtotime($datum)) < 6) {
             $bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter] = $StundenMitarbeiter[$auswahlMitarbeiter] - $StundenMitarbeiter[$auswahlMitarbeiter] / 5;
-        } else {
+        } elseif( date('N', strtotime($datum)) < 6) {
             $bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter] = $bereinigte_Wochenstunden_Mitarbeiter[$auswahlMitarbeiter] - $StundenMitarbeiter[$auswahlMitarbeiter] / 5;
         }
     }
@@ -138,9 +138,6 @@ echo "\t\t\t\t<br>\n";
     echo '</td>';
 }
 for ($j = 0; $j < $planAnzahl; ++$j) {
-    if (isset($feiertag) && !isset($notdienst)) {
-        break 1;
-    }
     echo "\t\t\t\t</tr></thead><tr>\n";
     for ($i = 0; $i < count($Dienstplan); ++$i) {
         $zeile = '';
@@ -270,9 +267,12 @@ fclose($myfile);
 $dienstplanCSV = '';
 $command = ('./Mitarbeiter_image.sh '.escapeshellcmd($Dienstplan[0]['Datum'][0]).'_'.escapeshellcmd($vk));
 exec($command, $kommandoErgebnis);
-echo '<img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').' style=width:70%;><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png') )
+{
+  echo '<img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').' style=width:70%;><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+  schreiben_ics($Dienstplan); //Schreibt die Daten aus dem Dienstplan (alle Tage, ohne Pause) in eine ics Datei. Fügt einen Download-button für die Datei ein.
+}
 
-schreiben_ics($Dienstplan); //Schreibt die Daten aus dem Dienstplan (alle Tage, ohne Pause) in eine ics Datei. Fügt einen Download-button für die Datei ein.
 
 //echo "<pre>";	var_export($_POST);    	echo "</pre>";
 
