@@ -9,9 +9,9 @@
 	unset($Urlauber, $Kranke, $Abwesende);
 	//Im folgenden prüfen wir, ob $datum bereis als UNIX timestamp vorliegt. Wenn es ein Timestamp ist, können wir direkt in 'Y-m-d' umrechnen. Wenn nicht, dann wandeln wir vorher um.
 	if (is_numeric($datum) && (int)$datum == $datum) {
-		$sqlDatum=date('Y-m-d', $datum);
+		$sql_datum=date('Y-m-d', $datum);
 	} else {
-		$sqlDatum=date('Y-m-d', strtotime($datum));
+		$sql_datum=date('Y-m-d', strtotime($datum));
 	}
 
 	//We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
@@ -23,12 +23,12 @@
 
 	$abfrage="SELECT *
 		FROM `Abwesenheit`
-		WHERE `Beginn` <= '$sqlDatum' AND `Ende` >= '$sqlDatum' AND VK IN (".$mitarbeiterliste.")"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.
+		WHERE `Beginn` <= '$sql_datum' AND `Ende` >= '$sql_datum' AND VK IN (".$mitarbeiterliste.")"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.
 	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 	while($row = mysqli_fetch_object($ergebnis))
 	{
 		$Abwesende[]=$row->VK;
-		$AbwesenheitsGrund[$row->VK]=$row->Grund;
+		$Abwesenheits_grund[$row->VK]=$row->Grund;
 		if ($row->Grund=="Urlaub")
 		{
 			$Urlauber[]=$row->VK;

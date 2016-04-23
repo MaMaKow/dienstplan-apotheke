@@ -79,7 +79,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		fclose($myfile);
 		$dienstplanCSV="";
 		$command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
-		exec($command, $kommandoErgebnis);
+		exec($command, $kommando_ergebnis);
 
 		//Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
 		require "zeichne-histogramm.php";
@@ -112,9 +112,9 @@ elseif ( isset($_POST['submitRückwärts']) && isset($_POST['Dienstplan'][0]['Da
 elseif ( isset($_POST['wochenAuswahl']) && isset($_POST['woche'])  )
 {
 	$datum=$_POST['woche'];
-	$montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
-	$montagsDifferenzString="-".$montagsDifferenz." day";
-	$datum=strtotime($montagsDifferenzString, strtotime($datum));
+	$montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
+	$montags_differenzString="-".$montags_differenz." day";
+	$datum=strtotime($montags_differenzString, strtotime($datum));
 	$datum=date('Y-m-d', $datum);
 }
 elseif ( isset($_POST['tagesAuswahl']) && isset($_POST['tag'])  )

@@ -18,9 +18,9 @@ $dienstplanCSV="";
 //$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
 $heute=date('Y-m-d');
 $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-$montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
-$montagsDifferenzString="-".$montagsDifferenz." day";
-$datum=strtotime($montagsDifferenzString, strtotime($datum));
+$montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
+$montags_differenzString="-".$montags_differenz." day";
+$datum=strtotime($montags_differenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum);
 
 
@@ -62,9 +62,9 @@ $VKmax=max(array_keys($Mitarbeiter));
 echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "<form id=myform method=post>\n";
-$RückwärtsButton="\t<input type=submit 	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $RückwärtsButton;
-$VorwärtsButton="\t<input type=submit 	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $VorwärtsButton;
-$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton;
+$Rückwärts_button="\t<input type=submit 	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
+$Vorwärts_button="\t<input type=submit 	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
+$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
 echo "<div id=wochenAuswahl><input name=woche type=date value=".date('Y-m-d', strtotime($datum)).">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "	<table border=2 style=width:99%>\n";
@@ -175,19 +175,19 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	$tag=$Dienstplan[$i]['Datum'][0];
 	require 'db-lesen-abwesenheit.php';
 //	list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit();
-	$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);
+	$Eingesetzte_mitarbeiter=array_values($Dienstplan[$i]['VK']);
 	if (isset($Urlauber))
 	{
 		foreach($Urlauber as $urlauber)
 		{
 			$pattern="/$urlauber/";
-			$ArbeitendeUrlauber=preg_grep($pattern, $EingesetzteMitarbeiter);
+			$Arbeitende_urlauber=preg_grep($pattern, $Eingesetzte_mitarbeiter);
 		}
-		if (isset($ArbeitendeUrlauber))
+		if (isset($Arbeitende_urlauber))
 		{
-			foreach($ArbeitendeUrlauber as $arbeitenderUrlauber)
+			foreach($Arbeitende_urlauber as $arbeitender_urlauber)
 			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderUrlauber]." ist im Urlaub und sollte nicht arbeiten.";
+				$Fehlermeldung[]=$Mitarbeiter[$arbeitender_urlauber]." ist im Urlaub und sollte nicht arbeiten.";
 			}
 		}
 	}
@@ -196,25 +196,25 @@ for ($i=0; $i<count($Dienstplan); $i++)
 		foreach($Kranke as $kranker)
 		{
 			$pattern="/$kranker/";
-			$ArbeitendeKranke=preg_grep($pattern, $EingesetzteMitarbeiter);
+			$Arbeitende_kranke=preg_grep($pattern, $Eingesetzte_mitarbeiter);
 		}
-		if (isset($ArbeitendeKranke))
+		if (isset($Arbeitende_kranke))
 		{
-			foreach($ArbeitendeKranke as $arbeitenderKranker)
+			foreach($Arbeitende_kranke as $arbeitender_kranker)
 			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderKranker]." ist krank und sollte der Arbeit fern bleiben.";
+				$Fehlermeldung[]=$Mitarbeiter[$arbeitender_kranker]." ist krank und sollte der Arbeit fern bleiben.";
 			}
 		}
 	}
 	//Jetzt schauen wir, ob sonst alle da sind.
 	if (count($Dienstplan)>3)
 	{
-		$MitarbeiterDifferenz=array_diff(array_keys($MandantenMitarbeiter), $EingesetzteMitarbeiter);
-		if(isset($Abwesende)){$MitarbeiterDifferenz=array_diff($MitarbeiterDifferenz, $Abwesende);}
-		if (!empty($MitarbeiterDifferenz))
+		$Mitarbeiter_differenz=array_diff(array_keys($Mandanten_mitarbeiter), $Eingesetzte_mitarbeiter);
+		if(isset($Abwesende)){$Mitarbeiter_differenz=array_diff($Mitarbeiter_differenz, $Abwesende);}
+		if (!empty($Mitarbeiter_differenz))
 		{
 			$fehler="Es sind folgende Mitarbeiter nicht eingesetzt: ";
-			foreach($MitarbeiterDifferenz as $arbeiter)
+			foreach($Mitarbeiter_differenz as $arbeiter)
 			{
 				$fehler.=$Mitarbeiter[$arbeiter].", ";
 			}
@@ -232,9 +232,9 @@ if (isset($Kranke))
 	echo "	<tr><td align=right>Krank</td><td>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>";
 }
 echo "	</table>\n";
-echo $submitButton;
+echo $submit_button;
 echo "</form>\n";
-//	echo "<pre>";	var_export($MandantenMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 /*

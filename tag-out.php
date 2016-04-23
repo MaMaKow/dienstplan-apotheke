@@ -73,10 +73,10 @@ foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filial
 }
 echo "\t\t\t</select>\n\t\t</form>\n";
 echo "\t\t\t<form id=myform method=post>\n";
-$RückwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $RückwärtsButton;
-$VorwärtsButton="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $VorwärtsButton;
+$Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $Rückwärts_button;
+$Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $Vorwärts_button;
 echo "\t\t\t\t<a href=tag-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
-//$submitButton="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submitButton; Leseversion
+//$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
 echo "\t\t\t<div id=wochenAuswahl class=no-print>\n";
 echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
@@ -116,7 +116,7 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile="";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{
-			$zeile.="\t\t\t\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
+			$zeile.="\t\t\t\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.="</a></b> ";
 		}
@@ -166,7 +166,7 @@ echo "\t\t\t\t\t</tr>\n";
 
 echo "\t\t\t\t\t<tr><td></td></tr>\n";
 echo "\t\t\t\t</table>\n";
-//echo $submitButton; Kein Schreibrecht in der Leseversion
+//echo $submit_button; Kein Schreibrecht in der Leseversion
 echo "\t\t\t</form>\n";
 echo "\t\t</div>\n";
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )

@@ -4,17 +4,17 @@
 	{
 		global $row, $datum, $tag, $position;
 		global $Dienstplan;//Die Variable wird heir global gesetzt, damit sie außerhab später zur Verfügung steht.
-		$oderOptionen=explode('|', $row->$spalte); //Nur das erste Argument wird bisher genutzt. Das ist natürlich halbherzig debug DEBUG!
-		//$undOptionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
-		preg_match('/[<>=!]+/', $oderOptionen[0], $vergleichsOperator);
-		preg_match('/[^<>=!]+/', $oderOptionen[0], $wunschUhrzeit);
-		if(isset($vergleichsOperator[0]))
+		$oder_optionen=explode('|', $row->$spalte); //Nur das erste Argument wird bisher genutzt. Das ist natürlich halbherzig debug DEBUG!
+		//$und_optionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
+		preg_match('/[<>=!]+/', $oder_optionen[0], $vergleichs_operator);
+		preg_match('/[^<>=!]+/', $oder_optionen[0], $wunsch_uhrzeit);
+		if(isset($vergleichs_operator[0]))
 		{
-			if($vergleichsOperator[0]=="=")
+			if($vergleichs_operator[0]=="=")
 			{
 				//Wir legen im folgenden den VK als ersten Key fest. Dies muss später wieder zurück übersetzt werden. Es ist aber notwendig um die verschiedenen Spalten zueinander zu führen.
-				$KonstanterGrundplan="$wunschUhrzeit[0]";
-				//echo "$row->VK, $spalte, $KonstanterGrundplan<br>\n";
+				$Konstanter_grundplan="$wunsch_uhrzeit[0]";
+				//echo "$row->VK, $spalte, $Konstanter_grundplan<br>\n";
 				$Dienstplan[$tag]['VK'][$position]=$row->VK;
 				$Dienstplan[$tag]['Datum'][$position]=$datum;
 				//Die folgenden zwei Zeilen sind problematisch. Aber die Funktion zeiche-histogramm braucht vorhandene Werte im Array. Vielleicht bauen wir dort eine Prüfung ein. Dann können wir das hier entfernen. debug DEBUG
@@ -26,7 +26,7 @@
 				{
 					$Dienstplan[$tag]['Mittagsende'][$position]=null;
 				}
-				$Dienstplan[$tag][$spalte][$position]=$KonstanterGrundplan;
+				$Dienstplan[$tag][$spalte][$position]=$Konstanter_grundplan;
 			}
 		}
 	}
@@ -69,22 +69,22 @@
 
 			if(empty($Grundplan[$tag]['Stunden'][$position]))
 			{
-				$sollMinuten=round($StundenMitarbeiter[$row->VK] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
-				$sollMinuten+=$MittagMitarbeiter[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+				$soll_minuten=round($Stunden_mitarbeiter[$row->VK] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
+				$soll_minuten+=$Mittag_mitarbeiter[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
 			}
 			else
 			{
-				$sollMinuten=$row->Stunden*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
-				$sollMinuten+=$MittagMitarbeiter[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+				$soll_minuten=$row->Stunden*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
+				$soll_minuten+=$Mittag_mitarbeiter[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
 			}
 
 			if(empty($Dienstplan[$tag]['Dienstbeginn'][$position]) && !empty($Dienstplan[$tag]['Dienstende'][$position])) //Wenn nur Dienstende feststeht, legen wir jetzt den Dienstbeginn fest.
 			{
-				$Dienstplan[$tag]['Dienstbeginn'][$position]=date('H:i', strtotime('- '.$sollMinuten.' minutes', strtotime($Dienstplan[$tag]['Dienstende'][$position])));
+				$Dienstplan[$tag]['Dienstbeginn'][$position]=date('H:i', strtotime('- '.$soll_minuten.' minutes', strtotime($Dienstplan[$tag]['Dienstende'][$position])));
 			}
 			if(empty($Dienstplan[$tag]['Dienstende'][$position]) && !empty($Dienstplan[$tag]['Dienstbeginn'][$position])) //... und wenn nur der Dienstbeginn fest steht, berechnen wir hier das Dienstende.
 			{
-				$Dienstplan[$tag]['Dienstende'][$position]=date('H:i', strtotime('+ '.$sollMinuten.' minutes', strtotime($Dienstplan[$tag]['Dienstbeginn'][$position])));
+				$Dienstplan[$tag]['Dienstende'][$position]=date('H:i', strtotime('+ '.$soll_minuten.' minutes', strtotime($Dienstplan[$tag]['Dienstbeginn'][$position])));
 			}
 		}
 	}
@@ -92,11 +92,11 @@
 
 	function mache_vorschlag($uhrzeit)
 	{
-		//debug DEBUG Vermutlich ist es cleverer, die $MitarbeiterOptionen gleich auf die Mitarbeiter zu begrenzen, die auch wirklich können. Dann sparen wir und zahlreiche Versuche.
+		//debug DEBUG Vermutlich ist es cleverer, die $Mitarbeiter_optionen gleich auf die Mitarbeiter zu begrenzen, die auch wirklich können. Dann sparen wir und zahlreiche Versuche.
 		global $datum, $tag, $Dienstplan, $Grundplan, $Abwesende;
-		global $Mitarbeiter, $MandantenMitarbeiter, $AusbildungMitarbeiter, $StundenMitarbeiter, $MittagMitarbeiter;
+		global $Mitarbeiter, $Mandanten_mitarbeiter, $Ausbildung_mitarbeiter, $Stunden_mitarbeiter, $Mittag_mitarbeiter;
 		//Eine Liste der zur Verfügung stehenden Mitarbeiter holen:
-		foreach($MandantenMitarbeiter as $vk => $nachname)
+		foreach($Mandanten_mitarbeiter as $vk => $nachname)
 		{
 			//Wer krank oder im Urlaub ist, der erscheint hier nicht.
 			if( isset($Abwesende) AND array_search($vk, $Abwesende) !== false)
@@ -114,75 +114,75 @@
 				}
 				else
 				{
-					$posPos=array_search($vk, $Grundplan[$tag]['VK']);
-					if($posPos===false)
+					$pos_pos=array_search($vk, $Grundplan[$tag]['VK']);
+					if($pos_pos===false)
 					{
 						//Es liegen keinerlei Wünsche vor. Wir sollten in der Datenbank welche eintragen, auch wenn es ein egal ist.
 						continue;
 						//Es wird nur automatisch eingeplant, wer auch einen Eintrag im Grundplan hat.
-						//$MitarbeiterOptionen[]=$vk;
+						//$Mitarbeiter_optionen[]=$vk;
 					}
-					elseif($Grundplan[$tag]['Dienstbeginn'][$posPos] === null)
+					elseif($Grundplan[$tag]['Dienstbeginn'][$pos_pos] === null)
 					{
 						//Keine Wünsche zum Dienstbeginn. Aber lässt sich das mit dem Dienstende vereinbaren? Gibt es andere Wunschhindernisse?
-						$MitarbeiterOptionen[]=$vk;
-						//echo "<pre>  "; var_export($MitarbeiterOptionen); echo "</pre>";
+						$Mitarbeiter_optionen[]=$vk;
+						//echo "<pre>  "; var_export($Mitarbeiter_optionen); echo "</pre>";
 					}
 					else
 					{
 						//Wir prüfen jetzt, ob ein Dienstbeginn denn auch gewünscht wäre.
-						$oderOptionen=explode('|', $Grundplan[$tag]['Dienstbeginn'][$posPos]); //Nur das erste Argument wird bisher genutzt. Das ist natürlich halbherzig debug DEBUG!
-						//$undOptionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
-						preg_match('/[<>=!]+/', $oderOptionen[0], $vergleichsOperator);
-						preg_match('/[^<>=!]+/', $oderOptionen[0], $wunschUhrzeit); $wunschUhrzeit=strtotime($wunschUhrzeit[0]);
-						if(isset($vergleichsOperator[0]))
+						$oder_optionen=explode('|', $Grundplan[$tag]['Dienstbeginn'][$pos_pos]); //Nur das erste Argument wird bisher genutzt. Das ist natürlich halbherzig debug DEBUG!
+						//$und_optionen=explode('&', $row->Dienstbeginn); //Wird im weiteren bisher nicht beachtet, braucht vermutlich eine komplette Umgebung.
+						preg_match('/[<>=!]+/', $oder_optionen[0], $vergleichs_operator);
+						preg_match('/[^<>=!]+/', $oder_optionen[0], $wunsch_uhrzeit); $wunsch_uhrzeit=strtotime($wunsch_uhrzeit[0]);
+						if(isset($vergleichs_operator[0]))
 						{
-							if($vergleichsOperator[0]=="<=")
+							if($vergleichs_operator[0]=="<=")
 							{
-								if( $uhrzeit <= $wunschUhrzeit )
+								if( $uhrzeit <= $wunsch_uhrzeit )
 								{
-									$MitarbeiterOptionen[]=$vk;
+									$Mitarbeiter_optionen[]=$vk;
 								}
 							}
-							elseif($vergleichsOperator[0]=="<")
+							elseif($vergleichs_operator[0]=="<")
 							{
-								if( $uhrzeit < $wunschUhrzeit )
+								if( $uhrzeit < $wunsch_uhrzeit )
 								{
-									$MitarbeiterOptionen[]=$vk;
+									$Mitarbeiter_optionen[]=$vk;
 								}
 							}
-							elseif($vergleichsOperator[0]==">=")
+							elseif($vergleichs_operator[0]==">=")
 							{
-								if( $uhrzeit >= $wunschUhrzeit )
+								if( $uhrzeit >= $wunsch_uhrzeit )
 								{
-									$MitarbeiterOptionen[]=$vk;
+									$Mitarbeiter_optionen[]=$vk;
 								}
 							}
-							elseif($vergleichsOperator[0]==">")
+							elseif($vergleichs_operator[0]==">")
 							{
-								if( $uhrzeit > $wunschUhrzeit )
+								if( $uhrzeit > $wunsch_uhrzeit )
 								{
-									$MitarbeiterOptionen[]=$vk;
+									$Mitarbeiter_optionen[]=$vk;
 								}
 							}
-							elseif($vergleichsOperator[0]=="<>" OR $vergleichsOperator[0]=="!=")
+							elseif($vergleichs_operator[0]=="<>" OR $vergleichs_operator[0]=="!=")
 							{
-								if( $uhrzeit != $wunschUhrzeit )
+								if( $uhrzeit != $wunsch_uhrzeit )
 								{
-									$MitarbeiterOptionen[]=$vk;
+									$Mitarbeiter_optionen[]=$vk;
 								}
 							}
 							else
 							{
-								echo "Der Vergleichsoperator $vergleichsOperator[0] wird nicht unterstützt.<br>\n";
+								echo "Der Vergleichsoperator $vergleichs_operator[0] wird nicht unterstützt.<br>\n";
 							}
 						}
 					}
 				}
 			}
 		}
-		if(empty($MitarbeiterOptionen)){/*echo "Keine weiteren Mitarbeiter<br>\n";*/ return false;}
-		$vorschlag = $MitarbeiterOptionen[mt_rand(0, count($MitarbeiterOptionen) - 1)];
+		if(empty($Mitarbeiter_optionen)){/*echo "Keine weiteren Mitarbeiter<br>\n";*/ return false;}
+		$vorschlag = $Mitarbeiter_optionen[mt_rand(0, count($Mitarbeiter_optionen) - 1)];
 		akzeptiere_vorschlag($vorschlag);
 	}
 
@@ -190,7 +190,7 @@
 	{
 		global $uhrzeit, $versuche;
 		global $datum, $tag, $Dienstplan, $Grundplan, $Abwesende;
-		global $Mitarbeiter, $MandantenMitarbeiter, $AusbildungMitarbeiter, $StundenMitarbeiter, $MittagMitarbeiter;
+		global $Mitarbeiter, $Mandanten_mitarbeiter, $Ausbildung_mitarbeiter, $Stunden_mitarbeiter, $Mittag_mitarbeiter;
 		$Dienstplan[$tag]['VK'][]=$vorschlag;
 		$position=max(array_keys($Dienstplan[$tag]['VK']));
 		$Dienstplan[$tag]['Datum'][$position]=$datum;
@@ -205,30 +205,30 @@
 		}
 		if(array_search($vorschlag, $Grundplan[$tag]['VK']) === false  OR  empty($Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])]))
 		{
-			$sollMinuten=round($StundenMitarbeiter[$vorschlag] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
-			$sollMinuten+=$MittagMitarbeiter[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+			$soll_minuten=round($Stunden_mitarbeiter[$vorschlag] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
+			$soll_minuten+=$Mittag_mitarbeiter[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
 		}
 		else
 		{
-			preg_match('/[0-9.]+/', $Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])], $wunschStunden);
+			preg_match('/[0-9.]+/', $Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])], $wunsch_stunden);
 
 			//		echo "<pre> "; var_export($Grundplan[$tag]['VK']); echo "</pre>";
 			//		echo "<pre> "; var_export($Grundplan[$tag]['Stunden']); echo "</pre>";
 			//		echo "<pre> "; var_export($Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])]); echo "</pre>";
-			//		echo "<pre> "; var_export($wunschStunden); echo "</pre>";
-			$sollMinuten=$wunschStunden[0]*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
+			//		echo "<pre> "; var_export($wunsch_stunden); echo "</pre>";
+			$soll_minuten=$wunsch_stunden[0]*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
 
-			$sollMinuten+=$MittagMitarbeiter[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
-			//			echo "Wir sind bei ".$Mitarbeiter[$vorschlag]." und es werden $sollMinuten zur weiteren Verwendung berechnet.<br>\n";
+			$soll_minuten+=$Mittag_mitarbeiter[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+			//			echo "Wir sind bei ".$Mitarbeiter[$vorschlag]." und es werden $soll_minuten zur weiteren Verwendung berechnet.<br>\n";
 		}
 
 		if(empty($Dienstplan[$tag]['Dienstbeginn'][$position]) && !empty($Dienstplan[$tag]['Dienstende'][$position])) //Wenn nur Dienstende feststeht, legen wir jetzt den Dienstbeginn fest.
 		{
-			$Dienstplan[$tag]['Dienstbeginn'][$position]=date('H:i', strtotime('- '.$sollMinuten.' minutes', strtotime($Dienstplan[$tag]['Dienstende'][$position])));
+			$Dienstplan[$tag]['Dienstbeginn'][$position]=date('H:i', strtotime('- '.$soll_minuten.' minutes', strtotime($Dienstplan[$tag]['Dienstende'][$position])));
 		}
 		if(empty($Dienstplan[$tag]['Dienstende'][$position]) && !empty($Dienstplan[$tag]['Dienstbeginn'][$position])) //... und wenn nur der Dienstbeginn fest steht, berechnen wir hier das Dienstende.
 		{
-			$Dienstplan[$tag]['Dienstende'][$position]=date('H:i', strtotime('+ '.$sollMinuten.' minutes', strtotime($Dienstplan[$tag]['Dienstbeginn'][$position])));
+			$Dienstplan[$tag]['Dienstende'][$position]=date('H:i', strtotime('+ '.$soll_minuten.' minutes', strtotime($Dienstplan[$tag]['Dienstbeginn'][$position])));
 		}
 	}
 
@@ -240,10 +240,10 @@
 		/*Damit wir keine Endlosschleife bauen, versuchen wir nur einige Male einen geeigneten Mitarbeiter zu finden, bevor wir zur nächsten Urzeit weiter schreiten.*/
 		if($versuche > 3){$uhrzeit=strtotime('+ 30 minutes', $uhrzeit); $versuche-=2; continue;}
 		/*zeichne-histogramm.php enthält bereits den notwendigen Code, um anwesende Mitarbeiter durchzuzählen und Bedarfe zu ermitteln.*/
-		$histogrammNoPrint=true; require 'zeichne-histogramm.php';
-		if(!isset($SollAnwesende[$uhrzeit])){echo "Fehler bei der Bestimmung der Anwesenheit.<br>\n"; break;}//Irgendetwas stimmt mit der Berechnung der Anwesenheit nicht. Das passiert zum Beispiel an Sonntagen, weil dort niemand Vorlieben hat. :-)
-		$sollAnwesende=max($min_anwesende, $SollAnwesende[$uhrzeit]);
-		if($sollAnwesende > $Anwesende[$uhrzeit])
+		$histogramm_no_print=true; require 'zeichne-histogramm.php';
+		if(!isset($Soll_anwesende[$uhrzeit])){echo "Fehler bei der Bestimmung der Anwesenheit.<br>\n"; break;}//Irgendetwas stimmt mit der Berechnung der Anwesenheit nicht. Das passiert zum Beispiel an Sonntagen, weil dort niemand Vorlieben hat. :-)
+		$soll_anwesende=max($min_anwesende, $Soll_anwesende[$uhrzeit]);
+		if($soll_anwesende > $Anwesende[$uhrzeit])
 		{
 			mache_vorschlag($uhrzeit);
 		}
@@ -279,13 +279,13 @@
 
 
 	//Hier kommt die Mittagspausenvergabe. Bereits besetzte Mittagszeiten werden berücksichtigt und nicht doppelt vergeben.
-	$pausenStart=strtotime('11:30:00');
+	$pausen_start=strtotime('11:30:00');
 	if( !empty($Dienstplan[$tag]['VK']) ) //Haben wir überhaupt einen Dienstplan?
 	{
 		if (!empty(array_column($Dienstplan, 'Mittagsbeginn')) and !empty(array_column($Dienstplan, 'Mittagsbeginn'))) //array_column durchsucht den ganzen Array.
 		{
-			$BesetzteMittagsBeginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
-			$BesetzteMittagsEnden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen jemand mit dem Essen fertig ist.
+			$Besetzte_mittags_beginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
+			$Besetzte_mittags_enden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen jemand mit dem Essen fertig ist.
 		}
 		foreach($Dienstplan[$tag]['VK'] as $position => $vk) //Die einzelnen Zeilen im Dienstplan
 		{
@@ -294,29 +294,29 @@
 				//Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
 				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$position];
 				$dienstende=$Dienstplan[$tag]["Dienstende"][$position];
-				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$MittagMitarbeiter[$vk]*60;
+				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$Mittag_mitarbeiter[$vk]*60;
 				if( $sekunden >= 6*3600 )
 				{
 					//Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-					$pausenEnde=$pausenStart+$MittagMitarbeiter[$vk]*60;
-					if(array_search($pausenStart, $BesetzteMittagsBeginne)!==false OR array_search($pausenEnde, $BesetzteMittagsEnden)!==false)
+					$pausen_ende=$pausen_start+$Mittag_mitarbeiter[$vk]*60;
+					if(array_search($pausen_start, $Besetzte_mittags_beginne)!==false OR array_search($pausen_ende, $Besetzte_mittags_enden)!==false)
 					{
 						//Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
-						$pausenStart+=1800;
-						$pausenEnde+=1800;
+						$pausen_start+=1800;
+						$pausen_ende+=1800;
 					}
-					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', $pausenStart);
-					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', $pausenEnde);
-					$pausenStart=$pausenEnde;
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', $pausen_start);
+					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', $pausen_ende);
+					$pausen_start=$pausen_ende;
 				}
 			}
 			elseif ( !empty($vk) AND !empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND empty($Dienstplan[$tag]['Mittagsende'][$position]) )
 			{
-					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', strtotime('- '.$MittagMitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsbeginn'][$position]));
+					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', strtotime('- '.$Mittag_mitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsbeginn'][$position]));
 			}
 			elseif ( !empty($vk) AND empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND !empty($Dienstplan[$tag]['Mittagsende'][$position]) )
 			{
-					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', strtotime('+ '.$MittagMitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsende'][$position]));
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', strtotime('+ '.$Mittag_mitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsende'][$position]));
 			}
 		}
 

@@ -157,10 +157,10 @@ if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
 //echo "\t\t<form id=myform method=post action=test-post.php>\n";
 echo "\t\t\t<div id=navigationsElemente>";
-$rückwärtsButton="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärtsButton;
-$vorwärtsButton="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";echo $vorwärtsButton;
-$copyButton="\t\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copyButton;
-$submitButton="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submitButton";
+$rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärts_button;
+$vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";echo $vorwärts_button;
+$copy_button="\t\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copy_button;
+$submit_button="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submit_button";
 echo "\t\t\t\t<a href=tag-out.php?datum=".$datum.">[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
@@ -283,7 +283,7 @@ if (isset($Kranke))
 	echo "\t\t<tr><td><b>Krank</b><br>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
 }
 echo "\t\t\t</table>\n";
-echo "$submitButton";
+echo "$submit_button";
 echo "\t\t</form>\n";
 echo "</div>";
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
@@ -299,7 +299,7 @@ echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('image
 echo "</div>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
-//	echo "<pre>";	var_export($MandantenMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 echo "\t</body>\n";

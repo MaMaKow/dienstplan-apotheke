@@ -14,14 +14,14 @@ $tage = 7;
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 //require "post-auswertung.php"; //Auswerten der per POST übergebenen Daten.
-if (isset($_POST['auswahlMitarbeiter'])) {
-    $auswahlMitarbeiter = $_POST['auswahlMitarbeiter'];
-} elseif (!isset($auswahlMitarbeiter)) {
-    $auswahlMitarbeiter = 1;
+if (isset($_POST['auswahl_mitarbeiter'])) {
+    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
+} elseif (!isset($auswahl_mitarbeiter)) {
+    $auswahl_mitarbeiter = 1;
 }
 
-if (isset($auswahlMitarbeiter)) {
-    create_cookie('auswahlMitarbeiter', $auswahlMitarbeiter);
+if (isset($auswahl_mitarbeiter)) {
+    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter);
 }
 if (isset($_POST['submitGrundplan'])) {
     $max_zeilen = -1;
@@ -36,7 +36,7 @@ if (isset($_POST['submitGrundplan'])) {
     }
 }
 if (isset($Grundplan)) {
-    //echo "VK: $auswahlMitarbeiter<br>\n";
+    //echo "VK: $auswahl_mitarbeiter<br>\n";
     for ($zeile = 0; $zeile <= $max_zeilen; ++$zeile) {
         foreach ($Grundplan as $wochentag => $Spalten) {
             //echo "Wochentag: $wochentag<br>\n";
@@ -64,7 +64,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $abfrage = 'SELECT *
 		FROM `Grundplan`
 		WHERE `Wochentag` = "'.$wochentag.'"
-			AND `VK`="'.$auswahlMitarbeiter.'"
+			AND `VK`="'.$auswahl_mitarbeiter.'"
 		;';
     $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
     while ($row = mysqli_fetch_object($ergebnis)) {
@@ -83,8 +83,8 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
         } else {
             $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
             //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-            if ($sekunden - $MittagMitarbeiter[$auswahlMitarbeiter] * 60 >= 6 * 3600) {
-                $mittagspause = $MittagMitarbeiter[$auswahlMitarbeiter] * 60;
+            if ($sekunden - $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60 >= 6 * 3600) {
+                $mittagspause = $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60;
                 $sekunden = $sekunden - $mittagspause;
             } else {
                 $mittagspause = false;
@@ -100,7 +100,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
      if ( !isset($Grundplan[$wochentag]) )
      {
      	$Grundplan[$wochentag]["Wochentag"][]=$wochentag;
-    	$Grundplan[$wochentag]["VK"][]="$auswahlMitarbeiter";
+    	$Grundplan[$wochentag]["VK"][]="$auswahl_mitarbeiter";
     	$Grundplan[$wochentag]["Dienstbeginn"][]=null;
     	$Grundplan[$wochentag]["Dienstende"][]=null;
       $Grundplan[$wochentag]["Mittagsbeginn"][]=null;
@@ -122,9 +122,9 @@ $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nich
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax = max(array_keys($Mitarbeiter));
 foreach ($Grundplan as $key => $Grundplantag) {
-    $PlanAnzahl[] = (count($Grundplantag['VK']));
+    $Plan_anzahl[] = (count($Grundplantag['VK']));
 }
-$planAnzahl = max($PlanAnzahl);
+$plan_anzahl = max($Plan_anzahl);
 
 //Produziere die Ausgabe
 ?>
@@ -166,11 +166,11 @@ require 'navigation.php';
 echo "<div class=no-image>\n";
 //echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime("%V", strtotime($datum))."</a><br>\n";
 echo "\t\t<form id=myform method=post>\n";
-//$RückwärtsButton="\t\t\t<input type=submit 	class=no-print	value="1 Woche Rückwärts"	name="submitWocheRückwärts">\n";echo $RückwärtsButton;
-//$VorwärtsButton="\t\t\t<input type=submit 	class=no-print	value="1 Woche Vorwärts"	name="submitWocheVorwärts">\n";echo $VorwärtsButton;
+//$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Rückwärts"	name="submitWocheRückwärts">\n";echo $Rückwärts_button;
+//$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Vorwärts"	name="submitWocheVorwärts">\n";echo $Vorwärts_button;
 //$zeile="<br>";
-$zeile = "<select name=auswahlMitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-$zeile .= "<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter.' '.$Mitarbeiter[$auswahlMitarbeiter].'</option>,';
+$zeile = "<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
+$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {
         $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
@@ -178,8 +178,8 @@ for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
 }
 $zeile .= '</select>';
 echo $zeile;
-$submitButton = "\t<input type=submit value=Absenden name=submitAuswahlMitarbeiter id=submitAuswahlMitarbeiter class=no-print>\n"; echo $submitButton; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo '<H1>'.$Mitarbeiter[$auswahlMitarbeiter].'</H1>';
+$submit_button = "\t<input type=submit value=Absenden name=submitAuswahlMitarbeiter id=submitAuswahlMitarbeiter class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
 echo "\t\t\t<table border=1>\n";
 echo "\t\t\t\t<thead>\n";
@@ -190,7 +190,7 @@ foreach ($Grundplan as $wochentag => $Plan) {
     echo $Wochentag[$wochentag];
     echo "</td>\n";
 }
-for ($j = 0; $j < $planAnzahl; ++$j) {
+for ($j = 0; $j < $plan_anzahl; ++$j) {
     if (isset($feiertag) && !isset($notdienst)) {
         break 1;
     }
@@ -250,7 +250,7 @@ for ($j = 0; $j < $planAnzahl; ++$j) {
         }
                 //Mittagsende
         if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Mandant'][$j])) {
-            $zeile .= "<br>\n".$KurzMandant[$Grundplan[$wochentag]['Mandant'][$j]];
+            $zeile .= "<br>\n".$Kurz_mandant[$Grundplan[$wochentag]['Mandant'][$j]];
             $zeile .= "<input type=hidden name=Grundplan[$wochentag][Mandant][$j] value=".$Grundplan[$wochentag]['Mandant'][$j].">\n";
         }
                 //if (isset($Grundplan[$wochentag]["VK"][$j]))  {
@@ -288,7 +288,7 @@ foreach ($Grundplan as $wochentag => $value) {
       continue 1;
     }
     foreach ($Grundplan[$wochentag]['Stunden'] as $key => $stunden) {
-        $Stunden[$auswahlMitarbeiter][] = $stunden;
+        $Stunden[$auswahl_mitarbeiter][] = $stunden;
     }
 }
 echo 'Wochenstunden ';
@@ -297,9 +297,9 @@ $i = 1;$j = 1; //Zahler für den Stunden-Array (wir wollen nach je x Elementen e
 foreach ($Stunden as $mitarbeiter => $stunden) {
     echo array_sum($stunden);
     echo ' / ';
-    echo $StundenMitarbeiter[$mitarbeiter];
-    if ($StundenMitarbeiter[$mitarbeiter] != array_sum($stunden)) {
-        $differenz = array_sum($stunden) - $StundenMitarbeiter[$mitarbeiter];
+    echo $Stunden_mitarbeiter[$mitarbeiter];
+    if ($Stunden_mitarbeiter[$mitarbeiter] != array_sum($stunden)) {
+        $differenz = array_sum($stunden) - $Stunden_mitarbeiter[$mitarbeiter];
         echo ' <b>( '.$differenz.' )</b>';
     }
 }
@@ -308,7 +308,7 @@ echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t</tfoot>\n";
 echo "\t\t\t</table>\n";
 
-$submitButton = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";echo "$submitButton";
+$submit_button = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";echo "$submit_button";
 echo "\t\t</form>\n";
 echo "</div>\n";
 
@@ -320,7 +320,7 @@ foreach (array_keys($Grundplan) as $wochentag) {
         if (!empty($vk)) {
             //Wir ignorieren die nicht ausgefüllten Felder
 
-            $vk = $auswahlMitarbeiter;
+            $vk = $auswahl_mitarbeiter;
             $dienstbeginn = $Grundplan[$wochentag]['Dienstbeginn'][$key];
             $dienstende = $Grundplan[$wochentag]['Dienstende'][$key];
             $mittagsbeginn = $Grundplan[$wochentag]['Mittagsbeginn'][$key]; //if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
@@ -348,7 +348,7 @@ fwrite($myfile, $grundplanCSV);
 fclose($myfile);
 $grundplanCSV = '';
 $command = ('./Mitarbeiter_image.sh '.escapeshellcmd($vk));
-exec($command, $kommandoErgebnis);
+exec($command, $kommando_ergebnis);
 echo '<img src=images/mitarbeiter_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$vk.'.png').' style=width:70%;><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 
 //echo "<pre>";    var_export($Grundplan);        echo "</pre>";

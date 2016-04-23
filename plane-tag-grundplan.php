@@ -40,9 +40,9 @@
 	//Hier entsteht die Mittagspausenvergabe.
 	if( !empty($Dienstplan[$tag]['VK']) ) //Haben wir überhaupt einen Dienstplan?
 	{
-		$BesetzteMittagsBeginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
-		$BesetzteMittagsEnden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen jemand mit dem Essen fertig ist.
-		$pausenStart=strtotime('11:30:00');
+		$Besetzte_mittags_beginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
+		$Besetzte_mittags_enden=array_map('strtotime', $Dienstplan[$tag]['Mittagsende']);//Zeiten, zu denen jemand mit dem Essen fertig ist.
+		$pausen_start=strtotime('11:30:00');
 		foreach($Dienstplan[$tag]['VK'] as $position => $vk) //Die einzelnen Zeilen im Dienstplan
 		{
 			//echo "Mittag für $Mitarbeiter[$vk]?<br>\n";
@@ -52,30 +52,30 @@
 				//Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
 				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$position];
 				$dienstende=$Dienstplan[$tag]["Dienstende"][$position];
-				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$MittagMitarbeiter[$vk]*60;
+				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$Mittag_mitarbeiter[$vk]*60;
 				if( $sekunden >= 6*3600 )
 				{
 					//echo "Mehr als 6 Stunden, also gibt es Mittag!";
 					//Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-					$pausenEnde=$pausenStart+$MittagMitarbeiter[$vk]*60;
-					if(array_search($pausenStart, $BesetzteMittagsBeginne)!==false OR array_search($pausenEnde, $BesetzteMittagsEnden)!==false)
+					$pausen_ende=$pausen_start+$Mittag_mitarbeiter[$vk]*60;
+					if(array_search($pausen_start, $Besetzte_mittags_beginne)!==false OR array_search($pausen_ende, $Besetzte_mittags_enden)!==false)
 					{
 						//Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
-						$pausenStart+=1800;
-						$pausenEnde+=1800;
+						$pausen_start+=1800;
+						$pausen_ende+=1800;
 					}
-					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', $pausenStart);
-					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', $pausenEnde);
-					$pausenStart=$pausenEnde;
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', $pausen_start);
+					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', $pausen_ende);
+					$pausen_start=$pausen_ende;
 				}
 			}
 			elseif ( !empty($vk) AND !empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND empty($Dienstplan[$tag]['Mittagsende'][$position]) )
 			{
-					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', strtotime('- '.$MittagMitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsbeginn'][$position]));
+					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', strtotime('- '.$Mittag_mitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsbeginn'][$position]));
 			}
 			elseif ( !empty($vk) AND empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND !empty($Dienstplan[$tag]['Mittagsende'][$position]) )
 			{
-					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', strtotime('+ '.$MittagMitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsende'][$position]));
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', strtotime('+ '.$Mittag_mitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsende'][$position]));
 			}
 		}
 

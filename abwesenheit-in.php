@@ -51,18 +51,18 @@ require 'default.php';
             $VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
             //Hole eine Liste aller Mandanten (Filialen)
             require 'db-lesen-mandant.php';
-            if (isset($_POST['auswahlMitarbeiter'])) {
-                $auswahlMitarbeiter = $_POST['auswahlMitarbeiter'];
-            } elseif (isset($_GET['auswahlMitarbeiter'])) {
-                $auswahlMitarbeiter = $_GET['auswahlMitarbeiter'];
-            } elseif (isset($_COOKIE['auswahlMitarbeiter'])) {
-                $auswahlMitarbeiter = $_COOKIE['auswahlMitarbeiter'];
+            if (isset($_POST['auswahl_mitarbeiter'])) {
+                $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
+            } elseif (isset($_GET['auswahl_mitarbeiter'])) {
+                $auswahl_mitarbeiter = $_GET['auswahl_mitarbeiter'];
+            } elseif (isset($_COOKIE['auswahl_mitarbeiter'])) {
+                $auswahl_mitarbeiter = $_COOKIE['auswahl_mitarbeiter'];
             } else {
-                $auswahlMitarbeiter = 1;
+                $auswahl_mitarbeiter = 1;
             }
 
-            if (isset($auswahlMitarbeiter)) {
-                create_cookie('auswahlMitarbeiter', $auswahlMitarbeiter);
+            if (isset($auswahl_mitarbeiter)) {
+                create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter);
             }
 
             //Wir löschen Datensätze, wenn dies befohlen wird.
@@ -75,10 +75,10 @@ require 'default.php';
                         $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
                     }
                 }
-                $auswahlMitarbeiter = $vk;
+                $auswahl_mitarbeiter = $vk;
             }
             //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
-            if (isset($_POST['submitStunden']) and isset($_POST['auswahlMitarbeiter']) and isset($_POST['beginn']) and isset($_POST['ende']) and isset($_POST['tage']) and isset($_POST['grund'])) {
+            if (isset($_POST['submitStunden']) and isset($_POST['auswahl_mitarbeiter']) and isset($_POST['beginn']) and isset($_POST['ende']) and isset($_POST['tage']) and isset($_POST['grund'])) {
                 for ($tag = strtotime($_POST['beginn']); $tag <= strtotime($_POST['ende']); $tag = strtotime('+1 day', strtotime($datum))) {
                     $datum = date('Y-m-d', $tag);
 //					echo "$datum<br>\n";
@@ -92,17 +92,17 @@ require 'default.php';
                 }
                 $abfrage = 'INSERT INTO `Abwesenheit`
 					(VK, Beginn, Ende, Tage, Grund)
-					VALUES ('.$_POST['auswahlMitarbeiter'].", '".$_POST['beginn']."', '".$_POST['ende']."', '".$_POST['tage']."', '".$_POST['grund']."')";
+					VALUES ('.$_POST['auswahl_mitarbeiter'].", '".$_POST['beginn']."', '".$_POST['ende']."', '".$_POST['tage']."', '".$_POST['grund']."')";
 //				echo "$abfrage";
                 $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
             }
-            $vk = $auswahlMitarbeiter;
+            $vk = $auswahl_mitarbeiter;
             $abfrage = 'SELECT * FROM `Abwesenheit`
 				WHERE `VK` = '.$vk.'
 				ORDER BY `Beginn` ASC
 				LIMIT 10';
             $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
-            $numberOfRows = mysqli_num_rows($ergebnis);
+            $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
                 $tablebody .= "\t\t\t<tr>\n";
@@ -112,7 +112,7 @@ require 'default.php';
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
                 $tablebody .= date('d.m.Y', strtotime($row->Ende));
                 $tablebody .= "\n\t\t\t\t</td>\n";
-                if ($i == $numberOfRows) {
+                if ($i == $number_of_rows) {
                     $tablebody .= "\t\t\t\t<td id=letzterGrund>\n\t\t\t\t\t";
                 } else {
                     $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
@@ -137,18 +137,18 @@ require 'default.php';
 require 'navigation.php';
 echo "<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahlMitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-echo "\t\t\t\t<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter.' '.$Mitarbeiter[$auswahlMitarbeiter]."</option>,\n";
+echo "\t\t\t<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
+echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {
         echo "\t\t\t\t<option value=$vk>".$vk.' '.$Mitarbeiter[$vk]."</option>,\n";
     }
 }
 echo "\t\t\t</select>\n";
-$submitButton = "\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submitButton; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+$submit_button = "\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo "\t\t</form>\n";
-echo "\t\t\t<H1>".$Mitarbeiter[$auswahlMitarbeiter]."</H1>\n";
-echo "<a class=no-print href=abwesenheit-out.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Lesen]</a>";
+echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
+echo "<a class=no-print href=abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
 echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
             echo "\t\t<table border=1>\n";
 //Überschrift
@@ -171,7 +171,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
             echo "\t\t</form>\n";
 //Eingabe. Der Saldo wird natürlich berechnet.
             echo "\t\t<form method=POST>\n";
-            echo "<input type=hidden name=auswahlMitarbeiter value=$auswahlMitarbeiter>";
+            echo "<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter>";
             echo "\t\t\t<tr class=no-print>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
             echo '<input type=date onchange=updateTage() id=beginn name=beginn value='.date('Y-m-d').'>';

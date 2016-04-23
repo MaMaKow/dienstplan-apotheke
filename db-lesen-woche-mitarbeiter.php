@@ -9,7 +9,7 @@ for ($i=0; $i<$tage; $i++)
 	$abfrage='SELECT *
 		FROM `Dienstplan`
 		WHERE `Datum` = "'.$tag.'"
-			AND `VK`="'.$auswahlMitarbeiter.'"
+			AND `VK`="'.$auswahl_mitarbeiter.'"
 		;';
 	$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 	while($row = mysqli_fetch_object($ergebnis))
@@ -28,7 +28,7 @@ for ($i=0; $i<$tage; $i++)
 	if ( !isset($Dienstplan[$i]) )
 	{
 		$Dienstplan[$i]["Datum"][]=$tag;
-		$Dienstplan[$i]["VK"][]="$auswahlMitarbeiter";
+		$Dienstplan[$i]["VK"][]="$auswahl_mitarbeiter";
 		$Dienstplan[$i]["Dienstbeginn"][]="-";
 		$Dienstplan[$i]["Dienstende"][]="-";
 		$Dienstplan[$i]["Mittagsbeginn"][]="-";

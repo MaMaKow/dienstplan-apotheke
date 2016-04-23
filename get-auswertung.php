@@ -7,9 +7,9 @@ if (!empty($_GET))
 	{
 		$datum=htmlspecialchars($_GET['datum']);
 	}
-	if (isset($_GET['auswahlMitarbeiter']))
+	if (isset($_GET['auswahl_mitarbeiter']))
 	{
-		$auswahlMitarbeiter=htmlspecialchars($_GET['auswahlMitarbeiter']);
+		$auswahl_mitarbeiter=htmlspecialchars($_GET['auswahl_mitarbeiter']);
 	}
 }
 ?>

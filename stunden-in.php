@@ -86,25 +86,25 @@ require 'default.php';
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
 			//Hole eine Liste aller Mandanten (Filialen)
 			require 'db-lesen-mandant.php';
-			if(isset($_POST['auswahlMitarbeiter']))
+			if(isset($_POST['auswahl_mitarbeiter']))
 			{
-				$auswahlMitarbeiter=$_POST['auswahlMitarbeiter'];
+				$auswahl_mitarbeiter=$_POST['auswahl_mitarbeiter'];
 			}
-			elseif(isset($_GET['auswahlMitarbeiter']))
+			elseif(isset($_GET['auswahl_mitarbeiter']))
 			{
-				$auswahlMitarbeiter=$_GET['auswahlMitarbeiter'];
+				$auswahl_mitarbeiter=$_GET['auswahl_mitarbeiter'];
 			}
-			elseif(isset($_COOKIE['auswahlMitarbeiter']))
+			elseif(isset($_COOKIE['auswahl_mitarbeiter']))
 			{
-				$auswahlMitarbeiter=$_COOKIE['auswahlMitarbeiter'];
+				$auswahl_mitarbeiter=$_COOKIE['auswahl_mitarbeiter'];
 			}
 			else
 			{
-					$auswahlMitarbeiter=1;
+					$auswahl_mitarbeiter=1;
 			}
-			if (isset($auswahlMitarbeiter))
+			if (isset($auswahl_mitarbeiter))
 			{
-				create_cookie("auswahlMitarbeiter", $auswahlMitarbeiter); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+				create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 			}
 
 			//Wir löschen Datensätze, wenn dies befohlen wird.
@@ -112,7 +112,7 @@ require 'default.php';
 			{
 				if($_GET['command'] == "delete")
 				{
-					$auswahlMitarbeiter=$_GET['vk'];
+					$auswahl_mitarbeiter=$_GET['vk'];
 					$abfrage="DELETE FROM `Stunden`
 						WHERE `VK` = ".$_GET['vk']." AND `Datum` = '".$_GET['datum']."'";
 					//echo "$abfrage";
@@ -120,20 +120,20 @@ require 'default.php';
 				}
 			}
 			//Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
-			if(isset($_POST['submitStunden']) and isset($_POST['auswahlMitarbeiter']) and isset($_POST['datum']) and isset($_POST['stunden']) and isset($_POST['saldo']) and isset($_POST['grund']))
+			if(isset($_POST['submitStunden']) and isset($_POST['auswahl_mitarbeiter']) and isset($_POST['datum']) and isset($_POST['stunden']) and isset($_POST['saldo']) and isset($_POST['grund']))
 			{
 					$abfrage="INSERT INTO `Stunden`
 						(VK, Datum, Stunden, Saldo, Grund)
-						VALUES (".$_POST['auswahlMitarbeiter'].", '". $_POST['datum']."', ". $_POST['stunden'].", ". $_POST['saldo'].", '". $_POST['grund']."')";
+						VALUES (".$_POST['auswahl_mitarbeiter'].", '". $_POST['datum']."', ". $_POST['stunden'].", ". $_POST['saldo'].", '". $_POST['grund']."')";
 					$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 			}
-			$vk=$auswahlMitarbeiter;
+			$vk=$auswahl_mitarbeiter;
 			$abfrage="SELECT * FROM `Stunden`
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
 				LIMIT 10";
 			$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
-			$numberOfRows = mysqli_num_rows($ergebnis);
+			$number_of_rows = mysqli_num_rows($ergebnis);
 			$tablebody=""; $i=1;
 			while ($row=mysqli_fetch_object($ergebnis))
 			{
@@ -147,7 +147,7 @@ require 'default.php';
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
 				$tablebody.= "$row->Stunden";
 				$tablebody.= "\n\t\t\t\t</td>\n";
-				if($i == $numberOfRows)
+				if($i == $number_of_rows)
 				{
 					$tablebody.= "\t\t\t\t<td id=saldoAlt>\n\t\t\t\t\t";
 				}
@@ -170,8 +170,8 @@ require 'default.php';
 require 'navigation.php';
 echo "<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahlMitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-echo "\t\t\t\t<option value=$auswahlMitarbeiter>".$auswahlMitarbeiter." ".$Mitarbeiter[$auswahlMitarbeiter]."</option>,\n";
+echo "\t\t\t<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
+echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
 for ($vk=1; $vk<$VKmax+1; $vk++)
 {
 	if(isset($Mitarbeiter[$vk]))
@@ -180,9 +180,9 @@ for ($vk=1; $vk<$VKmax+1; $vk++)
 	}
 }
 echo "\t\t\t</select>\n";
-$submitButton="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submitButton; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo "\t\t\t<H1>".$Mitarbeiter[$auswahlMitarbeiter]."</H1>\n";
-echo "<a href=stunden-out.php?auswahlMitarbeiter=$auswahlMitarbeiter>[Lesen]</a>";
+$submit_button="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
+echo "<a href=stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
 			echo "\t\t<table border=1>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n
