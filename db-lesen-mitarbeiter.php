@@ -9,7 +9,7 @@ if (isset($datum)) {
 } else {
     $sql_datum = '';
 }
-unset($MandantenMitarbeiter);
+unset($Mandanten_mitarbeiter);
 $abfrage = 'SELECT *
 	FROM `Mitarbeiter`
 	WHERE  `Beschäftigungsende` > "'.$sql_datum.'" OR `Beschäftigungsende` IS NULL
@@ -19,18 +19,18 @@ $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".m
 while ($row = mysqli_fetch_object($ergebnis)) {
     if ($row->Nachname != '') {
         $Mitarbeiter[$row->VK] = $row->Nachname;
-        $StundenMitarbeiter[$row->VK] = $row->Arbeitswochenstunden;
-        $MittagMitarbeiter[$row->VK] = $row->Mittag;
-        $AusbildungMitarbeiter[$row->VK] = $row->Ausbildung;
+        $Stunden_mitarbeiter[$row->VK] = $row->Arbeitswochenstunden;
+        $Mittag_mitarbeiter[$row->VK] = $row->Mittag;
+        $Ausbildung_mitarbeiter[$row->VK] = $row->Ausbildung;
         if (isset($mandant) && $row->Mandant == $mandant && $row->Stunden > 10) {
             //Welche Mitarbeiter sind immer da?
 
-            $MandantenMitarbeiter[$row->VK] = $row->Nachname;
+            $Mandanten_mitarbeiter[$row->VK] = $row->Nachname;
         }
         if ($row->Ausbildung == 'Apotheker' || $row->Ausbildung == 'PI') {
             //Wer ist ausreichend approbiert??
 
-            $ApprobierteMitarbeiter[$row->VK] = $row->Nachname;
+            $Approbierte_mitarbeiter[$row->VK] = $row->Nachname;
         }
         if ($row->Wareneingang == true) {
             //Wer kann einen Wareneingang machen?

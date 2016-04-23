@@ -19,24 +19,24 @@
 
 				$target_dir = "/upload/";
 				$target_file = SITE_ROOT . $target_dir . basename($_FILES["fileToUpload"]["name"]);
-				$uploadOk = 1;
-				$fileType = pathinfo($target_file, PATHINFO_EXTENSION);
+				$upload_ok = 1;
+				$file_type = pathinfo($target_file, PATHINFO_EXTENSION);
 
 				if (file_exists($target_file)) 
 				{
 				// Check if file already exists
 					$Fehlermeldung[]="Sorry, file already exists.";
-					$uploadOk = 0;
+					$upload_ok = 0;
 				}
-				elseif($fileType != "asy" )
+				elseif($file_type != "asy" )
 				{
 				// Allow certain file formats
 					$Fehlermeldung[]="Sorry, only ASYS PEP files are allowed.";
-					$uploadOk = 0;
+					$upload_ok = 0;
 				}
-				elseif ($uploadOk == 0) 
+				elseif ($upload_ok == 0) 
 				{
-				// Check if $uploadOk is set to 0 by an error
+				// Check if $upload_ok is set to 0 by an error
 					$Fehlermeldung[]="Sorry, your file was not uploaded.";
 					// if everything is ok, try to upload file
 				}

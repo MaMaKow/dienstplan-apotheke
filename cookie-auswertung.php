@@ -1,8 +1,8 @@
 <?php
 	#In order to set a cookie we must do this before any text has been written to the browser.
-	if(isset($_COOKIE["auswahlMitarbeiter"]))
+	if(isset($_COOKIE["auswahl_mitarbeiter"]))
 	{
-		$auswahlMitarbeiter=$_COOKIE["auswahlMitarbeiter"];
+		$auswahl_mitarbeiter=$_COOKIE["auswahl_mitarbeiter"];
 	}
 	if(isset($_COOKIE["mandant"]))
 	{

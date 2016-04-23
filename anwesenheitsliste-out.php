@@ -64,22 +64,22 @@ echo "<pre>"; var_dump($datum); echo "</pre>";
                 echo '<TR><TD>'.strftime('%a %d.%m.%Y', $datum).'</TD>';
                 foreach ($Mitarbeiter as $vk => $name) {
                     if (isset($Abwesende) and array_search($vk, $Abwesende) !== false) {
-                        if (preg_match('/Krank/i', $AbwesenheitsGrund[$vk])) {
+                        if (preg_match('/Krank/i', $Abwesenheits_grund[$vk])) {
                             $grund_string = 'K';
-                        } elseif (preg_match('/Kur/i', $AbwesenheitsGrund[$vk])) {
+                        } elseif (preg_match('/Kur/i', $Abwesenheits_grund[$vk])) {
                             $grund_string = 'K';
-                        } elseif (preg_match('/Urlaub/i', $AbwesenheitsGrund[$vk])) {
+                        } elseif (preg_match('/Urlaub/i', $Abwesenheits_grund[$vk])) {
                             $grund_string = 'U';
-                        } elseif (preg_match('/Elternzeit/i', $AbwesenheitsGrund[$vk])) {
+                        } elseif (preg_match('/Elternzeit/i', $Abwesenheits_grund[$vk])) {
                             $grund_string = 'E';
-                        } elseif (preg_match('/Nicht angestellt/i', $AbwesenheitsGrund[$vk])) {
+                        } elseif (preg_match('/Nicht angestellt/i', $Abwesenheits_grund[$vk])) {
                             $grund_string = 'N/A';
-                        }elseif (preg_match('/Notdienst/i', $AbwesenheitsGrund[$vk])) {
+                        }elseif (preg_match('/Notdienst/i', $Abwesenheits_grund[$vk])) {
                             $grund_string = 'NA';
                         } else {
-                            $grund_string = mb_substr($AbwesenheitsGrund[$vk], 0, 3);
+                            $grund_string = mb_substr($Abwesenheits_grund[$vk], 0, 3);
                         }
-                        echo '<TD title="'.$AbwesenheitsGrund[$vk].'">'.$grund_string.'</TD>';
+                        echo '<TD title="'.$Abwesenheits_grund[$vk].'">'.$grund_string.'</TD>';
                     } elseif (isset($notdienst) and $notdienst['vk'] == $vk) {
                         echo '<TD>N</TD>';
                     } else {

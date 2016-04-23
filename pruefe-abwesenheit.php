@@ -7,7 +7,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	require 'db-lesen-abwesenheit.php';
 	if(isset($Dienstplan[$i]['VK']))
 	{
-		$EingesetzteMitarbeiter=array_values($Dienstplan[$i]['VK']);
+		$Eingesetzte_mitarbeiter=array_values($Dienstplan[$i]['VK']);
 	}
 	else
 	{
@@ -17,20 +17,20 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	{
 		foreach($Urlauber as $urlauber)
 		{
-			foreach($EingesetzteMitarbeiter as $anwesender)
+			foreach($Eingesetzte_mitarbeiter as $anwesender)
 			{
 				if ($urlauber==$anwesender)
 				{
-					$ArbeitendeUrlauber[]=$anwesender;
+					$Arbeitende_urlauber[]=$anwesender;
 				}
 			}
 		}
-		if (isset($ArbeitendeUrlauber))
+		if (isset($Arbeitende_urlauber))
 		{
 
-			foreach($ArbeitendeUrlauber as $arbeitenderUrlauber)
+			foreach($Arbeitende_urlauber as $arbeitender_urlauber)
 			{
-				//$Fehlermeldung[]=$Mitarbeiter[$arbeitenderUrlauber]." ist im Urlaub und sollte nicht im Dienstplan sein.";
+				//$Fehlermeldung[]=$Mitarbeiter[$arbeitender_urlauber]." ist im Urlaub und sollte nicht im Dienstplan sein.";
 			}
 		}
 	}
@@ -38,19 +38,19 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	{
 		foreach($Kranke as $kranker)
 		{
-			foreach($EingesetzteMitarbeiter as $anwesender)
+			foreach($Eingesetzte_mitarbeiter as $anwesender)
 			{
 				if ($kranker==$anwesender)
 				{
-					$ArbeitendeKranke[]=$anwesender;
+					$Arbeitende_kranke[]=$anwesender;
 				}
 			}
 		}
-		if (isset($ArbeitendeKranke))
+		if (isset($Arbeitende_kranke))
 		{
-			foreach($ArbeitendeKranke as $arbeitenderKranker)
+			foreach($Arbeitende_kranke as $arbeitender_kranker)
 			{
-				//$Fehlermeldung[]=$Mitarbeiter[$arbeitenderKranker]." ist krank und sollte nicht im Dienstplan sein.";
+				//$Fehlermeldung[]=$Mitarbeiter[$arbeitender_kranker]." ist krank und sollte nicht im Dienstplan sein.";
 			}
 		}
 	}
@@ -58,32 +58,32 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	{
 		foreach($Abwesende as $abwesender)
 		{
-			foreach($EingesetzteMitarbeiter as $anwesender)
+			foreach($Eingesetzte_mitarbeiter as $anwesender)
 			{
 				if ($abwesender==$anwesender)
 				{
-					$ArbeitendeAbwesende[]=$anwesender;
+					$Arbeitende_abwesende[]=$anwesender;
 				}
 			}
 		}
-		if (isset($ArbeitendeAbwesende))
+		if (isset($Arbeitende_abwesende))
 		{
-			foreach($ArbeitendeAbwesende as $arbeitenderAbwesender)
+			foreach($Arbeitende_abwesende as $arbeitender_abwesender)
 			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitenderAbwesender]." ist abwesend (".$AbwesenheitsGrund[$arbeitenderAbwesender].") und sollte nicht im Dienstplan stehen.";
+				$Fehlermeldung[]=$Mitarbeiter[$arbeitender_abwesender]." ist abwesend (".$Abwesenheits_grund[$arbeitender_abwesender].") und sollte nicht im Dienstplan stehen.";
 			}
 		}
 	}
 
 	//Jetzt schauen wir, ob sonst alle da sind.
-	if (count($EingesetzteMitarbeiter)>3)
+	if (count($Eingesetzte_mitarbeiter)>3)
 	{
-		$MitarbeiterDifferenz=array_diff(array_keys($MandantenMitarbeiter), $EingesetzteMitarbeiter);
-		if(isset($Abwesende)){$MitarbeiterDifferenz=array_diff($MitarbeiterDifferenz, $Abwesende);}
-		if (!empty($MitarbeiterDifferenz))
+		$Mitarbeiter_differenz=array_diff(array_keys($Mandanten_mitarbeiter), $Eingesetzte_mitarbeiter);
+		if(isset($Abwesende)){$Mitarbeiter_differenz=array_diff($Mitarbeiter_differenz, $Abwesende);}
+		if (!empty($Mitarbeiter_differenz))
 		{
 			$fehler="Es sind folgende Mitarbeiter nicht eingesetzt: ";
-			foreach($MitarbeiterDifferenz as $arbeiter)
+			foreach($Mitarbeiter_differenz as $arbeiter)
 			{
 				$fehler.=$Mitarbeiter[$arbeiter].", ";
 			}

@@ -16,9 +16,9 @@ $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woch
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$montagsDifferenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
-$montagsDifferenzString="-".$montagsDifferenz." day";
-$datum=strtotime($montagsDifferenzString, strtotime($datum));
+$montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
+$montags_differenzString="-".$montags_differenz." day";
+$datum=strtotime($montags_differenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum);
 if (isset($datum))
 {
@@ -73,10 +73,10 @@ foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filial
 echo "\t\t\t</select>\n\t\t</form>\n";
 
 echo "\t\t<form id=myform method=post>\n";
-$RückwärtsButton="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
-echo $RückwärtsButton;
-$VorwärtsButton="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
-echo $VorwärtsButton;
+$Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
+echo $Rückwärts_button;
+$Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
+echo $Vorwärts_button;
 echo "\t\t\t\t<table border=0 rules=groups>\n";
 //echo "\t\t\t\t<div class=stretch-on-print>\n";
 echo "\t\t\t\t\t<thead>\n";
@@ -94,11 +94,11 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	require 'db-lesen-feiertag.php';
 	if(isset($feiertag)){echo " <br>".$feiertag." ";}
 	if (isset($feiertag) AND date('N', strtotime($datum))<6) {
-		foreach ($MandantenMitarbeiter as $vk => $nachname) {
+		foreach ($Mandanten_mitarbeiter as $vk => $nachname) {
 			if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
-					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $StundenMitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $Stunden_mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
 			} else {
-					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
 			}
 		}
 	}
@@ -114,7 +114,7 @@ require 'schreiben-tabelle.php';
 schreiben_tabelle($Dienstplan);
 if (!empty(array_column($Filialplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 {
-	echo "</tbody><tbody><tr><td colspan=$tage>".$KurzMandant[$mandant]." in ".$KurzMandant[$filiale]."</td></tr>";
+	echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
 	schreiben_tabelle($Filialplan);
 }
 echo "\t\t\t\t\t</tbody>\n";
@@ -133,16 +133,16 @@ for ($i=0; $i<count($Dienstplan); $i++)
 		if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
 				//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
 				if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
-						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $StundenMitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $Stunden_mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
 				} else {
-						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $StundenMitarbeiter[$vk] / 5;
+						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
 				}
 		}
 	}
 	//Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
 	if (isset($Urlauber))
 	{
-		echo "\t\t\t\t\t<td align=left><b>Urlaub</b><br>"; foreach($Urlauber as $value){echo "<a href=abwesenheit-out.php?datum=".$datum."&auswahlMitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";};
+		echo "\t\t\t\t\t<td align=left><b>Urlaub</b><br>"; foreach($Urlauber as $value){echo "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";};
 	}
 	else
 	{
@@ -150,7 +150,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 	if (isset($Kranke))
 	{
-		echo "\t\t<br><b>Krank</b><br>"; foreach($Kranke as $value){echo "<a href=abwesenheit-out.php?datum=".$datum."&auswahlMitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";}; echo "</td>\n";
+		echo "\t\t<br><b>Krank</b><br>"; foreach($Kranke as $value){echo "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";}; echo "</td>\n";
 	}
 	else
 	{
@@ -190,7 +190,7 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 	$i=0;$j=1; //Zähler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
 	foreach($Stunden as $mitarbeiter => $stunden)
 	{
-		if ( array_key_exists($mitarbeiter, $MandantenMitarbeiter)===false ){continue; /*Wir zeigen nur die Stunden von Mitarbeitern, die auch in den Mandanten gehören.*/}
+		if ( array_key_exists($mitarbeiter, $Mandanten_mitarbeiter)===false ){continue; /*Wir zeigen nur die Stunden von Mitarbeitern, die auch in den Mandanten gehören.*/}
 		$i++; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
 		if($i>=$tage)
 		{
@@ -202,7 +202,7 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
 				echo round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
 		} else {
-				echo round($StundenMitarbeiter[$mitarbeiter], 1);
+				echo round($Stunden_mitarbeiter[$mitarbeiter], 1);
 		}
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
 				if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
@@ -210,8 +210,8 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 						echo ' <b>( '.$differenz.' )</b>';
 					}
 				} else {
-						if (round($StundenMitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
-								$differenz = round(array_sum($stunden), 1) - round($StundenMitarbeiter[$mitarbeiter], 1);
+						if (round($Stunden_mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
+								$differenz = round(array_sum($stunden), 1) - round($Stunden_mitarbeiter[$mitarbeiter], 1);
 								echo ' <b>( '.$differenz.' )</b>';
 						}
 				}
@@ -224,7 +224,7 @@ echo "\t\t\t\t\t\t</td>\n";
 echo "\t\t\t\t\t</tr>\n";
 echo "\t\t\t\t\t</tfoot>\n";
 echo "\t\t\t\t</table>\n";
-// echo $submitButton;
+// echo $submit_button;
 echo "\t\t\t</form>\n";
 echo "</div>\n";
 require 'contact-form.php';

@@ -7,15 +7,15 @@ foreach($Dienstplan as $key => $Dienstplantag)
 {
 	if(isset($Dienstplantag['VK']))
 	{
-	$PlanAnzahl[]=(count($Dienstplantag['VK']));
+	$Plan_anzahl[]=(count($Dienstplantag['VK']));
 	}
 	else
 	{
-	$PlanAnzahl[]=0;
+	$Plan_anzahl[]=0;
 	}
 } 
-$planAnzahl=max($PlanAnzahl); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
-for ($j=0; $j<$planAnzahl; $j++)
+$plan_anzahl=max($Plan_anzahl); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
+for ($j=0; $j<$plan_anzahl; $j++)
 {
 	if(isset($feiertag) && !isset($notdienst)){break 1;}
 	echo "\t\t\t\t</tr></thead><tr>\n";
@@ -25,7 +25,7 @@ for ($j=0; $j<$planAnzahl; $j++)
 		echo "\t\t\t\t\t<td align=left>";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{ 
-			$zeile.="<b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahlMitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
+			$zeile.="<b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
 //			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.="</a></b> / ";

@@ -42,10 +42,10 @@ global $datum, $verbindungi, $Mitarbeiter;
 		fclose($myfile);
 		$dienstplanCSV="";
 		$command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
-		exec($command, $kommandoErgebnis); // Kann dies Fehler verursachen?
+		exec($command, $kommando_ergebnis); // Kann dies Fehler verursachen?
 		//Wir rufen die Funktion mehrmals mit verschiedenen Parametern auf. Kann dem Filial-Plan-Bild dabei etwas zustoßen?
 
-//		echo "<pre>";	var_export($kommandoErgebnis);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//		echo "<pre>";	var_export($kommando_ergebnis);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 		//Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
 		if ( !isset($Dienstplan[$i]) )
 		{

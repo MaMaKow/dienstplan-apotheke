@@ -65,8 +65,8 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     } else {
         $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
                 //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                if ($sekunden - $MittagMitarbeiter[$auswahlMitarbeiter] * 60 >= 6 * 3600) {
-                    $mittagspause = $MittagMitarbeiter[$auswahlMitarbeiter] * 60;
+                if ($sekunden - $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60 >= 6 * 3600) {
+                    $mittagspause = $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60;
                     $sekunden = $sekunden - $mittagspause;
                 } else {
                     $mittagspause = false;
@@ -92,7 +92,7 @@ fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
 $dienstplanCSV = '';
 $command = ('./Dienstplan_image.sh '.escapeshellcmd('m'.$mandant.'_'.$wochentag));
-exec($command, $kommandoErgebnis);
+exec($command, $kommando_ergebnis);
 
 //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
  if (!isset($Grundplan[$wochentag])) {
@@ -220,7 +220,7 @@ if (!isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) or !($Grundplan[$wochenta
 }
 echo "\t\t\t\t</tr>";
 echo "\t\t\t</table>\n";
-//echo "$submitButton";
+//echo "$submit_button";
 echo "\t\t</form>\n";
 echo "</div>";
 if (file_exists("images/dienstplan_m".$mandant."_".$wochentag.".png")) {
@@ -235,7 +235,7 @@ echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime("image
     echo "</div>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
-//	echo "<pre>";	var_export($MandantenMitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
     //echo "<pre>";	var_export($Wochentage);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 echo "\t</body>\n";
