@@ -33,8 +33,13 @@
 			$abfrage="SELECT * FROM Öffnungszeiten WHERE Wochentag = ".date('N', strtotime($datum))." AND Mandant = ".$mandant;
 			$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 			$row = mysqli_fetch_object($ergebnis);
-			$tages_beginn=strtotime($row->Beginn);
-			$tages_ende=strtotime($row->Ende);
+			if (!empty($row->Beginn) and !empty($row->Ende)) {
+				$tages_beginn=strtotime($row->Beginn);
+				$tages_ende=strtotime($row->Ende);
+			} else {
+				die ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.");
+			}
+
 
 			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...)
 			$tages_beginn=min($tages_beginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
@@ -137,21 +142,21 @@
 				$durchschnittstag=calculate_percentile($Tagimmonat['median'],50);
 
 				$faktor_tagimmonat=$Tagimmonat['median'][date('n', strtotime($datum))-1]/$durchschnittstag;
-				$datei="./pep/pep_wochentag";
-				$datei.=date("w", strtotime($datum))+1;
-				$datei.=".csv";
-				$lines=file($datei);
-				foreach($lines as $key => $value)
-				{
-					list($Wochentag['uhrzeit'][], $Wochentag['min'][], $Wochentag['median'][], $Wochentag['max'][])=explode(", ", $value);
+
+				$abfrage="SELECT * FROM pep_zeit_im_wochentag WHERE Wochentag = ".(date('w', strtotime($datum))+1)." AND Mandant = $mandant ";
+				$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+				while ($row = mysqli_fetch_object($ergebnis)) {
+						$Wochentag['uhrzeit'][]=$row->Uhrzeit;
+						//$Wochentag['median'][]=$row->Median;
+						$Wochentag['mittelwert'][]=$row->Mittelwert;
 				}
 				$erwartungCSV="";
-				foreach($Wochentag['median'] as $key => $tageszeitmedian)
+				foreach($Wochentag['mittelwert'] as $key => $tageszeitmittelwert)
 				{
 					$Erwartung['uhrzeit'][]=$Wochentag['uhrzeit'][$key];
-					$Erwartung['packungen'][]=$tageszeitmedian*$faktor_tagimmonat*$faktor_monatimjahr;
-					$Soll_anwesende[strtotime($Wochentag['uhrzeit'][$key])]=round($tageszeitmedian*$faktor_tagimmonat*$faktor_monatimjahr/$faktor_arbeitskraft+1,0);
-					$erwartungCSV.=$Wochentag['uhrzeit'][$key].", ".$tageszeitmedian*$faktor_tagimmonat*$faktor_monatimjahr."\n";
+					$Erwartung['packungen'][]=$tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr;
+					$Soll_anwesende[strtotime($Wochentag['uhrzeit'][$key])]=round($tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr/$faktor_arbeitskraft+1,0);
+					$erwartungCSV.=$Wochentag['uhrzeit'][$key].", ".$tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr."\n";
 				}
 
 				if(!isset($histogramm_no_print))
