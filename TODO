@@ -2,15 +2,11 @@ This is a TODO list.
 * Notdienst Eingabe- und Ausgabe-Maske
   * Ausgabemaske mit Feld für Eintragung von Ersatz zum Aushang
 * grundplan-vk-in.php Mehr Eingaben, alles als Input!
+
 * Installation
 * Konfiguration
 * Dokumentation
 
-* Alle Variablen-Namen mit underscore_zeichen statt GrossSchreibung
-
 
 - database Ware-Termine / Ware-PEP
 - database PEP-Information in der Datenbank / PEP-xxx.php tragen in diese Datenbank ein. Average statt Median.
-
-
-* tag-in.php mit Markieren des Ware-Menschen? Vielleicht über den Kommentar?
