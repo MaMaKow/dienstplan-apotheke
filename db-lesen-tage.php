@@ -6,7 +6,7 @@ global $datum, $verbindungi, $Mitarbeiter;
 	//Abruf der gespeicherten Daten aus der Datenbank
 	//$tage ist die Anzahl der Tage. 5 Tage = Woche; 1 Tag = 1 Tag.
 	//$mandant 1 ist der Marienplatz, 2 ist die Helenenstraße. Mandant 0 wird für den Chef, Frau Zapel, Frau Köhler und andere genutzt, die nicht jeden Tag im Plan stehen sollen.
-	$tag=$datum;
+//	$tag=$datum;
 	for ($i=0; $i<$tage; $i++)
 	{
 		$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));

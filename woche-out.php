@@ -10,16 +10,14 @@ $datenübertragung="";
 $dienstplanCSV="";
 
 
-//$Dienstbeginn=array( "8:00", "8:30", "9:00", "9:30", "10:00", "11:30", "12:00", "18:30" );
-$heute=date('Y-m-d');
-$datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
-require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
+$datum=date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
+require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 $montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
 $montags_differenzString="-".$montags_differenz." day";
 $datum=strtotime($montags_differenzString, strtotime($datum));
-$datum=date('Y-m-d', $datum);
+$datum=date('Y-m-d', $datum); $konstantes_datum=$datum;
 if (isset($datum))
 {
 	create_cookie("datum", $datum); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
@@ -62,12 +60,13 @@ echo "\t\t\t<div class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datu
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
 echo "\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
-echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
 	{
 		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
+	} else {
+		echo "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
 	}
 }
 echo "\t\t\t</select>\n\t\t</form>\n";
@@ -112,10 +111,17 @@ echo "\t\t\t\t\t</tr></thead><tbody>";
 
 require 'schreiben-tabelle.php';
 schreiben_tabelle($Dienstplan);
-if (!empty(array_column($Filialplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
-{
-	echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
-	schreiben_tabelle($Filialplan);
+$datum=$konstantes_datum;
+foreach ($Mandant as $filiale => $Name) {
+	if ($mandant == $filiale) {
+		continue 1;
+	}
+	$Filialplan=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
+	if (!empty(array_column($Filialplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
+	{
+		echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
+		schreiben_tabelle($Filialplan);
+	}
 }
 echo "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";

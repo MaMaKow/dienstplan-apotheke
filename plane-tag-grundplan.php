@@ -10,20 +10,23 @@
 		//Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
 		if( isset($Abwesende) AND array_search($row->VK, $Abwesende) !== false)
 		{
-			$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n"; continue 1;
+			$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n";
+			continue 1;
 		}
-		else
+		if( isset($Mitarbeiter) AND array_search($row->VK, array_column($Mitarbeiter)) === false)
 		{
-			$Dienstplan[$tag]['Datum'][]=$datum;
-			$Dienstplan[$tag]['VK'][]=$row->VK;
-			$Dienstplan[$tag]['Dienstbeginn'][]=$row->Dienstbeginn;
-			$Dienstplan[$tag]['Dienstende'][]=$row->Dienstende;
-			$Dienstplan[$tag]['Mittagsbeginn'][]=$row->Mittagsbeginn;
-			//echo $Mitarbeiter[$row->VK].": ".$row->Mittagsbeginn."<br>\n";
-			//TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
-			$Dienstplan[$tag]['Mittagsende'][]=$row->Mittagsende;
-			$Dienstplan[$tag]['Stunden'][]=$row->Stunden;
+			$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist nicht angestellt.<br>\n";
+			continue 1;
 		}
+		$Dienstplan[$tag]['Datum'][]=$datum;
+		$Dienstplan[$tag]['VK'][]=$row->VK;
+		$Dienstplan[$tag]['Dienstbeginn'][]=$row->Dienstbeginn;
+		$Dienstplan[$tag]['Dienstende'][]=$row->Dienstende;
+		$Dienstplan[$tag]['Mittagsbeginn'][]=$row->Mittagsbeginn;
+		//echo $Mitarbeiter[$row->VK].": ".$row->Mittagsbeginn."<br>\n";
+		//TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
+		$Dienstplan[$tag]['Mittagsende'][]=$row->Mittagsende;
+		$Dienstplan[$tag]['Stunden'][]=$row->Stunden;
 	}
 
 
@@ -46,7 +49,7 @@
 		foreach($Dienstplan[$tag]['VK'] as $position => $vk) //Die einzelnen Zeilen im Dienstplan
 		{
 			//echo "Mittag für $Mitarbeiter[$vk]?<br>\n";
-			if ( !empty($vk) AND !($Dienstplan[$tag]['Mittagsbeginn'][$position]>0) AND !($Dienstplan[$tag]['Mittagsende'][$position]>0) )
+			if ( !empty($Mittag_mitarbeiter[$vk]) AND !($Dienstplan[$tag]['Mittagsbeginn'][$position]>0) AND !($Dienstplan[$tag]['Mittagsende'][$position]>0) )
 			{
 				//echo "Mittag ist noch nicht definiert<br>\n";
 				//Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
