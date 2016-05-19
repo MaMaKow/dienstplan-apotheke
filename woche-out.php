@@ -34,7 +34,7 @@ require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
-$Filialplan=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
+//$Filialplan=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
 
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
@@ -116,11 +116,11 @@ foreach ($Mandant as $filiale => $Name) {
 	if ($mandant == $filiale) {
 		continue 1;
 	}
-	$Filialplan=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
-	if (!empty(array_column($Filialplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
+	$Filialplan[$filiale]=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
+	if (!empty(array_column($Filialplan[$filiale], 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 	{
 		echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
-		schreiben_tabelle($Filialplan);
+		schreiben_tabelle($Filialplan[$filiale]);
 	}
 }
 echo "\t\t\t\t\t</tbody>\n";
@@ -177,14 +177,23 @@ for ($tag=0; $tag<5; $tag++)
 	foreach($Dienstplan[$tag]['Stunden'] as $key => $stunden)
 	{
 		$Stunden[$Dienstplan[$tag]['VK'][$key]][]=$stunden;
+//		echo "$tag $mandant $key $stunden<br>\n";
 	}
 }
 for ($tag=0; $tag<5; $tag++)
 {
-	if (!isset($Filialplan[$tag]['Stunden'])) {continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-	foreach($Filialplan[$tag]['Stunden'] as $key => $stunden)
+	foreach ($Mandant as $mandant_key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 	{
-		$Stunden[$Filialplan[$tag]['VK'][$key]][]=$stunden;
+		if ($mandant_key!=$mandant)
+		{
+			if (!isset($Filialplan[$mandant_key][$tag]['Stunden'])) {
+				 continue 1;
+			} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
+			foreach($Filialplan[$mandant_key][$tag]['Stunden'] as $key => $stunden)
+			{
+				$Stunden[$Filialplan[$mandant_key][$tag]['VK'][$key]][]=$stunden;
+			}
+		}
 	}
 }
 
@@ -238,7 +247,6 @@ require 'contact-form.php';
 
 
 
-//echo "<pre>";	var_export($Urlauber);    	echo "</pre>";
 
 ?>
 	</body>

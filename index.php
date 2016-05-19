@@ -5,6 +5,8 @@
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
 	<body>
+		<?php require 'navigation.php';?>
+
 		<p>Dies wird ein Navigationsmenü für die Dienstplanung</p>
 		<H1>
 		<table border=0>
@@ -37,4 +39,3 @@
 		</H1>
 	</body>
 </html>
-

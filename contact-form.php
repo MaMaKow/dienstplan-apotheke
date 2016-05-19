@@ -3,7 +3,7 @@
 		function unhideContactForm()
 		{
 			document.getElementById("contactForm").style.display = "inline";
-		}	
+		}
 	</script>
 	<p><a href=#bottom onclick=unhideContactForm()>Wünsche, Kritik, Anregungen&nbsp+</a></p>
 	<form id=contactForm style=display:none method=POST>
@@ -65,4 +65,4 @@
 	}
 ?>
 </div>
-<a name=bottom>
+<a name=bottom></a>
