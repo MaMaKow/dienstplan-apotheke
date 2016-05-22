@@ -1,4 +1,9 @@
 <?php
+function examine_duty_roster ()
+{
+    global $verbindungi;
+    global $Dienstplan, $mandant, $datum;
+    global $Approbierte_mitarbeiter, $Wareneingang_Mitarbeiter;
     //Diese Datei zählt Anwesende, Approbierte, Ware-Menschen,...
     require_once 'headcount-duty-roster.php';
 
@@ -18,7 +23,7 @@
             }
         }
     } else {
-        echo 'Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.';
+        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.<br>\n";
     }
     if (isset($Wareneingang_Anwesende) and isset($tages_ende)) {
             //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
@@ -36,7 +41,7 @@
             }
         }
     } else {
-        echo 'Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Ware-Menschen.';
+        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Ware-Menschen.<br>\n";
     }
     if (isset($Anwesende) and isset($tages_ende)) {
             //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
@@ -54,5 +59,8 @@
             }
         }
     } else {
-        echo 'Notwendige Variablen sind nicht gesetzt. Keine Zählung der Anwesenden.<br>\n';
+        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der Anwesenden.<br>\n";
     }
+  }
+
+examine_duty_roster();

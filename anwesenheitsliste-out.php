@@ -15,7 +15,6 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 	$datum=$start_datum;
 	//Die Mitarbeiterliste benötigt ein $datum. Denn Mitarbeiter sind nicht auf ewig bei uns.
 	require 'db-lesen-mitarbeiter.php';
-echo "<pre>"; var_dump($datum); echo "</pre>";
 	$Months = array();
 	for( $i = 1; $i <= 12; $i++ ) {
 	    $Months[ $i ] = strftime( '%B', mktime( 0, 0, 0, $i, 1 ) );

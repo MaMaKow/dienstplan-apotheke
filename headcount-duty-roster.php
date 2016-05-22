@@ -36,7 +36,8 @@
 				$tages_beginn=strtotime($row->Beginn);
 				$tages_ende=strtotime($row->Ende);
 			} else {
-				die ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.");
+				echo ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.<br>\n");
+				return 1;
 			}
 
 			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...)
