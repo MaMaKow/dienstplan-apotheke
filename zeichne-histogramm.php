@@ -15,7 +15,9 @@
 				$tages_beginn=strtotime($row->Beginn);
 				$tages_ende=strtotime($row->Ende);
 			} else {
-				die ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.");
+				echo ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.<br>\n");
+				$tages_beginn=strtotime("0:00");
+				$tages_ende=strtotime("24:00");
 			}
 
 
@@ -86,13 +88,19 @@
 						$Wochentag['mittelwert'][]=$row->Mittelwert;
 				}
 				$erwartungCSV="";
-				foreach($Wochentag['mittelwert'] as $key => $tageszeitmittelwert)
-				{
-					$Erwartung['uhrzeit'][]=$Wochentag['uhrzeit'][$key];
-					$Erwartung['packungen'][]=$tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr;
-					$Soll_anwesende[strtotime($Wochentag['uhrzeit'][$key])]=round($tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr/$faktor_arbeitskraft+1,0);
-					$erwartungCSV.=$Wochentag['uhrzeit'][$key].", ".$tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr."\n";
+				if (isset($Wochentag['mittelwert'])) {
+					foreach($Wochentag['mittelwert'] as $key => $tageszeitmittelwert)
+					{
+						$Erwartung['uhrzeit'][]=$Wochentag['uhrzeit'][$key];
+						$Erwartung['packungen'][]=$tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr;
+						$Soll_anwesende[strtotime($Wochentag['uhrzeit'][$key])]=round($tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr/$faktor_arbeitskraft+1,0);
+						$erwartungCSV.=$Wochentag['uhrzeit'][$key].", ".$tageszeitmittelwert*$faktor_tagimmonat*$faktor_monatimjahr."\n";
+					}
+				} else {
+					echo ("Es sind keine Daten zu Abverkäufen an diesem Tag bekannt.<br>\n");
+
 				}
+
 
 				if(!isset($histogramm_no_print))
 				{

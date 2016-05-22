@@ -13,9 +13,9 @@
 			$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n";
 			continue 1;
 		}
-		if( isset($Mitarbeiter) AND array_search($row->VK, array_column($Mitarbeiter)) === false)
+		if( isset($Mitarbeiter) AND array_search($row->VK, array_keys($Mitarbeiter)) === false)
 		{
-			$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist nicht angestellt.<br>\n";
+			//$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist nicht angestellt.<br>\n";
 			continue 1;
 		}
 		$Dienstplan[$tag]['Datum'][]=$datum;
