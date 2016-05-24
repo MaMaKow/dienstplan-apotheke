@@ -118,8 +118,10 @@ echo "<a class=no-print href=abwesenheit-in.php?auswahl_mitarbeiter=$auswahl_mit
 			echo "$tablebody";
 			echo "\t\t</table>\n";
 			echo "\t</form>";
-echo "\t\t</div>\n";
+			echo "\t\t</div>\n";
 //		echo "<pre>"; var_dump($_POST); echo "</pre>";
+			require 'contact-form.php';
 		?>
+
 	</body>
 </html>

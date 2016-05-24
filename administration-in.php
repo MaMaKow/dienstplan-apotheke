@@ -1,15 +1,5 @@
-<html>
-	<head>
-		<meta charset=UTF-8>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
-	<body>
-		<?php
-			require 'navigation.php';
-		?>
-		<p style=height:5em></p>
-		<div>
+		<div  id="administration" style="display:none; clear:both;">
+			<p></p>
 			<ul>
 				<li><a href=anwesenheitsliste-out.php>Anwesenheitsliste</a></li>
 				<li><a href=grundplan-tag-in.php>Grundplan Tagesansicht</a></li>
@@ -19,5 +9,3 @@
 				<li><a href=logout.php>Logout</a></li>
 			</ul>
 		</div>
-	</body>
-</html>

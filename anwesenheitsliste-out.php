@@ -93,8 +93,10 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
     </TABLE>
     Legende
     <TABLE>
-      <TR><TD>K</TD><TD>Krank</TD><TD>U</TD><TD>Urlaub</TD><TD>E</TD><TD>Elternzeit</TD></TR>
-      <TR><TD>N/A</TD><TD>Nicht angestellt</TD><TD>N</TD><TD>Notdienst</TD><TD>NA</TD><TD>Ausgleich nach Notdienst</TD></TR>
+      <TR><TD>K</TD><TD>Krank</TD><TD>U</TD><TD>Urlaub</TD><TD>E</TD><TD>Elternzeit</TD>
+			<!--</TR><TR>!-->
+				<TD>N/A</TD><TD>Nicht angestellt</TD><TD>N</TD><TD>Notdienst</TD><TD>NA</TD><TD>Ausgleich nach Notdienst</TD></TR>
     </TABLE>
+		<?php require 'contact-form.php';?>
   </BODY>
 </HTML>

@@ -353,6 +353,8 @@ echo '<img src=images/mitarbeiter_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.
 
 //echo "<pre>";    var_export($Grundplan);        echo "</pre>";
 
+require 'contact-form.php';
+
 ?>
     </body>
 <html>

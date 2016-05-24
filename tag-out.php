@@ -181,8 +181,8 @@ if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 	echo "\t\t\t\t<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>\n";
 	echo "\t\t\t</div>\n";
 	echo "\t\t</div>\n";
-	require 'contact-form.php';
 }
+require 'contact-form.php';
 
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 

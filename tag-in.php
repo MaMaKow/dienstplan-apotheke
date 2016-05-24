@@ -302,6 +302,8 @@ echo "</div>";
 //	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
+require 'contact-form.php';
+
 echo "\t</body>\n";
 echo "</html>";
 ?>

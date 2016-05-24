@@ -225,6 +225,7 @@ echo "<a href=stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</
 			echo "\t</form>";
 //		echo "<pre>"; var_dump($_POST); echo "</pre>";
 			echo "</div>\n";
+			require 'contact-form.php';
 		?>
 	</body>
 </html>

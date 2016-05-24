@@ -276,6 +276,8 @@ if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png'
 
 //echo "<pre>";	var_export($_POST);    	echo "</pre>";
 
+require 'contact-form.php';
+
 ?>
 	</body>
 <html>
