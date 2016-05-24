@@ -22,7 +22,7 @@
 				$upload_ok = 1;
 				$file_type = pathinfo($target_file, PATHINFO_EXTENSION);
 
-				if (file_exists($target_file)) 
+				if (file_exists($target_file))
 				{
 				// Check if file already exists
 					$Fehlermeldung[]="Sorry, file already exists.";
@@ -34,7 +34,7 @@
 					$Fehlermeldung[]="Sorry, only ASYS PEP files are allowed.";
 					$upload_ok = 0;
 				}
-				elseif ($upload_ok == 0) 
+				elseif ($upload_ok == 0)
 				{
 				// Check if $upload_ok is set to 0 by an error
 					$Fehlermeldung[]="Sorry, your file was not uploaded.";
@@ -42,7 +42,7 @@
 				}
 				else
 				{
-					if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) 
+					if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
 					{
 			        		$Warnmeldung[]="The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
 			        		$Warnmeldung[]="It will be processed in the background.";
@@ -82,5 +82,7 @@
 				<input type="submit" value="Upload" name="submit"><br>
 			</form>
 		</div>
+		<?php require 'contact-form.php';?>
+
 	</body>
 </html>

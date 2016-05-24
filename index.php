@@ -37,5 +37,6 @@
 			</tr>
 		</table>
 		</H1>
+		<?php require 'contact-form.php';?>
 	</body>
 </html>

@@ -192,6 +192,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
             echo "\t</form>";
 //echo "<pre>"; var_dump($_POST); echo "</pre>";
             echo "</div>\n";
+						require 'contact-form.php';
         ?>
 	</body>
 </html>
