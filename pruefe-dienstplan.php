@@ -4,6 +4,8 @@ function examine_duty_roster ()
     global $verbindungi;
     global $Dienstplan, $mandant, $datum;
     global $Approbierte_mitarbeiter, $Wareneingang_Mitarbeiter;
+    //Variabkes that will be set here have to be global too, to make them visible outside.
+    global $Fehlermeldung, $Warnmeldung;
     //Diese Datei zählt Anwesende, Approbierte, Ware-Menschen,...
     require_once 'headcount-duty-roster.php';
 

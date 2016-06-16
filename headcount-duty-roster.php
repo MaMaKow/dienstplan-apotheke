@@ -1,5 +1,4 @@
 <?php
-
 		//Zunächst müssen wir festlegen, wie groß die Zeitsprünge in der Auswertung werden.
 		$zeit_abstand=5*60; //5 Minuten
 		if (!isset($tag)) {$tag=0;} //Beim Aufruf aus tag-out wird kein Tag übergeben. Beim Aufruf aus der Auswertung, wird ein $tag übergeben.
@@ -37,6 +36,8 @@
 				$tages_ende=strtotime($row->Ende);
 			} else {
 				echo ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.<br>\n");
+				$tages_beginn=strtotime('1:00');
+				$tages_ende=strtotime('23:00');
 				return 1;
 			}
 
