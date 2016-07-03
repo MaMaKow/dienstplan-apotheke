@@ -7,7 +7,6 @@
 		$faktor_arbeitskraft=6; //Wie viele Packungen schafft ein Mitarbeiter pro Zeiteinheit (?halbe Stunde?)?
 		if (!empty($Dienstplan[$tag]["Dienstbeginn"]))
 		{
-
 			$abfrage="SELECT * FROM Öffnungszeiten WHERE Wochentag = ".date('N', strtotime($datum))." AND Mandant = ".$mandant;
 			$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 			$row = mysqli_fetch_object($ergebnis);
@@ -15,15 +14,16 @@
 				$tages_beginn=strtotime($row->Beginn);
 				$tages_ende=strtotime($row->Ende);
 			} else {
-				echo ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.<br>\n");
+				//echo ("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.<br>\n");
 				$tages_beginn=strtotime("0:00");
 				$tages_ende=strtotime("24:00");
 			}
 
 
 			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...)
-			$tages_beginn=min($tages_beginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
-			$tages_ende=max($tages_ende, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
+			//$tages_beginn=min($tages_beginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
+			//$tages_ende=max($tages_ende, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
+
 			//Wenn die Funktion bereits aufgerufen wurde, ist dieser Wert bereits gesetzt.
 			if(empty($Dienstzeiten[0]))
 			{

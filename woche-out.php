@@ -47,6 +47,7 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 <html moznomarginboxes> <!-- Wir wollen beim Ausdrucken keinen Header mit auf dem Papier. -->
 	<head>
 		<meta charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print" />
 	</head>
@@ -76,6 +77,7 @@ $Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche R
 echo $Rückwärts_button;
 $Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
 echo $Vorwärts_button;
+echo "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
 echo "\t\t\t\t<table border=0 rules=groups>\n";
 //echo "\t\t\t\t<div class=stretch-on-print>\n";
 echo "\t\t\t\t\t<thead>\n";
@@ -123,6 +125,7 @@ foreach ($Mandant as $filiale => $Name) {
 		schreiben_tabelle($Filialplan[$filiale]);
 	}
 }
+
 echo "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";
 echo "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
@@ -242,6 +245,27 @@ echo "\t\t\t\t</table>\n";
 // echo $submit_button;
 echo "\t\t\t</form>\n";
 echo "</div>\n";
+if (isset($Fehlermeldung))
+{
+	echo "\t\t<div class=errormsg>\n";
+	$Fehlermeldung=array_unique($Fehlermeldung);
+	foreach($Fehlermeldung as $fehler)
+	{
+		echo "\t\t\t<H1>".$fehler."</H1>\n";
+	}
+	echo "\t\t</div>";
+}
+if (isset($Warnmeldung))
+{
+	echo "\t\t<div class=warningmsg>\n";
+	$Warnmeldung=array_unique($Warnmeldung);
+	foreach($Warnmeldung as $warnung)
+	{
+		echo "\t\t\t<H1>".$warnung."</H1>\n";
+	}
+	echo "\t\t</div>\n";
+}
+
 require 'contact-form.php';
 
 

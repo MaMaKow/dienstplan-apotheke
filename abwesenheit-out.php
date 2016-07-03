@@ -30,7 +30,7 @@
 	$abfrage="SELECT * FROM `Abwesenheit`
 		WHERE `VK` = ".$vk."
 		ORDER BY `Beginn` ASC
-		LIMIT 10";
+		";
 	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 	$number_of_rows = mysqli_num_rows($ergebnis);
 	$tablebody=""; $i=1;
@@ -71,6 +71,7 @@
 <html>
 	<head>
 		<meta charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>

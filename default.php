@@ -8,4 +8,5 @@
 	//setlocale(LC_ALL, 'de_DE'); // Leider versteht die Datenbank dann nicht mehr, was die Kommata sollen.
 	error_reporting(E_ALL); //debugging
 	ini_set("display_errors", 1); //debugging
+	if(isset($_SERVER['REMOTE_USER'])){$user=$_SERVER['REMOTE_USER']; } else {$user="IP ".$_SERVER['REMOTE_ADDR']; }
 ?>

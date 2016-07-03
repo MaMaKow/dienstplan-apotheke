@@ -28,16 +28,41 @@ if (isset($datum))
 {
 	create_cookie("datum", $datum);
 }
+
+//The following lines check for the state of approval.
+//Duty rosters have to be approved by the leader, before the staff can view them.
+unset($approval);
+$abfrage="SELECT state FROM `approval` WHERE date='$datum' AND branch='$mandant'";
+$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+while($row = mysqli_fetch_object($ergebnis)){
+	$approval=$row->state;
+}
+if (isset($approval)) {
+	if ($approval=="approved") {
+		//$Warnmeldung[]="Alles ist gut.";
+	} elseif ($approval=="not_yet_approved") {
+		$Warnmeldung[]="Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
+	} elseif ($approval=="disapproved") {
+		$Warnmeldung[]="Der Dienstplan wird noch überarbeitet!";
+	}
+} else {
+	$approval="not_yet_approved";
+	$Warnmeldung[]="Fehlende Daten in der Tabelle `approval`";
+	// TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
+	//That might espacially occur during the development stage of this feature.
+}
+
+
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-
-require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
+//Lesen der in der Datenbank gespeicherten Daten.
+require 'db-lesen-tage.php';
 $Dienstplan=db_lesen_tage($tage, $mandant);
 require "zeichne-histogramm.php";
-
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
+
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
 
 
@@ -47,40 +72,61 @@ $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 <html>
 	<head>
 		<meta charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
 	<body>
 <?php
 require 'navigation.php';
+
+if (isset($Fehlermeldung))
+{
+	echo "\t\t<div class=errormsg>\n";
+	foreach($Fehlermeldung as $fehler)
+	{
+		echo "\t\t\t<H1>".$fehler."</H1>\n";
+	}
+	echo "\t\t</div>";
+}
+if (isset($Warnmeldung))
+{
+	echo "\t\t<div class=warningmsg>\n";
+	foreach($Warnmeldung as $warnung)
+	{
+		echo "\t\t\t<H1>".$warnung."</H1>\n";
+	}
+	echo "\t\t</div>\n";
+}
+
 echo "\t\t<div class=no-image>\n";
 echo "\t\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 
 
 //Support for various branch clients.
-echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
-echo "\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
+echo "\t\t\t<form id=mandantenformular method=post>\n";
+echo "\t\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
+echo "\t\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
 	{
-		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
+		echo "\t\t\t\t\t<option value=".$key.">".$value."</option>\n";
 	}else {
-		echo "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
+		echo "\t\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
 	}
 }
-echo "\t\t\t</select>\n\t\t</form>\n";
+echo "\t\t\t\t</select>\n\t\t\t</form>\n";
 echo "\t\t\t<form id=myform method=post>\n";
 $Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $Rückwärts_button;
 $Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $Vorwärts_button;
 echo "\t\t\t\t<a href=tag-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
-echo "\t\t\t<div id=wochenAuswahl class=no-print>\n";
-echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
-echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
-echo "\t\t\t</div>\n";
+echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
+echo "\t\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+echo "\t\t\t\t</div>\n";
 echo "\t\t\t\t<table border=0 >\n";
 echo "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
@@ -106,6 +152,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst['mandant'])){echo "<br>NOTDIENST<br>".$Mitarbeiter[$notdienst['vk']]." / ". $Mandant[$notdienst['mandant']];}
 	echo "</td>\n";
 }
+if ($approval=="approved") {
 for ($j=0; $j<$VKcount; $j++)
 {
 	//TODO The following line will prevent planning on hollidays. The problem ist, that we work might emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
@@ -165,11 +212,13 @@ for ($j=0; $j<$VKcount; $j++)
 echo "\t\t\t\t\t</tr>\n";
 
 echo "\t\t\t\t\t<tr><td></td></tr>\n";
+}
 echo "\t\t\t\t</table>\n";
 //echo $submit_button; Kein Schreibrecht in der Leseversion
 echo "\t\t\t</form>\n";
 echo "\t\t</div>\n";
-if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
+
+if ( $approval=="approved" and file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
 	echo "\t\t<div class=above-image>\n";
 	echo "\t\t\t<div class=image>\n";
@@ -184,7 +233,7 @@ if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 }
 require 'contact-form.php';
 
-//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 
 		?>
 	</body>

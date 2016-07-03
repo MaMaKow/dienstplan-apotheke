@@ -4,9 +4,11 @@ require 'default.php';
 <html>
 	<head>
 		<meta charset=UTF-8>
-  		<link rel="stylesheet" type="text/css" href="style.css" media="all">
+		<script type="text/javascript" src="javascript.js" ></script>
+		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 		<script>"use strict";
+		// TODO: Does the function work as expected? Will EVERYTHING work if it replaces the one in javascript.js?
 			function confirmDelete(link)
 			{
 				var r = confirm("Diesen Datensatz wirklich löschen?");
@@ -21,10 +23,6 @@ require 'default.php';
 				//	alert("You pressed Cancel!");
 					return false;
 				}
-			}
-			function leavePage()
-			{
-				window.location.replace("https://www.google.de"); //Wechselt automatisch heraus aus der Eingabemaske.
 			}
 			window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
 			function updatesaldo()
@@ -131,7 +129,7 @@ require 'default.php';
 			$abfrage="SELECT * FROM `Stunden`
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
-				LIMIT 10";
+				";
 			$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 			$number_of_rows = mysqli_num_rows($ergebnis);
 			$tablebody=""; $i=1;

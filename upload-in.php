@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <?php
+// TODO: I want a reminder inside the woche-in.php and tag-in.php (maybe within post-auswertung) if the last update is older then 3 months.
 	require "default.php";
 ?>
 <html>
 	<head>
 		<meta charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>

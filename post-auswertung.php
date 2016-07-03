@@ -2,25 +2,33 @@
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
 if ( isset($_POST['mandant']))
 {
-	$mandant=htmlspecialchars($_POST['mandant']);
-	if ( $mandant==2 )
-	{
-		$filiale=1; //debug DEBUG Hier wird jetzt hard coded, dass die Helenenstraße die Hauptfiliale zum Marienplatz ist. Das könnte man in einem wirklich großen Verbund noch anders klären. Zu Beispiel könnte man die Mutter separat kennzeichnen.
+	if (is_int((int)$_POST['mandant'])){
+		$mandant=htmlspecialchars($_POST['mandant']);
+		// TODO: Is the following still necessary? Or do we allways handle every $filiale
+		if ( $mandant==2 )
+		{
+			$filiale=1; //debug DEBUG Hier wird jetzt hard coded, dass die Helenenstraße die Hauptfiliale zum Marienplatz ist. Das könnte man in einem wirklich großen Verbund noch anders klären. Zu Beispiel könnte man die Mutter separat kennzeichnen.
+		}
+	} else {
+		throw new InvalidArgumentException("Ungültiger Wert für Mandant per POST übergeben");
 	}
 }
+else {
+	// TODO: This probably is an Exception. We should be aware if we do anything without knowing about the branch (=mandant) that we work on.
+}
+
 if ( isset($_POST['datum']))
 {
+	echo "$datum";
 	$datum=htmlspecialchars($_POST['datum']);
 }
+
 if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 {
-	$datenempfang="Die Daten wurden empfangen.<br>\n";
-//	$datum=$_POST['Dienstplan'][0]['Datum'][0];
 	foreach ( $_POST['Dienstplan'] as $plan => $inhalt )
 	{
 		$Dienstplan[$plan]=$inhalt;
 	}
-//	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der übergebene Datensatz zu Debugging-Zwecken angesehen werden.
 	foreach(array_keys($Dienstplan) as $tag ) //Hier sollte eigentlich nur ein einziger Tag ankommen.
 	{
 		$datum=$Dienstplan[$tag]['Datum'][0];
@@ -29,18 +37,17 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 			AND `Mandant` = '$mandant'
 			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
 		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
-//		echo "$abfrage<br>\n";
 		foreach($Dienstplan[$tag]['VK'] as $key => $VK) //Die einzelnen Zeilen im Dienstplan
 		{
 			if ( !empty($VK) ) //Wir ignorieren die nicht ausgefüllten Felder
 			{
+				// TODO: Do we still need to explode? Or is only the number sent in POST?
 				list($VK)=explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
 				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$key];
 				$dienstende=$Dienstplan[$tag]["Dienstende"][$key];
-				$kommentar=$Dienstplan[$tag]["Kommentar"][$key];
 				$mittagsbeginn=$Dienstplan[$tag]["Mittagsbeginn"][$key]; if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
 				$mittagsende=$Dienstplan[$tag]["Mittagsende"][$key]; if(empty($Mittagsende)){$Mittagsende="0:00";}
-	//			$kommentar='Noch nicht eingebaut'
+				$kommentar=$Dienstplan[$tag]["Kommentar"][$key];
 				if (isset($mittagsbeginn) && isset($mittagsende))
 				{
 					$sekunden=strtotime($dienstende)-strtotime($dienstbeginn);
@@ -53,15 +60,17 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 					$sekunden=strtotime($dienstende)-strtotime($dienstbeginn);
 					$stunden=$sekunden/3600;
 				}
-				$abfrage="REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar)
-					VALUES ('$VK', '$datum', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$mandant', '$kommentar')";
+				$abfrage="REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user)
+					VALUES ('$VK', '$datum', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$mandant', '$kommentar', '$user')";
 				$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 //				echo "$abfrage<br>\n";
-				$Datenübertragung="Die Daten wurden in die Datenbank eingetragen.<br>\n";
-				//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
 
+				//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
 				if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 				if(empty($mittagsende)){$mittagsende="0:00";}
+				if (!isset($Mitarbeiter)) {
+					require 'db-lesen-mitarbeiter.php';
+				}
 				$dienstplanCSV.=$Mitarbeiter[$VK].", $VK, $datum";
 				$dienstplanCSV.=", ".$dienstbeginn;
 				$dienstplanCSV.=", ".$dienstende;
@@ -84,6 +93,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		//Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
 		require "zeichne-histogramm.php";
 	}
+	$datum=$Dienstplan[0]['Datum'][0];
 }
 elseif ( isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])  )
 {
@@ -128,6 +138,9 @@ elseif ( isset($_POST['tagesAuswahl']) && isset($_POST['woche'])  )
 elseif ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
 {
 require 'copy-paste.php';
+}
+elseif ( (isset($_POST['submit_approval']) or isset($_POST['submit_disapproval'])) && count($_POST['Dienstplan']) > 0 ) {
+require 'db-write-approval.php';
 }
 else
 {

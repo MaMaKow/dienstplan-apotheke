@@ -41,9 +41,9 @@
 				return 1;
 			}
 
-			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...)
-			$tages_beginn=min($tages_beginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
-			$tages_ende=max($tages_ende, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
+			//Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...) könnte man mit den folgenden zwei Zeilen die Prüfung erweitern.
+			//$tages_beginn=min($tages_beginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
+			//$tages_ende=max($tages_ende, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
 			//Wenn die Funktion bereits aufgerufen wurde, ist dieser Wert bereits gesetzt.
 			if(empty($Dienstzeiten[0]))
 			{
@@ -121,7 +121,7 @@
 		else
 		{
 			echo "<br>Kein Dienstplan gefunden beim Zeichnen des Histogramms.<br>\n";
-//			echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//			echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 		}
 
 ?>

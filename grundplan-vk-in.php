@@ -130,31 +130,8 @@ $plan_anzahl = max($Plan_anzahl);
 ?>
 <html>
 	<head>
-    <script>
-    function unhide_mittag() {
-      var mittags_input = document.getElementsByClassName("mittags_input")
-      for (var i = 0; i < mittags_input.length; i++) {
-        mittags_input[i].style.display = "inline";
-      }
-      var mittags_ersatz = document.getElementsByClassName("mittags_ersatz")
-      for (var i = 0; i < mittags_ersatz.length; i++) {
-        mittags_ersatz[i].style.display = "none";
-      }
-      //document.getElementById("mittagspause").style.display = "inline";
-      //document.getElementById("mittagspause").type = "text";
-    }
-    function rehide_mittag()  {
-      var mittags_input = document.getElementsByClassName("mittags_input")
-      for (var i = 0; i < mittags_input.length; i++) {
-        mittags_input[i].style.display = "none";
-      }
-      var mittags_ersatz = document.getElementsByClassName("mittags_ersatz")
-      for (var i = 0; i < mittags_ersatz.length; i++) {
-        mittags_ersatz[i].style.display = "inline";
-      }
-    }
-    </script>
 		<meta charset=UTF-8>
+    <script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
@@ -274,11 +251,8 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
 }
 echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t<tfoot>\n";
-
-echo "\t\t\t\t</tr>\n"; //debug DEBUG THis one seems to be bulshit. There is a </tr> a few lines above before the start of this <tfoot>
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
-//for ($tag=0; $tag<count($Grundplan); $tag++)
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.
