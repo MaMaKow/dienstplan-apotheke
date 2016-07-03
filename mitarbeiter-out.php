@@ -56,6 +56,7 @@ $plan_anzahl = max($Plan_anzahl);
 <html>
 	<head>
 		<meta charset=UTF-8>
+    <script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>

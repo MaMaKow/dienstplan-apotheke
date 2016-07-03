@@ -4,43 +4,11 @@ require 'default.php';
 <html>
 	<head>
 		<meta charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-		<script>"use strict";
-			function confirmDelete(link)
-			{
-				var r = confirm("Diesen Datensatz wirklich löschen?");
-				return r;
-			}
-			function leavePage()
-			{
-				window.location.replace("https://www.google.de"); //Wechselt automatisch heraus aus der Eingabemaske.
-			}
+		<script>
 			window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
-			function updateTage()
-			{
-				//Wir lesen die Objekte aus dem HTML code.
-				var beginnId			= document.getElementById("beginn");
-				var endeId			= document.getElementById("ende");
-				var tageId			= document.getElementById("tage");
-
-				//Wir entnehmen die vorhandenen Werte.
-				var beginn			= new Date (beginnId.value);
-				var ende			= new Date (endeId.value);
-				if (beginn > ende) {alert('Das Ende liegt vor dem Startdatum'); }
-				var start = new Date(beginn.getTime());
-				var end = new Date(ende.getTime());
-				var count = 0;
-				while (start <= end)
-				{
-					if (start.getDay() != 0 && start.getDay() != 6)
-					{
-						count++;
-					}
-					start.setDate(start.getDate() + 1);
-				}
-				tageId.value 	= count;
-			}
 		</script>
 	</head>
 	<body>
@@ -100,7 +68,7 @@ require 'default.php';
             $abfrage = 'SELECT * FROM `Abwesenheit`
 				WHERE `VK` = '.$vk.'
 				ORDER BY `Beginn` ASC
-				LIMIT 10';
+				';
             $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
             $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;

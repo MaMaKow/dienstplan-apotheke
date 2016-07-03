@@ -24,6 +24,7 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 <HTML>
   <HEAD>
     <META charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
 		<LINK rel="stylesheet" type="text/css" href="style.css" media="all">
 		<LINK rel="stylesheet" type="text/css" href="print.css" media="print">
   </HEAD>

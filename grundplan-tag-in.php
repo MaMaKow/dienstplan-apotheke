@@ -21,7 +21,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 require 'db-lesen-mitarbeiter.php';
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-//echo "<pre>";    var_export($_POST);        echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//echo "<pre>";    var_export($_POST);        echo "</pre>";
 if (isset($_POST['submitGrundplan'])) {
     foreach ($_POST['Grundplan'] as $plan => $inhalt) {
         $Grundplan[$plan] = $inhalt;
@@ -176,6 +176,7 @@ $VKmax = max(array_keys($Mitarbeiter));
 <html>
 	<head>
 		<meta charset=UTF-8>
+    <script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
@@ -332,8 +333,7 @@ echo '<img src=images/histogramm_m'.$mandant.'_'.$datum.'.png?'.filemtime('image
     echo '</div>';
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
-//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-    //echo "<pre>";	var_export($Wochentage);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>";
 
 require 'contact-form.php';
 

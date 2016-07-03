@@ -1,7 +1,11 @@
 <?php
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-for ($i=0; $i<count($Dienstplan); $i++)
-{
+//for ($i=0; $i<count($Dienstplan); $i++)
+//{
+if (!isset($i)) {
+	$i=0;
+	// TODO: This is an Exception. It should probably be handled better!
+}
 	unset($Urlauber, $Kranke, $Abwesende);
 	$datum=$Dienstplan[$i]['Datum'][0];
 	require 'db-lesen-abwesenheit.php';
@@ -11,7 +15,8 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 	else
 	{
-		continue;
+		$Eingesetzte_mitarbeiter=array();
+		//continue;
 	}
 	if (isset($Urlauber))
 	{
@@ -95,5 +100,5 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	{
 //		echo "Dienstplan erst halb voll?";
 	}
-}
+//}
 ?>

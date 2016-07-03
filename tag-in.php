@@ -18,8 +18,6 @@ $datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woch
 
 
 
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
@@ -32,7 +30,7 @@ if (isset($datum))
 	create_cookie("datum", $datum);
 }
 
-//Hole erneut eine Liste aller Mitarbeiter debug DEBUG Post-Auswertung braucht dies und dies braucht POST-Auswertung!
+//Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
@@ -84,32 +82,9 @@ require 'pruefe-abwesenheit.php';
 ?>
 <html>
 	<head>
-		<script>
-		function unhide_kommentar() {
-			var kommentar_input = document.getElementsByClassName("kommentar_input")
-			for (var i = 0; i < kommentar_input.length; i++) {
-				kommentar_input[i].style.display = "inline";
-			}
-			var kommentar_ersatz = document.getElementsByClassName("kommentar_ersatz")
-			for (var i = 0; i < kommentar_ersatz.length; i++) {
-				kommentar_ersatz[i].style.display = "none";
-			}
-			//document.getElementById("mittagspause").style.display = "inline";
-			//document.getElementById("mittagspause").type = "text";
-		}
-		function rehide_kommentar()  {
-			var kommentar_input = document.getElementsByClassName("kommentar_input")
-			for (var i = 0; i < kommentar_input.length; i++) {
-				kommentar_input[i].style.display = "none";
-			}
-			var kommentar_ersatz = document.getElementsByClassName("kommentar_ersatz")
-			for (var i = 0; i < kommentar_ersatz.length; i++) {
-				kommentar_ersatz[i].style.display = "inline";
-			}
-		}
-		</script>
-
 		<meta charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
+		<noscript>Sorry, your browser does not support JavaScript!</noscript>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
@@ -148,7 +123,7 @@ foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filial
 	if ($key!=$mandant)
 	{
 		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
-	}else {
+	} else {
 		echo "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
 	}
 }
@@ -161,6 +136,13 @@ $rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name=
 $vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";echo $vorwärts_button;
 $copy_button="\t\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copy_button;
 $submit_button="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submit_button";
+
+echo "<br><br>\n";
+// TODO: The button should be inactive when the approval already was done.
+$submit_approval_button="\t\t\t\t<input type=submit value=Zustimmen name='submit_approval'>\n";echo "$submit_approval_button";
+$submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";echo "$submit_disapproval_button";
+echo "<br><br>\n";
+
 echo "\t\t\t\t<a href=tag-out.php?datum=".$datum.">[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
@@ -299,8 +281,7 @@ echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('image
 echo "</div>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
-//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 
 require 'contact-form.php';
 

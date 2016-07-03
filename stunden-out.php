@@ -4,6 +4,7 @@ require 'default.php';
 <html>
 	<head>
 		<meta charset=UTF-8>
+		<script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>
@@ -41,7 +42,7 @@ echo "<div class=no-image>\n";
 			$abfrage="SELECT * FROM `Stunden`
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
-				LIMIT 10";
+				";
 			$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 			$number_of_rows = mysqli_num_rows($ergebnis);
 			$tablebody=""; $i=1;
@@ -95,7 +96,7 @@ for ($vk=1; $vk<$VKmax+1; $vk++)
 				"\t\t\t\t<th>Stunden</th>\n".
 				"\t\t\t\t<th>Saldo</th>\n".
 				"\t\t\t</tr>\n";
-//Ausgabe 
+//Ausgabe
 			echo "$tablebody";
 			echo "\t\t</table>\n";
 			echo "\t</form>\n";

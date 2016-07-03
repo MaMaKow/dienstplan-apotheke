@@ -17,8 +17,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $Wochentage[$wochentag] = strftime("%A", $pseudo_datum);
 }
 
-//Hole eine Liste aller Mitarbeiter
-require "db-lesen-mitarbeiter.php";
 require "cookie-auswertung.php"; //Auswerten der per COOKIE gespeicherten Daten.
 require "get-auswertung.php"; //Auswerten der per GET übergebenen Daten.
 //echo "<pre>";    var_export($_POST);        echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
@@ -37,7 +35,8 @@ if (isset($mandant)) {
     create_cookie('mandant', $mandant);
 }
 
-//Hole erneut eine Liste aller Mitarbeiter debug DEBUG Post-Auswertung braucht dies und dies braucht POST-Auswertung!
+
+//Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
@@ -131,6 +130,7 @@ $VKmax = max(array_keys($Mitarbeiter));
 <html>
 	<head>
 		<meta charset=UTF-8>
+    <script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
 	</head>

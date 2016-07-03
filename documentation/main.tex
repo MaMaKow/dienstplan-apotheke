@@ -25,7 +25,7 @@
 
 \begin{document}
 \maketitle
-\tableofcontents\pagebreak 
+\tableofcontents\pagebreak
 
 
 
@@ -142,8 +142,8 @@ Die Tagesansicht besteht aus einer Tabelle mit den Informationen,
 	\item Nachname
 	\item Dienstbeginn und Dienstende
 	\item Mittagsbeginn und Mittagsende (wenn vorhanden)
-\end{itemize} 
-und zwei Abbildungen. Die obere Abbildung zeigt die Informationen der Tabelle in Form eines Balkendiagrammes. Zusätzlich ist die Gesamtstundenzahl des Tages für jeden Mitarbeiter angegeben (Abb. \ref{fig:Tagesansicht}). 
+\end{itemize}
+und zwei Abbildungen. Die obere Abbildung zeigt die Informationen der Tabelle in Form eines Balkendiagrammes. Zusätzlich ist die Gesamtstundenzahl des Tages für jeden Mitarbeiter angegeben (Abb. \ref{fig:Tagesansicht}).
 
 Im darunter liegenden Bild finden sich zwei Histogramme. In roter Farbe ist der erwartete Arbeitsaufwand im Verkauf dargestellt. Hierzu werden die Faktoren Monat, Tag im Monat, Wochentag und Uhrzeit berücksichtigt. Die Erfassung der Daten erfolgt aus der PEP-Exportfunktion der ASYS-Software. Derzeit muss eine solche Datei manuell über einen sicheren Transport (z.B. SFTP) zum Server transportiert werden.
 
@@ -175,7 +175,7 @@ Unter dem ausgewählten Mandanten, wird auch eine zweite Tabelle angezeigt. Dort
 
 Darunter werden die Mitarbeiter angezeigt die wegen Krankheit oder Urlaub nicht anwesend sind. Andere Abwesenheitsgründe (z.B. Elternzeit) werden nicht berücksichtigt.
 
-Auch die Anzahl der Wochenstunden für jeden Mitarbeiter werden zusammengerechnet. Diese erscheinen nicht auf dem ausgehängten Ausdruck, da vor diesem Abschnitt ein Zeilenumbruch eingefügt wird. 
+Auch die Anzahl der Wochenstunden für jeden Mitarbeiter werden zusammengerechnet. Diese erscheinen nicht auf dem ausgehängten Ausdruck, da vor diesem Abschnitt ein Zeilenumbruch eingefügt wird.
 
 Auch in dieser Ansicht kann jeweils eine Woche vor und zurück geblättert werden. Alle Mandanten können ausgewählt werden.
 
@@ -186,7 +186,7 @@ Auch in dieser Ansicht kann jeweils eine Woche vor und zurück geblättert werde
 \subsubsection{Mitarbeiter}
 In der Mitarbeiteransicht kann der Stundenplan eines einzelnen Mitarbeiters betrachtet werden.
 In der Tabelle sind die Dienstzeiten der gesamten Woche von Montag bis Sonntag eingetragen.
-Die Summe der Wochenstunden von Montag bis Freitag wird mit den Sollstunden verglichen. Eine Beachtung der Abwesenheit durch Urlaub oder Krankheit ist noch in Planung. %debug DEBUG
+Die Summe der Wochenstunden von Montag bis Freitag wird mit den Sollstunden verglichen. Abwesenheit durch Urlaub oder Krankheit werden von den Sollstunden automatisch abgezogen. Auch Feiertage werden beachtet.
 
 Unter der Tabelle findet sich ein Bild, dass den Stundenplan graphisch darstellt (Abb. \ref{fig:Mitarbeiteransicht}).
 \begin{figure}[h]
