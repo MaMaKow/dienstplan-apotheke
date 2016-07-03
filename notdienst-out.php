@@ -2,7 +2,6 @@
 require 'default.php';
 require 'db-verbindung.php';
 $mandant = 1;    //Wir zeigen den Dienstplan standardmäßig für die "Hauptapotheke" Mandant 1
-$filiale = 2;    //Am unteren Rand werden auch unsere Mitarbeiter in dieser Filale angezeigt.
 
 $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 $year = date('Y');

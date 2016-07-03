@@ -3,8 +3,7 @@ require 'default.php';
 require 'db-verbindung.php';
 
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
-$filiale=2;	//Am unteren Rand werden auch unsere Mitarbeiter in dieser Filale angezeigt.
-$tage=6;	//Dies ist eine Wochenansicht ohne Wochenende
+$tage=6;	//Dies ist eine Wochenansicht ohne Sonntag
 
 $datenübertragung="";
 $dienstplanCSV="";
@@ -33,8 +32,6 @@ require 'db-lesen-mitarbeiter.php';
 require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
-//$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
-//$Filialplan=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
 
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.

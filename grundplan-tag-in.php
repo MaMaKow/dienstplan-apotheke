@@ -2,7 +2,6 @@
 require 'default.php';
 require 'db-verbindung.php';
 $mandant = 1;    //Wir zeigen den Grundplan standardmäßig für die "Apotheke am Marienplatz"
-$filiale = 2;    //Am unteren Rand werden auch unsere Mitarbeiter in dieser Filale angezeigt.
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
@@ -17,8 +16,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $Wochentage[$wochentag] = strftime('%A', $pseudo_datum);
 }
 
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 //echo "<pre>";    var_export($_POST);        echo "</pre>";
@@ -30,10 +27,8 @@ if (isset($_POST['submitGrundplan'])) {
     foreach ($Grundplan as $wochentag => $value) {
         foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
             //Die einzelnen Zeilen im Grundplan
-
             if (!empty($VK)) {
                 //Wir ignorieren die nicht ausgefüllten Felder
-
                 list($VK) = explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
                 $dienstbeginn = $Grundplan[$wochentag]['Dienstbeginn'][$key];
                 $dienstende = $Grundplan[$wochentag]['Dienstende'][$key];
@@ -59,7 +54,6 @@ if (isset($_POST['submitGrundplan'])) {
                 $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
 			             VALUES ('$VK', '$wochentag', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$kommentar', '$mandant')";
                 $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
-                //echo "$abfrage<br>\n";
             }
         }
     }
@@ -76,11 +70,11 @@ if (isset($_POST['wochentag'])) {
     $wochentag = 1;
 }
 
+//Hole eine Liste aller Mitarbeiter
 if (isset($mandant)) {
     create_cookie('mandant', $mandant);
 }
 
-//Hole erneut eine Liste aller Mitarbeiter debug DEBUG Post-Auswertung braucht dies und dies braucht POST-Auswertung!
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
@@ -165,7 +159,9 @@ require 'zeichne-histogramm.php';
 
 //$Grundplan=db_lesen_tage($tage, $mandant);
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
-//$Filialplan=db_lesen_tage($tage, $filiale, "[^".$filiale."]");
+//foreach ($Mandant as $filiale => $name) {
+  //$Filialplan[$filiale]=db_lesen_tage($tage, $filiale, "[^".$filiale."]");
+//}
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
@@ -191,12 +187,11 @@ echo "\t\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t\t<input type=hidden name=wochentag value=".$Grundplan[$wochentag]["Wochentag"][0].">\n";
 echo "\t\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $key => $value) {
-    //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
-    if ($key != $mandant) {
-        echo "\t\t\t\t\t<option value=".$key.'>'.$value."</option>\n";
+foreach ($Mandant as $filiale => $name) {
+    if ($filiale != $mandant) {
+        echo "\t\t\t\t\t<option value=".$filiale.'>'.$value."</option>\n";
     } else {
-        echo "\t\t\t\t\t<option value=".$key.' selected>'.$value."</option>\n";
+        echo "\t\t\t\t\t<option value=".$filiale.' selected>'.$value."</option>\n";
     }
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";
@@ -206,12 +201,11 @@ echo "\t\t\t<form id=wochentagformular method=post>\n";
 echo "\t\t\t\t<input type=hidden name=mandant value=".$Grundplan[$wochentag]["Mandant"][0].">\n";
 echo "\t\t\t\t<select class=no-print style=font-size:150% name=wochentag onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
-foreach ($Wochentage as $key => $value) {
-    //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
-    if ($key != $wochentag) {
-        echo "\t\t\t\t\t<option value=".$key.'>'.$value."</option>\n";
+foreach ($Wochentage as $temp_weekday => $value) {
+    if ($temp_weekday != $wochentag) {
+        echo "\t\t\t\t\t<option value=".$temp_weekday.'>'.$value."</option>\n";
     } else {
-        echo "\t\t\t\t\t<option value=".$key.' selected>'.$value."</option>\n";
+        echo "\t\t\t\t\t<option value=".$temp_weekday.' selected>'.$value."</option>\n";
     }
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";

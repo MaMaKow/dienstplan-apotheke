@@ -4,17 +4,9 @@ if ( isset($_POST['mandant']))
 {
 	if (is_int((int)$_POST['mandant'])){
 		$mandant=htmlspecialchars($_POST['mandant']);
-		// TODO: Is the following still necessary? Or do we allways handle every $filiale
-		if ( $mandant==2 )
-		{
-			$filiale=1; //debug DEBUG Hier wird jetzt hard coded, dass die Helenenstraße die Hauptfiliale zum Marienplatz ist. Das könnte man in einem wirklich großen Verbund noch anders klären. Zu Beispiel könnte man die Mutter separat kennzeichnen.
-		}
 	} else {
 		throw new InvalidArgumentException("Ungültiger Wert für Mandant per POST übergeben");
 	}
-}
-else {
-	// TODO: This probably is an Exception. We should be aware if we do anything without knowing about the branch (=mandant) that we work on.
 }
 
 if ( isset($_POST['datum']))
