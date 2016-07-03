@@ -177,8 +177,6 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
 }
 echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t<tfoot>\n";
-
-echo "\t\t\t\t</tr>\n"; //debug DEBUG THis one seems to be bulshit. There is a </tr> a few lines above before the start of this <tfoot>
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)

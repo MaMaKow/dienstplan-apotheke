@@ -2,7 +2,6 @@
 require "default.php";
 require "db-verbindung.php";
 $mandant = 1;    //Wir zeigen den Grundplan standardmäßig für die "Apotheke am Marienplatz"
-$filiale = 2;    //Am unteren Rand werden auch unsere Mitarbeiter in dieser Filale angezeigt.
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
@@ -19,7 +18,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 
 require "cookie-auswertung.php"; //Auswerten der per COOKIE gespeicherten Daten.
 require "get-auswertung.php"; //Auswerten der per GET übergebenen Daten.
-//echo "<pre>";    var_export($_POST);        echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 
 if (isset($_POST['mandant'])) {
@@ -118,8 +116,6 @@ $datum = date('Y-m-d', $pseudo_datum);
 require 'zeichne-histogramm.php';
 
 //$Grundplan=db_lesen_tage($tage, $mandant);
-/*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
-//$Filialplan=db_lesen_tage($tage, $filiale, "[^".$filiale."]");
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
@@ -144,12 +140,11 @@ echo "\t\t\t<form id=mandantenformular method=post>\n";
 //echo "\t\t\t\t<input type=hidden name=wochentag value=".$Grundplan[$wochentag]["Wochentag"][0].">\n";
 echo "\t\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $key => $value) {
-    //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
-    if ($key != $mandant) {
-        echo "\t\t\t\t\t<option value=".$key.'>'.$value."</option>\n";
+foreach ($Mandant as $filiale => $name) {
+    if ($filiale != $mandant) {
+        echo "\t\t\t\t\t<option value=".$filiale.'>'.$name."</option>\n";
     } else {
-        echo "\t\t\t\t\t<option value=".$key.' selected>'.$value."</option>\n";
+        echo "\t\t\t\t\t<option value=".$filiale.' selected>'.$name."</option>\n";
     }
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";
@@ -220,23 +215,16 @@ if (!isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) or !($Grundplan[$wochenta
 }
 echo "\t\t\t\t</tr>";
 echo "\t\t\t</table>\n";
-//echo "$submit_button";
 echo "\t\t</form>\n";
 echo "</div>";
 if (file_exists("images/dienstplan_m".$mandant."_".$wochentag.".png")) {
     echo "<div class=above-image>";
     echo "<div class=image>";
-//echo "<td align=center valign=top rowspan=60>";
 echo "<img src=images/dienstplan_m".$mandant."_".$wochentag.".png?".filemtime("images/dienstplan_m".$mandant."_".$wochentag.".png")." style=width:100%;><br>";
-//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-//echo "</div>";
-//echo "<div class=image>";
+//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern. Therefore we use the file modification time.
 echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime("images/histogramm_m".$mandant."_".$datum.".png")." style=width:100%;>";
     echo "</div>";
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
-//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
-    //echo "<pre>";	var_export($Wochentage);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 
 require 'contact-form.php';
 

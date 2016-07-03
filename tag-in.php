@@ -2,7 +2,6 @@
 require 'default.php';
 require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
-$filiale=2;	//Am unteren Rand werden auch unsere Mitarbeiter in dieser Filale angezeigt.
 $tage=1;	//Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
@@ -37,7 +36,7 @@ require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
-$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
+//$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 
@@ -118,13 +117,13 @@ echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
 echo "\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
+foreach ($Mandant as $filiale => $name)
 {
-	if ($key!=$mandant)
+	if ($filiale!=$mandant)
 	{
-		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
+		echo "\t\t\t\t<option value=".$filiale.">".$name."</option>\n";
 	} else {
-		echo "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
+		echo "\t\t\t\t<option value=".$filiale." selected>".$name."</option>\n";
 	}
 }
 echo "\t\t\t</select>\n\t\t</form>\n";
@@ -135,7 +134,7 @@ echo "\t\t\t<div id=navigationsElemente>";
 $rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärts_button;
 $vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";echo $vorwärts_button;
 $copy_button="\t\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copy_button;
-$submit_button="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo "$submit_button";
+$submit_button="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n"; echo "$submit_button";
 
 echo "<br><br>\n";
 // TODO: The button should be inactive when the approval already was done.

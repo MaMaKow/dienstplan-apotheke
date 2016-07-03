@@ -108,13 +108,13 @@ echo "\t\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
 echo "\t\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
+foreach ($Mandant as $filiale => $name)
 {
-	if ($key!=$mandant)
+	if ($filiale!=$mandant)
 	{
-		echo "\t\t\t\t\t<option value=".$key.">".$value."</option>\n";
+		echo "\t\t\t\t\t<option value=".$filiale.">".$name."</option>\n";
 	}else {
-		echo "\t\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
+		echo "\t\t\t\t\t<option value=".$filiale." selected>".$name."</option>\n";
 	}
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";
