@@ -85,7 +85,15 @@ for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
 $zeile .= '</select>';
 echo $zeile;
 $submit_button = "\t<input type=submit value=Absenden name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
+if (isset($Mitarbeiter[$auswahl_mitarbeiter])) {
+  echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
+}
+else {
+  //This happens if a coworker is not working with us anymore.
+  //He can still be chosen within abwesenheit and stunden.
+  //Therefore we will read his/her number in the cookie.
+  die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
+}
 
 //echo "\t\t\t<table border=0 rules=groups style=width:99%>\n";
 echo "\t\t\t<table border=1>\n";

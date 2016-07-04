@@ -2,6 +2,8 @@
 		//Zunächst müssen wir festlegen, wie groß die Zeitsprünge in der Auswertung werden.
 		$zeit_abstand=5*60; //5 Minuten
 		if (!isset($tag)) {$tag=0;} //Beim Aufruf aus tag-out wird kein Tag übergeben. Beim Aufruf aus der Auswertung, wird ein $tag übergeben.
+		$Approbierten_anwesende = array();
+		$Wareneingang_Anwesende = array();
 		if (!empty($Dienstplan[$tag]["Dienstbeginn"]))
 		{
 			//Im folgenden Suchen wir die Approbierten, die heute anwesend sind. Sie werden im $Approbierten_plan gespeichert.

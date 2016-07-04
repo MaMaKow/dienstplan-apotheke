@@ -149,7 +149,15 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	require 'db-lesen-feiertag.php';
 	if(isset($feiertag)){echo " ".$feiertag." ";}
 	require 'db-lesen-notdienst.php';
-	if(isset($notdienst['mandant'])){echo "<br>NOTDIENST<br>".$Mitarbeiter[$notdienst['vk']]." / ". $Mandant[$notdienst['mandant']];}
+	if(isset($notdienst['mandant'])){
+		echo "<br>NOTDIENST<br>";
+		if (isset($Mitarbeiter[$notdienst['vk']])) {
+			echo $Mitarbeiter[$notdienst['vk']];
+		}else {
+			echo "???";
+		}
+		echo " / ". $Mandant[$notdienst['mandant']];
+	}
 	echo "</td>\n";
 }
 if ($approval=="approved") {
