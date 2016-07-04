@@ -111,7 +111,7 @@
 					$erwartungCSV="";
 				}
 			}
-//			echo "<pre>";	var_export($Erwartung);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
+//			echo "<pre>";	var_export($Erwartung);    	echo "</pre>";
 			if(!isset($histogramm_no_print))
 			{
 				$command=('./Histogramm_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
@@ -127,7 +127,6 @@
 		else
 		{
 			echo "<br>Kein Dienstplan gefunden beim Zeichnen des Histogramms.<br>\n";
-//			echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; // Hier kann der aus der Datenbank gelesene Datensatz zu Debugging-Zwecken angesehen werden.
 		}
 
 ?>

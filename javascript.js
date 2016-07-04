@@ -99,3 +99,54 @@ function toggle_show_administration ()
   }
 
 }
+
+//This function is used by stunden-in.php
+function updatesaldo()
+{
+  //Wir lesen die Objekte aus dem HTML code.
+  var stundenInputId		= document.getElementById("stunden");
+  var stundenSaldoId		= document.getElementById("saldoAlt");
+  var stundenSaldoNeuId		= document.getElementById("saldoNeu");
+
+  //Wir entnehmen die vorhandenen Werte.
+  if ( stundenSaldoId != null) { //For new Coworkers there is no value set. Therefore we start with 0.
+    var stundenSaldoValue		= Number(stundenSaldoId.innerHTML);
+  }else {
+    var stundenSaldoValue		= 0;
+  }
+  var stundenInputArray		= stundenInputId.value.split(":");
+  if (stundenInputArray[1]) //Wenn es einen Doppelpunkt gibt.
+  {
+//					document.write('Wir haben einen Doppelpunkt.');
+    //Die Eingabe ist eine Zeit mit Doppelpunkt. Wir rechnen in einen float (Kommazahl) um.
+    var stundenInputHour 		= Number(stundenInputArray[0]);
+    var stundenInputMinute 		= Number(stundenInputArray[1]);
+    var stundenInputSecond		= Number(stundenInputArray[2]);
+
+    //Jetzt berechnen wir aus den Daten eine Summe. Dazu formen wir zunächst in ein gültiges Datum um.
+    var stundenInputValue = 0;// Wir initialisieren den Input als Null und addieren dann Sekunden, Minuten und Stunden dazu.
+    if(!isNaN(stundenInputSecond))
+    {
+      stundenInputValue		= stundenInputValue + stundenInputSecond/3600;
+    }
+    if(!isNaN(stundenInputMinute))
+    {
+      stundenInputValue		= stundenInputValue + stundenInputMinute/60;
+    }
+    if(!isNaN(stundenInputHour))
+    {
+      stundenInputValue		= stundenInputValue + stundenInputHour;
+    }
+    stundenInputId.value = stundenInputValue;
+  }
+  else
+  {
+    //Die Stunden sind eine Ganzzahl oder eine Kommazahl.
+    //Wir entnehmen die vorhandenen Werte.
+    //Wir brauchen die Kommazahl mit einem Punkt, nicht mit einem Komma.
+    stundenInputId.value = stundenInputId.value.replace(/,/g, '.')
+    var stundenInputValue		= Number(stundenInputId.value);
+  }
+  var ergebnis		 	= stundenInputValue + stundenSaldoValue;
+  stundenSaldoNeuId.value 	= ergebnis;
+}

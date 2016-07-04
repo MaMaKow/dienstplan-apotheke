@@ -133,6 +133,8 @@ require 'copy-paste.php';
 }
 elseif ( (isset($_POST['submit_approval']) or isset($_POST['submit_disapproval'])) && count($_POST['Dienstplan']) > 0 ) {
 require 'db-write-approval.php';
+$datum=$_POST['Dienstplan'][0]['Datum'][0];
+// TODO: Is this save? Is the key 0 allways set?
 }
 else
 {
