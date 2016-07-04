@@ -7,73 +7,8 @@ require 'default.php';
 		<script type="text/javascript" src="javascript.js" ></script>
 		<link rel="stylesheet" type="text/css" href="style.css" media="all">
 		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-		<script>"use strict";
-		// TODO: Does the function work as expected? Will EVERYTHING work if it replaces the one in javascript.js?
-			function confirmDelete(link)
-			{
-				var r = confirm("Diesen Datensatz wirklich löschen?");
-				if (r == true)
-				{
-				//	alert("You pressed OK!");
-				//	alert(link);
-					window.location.replace(link); //Wechselt automatisch heraus aus der Eingabemaske.
-				}
-				else
-				{
-				//	alert("You pressed Cancel!");
-					return false;
-				}
-			}
+		<script>
 			window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
-			function updatesaldo()
-			{
-				//Wir lesen die Objekte aus dem HTML code.
-				var stundenInputId		= document.getElementById("stunden");
-				var stundenSaldoId		= document.getElementById("saldoAlt");
-				var stundenSaldoNeuId		= document.getElementById("saldoNeu");
-
-				//Wir entnehmen die vorhandenen Werte.
-				if ( stundenSaldoId != null) { //For new Coworkers there is no value set. Therefore we start with 0.
-					var stundenSaldoValue		= Number(stundenSaldoId.innerHTML);
-				}else {
-					var stundenSaldoValue		= 0;
-				}
-				var stundenInputArray		= stundenInputId.value.split(":");
-				if (stundenInputArray[1]) //Wenn es einen Doppelpunkt gibt.
-				{
-//					document.write('Wir haben einen Doppelpunkt.');
-					//Die Eingabe ist eine Zeit mit Doppelpunkt. Wir rechnen in einen float (Kommazahl) um.
-					var stundenInputHour 		= Number(stundenInputArray[0]);
-					var stundenInputMinute 		= Number(stundenInputArray[1]);
-					var stundenInputSecond		= Number(stundenInputArray[2]);
-
-					//Jetzt berechnen wir aus den Daten eine Summe. Dazu formen wir zunächst in ein gültiges Datum um.
-					var stundenInputValue = 0;// Wir initialisieren den Input als Null und addieren dann Sekunden, Minuten und Stunden dazu.
-					if(!isNaN(stundenInputSecond))
-					{
-						stundenInputValue		= stundenInputValue + stundenInputSecond/3600;
-					}
-					if(!isNaN(stundenInputMinute))
-					{
-						stundenInputValue		= stundenInputValue + stundenInputMinute/60;
-					}
-					if(!isNaN(stundenInputHour))
-					{
-						stundenInputValue		= stundenInputValue + stundenInputHour;
-					}
-					stundenInputId.value = stundenInputValue;
-				}
-				else
-				{
-					//Die Stunden sind eine Ganzzahl oder eine Kommazahl.
-					//Wir entnehmen die vorhandenen Werte.
-					//Wir brauchen die Kommazahl mit einem Punkt, nicht mit einem Komma.
-					stundenInputId.value = stundenInputId.value.replace(/,/g, '.')
-					var stundenInputValue		= Number(stundenInputId.value);
-				}
-				var ergebnis		 	= stundenInputValue + stundenSaldoValue;
-				stundenSaldoNeuId.value 	= ergebnis;
-			}
 		</script>
 	</head>
 	<body>
@@ -105,6 +40,7 @@ require 'default.php';
 				create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 			}
 
+/*
 			//Wir löschen Datensätze, wenn dies befohlen wird.
 			if(isset($_GET['command']) and isset($_GET['vk']) and isset($_GET['datum']))
 			{
@@ -117,6 +53,20 @@ require 'default.php';
 					$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 				}
 			}
+*/
+			//Wir löschen Datensätze, wenn dies befohlen wird.
+			if (isset($_POST['loeschen'])) {
+					foreach ($_POST['loeschen'] as $vk => $Daten) {
+							foreach ($Daten as $datum => $X) {
+									$abfrage = "DELETE FROM `Stunden`
+			WHERE `VK` = '$vk' AND `Datum` = '$datum'";
+					//		echo "$abfrage";
+									$ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+							}
+					}
+					$auswahl_mitarbeiter = $vk;
+			}
+
 			//Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
 			if(isset($_POST['submitStunden']) and isset($_POST['auswahl_mitarbeiter']) and isset($_POST['datum']) and isset($_POST['stunden']) and isset($_POST['saldo']) and isset($_POST['grund']))
 			{
@@ -137,7 +87,7 @@ require 'default.php';
 			{
 				$tablebody.= "\t\t\t<tr>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-				$tablebody.= date('d.m.Y', strtotime($row->Datum))." <a align=right href=javascript:void(); title='Diesen Datensatz löschen' onClick=confirmDelete('?command=delete&vk=$row->VK&datum=$row->Datum')>[x]</a>";
+				$tablebody.= date('d.m.Y', strtotime($row->Datum))." <input class=no-print type=submit name=loeschen[$vk][$row->Datum] value='X' title='Diesen Datensatz löschen'>";
 				$tablebody.= "\n\t\t\t\t</td>\n";
 				$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
 				$tablebody.= "$row->Grund";
@@ -169,18 +119,24 @@ require 'navigation.php';
 echo "<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
-for ($vk=1; $vk<$VKmax+1; $vk++)
+//echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
+foreach ($Mitarbeiter as $vk => $name)
 {
-	if(isset($Mitarbeiter[$vk]))
+	if($vk == $auswahl_mitarbeiter)
 	{
+		echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+	}
+	else {
 		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
 	}
 }
 echo "\t\t\t</select>\n";
 $submit_button="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
+echo "\t\t</form>\n";
 echo "<a href=stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
+
+echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 			echo "\t\t<table border=1>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n

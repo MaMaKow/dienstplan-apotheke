@@ -16,7 +16,7 @@ require 'default.php';
             require 'db-verbindung.php';
             //Hole eine Liste aller Mitarbeiter
             require 'db-lesen-mitarbeiter.php';
-            $VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
+            //$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
             //Hole eine Liste aller Mandanten (Filialen)
             require 'db-lesen-mandant.php';
             if (isset($_POST['auswahl_mitarbeiter'])) {
@@ -106,11 +106,15 @@ require 'navigation.php';
 echo "<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
-for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
-    if (isset($Mitarbeiter[$vk])) {
-        echo "\t\t\t\t<option value=$vk>".$vk.' '.$Mitarbeiter[$vk]."</option>,\n";
-    }
+foreach ($Mitarbeiter as $vk => $name)
+{
+	if($vk == $auswahl_mitarbeiter)
+	{
+		echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+	}
+	else {
+		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+	}
 }
 echo "\t\t\t</select>\n";
 $submit_button = "\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
