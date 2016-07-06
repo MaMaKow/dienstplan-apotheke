@@ -36,7 +36,7 @@ echo "<div class=no-image>\n";
 			}
 			if (isset($auswahl_mitarbeiter))
 			{
-				create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+				create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 			}
 			$vk=$auswahl_mitarbeiter;
 			$abfrage="SELECT * FROM `Stunden`

@@ -22,11 +22,11 @@ require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if (isset($mandant))
 {
-	create_cookie("mandant", $mandant);
+	create_cookie("mandant", $mandant, 30);
 }
 if (isset($datum))
 {
-	create_cookie("datum", $datum);
+	create_cookie("datum", $datum, 0.5);
 }
 
 //The following lines check for the state of approval.

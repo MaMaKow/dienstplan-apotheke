@@ -27,7 +27,7 @@ if (isset($_POST['submitAuswahlMitarbeiter'])) {
     $auswahl_mitarbeiter = 1;
 }
 if (isset($auswahl_mitarbeiter)) {
-    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter);
+    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
 
 if (isset($datum)) {
