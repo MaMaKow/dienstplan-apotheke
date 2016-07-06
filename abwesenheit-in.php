@@ -30,7 +30,7 @@ require 'default.php';
             }
 
             if (isset($auswahl_mitarbeiter)) {
-                create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter);
+                create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
             }
 
             //Wir löschen Datensätze, wenn dies befohlen wird.

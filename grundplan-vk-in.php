@@ -21,7 +21,7 @@ if (isset($_POST['auswahl_mitarbeiter'])) {
 }
 
 if (isset($auswahl_mitarbeiter)) {
-    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter);
+    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
 if (isset($_POST['submitGrundplan'])) {
     $max_zeilen = -1;
@@ -47,9 +47,12 @@ if (isset($Grundplan)) {
                 }
             }
             if (isset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant)) {
-                $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Kommentar, Stunden, Mandant)
-					VALUES ('$VK', '$wochentag', '$Dienstbeginn', '$Dienstende', '$Mittagsbeginn', '$Mittagsende', '$Kommentar', '$Stunden', '$Mandant')";
-                //echo "$abfrage<br>\n";
+                //First, the old values are deleted.
+                $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$Mandant' AND VK='$VK'";
+                $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                //Second, new values are inserted.
+                $abfrage = "INSERT INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Kommentar, Stunden, Mandant)
+					      VALUES ('$VK', '$wochentag', '$Dienstbeginn', '$Dienstende', '$Mittagsbeginn', '$Mittagsende', '$Kommentar', '$Stunden', '$Mandant')";
                 unset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant);
                 $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
             }
@@ -147,10 +150,12 @@ echo "\t\t<form id=myform method=post>\n";
 //$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Vorwärts"	name="submitWocheVorwärts">\n";echo $Vorwärts_button;
 //$zeile="<br>";
 $zeile = "<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
-for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
-    if (isset($Mitarbeiter[$vk])) {
-        $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
+//$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
+foreach ($Mitarbeiter as $vk => $name) {
+    if ($vk == $auswahl_mitarbeiter) {
+        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>,';
+    }else {
+      $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>,';
     }
 }
 $zeile .= '</select>';

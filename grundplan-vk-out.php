@@ -19,7 +19,7 @@ if (isset($_POST['auswahl_mitarbeiter'])) {
 }
 
 if (isset($auswahl_mitarbeiter)) {
-    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter);
+    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
 
 //Abruf der gespeicherten Daten aus der Datenbank

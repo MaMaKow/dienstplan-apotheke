@@ -25,6 +25,10 @@ if (isset($_POST['submitGrundplan'])) {
     }
 
     foreach ($Grundplan as $wochentag => $value) {
+        //First, the old values are deleted.
+        $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
+        $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+        //New values are composed from the Grundplan from $_POST.
         foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
             //Die einzelnen Zeilen im Grundplan
             if (!empty($VK)) {
@@ -43,6 +47,10 @@ if (isset($_POST['submitGrundplan'])) {
                 } else {
                     $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
                     //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
+                    if (!isset($Mitarbeiter)) {
+                      require 'db-lesen-mitarbeiter.php';
+                    }
+
                     if ($sekunden - $Mittag_mitarbeiter[$VK] * 60 >= 6 * 3600) {
                       $mittagspause = $Mittag_mitarbeiter[$VK] * 60;
                       $sekunden = $sekunden - $mittagspause;
@@ -51,6 +59,7 @@ if (isset($_POST['submitGrundplan'])) {
                     }
                     $stunden = round($sekunden / 3600, 1);
                 }
+                //The new values are stored inside the database.
                 $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
 			             VALUES ('$VK', '$wochentag', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$kommentar', '$mandant')";
                 $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
@@ -70,11 +79,11 @@ if (isset($_POST['wochentag'])) {
     $wochentag = 1;
 }
 
-//Hole eine Liste aller Mitarbeiter
 if (isset($mandant)) {
-    create_cookie('mandant', $mandant);
+    create_cookie('mandant', $mandant, 30);
 }
 
+//Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
@@ -189,9 +198,9 @@ echo "\t\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=
 //echo "\t\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $filiale => $name) {
     if ($filiale != $mandant) {
-        echo "\t\t\t\t\t<option value=".$filiale.'>'.$value."</option>\n";
+        echo "\t\t\t\t\t<option value=".$filiale.'>'.$name."</option>\n";
     } else {
-        echo "\t\t\t\t\t<option value=".$filiale.' selected>'.$value."</option>\n";
+        echo "\t\t\t\t\t<option value=".$filiale.' selected>'.$name."</option>\n";
     }
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";
@@ -231,21 +240,21 @@ for ($j = 0; $j < $VKcount; ++$j) {
         $zeile = '';
     echo "\t\t\t\t\t<td align=right>";
     $zeile .= '<select name=Grundplan['.$wochentag.'][VK]['.$j.'] tabindex='.(($wochentag * $VKcount * 5) + ($j * 5) + 1).'><option>';
-    if (isset($Grundplan[$wochentag]['VK'][$j]) && isset($Mitarbeiter[$Grundplan[$wochentag]['VK'][$j]])) {
-        $zeile .= $Grundplan[$wochentag]['VK'][$j].' '.$Mitarbeiter[$Grundplan[$wochentag]['VK'][$j]];
-    }
+//    if (isset($Grundplan[$wochentag]['VK'][$j]) && isset($Mitarbeiter[$Grundplan[$wochentag]['VK'][$j]])) {
+        //$zeile .= $Grundplan[$wochentag]['VK'][$j].' '.$Mitarbeiter[$Grundplan[$wochentag]['VK'][$j]];
+//    }
     $zeile .= '</option>';
-    for ($k = 1; $k < $VKmax + 1; ++$k) {
+    foreach ($Mitarbeiter as $k => $name) {
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
-            if (isset($Mitarbeiter[$k]) and $Grundplan[$wochentag]['VK'][$j] != $k) {
+            if ( $Grundplan[$wochentag]['VK'][$j] != $k) {
                 //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 
-                    $zeile .= '<option>'.$k.' '.$Mitarbeiter[$k].'</option>,';
+                    $zeile .= '<option>'.$k.' '.$name.'</option>,';
             } else {
-                $zeile .= '<option></option>,'; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
+              $zeile .= '<option selected>'.$k.' '.$name.'</option>,';
             }
-        } elseif (isset($Mitarbeiter[$k])) {
-            $zeile .= '<option>'.$k.' '.$Mitarbeiter[$k].'</option>,';
+        } else {
+            $zeile .= '<option>'.$k.' '.$name.'</option>,';
         }
     }
     $zeile .= "</select>\n";
@@ -327,7 +336,7 @@ echo '<img src=images/histogramm_m'.$mandant.'_'.$datum.'.png?'.filemtime('image
     echo '</div>';
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 }
-//	echo "<pre>";	var_export($Mandanten_mitarbeiter);    	echo "</pre>";
+//	echo "<pre>";	var_export($_POST);    	echo "</pre>";
 
 require 'contact-form.php';
 

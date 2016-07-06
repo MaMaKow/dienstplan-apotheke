@@ -19,11 +19,11 @@ $datum=strtotime($montags_differenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum); $konstantes_datum=$datum;
 if (isset($datum))
 {
-	create_cookie("datum", $datum); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+	create_cookie("datum", $datum, 0.5); //Diese Funktion muss vor dem ersten echo durchgeführt werden.
 }
 if (isset($mandant))
 {
-	create_cookie("mandant", $mandant); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+	create_cookie("mandant", $mandant, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 }
 
 //Hole eine Liste aller Mitarbeiter

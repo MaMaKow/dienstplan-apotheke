@@ -30,7 +30,7 @@ if (isset($_POST['wochentag'])) {
 }
 
 if (isset($mandant)) {
-    create_cookie('mandant', $mandant);
+    create_cookie('mandant', $mandant, 30);
 }
 
 
