@@ -1,13 +1,13 @@
 <?php
 //Wir erstellen eine Icalendar Datei (ICS). Diese kann dann in einen Kalender importiert werden.
-function schreiben_ics ($Dienstplan) 
+function schreiben_ics ($Dienstplan)
 {
 global $Mitarbeiter;
 $textICS="";
 $textICS.="BEGIN:VCALENDAR\n";
 $textICS.="VERSION:2.0\n";
 $textICS.="PRODID:-//Dr. Martin Mandelkow/martin-mandelkow.de//Apotheke am Marienplatz//DE\n";
-foreach(array_keys($Dienstplan) as $tag ) 
+foreach(array_keys($Dienstplan) as $tag )
 {
 	$datum=$Dienstplan[$tag]["Datum"][0];
 	foreach($Dienstplan[$tag]['VK'] as $key => $vk)
@@ -39,7 +39,7 @@ $myfile = fopen($filename, "w") or die("Unable to open file!");
 fwrite($myfile, $textICS);
 fclose($myfile);
 $textICS="";
-echo "<button type=button class=no-print onclick=location='$filename'>Download ics Kalender Datei</button>\n";
+echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print onclick=location='$filename' title='Download ics Kalender Datei'><img src=images/download.png width=32px><br>ICS Datei</button>\n";
 //echo "<pre>\n"; var_dump($Dienstplan); echo "</pre>";
 }
 ?>

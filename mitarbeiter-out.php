@@ -65,14 +65,21 @@ $plan_anzahl = max($Plan_anzahl);
 require 'navigation.php';
 echo "<div class=no-image>\n";
 echo "\t\t<a href=woche-out.php?datum=".$datum.'>Kalenderwoche '.strftime('%V', strtotime($datum))."</a><br>\n";
-//echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 echo "\t\t<form id=myform method=post>\n";
-$Rückwärts_button = "\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
-$Vorwärts_button = "\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
-$zeile = '<br>';
-//$zeile.="<select name=auswahl_mitarbeiter class=no-print onChange=this.form.submit()>";
-$zeile .= "<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-//$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
+//Page heading:
+if (isset($Mitarbeiter[$auswahl_mitarbeiter])) {
+  echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
+}
+else {
+  //This happens if a coworker is not working with us anymore.
+  //He can still be chosen within abwesenheit and stunden.
+  //Therefore we will read his/her number in the cookie.
+  die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
+}
+
+
+//Chose which worker to view:
+$zeile = "<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {
         if ($vk == $auswahl_mitarbeiter) {
@@ -83,18 +90,23 @@ for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     }
 }
 $zeile .= '</select>';
+//name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+$zeile .= "\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
+$zeile .= '<br><br>';
 echo $zeile;
-$submit_button = "\t<input type=submit value=Absenden name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-if (isset($Mitarbeiter[$auswahl_mitarbeiter])) {
-  echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
-}
-else {
-  //This happens if a coworker is not working with us anymore.
-  //He can still be chosen within abwesenheit and stunden.
-  //Therefore we will read his/her number in the cookie.
-  die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
-}
 
+//Navigation between the weeks:
+//$Rückwärts_button = "\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
+//$Vorwärts_button = "\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
+$rückwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheRückwärts">
+  <i class="icon-user icon-white"><img src=images/backward.png width=32px></i><br>1 Woche Rückwärts
+</button>';
+$vorwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheVorwärts">
+  <i class="icon-user icon-white"><img src=images/foreward.png width=32px></i><br>1 Woche Vorwärts
+</button>';
+echo "$rückwärts_button_img";
+echo "$vorwärts_button_img";
+echo '<br><br>';
 //echo "\t\t\t<table border=0 rules=groups style=width:99%>\n";
 echo "\t\t\t<table border=1>\n";
 echo "\t\t\t\t<thead>\n";
@@ -276,7 +288,7 @@ $command = ('./Mitarbeiter_image.sh '.escapeshellcmd($Dienstplan[0]['Datum'][0])
 exec($command, $kommando_ergebnis);
 if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png') )
 {
-  echo '<img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').' style=width:70%;><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+  echo '<img class=worker-img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
   schreiben_ics($Dienstplan); //Schreibt die Daten aus dem Dienstplan (alle Tage, ohne Pause) in eine ics Datei. Fügt einen Download-button für die Datei ein.
 }
 

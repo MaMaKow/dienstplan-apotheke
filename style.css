@@ -128,3 +128,17 @@ li a:hover {
 tr.wochenende {
     background-color: #B4B4B4;
 }
+img.worker-img {
+	border: 5px solid #B4B4B4;
+	clear: left;
+	position: relative;
+	float: left;
+	height: 64px;
+}
+img.worker-img:hover {
+	height: auto;
+	width: 90%;
+}
+select {
+	font-size: xx-large;
+}

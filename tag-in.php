@@ -44,7 +44,7 @@ if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 AND !isset
 {
 	//Wir wollen eine automatische Dienstplanfindung beginnen.
 	//Mal sehen, wie viel die Maschine selbst gestalten kann.
-	$Fehlermeldung[]="Kein Plan in der Datenbank dies is ein Vorschlag!";
+	$Fehlermeldung[]="Kein Plan in der Datenbank, dies ist ein Vorschlag!";
 //	unset ($Dienstplan);
 	require_once 'plane-tag-grundplan.php';
 }
@@ -131,14 +131,24 @@ if ( isset($datenübertragung) ) {echo $datenübertragung;}
 echo "\t\t<form id=myform method=post>\n";
 //echo "\t\t<form id=myform method=post action=test-post.php>\n";
 echo "\t\t\t<div id=navigationsElemente>";
-$rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $rückwärts_button;
-$vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";echo $vorwärts_button;
-$copy_button="\t\t\t\t<input type=submit 	value='In die nächste Woche kopieren'	name='submitCopyPaste'>\n";echo $copy_button;
-$submit_button="\t\t\t\t<input type=submit value=Absenden name='submitDienstplan'>\n"; echo "$submit_button";
+//$rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";
+//$vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";
+$rückwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitRückwärts">
+  <i class="icon-user icon-white"><img src=images/backward.png width=32px></i><br>1 Tag Rückwärts
+</button>';
+$vorwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitVorwärts">
+  <i class="icon-user icon-white"><img src=images/foreward.png width=32px></i><br>1 Tag Rückwärts
+</button>';
+$submit_button_img='<button type="submit" class="btn btn-primary no-print" value=Absenden name="submitDienstplan">
+  <i class="icon-user icon-white"><img src=images/save.png width=32px></i><br>Speichern
+</button>';
+echo "$rückwärts_button_img";
+echo "$vorwärts_button_img";
+echo "$submit_button_img";
 
 echo "<br><br>\n";
 // TODO: The button should be inactive when the approval already was done.
-$submit_approval_button="\t\t\t\t<input type=submit value=Zustimmen name='submit_approval'>\n";echo "$submit_approval_button";
+$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";echo "$submit_approval_button";
 $submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";echo "$submit_disapproval_button";
 echo "<br><br>\n";
 
@@ -264,7 +274,6 @@ if (isset($Kranke))
 	echo "\t\t<tr><td><b>Krank</b><br>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
 }
 echo "\t\t\t</table>\n";
-echo "$submit_button";
 echo "\t\t</form>\n";
 echo "</div>";
 if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
