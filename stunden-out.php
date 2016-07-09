@@ -2,13 +2,8 @@
 require 'default.php';
 ?>
 <html>
-	<head>
-		<meta charset=UTF-8>
-		<script type="text/javascript" src="javascript.js" ></script>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
-	<body>
+<?php require 'head.php';?>
+<body>
 		<?php
 require 'navigation.php';
 echo "<div class=no-image>\n";
@@ -75,7 +70,7 @@ echo "<div class=no-image>\n";
 
 //Hier beginnt die Ausgabe
 echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
+echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
 echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
 for ($vk=1; $vk<$VKmax+1; $vk++)
 {

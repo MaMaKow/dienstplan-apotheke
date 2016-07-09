@@ -1,19 +1,17 @@
 <?php
+#Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
 require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Tagesansicht für einen einzelnen Tag.
 
-#Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 
 
 $datenübertragung="";
 $dienstplanCSV="";
 
 
-
-$heute=date('Y-m-d');
-$datum=$heute; //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
+$datum=date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 
 
 
@@ -80,13 +78,7 @@ require 'pruefe-abwesenheit.php';
 //Produziere die Ausgabe
 ?>
 <html>
-	<head>
-		<meta charset=UTF-8>
-		<script type="text/javascript" src="javascript.js" ></script>
-		<noscript>Sorry, your browser does not support JavaScript!</noscript>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
+<?php require 'head.php';?>
 	<body>
 <?php
 require 'navigation.php';
@@ -115,7 +107,7 @@ echo "<div class=no-image>\n";
 echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><div class=only-print><b>". $Mandant[$mandant] ."</b></div><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
-echo "\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
+echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $filiale => $name)
 {

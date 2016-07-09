@@ -54,12 +54,7 @@ $plan_anzahl = max($Plan_anzahl);
 //Produziere die Ausgabe
 ?>
 <html>
-	<head>
-		<meta charset=UTF-8>
-    <script type="text/javascript" src="javascript.js" ></script>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
+<?php require 'head.php';?>
 	<body>
 <?php
 require 'navigation.php';
@@ -79,7 +74,7 @@ else {
 
 
 //Chose which worker to view:
-$zeile = "<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
+$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {
         if ($vk == $auswahl_mitarbeiter) {
@@ -91,7 +86,7 @@ for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
 }
 $zeile .= '</select>';
 //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-$zeile .= "\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
+$zeile .= "\t<input style=display:none type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
 $zeile .= '<br><br>';
 echo $zeile;
 
