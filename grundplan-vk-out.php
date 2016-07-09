@@ -92,12 +92,7 @@ $plan_anzahl = max($Plan_anzahl);
 //Produziere die Ausgabe
 ?>
 <html>
-	<head>
-		<meta charset=UTF-8>
-    <script type="text/javascript" src="javascript.js" ></script>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
+<?php require 'head.php';?>
 	<body>
 <?php
 require 'navigation.php';
@@ -107,7 +102,7 @@ echo "\t\t<form id=myform method=post>\n";
 //$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
 //$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
 //$zeile="<br>";
-$zeile = "<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
+$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
 $zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {

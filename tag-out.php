@@ -70,12 +70,7 @@ $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 //Produziere die Ausgabe
 ?>
 <html>
-	<head>
-		<meta charset=UTF-8>
-		<script type="text/javascript" src="javascript.js" ></script>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
+<?php require 'head.php';?>
 	<body>
 <?php
 require 'navigation.php';
@@ -106,7 +101,7 @@ echo "\t\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V'
 //Support for various branch clients.
 echo "\t\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
-echo "\t\t\t\t<select class=no-print style=font-size:150% name=mandant onchange=this.form.submit()>\n";
+echo "\t\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $filiale => $name)
 {

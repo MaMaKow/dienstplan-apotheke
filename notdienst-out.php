@@ -33,12 +33,8 @@ while ($row = mysqli_fetch_object($ergebnis)) {
 ?>
 
 <html>
-	<head>
-		<meta charset=UTF-8>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
-	<body>
+<?php require 'head.php';?>
+<body>
 			<table border=1>
 				<tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
 				<?php

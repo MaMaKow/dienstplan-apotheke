@@ -2,15 +2,10 @@
 require 'default.php';
 ?>
 <html>
-	<head>
-		<meta charset=UTF-8>
-		<script type="text/javascript" src="javascript.js" ></script>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
+<?php require 'head.php';?>
 		<script>
 			window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
 		</script>
-	</head>
 	<body>
 		<?php
             require 'db-verbindung.php';
@@ -105,7 +100,7 @@ require 'default.php';
 require 'navigation.php';
 echo "<div class=no-image>\n";
 echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahl_mitarbeiter class=no-print onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
+echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
 foreach ($Mitarbeiter as $vk => $name)
 {
 	if($vk == $auswahl_mitarbeiter)
