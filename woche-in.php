@@ -89,7 +89,7 @@ echo "\t\t\t\t<a href=woche-out.php?datum=".$datum." class=no-print>[Lesen]</a>\
 
 echo "<br><br>\n";
 // TODO: The button should be inactive when the approval already was done.
-$submit_approval_button="\t\t\t\t<input type=submit value=Zustimmen name='submit_approval'>\n";echo "$submit_approval_button";
+$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";echo "$submit_approval_button";
 $submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";echo "$submit_disapproval_button";
 echo "<br><br>\n";
 
