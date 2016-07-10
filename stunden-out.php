@@ -67,24 +67,26 @@ echo "<div class=no-image>\n";
 				$i++;
 			}
 
+			//Hier beginnt die Ausgabe
+			echo "\t\t<form method=POST>\n";
+			echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
+			echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
+			for ($vk=1; $vk<$VKmax+1; $vk++)
+			{
+				if(isset($Mitarbeiter[$vk]))
+				{
+					echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+				}
+			}
 
-//Hier beginnt die Ausgabe
-echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
-for ($vk=1; $vk<$VKmax+1; $vk++)
-{
-	if(isset($Mitarbeiter[$vk]))
-	{
-		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
-	}
-}
-				echo "\t\t\t</select>\n";
-				$submit_button="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-				echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
-				echo "\t\t\t<a class=no-print href=stunden-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a>\n";
+				echo "\t\t\t</select><br><br>\n";
+				//name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+				$submit_button="\t\t\t<input type=submit hidden value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
+				echo $submit_button;
+				echo "\t\t\t<H1 class=only-print>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
+				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a><br><br></div>\n";
 				echo "\t\t<table border=1>\n";
-//Überschrift
+				//Überschrift
 				echo "\t\t\t<tr>\n".
 				"\t\t\t\t<th>Datum</th>\n".
 				"\t\t\t\t<th>Grund</th>\n".

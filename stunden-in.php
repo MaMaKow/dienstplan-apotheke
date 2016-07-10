@@ -126,10 +126,10 @@ foreach ($Mitarbeiter as $vk => $name)
 	}
 }
 echo "\t\t\t</select>\n";
-$submit_button="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
+$submit_button="\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+echo "\t\t\t<H1 class=only-print>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
 echo "\t\t</form>\n";
-echo "<a href=stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
+echo "<a class=no-print href=stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
 
 echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 			echo "\t\t<table border=1>\n";
@@ -170,7 +170,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 			echo "\n\t\t\t\t</td>\n";
 			echo "\n\t\t\t</tr>\n";
 			echo "\t\t</table>\n";
-			echo "<input type=submit name=submitStunden value='Eintragen'>";
+			echo "<input class=no-print type=submit name=submitStunden value='Eintragen'>";
 			echo "\t</form>";
 //		echo "<pre>"; var_dump($_POST); echo "</pre>";
 			echo "</div>\n";

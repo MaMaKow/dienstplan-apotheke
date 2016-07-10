@@ -39,6 +39,14 @@ if (isset($datum)) {
 }
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
+if (!isset($Mitarbeiter[$auswahl_mitarbeiter])) {
+  //This happens if a coworker is not working with us anymore.
+  //He can still be chosen within abwesenheit and stunden.
+  //Therefore we will read his/her number in the cookie.
+  //Now we just change it to someone, who is actually there:
+  $auswahl_mitarbeiter=min(array_keys($Mitarbeiter));
+  //die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
+}
 //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-woche-mitarbeiter.php';
 require 'db-lesen-feiertag.php';
@@ -62,26 +70,16 @@ echo "<div class=no-image>\n";
 echo "\t\t<a href=woche-out.php?datum=".$datum.'>Kalenderwoche '.strftime('%V', strtotime($datum))."</a><br>\n";
 echo "\t\t<form id=myform method=post>\n";
 //Page heading:
-if (isset($Mitarbeiter[$auswahl_mitarbeiter])) {
-  echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
-}
-else {
-  //This happens if a coworker is not working with us anymore.
-  //He can still be chosen within abwesenheit and stunden.
-  //Therefore we will read his/her number in the cookie.
-  die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
-}
+echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
 
 //Chose which worker to view:
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
-    if (isset($Mitarbeiter[$vk])) {
-        if ($vk == $auswahl_mitarbeiter) {
-            $zeile .= "<option value=$vk selected>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
-        } else {
-            $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
-        }
+foreach ($Mitarbeiter as $vk => $name) {
+    if ($vk == $auswahl_mitarbeiter) {
+        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>,';
+    } else {
+        $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>,';
     }
 }
 $zeile .= '</select>';
