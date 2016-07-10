@@ -125,23 +125,12 @@ echo "\t\t<form id=myform method=post>\n";
 echo "\t\t\t<div id=navigationsElemente>";
 //$rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";
 //$vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";
-$rückwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitRückwärts">
-  <i class="icon-user icon-white"><img src=images/backward.png width=32px></i><br>1 Tag Rückwärts
-</button>';
-$vorwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitVorwärts">
-  <i class="icon-user icon-white"><img src=images/foreward.png width=32px></i><br>1 Tag Rückwärts
-</button>';
-$submit_button_img='<button type="submit" class="btn btn-primary no-print" value=Absenden name="submitDienstplan">
-  <i class="icon-user icon-white"><img src=images/save.png width=32px></i><br>Speichern
-</button>';
 echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "$submit_button_img";
-
 echo "<br><br>\n";
-// TODO: The button should be inactive when the approval already was done.
-$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";echo "$submit_approval_button";
-$submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";echo "$submit_disapproval_button";
+echo "$submit_approval_button";
+echo "$submit_disapproval_button";
 echo "<br><br>\n";
 
 echo "\t\t\t\t<a href=tag-out.php?datum=".$datum.">[Lesen]</a>\n";

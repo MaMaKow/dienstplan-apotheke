@@ -114,11 +114,16 @@ foreach ($Mandant as $filiale => $name)
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";
 echo "\t\t\t<form id=myform method=post>\n";
-$Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Rückwärts'	name='submitRückwärts'>\n";echo $Rückwärts_button;
-$Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print value='1 Tag Vorwärts'	name='submitVorwärts'>\n";echo $Vorwärts_button;
-echo "\t\t\t\t<a href=tag-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
+echo "<div class=no-print>";
+echo "$rückwärts_button_img";
+echo "$vorwärts_button_img";
+echo "<br><br>\n";
+echo "\t\t\t\t<a href=tag-in.php?datum=".$datum.">[Bearbeiten]</a>\n";
+echo "<br><br>\n";
+//echo "</div>\n";
+
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
-echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
+//echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
 echo "\t\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t\t</div>\n";
