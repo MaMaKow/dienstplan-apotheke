@@ -33,20 +33,7 @@ require 'db-lesen-feiertag.php';
 
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter));
-foreach($Dienstplan as $key => $Dienstplantag)
-{
-	if(isset($Dienstplantag['VK']))
-	{
-		$Plan_anzahl[]=(count($Dienstplantag['VK']));
-	}
-	else
-	{
-		$Plan_anzahl[]=0;
-	}
-}
-$plan_anzahl=max($Plan_anzahl); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
-$VKcount=max($plan_anzahl+1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-
+$VKcount = calculate_VKcount ($Dienstplan);
 
 
 
@@ -82,16 +69,21 @@ foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filial
 echo "\t\t\t</select>\n\t\t</form>\n";
 
 echo "<form id=myform method=post>\n";
-$Rückwärts_button="\t<input type=submit value='1 Woche Rückwärts' name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
-$Vorwärts_button="\t<input type=submit value='1 Woche Vorwärts' name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
-$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
+echo "<div class=no-print>";
+echo $rückwärts_button_week_img;
+echo $vorwärts_button_week_img;
+echo "$submit_button_img";
+echo "<br><br>";
+//$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
+echo "$submit_approval_button_img";
+echo "$submit_disapproval_button_img";
+echo "<br><br>\n";
 echo "\t\t\t\t<a href=woche-out.php?datum=".$datum." class=no-print>[Lesen]</a>\n";
-
-echo "<br><br>\n";
 // TODO: The button should be inactive when the approval already was done.
-$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";echo "$submit_approval_button";
-$submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";echo "$submit_disapproval_button";
+//$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";
+//$submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";
 echo "<br><br>\n";
+echo "</div>";
 
 echo "<div id=wochenAuswahl><input name=woche type=date value=".date('Y-m-d', strtotime($datum)).">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
@@ -176,8 +168,8 @@ for ($j=0; $j<$VKcount; $j++)
 	{//Mittagspause
 		$zeile="";
 		echo "\t\t\t\t<td align=right>";
-		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar()>K+</a></div>";
-		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar()>K-</a></div>";
+		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
+		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
 		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
@@ -189,12 +181,12 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
 		$zeile.=">";
-		$zeile.="<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[".$i."][Kommentar][".$j."] value=";
+		$zeile.="<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[".$i."][Kommentar][".$j."] value=\"";
 		if (isset($Dienstplan[$i]["Kommentar"][$j]))
 		{
 			$zeile.= $Dienstplan[$i]["Kommentar"][$j];
 		}
-		$zeile.="></div>";
+		$zeile.="\"></div>";
 
 		echo $zeile;
 		echo "</td>";
@@ -230,7 +222,6 @@ for ($i=0; $i<count($Dienstplan); $i++)
 }
 echo "\t\t</tr>\n";
 echo "\t</table>\n";
-echo $submit_button;
 echo "</form>\n";
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.

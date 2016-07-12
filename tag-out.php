@@ -148,6 +148,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	echo $zeile;
 	require 'db-lesen-feiertag.php';
 	if(isset($feiertag)){echo " ".$feiertag." ";}
+	require_once 'db-lesen-abwesenheit.php';
 	require 'db-lesen-notdienst.php';
 	if(isset($notdienst['mandant'])){
 		echo "<br>NOTDIENST<br>";
@@ -220,6 +221,29 @@ for ($j=0; $j<$VKcount; $j++)
 echo "\t\t\t\t\t</tr>\n";
 
 echo "\t\t\t\t\t<tr><td></td></tr>\n";
+require 'schreiben-tabelle.php';
+foreach ($Mandant as $filiale => $Name) {
+	if ($mandant == $filiale) {
+		continue 1;
+	}
+	$Filialplan[$filiale]=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
+	if (!empty(array_column($Filialplan[$filiale], 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
+	{
+		echo "<tr><td><br></td></tr>";
+		echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
+		schreiben_tabelle($Filialplan[$filiale]);
+	}
+}
+echo "<tr><td><br></td></tr>";
+if (isset($Urlauber))
+{
+	echo "\t\t<tr><td><b>Urlaub</b><br>"; foreach($Urlauber as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
+}
+if (isset($Kranke))
+{
+	echo "\t\t<tr><td><b>Krank</b><br>"; foreach($Kranke as $value){echo $Mitarbeiter[$value]."<br>";}; echo "</td></tr>\n";
+}
+
 }
 echo "\t\t\t\t</table>\n";
 //echo $submit_button; Kein Schreibrecht in der Leseversion

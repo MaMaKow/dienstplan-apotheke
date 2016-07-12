@@ -81,9 +81,8 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		$dienstplanCSV="";
 		$command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
 		exec($command, $kommando_ergebnis);
-
 		//Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
-		require "zeichne-histogramm.php";
+		//require "zeichne-histogramm.php";
 	}
 	$datum=$Dienstplan[0]['Datum'][0];
 }

@@ -28,7 +28,7 @@ require 'default.php';
 			}
 			else
 			{
-					$auswahl_mitarbeiter=1;
+					$auswahl_mitarbeiter=min(array_keys($Mitarbeiter));
 			}
 			if (isset($auswahl_mitarbeiter))
 			{
@@ -96,7 +96,7 @@ require 'default.php';
 				}
 				else
 				{
-					$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
+						$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
 				}
 				$tablebody.= "$row->Saldo"; $saldo=$row->Saldo; //Wir tragen den Saldo mit uns fort.
 				$tablebody.= "\n\t\t\t\t</td>\n";
@@ -150,12 +150,14 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 //Ausgabe
 			echo "$tablebody";
 //Eingabe. Der Saldo wird natürlich berechnet.
-			echo "\t\t\t<tr>\n";
+			echo "\t\t\t</form><tr>\n";
 /*
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
 			echo $Mitarbeiter[$row->VK];
 			echo "\n\t\t\t\t</td>\n";
 */
+
+			echo "\t\t\t\t<form method=POST>\n\t\t\t\t\t";
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
 			echo "<input type=date value=".date('Y-m-d')." name=datum>";
 			echo "\n\t\t\t\t</td>\n";
@@ -171,8 +173,9 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 			echo "\n\t\t\t</tr>\n";
 			echo "\t\t</table>\n";
 			echo "<input class=no-print type=submit name=submitStunden value='Eintragen'>";
+			echo "<input hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter>";
 			echo "\t</form>";
-//		echo "<pre>"; var_dump($_POST); echo "</pre>";
+//echo "<pre>"; var_dump($_POST); echo "</pre>";
 			echo "</div>\n";
 			require 'contact-form.php';
 		?>
