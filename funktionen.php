@@ -20,4 +20,21 @@
 	    }
 	    return $median;
 	}
-?>
+
+	function calculate_VKcount ($Dienstplan) {
+		global $Mandanten_mitarbeiter;
+		foreach($Dienstplan as $key => $Dienstplantag)
+		{
+			if(isset($Dienstplantag['VK']))
+			{
+				$Plan_anzahl[]=(count($Dienstplantag['VK']));
+			}
+			else
+			{
+				$Plan_anzahl[]=0;
+			}
+		}
+		$plan_anzahl=max($Plan_anzahl); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
+		$VKcount=max($plan_anzahl+1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+		return $VKcount;
+	}

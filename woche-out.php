@@ -65,11 +65,16 @@ foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filial
 echo "\t\t\t</select>\n\t\t</form>\n";
 
 echo "\t\t<form id=myform method=post>\n";
-$Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
-echo $Rückwärts_button;
-$Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
-echo $Vorwärts_button;
+//$Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
+//echo $Rückwärts_button;
+//$Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
+//echo $Vorwärts_button;
+echo "<div class=no-print>";
+echo $rückwärts_button_week_img;
+echo $vorwärts_button_week_img;
+echo "<br><br>";
 echo "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
+echo "<br><br></div>";
 echo "\t\t\t\t<table border=0 rules=groups>\n";
 //echo "\t\t\t\t<div class=stretch-on-print>\n";
 echo "\t\t\t\t\t<thead>\n";

@@ -111,11 +111,11 @@
 					$erwartungCSV="";
 				}
 			}
-//			echo "<pre>";	var_export($Erwartung);    	echo "</pre>";
 			if(!isset($histogramm_no_print))
 			{
 				$command=('./Histogramm_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
 				exec($command, $kommando_ergebnis);
+				//echo "<pre>";	var_export($kommando_ergebnis);    	echo "</pre>";
 			//debug DEBUG to do: Die Dateien im tmp/ könnten wir anschließend alle wieder löschen.
 			//debug DEBUG to do: EinEindeutige Unique Namen! Wenn gleichtzeitig mehrere Mitarbeiter zugreifen, werden mehrere Dateien mit dem gleichen Namen erzeugt. Das kann zu Fehlern führen.
 			}

@@ -10,18 +10,67 @@
 			<?php require 'administration-in.php';?>
 		</div>
 		<?php
-		$rückwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitRückwärts">
-		  <i class="icon-user icon-white"><img src=images/backward.png width=32px></i><br>1 Tag Rückwärts
+//In the following lines we will define buttons for the use in other documents.
+
+$rückwärts_button_img='
+		<button type="submit" class="btn btn-primary no-print" value="" name="submitRückwärts">
+			<i class="icon-user icon-white">
+				<img src=images/backward.png width=32px>
+			</i>
+			<br>
+			1 Tag Rückwärts
 		</button>';
-		$vorwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitVorwärts">
-		  <i class="icon-user icon-white"><img src=images/foreward.png width=32px></i><br>1 Tag Rückwärts
+$vorwärts_button_img='
+		<button type="submit" class="btn btn-primary no-print" value="" name="submitVorwärts">
+			<i class="icon-user icon-white">
+				<img src=images/foreward.png width=32px>
+			</i>
+			<br>
+			1 Tag Rückwärts
 		</button>';
-		$submit_button_img='<button type="submit" class="btn btn-primary no-print" value=Absenden name="submitDienstplan">
-		  <i class="icon-user icon-white"><img src=images/save.png width=32px></i><br>Speichern
+$rückwärts_button_week_img='
+		<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheRückwärts">
+			<i class="icon-user icon-white">
+				<img src=images/backward.png width=32px>
+			</i>
+			<br>
+			1 Woche Rückwärts
 		</button>';
-		// TODO: The button should be inactive when the approval already was done.
-		$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";
-		$submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";
+$vorwärts_button_week_img='
+		<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheVorwärts">
+			<i class="icon-user icon-white">
+				<img src=images/foreward.png width=32px>
+			</i>
+			<br>
+			1 Woche Rückwärts
+		</button>';
+$submit_button_img='
+		<button type="submit" class="btn btn-primary no-print" value=Absenden name="submitDienstplan">
+		  <i class="icon-user icon-white">
+				<img src=images/save.png width=32px>
+			</i>
+			<br>
+			Speichern
+		</button>';
+// TODO: The button should be inactive when the approval already was done.
+$submit_approval_button_img='
+		<button type="submit" class="btn btn-primary no-print" value=Genehmigen name="submit_approval">
+			<i class="icon-user icon-white">
+				<img src=images/approve.png width=32px>
+			</i>
+			<br>
+			Genehmigen
+		</button>';
+//		<input type=submit value=Genehmigen name='submit_approval'>\n";
+$submit_disapproval_button_img='
+		<button type="submit" class="btn btn-primary no-print" value=Ablehnen name="submit_disapproval">
+			<i class="icon-user icon-white">
+				<img src=images/disapprove.png width=32px>
+			</i>
+			<br>
+			Ablehnen
+		</button>';
+//	<input type=submit value=Ablehnen name='submit_disapproval'>\n";
 
 
 

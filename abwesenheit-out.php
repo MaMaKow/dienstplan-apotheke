@@ -91,7 +91,7 @@ for ($vk=1; $vk<$VKmax+1; $vk++)
 	}
 }
 echo "\t\t\t</select>\n";
-$submit_button="\t\t\t<input type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+$submit_button="\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
 echo "<a class=no-print href=abwesenheit-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a>";
 			echo "\t\t<table border=1>\n";

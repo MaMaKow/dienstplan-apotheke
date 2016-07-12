@@ -65,7 +65,10 @@ if(isset($notdienst['mandant']))
 
 
 
-$VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+//Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+//$VKcount=count($Mitarbeiter);
+$VKcount = calculate_VKcount ($Dienstplan);
+
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter));
 
@@ -129,8 +132,8 @@ echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "$submit_button_img";
 echo "<br><br>\n";
-echo "$submit_approval_button";
-echo "$submit_disapproval_button";
+echo "$submit_approval_button_img";
+echo "$submit_disapproval_button_img";
 echo "<br><br>\n";
 
 echo "\t\t\t\t<a href=tag-out.php?datum=".$datum.">[Lesen]</a>\n";
@@ -220,8 +223,8 @@ for ($j=0; $j<$VKcount; $j++)
 	{//Mittagspause
 		$zeile="";
 		echo "\t\t\t\t\t<td align=right>";
-		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar()>K+</a></div>";
-		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar()>K-</a></div>";
+		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
+		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
 		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
@@ -233,12 +236,12 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
 		$zeile.=">";
-		$zeile.="<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[".$i."][Kommentar][".$j."] value=";
+		$zeile.="<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[".$i."][Kommentar][".$j."] value=\"";
 		if (isset($Dienstplan[$i]["Kommentar"][$j]))
 		{
 			$zeile.= $Dienstplan[$i]["Kommentar"][$j];
 		}
-		$zeile.="></div>";
+		$zeile.="\"></div>";
 		echo $zeile;
 		echo "</td>\n";
 	}
