@@ -26,7 +26,7 @@ $vorwärts_button_img='
 				<img src=images/foreward.png width=32px>
 			</i>
 			<br>
-			1 Tag Rückwärts
+			1 Tag Vorwärts
 		</button>';
 $rückwärts_button_week_img='
 		<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheRückwärts">
@@ -42,7 +42,7 @@ $vorwärts_button_week_img='
 				<img src=images/foreward.png width=32px>
 			</i>
 			<br>
-			1 Woche Rückwärts
+			1 Woche Vorwärts
 		</button>';
 $submit_button_img='
 		<button type="submit" class="btn btn-primary no-print" value=Absenden name="submitDienstplan">
