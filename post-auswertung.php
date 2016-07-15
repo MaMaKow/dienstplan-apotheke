@@ -11,7 +11,6 @@ if ( isset($_POST['mandant']))
 
 if ( isset($_POST['datum']))
 {
-	echo "$datum";
 	$datum=htmlspecialchars($_POST['datum']);
 }
 

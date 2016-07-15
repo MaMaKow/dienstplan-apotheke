@@ -87,7 +87,8 @@ echo "</div>";
 
 echo "<div id=wochenAuswahl><input name=woche type=date value=".date('Y-m-d', strtotime($datum)).">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
-echo "\t<table border=2 style=width:99%>\n";
+echo "\t<table border=0 rules=groups>\n";
+echo "\t\t\t\t\t<thead>\n";
 echo "\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
@@ -116,7 +117,9 @@ for ($i=0; $i<count($Dienstplan); $i++)
 //echo "<img src=histogramm_".$datum.".png?".filemtime('dienstplan_'.$datum.'.png')." style=width:90%;></td>";
 //echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
 //}
-echo "\t\t\t</tr><tr>\n";
+//echo "\t\t\t</tr><tr>\n";
+echo "\t\t\t\t\t</tr></thead><tbody><tr>";
+
 for ($j=0; $j<$VKcount; $j++)
 {
 	if(isset($feiertag) && !isset($notdienst)){break 1;}
@@ -193,6 +196,9 @@ for ($j=0; $j<$VKcount; $j++)
 	}
 }
 echo "\t\t\t</tr>\n";
+echo "\t\t\t\t\t</tbody>\n";
+//echo "\t\t\t\t</div>\n";
+echo "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 echo "\t\t\t<tr>\n";

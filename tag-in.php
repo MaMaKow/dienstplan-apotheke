@@ -142,7 +142,7 @@ echo "\t\t\t<div id=wochenAuswahl>\n";
 echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</div>\n";
-echo "\t\t\t<table border=2>\n";
+echo "\t\t\t<table border=0 rules=groups>\n";
 echo "\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
