@@ -1,6 +1,7 @@
 <?php
 require 'default.php';
 require 'db-verbindung.php';
+require 'schreiben-tabelle.php';
 
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=6;	//Dies ist eine Wochenansicht ohne Sonntag
@@ -50,47 +51,48 @@ echo "\t\t<div class='no-image'>\n";
 echo "\t\t\t<div class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
 
 //Support for various branch clients.
-echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
-echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
+$branch_form_html = "";
+$branch_form_html .= "\t\t<form id=mandantenformular method=post>\n";
+$branch_form_html .= "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
+$branch_form_html .= "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
 	{
-		echo "\t\t\t\t<option value=".$key.">".$value."</option>\n";
+		$branch_form_html .= "\t\t\t\t<option value=".$key.">".$value."</option>\n";
 	} else {
-		echo "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
+		$branch_form_html .= "\t\t\t\t<option value=".$key." selected>".$value."</option>\n";
 	}
 }
-echo "\t\t\t</select>\n\t\t</form>\n";
+$branch_form_html .= "\t\t\t</select>\n\t\t</form>\n";
+echo $branch_form_html;
 
 echo "\t\t<form id=myform method=post>\n";
-//$Rückwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";
-//echo $Rückwärts_button;
-//$Vorwärts_button="\t\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";
-//echo $Vorwärts_button;
-echo "<div class=no-print>";
-echo $rückwärts_button_week_img;
-echo $vorwärts_button_week_img;
-echo "<br><br>";
-echo "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
-echo "<br><br></div>";
+$buttons_div_html = "";
+$buttons_div_html .= "<div class=no-print>";
+$buttons_div_html .= $rückwärts_button_week_img;
+$buttons_div_html .= $vorwärts_button_week_img;
+$buttons_div_html .= "<br><br>";
+$buttons_div_html .= "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
+$buttons_div_html .= "<br><br></div>";
+echo $buttons_div_html;
+
 echo "\t\t\t\t<table border=0 rules=groups>\n";
-//echo "\t\t\t\t<div class=stretch-on-print>\n";
-echo "\t\t\t\t\t<thead>\n";
-echo "\t\t\t\t\t<tr>\n";
+$head_table_html = "";
+$head_table_html .= "\t\t\t\t\t<thead>\n";
+$head_table_html .= "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
-	echo "\t\t\t\t\t\t<td>";
-	echo "<a href=tag-out.php?datum=".$Dienstplan[$i]["Datum"][0].">";
-	echo strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
-	echo " \n";
-	echo "<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
-	echo "<input type=hidden name=mandant value=".$mandant.">";
-	echo strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
+	$head_table_html .= "\t\t\t\t\t\t<td>";
+	$head_table_html .= "<a href=tag-out.php?datum=".$Dienstplan[$i]["Datum"][0].">";
+	$head_table_html .= strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
+	$head_table_html .= " \n";
+	$head_table_html .= "<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
+	$head_table_html .= "<input type=hidden name=mandant value=".$mandant.">";
+	$head_table_html .= strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
 	$datum=($Dienstplan[$i]['Datum'][0]);
 	require 'db-lesen-feiertag.php';
-	if(isset($feiertag)){echo " <br>".$feiertag." ";}
+	if(isset($feiertag)){$head_table_html .= " <br>".$feiertag." ";}
 	if (isset($feiertag) AND date('N', strtotime($datum))<6) {
 		foreach ($Mandanten_mitarbeiter as $vk => $nachname) {
 			if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
@@ -102,14 +104,14 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 
 	require 'db-lesen-notdienst.php';
-	if(isset($notdienst)){echo "<br> NOTDIENST ";}
-	echo "</td></a>\n";
+	if(isset($notdienst)){$head_table_html .= "<br> NOTDIENST ";}
+	$head_table_html .= "</td></a>\n";
 }
-echo "\t\t\t\t\t</tr></thead><tbody>";
+$head_table_html .= "\t\t\t\t\t</tr></thead><tbody>";
+echo $head_table_html;
 
-
-require 'schreiben-tabelle.php';
-schreiben_tabelle($Dienstplan);
+$table_html = schreiben_tabelle($Dienstplan);
+echo $table_html;
 $datum=$konstantes_datum;
 foreach ($Mandant as $filiale => $Name) {
 	if ($mandant == $filiale) {
@@ -119,7 +121,8 @@ foreach ($Mandant as $filiale => $Name) {
 	if (!empty(array_column($Filialplan[$filiale], 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 	{
 		echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
-		schreiben_tabelle($Filialplan[$filiale]);
+		$table_html = schreiben_tabelle($Filialplan[$filiale]);
+		echo $table_html;
 	}
 }
 
@@ -244,23 +247,41 @@ echo "\t\t\t</form>\n";
 echo "</div>\n";
 if (isset($Fehlermeldung))
 {
-	echo "\t\t<div class=errormsg>\n";
+	$error_message_html = "";
+	$error_message_html .= "\t\t<div class=errormsg>\n";
 	$Fehlermeldung=array_unique($Fehlermeldung);
 	foreach($Fehlermeldung as $fehler)
 	{
-		echo "\t\t\t<H1>".$fehler."</H1>\n";
+		$error_message_html .= "\t\t\t<H1>".$fehler."</H1>\n";
 	}
-	echo "\t\t</div>";
+	$error_message_html .= "\t\t</div>";
+	echo $error_message_html;
 }
+
 if (isset($Warnmeldung))
 {
-	echo "\t\t<div class=warningmsg>\n";
+	$warning_message_html = "";
+	$warning_message_html .= "\t\t<div class=warningmsg>\n";
 	$Warnmeldung=array_unique($Warnmeldung);
 	foreach($Warnmeldung as $warnung)
 	{
-		echo "\t\t\t<H1>".$warnung."</H1>\n";
+		$warning_message_html .= "\t\t\t<H1>".$warnung."</H1>\n";
 	}
-	echo "\t\t</div>\n";
+	$warning_message_html .= "\t\t</div>\n";
+	echo $warning_message_html;
+}
+
+if (isset($Overlay_message))
+{
+	$overlay_message_html = "";
+	$overlay_message_html .= "\t\t<div class=overlay>\n";
+	$Overlay_message=array_unique($Overlay_message);
+	foreach($Overlay_message as $message)
+	{
+		$overlay_message_html .= "\t\t\t<H1>".$message."</H1>\n";
+	}
+	$overlay_message_html .= "\t\t</div>\n";
+	echo $overlay_message_html;
 }
 
 require 'contact-form.php';
