@@ -150,3 +150,18 @@ function updatesaldo()
   var ergebnis		 	= stundenInputValue + stundenSaldoValue;
   stundenSaldoNeuId.value 	= ergebnis;
 }
+
+//The following function is used by install.php
+/*
+$("#second_pass").on("keyup change blur paste cut click", function() {
+
+});
+*/
+
+function compare_passwords () {
+var first_pass = document.getElementById('first_pass').value;
+var second_pass = document.getElementById('second_pass').value;
+
+
+document.getElementById('clear_pass').value = second_pass;
+}

@@ -45,7 +45,7 @@
 		$nachricht.= ">>>   >>>";
 		$nachricht.= "\n\n";
 	}
-	$header = 'From: apache@martin-mandelkow.de' . "\r\n" ;
+	$header = 'From: '.$config['contact_email']."\r\n" ;
 	if( isset($_POST['email'])  )
 	{
 		$header.= 'Reply-To: '.$_POST['email'] . "\r\n" ;

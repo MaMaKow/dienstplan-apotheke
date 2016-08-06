@@ -105,12 +105,28 @@ select:hover
 
 .overlay
 {
-	position: relative;
-	top:0;
+	position: absolute;
+	width: 50%;
+	height: 50%;
+	/*
+	left: 25%;
+	top:25%;
+	*/
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	/*
 	float: left;
 	clear: both;
+	*/
 	background-color: #73AC22;
+	opacity: 0.8;
 	z-index: 10;
+}
+.overlay:hover
+{
+	opacity: 0.2;
 }
 .errormsg
 {
@@ -168,4 +184,9 @@ img.worker-img:hover {
 }
 .large {
 	font-size: xx-large;
+}
+.hint {
+	font-size: small;
+	font-weight: lighter;
+	text-align: left;
 }
