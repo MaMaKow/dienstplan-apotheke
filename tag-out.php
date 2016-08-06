@@ -161,7 +161,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 	echo "</td>\n";
 }
-if ($approval=="approved") {
+if ($approval=="approved" OR $config['hide_disapproved']==false) {
 for ($j=0; $j<$VKcount; $j++)
 {
 	//TODO The following line will prevent planning on hollidays. The problem ist, that we work might emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
@@ -231,7 +231,8 @@ foreach ($Mandant as $filiale => $Name) {
 	{
 		echo "<tr><td><br></td></tr>";
 		echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
-		schreiben_tabelle($Filialplan[$filiale]);
+		$table_html =	schreiben_tabelle($Filialplan[$filiale]);
+		echo $table_html;
 	}
 }
 echo "<tr><td><br></td></tr>";
@@ -250,7 +251,7 @@ echo "\t\t\t\t</table>\n";
 echo "\t\t\t</form>\n";
 echo "\t\t</div>\n";
 
-if ( $approval=="approved" and file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
+if ( ($approval=="approved" OR $config['hide_disapproved']==false) and file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
 {
 	echo "\t\t<div class=above-image>\n";
 	echo "\t\t\t<div class=image>\n";

@@ -1,9 +1,10 @@
 <?php
 function schreiben_tabelle ($Dienstplan){
 		global $Mitarbeiter, $mandant;
-		global $verbindungi;
-		global $Warnmeldung, $Fehlermeldung;
-		echo "\t\t\t\t</tr><tr>\n";
+		global $verbindungi, $config;
+		global $Warnmeldung, $Fehlermeldung, $Overlay_message;
+		$table_html = "";
+		$table_html .=  "\t\t\t\t</tr><tr>\n";
 		foreach($Dienstplan as $key => $Dienstplantag)
 		{
 			if(isset($Dienstplantag['VK']))
@@ -20,7 +21,7 @@ function schreiben_tabelle ($Dienstplan){
 		for ($j=0; $j<$plan_anzahl; $j++)
 		{
 			if(isset($feiertag) && !isset($notdienst)){break 1;}
-			echo "\t\t\t\t</tr></thead><tr>\n";
+			$table_html .=  "\t\t\t\t</tr></thead><tr>\n";
 			for ($i=0; $i<count($Dienstplan); $i++)
 			{//Mitarbeiter
 				//The following lines check for the state of approval.
@@ -34,20 +35,20 @@ function schreiben_tabelle ($Dienstplan){
 				}
 				if (isset($approval)) {
 					if ($approval=="approved") {
-						//$Warnmeldung[]="Alles ist gut.";
+						//$Overlay_message[]="Alles ist gut.";
 					} elseif ($approval=="not_yet_approved") {
-						$Warnmeldung[]="Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
+						$Overlay_message[]="Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
 					} elseif ($approval=="disapproved") {
-						$Warnmeldung[]="Der Dienstplan wird noch überarbeitet!";
+						$Overlay_message[]="Der Dienstplan wird noch überarbeitet!";
 					}
 				} else {
 					$approval="not_yet_approved";
-					$Warnmeldung[]="Fehlende Daten in der Tabelle `approval`";
+					$Overlay_message[]="Fehlende Daten in der Tabelle `approval`";
 					// TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
 					//That might espacially occur during the development stage of this feature.
 				}
-				echo "\t\t\t\t\t<td align=left>";
-				if ($approval=="approved") {
+				$table_html .=  "\t\t\t\t\t<td align=left>";
+				if ($approval=="approved" OR $config['hide_disapproved']==false) {
 					$zeile="";
 					if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 					{
@@ -70,10 +71,10 @@ function schreiben_tabelle ($Dienstplan){
 						$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 					}
 					$zeile.="";
-					echo $zeile;
+					$table_html .=  $zeile;
 					//	Mittagspause
 					$zeile="";
-					echo "\t\t\t\t<br>\n";
+					$table_html .=  "\t\t\t\t<br>\n";
 					if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 					{
 						$zeile.=" Pause: ";
@@ -85,11 +86,11 @@ function schreiben_tabelle ($Dienstplan){
 						$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 					}
 					$zeile.="";
-					echo $zeile;
+					$table_html .=  $zeile;
 				}
-				echo "</td>\n";
+				$table_html .=  "</td>\n";
 			}
 		}
-		echo "\t\t\t\t</tr>\n";
+		$table_html .=  "\t\t\t\t</tr>\n";
+		return $table_html;
 }
-?>
