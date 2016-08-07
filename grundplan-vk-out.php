@@ -229,7 +229,7 @@ foreach (array_keys($Grundplan) as $wochentag) {
     }
 }
 $filename = 'tmp/Mitarbeiter.csv';
-$myfile = fopen($filename, 'w') or die('Unable to open file!');
+$myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
 fwrite($myfile, $grundplanCSV);
 fclose($myfile);
 $grundplanCSV = '';

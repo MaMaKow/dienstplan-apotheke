@@ -35,7 +35,7 @@ $textICS.="END:VCALENDAR";
 
 
 $filename = "ics/wochenkalender_".strftime('%V', strtotime($datum))."_".$vk.".ics"; //Die Datei bekommt den Namen der Kalenderwoche und des Mitarbeiters.
-$myfile = fopen($filename, "w") or die("Unable to open file!");
+$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 fwrite($myfile, $textICS);
 fclose($myfile);
 $textICS="";

@@ -37,7 +37,7 @@ header("Content-type:text/calendar;charset=utf-8");
 header("Content-Disposition:inline;filename=calendar.ics"); //Dies teilt dem "Browser" mit, dass er die Datei selbst ohne externes Programm öffnen soll. Alternative zu inline wäre attachment
 echo "$textICS";
 //$filename = "ics/wochenkalender_".strftime('%V', strtotime($datum))."_".$vk.".ics"; //Die Datei bekommt den Namen der Kalenderwoche und des Mitarbeiters.
-//$myfile = fopen($filename, "w") or die("Unable to open file!");
+//$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 //fwrite($myfile, $textICS);
 //fclose($myfile);
 //$textICS="";

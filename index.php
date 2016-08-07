@@ -1,5 +1,9 @@
+
 <html>
-<?php require 'head.php';?>
+	<?php
+		require 'default.php';
+		require 'head.php';
+	?>
 	<body>
 		<?php require 'navigation.php';?>
 

@@ -36,14 +36,17 @@ global $datum, $verbindungi, $Mitarbeiter;
 			$dienstplanCSV.=", ".$row->Stunden;
 			$dienstplanCSV.=", ".$row->Mandant."\n";
 		}
-		$filename = "tmp/Dienstplan.csv";
-		$myfile = fopen($filename, "w") or die("Unable to open file!\n");
-		fwrite($myfile, $dienstplanCSV);
-		fclose($myfile);
-		$dienstplanCSV="";
-		$command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
-		exec($command, $kommando_ergebnis); // Kann dies Fehler verursachen?
-		//Wir rufen die Funktion mehrmals mit verschiedenen Parametern auf. Kann dem Filial-Plan-Bild dabei etwas zustoßen?
+		if ($tage == 1) {
+			# This image is shown only for views with one single day.
+			$filename = "tmp/Dienstplan.csv";
+			$myfile = fopen($filename, "w") or die("Unable to open file $filename!\n");
+			fwrite($myfile, $dienstplanCSV);
+			fclose($myfile);
+			$dienstplanCSV="";
+			$command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
+			exec($command, $kommando_ergebnis); // Kann dies Fehler verursachen?
+			//Wir rufen die Funktion mehrmals mit verschiedenen Parametern auf. Kann dem Filial-Plan-Bild dabei etwas zustoßen?
+		}
 
 //		echo "<pre>";	var_export($kommando_ergebnis);    	echo "</pre>";
 		//Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.

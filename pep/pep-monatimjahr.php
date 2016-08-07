@@ -35,7 +35,7 @@ for ($monat=1; $monat<=12; $monat++)
 	$txt.=$monat.", ".calculate_percentile($Packungen[$monat],5) .", ". calculate_percentile($Packungen[$monat],50) .", ".  calculate_percentile($Packungen[$monat],95) . "\n";
 }
 $filename = "pep_monatimjahr.csv";
-$myfile = fopen($filename, "w") or die("Unable to open file!");
+$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 fwrite($myfile, $txt);
 fclose($myfile);
 $txt= "";
