@@ -54,7 +54,7 @@
 			if(!isset($histogramm_no_print))
 			{
 				$filename = "tmp/Histogramm.csv";
-				$myfile = fopen($filename, "w") or die("Unable to open file!");
+				$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 				fwrite($myfile, $histogrammCSV);
 				fclose($myfile);
 				$histogrammCSV="";
@@ -105,7 +105,7 @@
 				if(!isset($histogramm_no_print))
 				{
 					$filename = "tmp/Erwartung.csv";
-					$myfile = fopen($filename, "w") or die("Unable to open file!");
+					$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 					fwrite($myfile, $erwartungCSV);
 					fclose($myfile);
 					$erwartungCSV="";

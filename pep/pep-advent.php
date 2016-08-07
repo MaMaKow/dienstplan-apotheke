@@ -67,7 +67,7 @@ for ($advent=0; $advent<=4; $advent++)
 		$txt.=date('G:i:s', $uhrzeit).", ".calculate_percentile($Packungen[$advent][$uhrzeit],5) .", ". calculate_percentile($Packungen[$advent][$uhrzeit],50) .", ".  calculate_percentile($Packungen[$advent][$uhrzeit],95) . "\n";
 	}
 	$filename = "pep_advent".$advent.".csv";
-	$myfile = fopen($filename, "w") or die("Unable to open file!");
+	$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 	fwrite($myfile, $txt);
 	fclose($myfile);
 	$txt= "";

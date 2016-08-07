@@ -273,7 +273,7 @@ foreach (array_keys($Dienstplan) as $tag) {
     }
 }
 $filename = 'tmp/Mitarbeiter.csv';
-$myfile = fopen($filename, 'w') or die('Unable to open file!');
+$myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
 fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
 $dienstplanCSV = '';

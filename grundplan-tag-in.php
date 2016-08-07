@@ -135,7 +135,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $dienstplanCSV .= ', '.$row->Mandant."\n";
 }
 $filename = 'tmp/Dienstplan.csv';
-$myfile = fopen($filename, 'w') or die('Unable to open file!');
+$myfile = fopen($filename, 'w') or die("Unable to open file $filename!");
 fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
 $dienstplanCSV = '';

@@ -72,9 +72,9 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 
 			}
 		}
-
+		/*
 		$filename = "tmp/Dienstplan.csv";
-		$myfile = fopen($filename, "w") or die("Unable to open file!");
+		$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 		fwrite($myfile, $dienstplanCSV);
 		fclose($myfile);
 		$dienstplanCSV="";
@@ -82,6 +82,7 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 		exec($command, $kommando_ergebnis);
 		//Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
 		//require "zeichne-histogramm.php";
+		*/
 	}
 	$datum=$Dienstplan[0]['Datum'][0];
 }

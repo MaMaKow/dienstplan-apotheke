@@ -23,7 +23,7 @@ for ($tag=1; $tag<=31; $tag++)
 	$txt.=$tag.", ". calculate_percentile($Packungen[$tag],5) .", ". calculate_percentile($Packungen[$tag],50) .", ".  calculate_percentile($Packungen[$tag],95) . "\n";
 }
 $filename = "pep_monatstag.csv";
-$myfile = fopen($filename, "w") or die("Unable to open file!");
+$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 fwrite($myfile, $txt);
 fclose($myfile);
 $txt= "";
