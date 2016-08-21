@@ -55,7 +55,7 @@ a:hover
 	width: 100%;
 }
 
-.no-image
+.main-area
 {
 	position: relative;
 	float: left;
@@ -106,12 +106,13 @@ select:hover
 .overlay
 {
 	position: absolute;
-	width: 50%;
-	height: 50%;
+	width: 100%;
+	height: 100%;
 	/*
 	left: 25%;
 	top:25%;
 	*/
+	margin-top: 1.2em;
 	text-align: center;
 	display: flex;
 	align-items: center;

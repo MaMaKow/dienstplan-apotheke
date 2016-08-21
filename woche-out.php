@@ -9,6 +9,10 @@ $tage=6;	//Dies ist eine Wochenansicht ohne Sonntag
 $datenübertragung="";
 $dienstplanCSV="";
 
+$error_message_html = "";
+$warning_message_html = "";
+$overlay_message_html = "";
+
 
 $datum=date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
 require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
@@ -47,12 +51,13 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 	<body>
 <?php
 require 'navigation.php';
-echo "\t\t<div class='no-image'>\n";
-echo "\t\t\t<div class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
+$main_div_html = "\t\t<div class='main-area'>\n";
+$date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
+$main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
 $branch_form_html = "";
-$branch_form_html .= "\t\t<form id=mandantenformular method=post>\n";
+$branch_form_html .= "\t\t<form id=branch_form method=post>\n";
 $branch_form_html .= "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
 $branch_form_html .= "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
@@ -65,19 +70,19 @@ foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filial
 	}
 }
 $branch_form_html .= "\t\t\t</select>\n\t\t</form>\n";
-echo $branch_form_html;
+$main_div_html .= $branch_form_html;
 
-echo "\t\t<form id=myform method=post>\n";
+$duty_roster_form_html = "\t\t<form id=duty_roster_form method=post>\n";
 $buttons_div_html = "";
-$buttons_div_html .= "<div class=no-print>";
+$buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= $rückwärts_button_week_img;
 $buttons_div_html .= $vorwärts_button_week_img;
 $buttons_div_html .= "<br><br>";
 $buttons_div_html .= "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
 $buttons_div_html .= "<br><br></div>";
-echo $buttons_div_html;
+$duty_roster_form_html .= $buttons_div_html;
 
-echo "\t\t\t\t<table border=0 rules=groups>\n";
+$table_html = "\t\t\t\t<table border=0 rules=groups>\n";
 $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";
@@ -107,11 +112,22 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	if(isset($notdienst)){$head_table_html .= "<br> NOTDIENST ";}
 	$head_table_html .= "</td></a>\n";
 }
-$head_table_html .= "\t\t\t\t\t</tr></thead><tbody>";
-echo $head_table_html;
+$head_table_html .= "\t\t\t\t\t</tr></thead>";
+$table_html .= $head_table_html;
 
-$table_html = schreiben_tabelle($Dienstplan);
-echo $table_html;
+$table_body_html  = "<tbody>";
+$table_body_html .= schreiben_tabelle($Dienstplan);
+if (isset($Overlay_message))
+{
+	$overlay_message_html .= "\t\t<div class=overlay>\n";
+	$Overlay_message=array_unique($Overlay_message);
+	foreach($Overlay_message as $message)
+	{
+		$overlay_message_html .= "\t\t\t<H1>".$message."</H1>\n";
+	}
+	$overlay_message_html .= "\t\t</div>\n";
+}
+$table_html .= $table_body_html;
 $datum=$konstantes_datum;
 foreach ($Mandant as $filiale => $Name) {
 	if ($mandant == $filiale) {
@@ -120,15 +136,15 @@ foreach ($Mandant as $filiale => $Name) {
 	$Filialplan[$filiale]=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
 	if (!empty(array_column($Filialplan[$filiale], 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 	{
-		echo "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
-		$table_html = schreiben_tabelle($Filialplan[$filiale]);
-		echo $table_html;
+		$table_html .= "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
+		$table_body_html = schreiben_tabelle($Filialplan[$filiale]);
+		$table_html .= $table_body_html;
 	}
 }
 
-echo "\t\t\t\t\t</tbody>\n";
+$table_html .= "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
+$table_foot_html = "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i=0; $i<count($Dienstplan); $i++)
@@ -137,6 +153,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	unset($Urlauber, $Kranke);
 	require 'db-lesen-abwesenheit.php';
 	require 'db-lesen-feiertag.php';
+// TODO: I am not sure where to put the following line. There is an echo inside.
 	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	foreach ($Abwesende as $key => $vk) {
 		if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
@@ -151,28 +168,45 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	//Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
 	if (isset($Urlauber))
 	{
-		echo "\t\t\t\t\t<td align=left><b>Urlaub</b><br>"; foreach($Urlauber as $value){echo "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";};
+		$table_foot_html .= "\t\t\t\t\t<td align=left><b>Urlaub</b><br>";
+		foreach($Urlauber as $value){
+			$table_foot_html .= "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";
+		}
 	}
 	else
 	{
-		echo "\t\t\t\t\t\t<td>";
+		$table_foot_html .= "\t\t\t\t\t\t<td>";
 	}
 	if (isset($Kranke))
 	{
-		echo "\t\t<br><b>Krank</b><br>"; foreach($Kranke as $value){echo "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";}; echo "</td>\n";
+		$table_foot_html .= "\t\t<br><b>Krank</b><br>";
+		foreach($Kranke as $value){
+			$table_foot_html .= "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";
+		}
+		$table_foot_html .= "</td>\n";
 	}
 	else
 	{
-		echo "</td>\n";
+		$table_foot_html .= "</td>\n";
 	}
 }
-echo "\t\t\t\t\t</tr>\n";
-echo "\t\t\t\t</table>\n";
-echo "\t\t\t\t<table border=0 rules=groups>\n";
+$table_foot_html .= "\t\t\t\t\t</tr>\n";
+$table_foot_html .= "\t\t\t\t\t</tfoot>\n";
+
+$table_html .= $table_foot_html;
+$table_html .= "\t\t\t\t</table>\n\t\t\t</div>";
+
+$table_div_html = "<div id=table_overlay_area>";
+$table_div_html .= $overlay_message_html;
+$table_div_html .= $table_html;
+
+
+$duty_roster_form_html .= $table_div_html;
+$week_hours_table_html = "\t\t\t\t<table border=0 rules=groups>\n";
 
 //Wir zeichnen jetzt die Wochenstunden der Mitarbeiter. In dieser Ansicht werden ausschließlich die Tage Montag bis Freitag betrachtet. Dies ist ein Unterschied zur Mitarbeiteransicht. Dort werden alle Wochentage berücksichtigt.
-echo "\t\t\t\t\t<tr>\n";
-echo "\t\t\t\t\t\t<td colspan=5>\n";
+$week_hours_table_html .= "\t\t\t\t\t<tr>\n";
+$week_hours_table_html .= "\t\t\t\t\t\t<td colspan=5>\n";
 // TODO: $tag<5; should be a configurable variable. It might be 6 or seven in other pharmacies.
 for ($tag=0; $tag<5; $tag++)
 {
@@ -199,11 +233,10 @@ for ($tag=0; $tag<5; $tag++)
 		}
 	}
 }
-
 //An leeren Wochen soll nicht gerechnet werden.
 if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 {
-	echo "<b>Wochenstunden</b><tr>";
+	$week_hours_table_html .= "<b>Wochenstunden</b><tr>";
 	ksort($Stunden);
 	$i=0;$j=1; //Zähler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
 	foreach($Stunden as $mitarbeiter => $stunden)
@@ -212,42 +245,43 @@ if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage
 		$i++; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
 		if($i>=$tage)
 		{
-			echo "</tr><tr>";
+			$week_hours_table_html .= "</tr><tr>";
 			$i=0;//$j++;
 		}
-		echo "<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden);
-		echo " / ";
+		$week_hours_table_html .= "<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden);
+		$week_hours_table_html .= " / ";
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-				echo round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
+				$week_hours_table_html .= round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
 		} else {
-				echo round($Stunden_mitarbeiter[$mitarbeiter], 1);
+				$week_hours_table_html .= round($Stunden_mitarbeiter[$mitarbeiter], 1);
 		}
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
 				if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
 						$differenz = round(array_sum($stunden), 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
-						echo ' <b>( '.$differenz.' )</b>';
+						$week_hours_table_html .= ' <b>( '.$differenz.' )</b>';
 					}
 				} else {
 						if (round($Stunden_mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
 								$differenz = round(array_sum($stunden), 1) - round($Stunden_mitarbeiter[$mitarbeiter], 1);
-								echo ' <b>( '.$differenz.' )</b>';
+								$week_hours_table_html .= ' <b>( '.$differenz.' )</b>';
 						}
 				}
 
-		echo "</td>";
+		$week_hours_table_html .= "</td>";
 	}
-	echo "</tr>";
+	$week_hours_table_html .= "</tr>";
 }
-echo "\t\t\t\t\t\t</td>\n";
-echo "\t\t\t\t\t</tr>\n";
-echo "\t\t\t\t\t</tfoot>\n";
-echo "\t\t\t\t</table>\n";
+$week_hours_table_html .= "\t\t\t\t\t\t</td>\n";
+$week_hours_table_html .= "\t\t\t\t\t</tr>\n";
+$week_hours_table_html .= "\t\t\t\t</table>\n";
+$duty_roster_form_html .= $week_hours_table_html;
 // echo $submit_button;
-echo "\t\t\t</form>\n";
-echo "</div>\n";
+$duty_roster_form_html .= "\t\t\t</form>\n";
+$main_div_html .= $duty_roster_form_html;
+$main_div_html .= "</div>\n";
+
 if (isset($Fehlermeldung))
 {
-	$error_message_html = "";
 	$error_message_html .= "\t\t<div class=errormsg>\n";
 	$Fehlermeldung=array_unique($Fehlermeldung);
 	foreach($Fehlermeldung as $fehler)
@@ -255,12 +289,10 @@ if (isset($Fehlermeldung))
 		$error_message_html .= "\t\t\t<H1>".$fehler."</H1>\n";
 	}
 	$error_message_html .= "\t\t</div>";
-	echo $error_message_html;
 }
 
 if (isset($Warnmeldung))
 {
-	$warning_message_html = "";
 	$warning_message_html .= "\t\t<div class=warningmsg>\n";
 	$Warnmeldung=array_unique($Warnmeldung);
 	foreach($Warnmeldung as $warnung)
@@ -268,22 +300,13 @@ if (isset($Warnmeldung))
 		$warning_message_html .= "\t\t\t<H1>".$warnung."</H1>\n";
 	}
 	$warning_message_html .= "\t\t</div>\n";
-	echo $warning_message_html;
 }
 
-if (isset($Overlay_message))
-{
-	$overlay_message_html = "";
-	$overlay_message_html .= "\t\t<div class=overlay>\n";
-	$Overlay_message=array_unique($Overlay_message);
-	foreach($Overlay_message as $message)
-	{
-		$overlay_message_html .= "\t\t\t<H1>".$message."</H1>\n";
-	}
-	$overlay_message_html .= "\t\t</div>\n";
-	echo $overlay_message_html;
-}
 
+echo $error_message_html;
+echo $warning_message_html;
+
+echo $main_div_html;
 require 'contact-form.php';
 
 

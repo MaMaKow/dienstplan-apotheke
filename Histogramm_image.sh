@@ -6,8 +6,6 @@ gnuplot Histogramm.gnuplot #&& echo "gnuplot war erfolgreich"
 mv tmp/histogramm.png images/histogramm_$1.png #&& echo "Das Bild wurde umbenannt."
 
 #Clean up:
-sleep 1
-rm tmp/histogramm.png
 rm tmp/Histogramm.csv
 #rm tmp/Erwartung.csv
 #echo "Das Script ist am Ende."

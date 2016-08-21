@@ -106,7 +106,7 @@ if (isset($Warnmeldung))
 }
 
 //Hier beginnt die Normale Ausgabe.
-echo "<div class=no-image>\n";
+echo "<div class=main-area>\n";
 echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><div class=only-print><b>". $Mandant[$mandant] ."</b></div><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";

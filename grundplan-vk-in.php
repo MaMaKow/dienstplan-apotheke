@@ -138,7 +138,7 @@ $plan_anzahl = max($Plan_anzahl);
 
 <?php
 require 'navigation.php';
-echo "<div class=no-image>\n";
+echo "<div class=main-area>\n";
 //echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime("%V", strtotime($datum))."</a><br>\n";
 echo "\t\t<form id=myform method=post>\n";
 //$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Rückwärts"	name="submitWocheRückwärts">\n";echo $Rückwärts_button;

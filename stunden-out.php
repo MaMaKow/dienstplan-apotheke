@@ -6,7 +6,7 @@ require 'default.php';
 <body>
 		<?php
 require 'navigation.php';
-echo "<div class=no-image>\n";
+echo "<div class=main-area>\n";
 			require 'db-verbindung.php';
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';
