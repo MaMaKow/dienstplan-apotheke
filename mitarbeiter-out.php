@@ -66,7 +66,7 @@ $plan_anzahl = max($Plan_anzahl);
 	<body>
 <?php
 require 'navigation.php';
-echo "<div class=no-image>\n";
+echo "<div class=main-area>\n";
 echo "\t\t<a href=woche-out.php?datum=".$datum.'>Kalenderwoche '.strftime('%V', strtotime($datum))."</a><br>\n";
 echo "\t\t<form id=myform method=post>\n";
 //Page heading:

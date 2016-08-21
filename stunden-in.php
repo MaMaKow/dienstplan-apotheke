@@ -111,7 +111,7 @@ require 'default.php';
 
 //Hier beginnt die Ausgabe
 require 'navigation.php';
-echo "<div class=no-image>\n";
+echo "<div class=main-area>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
 //echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";

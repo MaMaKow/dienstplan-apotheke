@@ -94,7 +94,7 @@ if (isset($Warnmeldung))
 	echo "\t\t</div>\n";
 }
 
-echo "\t\t<div class=no-image>\n";
+echo "\t\t<div class=main-area>\n";
 echo "\t\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 
 

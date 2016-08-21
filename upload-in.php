@@ -72,7 +72,7 @@
 				echo "\t\t</div>";
 			}
 		?>
-		<div class=no-image>
+		<div class=main-area>
 			<form action="upload-in.php" method="post" enctype="multipart/form-data">
 				Eine PEP-Datei zum Hochladen auswählen:<br>
 				<input type="file" name="fileToUpload" id="fileToUpload"><br>
