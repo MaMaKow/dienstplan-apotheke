@@ -161,7 +161,18 @@ $("#second_pass").on("keyup change blur paste cut click", function() {
 function compare_passwords () {
 var first_pass = document.getElementById('first_pass').value;
 var second_pass = document.getElementById('second_pass').value;
+if (first_pass == second_pass && first_pass != "") {
+  //document.getElementById('clear_pass').value = 'same';
+  document.getElementById('disapprove_pass_img').style.display = 'none';
+  document.getElementById('approve_pass_img').style.display = "block";
+} else if (second_pass != "") {
+  //document.getElementById('clear_pass').value = 'different';
+  document.getElementById('disapprove_pass_img').style.display = "block";
+  document.getElementById('approve_pass_img').style.display = 'none';
+} else {
+  //document.getElementById('clear_pass').value = 'not yet';
+  document.getElementById('disapprove_pass_img').style.display = 'none';
+  document.getElementById('approve_pass_img').style.display = 'none';
+}
 
-
-document.getElementById('clear_pass').value = second_pass;
 }
