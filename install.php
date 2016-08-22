@@ -1,14 +1,116 @@
 <?php
 require 'funktionen.php';
-//Define different error reporting options:
-$error_error   = "E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE";
-$error_warning = "$error_error   | E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING";
-$error_notice  = "$error_warning | E_NOTICE | E_USER_NOTICE | E_DEPRECATED | E_USER_DEPRECATED";
-$error_all     = "$error_notice  | E_STRICT";
 
-//We might want to read some kind of standard values from a file:
-include "config/default_config.php";
-$default_config = $config;
+if (empty($_POST)) {
+  if (file_exists("./config/config.php")) {
+    //If there allready is a configuration, then we will shows those values
+    include "./config/config.php";
+  }else {
+    //We might want to read some kind of standard values from a file:
+    include "./config/default_config.php";
+  }
+  $default_config = $config;
+} else {
+  //Read the POST values:
+  foreach ($_POST as $key => $value) {
+    if (!empty($_POST[$key])) {
+        $new_config[$key] = sanitize_user_input($value);
+    } elseif (isset($default_config[$key])) {
+        $new_config[$key] = sanitize_user_input($default_config[$key]);
+    }
+  }
+  $config = $new_config;
+  //echo "<pre>"; var_export($_POST); echo "</pre>";
+  //Create a config directory if it does not yet exist.
+  if (!is_dir('./config')) {
+    if (!mkdir('./config', 0664, true)) {
+      die('Erstellung der Verzeichnisse schlug fehl...');
+    }
+  }
+  if (!is_dir('./tmp')) {
+    if (!mkdir('./tmp', 0664, true)) {
+      die('Erstellung der Verzeichnisse schlug fehl...');
+    }
+  }
+  if (!is_dir('./upload')) {
+    if (!mkdir('./upload', 0664, true)) {
+      die('Erstellung der Verzeichnisse schlug fehl...');
+    }
+  }
+
+  //rename('./config/new_config.php', './config/config.php');
+  if (file_exists('./config/config.php')) {
+    rename('./config/config.php', './config/config.php_'.time());
+  }
+  file_put_contents('./config/config.php', '<?php  $config =' . var_export($new_config, true) . ';');
+  chmod('./config/config.php', 0664);
+}
+
+//Define different error reporting options:
+$error_error   = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
+$error_warning = $error_error   | E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;
+$error_notice  = $error_warning | E_NOTICE | E_USER_NOTICE | E_DEPRECATED | E_USER_DEPRECATED;
+$error_all     = $error_notice  | E_STRICT;
+
+//Check which error reporting strength has been set roughly. This is not precise!
+if ($error_all <= $config['error_reporting']) {
+    $error_all_checked="checked";
+} elseif ($error_notice <= $config['error_reporting']) {
+    $error_notice_checked="checked";
+} elseif ($error_warning <= $config['error_reporting']) {
+    $error_warning_checked="checked";
+} elseif ($error_error <= $config['error_reporting']) {
+    $error_error_checked="checked";
+} else {
+  function FriendlyErrorType($type)
+      {
+          switch($type)
+              {
+              case E_ERROR: // 1 //
+                  return 'E_ERROR';
+              case E_WARNING: // 2 //
+                  return 'E_WARNING';
+              case E_PARSE: // 4 //
+                  return 'E_PARSE';
+              case E_NOTICE: // 8 //
+                  return 'E_NOTICE';
+              case E_CORE_ERROR: // 16 //
+                  return 'E_CORE_ERROR';
+              case E_CORE_WARNING: // 32 //
+                  return 'E_CORE_WARNING';
+              case E_CORE_ERROR: // 64 //
+                  return 'E_COMPILE_ERROR';
+              case E_CORE_WARNING: // 128 //
+                  return 'E_COMPILE_WARNING';
+              case E_USER_ERROR: // 256 //
+                  return 'E_USER_ERROR';
+              case E_USER_WARNING: // 512 //
+                  return 'E_USER_WARNING';
+              case E_USER_NOTICE: // 1024 //
+                  return 'E_USER_NOTICE';
+              case E_STRICT: // 2048 //
+                  return 'E_STRICT';
+              case E_RECOVERABLE_ERROR: // 4096 //
+                  return 'E_RECOVERABLE_ERROR';
+              case E_DEPRECATED: // 8192 //
+                  return 'E_DEPRECATED';
+              case E_USER_DEPRECATED: // 16384 //
+                  return 'E_USER_DEPRECATED';
+              }
+          return $type;
+      }
+    $other_error = FriendlyErrorType($config['error_reporting']);
+    //echo "Debug mode is not preconfigured:<br>".FriendlyErrorType($config['error_reporting'])."<br>";
+    $other_error_html = '
+    <tr>
+      <td>
+        <input type="radio" name="error_reporting" value="'.$other_error.'" checked>
+        '.$other_error.' (current value)
+      </td>
+    </tr>
+';
+}
+
 
 //Get a list of supported encodings:
 // TODO: is perhaps /usr/share/i18n/SUPPORTED better for supported encodings?
@@ -26,18 +128,10 @@ foreach ($exec_result as $key => $installed_locale) {
 }
 $datalist_locales .= "</datalist>\n";
 
-//Read the POST values:
-foreach ($_POST as $key => $value) {
-  if (!empty($_POST[$key])) {
-      $new_config[$key] = sanitize_user_input($value);
-  } elseif (isset($default_config[$key])) {
-      $new_config[$key] = sanitize_user_input($default_config[$key]);
-  }
-}
 
-//echo "<pre>"; var_export($config); echo "</pre>";
-echo "<pre>"; var_export($new_config); echo "</pre>";
-file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_config, true) . ';');
+//echo "<pre>"; var_export($new_config); echo "</pre>";
+
+
 ?>
 
 
@@ -50,8 +144,8 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
       <p>Bitte ergänzen Sie die folgenden Werte um den Dienstplan zu konfigurieren.</p>
       <form class="" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <pre><?php //echo "$datalist_locales";?></pre>
-        <table>
-          <th colspan="3">
+        <table border="5" width=10%>
+          <th colspan="99">
             Database settings
             <p class="hint">
               The installation script will create a new MySQL database.
@@ -59,6 +153,12 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
               All the information about the duty rosters will be stored password protected in this database.
             </p>
           </th>
+          <tr>
+            <td width=1%>Application name
+            </td>
+            <td width=1%><input type="text" name="application_name" value="<?php echo $config['application_name']?>">
+            </td>
+          </tr>
           <tr>
             <td>Database name
             </td>
@@ -74,12 +174,21 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
           <tr>
             <td>User Password
             </td>
-            <td><input type="password" name="database_password" id="first_pass">
+            <td><input type="password" name="database_password" id="first_pass"
+              onchange="compare_passwords()"
+              onkeyup="compare_passwords()"
+              onkeydown="compare_passwords()"
+              onclick="compare_passwords()"
+              onblur="compare_passwords()"
+              onpaste="compare_passwords()"
+              >
             </td>
-            <td rowspan="2">
-              <img src="images/approve.png" height="20em">
-              <img src="images/disapprove.png" height="15em">
+            <td width=90%>
+              <img id="approve_pass_img"    style="display:none" src="images/approve.png" height="20em">
+              <img id="disapprove_pass_img" style="display:none" src="images/disapprove.png" height="20em">
+              <!--
               <input type="text" id=clear_pass>
+          -->
             </td>
           </tr>
           <tr>
@@ -95,7 +204,7 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
                 >
             </td>
           </tr>
-          <th colspan="3">
+          <th colspan="99">
             Contact information
             <p class="hint">
               Viewing users will be invited to address wishes and suggestions to the editor of the duty rosters.
@@ -104,10 +213,10 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
           <tr>
             <td>Email
             </td>
-            <td><input type="email" name="contact_email">
+            <td><input type="email" name="contact_email" value="<?php echo $config['contact_email']?>">
             </td>
           </tr>
-          <th colspan="3">
+          <th colspan="99">
             Technical details
             <p class="hint">
               Time values can be adapted to various local user's environments.
@@ -116,47 +225,50 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
             </p>
           </th>
           <tr>
-            <td>Charset
-            </td>
-            <td><input list="encodings" value="<?php echo $config['mb_internal_encoding']?>" name="mb_internal_encoding">
-              <?php echo "$datalist_encodings"; ?>
-            </td>
-          </tr>
-          <tr>
             <td>Locale
             </td>
             <td><input list="locales" value="<?php echo $config['LC_TIME']?>" name="LC_TIME">
               <?php echo "$datalist_locales"; ?>
             </td>
           </tr>
-          <th colspan="3"> Debugging
+          <tr>
+            <td>Charset
+            </td>
+            <td><input list="encodings" value="<?php echo $config['mb_internal_encoding']?>" name="mb_internal_encoding">
+              <?php echo "$datalist_encodings"; ?>
+            </td>
+          </tr>
+          <th colspan="99"> Debugging
               <p class="hint"> Which type of errors should be reported to the user?</p>
           </th>
           <tr>
             <td>
-              <input type="radio" name="error_reporting" value="<?php echo $error_error?>">
+              <input type="radio" name="error_reporting" value="<?php echo "$error_error\" $error_error_checked";?>>
               Only fatal errors
             </td>
           </tr>
           <tr>
             <td>
-              <input type="radio" name="error_reporting" value="<?php echo $error_warning?>">
+              <input type="radio" name="error_reporting" value="<?php echo "$error_warning\" $error_warning_checked";?>>
               Also warnings
             </td>
           </tr>
           <tr>
             <td>
-              <input type="radio" name="error_reporting" value="<?php echo $error_notice?>">
+              <input type="radio" name="error_reporting" value="<?php echo "$error_notice\" $error_notice_checked";?>>
               And notices
             </td>
           </tr>
           <tr>
             <td>
-              <input type="radio" name="error_reporting" value="<?php echo $error_all?>" checked>
+              <input type="radio" name="error_reporting" value="<?php echo "$error_all\" $error_all_checked";?>>
               Everything
             </td>
           </tr>
-          <th colspan="3">Approval
+          <?php if (!empty($other_error_html)) {
+            echo "$other_error_html";
+          }?>
+          <th colspan="99">Approval
               <p class="hint">
                 After a duty roster is planned, it has to be approved, before it is in effect.
                 <br>
@@ -171,6 +283,7 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
             <td><input type="radio" name="hide_disapproved" value="false" checked>Show
             </td>
           </tr>
+          <!--
           <tr>
             <td>
             </td>
@@ -182,7 +295,7 @@ file_put_contents('config/new_config.php', '<?php  $config =' . var_export($new_
             </td>
             <td><input type="text">
             </td>
-          </tr>
+          </tr>-->
         </table>
         <input type="submit">
       </form>

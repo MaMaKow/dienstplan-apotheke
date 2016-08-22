@@ -28,6 +28,10 @@ td
 {
 	white-space: nowrap; vertical-align: top;
 }
+th
+{
+	text-align: left;
+}
 a
 {
 	text-decoration: none;
