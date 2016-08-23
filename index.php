@@ -1,6 +1,9 @@
 
 <html>
 	<?php
+		if (!file_exists('./config/config.php')) {
+			echo "The application does not seem to be configured. Please see the <a href=install.php>installation page</a>";
+		}
 		require 'default.php';
 		require 'head.php';
 	?>
