@@ -1,4 +1,8 @@
 <?php
+	if (!file_exists('./config/config.php')) {
+		die ("The application does not seem to be installed. Please see the <a href=install.php>installation page</a>!");
+	}
+
 	require "config/config.php";
 	//	file_put_contents('config/config.php', '<?php  $config =' . var_export($config, true) . ';');
 	//We want some functions to be accessable in all scripts.
