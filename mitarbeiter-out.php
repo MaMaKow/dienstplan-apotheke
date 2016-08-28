@@ -277,7 +277,7 @@ $myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
 fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
 $dienstplanCSV = '';
-$command = ('./Mitarbeiter_image.sh '.escapeshellcmd($Dienstplan[0]['Datum'][0]).'_'.escapeshellcmd($vk));
+$command = ('./Mitarbeiter_image.sh 2>&1 '.escapeshellcmd($Dienstplan[0]['Datum'][0]).'_'.escapeshellcmd($vk));
 exec($command, $kommando_ergebnis);
 if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png') )
 {

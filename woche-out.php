@@ -119,8 +119,8 @@ $table_body_html  = "<tbody>";
 $table_body_html .= schreiben_tabelle($Dienstplan);
 if (isset($Overlay_message))
 {
-	$overlay_message_html .= "\t\t<div class=overlay>\n";
-	$Overlay_message=array_unique($Overlay_message);
+	$overlay_message_html .= "\t\t<div class='overlay no-print'>\n";
+	$Overlay_message=array_unique($Overlay_message); 
 	foreach($Overlay_message as $message)
 	{
 		$overlay_message_html .= "\t\t\t<H1>".$message."</H1>\n";
