@@ -43,7 +43,7 @@ global $datum, $verbindungi, $Mitarbeiter;
 			fwrite($myfile, $dienstplanCSV);
 			fclose($myfile);
 			$dienstplanCSV="";
-			$command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
+			$command=('./Dienstplan_image.sh 2>&1 '.escapeshellcmd("m".$mandant."_".$datum));
 			exec($command, $kommando_ergebnis); // Kann dies Fehler verursachen?
 			//Wir rufen die Funktion mehrmals mit verschiedenen Parametern auf. Kann dem Filial-Plan-Bild dabei etwas zustoßen?
 		}
