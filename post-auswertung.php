@@ -23,6 +23,12 @@ if ( isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0 )
 	foreach(array_keys($Dienstplan) as $tag ) //Hier sollte eigentlich nur ein einziger Tag ankommen.
 	{
 		$datum=$Dienstplan[$tag]['Datum'][0];
+		//The following lines will add an entry for every day in the table approval.
+		//TODO: We should manage situations, where an entry already exists better.
+		$abfrage="INSERT IGNORE INTO `approval` (date, state, branch, user)
+			VALUES ('$datum', 'not_yet_approved', '$mandant', '$user')";
+		//echo "<!--"; var_export($abfrage); echo "-->\n";
+		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 		$abfrage="DELETE FROM `Dienstplan`
 			WHERE `Datum` = '$datum'
 			AND `Mandant` = '$mandant'
