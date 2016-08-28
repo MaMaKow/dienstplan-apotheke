@@ -7,6 +7,10 @@ global $datum, $verbindungi, $Mitarbeiter;
 	//$tage ist die Anzahl der Tage. 5 Tage = Woche; 1 Tag = 1 Tag.
 	//$mandant 1 ist der Marienplatz, 2 ist die Helenenstraße. Mandant 0 wird für den Chef, Frau Zapel, Frau Köhler und andere genutzt, die nicht jeden Tag im Plan stehen sollen.
 //	$tag=$datum;
+
+	//We need information about the qualification of the workers:
+	require 'db-lesen-mitarbeiter.php';
+
 	for ($i=0; $i<$tage; $i++)
 	{
 		$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));
@@ -15,6 +19,8 @@ global $datum, $verbindungi, $Mitarbeiter;
 //		$abfrage='SELECT * FROM `Dienstplan` WHERE `Datum` = "'.$tag.'" AND `Mandant` = "'.$mandant.'" ORDER BY `Dienstbeginn` ASC, `Mittagsbeginn` ASC;';
 		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 		$dienstplanCSV="";
+
+
 		while($row = mysqli_fetch_object($ergebnis))
 		{
 			$Dienstplan[$i]["Datum"][]=$row->Datum;
@@ -28,13 +34,28 @@ global $datum, $verbindungi, $Mitarbeiter;
 			//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
 			if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 			if(empty($mittagsende)){$mittagsende="0:00";}
+			//The next lines will be used for coloring the image dependent on the education of the workers:
+			if($Ausbildung_mitarbeiter[$row->VK] == "Apotheker"){
+				$worker_style = 1;
+			} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PI"){
+				$worker_style = 1;
+			} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PTA"){
+				$worker_style = 2;
+			} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PKA"){
+				$worker_style = 3;
+			} else{
+				//anybody else
+				$worker_style = 3;
+			}
+			//We write a file to feed the data to gnuplot for imaging.
 			$dienstplanCSV.=$Mitarbeiter[$row->VK].", $row->VK, $row->Datum";
 			$dienstplanCSV.=", ".$row->Dienstbeginn;
 			$dienstplanCSV.=", ".$row->Dienstende;
 			$dienstplanCSV.=", ".$row->Mittagsbeginn;
 			$dienstplanCSV.=", ".$row->Mittagsende;
 			$dienstplanCSV.=", ".$row->Stunden;
-			$dienstplanCSV.=", ".$row->Mandant."\n";
+			$dienstplanCSV.=", ".$row->Mandant;
+			$dienstplanCSV.=", ".$worker_style."\n";
 		}
 		if ($tage == 1) {
 			# This image is shown only for views with one single day.
