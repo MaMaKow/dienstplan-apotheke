@@ -127,11 +127,12 @@ select:hover
 	*/
 	background-color: #73AC22;
 	opacity: 0.8;
-	z-index: 10;
+	z-index: -10;
 }
 .overlay:hover
 {
 	opacity: 0.2;
+	z-index: -10;
 }
 .errormsg
 {
