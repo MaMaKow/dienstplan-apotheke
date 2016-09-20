@@ -83,7 +83,8 @@ img
 }
 input[type="time"]
 {
-
+	size: 5em;
+	font-family: monospace;
 	border-top: initial;
 	border-left: 3px dotted #FEFEFF;
 	border-right: 3px dotted #FEFEFF;
@@ -195,4 +196,38 @@ img.worker-img:hover {
 	font-size: small;
 	font-weight: lighter;
 	text-align: left;
+}
+button {
+    background-color: #BDE682;
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+.btn-save {
+	background-color: #73AC22;
+	color: white;
+}
+.icon-white {
+	-webkit-filter: brightness(0) invert(100%);
+	-moz-filter: brightness(0) invert(100%);
+	-ms-filter: brightness(0) invert(100%);
+	-o-filter: brightness(0) invert(100%);
+	filter: brightness(0) invert(100%);
+}
+.icon-black {
+	-webkit-filter: brightness(0);
+	-moz-filter: brightness(0);
+	-ms-filter: brightness(0);
+	-o-filter: brightness(0);
+	filter: brightness(0);
+}
+.icon-grey {
+	/*background-color: red;*/
+}
+.btn-secondary {
+	background-color: #B4B4B4;
 }
