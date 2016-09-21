@@ -198,6 +198,23 @@ img.worker-img:hover {
 	font-weight: lighter;
 	text-align: left;
 }
+.table {
+	display:block;
+	border="5";
+	width=10%;
+}
+.row {
+	display:block;
+}
+.cell-header {
+	font-weight: bold;
+}
+.cell {
+	display:inline-block;
+}
+button.next {
+	background-color: #73AC22;
+}
 button {
     background-color: #BDE682;
     border: none;
