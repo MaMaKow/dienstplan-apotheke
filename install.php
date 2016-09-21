@@ -48,6 +48,11 @@ if (empty($_POST)) {
       die('Erstellung der Verzeichnisse schlug fehl...');
     }
   }
+  if (!is_dir('./ics')) {
+    if (!mkdir('./ics', 0664, true)) {
+      die('Erstellung der Verzeichnisse schlug fehl...');
+    }
+  }
   if (!is_dir('./upload')) {
     if (!mkdir('./upload', 0664, true)) {
       die('Erstellung der Verzeichnisse schlug fehl...');
