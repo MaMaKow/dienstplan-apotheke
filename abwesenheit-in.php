@@ -57,7 +57,16 @@ require 'default.php';
 					(VK, Beginn, Ende, Tage, Grund)
 					VALUES ('.$_POST['auswahl_mitarbeiter'].", '".$_POST['beginn']."', '".$_POST['ende']."', '".$_POST['tage']."', '".$_POST['grund']."')";
 //				echo "$abfrage";
-                $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+//                $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+		if( !($ergebnis=mysqli_query($verbindungi, $abfrage)) ) {
+			$error_string=mysqli_error($verbindungi);
+			if (strpos($error_string, 'Duplicate') !== false){
+				$Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
+			} else {
+				//Are there other errors, that we should handle?
+				die("Error: $abfrage <br>".mysqli_error($verbindungi));
+			}
+		}
             }
             $vk = $auswahl_mitarbeiter;
             $abfrage = 'SELECT * FROM `Abwesenheit`
@@ -98,6 +107,15 @@ require 'default.php';
 
 //Hier beginnt die Ausgabe
 require 'navigation.php';
+if (isset($Fehlermeldung))
+{
+	echo "\t\t<div class=errormsg>\n";
+	foreach($Fehlermeldung as $fehler)
+	{
+		echo "\t\t\t<H1>".$fehler."</H1>\n";
+	}
+	echo "\t\t</div>";
+}
 echo "<div class=main-area>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
@@ -151,7 +169,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
             echo "$datalist";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo "<input readonly type=number id=tage name=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>";
+            echo "<input readonly value=1 type=number id=tage name=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>";
             echo "\n\t\t\t\t</td>\n";
             echo "\n\t\t\t</tr>\n";
             echo "\t\t</table>\n";

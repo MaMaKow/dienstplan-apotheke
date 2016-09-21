@@ -78,6 +78,9 @@ $buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= $rückwärts_button_week_img;
 $buttons_div_html .= $vorwärts_button_week_img;
 $buttons_div_html .= "<br><br>";
+$buttons_div_html .= "\t\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+$buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+$buttons_div_html .= "<br><br>";
 $buttons_div_html .= "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
@@ -119,8 +122,8 @@ $table_body_html  = "<tbody>";
 $table_body_html .= schreiben_tabelle($Dienstplan);
 if (isset($Overlay_message))
 {
-	$overlay_message_html .= "\t\t<div class=overlay>\n";
-	$Overlay_message=array_unique($Overlay_message);
+	$overlay_message_html .= "\t\t<div class='overlay no-print'>\n";
+	$Overlay_message=array_unique($Overlay_message); 
 	foreach($Overlay_message as $message)
 	{
 		$overlay_message_html .= "\t\t\t<H1>".$message."</H1>\n";

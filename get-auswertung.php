@@ -7,6 +7,10 @@ if (!empty($_GET))
 	{
 		$datum=htmlspecialchars($_GET['datum']);
 	}
+	if (isset($_GET['mandant']))
+	{
+		$mandant=htmlspecialchars($_GET['mandant']);
+	}
 	if (isset($_GET['auswahl_mitarbeiter']))
 	{
 		$auswahl_mitarbeiter=htmlspecialchars($_GET['auswahl_mitarbeiter']);

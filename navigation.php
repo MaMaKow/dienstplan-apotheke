@@ -14,7 +14,7 @@
 
 $rückwärts_button_img='
 		<button type="submit" class="btn btn-primary no-print" value="" name="submitRückwärts">
-			<i class="icon-user icon-white">
+			<i class="icon-user icon-black">
 				<img src=images/backward.png width=32px>
 			</i>
 			<br>
@@ -22,7 +22,7 @@ $rückwärts_button_img='
 		</button>';
 $vorwärts_button_img='
 		<button type="submit" class="btn btn-primary no-print" value="" name="submitVorwärts">
-			<i class="icon-user icon-white">
+			<i class="icon-user icon-black">
 				<img src=images/foreward.png width=32px>
 			</i>
 			<br>
@@ -30,7 +30,7 @@ $vorwärts_button_img='
 		</button>';
 $rückwärts_button_week_img='
 		<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheRückwärts">
-			<i class="icon-user icon-white">
+			<i class="icon-user icon-black">
 				<img src=images/backward.png width=32px>
 			</i>
 			<br>
@@ -38,14 +38,14 @@ $rückwärts_button_week_img='
 		</button>';
 $vorwärts_button_week_img='
 		<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheVorwärts">
-			<i class="icon-user icon-white">
+			<i class="icon-user icon-black">
 				<img src=images/foreward.png width=32px>
 			</i>
 			<br>
 			1 Woche Vorwärts
 		</button>';
 $submit_button_img='
-		<button type="submit" class="btn btn-primary no-print" value=Absenden name="submitDienstplan">
+		<button type="submit" class="btn btn-primary btn-save no-print" value=Absenden name="submitDienstplan">
 		  <i class="icon-user icon-white">
 				<img src=images/save.png width=32px>
 			</i>
@@ -54,8 +54,8 @@ $submit_button_img='
 		</button>';
 // TODO: The button should be inactive when the approval already was done.
 $submit_approval_button_img='
-		<button type="submit" class="btn btn-primary no-print" value=Genehmigen name="submit_approval">
-			<i class="icon-user icon-white">
+		<button type="submit" class="btn btn-secondary no-print" value=Genehmigen name="submit_approval">
+			<i class="icon-user icon-grey">
 				<img src=images/approve.png width=32px>
 			</i>
 			<br>
@@ -63,8 +63,8 @@ $submit_approval_button_img='
 		</button>';
 //		<input type=submit value=Genehmigen name='submit_approval'>\n";
 $submit_disapproval_button_img='
-		<button type="submit" class="btn btn-primary no-print" value=Ablehnen name="submit_disapproval">
-			<i class="icon-user icon-white">
+		<button type="submit" class="btn btn-secondary no-print" value=Ablehnen name="submit_disapproval">
+			<i class="icon-user icon-grey">
 				<img src=images/disapprove.png width=32px>
 			</i>
 			<br>

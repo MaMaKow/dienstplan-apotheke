@@ -22,6 +22,14 @@ $montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der W
 $montags_differenzString="-".$montags_differenz." day";
 $datum=strtotime($montags_differenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum);
+if (isset($datum))
+{
+	create_cookie("datum", $datum, 0.5); //Diese Funktion muss vor dem ersten echo durchgeführt werden.
+}
+if (isset($mandant))
+{
+	create_cookie("mandant", $mandant, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+}
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
@@ -73,6 +81,9 @@ echo "<div class=no-print>";
 echo $rückwärts_button_week_img;
 echo $vorwärts_button_week_img;
 echo "$submit_button_img";
+echo "<br><br>\n";
+echo "<div id=wochenAuswahl><input name=woche type=date value=".date('Y-m-d', strtotime($datum)).">";
+echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
 echo "$submit_approval_button_img";
@@ -85,8 +96,6 @@ echo "\t\t\t\t<a href=woche-out.php?datum=".$datum." class=no-print>[Lesen]</a>\
 echo "<br><br>\n";
 echo "</div>";
 
-echo "<div id=wochenAuswahl><input name=woche type=date value=".date('Y-m-d', strtotime($datum)).">";
-echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "\t<table border=0 rules=groups>\n";
 echo "\t\t\t\t\t<thead>\n";
 echo "\t\t\t<tr>\n";

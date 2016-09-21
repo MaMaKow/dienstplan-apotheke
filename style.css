@@ -83,7 +83,8 @@ img
 }
 input[type="time"]
 {
-
+	size: 5em;
+	font-family: monospace;
 	border-top: initial;
 	border-left: 3px dotted #FEFEFF;
 	border-right: 3px dotted #FEFEFF;
@@ -95,6 +96,7 @@ input[type="time"]:hover
 }
 select
 {
+	color: #73AC22;
 	background-color: #FEFEFF;
 
 	border-top: 3px dotted #B4B4B4;
@@ -127,11 +129,12 @@ select:hover
 	*/
 	background-color: #73AC22;
 	opacity: 0.8;
-	z-index: 10;
+	z-index: -10;
 }
 .overlay:hover
 {
 	opacity: 0.2;
+	z-index: -10;
 }
 .errormsg
 {
@@ -211,4 +214,38 @@ img.worker-img:hover {
 }
 button.next {
 	background-color: #73AC22;
+}
+button {
+    background-color: #BDE682;
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+.btn-save {
+	background-color: #73AC22;
+	color: white;
+}
+.icon-white {
+	-webkit-filter: brightness(0) invert(100%);
+	-moz-filter: brightness(0) invert(100%);
+	-ms-filter: brightness(0) invert(100%);
+	-o-filter: brightness(0) invert(100%);
+	filter: brightness(0) invert(100%);
+}
+.icon-black {
+	-webkit-filter: brightness(0);
+	-moz-filter: brightness(0);
+	-ms-filter: brightness(0);
+	-o-filter: brightness(0);
+	filter: brightness(0);
+}
+.icon-grey {
+	/*background-color: red;*/
+}
+.btn-secondary {
+	background-color: #B4B4B4;
 }
