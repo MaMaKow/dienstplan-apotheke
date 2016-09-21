@@ -89,14 +89,6 @@ $zeile .= '<br><br>';
 echo $zeile;
 
 //Navigation between the weeks:
-//$Rückwärts_button = "\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
-//$Vorwärts_button = "\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
-$rückwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheRückwärts">
-  <i class="icon-user icon-white"><img src=images/backward.png width=32px></i><br>1 Woche Rückwärts
-</button>';
-$vorwärts_button_img='<button type="submit" class="btn btn-primary no-print" value="" name="submitWocheVorwärts">
-  <i class="icon-user icon-white"><img src=images/foreward.png width=32px></i><br>1 Woche Vorwärts
-</button>';
 echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo '<br><br>';
@@ -277,7 +269,7 @@ $myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
 fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
 $dienstplanCSV = '';
-$command = ('./Mitarbeiter_image.sh '.escapeshellcmd($Dienstplan[0]['Datum'][0]).'_'.escapeshellcmd($vk));
+$command = ('./Mitarbeiter_image.sh 2>&1 '.escapeshellcmd($Dienstplan[0]['Datum'][0]).'_'.escapeshellcmd($vk));
 exec($command, $kommando_ergebnis);
 if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png') )
 {

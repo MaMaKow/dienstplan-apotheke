@@ -125,6 +125,18 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Kommentar'][] = $row->Kommentar;
     $Grundplan[$wochentag]['Mandant'][] = $row->Mandant;
 
+	if($Ausbildung_mitarbeiter[$row->VK] == "Apotheker"){
+		$worker_style = 1;
+	} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PI"){
+		$worker_style = 1;
+	} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PTA"){
+		$worker_style = 2;
+	} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PKA"){
+		$worker_style = 3;
+	} else{
+		//anybody else
+		$worker_style = 3;
+	}
     //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
     $dienstplanCSV .= $Mitarbeiter[$row->VK].", $row->VK, $wochentag";
     $dienstplanCSV .= ', '.$row->Dienstbeginn;
@@ -132,7 +144,8 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $dienstplanCSV .= ', '.$row->Mittagsbeginn;
     $dienstplanCSV .= ', '.$row->Mittagsende;
     $dienstplanCSV .= ', '.$row->Stunden;
-    $dienstplanCSV .= ', '.$row->Mandant."\n";
+    $dienstplanCSV .= ', '.$row->Mandant;;
+	$dienstplanCSV.=", ".$worker_style."\n";
 }
 $filename = 'tmp/Dienstplan.csv';
 $myfile = fopen($filename, 'w') or die("Unable to open file $filename!");
