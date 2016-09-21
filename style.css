@@ -96,6 +96,7 @@ input[type="time"]:hover
 }
 select
 {
+	color: #73AC22;
 	background-color: #FEFEFF;
 
 	border-top: 3px dotted #B4B4B4;
