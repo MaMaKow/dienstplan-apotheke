@@ -14,12 +14,11 @@ global $datum, $verbindungi, $Mitarbeiter;
 	for ($i=0; $i<$tage; $i++)
 	{
 		$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));
-		$abfrage='SELECT Dienstplan.* FROM `Dienstplan` LEFT JOIN Mitarbeiter ON Dienstplan.VK=Mitarbeiter.VK WHERE Dienstplan.Mandant = "'.$mandant.'" AND `Datum` = "'.$tag.'" AND Mitarbeiter.Mandant REGEXP "^'.$VKmandant.'$" ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
+		$abfrage='SELECT DISTINCT Dienstplan.* FROM `Dienstplan` LEFT JOIN Mitarbeiter ON Dienstplan.VK=Mitarbeiter.VK WHERE Dienstplan.Mandant = "'.$mandant.'" AND `Datum` = "'.$tag.'" AND Mitarbeiter.Mandant REGEXP "^'.$VKmandant.'$" ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
 
 //		$abfrage='SELECT * FROM `Dienstplan` WHERE `Datum` = "'.$tag.'" AND `Mandant` = "'.$mandant.'" ORDER BY `Dienstbeginn` ASC, `Mittagsbeginn` ASC;';
 		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 		$dienstplanCSV="";
-
 
 		while($row = mysqli_fetch_object($ergebnis))
 		{
