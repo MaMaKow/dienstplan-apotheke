@@ -68,7 +68,15 @@ require 'default.php';
 					$abfrage="INSERT INTO `Stunden`
 						(VK, Datum, Stunden, Saldo, Grund)
 						VALUES (".$_POST['auswahl_mitarbeiter'].", '". $_POST['datum']."', ". $_POST['stunden'].", ". $_POST['saldo'].", '". $_POST['grund']."')";
-					$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+					if( !($ergebnis=mysqli_query($verbindungi, $abfrage)) ) {
+						$error_string=mysqli_error($verbindungi);
+						if (strpos($error_string, 'Duplicate') !== false){
+							$Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
+						} else {
+							//Are there other errors, that we should handle?
+							die("Error: $abfrage <br>".mysqli_error($verbindungi));
+						}
+					}
 			}
 			$vk=$auswahl_mitarbeiter;
 			$abfrage="SELECT * FROM `Stunden`
@@ -111,6 +119,15 @@ require 'default.php';
 
 //Hier beginnt die Ausgabe
 require 'navigation.php';
+if (isset($Fehlermeldung))
+{
+	echo "\t\t<div class=errormsg>\n";
+	foreach($Fehlermeldung as $fehler)
+	{
+		echo "\t\t\t<H1>".$fehler."</H1>\n";
+	}
+	echo "\t\t</div>";
+}
 echo "<div class=main-area>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
