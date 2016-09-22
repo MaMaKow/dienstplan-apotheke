@@ -144,7 +144,7 @@ echo "\t\t<form id=myform method=post>\n";
 //$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Rückwärts"	name="submitWocheRückwärts">\n";echo $Rückwärts_button;
 //$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Vorwärts"	name="submitWocheVorwärts">\n";echo $Vorwärts_button;
 //$zeile="<br>";
-$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
+$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submit_button_img').click()>";
 //$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
 foreach ($Mitarbeiter as $vk => $name) {
     if ($vk == $auswahl_mitarbeiter) {
@@ -155,8 +155,13 @@ foreach ($Mitarbeiter as $vk => $name) {
 }
 $zeile .= '</select>';
 echo $zeile;
-$submit_button = "\t<input type=submit value=Absenden name=submitAuswahlMitarbeiter id=submitAuswahlMitarbeiter class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
+echo "<br>";
+echo "<br>";
+//$submit_button = "\t<input type=submit value=Absenden name=submitAuswahlMitarbeiter id=submitAuswahlMitarbeiter class=no-print>\n"; 
+echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+echo "<br>";
+echo "<br>";
+//echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
 echo "\t\t\t<table border=1>\n";
 echo "\t\t\t\t<thead>\n";
