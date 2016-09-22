@@ -45,7 +45,7 @@ $vorwärts_button_week_img='
 			1 Woche Vorwärts
 		</button>';
 $submit_button_img='
-		<button type="submit" class="btn btn-primary btn-save no-print" value=Absenden name="submitDienstplan">
+		<button type="submit" id=submit_button_img class="btn btn-primary btn-save no-print" value=Absenden name="submitDienstplan">
 		  <i class="icon-user icon-white">
 				<img src=images/save.png width=32px>
 			</i>
