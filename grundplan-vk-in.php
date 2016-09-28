@@ -118,8 +118,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
     $Wochentag[$wochentag] = strftime('%A', $pseudo_datum);
 }
-require 'db-lesen-woche-mitarbeiter.php'; //Lesen der in der Datenbank gespeicherten Daten.
-require 'db-lesen-feiertag.php';
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
@@ -173,9 +171,6 @@ foreach ($Grundplan as $wochentag => $Plan) {
     echo "</td>\n";
 }
 for ($j = 0; $j < $plan_anzahl; ++$j) {
-    if (isset($feiertag) && !isset($notdienst)) {
-        break 1;
-    }
     echo "\t\t\t\t</tr></thead><tr>\n";
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
