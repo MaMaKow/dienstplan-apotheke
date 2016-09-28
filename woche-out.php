@@ -158,14 +158,16 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	require 'db-lesen-feiertag.php';
 // TODO: I am not sure where to put the following line. There is an echo inside.
 	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-	foreach ($Abwesende as $key => $vk) {
-		if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
-				//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
-				if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
-						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $Stunden_mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
-				} else {
-						$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
-				}
+	if (isset($Abwesende) {
+		foreach ($Abwesende as $key => $vk) {
+			if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
+					//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
+					if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
+							$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $Stunden_mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
+					} else {
+							$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
+					}
+			}
 		}
 	}
 	//Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
@@ -237,7 +239,7 @@ for ($tag=0; $tag<5; $tag++)
 	}
 }
 //An leeren Wochen soll nicht gerechnet werden.
-if (!empty(array_column($Dienstplan, 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
+if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) //array_column durchsucht alle Tage nach einem 'VK'.
 {
 	$week_hours_table_html .= "<b>Wochenstunden</b><tr>";
 	ksort($Stunden);
