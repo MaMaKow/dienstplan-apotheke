@@ -48,6 +48,7 @@ if (!isset($Mitarbeiter[$auswahl_mitarbeiter])) {
   //die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
 }
 //Lesen der in der Datenbank gespeicherten Daten.
+require 'db-lesen-mandant.php';
 require 'db-lesen-woche-mitarbeiter.php';
 require 'db-lesen-feiertag.php';
 
@@ -172,7 +173,10 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Mittagsende'][$j]));
         }
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Stunden'][$j] > 0) {
-            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Dienstplan[$i]['VK'][$j].'>'.$Dienstplan[$i]['Stunden'][$j].' Stunden';
+            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Dienstplan[$i]['VK'][$j].'>'.$Dienstplan[$i]['Stunden'][$j].' Stunden</a>';
+        }
+        if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Mandant'][$j] > 0) {
+            $zeile .= '<br>'.$Kurz_mandant[$Dienstplan[$i]['Mandant'][$j]];
         }
         $zeile .= '';
 
