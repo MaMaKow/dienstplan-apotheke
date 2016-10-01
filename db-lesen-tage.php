@@ -1,6 +1,6 @@
 <?php
 //Argumente hinter dem .. sind optional.
-function db_lesen_tage($tage, $mandant, $VKmandant='[0-9]*')
+function db_lesen_tage(int $tage, int $mandant, $VKmandant='[0-9]*')
 {
 global $datum, $verbindungi, $Mitarbeiter;
 	//Abruf der gespeicherten Daten aus der Datenbank
