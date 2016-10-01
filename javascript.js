@@ -29,6 +29,7 @@ function rehide_mittag()  {
 //This function is called by abwesenheit-in.php
 function confirmDelete(link)
 {
+	//TODO: Do we need the argument for this function?
   var r = confirm("Diesen Datensatz wirklich löschen?");
   return r;
 }
@@ -48,7 +49,6 @@ function updateTage()
   //Wir entnehmen die vorhandenen Werte.
   var beginn			= new Date (beginnId.value);
   var ende			= new Date (endeId.value);
-  if (beginn > ende) {alert('Das Ende liegt vor dem Startdatum'); }
   var start = new Date(beginn.getTime());
   var end = new Date(ende.getTime());
   var count = 0;
@@ -62,7 +62,20 @@ function updateTage()
   }
   tageId.value 	= count;
 }
+//This function is called by abwesenheit-in.php
+function checkUpdateTage ()
+{
+  //Wir lesen die Objekte aus dem HTML code.
+  var beginnId			= document.getElementById("beginn");
+  var endeId			= document.getElementById("ende");
+  var tageId			= document.getElementById("tage");
 
+  //Wir entnehmen die vorhandenen Werte.
+  var beginn			= new Date (beginnId.value);
+  var ende			= new Date (endeId.value);
+  if (beginn > ende) {alert('Das Ende liegt vor dem Startdatum'); }
+ 
+}
 //This function is called by tag-in.php
 function unhide_kommentar() {
   var kommentar_input = document.getElementsByClassName("kommentar_input")
