@@ -1,6 +1,6 @@
 <?php
 
-	function finde_konstanten($spalte) //Spalte ist Dienstbeginn, Dienstende, oder eine andere Spalte der Tabelle mit den Wunschzeiten
+	function finde_konstanten(string $spalte) //Spalte ist Dienstbeginn, Dienstende, oder eine andere Spalte der Tabelle mit den Wunschzeiten
 	{
 		global $row, $datum, $tag, $position;
 		global $Dienstplan;//Die Variable wird heir global gesetzt, damit sie außerhab später zur Verfügung steht.
@@ -90,9 +90,9 @@
 	}
 
 
-	function mache_vorschlag($uhrzeit)
+	function mache_vorschlag(int $uhrzeit)
 	{
-		//debug DEBUG Vermutlich ist es cleverer, die $Mitarbeiter_optionen gleich auf die Mitarbeiter zu begrenzen, die auch wirklich können. Dann sparen wir und zahlreiche Versuche.
+		//TODO: Vermutlich ist es cleverer, die $Mitarbeiter_optionen gleich auf die Mitarbeiter zu begrenzen, die auch wirklich können. Dann sparen wir und zahlreiche Versuche.
 		global $datum, $tag, $Dienstplan, $Grundplan, $Abwesende;
 		global $Mitarbeiter, $Mandanten_mitarbeiter, $Ausbildung_mitarbeiter, $Stunden_mitarbeiter, $Mittag_mitarbeiter;
 		//Eine Liste der zur Verfügung stehenden Mitarbeiter holen:
@@ -186,7 +186,7 @@
 		akzeptiere_vorschlag($vorschlag);
 	}
 
-	function akzeptiere_vorschlag($vorschlag)
+	function akzeptiere_vorschlag(int $vorschlag)
 	{
 		global $uhrzeit, $versuche;
 		global $datum, $tag, $Dienstplan, $Grundplan, $Abwesende;

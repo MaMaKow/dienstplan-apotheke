@@ -1,5 +1,5 @@
 <?php
-	function create_cookie($cookie_name, $cookie_value, $days=7)
+	function create_cookie(string $cookie_name, $cookie_value, int $days=7)
 	{
 		if ( isset($cookie_name) AND isset($cookie_value) )
 		{
@@ -7,7 +7,7 @@
 		}
 	}
 
-	function calculate_percentile($arr,$perc) {
+	function calculate_percentile(array $arr, int $perc) {
 	    sort($arr);
 	    $count = count($arr); //total numbers in array
 	    $middleval = floor(($count-1)*$perc/100); // find the middle value, or the lowest middle value
@@ -21,7 +21,7 @@
 	    return $median;
 	}
 
-	function calculate_VKcount ($Dienstplan) {
+	function calculate_VKcount (array $Dienstplan) {
 		global $Mandanten_mitarbeiter;
 		foreach($Dienstplan as $key => $Dienstplantag)
 		{

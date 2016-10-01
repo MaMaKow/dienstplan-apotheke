@@ -1,6 +1,6 @@
 <?php
 //Wir erstellen eine Icalendar Datei (ICS). Diese kann dann in einen Kalender importiert werden.
-function schreiben_ics ($Dienstplan)
+function schreiben_ics (array $Dienstplan)
 {
 global $Mitarbeiter;
 $textICS="";
