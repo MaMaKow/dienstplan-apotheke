@@ -1,5 +1,5 @@
 <?php
-function schreiben_tabelle ($Dienstplan){
+function schreiben_tabelle (array $Dienstplan){
 		global $Mitarbeiter, $mandant;
 		global $verbindungi, $config;
 		global $Warnmeldung, $Fehlermeldung, $Overlay_message;

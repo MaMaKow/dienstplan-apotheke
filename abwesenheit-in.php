@@ -15,11 +15,11 @@ require 'default.php';
             //Hole eine Liste aller Mandanten (Filialen)
             require 'db-lesen-mandant.php';
             if (isset($_POST['auswahl_mitarbeiter'])) {
-                $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
+                $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
             } elseif (isset($_GET['auswahl_mitarbeiter'])) {
-                $auswahl_mitarbeiter = $_GET['auswahl_mitarbeiter'];
+                $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
             } elseif (isset($_COOKIE['auswahl_mitarbeiter'])) {
-                $auswahl_mitarbeiter = $_COOKIE['auswahl_mitarbeiter'];
+                $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
             } else {
                 $auswahl_mitarbeiter = 1;
             }
@@ -30,8 +30,11 @@ require 'default.php';
 
             //Wir löschen Datensätze, wenn dies befohlen wird.
             if (isset($_POST['loeschen'])) {
-                foreach ($_POST['loeschen'] as $vk => $Beginne) {
+                $Loeschen = filter_input(INPUT_POST, 'loeschen', FILTER_REQUIRE_ARRAY);
+                foreach ($Loeschen as $vk => $Beginne) {
                     foreach ($Beginne as $beginn => $X) {
+                        $vk = filter_var($vk, FILTER_VALIDATE_INT);
+                        $beginn = filter_var($beginn, FILTER_SANITIZE_STRING);
                         $abfrage = "DELETE FROM `Abwesenheit`
 						WHERE `VK` = '$vk' AND `Beginn` = '$beginn'";
                 //		echo "$abfrage";
@@ -49,7 +52,7 @@ require 'default.php';
                     //Jetzt werden die Feiertage abgezogen, die nicht auf ein Wochenende fallen.
                     //Samstage und Sonntage wurden vorher bereits im Javascript abgezogen.
                     if (isset($feiertag) and strftime('%u', strtotime($datum)) < 6) {
-                        echo "$feiertag ist ein Feiertag ($datum).<br>\n";
+                        $Feiertagsmeldung[] = "$feiertag ist ein Feiertag ($datum).<br>\n";
                         --$_POST['tage'];
                     }
                 }
@@ -116,6 +119,15 @@ if (isset($Fehlermeldung))
 	}
 	echo "\t\t</div>";
 }
+if (isset($Feiertagsmeldung))
+{
+	echo "\t\t<div class=warningmsg>\n";
+	foreach($Feiertagsmeldung as $feiertag)
+	{
+		echo "\t\t\t<H1>".$feiertag."</H1>\n";
+	}
+	echo "\t\t</div>";
+}
 echo "<div class=main-area>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
@@ -159,10 +171,10 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
             echo "<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter>";
             echo "\t\t\t<tr class=no-print>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo '<input type=date onchange=updateTage() id=beginn name=beginn value='.date('Y-m-d').'>';
+            echo '<input type=date onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value='.date('Y-m-d').'>';
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo '<input type=date onchange=updateTage() id=ende name=ende value='.date('Y-m-d').'>';
+            echo '<input type=date onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value='.date('Y-m-d').'>';
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
             echo "<input list='gruende' name=grund>";
