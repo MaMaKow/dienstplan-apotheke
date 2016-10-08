@@ -200,8 +200,8 @@ img.worker-img:hover {
 }
 .table {
 	display:block;
-	border="5";
-	width=10%;
+	border: 5px;
+	width: 10%;
 }
 .row {
 	display:block;

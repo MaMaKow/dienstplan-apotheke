@@ -158,7 +158,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	require 'db-lesen-feiertag.php';
 // TODO: I am not sure where to put the following line. There is an echo inside.
 	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-	if (isset($Abwesende) {
+	if (isset($Abwesende)) {
 		foreach ($Abwesende as $key => $vk) {
 			if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
 					//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.

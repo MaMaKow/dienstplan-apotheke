@@ -1,5 +1,11 @@
 <?php
-	function create_cookie(string $cookie_name, $cookie_value, int $days=7)
+        /**
+         * @param string $cookie_name Name of the cookie.
+         * @param mixed $cookie_value Value to be stored inside the cookie.
+         * @param int $days The number of days until expiration.
+         * @return null
+        */
+	function create_cookie($cookie_name, $cookie_value, $days=7)
 	{
 		if ( isset($cookie_name) AND isset($cookie_value) )
 		{
@@ -7,10 +13,16 @@
 		}
 	}
 
-	function calculate_percentile(array $arr, int $perc) {
+        
+	/**
+         * @param array $arr An array of numbers.
+         * @param int $percentile The number of the percentile (usually an integer between 0 and 100).
+         * @return float The nth percentile of $arr
+        */
+        function calculate_percentile($arr, $percentile) {
 	    sort($arr);
 	    $count = count($arr); //total numbers in array
-	    $middleval = floor(($count-1)*$perc/100); // find the middle value, or the lowest middle value
+	    $middleval = floor(($count-1)*$percentile/100); // find the middle value, or the lowest middle value
 	    if($count % 2) { // odd number, middle is the median
 	        $median = $arr[$middleval];
 	    } else { // even number, calculate avg of 2 medians
@@ -21,7 +33,13 @@
 	    return $median;
 	}
 
-	function calculate_VKcount (array $Dienstplan) {
+        /**
+         * 
+         * @global array $Mandanten_mitarbeiter
+         * @param array $Dienstplan
+         * @return int
+         */
+	function calculate_VKcount ($Dienstplan) {
 		global $Mandanten_mitarbeiter;
 		foreach($Dienstplan as $key => $Dienstplantag)
 		{
@@ -39,9 +57,12 @@
 		return $VKcount;
 	}
 
+        /**
+         * 
+         * @param mixed $data
+         * @return mixed
+         */
 	function sanitize_user_input($data) {
-	  $data = trim($data);
-	  $data = stripslashes($data);
-	  $data = htmlspecialchars($data);
-	  return $data;
+	  $clean_data = htmlspecialchars(stripslashes(trim($data)));
+	  return $clean_data;
 	}
