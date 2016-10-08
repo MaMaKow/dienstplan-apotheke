@@ -48,6 +48,7 @@ if (!isset($Mitarbeiter[$auswahl_mitarbeiter])) {
   //die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
 }
 //Lesen der in der Datenbank gespeicherten Daten.
+require 'db-lesen-mandant.php';
 require 'db-lesen-woche-mitarbeiter.php';
 require 'db-lesen-feiertag.php';
 
@@ -89,8 +90,8 @@ $zeile .= '<br><br>';
 echo $zeile;
 
 //Navigation between the weeks:
-echo "$rückwärts_button_img";
-echo "$vorwärts_button_img";
+echo "$rückwärts_button_week_img";
+echo "$vorwärts_button_week_img";
 echo '<br><br>';
 //echo "\t\t\t<table border=0 rules=groups style=width:99%>\n";
 echo "\t\t\t<table border=1>\n";
@@ -130,7 +131,7 @@ echo "\t\t\t\t<br>\n";
     $zeile .= strftime('%A', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
     echo '</a>';
-    if (array_search($auswahl_mitarbeiter, $Abwesende) !== false) {
+    if (isset($Abwesende)  AND  array_search($auswahl_mitarbeiter, $Abwesende) !== false) {
         echo '<br>'.$Abwesenheits_grund[$auswahl_mitarbeiter];
         if (!isset($feiertag) and date('N', strtotime($datum)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
@@ -172,7 +173,10 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Mittagsende'][$j]));
         }
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Stunden'][$j] > 0) {
-            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Dienstplan[$i]['VK'][$j].'>'.$Dienstplan[$i]['Stunden'][$j].' Stunden';
+            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Dienstplan[$i]['VK'][$j].'>'.$Dienstplan[$i]['Stunden'][$j].' Stunden</a>';
+        }
+        if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Mandant'][$j] > 0) {
+            $zeile .= '<br>'.$Kurz_mandant[$Dienstplan[$i]['Mandant'][$j]];
         }
         $zeile .= '';
 

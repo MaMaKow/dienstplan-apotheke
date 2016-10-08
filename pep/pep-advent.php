@@ -44,7 +44,7 @@ echo "$jahr\n";
 	}
 }
 echo "Here we are";
-function calculate_percentile($arr,$perc) {
+function calculate_percentile(array $arr, int $perc) {
     sort($arr);
     $count = count($arr); //total numbers in array
     $middleval = floor(($count-1)*$perc/100); // find the middle value, or the lowest middle value

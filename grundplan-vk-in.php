@@ -118,8 +118,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
     $Wochentag[$wochentag] = strftime('%A', $pseudo_datum);
 }
-require 'db-lesen-woche-mitarbeiter.php'; //Lesen der in der Datenbank gespeicherten Daten.
-require 'db-lesen-feiertag.php';
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
@@ -144,7 +142,7 @@ echo "\t\t<form id=myform method=post>\n";
 //$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Rückwärts"	name="submitWocheRückwärts">\n";echo $Rückwärts_button;
 //$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Vorwärts"	name="submitWocheVorwärts">\n";echo $Vorwärts_button;
 //$zeile="<br>";
-$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
+$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submit_button_img').click()>";
 //$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
 foreach ($Mitarbeiter as $vk => $name) {
     if ($vk == $auswahl_mitarbeiter) {
@@ -155,8 +153,13 @@ foreach ($Mitarbeiter as $vk => $name) {
 }
 $zeile .= '</select>';
 echo $zeile;
-$submit_button = "\t<input type=submit value=Absenden name=submitAuswahlMitarbeiter id=submitAuswahlMitarbeiter class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
+echo "<br>";
+echo "<br>";
+//$submit_button = "\t<input type=submit value=Absenden name=submitAuswahlMitarbeiter id=submitAuswahlMitarbeiter class=no-print>\n"; 
+echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+echo "<br>";
+echo "<br>";
+//echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
 echo "\t\t\t<table border=1>\n";
 echo "\t\t\t\t<thead>\n";
@@ -168,9 +171,6 @@ foreach ($Grundplan as $wochentag => $Plan) {
     echo "</td>\n";
 }
 for ($j = 0; $j < $plan_anzahl; ++$j) {
-    if (isset($feiertag) && !isset($notdienst)) {
-        break 1;
-    }
     echo "\t\t\t\t</tr></thead><tr>\n";
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
