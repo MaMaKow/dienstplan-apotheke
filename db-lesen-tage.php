@@ -1,6 +1,16 @@
 <?php
 //Argumente hinter dem .. sind optional.
-function db_lesen_tage(int $tage, int $mandant, $VKmandant='[0-9]*')
+/**
+ * 
+ * @global string $datum
+ * @global object $verbindungi
+ * @global array $Mitarbeiter
+ * @param int $tage number of days (typically just 1 or 5, 6, 7)
+ * @param int $mandant
+ * @param string $VKmandant as regular expression
+ * @return array $Dienstplan for the branch $mandant including $tage days beginning with $datum 
+ */
+function db_lesen_tage($tage, $mandant, $VKmandant='[0-9]*')
 {
 global $datum, $verbindungi, $Mitarbeiter;
 	//Abruf der gespeicherten Daten aus der Datenbank
