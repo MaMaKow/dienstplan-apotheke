@@ -90,8 +90,8 @@ $zeile .= '<br><br>';
 echo $zeile;
 
 //Navigation between the weeks:
-echo "$rückwärts_button_img";
-echo "$vorwärts_button_img";
+echo "$rückwärts_button_week_img";
+echo "$vorwärts_button_week_img";
 echo '<br><br>';
 //echo "\t\t\t<table border=0 rules=groups style=width:99%>\n";
 echo "\t\t\t<table border=1>\n";
