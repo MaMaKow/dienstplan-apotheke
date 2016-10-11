@@ -124,7 +124,7 @@ if (isset($Feiertagsmeldung))
 	echo "\t\t<div class=warningmsg>\n";
 	foreach($Feiertagsmeldung as $feiertag)
 	{
-		echo "\t\t\t<H1>".$feiertag."</H1>\n";
+		echo "\t\t\t<H3>".$feiertag."</H3>\n";
 	}
 	echo "\t\t</div>";
 }

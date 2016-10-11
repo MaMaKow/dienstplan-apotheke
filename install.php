@@ -90,7 +90,12 @@ if ($error_all <= $config['error_reporting']) {
 } elseif ($error_error <= $config['error_reporting']) {
     $error_error_checked="checked";
 } else {
-  function FriendlyErrorType(int $type)
+     /**
+     * 
+     * @param int $type
+     * @return string|int
+     */
+  function FriendlyErrorType($type)
       {
           switch($type)
               {
