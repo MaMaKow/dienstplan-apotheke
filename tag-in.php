@@ -88,7 +88,7 @@ require 'navigation.php';
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 if (isset($Fehlermeldung))
 {
-	echo "		<div class=errormsg><H1>";
+	echo "		<div class=errormsg>";
 	foreach($Fehlermeldung as $fehler)
 	{
 		echo "		<H1>".$fehler."</H1>";
@@ -97,10 +97,10 @@ if (isset($Fehlermeldung))
 }
 if (isset($Warnmeldung))
 {
-	echo "		<div class=warningmsg><H1>";
+	echo "		<div class=warningmsg>";
 	foreach($Warnmeldung as $warnung)
 	{
-		echo "		<H1>".$warnung."</H1>";
+		echo "		<H2>".$warnung."</H2>";
 	}
 	echo "</div>";
 }

@@ -89,7 +89,7 @@ if (isset($Warnmeldung))
 	echo "\t\t<div class=warningmsg>\n";
 	foreach($Warnmeldung as $warnung)
 	{
-		echo "\t\t\t<H1>".$warnung."</H1>\n";
+		echo "\t\t\t<H2>".$warnung."</H2>\n";
 	}
 	echo "\t\t</div>\n";
 }
