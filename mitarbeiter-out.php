@@ -1,6 +1,7 @@
 <?php
 require 'default.php';
 require 'db-verbindung.php';
+require 'db-lesen-mandant.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
 
 //$datenübertragung="";
@@ -48,7 +49,6 @@ if (!isset($Mitarbeiter[$auswahl_mitarbeiter])) {
   //die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
 }
 //Lesen der in der Datenbank gespeicherten Daten.
-require 'db-lesen-mandant.php';
 require 'db-lesen-woche-mitarbeiter.php';
 require 'db-lesen-feiertag.php';
 
@@ -278,8 +278,8 @@ exec($command, $kommando_ergebnis);
 if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png') )
 {
   echo '<img class=worker-img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-  schreiben_ics($Dienstplan); //Schreibt die Daten aus dem Dienstplan (alle Tage, ohne Pause) in eine ics Datei. Fügt einen Download-button für die Datei ein.
-}
+  }
+schreiben_ics($Dienstplan); //Schreibt die Daten aus dem Dienstplan (alle Tage, ohne Pause) in eine ics Datei. Fügt einen Download-button für die Datei ein.
 
 
 //echo "<pre>";	var_export($_POST);    	echo "</pre>";
