@@ -4,6 +4,7 @@
  * 
  * @global array $Mitarbeiter 
  * @param array $Dienstplan
+ * @return string $textICS the ICS text file
  */
 function schreiben_ics ($Dienstplan)
 {
@@ -51,12 +52,12 @@ foreach(array_keys($Dienstplan) as $tag )
 $textICS.="END:VCALENDAR";
 
 
+/*
 $filename = "ics/wochenkalender_".strftime('%V', strtotime($datum))."_".$vk.".ics"; //Die Datei bekommt den Namen der Kalenderwoche und des Mitarbeiters.
 $myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
 fwrite($myfile, $textICS);
 fclose($myfile);
-unset ($textICS);
-echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print onclick=location='$filename' title='Download ics Kalender Datei'><img src=images/download.png width=32px><br>ICS Datei</button>\n";
-//echo "<pre>\n"; var_dump($Dienstplan); echo "</pre>";
+*/
+    return $textICS;
 }
 ?>
