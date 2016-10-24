@@ -1,5 +1,5 @@
 <?php
-	if (!file_exists('./config/config.php')) {
+	if (!file_exists('./config/config.php') and !file_exists('../config/config.php')) {
 		die ("The application does not seem to be installed. Please see the <a href=install.php>installation page</a>!");
 	}
 

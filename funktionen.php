@@ -13,6 +13,16 @@
 		}
 	}
 
+    /**
+     * 
+     * @param string $time_string
+     * @return float time in hours
+     */
+    function time_from_text_to_int($time_string) {
+        list($hour, $minute, $second) = explode(":", $time_string);
+        $time_float = $hour + $minute / 60 + $second / 3600;
+        return $time_float;
+    }
         
 	/**
          * @param array $arr An array of numbers.
