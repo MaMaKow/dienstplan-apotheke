@@ -27,36 +27,71 @@
  */
 function draw_image_histogramm($Dienstplan) {
     global $Erwartung;
+
     $canvas_width = 650;
     $canvas_height = 200;
+
+//    $inner_margin_x = $bar_height * 0.2;
+//    $inner_margin_y = $inner_margin_x;
+    $outer_margin_x = 30;
+    $outer_margin_y = 20;
+    $font_size = 24;
+
     $start_time = min(array_map('time_from_text_to_int', $Erwartung['uhrzeit']));
     $end_time = max(array_map('time_from_text_to_int', $Erwartung['uhrzeit']));
     $max_work_load = max($Erwartung['packungen']);
     $duration = $end_time - $start_time;
-    var_export(array_walk($Erwartung['uhrzeit'], 'time_from_text_to_int'));
-    $width_factor = ($canvas_width-10) / $duration;
-    $height_factor = ($canvas_height-10) / $max_work_load ;
-    $x_start = time_from_text_to_int($Erwartung['uhrzeit'][0]);
-    $y_start = time_from_text_to_int($Erwartung['packungen'][0])*-1;
-    $canvas_text = "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height' style=background-color:black;>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
+    $width_factor = ($canvas_width-($outer_margin_x*2)) / $duration;
+    $height_factor = ($canvas_height-($outer_margin_y*2)) / $max_work_load ;
+    $x_start = $outer_margin_x/$width_factor;
+    $y_start = $outer_margin_y/$height_factor*-1;
+
+    $canvas_text = "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height' style=background-color:#F0F0F0;>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
     $canvas_text .= "<script>\n";
     $canvas_text .= "var c = document.getElementById('canvas_histogram');\n";
     $canvas_text .= "var ctx = c.getContext('2d');\n";
     $canvas_text .= "ctx.fillStyle = '#FF0000';\n";
     $canvas_text .= "ctx.translate(0,$canvas_height);\n";
     $canvas_text .= "ctx.scale($width_factor, $height_factor);\n";
-    $canvas_text .= "ctx.moveTo($x_start,$y_start);\n";
+
+    $canvas_text .= "ctx.moveTo($x_start, $y_start);\n";
     foreach ($Erwartung['uhrzeit'] as $line => $uhrzeit) {
         $packungen = $Erwartung['packungen'][$line];
-        $x_pos = (time_from_text_to_int($uhrzeit) - $start_time);
-        $y_pos = $packungen*-1;
+        $x_pos = (time_from_text_to_int($uhrzeit) - $start_time)+$outer_margin_x/$width_factor;
+        $y_pos = ($packungen*-1)-($outer_margin_y/$height_factor);
         $canvas_text .= "ctx.lineTo($x_pos, $y_pos);\n";
     }
     //$canvas_text .= $canvas_box_text;
     $canvas_text .= "ctx.lineTo($x_pos, $y_start);\n";
-    $canvas_text .= "ctx.stroke();\n";
+    $canvas_text .= "ctx.closePath();";
+//    $canvas_text .= "ctx.stroke();\n";
     $canvas_text .= "ctx.fillStyle = 'red';\n";
     $canvas_text .= "ctx.fill();\n";
+    
+    $canvas_text .= "ctx.scale(" . 1/$width_factor . ", " . 1/$height_factor . ");\n";
+    $canvas_text .= "ctx.fillStyle = 'black';\n";
+    $canvas_text .= "ctx.font = '"."$font_size"."px sans-serif';\n";
+    $canvas_text .= "ctx.textAlign = 'center';\n";
+    for ($time = floor($start_time); $time <= ceil($end_time); $time = $time + 2) {
+        $x_pos = ($time-$start_time)*$width_factor+$outer_margin_x;
+        $x_pos_secondary = $x_pos + 1*$width_factor;
+        $y_pos = 0;
+        $y_pos_line_start = (($outer_margin_y/$height_factor)+$font_size)*-1;
+        $y_pos_line_end = -$canvas_height+($outer_margin_y/$height_factor);
+        $canvas_text .= "ctx.fillText('$time:00', '$x_pos', '$y_pos');\n";
+        $canvas_text .= "ctx.beginPath();\n"
+                . "ctx.setLineDash([5, 5]);\n"
+                . "ctx.moveTo($x_pos, $y_pos_line_start);\n"
+                . "ctx.lineTo($x_pos, $y_pos_line_end);\n"
+                . "ctx.stroke();\n"
+                . "ctx.closePath();\n";         
+        $canvas_text .= "ctx.beginPath();\n"
+                . "ctx.setLineDash([1, 5]);\n"
+                . "ctx.moveTo($x_pos_secondary, $y_pos_line_start);\n"
+                . "ctx.lineTo($x_pos_secondary, $y_pos_line_end);\n"
+                . "ctx.stroke();\n"
+                . "ctx.closePath();\n";         
+    }
     
     $canvas_text .= "</script>";
 //header("Content-type: image/canvas+xml");

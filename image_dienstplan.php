@@ -46,7 +46,7 @@ function draw_image_dienstplan($Dienstplan) {
 //echo "<pre>";var_dump($Times); echo "</pre>"; 
     /* $svg_text  = "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
       /*$svg_text .= "<?xml version='1.0' encoding='utf-8'?>\n"; */
-    $svg_text .= "<svg id='svgimg' width='650'  viewBox='0 0 $svg_outer_width $svg_outer_height' >\n";
+    $svg_text .= "<svg id='svgimg' width='650'  viewBox='0 0 $svg_outer_width $svg_outer_height' style=background-color:#F0F0F0;>\n";
     $svg_text .= "\t<!--Rectangle as border-->\n";
     $svg_text .= "\t<rect x='$outer_margin_x' y='$outer_margin_y' width='$svg_inner_width' height='$svg_inner_height' stroke-width='1' stroke='black' style='fill:none;' />\n";
 
