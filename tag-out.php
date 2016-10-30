@@ -251,7 +251,7 @@ echo "\t\t\t\t</table>\n";
 echo "\t\t\t</form>\n";
 echo "\t\t</div>\n";
 
-if ( ($approval=="approved" OR $config['hide_disapproved']==false))
+if ( ($approval=="approved" OR $config['hide_disapproved']==false) AND !empty($Dienstplan[0]["Dienstbeginn"]))
 {
 	echo "\t\t<div class=above-image>\n";
 	echo "\t\t\t<div class=image>\n";

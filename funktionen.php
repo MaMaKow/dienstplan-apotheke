@@ -76,3 +76,15 @@
 	  $clean_data = htmlspecialchars(stripslashes(trim($data)));
 	  return $clean_data;
 	}
+        
+/**
+ * 
+ * @param array $Dienstplan
+ * @return array A list of tie points where the number of employees might change.
+ */
+function calculate_changing_times($Dienstplan) {
+    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'], $Dienstplan[0]['Dienstende'], $Dienstplan[0]['Mittagsbeginn'], $Dienstplan[0]['Mittagsende']);
+    sort($Changing_times);
+    $Changing_times = array_unique($Changing_times);
+    return $Changing_times;
+}
