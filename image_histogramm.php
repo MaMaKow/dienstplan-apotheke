@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Copyright (C) 2016 Mandelkow
  *
@@ -17,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 //    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
+require_once 'headcount-duty-roster.php';
 
 
 /**
@@ -67,8 +67,13 @@ function draw_image_histogramm($Dienstplan) {
 //    $canvas_text .= "ctx.stroke();\n";
     $canvas_text .= "ctx.fillStyle = 'red';\n";
     $canvas_text .= "ctx.fill();\n";
+
     
     $canvas_text .= "ctx.scale(" . 1/$width_factor . ", " . 1/$height_factor . ");\n";
+    $canvas_text .= draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time);
+
+    $canvas_text .= "ctx.strokeStyle = '#000000';";
+    $canvas_text .= "ctx.lineWidth=1;\n";
     $canvas_text .= "ctx.fillStyle = 'black';\n";
     $canvas_text .= "ctx.font = '"."$font_size"."px sans-serif';\n";
     $canvas_text .= "ctx.textAlign = 'center';\n";
@@ -92,10 +97,38 @@ function draw_image_histogramm($Dienstplan) {
                 . "ctx.stroke();\n"
                 . "ctx.closePath();\n";         
     }
-    
     $canvas_text .= "</script>";
 //header("Content-type: image/canvas+xml");
     return $canvas_text;
 }
+
+function draw_image_dienstplan_add_headcount ($outer_margin_x, $width_factor, $height_factor, $start_time) {
+    global $Anwesende, $Changing_times;
+    $canvas_text  = "ctx.beginPath();\n";
+    $canvas_text .= "ctx.setLineDash([]);\n";
+    $canvas_text .= "ctx.lineWidth=5;\n";
+    $canvas_text .= "ctx.fillStyle = 'green';\n";
+    foreach ($Changing_times as $time) {
+        $unix_time = strtotime($time);
+        $time_float = time_from_text_to_int($time);
+        $x_pos_line_start = $x_pos_line_end;
+        $y_pos_line_start = $y_pos_line_end;
+        $x_pos_line_end = ($time_float-$start_time)*$width_factor+$outer_margin_x;
+        $y_pos_line_end = $Anwesende[$unix_time]*$height_factor*-1*6;
+        if (empty($x_pos_line_start)) {continue;} //Skipping the first round.
+
+        $canvas_text .= ""
+                     .  "ctx.lineTo($x_pos_line_end, $y_pos_line_start);\n"
+                     .  "ctx.lineTo($x_pos_line_end, $y_pos_line_end);\n";
+    }
+    $canvas_text .= "ctx.strokeStyle = '#00FF00';";
+    $canvas_text .= "ctx.stroke();\n";
+    $canvas_text .= "ctx.closePath();\n";
+
+    return $canvas_text;
+}
+
+    //echo '<pre>';    var_export(draw_image_dienstplan_add_headcount());   echo '</pre>';
+
 
 ?>
