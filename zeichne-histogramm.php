@@ -25,29 +25,29 @@
 			//$tages_ende=max($tages_ende, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
 
 			//Wenn die Funktion bereits aufgerufen wurde, ist dieser Wert bereits gesetzt.
-			if(empty($Dienstzeiten[0]))
+			if(empty($Changing_times[0]))
 			{
-				for ($dienstzeit=$tages_beginn; $dienstzeit<=$tages_ende; $dienstzeit=$dienstzeit+$zeit_abstand){$Dienstzeiten[]=$dienstzeit;}
+                                $Changing_times = calculate_changing_times($Dienstplan);
 			}
 			$Dienst_enden=array_map('strtotime', $Dienstplan[$tag]["Dienstende"]);
 			$Dienst_beginne=array_map('strtotime', $Dienstplan[$tag]["Dienstbeginn"]);
 			$Mittags_enden=array_map('strtotime', $Dienstplan[$tag]["Mittagsende"]);
 			$Mittags_beginne=array_map('strtotime', $Dienstplan[$tag]["Mittagsbeginn"]);
 			$histogrammCSV="";
-			foreach($Dienstzeiten as $zeit)
+			foreach($Changing_times as $zeit)
 			{
 				//Die folgende Umschreibung von $zeit auf eine globale $dienstzeit ist notwendig, um innerhalb der array-filter Funtion darauf per global zugreifen zu können.
-				global $dienstzeit;
-				$dienstzeit=$zeit;
-				$gekommene=count(array_filter(array_filter($Dienst_beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
-				$gegangene=count(array_filter(array_filter($Dienst_enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
-				$mittagende=count(array_filter(array_filter($Mittags_beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-				$gemittagte=count(array_filter(array_filter($Mittags_enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+				global $unix_time;
+				$unix_time = strtotime($zeit);
+				$gekommene=count(array_filter(array_filter($Dienst_beginne, function($value) {global $unix_time; return $value <= $unix_time;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
+				$gegangene=count(array_filter(array_filter($Dienst_enden, function($value) {global $unix_time; return $value <= $unix_time;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
+				$mittagende=count(array_filter(array_filter($Mittags_beginne, function($value) {global $unix_time; return $value <= $unix_time;})));
+				$gemittagte=count(array_filter(array_filter($Mittags_enden, function($value) {global $unix_time; return $value <= $unix_time;})));
 				$mittagende=$mittagende-$gemittagte;
 				$anwesende=$gekommene-$gegangene;
 				$anwesende=$anwesende-$mittagende;
-				$Anwesende[$dienstzeit]=$anwesende;
-				$histogrammCSV.=date('H:i', $dienstzeit).", ".$anwesende."\n";
+				$Anwesende[$unix_time]=$anwesende;
+				$histogrammCSV.=date('H:i', $unix_time).", ".$anwesende."\n";
 //				echo date('H:i', $dienstzeit)."\t$gekommene\t$gegangene\t$mittagende\t$anwesende<br>\n";
 			}
 

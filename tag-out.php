@@ -58,7 +58,7 @@ require 'db-lesen-mitarbeiter.php';
 //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-tage.php';
 $Dienstplan=db_lesen_tage($tage, $mandant);
-require "zeichne-histogramm.php";
+//require "zeichne-histogramm.php";
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
@@ -255,22 +255,14 @@ if ( ($approval=="approved" OR $config['hide_disapproved']==false) AND !empty($D
 {
 	echo "\t\t<div class=above-image>\n";
 	echo "\t\t\t<div class=image>\n";
-	//echo "<td align=center valign=top rowspan=60>";
 	require_once 'image_dienstplan.php';
         $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
         echo $svg_image_dienstplan;
+        echo "<br>\n";
         require_once 'image_histogramm.php';
         $svg_image_histogramm = draw_image_histogramm($Dienstplan);
         echo "<br>\n";
         echo $svg_image_histogramm;
-//	echo "\t\t\t\t<object id='svgimgobj' width='540' height='252' style=background:red type='image/svg+xml' data=draw_image_dienstplan.php?mandant=$mandant&datum=$datum><br>\n";
-	//	echo "\t\t\t\t<object style=background:red type='image/svg+xml' data=IMG_1697.JPG><br>\n";
-//	echo "\t\t\t\t<iframe style=background:red type='image/svg+xml' src=IMG_1697.JPG><br>\n";
-//	echo "\t\t\t\t<img height=300 width=600 src=draw_image_dienstplan.php?mandant=$mandant&datum=$datum><br>\n";
-	//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-	//echo "</div>";
-	//echo "<div class=image>";
-	//echo "\t\t\t\t<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>\n";
 	echo "\t\t\t</div>\n";
 	echo "\t\t</div>\n";
 }
