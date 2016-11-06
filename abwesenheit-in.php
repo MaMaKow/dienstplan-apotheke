@@ -38,7 +38,7 @@ require 'default.php';
                         $abfrage = "DELETE FROM `Abwesenheit`
 						WHERE `VK` = '$vk' AND `Beginn` = '$beginn'";
                 //		echo "$abfrage";
-                        $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                        $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
                     }
                 }
                 $auswahl_mitarbeiter = $vk;
@@ -59,14 +59,13 @@ require 'default.php';
                 $abfrage = 'INSERT INTO `Abwesenheit`
 					(VK, Beginn, Ende, Tage, Grund)
 					VALUES ('.$_POST['auswahl_mitarbeiter'].", '".$_POST['beginn']."', '".$_POST['ende']."', '".$_POST['tage']."', '".$_POST['grund']."')";
-//				echo "$abfrage";
-//                $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
 		if( !($ergebnis=mysqli_query($verbindungi, $abfrage)) ) {
 			$error_string=mysqli_error($verbindungi);
 			if (strpos($error_string, 'Duplicate') !== false){
 				$Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
 			} else {
 				//Are there other errors, that we should handle?
+                                error_log("Error: $abfrage <br>".mysqli_error($verbindungi));
 				die("Error: $abfrage <br>".mysqli_error($verbindungi));
 			}
 		}
@@ -76,7 +75,7 @@ require 'default.php';
 				WHERE `VK` = '.$vk.'
 				ORDER BY `Beginn` ASC
 				';
-            $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+            $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
             $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
@@ -101,7 +100,7 @@ require 'default.php';
                 ++$i;
             }
             $abfrage = 'SELECT DISTINCT `Grund` FROM `Abwesenheit` ORDER BY `Grund` ASC';
-            $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+            $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
             $datalist = "<datalist id='gruende'>\n";
             while ($row = mysqli_fetch_object($ergebnis)) {
                 $datalist .= "\t<option value='$row->Grund'>\n";

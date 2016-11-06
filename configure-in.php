@@ -23,16 +23,19 @@ if (empty($_POST)) {
   //Create a config directory if it does not yet exist.
   if (!is_dir('./config')) {
     if (!mkdir('./config', 0664, true)) {
+      error_log('Erstellung der Verzeichnisse schlug fehl...');
       die('Erstellung der Verzeichnisse schlug fehl...');
     }
   }
   if (!is_dir('./tmp')) {
     if (!mkdir('./tmp', 0664, true)) {
+      error_log('Erstellung der Verzeichnisse schlug fehl...');
       die('Erstellung der Verzeichnisse schlug fehl...');
     }
   }
   if (!is_dir('./upload')) {
     if (!mkdir('./upload', 0664, true)) {
+      error_log('Erstellung der Verzeichnisse schlug fehl...');
       die('Erstellung der Verzeichnisse schlug fehl...');
     }
   }

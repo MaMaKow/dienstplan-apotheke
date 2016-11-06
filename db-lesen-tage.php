@@ -66,6 +66,7 @@ global $datum, $verbindungi, $Mitarbeiter;
 			$dienstplanCSV.=", ".$row->Mandant;
 			$dienstplanCSV.=", ".$worker_style."\n";
 		}
+                /*
 		if ($tage == 1) {
 			# This image is shown only for views with one single day.
 			$filename = "tmp/Dienstplan.csv";
@@ -79,6 +80,8 @@ global $datum, $verbindungi, $Mitarbeiter;
 		}
 
 //		echo "<pre>";	var_export($kommando_ergebnis);    	echo "</pre>";
+                 
+                 */
 		//Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
 		if ( !isset($Dienstplan[$i]) )
 		{

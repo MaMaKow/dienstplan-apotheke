@@ -70,7 +70,7 @@ if (empty($_POST)) {
   require 'db-verbindung.php'; //needs $config['database_user'], $config['database_password'] and $config['database_name']
   //$abfrage = "CREATE DATABASE IF NOT EXISTS `".$config['database_name']."` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;";
   $abfrage = "CREATE DATABASE IF NOT EXISTS `Apotheketest` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;";
-  $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+  $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
   // TODO: /var/www/html/phpBB3/install/index.php shows an example of the information needed.
 }
 

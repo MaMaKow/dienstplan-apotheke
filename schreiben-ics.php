@@ -49,7 +49,7 @@ foreach(array_keys($Dienstplan) as $tag )
 		}
 	}
 }
-$textICS.="END:VCALENDAR";
+$textICS.="END:VCALENDAR\n";
 
 
 /*

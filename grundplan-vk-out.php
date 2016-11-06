@@ -29,7 +29,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 		WHERE `Wochentag` = "'.$wochentag.'"
 			AND `VK`="'.$auswahl_mitarbeiter.'"
 		;';
-    $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+    $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
     while ($row = mysqli_fetch_object($ergebnis)) {
         $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
         $Grundplan[$wochentag]['VK'][] = $row->VK;

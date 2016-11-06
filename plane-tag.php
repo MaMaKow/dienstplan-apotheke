@@ -240,7 +240,8 @@
 		/*Damit wir keine Endlosschleife bauen, versuchen wir nur einige Male einen geeigneten Mitarbeiter zu finden, bevor wir zur nächsten Urzeit weiter schreiten.*/
 		if($versuche > 3){$uhrzeit=strtotime('+ 30 minutes', $uhrzeit); $versuche-=2; continue;}
 		/*zeichne-histogramm.php enthält bereits den notwendigen Code, um anwesende Mitarbeiter durchzuzählen und Bedarfe zu ermitteln.*/
-		$histogramm_no_print=true; require 'zeichne-histogramm.php';
+                //TODO: If ths module is required to work in future versions again. it should use headcound-duty-roster instead of zeichne-histogram!
+                //$histogramm_no_print=true; require 'zeichne-histogramm.php'; 
 		if(!isset($Soll_anwesende[$uhrzeit])){echo "Fehler bei der Bestimmung der Anwesenheit.<br>\n"; break;}//Irgendetwas stimmt mit der Berechnung der Anwesenheit nicht. Das passiert zum Beispiel an Sonntagen, weil dort niemand Vorlieben hat. :-)
 		$soll_anwesende=max($min_anwesende, $Soll_anwesende[$uhrzeit]);
 		if($soll_anwesende > $Anwesende[$uhrzeit])
