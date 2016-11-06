@@ -27,7 +27,7 @@ function draw_image_dienstplan($Dienstplan) {
     global $Mitarbeiter, $Ausbildung_mitarbeiter;
     $bar_height = 20;
     $bar_width_factor = 40;
-    $font_size = $bar_height;
+    $font_size = $bar_height*0.6;
 
     $inner_margin_x = $bar_height * 0.2;
     $inner_margin_y = $inner_margin_x;
@@ -49,9 +49,9 @@ function draw_image_dienstplan($Dienstplan) {
     //echo "<pre>";var_dump($Times); echo "</pre>"; 
     /* $svg_text  = "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
       /*$svg_text .= "<?xml version='1.0' encoding='utf-8'?>\n"; */
-    $svg_text .= "<svg id='svgimg' width='650'  viewBox='0 0 $svg_outer_width $svg_outer_height' style=background-color:#F0F0F0;>\n";
-    $svg_text .= "\t<!--Rectangle as border-->\n";
-    $svg_text .= "\t<rect x='$outer_margin_x' y='$outer_margin_y' width='$svg_inner_width' height='$svg_inner_height' stroke-width='1' stroke='black' style='fill:none;' />\n";
+    $svg_text .= "<svg id='svgimg' width='650'  viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
+//    $svg_text .= "\t<!--Rectangle as border-->\n";
+//    $svg_text .= "\t<rect x='$outer_margin_x' y='$outer_margin_y' width='$svg_inner_width' height='$svg_inner_height' stroke-width='1' stroke='black' style='fill:none;' />\n";
 
     $svg_grid_text = "\t<!--Grid-->\n";
     for ($time = floor($first_start); $time <= ceil($last_end); $time = $time + 2) {
@@ -61,9 +61,10 @@ function draw_image_dienstplan($Dienstplan) {
         $y_pos_text = $font_size;
         $y_pos_grid_start = $outer_margin_y;
         $y_pos_grid_end = $outer_margin_y + $svg_inner_height;
-        $svg_grid_text .= "\t<line x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end' stroke-dasharray='5, 5' style='stroke:rgb(255,0,0);stroke-width:2' />\n";
-        $svg_grid_text .= "\t<line x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' stroke-dasharray='1, 5' style='stroke:rgb(255,0,0);stroke-width:0.5' />\n";
+        $svg_grid_text .= "\t<line x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end' stroke-dasharray='5, 5' style='stroke:#B4B4B4;stroke-width:2' />\n";
+        $svg_grid_text .= "\t<line x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' stroke-dasharray='1, 5' style='stroke:#B4B4B4;stroke-width:0.5' />\n";
         $svg_grid_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
+        $svg_grid_text .= "\t\t<text x='$x_pos_text' y='$svg_outer_height' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
     }
     $svg_text .= $svg_grid_text;
     //draw the bars from start to end for every employee
@@ -105,7 +106,7 @@ function draw_image_dienstplan($Dienstplan) {
         $x_pos_text_secondary = $x_pos_text + $width;
         $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill:$Worker_style[$worker_style];' />\n";
         $svg_box_text .= "\t<rect x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' style='fill:lightgrey;' />\n";
-        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>" . $vk . " " . $Mitarbeiter[$vk] . "</text>\n";
+        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $Mitarbeiter[$vk] . "</text>\n";
         $svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
     }
     $svg_text .= $svg_box_text;

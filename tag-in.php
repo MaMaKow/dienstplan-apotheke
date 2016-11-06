@@ -48,7 +48,7 @@ if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 AND !isset
 }
 if( !empty($Dienstplan[0]['VK'][0]) )
 {
-	require "zeichne-histogramm.php";
+	//require "zeichne-histogramm.php";
 	require 'pruefe-dienstplan.php';
 }
 else
@@ -260,18 +260,19 @@ if (isset($Kranke))
 echo "\t\t\t</table>\n";
 echo "\t\t</form>\n";
 echo "</div>";
-if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
+if ( !empty($Dienstplan[0]["Dienstbeginn"]) )
 {
-echo "<div class=above-image>";
-echo "<div class=image>";
-//echo "<td align=center valign=top rowspan=60>";
-echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>";
-//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-//echo "</div>";
-//echo "<div class=image>";
-echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>";
-echo "</div>";
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
+	echo "\t\t<div class=above-image>\n";
+	echo "\t\t\t<div class=image>\n";
+	require_once 'image_dienstplan.php';
+        $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
+        echo $svg_image_dienstplan;
+        require_once 'image_histogramm.php';
+        $svg_image_histogramm = draw_image_histogramm($Dienstplan);
+        echo "<br>\n";
+        echo $svg_image_histogramm;
+	echo "\t\t\t</div>\n";
+	echo "\t\t</div>\n";
 }
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 

@@ -10,6 +10,7 @@ while($row = mysqli_fetch_object($ergebnis))
 	{
 		$Mandant[$row->Mandant]=$row->Name;
 		$Kurz_mandant[$row->Mandant]=$row->Kurzname;
+                $Pep_mandant[$row->Mandant]=$row->PEP;
 	}
 }
 ?>
