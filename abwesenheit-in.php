@@ -30,17 +30,17 @@ require 'default.php';
 
             //Wir löschen Datensätze, wenn dies befohlen wird.
             if (isset($_POST['loeschen'])) {
-                $Loeschen = filter_input(INPUT_POST, 'loeschen', FILTER_REQUIRE_ARRAY);
-                foreach ($Loeschen as $vk => $Beginne) {
-                    foreach ($Beginne as $beginn => $X) {
-                        $vk = filter_var($vk, FILTER_VALIDATE_INT);
-                        $beginn = filter_var($beginn, FILTER_SANITIZE_STRING);
-                        $abfrage = "DELETE FROM `Abwesenheit`
-						WHERE `VK` = '$vk' AND `Beginn` = '$beginn'";
-                //		echo "$abfrage";
-                        $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
-                    }
-                }
+                //$Loeschen = filter_input(INPUT_POST, 'loeschen', FILTER_REQUIRE_ARRAY);
+//                foreach ($Loeschen as $vk => $Beginne) {
+  //                  foreach ($Beginne as $beginn => $X) {
+                $vk = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
+                $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
+                $abfrage = "DELETE FROM `Abwesenheit`
+                	WHERE `VK` = '$vk' AND `Beginn` = '$beginn'";
+              //  		echo "$abfrage";
+                $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+    //                }
+      //          }
                 $auswahl_mitarbeiter = $vk;
             }
             //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
@@ -79,10 +79,10 @@ require 'default.php';
             $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
-                $tablebody .= "\t\t\t<tr>\n";
+                $tablebody .= "\t\t\t<tr>\n\t\t\t\t<form onsubmit='return confirmDelete()' method=POST>";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
-                $tablebody .= date('d.m.Y', strtotime($row->Beginn))." <input class=no-print type=submit name=loeschen[$vk][$row->Beginn] value='X' title='Diesen Datensatz löschen'>";
-                $tablebody .= "\n\t\t\t\t</td>\n";
+                $tablebody .= date('d.m.Y', strtotime($row->Beginn))." <input hidden name='auswahl_mitarbeiter' value='$vk'><input hidden name='beginn' value='$row->Beginn'><input class=no-print type=submit name=loeschen value='X' title='Diesen Datensatz löschen'>";
+                $tablebody .= "\n\t\t\t\t</td></form>\n";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
                 $tablebody .= date('d.m.Y', strtotime($row->Ende));
                 $tablebody .= "\n\t\t\t\t</td>\n";
@@ -145,7 +145,7 @@ $submit_button = "\t\t\t<input hidden type=submit value=Auswahl name='submitAusw
 echo "\t\t</form>\n";
 echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
 echo "<a class=no-print href=abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
-echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
+echo "\t\t\n";
             echo "\t\t<table border=1>\n";
 //Überschrift
             echo "\t\t\t<tr>\n
@@ -164,7 +164,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 				\t\t\t</tr>\n";
 //Ausgabe
             echo "$tablebody";
-            echo "\t\t</form>\n";
+            //echo "\t\t</form>\n";
 //Eingabe. Der Saldo wird natürlich berechnet.
             echo "\t\t<form method=POST>\n";
             echo "<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter>";
