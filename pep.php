@@ -53,5 +53,5 @@ $abfrage="
         FROM `pep`
         GROUP BY MONTH(Datum)
     ;";
-//echo "<pre>"; echo $abfrage;
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+
+$ergebnis = mysqli_multi_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
