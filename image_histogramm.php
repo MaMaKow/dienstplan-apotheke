@@ -75,7 +75,7 @@ function draw_image_histogramm($Dienstplan) {
 //    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
     
     $canvas_width = 650;
-    $canvas_height = 200;
+    $canvas_height = 300;
 
 //    $inner_margin_x = $bar_height * 0.2;
 //    $inner_margin_y = $inner_margin_x;
@@ -121,9 +121,10 @@ function draw_image_histogramm($Dienstplan) {
     $canvas_text .= "ctx.scale(" . 1/$width_factor . ", " . 1/$height_factor . ");\n";
     $canvas_text .= draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time);
 
-    $canvas_text .= "ctx.strokeStyle = '#B4B4B4';";
-    $canvas_text .= "ctx.lineWidth=1;\n";
-    $canvas_text .= "ctx.fillStyle = 'black';\n";
+    //$canvas_text .= "ctx.strokeStyle = '#B4B4B4';";
+    $canvas_text .= "ctx.strokeStyle = 'black';"; // = dot color
+    $canvas_text .= "ctx.lineWidth=2;\n";
+    $canvas_text .= "ctx.fillStyle = 'black';\n"; // = font color
     $canvas_text .= "ctx.font = '"."$font_size"."px sans-serif';\n";
     $canvas_text .= "ctx.textAlign = 'center';\n";
     for ($time = floor($start_time); $time <= ceil($end_time); $time = $time + 2) {
@@ -134,13 +135,13 @@ function draw_image_histogramm($Dienstplan) {
         $y_pos_line_end = -$canvas_height+($outer_margin_y/$height_factor);
         $canvas_text .= "ctx.fillText('$time:00', '$x_pos', '$y_pos');\n";
         $canvas_text .= "ctx.beginPath();\n"
-                . "ctx.setLineDash([5, 5]);\n"
+                . "ctx.setLineDash([1, 8]);\n"
                 . "ctx.moveTo($x_pos, $y_pos_line_start);\n"
                 . "ctx.lineTo($x_pos, $y_pos_line_end);\n"
                 . "ctx.stroke();\n"
                 . "ctx.closePath();\n";         
         $canvas_text .= "ctx.beginPath();\n"
-                . "ctx.setLineDash([1, 5]);\n"
+                . "ctx.setLineDash([1, 16]);\n"
                 . "ctx.moveTo($x_pos_secondary, $y_pos_line_start);\n"
                 . "ctx.lineTo($x_pos_secondary, $y_pos_line_end);\n"
                 . "ctx.stroke();\n"
