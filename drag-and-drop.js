@@ -23,15 +23,22 @@ var selectedElement = 0;
   var currentY = 0;
   var currentMatrix = 0;
 
-  function selectElement(evt) {
+  function selectElement(evt, moveType) {
     var url = window.location.pathname;
     var filename = url.substring(url.lastIndexOf('/')+1);
     if (filename !== 'tag-in.php') {return;} //will stop execution in all other interfaces.
 
-    selectedElement = evt.target;
+    if (moveType === 'single'){
+	selectedElement = evt.target;
+    } else if (moveType === 'group'){
+ 	selectedElement =  evt.target.parentNode;
+    } else {
+        console.log('Error: selectElement() has to be called with a moveType of either "single" or "group"!' + evt + ", " + moveType);
+    }
     var firstX = evt.clientX;
     currentX = evt.clientX;
     currentY = evt.clientY;
+    console.log(selectedElement);
     currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
     
       for(var i=0; i<currentMatrix.length; i++) {
@@ -63,8 +70,16 @@ function deselectElement(evt){
     selectedElement.setAttributeNS(null, "transform", newMatrix);
     var rect_id = selectedElement.id;
     var line = rect_id.substring(rect_id.lastIndexOf('_')+1);
-    syncToTable(line, 'Mittagsbeginn', diff_hour);
-    syncToTable(line, 'Mittagsende', diff_hour);
+    var column = rect_id.substring(0,rect_id.lastIndexOf('_'));
+    if (column === "break_box"){
+        syncToTable(line, 'Mittagsbeginn', diff_hour);
+        syncToTable(line, 'Mittagsende', diff_hour);
+    } else if (column === "work_box"){
+        syncToTable(line, 'Dienstbeginn', diff_hour);
+        syncToTable(line, 'Dienstende', diff_hour);
+    } else {
+        console.log('Error: deselectElement() only works on the "break_box" and on the "work_box"!' + evt + ", " + column);
+    }
     selectedElement.removeAttributeNS(null, "onmousemove");
     selectedElement.removeAttributeNS(null, "onmouseout");
     selectedElement.removeAttributeNS(null, "onmouseup");
