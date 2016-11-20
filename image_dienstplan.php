@@ -105,12 +105,14 @@ function draw_image_dienstplan($Dienstplan) {
         $width = $width_in_hours * $bar_width_factor;
         $break_width = $break_width_in_hours * $bar_width_factor;
         $x_pos_text_secondary = $x_pos_text + $width;
-        $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height'  id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt)' style='fill: $Worker_style[$worker_style];cursor: cell;' />\n";
+        $svg_box_text .= "<g id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' >";
+        $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];cursor: cell;' />\n";
         //http://www.petercollingridge.co.uk/interactive-svg-components/draggable-svg-element
 //        $svg_break_box_text .= "\t<rect class='draggable' id=break_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt)' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' style='fill:#FEFEFF;' />\n";
-        $svg_box_text .= "\t<rect class='draggable' id=break_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt)' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' style='fill:#FEFEFF;' />\n";
         $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $Mitarbeiter[$vk] . "</text>\n";
         $svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
+        $svg_box_text .= "</g>";
+        $svg_box_text .= "\t<rect class='draggable' id=break_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' style='fill:#FEFEFF;' />\n";
     }
     $svg_text .= $svg_box_text;
     $svg_text .= $svg_grid_text;
