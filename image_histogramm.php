@@ -28,7 +28,7 @@ function get_Erwartung ($datum, $mandant) {
 
     $pep_mandant = $Pep_mandant[$mandant];
     
-    $abfrage = "SELECT Uhrzeit, Mittelwert FROM `pep_zeit_im_wochentag`  WHERE Mandant = $pep_mandant and Wochentag = $sql_weekday";
+    $abfrage = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $pep_mandant and Wochentag = $sql_weekday";
     $ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
     while($row = mysqli_fetch_object($ergebnis)) {
         $Packungen[$row->Uhrzeit]=$row->Mittelwert;

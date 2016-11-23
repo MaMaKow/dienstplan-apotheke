@@ -19,10 +19,21 @@
 require 'default.php';
 require 'db-verbindung.php';
 
-$abfrage="
-    TRUNCATE `pep_zeit_im_wochentag`;
+$abfrage = "DROP TABLE IF EXISTS `pep_weekday_time`;
+   CREATE TABLE IF NOT EXISTS `pep_weekday_time` (
+  `Uhrzeit` time NOT NULL,
+  `Wochentag` int(11) NOT NULL COMMENT '0=Monday',
+  `Mittelwert` float DEFAULT NULL,
+  `Mandant` int(11) NOT NULL,
+  PRIMARY KEY (`Uhrzeit`,`Wochentag`,`Mandant`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+";
+
+$abfrage .= "
+REMOVE FROM `pep` WHERE DAY(`Datum`) = 24 AND MONTH(`Datum`) = 12;
+
     
-    INSERT INTO `pep_zeit_im_wochentag`
+    INSERT INTO `pep_weekday_time`
         SELECT SEC_TO_TIME(round(TIME_TO_SEC(`Zeit`)/60/15)*15*60),
             WEEKDAY(Datum),
             sum(Anzahl)/COUNT(DISTINCT `Datum`),
@@ -33,8 +44,15 @@ $abfrage="
             Mandant
     ;
     
-    TRUNCATE `pep_tag_im_monat`;
-    
+DROP TABLE IF EXISTS `pep_tag_im_monat`;
+CREATE TABLE IF NOT EXISTS `pep_tag_im_monat` (
+  `day` int(11) NOT NULL,
+  `factor` float NOT NULL,
+  `branch` int(11) NOT NULL,
+  PRIMARY KEY (`day`,`branch`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
     INSERT INTO `pep_tag_im_monat`
         SELECT DAYOFMONTH(`Datum`),
             SUM(`Anzahl`)/COUNT(DISTINCT `Datum`)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`),
@@ -44,7 +62,13 @@ $abfrage="
             `Mandant`
     ;
     
-    TRUNCATE `pep_monat_im_jahr`;
+DROP TABLE IF EXISTS `pep_monat_im_jahr`;
+CREATE TABLE IF NOT EXISTS `pep_monat_im_jahr` (
+  `month` int(11) NOT NULL,
+  `factor` float NOT NULL,
+  `branch` int(11) NOT NULL
+  PRIMARY KEY (`month`,`branch`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
     
     INSERT INTO `pep_monat_im_jahr`
         SELECT MONTH(Datum),

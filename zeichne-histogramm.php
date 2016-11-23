@@ -80,7 +80,7 @@
 
 				$faktor_tagimmonat=$Tagimmonat['median'][date('n', strtotime($datum))-1]/$durchschnittstag;
 
-				$abfrage="SELECT * FROM pep_zeit_im_wochentag WHERE Wochentag = ".(date('w', strtotime($datum))+1)." AND Mandant = $mandant ";
+				$abfrage="SELECT * FROM pep_weekday_time WHERE Wochentag = ".(date('w', strtotime($datum))+1)." AND Mandant = $mandant ";
 				$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 				while ($row = mysqli_fetch_object($ergebnis)) {
 						$Wochentag['uhrzeit'][]=$row->Uhrzeit;
