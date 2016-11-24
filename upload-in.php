@@ -43,8 +43,9 @@
 					{
 			        		$Warnmeldung[]="The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
 			        		$Warnmeldung[]="It will be processed in the background.";
-						$command="./pep.sh ".$config['database_user']." ".$config['database_password']." ".$config['database_name']." >> tmp/pep.log &";
-						exec($command);
+						//$command="./pep.sh ".$config['database_user']." ".$config['database_password']." ".$config['database_name']." >> tmp/pep.log &";
+                                                $command = 'pep.php > /dev/null 2>&1 &'; //This process will run asynchronously.
+                                                exec($command);
 				    	}
 					else
 					{
