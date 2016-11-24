@@ -70,7 +70,7 @@ $abfrage  = "SELECT `first`.`VK`,"
         . " `first`.`Mandant` as first_branch,"
         . " `second`.`Dienstbeginn` as second_start, `second`.`Dienstende` as second_end,"
         . " `second`.`Mandant` as second_branch"
-        . " FROM `dienstplan` AS first"
+        . " FROM `Dienstplan` AS first"
         . " 	INNER JOIN `dienstplan` as second"
         . " 		ON first.VK = second.VK"  //compare multiple different rows together
         . " 		AND first.datum = second.datum" //compare multiple different rows together
