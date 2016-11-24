@@ -16,6 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 //    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
+//Check if the PEP information is still up-to-date:
+$abfrage = "SELECT max(Datum) as Datum FROM `pep`";
+$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>" . mysqli_error($verbindungi)) and die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+$row = mysqli_fetch_object($ergebnis);
+$newest_pep_date = strtotime($row->Datum);
+$today = time();
+$seconds_since_last_update = $today - $newest_pep_date;
+if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) {
+    echo "<div class=warningmsg>Die PEP Information ist veraltet. Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div>";
+}
+
 require_once 'headcount-duty-roster.php';
 
 function get_Erwartung ($datum, $mandant) {
@@ -34,12 +45,12 @@ function get_Erwartung ($datum, $mandant) {
         $Packungen[$row->Uhrzeit]=$row->Mittelwert;
     }
 
-    $abfrage = "SELECT factor FROM `pep_tag_im_monat`  WHERE `branch` = $pep_mandant and `day` = $month_day";
+    $abfrage = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $pep_mandant and `day` = $month_day";
     $ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
     $row = mysqli_fetch_object($ergebnis);
     $factor_tag_im_monat = $row->factor;
 
-    $abfrage = "SELECT factor FROM `pep_monat_im_jahr`  WHERE `branch` = $pep_mandant and `month` = $month";
+    $abfrage = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $pep_mandant and `month` = $month";
     $ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
     $row = mysqli_fetch_object($ergebnis);
     $factor_monat_im_jahr = $row->factor;
