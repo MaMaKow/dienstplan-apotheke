@@ -47,6 +47,7 @@
 			//Wenn die Funktion bereits aufgerufen wurde, ist dieser Wert bereits gesetzt.
 			if(empty($Changing_times[0]))
 			{
+                                global $Changing_times;
                                 $Changing_times = calculate_changing_times($Dienstplan);
 			}
 			if ( isset($Approbierten_dienstplan) )
@@ -110,12 +111,9 @@
 				$anwesende=$gekommene-$gegangene;
 				$anwesende=$anwesende-$mittagende;
 				$Anwesende[$unix_time]=$anwesende;
-                                
-				$histogrammCSV.=date('H:i', $unix_time).", ".$anwesende."\n";
+				//$histogrammCSV.=date('H:i', $unix_time).", ".$anwesende."\n";
 				//echo date('H:i', $unix_time)."\t$gekommene\t$gegangene\t$mittagende\t$anwesende<br>\n";
 			}
-			//echo "<pre>";	var_export($Anwesende);    	echo "</pre>";
-
 		}
 		else
 		{

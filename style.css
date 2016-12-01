@@ -252,11 +252,3 @@ button:hover{
 .btn-secondary {
 	background-color: #B4B4B4;
 }
-
-/*
-The following classes are ment for the SVG image elements:
-*/
-
-.draggable {
-    cursor: move;
-}
