@@ -42,6 +42,12 @@ $row = mysqli_fetch_object($ergebnis);
 $last_pep_update = strtotime($row->create_time);
 */
 
+$abfrage = "UPDATE dienstplan set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
+$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$abfrage = "UPDATE dienstplan set Mittagsende = null WHERE Mittagsende = '00:00:00'";
+$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+
+
 $abfrage = "DROP TABLE IF EXISTS `pep_weekday_time`;
 ";
 $ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
