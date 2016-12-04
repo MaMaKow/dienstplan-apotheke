@@ -44,7 +44,7 @@ if( array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
 //	unset ($Dienstplan);
 	require_once 'plane-tag-grundplan.php';
 }
-if( !empty($Dienstplan[0]['VK'][0]) )
+if( array_sum($Dienstplan[0]['VK']) > 1 OR !empty($Dienstplan[0]['VK'][0]))
 {
 	//require "zeichne-histogramm.php";
 	require 'pruefe-dienstplan.php';
@@ -179,22 +179,22 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1).">";
 		$zeile.="<option></option>";
 
-		for ($k=1; $k<$VKmax+1; $k++)
+		for ($k=1; $k<$VKmax+1; $k++) //k=1 means that we will ignore any worker with a number smaller than one. Specific people like the cleaning lady will not be visible in the plan. But their holiday can still be organized with the holiday module.
 		{
 			if (isset($Dienstplan[$i]["VK"][$j]))
 			{
 				if ( isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j]!=$k ) //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 				{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>,";
 				}
 				elseif ( isset($Mitarbeiter[$k]) )
 				{
-					$zeile.="<option selected>".$k." ".$Mitarbeiter[$k]."</option>,"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
+					$zeile.="<option value=$k selected>".$k." ".$Mitarbeiter[$k]."</option>,"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
 				}
 			}
 			elseif ( isset($Mitarbeiter[$k]) )
 			{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>,";
 			}
 		}
 		$zeile.="</select>\n";
