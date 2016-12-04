@@ -83,12 +83,14 @@
  * @return array A list of tie points where the number of employees might change.
  */
 function calculate_changing_times($Dienstplan) {
-    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'] ,$Dienstplan[0]['Dienstende'], $Dienstplan[0]['Mittagsbeginn'], $Dienstplan[0]['Mittagsende']);
+    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'], $Dienstplan[0]['Dienstende'], $Dienstplan[0]['Mittagsbeginn'], $Dienstplan[0]['Mittagsende']);
+//    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'],[--Beginn--] ,$Dienstplan[0]['Dienstende'],[--Ende--], $Dienstplan[0]['Mittagsbeginn'],[--Beginn--], $Dienstplan[0]['Mittagsende']);
+//    echo "<pre>\$Changing_times:"; var_export($Changing_times); echo "</pre>\n";//die;
     sort($Changing_times);
     $Unique_changing_times = array_unique($Changing_times);
     //Remove empty and null values from the array:
     $Clean_changing_times = array_filter( $Unique_changing_times, 'strlen' );
-//    echo "<pre>\$Clean_changing_times:"; var_export($Clean_changing_times); echo "</pre>\n";die;
+    //echo "<pre>\$Clean_changing_times:"; var_export($Clean_changing_times); echo "</pre>\n";die;
 
     return $Clean_changing_times;
 }
@@ -108,4 +110,13 @@ function hex2rgb($hexstring) {
    $rgb = array($r, $g, $b);
    return implode(",", $rgb); // returns the rgb values separated by commas
    //return $rgb; // returns an array with the rgb values
+}
+
+function escape_sql_value($value) {
+    if ($value === 'null') {
+        return $value;
+    } else {
+        $escaped_sql_value = '\''.$value.'\'';
+    }
+    return $escaped_sql_value;
 }

@@ -35,7 +35,6 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
         //TODO: We should manage situations, where an entry already exists better.
         $abfrage = "INSERT IGNORE INTO `approval` (date, state, branch, user)
 			VALUES ('$datum', 'not_yet_approved', '$mandant', '$user')";
-        //echo "<!--"; var_export($abfrage); echo "-->\n";
         $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
         $abfrage = "DELETE FROM `Dienstplan`
 			WHERE `Datum` = '$datum'
@@ -43,7 +42,7 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
 			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
         $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
         foreach ($Dienstplan[$tag]['VK'] as $key => $VK) { //Die einzelnen Zeilen im Dienstplan
-            if (!empty($VK)) { //Wir ignorieren die nicht ausgefüllten Felder
+            if ( !empty($VK) AND $VK != 'null' ) { //Wir ignorieren die nicht ausgefüllten Felder
                 // TODO: Do we still need to explode? Or is only the number sent in POST?
                 list($VK) = explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
                 $dienstbeginn = $Dienstplan[$tag]["Dienstbeginn"][$key];
@@ -67,7 +66,17 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
                     $stunden = $sekunden / 3600;
                 }
                 $abfrage = "REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user)
-					VALUES ('$VK', '$datum', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$mandant', '$kommentar', '$user')";
+					VALUES ($VK, ".escape_sql_value($datum)
+                                        .", ".escape_sql_value($dienstbeginn)
+                                        .", ".escape_sql_value($dienstende)
+                                        .", ".escape_sql_value($mittagsbeginn)
+                                        .", ".escape_sql_value($mittagsende)
+                                        .", ".$stunden
+                                        .", ".$mandant
+                                        .", ".escape_sql_value($kommentar)
+                                        .", ".escape_sql_value($user)
+                                        .")";
+//        echo "<pre>\$abfrage:\n"; echo $abfrage; echo "</pre>"; //die;
                 $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
 //				echo "$abfrage<br>\n";
 /*                //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.

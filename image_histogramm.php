@@ -36,9 +36,10 @@ function get_Erwartung($datum, $mandant) {
     global $verbindungi;
     global $Pep_mandant;
 
-    $sql_weekday = date('N', $datum) - 1;
-    $month_day = date('j', $datum);
-    $month = date('n', $datum);
+    $unix_datum = strtotime($datum);
+    $sql_weekday = date('N', $unix_datum) - 1;
+    $month_day = date('j', $unix_datum);
+    $month = date('n', $unix_datum);
 
     $pep_mandant = $Pep_mandant[$mandant];
 
