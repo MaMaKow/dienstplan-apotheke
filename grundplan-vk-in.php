@@ -23,7 +23,7 @@ if (isset($_POST['auswahl_mitarbeiter'])) {
 if (isset($auswahl_mitarbeiter)) {
     create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
-if (isset($_POST['submitGrundplan'])) {
+if (isset($_POST['submitDienstplan'])) {
     $max_zeilen = -1;
     foreach ($_POST['Grundplan'] as $wochentag => $Spalten) {
         foreach ($Spalten as $spalte => $Zeilen) {
@@ -288,6 +288,7 @@ echo "</div>\n";
 
 //Jetzt wird ein Bild gezeichnet, dass den Stundenplan des Mitarbeiters wiedergibt.
 foreach (array_keys($Grundplan) as $wochentag) {
+    break;
     foreach ($Grundplan[$wochentag]['VK'] as $key => $vk) {
         //Die einzelnen Zeilen im Grundplan
 
@@ -316,6 +317,7 @@ foreach (array_keys($Grundplan) as $wochentag) {
         }
     }
 }
+/*
 $filename = 'tmp/Mitarbeiter.csv';
 $myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
 fwrite($myfile, $grundplanCSV);
@@ -323,7 +325,15 @@ fclose($myfile);
 $grundplanCSV = '';
 $command = ('./Mitarbeiter_image.sh '.escapeshellcmd($vk));
 exec($command, $kommando_ergebnis);
-echo '<img src=images/mitarbeiter_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$vk.'.png').' style=width:70%;><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
+
+*/
+//$Dienstplan[0] = $Grundplan[$wochentag]; //We will use $Dienstplan[0] for functions that are written for the use with single days as a workaround.
+
+require_once 'image_dienstplan_vk.php';
+        $svg_image_dienstplan = draw_image_dienstplan_vk($Grundplan);
+        echo $svg_image_dienstplan;
+
+//echo '<img src=images/mitarbeiter_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$vk.'.png').' style=width:70%;><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 
 //echo "<pre>";    var_export($Grundplan);        echo "</pre>";
 

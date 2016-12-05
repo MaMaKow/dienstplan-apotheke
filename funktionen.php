@@ -120,3 +120,22 @@ function escape_sql_value($value) {
     }
     return $escaped_sql_value;
 }
+
+function print_debug_variable($variable){
+
+    function find_var_name($var) {
+        foreach($GLOBALS as $var_name => $value) {
+            if ($value === $var) {
+                return $var_name;
+            }
+        }
+        return false;
+    }
+
+    $variable_name = find_var_name($variable);
+    echo "<pre>$variable_name:\n";
+    var_export($variable);
+    echo "</pre>";
+
+}
+
