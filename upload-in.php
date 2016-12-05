@@ -43,8 +43,9 @@
 					{
 			        		$Warnmeldung[]="The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
 			        		$Warnmeldung[]="It will be processed in the background.";
-						$command="./pep.sh ".$config['database_user']." ".$config['database_password']." ".$config['database_name']." >> tmp/pep.log &";
-						exec($command);
+						//$command="./pep.sh ".$config['database_user']." ".$config['database_password']." ".$config['database_name']." >> tmp/pep.log &";
+                                                $command = 'pep.php > /dev/null 2>&1 &'; //This process will run asynchronously.
+                                                exec($command);
 				    	}
 					else
 					{
@@ -55,7 +56,7 @@
 			//Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 			if (isset($Fehlermeldung))
 			{
-				echo "<div class=errormsg><H1>\n";
+				echo "<div class=errormsg>\n";
 				foreach($Fehlermeldung as $fehler)
 				{
 					echo "\t\t\t<H1>".$fehler."</H1>\n";
@@ -64,10 +65,10 @@
 			}
 			if (isset($Warnmeldung))
 			{
-				echo "<div class=warningmsg><H1>\n";
+				echo "<div class=warningmsg>\n";
 				foreach($Warnmeldung as $warnung)
 				{
-					echo "\t\t\t<H1>".$warnung."</H1>\n";
+					echo "\t\t\t<H2>".$warnung."</H2>\n";
 				}
 				echo "\t\t</div>";
 			}

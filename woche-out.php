@@ -302,7 +302,7 @@ if (isset($Warnmeldung))
 	$Warnmeldung=array_unique($Warnmeldung);
 	foreach($Warnmeldung as $warnung)
 	{
-		$warning_message_html .= "\t\t\t<H1>".$warnung."</H1>\n";
+		$warning_message_html .= "\t\t\t<H2>".$warnung."</H2>\n";
 	}
 	$warning_message_html .= "\t\t</div>\n";
 }

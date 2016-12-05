@@ -25,7 +25,6 @@ global $datum, $verbindungi, $Mitarbeiter;
 	{
 		$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));
 		$abfrage='SELECT DISTINCT Dienstplan.* FROM `Dienstplan` LEFT JOIN Mitarbeiter ON Dienstplan.VK=Mitarbeiter.VK WHERE Dienstplan.Mandant = "'.$mandant.'" AND `Datum` = "'.$tag.'" AND Mitarbeiter.Mandant REGEXP "^'.$VKmandant.'$" ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
-
 //		$abfrage='SELECT * FROM `Dienstplan` WHERE `Datum` = "'.$tag.'" AND `Mandant` = "'.$mandant.'" ORDER BY `Dienstbeginn` ASC, `Mittagsbeginn` ASC;';
 		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
 		$dienstplanCSV="";
@@ -66,6 +65,7 @@ global $datum, $verbindungi, $Mitarbeiter;
 			$dienstplanCSV.=", ".$row->Mandant;
 			$dienstplanCSV.=", ".$worker_style."\n";
 		}
+                /*
 		if ($tage == 1) {
 			# This image is shown only for views with one single day.
 			$filename = "tmp/Dienstplan.csv";
@@ -79,6 +79,8 @@ global $datum, $verbindungi, $Mitarbeiter;
 		}
 
 //		echo "<pre>";	var_export($kommando_ergebnis);    	echo "</pre>";
+                 
+                 */
 		//Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
 		if ( !isset($Dienstplan[$i]) )
 		{

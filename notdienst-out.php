@@ -24,7 +24,7 @@ if (isset($year)) {
 require 'db-lesen-mandant.php';
 
 $abfrage = "SELECT * FROM Notdienst WHERE YEAR(Datum) = $year AND Mandant = $mandant";
-$ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Notdienste['VK'][] = $row->VK;
     $Notdienste['Datum'][] = $row->Datum;

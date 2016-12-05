@@ -56,7 +56,7 @@ require 'default.php';
 									$abfrage = "DELETE FROM `Stunden`
 			WHERE `VK` = '$vk' AND `Datum` = '$datum'";
 					//		echo "$abfrage";
-									$ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+									$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
 							}
 					}
 					$auswahl_mitarbeiter = $vk;
@@ -74,6 +74,7 @@ require 'default.php';
 							$Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
 						} else {
 							//Are there other errors, that we should handle?
+                                                        error_log("Error: $abfrage <br>".mysqli_error($verbindungi));
 							die("Error: $abfrage <br>".mysqli_error($verbindungi));
 						}
 					}

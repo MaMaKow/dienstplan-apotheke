@@ -5,8 +5,6 @@ require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Tagesansicht für einen einzelnen Tag.
 
-
-
 $datenübertragung="";
 $dienstplanCSV="";
 
@@ -26,29 +24,29 @@ if (isset($datum))
 {
 	create_cookie("datum", $datum, 0.5);
 }
-
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan=db_lesen_tage($tage, $mandant);
+//echo "<pre>\$Dienstplan:\n";	var_export($Dienstplan);    	echo "</pre>";die;
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 
-if( empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 AND !isset($feiertag)) //Samstag und Sonntag planen wir nicht.
+if( array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 AND !isset($feiertag)) //Samstag und Sonntag planen wir nicht.
 {
-	//Wir wollen eine automatische Dienstplanfindung beginnen.
+    //Wir wollen eine automatische Dienstplanfindung beginnen.
 	//Mal sehen, wie viel die Maschine selbst gestalten kann.
 	$Fehlermeldung[]="Kein Plan in der Datenbank, dies ist ein Vorschlag!";
 //	unset ($Dienstplan);
 	require_once 'plane-tag-grundplan.php';
 }
-if( !empty($Dienstplan[0]['VK'][0]) )
+if( array_sum($Dienstplan[0]['VK']) > 1 OR !empty($Dienstplan[0]['VK'][0]))
 {
-	require "zeichne-histogramm.php";
+	//require "zeichne-histogramm.php";
 	require 'pruefe-dienstplan.php';
 }
 else
@@ -88,7 +86,7 @@ require 'navigation.php';
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 if (isset($Fehlermeldung))
 {
-	echo "		<div class=errormsg><H1>";
+	echo "		<div class=errormsg>";
 	foreach($Fehlermeldung as $fehler)
 	{
 		echo "		<H1>".$fehler."</H1>";
@@ -97,10 +95,10 @@ if (isset($Fehlermeldung))
 }
 if (isset($Warnmeldung))
 {
-	echo "		<div class=warningmsg><H1>";
+	echo "		<div class=warningmsg>";
 	foreach($Warnmeldung as $warnung)
 	{
-		echo "		<H1>".$warnung."</H1>";
+		echo "		<H2>".$warnung."</H2>";
 	}
 	echo "</div>";
 }
@@ -181,33 +179,33 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1).">";
 		$zeile.="<option></option>";
 
-		for ($k=1; $k<$VKmax+1; $k++)
+		for ($k=1; $k<$VKmax+1; $k++) //k=1 means that we will ignore any worker with a number smaller than one. Specific people like the cleaning lady will not be visible in the plan. But their holiday can still be organized with the holiday module.
 		{
 			if (isset($Dienstplan[$i]["VK"][$j]))
 			{
 				if ( isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j]!=$k ) //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 				{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>,";
 				}
 				elseif ( isset($Mitarbeiter[$k]) )
 				{
-					$zeile.="<option selected>".$k." ".$Mitarbeiter[$k]."</option>,"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
+					$zeile.="<option value=$k selected>".$k." ".$Mitarbeiter[$k]."</option>,"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
 				}
 			}
 			elseif ( isset($Mitarbeiter[$k]) )
 			{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>,";
 			}
 		}
 		$zeile.="</select>\n";
 		//Dienstbeginn
 		$zeile.="\t\t\t\t\t\t<input type=hidden name=Dienstplan[".$i."][Datum][".$j."] value=".$Dienstplan[0]["Datum"][0].">\n";
-		$zeile.="\t\t\t\t\t\t<input type=time size=5 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
+		$zeile.="\t\t\t\t\t\t<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[".$i."][Dienstbeginn][".$j."] id=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=5 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
+		$zeile.="> bis <input type=time size=5 class=Dienstplan_Dienstende name=Dienstplan[".$i."][Dienstende][".$j."] id=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
 		//Dienstende
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
@@ -225,12 +223,12 @@ for ($j=0; $j<$VKcount; $j++)
 		echo "\t\t\t\t\t<td align=right>";
 		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
 		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-		$zeile.=" Pause: <input type=time size=5 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
+		$zeile.=" Pause: <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[".$i."][Mittagsbeginn][".$j."] id=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=5 name=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
+		$zeile.="> bis <input type=time size=5 class=Dienstplan_Mittagsende name=Dienstplan[".$i."][Mittagsende][".$j."] id=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
@@ -260,18 +258,19 @@ if (isset($Kranke))
 echo "\t\t\t</table>\n";
 echo "\t\t</form>\n";
 echo "</div>";
-if ( file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
+if ( !empty($Dienstplan[0]["Dienstbeginn"]) )
 {
-echo "<div class=above-image>";
-echo "<div class=image>";
-//echo "<td align=center valign=top rowspan=60>";
-echo "<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>";
-//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-//echo "</div>";
-//echo "<div class=image>";
-echo "<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>";
-echo "</div>";
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
+	echo "\t\t<div class=above-image>\n";
+	echo "\t\t\t<div class=image>\n";
+	require_once 'image_dienstplan.php';
+        $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
+        echo $svg_image_dienstplan;
+        require_once 'image_histogramm.php';
+        $svg_image_histogramm = draw_image_histogramm($Dienstplan);
+        echo "<br>\n";
+        echo $svg_image_histogramm;
+	echo "\t\t\t</div>\n";
+	echo "\t\t</div>\n";
 }
 //echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 

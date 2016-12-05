@@ -1,6 +1,4 @@
 <?php
-		//Zunächst müssen wir festlegen, wie groß die Zeitsprünge in der Auswertung werden.
-		$zeit_abstand=5*60; //5 Minuten
 		if (!isset($tag)) {$tag=0;} //Beim Aufruf aus tag-out wird kein Tag übergeben. Beim Aufruf aus der Auswertung, wird ein $tag übergeben.
 		$Approbierten_anwesende = array();
 		$Wareneingang_Anwesende = array();
@@ -47,12 +45,10 @@
 			//$tages_beginn=min($tages_beginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
 			//$tages_ende=max($tages_ende, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
 			//Wenn die Funktion bereits aufgerufen wurde, ist dieser Wert bereits gesetzt.
-			if(empty($Dienstzeiten[0]))
+			if(empty($Changing_times[0]))
 			{
-				for ($dienstzeit=$tages_beginn; $dienstzeit<=$tages_ende; $dienstzeit=$dienstzeit+$zeit_abstand)
-				{
-					$Dienstzeiten[]=$dienstzeit;
-				}
+                                global $Changing_times;
+                                $Changing_times = calculate_changing_times($Dienstplan);
 			}
 			if ( isset($Approbierten_dienstplan) )
 			{
@@ -73,56 +69,56 @@
 			$Mittags_enden=array_map('strtotime', $Dienstplan[$tag]["Mittagsende"]);
 			$Mittags_beginne=array_map('strtotime', $Dienstplan[$tag]["Mittagsbeginn"]);
 			$histogrammCSV="";
-			foreach($Dienstzeiten as $zeit)
+                        foreach($Changing_times as $zeit)
 			{
 				//Die folgende Umschreibung von $zeit auf eine globale $dienstzeit ist notwendig, um innerhalb der array-filter Funtion darauf per global zugreifen zu können.
-				global $dienstzeit;
-				$dienstzeit=$zeit;
+				global $unix_time;
+				$unix_time = strtotime($zeit);
 				if ( isset($Wareneingang_dienstplan) )
 				{
 					//Wir zählen die Approbierten Mitarbeiter
 					//Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
-					$wareneingang_Gekommene=count(array_filter(array_filter($Wareneingang_Dienst_Beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$wareneingang_Gekommene=count(array_filter(array_filter($Wareneingang_Dienst_Beginne, function($value) {global $unix_time; return $value <= $unix_time;})));
 					//Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
-					$wareneingang_Gegangene=count(array_filter(array_filter($Wareneingang_Dienst_Enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-					$wareneingang_Mittagende=count(array_filter(array_filter($Wareneingang_Mittags_Beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-					$wareneingang_Gemittagte=count(array_filter(array_filter($Wareneingang_Mittags_Enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$wareneingang_Gegangene=count(array_filter(array_filter($Wareneingang_Dienst_Enden, function($value) {global $unix_time; return $value <= $unix_time;})));
+					$wareneingang_Mittagende=count(array_filter(array_filter($Wareneingang_Mittags_Beginne, function($value) {global $unix_time; return $value <= $unix_time;})));
+					$wareneingang_Gemittagte=count(array_filter(array_filter($Wareneingang_Mittags_Enden, function($value) {global $unix_time; return $value <= $unix_time;})));
 					$wareneingang_Mittagende=$wareneingang_Mittagende-$wareneingang_Gemittagte;
 					$wareneingang_Anwesende=$wareneingang_Gekommene-$wareneingang_Gegangene;
 					$wareneingang_Anwesende=$wareneingang_Anwesende-$wareneingang_Mittagende;
-					$Wareneingang_Anwesende[$dienstzeit]=$wareneingang_Anwesende;
+					$Wareneingang_Anwesende[$unix_time]=$wareneingang_Anwesende;
 				}
 				if ( isset($Approbierten_dienstplan) )
 				{
 					//Wir zählen die Approbierten Mitarbeiter
 					//Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
-					$approbierten_gekommene=count(array_filter(array_filter($Approbierten_dienst_beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$approbierten_gekommene=count(array_filter(array_filter($Approbierten_dienst_beginne, function($value) {global $unix_time; return $value <= $unix_time;})));
 					//Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
-					$approbierten_gegangene=count(array_filter(array_filter($Approbierten_dienst_enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-					$approbierten_mittagende=count(array_filter(array_filter($Approbierten_mittags_beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-					$approbierten_gemittagte=count(array_filter(array_filter($Approbierten_mittags_enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+					$approbierten_gegangene=count(array_filter(array_filter($Approbierten_dienst_enden, function($value) {global $unix_time; return $value <= $unix_time;})));
+					$approbierten_mittagende=count(array_filter(array_filter($Approbierten_mittags_beginne, function($value) {global $unix_time; return $value <= $unix_time;})));
+					$approbierten_gemittagte=count(array_filter(array_filter($Approbierten_mittags_enden, function($value) {global $unix_time; return $value <= $unix_time;})));
 					$approbierten_mittagende=$approbierten_mittagende-$approbierten_gemittagte;
 					$approbierten_anwesende=$approbierten_gekommene-$approbierten_gegangene;
 					$approbierten_anwesende=$approbierten_anwesende-$approbierten_mittagende;
-					$Approbierten_anwesende[$dienstzeit]=$approbierten_anwesende;
+					$Approbierten_anwesende[$unix_time]=$approbierten_anwesende;
 				}
 				//Und jetzt noch mal für alle Mitarbeiter
-				$gekommene=count(array_filter(array_filter($Dienst_beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
-				$gegangene=count(array_filter(array_filter($Dienst_enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
-				$mittagende=count(array_filter(array_filter($Mittags_beginne, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
-				$gemittagte=count(array_filter(array_filter($Mittags_enden, function($value) {global $dienstzeit; return $value <= $dienstzeit;})));
+				$gekommene=count(array_filter(array_filter($Dienst_beginne, function($value) {global $unix_time; return $value <= $unix_time;}))); //Die Zahl der Mitarbeiter, die irgendwann heute angefangen haben.
+				$gegangene=count(array_filter(array_filter($Dienst_enden, function($value) {global $unix_time; return $value <= $unix_time;}))); //Die Anzahl der Mitarbeiter, die noch nicht gegangen sind.
+				$mittagende=count(array_filter(array_filter($Mittags_beginne, function($value) {global $unix_time; return $value <= $unix_time;})));
+				$gemittagte=count(array_filter(array_filter($Mittags_enden, function($value) {global $unix_time; return $value <= $unix_time;})));
 				$mittagende=$mittagende-$gemittagte;
 				$anwesende=$gekommene-$gegangene;
 				$anwesende=$anwesende-$mittagende;
-				$Anwesende[$dienstzeit]=$anwesende;
-				$histogrammCSV.=date('H:i', $dienstzeit).", ".$anwesende."\n";
-//				echo date('H:i', $dienstzeit)."\t$gekommene\t$gegangene\t$mittagende\t$anwesende<br>\n";
+				$Anwesende[$unix_time]=$anwesende;
+				//$histogrammCSV.=date('H:i', $unix_time).", ".$anwesende."\n";
+				//echo date('H:i', $unix_time)."\t$gekommene\t$gegangene\t$mittagende\t$anwesende<br>\n";
 			}
-
 		}
 		else
 		{
-			echo "<br>Kein Dienstplan gefunden beim Zeichnen des Histogramms.<br>\n";
+                    global $Warnmeldung;
+                    $Warnmeldung[] = "Kein Dienstplan gefunden beim Zeichnen des Histogramms.";
 //			echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 		}
 
