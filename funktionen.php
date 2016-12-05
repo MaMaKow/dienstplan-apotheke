@@ -13,6 +13,16 @@
 		}
 	}
 
+    /**
+     * 
+     * @param string $time_string
+     * @return float time in hours
+     */
+    function time_from_text_to_int($time_string) {
+        list($hour, $minute, $second) = explode(":", $time_string);
+        $time_float = $hour + $minute / 60 + $second / 3600;
+        return $time_float;
+    }
         
 	/**
          * @param array $arr An array of numbers.
@@ -66,3 +76,47 @@
 	  $clean_data = htmlspecialchars(stripslashes(trim($data)));
 	  return $clean_data;
 	}
+        
+/**
+ * 
+ * @param array $Dienstplan
+ * @return array A list of tie points where the number of employees might change.
+ */
+function calculate_changing_times($Dienstplan) {
+    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'], $Dienstplan[0]['Dienstende'], $Dienstplan[0]['Mittagsbeginn'], $Dienstplan[0]['Mittagsende']);
+//    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'],[--Beginn--] ,$Dienstplan[0]['Dienstende'],[--Ende--], $Dienstplan[0]['Mittagsbeginn'],[--Beginn--], $Dienstplan[0]['Mittagsende']);
+//    echo "<pre>\$Changing_times:"; var_export($Changing_times); echo "</pre>\n";//die;
+    sort($Changing_times);
+    $Unique_changing_times = array_unique($Changing_times);
+    //Remove empty and null values from the array:
+    $Clean_changing_times = array_filter( $Unique_changing_times, 'strlen' );
+    //echo "<pre>\$Clean_changing_times:"; var_export($Clean_changing_times); echo "</pre>\n";die;
+
+    return $Clean_changing_times;
+}
+
+function hex2rgb($hexstring) {
+   $hex = str_replace("#", "", $hexstring);
+
+   if(strlen($hex) == 3) {
+      $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+      $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+      $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+   } else {
+      $r = hexdec(substr($hex,0,2));
+      $g = hexdec(substr($hex,2,2));
+      $b = hexdec(substr($hex,4,2));
+   }
+   $rgb = array($r, $g, $b);
+   return implode(",", $rgb); // returns the rgb values separated by commas
+   //return $rgb; // returns an array with the rgb values
+}
+
+function escape_sql_value($value) {
+    if ($value === 'null') {
+        return $value;
+    } else {
+        $escaped_sql_value = '\''.$value.'\'';
+    }
+    return $escaped_sql_value;
+}

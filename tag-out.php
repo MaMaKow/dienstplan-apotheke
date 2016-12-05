@@ -58,7 +58,7 @@ require 'db-lesen-mitarbeiter.php';
 //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-tage.php';
 $Dienstplan=db_lesen_tage($tage, $mandant);
-require "zeichne-histogramm.php";
+//require "zeichne-histogramm.php";
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
@@ -89,7 +89,7 @@ if (isset($Warnmeldung))
 	echo "\t\t<div class=warningmsg>\n";
 	foreach($Warnmeldung as $warnung)
 	{
-		echo "\t\t\t<H1>".$warnung."</H1>\n";
+		echo "\t\t\t<H2>".$warnung."</H2>\n";
 	}
 	echo "\t\t</div>\n";
 }
@@ -251,16 +251,18 @@ echo "\t\t\t\t</table>\n";
 echo "\t\t\t</form>\n";
 echo "\t\t</div>\n";
 
-if ( ($approval=="approved" OR $config['hide_disapproved']==false) and file_exists("images/dienstplan_m".$mandant."_".$datum.".png") )
+if ( ($approval=="approved" OR $config['hide_disapproved']==false) AND !empty($Dienstplan[0]["Dienstbeginn"]))
 {
 	echo "\t\t<div class=above-image>\n";
 	echo "\t\t\t<div class=image>\n";
-	//echo "<td align=center valign=top rowspan=60>";
-	echo "\t\t\t\t<img src=images/dienstplan_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;><br>\n";
-	//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-	//echo "</div>";
-	//echo "<div class=image>";
-	echo "\t\t\t\t<img src=images/histogramm_m".$mandant."_".$datum.".png?".filemtime('images/dienstplan_m'.$mandant.'_'.$datum.'.png')." style=width:100%;>\n";
+	require_once 'image_dienstplan.php';
+        $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
+        echo $svg_image_dienstplan;
+        echo "<br>\n";
+        require_once 'image_histogramm.php';
+        $svg_image_histogramm = draw_image_histogramm($Dienstplan);
+        echo "<br>\n";
+        echo $svg_image_histogramm;
 	echo "\t\t\t</div>\n";
 	echo "\t\t</div>\n";
 }

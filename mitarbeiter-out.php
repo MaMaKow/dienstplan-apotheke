@@ -1,6 +1,7 @@
 <?php
 require 'default.php';
 require 'db-verbindung.php';
+require 'db-lesen-mandant.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
 
 //$datenübertragung="";
@@ -48,7 +49,6 @@ if (!isset($Mitarbeiter[$auswahl_mitarbeiter])) {
   //die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
 }
 //Lesen der in der Datenbank gespeicherten Daten.
-require 'db-lesen-mandant.php';
 require 'db-lesen-woche-mitarbeiter.php';
 require 'db-lesen-feiertag.php';
 
@@ -272,14 +272,14 @@ $filename = 'tmp/Mitarbeiter.csv';
 $myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
 fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
-$dienstplanCSV = '';
+unset($dienstplanCSV);
 $command = ('./Mitarbeiter_image.sh 2>&1 '.escapeshellcmd($Dienstplan[0]['Datum'][0]).'_'.escapeshellcmd($vk));
 exec($command, $kommando_ergebnis);
 if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png') )
 {
   echo '<img class=worker-img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-  schreiben_ics($Dienstplan); //Schreibt die Daten aus dem Dienstplan (alle Tage, ohne Pause) in eine ics Datei. Fügt einen Download-button für die Datei ein.
-}
+  }
+echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print onclick=location='webdav.php?auswahl_mitarbeiter=$auswahl_mitarbeiter&datum=$start_datum' title='Download ics Kalender Datei'><img src=images/download.png width=32px><br>ICS Datei</button>\n";
 
 
 //echo "<pre>";	var_export($_POST);    	echo "</pre>";

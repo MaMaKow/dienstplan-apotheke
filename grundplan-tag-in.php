@@ -27,7 +27,7 @@ if (isset($_POST['submitGrundplan'])) {
     foreach ($Grundplan as $wochentag => $value) {
         //First, the old values are deleted.
         $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
-        $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+        $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
         //New values are composed from the Grundplan from $_POST.
         foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
             //Die einzelnen Zeilen im Grundplan
@@ -62,7 +62,7 @@ if (isset($_POST['submitGrundplan'])) {
                 //The new values are stored inside the database.
                 $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
 			             VALUES ('$VK', '$wochentag', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$kommentar', '$mandant')";
-                $ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
             }
         }
     }
@@ -94,7 +94,7 @@ WHERE `Wochentag` = "'.$wochentag.'"
 	AND `Mandant`="'.$mandant.'"
 	ORDER BY `Dienstbeginn`
 ;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
 unset($Grundplan);
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
@@ -177,7 +177,7 @@ $tag = $wochentag;
 $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
 $pseudo_datum = strtotime('+'.($wochentag - 1).' day', $pseudo_datum);
 $datum = date('Y-m-d', $pseudo_datum);
-require 'zeichne-histogramm.php';
+//require 'zeichne-histogramm.php';
 
 //$Grundplan=db_lesen_tage($tage, $mandant);
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
@@ -335,19 +335,21 @@ echo "\t\t\t</table>\n";
 echo "$submit_button";
 echo "\t\t</form>\n";
 echo '</div>';
-if (file_exists('images/dienstplan_m'.$mandant.'_'.$wochentag.'.png')) {
-    echo '<div class=above-image>';
-    echo '<div class=image>';
-//echo "<td align=center valign=top rowspan=60>";
-echo '<img src=images/dienstplan_m'.$mandant.'_'.$wochentag.'.png?'.filemtime('images/dienstplan_m'.$mandant.'_'.$wochentag.'.png').' style=width:100%;><br>';
-//Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-//echo "</div>";
-//echo "<div class=image>";
-echo '<img src=images/histogramm_m'.$mandant.'_'.$datum.'.png?'.filemtime('images/histogramm_m'.$mandant.'_'.$datum.'.png').' style=width:100%;>';
-    echo '</div>';
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
+if (!empty($Grundplan[$wochentag]["Dienstbeginn"]))
+{
+    //TODO: This does not work yet. PLease check Dienstplan equals Grundplan?
+	echo "\t\t<div class=above-image>\n";
+	echo "\t\t\t<div class=image>\n";
+	require_once 'image_dienstplan.php';
+        $svg_image_dienstplan = draw_image_dienstplan($Grundplan);
+        echo $svg_image_dienstplan;
+        require_once 'image_histogramm.php';
+        $svg_image_histogramm = draw_image_histogramm($Grundplan);
+        echo "<br>\n";
+        echo $svg_image_histogramm;
+	echo "\t\t\t</div>\n";
+	echo "\t\t</div>\n";
 }
-//	echo "<pre>";	var_export($_POST);    	echo "</pre>";
 
 require 'contact-form.php';
 

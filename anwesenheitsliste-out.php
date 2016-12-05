@@ -7,11 +7,16 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 	require 'db-verbindung.php';
 
 	if (isset($_POST["month"])) {
-	  $month=$_POST["month"];
+	  $month=sanitize_user_input($_POST["month"]);
 	  } else {
 	  $month=date("n");
 	}
-	$start_datum=mktime( 0, 0, 0, $month, 1 );
+	if (isset($_POST["year"])) {
+	  $year=sanitize_user_input($_POST["year"]);
+	  } else {
+	  $year=date("Y");
+	}
+	$start_datum=mktime( 0, 0, 0, $month, 1, $year );
 	$datum=$start_datum;
 	//Die Mitarbeiterliste benötigt ein $datum. Denn Mitarbeiter sind nicht auf ewig bei uns.
 	require 'db-lesen-mitarbeiter.php';
@@ -34,34 +39,47 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 ?>
     <FORM method=post class="no-print">
       <SELECT name=month onchange=this.form.submit()>
-        <?php foreach ($Months as $month_number => $month_name) {
+        <?php
+            foreach ($Months as $month_number => $month_name) {
               echo "<option value=$month_number";
               if ($month_number==$month) {
                 echo " SELECTED ";
               }
               echo ">$month_name</option>\n";
-            } ?>
-      <SELECT>
+            }
+        ?>
+      </SELECT>
+      <SELECT name=year onchange=this.form.submit()>
+        <?php
+            foreach ($Years as $year_number) {
+              echo "<option value=$year_number";
+              if ($year_number==$year) {
+                echo " SELECTED ";
+              }
+              echo ">$year_number</option>\n";
+            }
+        ?>
+      </SELECT>
     </FORM>
-    <TABLE border=1>
+      <TABLE border=1>
       <TR>
         <TD>Anwesenheit</TD>
         <?php foreach ($Mitarbeiter as $vk => $name) {
-      echo '<TD>'.mb_substr($name, 0, 4)."<br>$vk</TD>";
+      echo '<TD style="padding-bottom: 0">'.mb_substr($name, 0, 4)."<br>$vk</TD>";
   }?>
       </TR>
       <?php
         //$start_datum = strtotime('01.02.2016');
         for ($datum = $start_datum; $datum < strtotime('+ 1 month', $start_datum); $datum = strtotime('+ 1 day', $datum)) {
             if (date('N', $datum) >= 6) {
-                echo '<TR class=wochenende><TD>'.strftime('%a', $datum).'</TD>';
+                echo '<TR class=wochenende><TD style="padding-bottom: 0">'.strftime('%a %d.%m.', $datum).'</TD>';
                 foreach ($Mitarbeiter as $vk => $name) {
                     echo '<TD></TD>';
                 }
             } else {
                 require 'db-lesen-abwesenheit.php';
                 require 'db-lesen-notdienst.php';
-                echo '<TR><TD>'.strftime('%a %d.%m.%Y', $datum).'</TD>';
+                echo '<TR><TD style="padding-bottom: 0">'.strftime('%a %d.%m.%Y', $datum).'</TD>';
                 foreach ($Mitarbeiter as $vk => $name) {
                     if (isset($Abwesende) and array_search($vk, $Abwesende) !== false) {
                         if (preg_match('/Krank/i', $Abwesenheits_grund[$vk])) {
@@ -79,9 +97,9 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
                         } else {
                             $grund_string = mb_substr($Abwesenheits_grund[$vk], 0, 3);
                         }
-                        echo '<TD title="'.$Abwesenheits_grund[$vk].'">'.$grund_string.'</TD>';
+                        echo '<TD style="padding-bottom: 0" title="'.$Abwesenheits_grund[$vk].'">'.$grund_string.'</TD>';
                     } elseif (isset($notdienst) and $notdienst['vk'] == $vk) {
-                        echo '<TD>N</TD>';
+                        echo '<TD style="padding-bottom: 0">N</TD>';
                     } else {
                         echo '<TD></TD>';
                     }

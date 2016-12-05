@@ -31,8 +31,4 @@ do
 	&& rm $pepdatei && rm $asydatei
 done
 
-cd pep
-php pep-monatimjahr.php
-php pep-monatstag.php
-php pep-wochentag.php
-cd ..
+php pep.php

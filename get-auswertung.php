@@ -5,15 +5,15 @@ if (!empty($_GET))
 {
 	if (isset($_GET['datum']))
 	{
-		$datum=htmlspecialchars($_GET['datum']);
+		$datum=sanitize_user_input($_GET['datum']);
 	}
 	if (isset($_GET['mandant']))
 	{
-		$mandant=htmlspecialchars($_GET['mandant']);
+		$mandant=sanitize_user_input($_GET['mandant']);
 	}
 	if (isset($_GET['auswahl_mitarbeiter']))
 	{
-		$auswahl_mitarbeiter=htmlspecialchars($_GET['auswahl_mitarbeiter']);
+		$auswahl_mitarbeiter=sanitize_user_input($_GET['auswahl_mitarbeiter']);
 	}
 }
 ?>

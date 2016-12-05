@@ -45,7 +45,7 @@ WHERE `Wochentag` = "'.$wochentag.'"
 	AND `Mandant`="'.$mandant.'"
 	ORDER BY `Dienstbeginn`
 ;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
     $Grundplan[$wochentag]['VK'][] = $row->VK;
@@ -84,7 +84,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $dienstplanCSV .= ', '.$row->Mandant."\n";
 }
 $filename = 'tmp/Dienstplan.csv';
-$myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
+$myfile = fopen($filename, 'w') or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die( "Unable to open file $filename!");
 fwrite($myfile, $dienstplanCSV);
 fclose($myfile);
 $dienstplanCSV = '';
