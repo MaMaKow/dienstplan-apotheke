@@ -44,7 +44,7 @@ var selectedElement = 0;
       for(var i=0; i<currentMatrix.length; i++) {
         currentMatrix[i] = parseFloat(currentMatrix[i]);
       }
-    selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
+    //selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
     selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
     selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
     
