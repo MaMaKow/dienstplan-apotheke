@@ -282,7 +282,7 @@ echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t</tfoot>\n";
 echo "\t\t\t</table>\n";
 
-$submit_button = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";echo "$submit_button";
+//$submit_button = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";echo "$submit_button";
 echo "\t\t</form>\n";
 echo "</div>\n";
 
@@ -341,4 +341,4 @@ require 'contact-form.php';
 
 ?>
     </body>
-<html>
+</html>
