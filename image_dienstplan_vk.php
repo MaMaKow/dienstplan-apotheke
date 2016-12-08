@@ -25,8 +25,11 @@
  * @return string The svg element
  */
 function draw_image_dienstplan_vk($Dienstplan) {
-    print_debug_variable($Dienstplan);
     global $Mitarbeiter, $Ausbildung_mitarbeiter;
+
+    $line = 0; //TODO: This will be hardcoded here. It could be calculated in a later use case.
+
+
     $bar_height = 20;
     $bar_width_factor = 40; $javascript_variables = "var bar_width_factor = $bar_width_factor;";
     $font_size = $bar_height*0.6;
@@ -45,9 +48,10 @@ function draw_image_dienstplan_vk($Dienstplan) {
     $svg_outer_height = $svg_inner_height + ($outer_margin_y * 2);
 
     foreach ($Dienstplan as $day => $Column) {
-        $day_starts[] = $Dienstplan[$day]['Dienstbeginn'];
-        $day_ends[] = $Dienstplan[$day]['Dienstende'];
+        $day_starts[] = $Dienstplan[$day]['Dienstbeginn'][$line];
+        $day_ends[] = $Dienstplan[$day]['Dienstende'][$line];
     }
+    
     $first_start = min($day_starts);
     $last_end = max($day_ends);
     $svg_inner_width = $inner_margin_x * 2 + ((ceil($last_end) - floor($first_start)) * $bar_width_factor);
@@ -75,8 +79,13 @@ function draw_image_dienstplan_vk($Dienstplan) {
     //draw the bars from start to end for every employee
     $svg_box_text = "\t<!--Boxes-->\n";
     $svg_break_box_text = '';
-    $line = 0; //TODO: This will be hardcoded here. It could be calculated in a later use case.
+ //   print_debug_variable($Dienstplan);
+
     foreach ($Dienstplan as $day => $Column) {
+//        echo "<pre>"; var_dump(time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line])); echo "</pre>"; 
+
+        $vk = $Dienstplan[$day]['VK'][$line];
+
         $dienst_beginn = time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line]);
         $dienst_ende = time_from_text_to_int($Dienstplan[$day]['Dienstende'][$line]);
         $break_start = time_from_text_to_int($Dienstplan[$day]['Mittagsbeginn'][$line]);
@@ -106,7 +115,7 @@ function draw_image_dienstplan_vk($Dienstplan) {
         $x_pos_box = $outer_margin_x + $inner_margin_x + ($dienst_beginn - floor($first_start)) * $bar_width_factor;
         $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $bar_width_factor);
         $x_pos_text = $x_pos_box;
-        $y_pos_box = $outer_margin_y + ($inner_margin_y * ($day + 1)) + ($bar_height * $day);
+        $y_pos_box = $outer_margin_y + ($inner_margin_y * ($day)) + ($bar_height * ($day - 1));
         $y_pos_text = $y_pos_box + $bar_height;
         $width = $width_in_hours * $bar_width_factor;
         $break_width = $break_width_in_hours * $bar_width_factor;
@@ -126,7 +135,8 @@ function draw_image_dienstplan_vk($Dienstplan) {
         $svg_box_text .= "</g>";
 
         $svg_box_text .= "\t<rect id=break_box_$day transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $cursor_style_break_box;' />\n";
-    }
+
+        }
     $svg_text .= $svg_box_text;
     $svg_text .= $svg_grid_text;
 //    $svg_text .= $svg_break_box_text;
