@@ -66,14 +66,22 @@ function updateTage()
 function checkUpdateTage ()
 {
   //Wir lesen die Objekte aus dem HTML code.
-  var beginnId			= document.getElementById("beginn");
-  var endeId			= document.getElementById("ende");
-  var tageId			= document.getElementById("tage");
-
+  var beginn_Id			= document.getElementById("beginn");
+  var ende_Id			= document.getElementById("ende");
+  var tage_Id			= document.getElementById("tage");
+  var warning_message_tr_Id	= document.getElementById("warning_message_tr");
+  var warning_message_td_Id	= document.getElementById("warning_message_td");
+  
   //Wir entnehmen die vorhandenen Werte.
-  var beginn			= new Date (beginnId.value);
-  var ende			= new Date (endeId.value);
-  if (beginn > ende) {alert('Das Ende liegt vor dem Startdatum'); }
+  var beginn			= new Date (beginn_Id.value);
+  var ende			= new Date (ende_Id.value);
+  if (beginn > ende) {
+      warning_message_tr_Id.style.display="table-row";
+      warning_message_td_Id.innerHTML="Das Ende liegt vor dem Startdatum!";
+      //alert('Das Ende liegt vor dem Startdatum'); 
+  } else {
+      warning_message_tr_Id.style.display="none";
+  }
  
 }
 //This function is called by tag-in.php
