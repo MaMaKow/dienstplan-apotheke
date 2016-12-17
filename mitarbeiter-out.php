@@ -175,7 +175,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Stunden'][$j] > 0) {
             $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Dienstplan[$i]['VK'][$j].'>'.$Dienstplan[$i]['Stunden'][$j].' Stunden</a>';
         }
-        if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Mandant'][$j] > 0) {
+        if (isset($Dienstplan[$i]['VK'][$j]) and isset($Dienstplan[$i]['Mandant'][$j])) {
             $zeile .= '<br>'.$Kurz_mandant[$Dienstplan[$i]['Mandant'][$j]];
         }
         $zeile .= '';
