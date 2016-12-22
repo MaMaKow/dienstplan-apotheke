@@ -1,7 +1,7 @@
 .datepickerdropdown {
   background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAD6CAIAAADvIroEAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAIhJREFUOE99w4cRgDAQBLHtvzKyyWByhjKo4E8z4vs+3vc1P8+Det836nVdqOd5oh7HgXXfd9Rt21DXdUVdlgV1nmes0zShjuOIOgwDqvcete97rF3XobZti9o0DWpd16hVVaGWZYm1KArUPM9RnXOoWZahpmmKNUkS1DiOUaMoQg3DEDUIAow/RjJ3qB92TU4AAAAASUVORK5CYII=);
   border:1px solid #888;
-  border-radius:5px;
+  border-radius:0px;
   padding:10px;
   position:absolute;
   text-align:center;
@@ -13,7 +13,7 @@
 .datepickerdropdown input {
   font-family:monospace;
   border:1px solid #888;
-  border-radius:3px;
+  border-radius:0px;
   margin:1px;
   padding:2px 5px;
   text-align:center;

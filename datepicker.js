@@ -1,12 +1,24 @@
-// Converts a date into '12-Oct-1984' format
+/*
+ * This part of the software was licensed under the MIT license by Chris Hulbert:
+ * https://github.com/chrishulbert/datepicker
+ * Copyright (c) 2015 Chris Hulbert
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// Converts a date into 'YYYY-M-D' format
 function getDateString(dt) {
-  return dt.getDate() + '-' + 
-    ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()] + 
-    '-' + dt.getFullYear();
+    console.log('getDateString with dt: ' + dt);
+    //TODO: YYYY-MM-DD format would be prefered.
+    return dt.getFullYear() + '-' + (dt.getMonth()+1) +  '-' + dt.getDate();
 }
 
 // Converts a date into 'July 2010' format
 function getMonthYearString(dt) {
+    console.log('getMonthYearString with dt: ' + dt);
   return ['January','February','March','April','May','June','July',
           'August','September','October','November','December'][dt.getMonth()] +
          ' ' + dt.getFullYear();
@@ -14,6 +26,7 @@ function getMonthYearString(dt) {
 
 // This is the function called when the user clicks any button
 function chooseDate(e) {
+    console.log('chooseDate with e: ' + e);
   var targ; // Crossbrowser way to find the target (http://www.quirksmode.org/js/events_properties.html)
 	if (!e) var e = window.event;
 	if (e.target) targ = e.target;
@@ -33,6 +46,7 @@ function chooseDate(e) {
 
 // Parse a date in d-MMM-yyyy format
 function parseMyDate(d) {
+    console.log('parseMyDate with d: ' + d);
   if (d=="") return new Date('NotADate'); // For Safari
   var a = d.split('-');
   if (a.length!=3) return new Date(d); // Missing 2 dashes
@@ -55,6 +69,7 @@ function parseMyDate(d) {
 
 // This creates the calendar for a given month
 function createCalendar(div, month) {
+    console.log('createCalendar with div: ' + div + ' and month: ' + month);
   var idOfTextbox = div.getAttribute('datepickertextbox'); // Get the textbox id which was saved in the div
   var textbox = document.getElementById(idOfTextbox); // Find the textbox now
   var tbl = document.createElement('table');
@@ -82,7 +97,8 @@ function createCalendar(div, month) {
   nextMonthBn.onclick=chooseDate;
   nextMonthBn.setAttribute('date',new Date(month.getFullYear(),month.getMonth()+1,1,0,0,0,0).toString());
   var daysRow = tbl.insertRow(-1);
-  daysRow.insertCell(-1).innerHTML="Mon";
+  //TODO: toLocaleDateString() is probably a more clever way to do this:
+    daysRow.insertCell(-1).innerHTML="Mon";
   daysRow.insertCell(-1).innerHTML="Tue";
   daysRow.insertCell(-1).innerHTML="Wed";
   daysRow.insertCell(-1).innerHTML="Thu";
@@ -136,6 +152,7 @@ function createCalendar(div, month) {
 
 // This is called when they click the icon next to the date inputbox
 function showDatePicker(idOfTextbox) {
+    console.log('showDatePicker with idOfTextbox: ' + idOfTextbox);
   var textbox = document.getElementById(idOfTextbox);
   
   // See if the date picker is already there, if so, remove it
@@ -162,7 +179,8 @@ function showDatePicker(idOfTextbox) {
 
 // Adds an item after an existing one
 function insertAfter(newItem, existingItem) {
-  if (existingItem.nextSibling) { // Find the next sibling, and add newItem before it
+      console.log('insertAfter with newItem: ' + newItem + ' and existingItem: ' + existingItem);
+if (existingItem.nextSibling) { // Find the next sibling, and add newItem before it
     existingItem.parentNode.insertBefore(newItem, existingItem.nextSibling); 
   } else { // In case the existingItem has no sibling after itself, append it
     existingItem.parentNode.appendChild(newItem);
@@ -171,6 +189,7 @@ function insertAfter(newItem, existingItem) {
 
 // This is called when the page loads, it searches for inputs where the class is 'datepicker'
 function datePickerInit() {
+    console.log('datePickerInit without parameter');
   // Search for elements by class
   var allElements = document.getElementsByTagName("*");
   for (i=0; i<allElements.length; i++) {
@@ -192,7 +211,9 @@ function datePickerInit() {
 
 // Hook myself into the page load event
 if (window.addEventListener) { // W3C standard
-  window.addEventListener('load', datePickerInit, false);
-} else if (window.attachEvent) { // Microsoft
+        console.log('window.addEventListener');
+        window.addEventListener('load', datePickerInit, false);
+} else if (window.attachEvent) { // Internet Explorer <= 8 and Opera <= 6.0
+    console.log('window.attachEvent');
   window.attachEvent('onload', datePickerInit);
 }
