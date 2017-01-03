@@ -197,3 +197,22 @@ if (first_pass == second_pass && first_pass != "") {
 }
 
 }
+function update_pep() {
+    var filename = document.getElementById("filename").value;
+//    document.getElementById("xmlhttpresult").innerHTML = "<div class=warningmsg><p>working on: " + filename+"</p></div>";
+    document.getElementById("xmlhttpresult").innerHTML = "<p>working on: " + filename+"</p>";
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+//        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState >= 3 && this.status == 200) {
+            document.getElementById("xmlhttpresult").innerHTML = this.responseText;
+        }
+    };
+    xmlhttp.open("GET", "pep.php?filename=" + filename, true);
+    xmlhttp.send();
+}
+function reset_update_pep() {
+    document.getElementById("xmlhttpresult").innerHTML = "";
+    document.getElementById("javascriptmessage").innerHTML = "";
+    document.getElementById("phpscriptmessages").innerHTML = "";
+}
