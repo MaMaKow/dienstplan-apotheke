@@ -8,12 +8,16 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-// Converts a date into 'YYYY-M-D' format
+//Adds leading zeros to numbers
+function pad(number, size) {
+    var number_string = number+"";
+    while (number_string.length < size) number_string = "0" + number_string;
+    return number_string;
+}
+// Converts a date into 'YYYY-MM-DD' format
 function getDateString(dt) {
     console.log('getDateString with dt: ' + dt);
-    //TODO: YYYY-MM-DD format would be prefered.
-    return dt.getFullYear() + '-' + (dt.getMonth()+1) +  '-' + dt.getDate();
+    return dt.getFullYear() + '-' + pad((dt.getMonth()+1), 2) +  '-' + pad(dt.getDate(), 2);
 }
 
 // Converts a date into 'July 2010' format
