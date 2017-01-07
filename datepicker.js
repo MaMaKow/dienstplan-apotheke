@@ -16,21 +16,25 @@ function pad(number, size) {
 }
 // Converts a date into 'YYYY-MM-DD' format
 function getDateString(dt) {
-    console.log('getDateString with dt: ' + dt);
     return dt.getFullYear() + '-' + pad((dt.getMonth()+1), 2) +  '-' + pad(dt.getDate(), 2);
 }
 
 // Converts a date into 'July 2010' format
 function getMonthYearString(dt) {
-    console.log('getMonthYearString with dt: ' + dt);
-  return ['January','February','March','April','May','June','July',
+    selectedLocale = 'de-de'; 
+    month_string = dt.toLocaleString(selectedLocale, {month: 'long'}); //"numeric", "2-digit", "narrow", "short" and "long"
+    return month_string + ' ' + dt.getFullYear();
+    //console.log('getMonthYearString with dt: ' + dt);
+  /*
+    return ['January','February','March','April','May','June','July',
           'August','September','October','November','December'][dt.getMonth()] +
          ' ' + dt.getFullYear();
+         */
 }
 
 // This is the function called when the user clicks any button
 function chooseDate(e) {
-    console.log('chooseDate with e: ' + e);
+    //console.log('chooseDate with e: ' + e);
   var targ; // Crossbrowser way to find the target (http://www.quirksmode.org/js/events_properties.html)
 	if (!e) var e = window.event;
 	if (e.target) targ = e.target;
@@ -48,32 +52,15 @@ function chooseDate(e) {
   div.parentNode.removeChild(div); // Remove the dropdown box now
 }
 
-// Parse a date in d-MMM-yyyy format
+// Parse a date
 function parseMyDate(d) {
-    console.log('parseMyDate with d: ' + d);
   if (d=="") return new Date('NotADate'); // For Safari
-  var a = d.split('-');
-  if (a.length!=3) return new Date(d); // Missing 2 dashes
-  var m = -1; // Now find the month
-  if (a[1]=='Jan') m=0;
-  if (a[1]=='Feb') m=1;
-  if (a[1]=='Mar') m=2;
-  if (a[1]=='Apr') m=3;
-  if (a[1]=='May') m=4;
-  if (a[1]=='Jun') m=5;
-  if (a[1]=='Jul') m=6;
-  if (a[1]=='Aug') m=7;
-  if (a[1]=='Sep') m=8;
-  if (a[1]=='Oct') m=9;
-  if (a[1]=='Nov') m=10;
-  if (a[1]=='Dec') m=11;
-  if (m<0) return new Date(d); // Couldn't find the month
-  return new Date(a[2],m,a[0],0,0,0,0);
+  return new Date(d); //Works for dates formated in RFC 822 or ISO 8601 format
 }
 
 // This creates the calendar for a given month
 function createCalendar(div, month) {
-    console.log('createCalendar with div: ' + div + ' and month: ' + month);
+    //console.log('createCalendar with div: ' + div + ' and month: ' + month);
   var idOfTextbox = div.getAttribute('datepickertextbox'); // Get the textbox id which was saved in the div
   var textbox = document.getElementById(idOfTextbox); // Find the textbox now
   var tbl = document.createElement('table');
@@ -102,13 +89,20 @@ function createCalendar(div, month) {
   nextMonthBn.setAttribute('date',new Date(month.getFullYear(),month.getMonth()+1,1,0,0,0,0).toString());
   var daysRow = tbl.insertRow(-1);
   //TODO: toLocaleDateString() is probably a more clever way to do this:
-    daysRow.insertCell(-1).innerHTML="Mon";
-  daysRow.insertCell(-1).innerHTML="Tue";
-  daysRow.insertCell(-1).innerHTML="Wed";
-  daysRow.insertCell(-1).innerHTML="Thu";
-  daysRow.insertCell(-1).innerHTML="Fri";
-  daysRow.insertCell(-1).innerHTML="Sat";
-  daysRow.insertCell(-1).innerHTML="Sun";
+  var today = new Date();
+  for(i=0; i<7; i++){
+    monday = new Date();
+    monday.setDate(today.getDate() - today.getDay() + 1);
+    tag = new Date();
+    tag.setDate(monday.getDate() + i);
+    
+    //console.log(tag);
+    //console.log(tag.getDay());
+    //console.log("Montag: " + monday);
+    selectedLocale = 'de-de'; 
+    weekday_string = tag.toLocaleString(selectedLocale, {weekday: 'short'}); //narrow, short, long
+    daysRow.insertCell(-1).innerHTML = weekday_string;
+  }
   
   // Make the calendar
   var selected = parseMyDate(textbox.value); // Try parsing the date
@@ -156,15 +150,15 @@ function createCalendar(div, month) {
 
 // This is called when they click the icon next to the date inputbox
 function showDatePicker(idOfTextbox) {
-    console.log('showDatePicker with idOfTextbox: ' + idOfTextbox);
+    //console.log('showDatePicker with idOfTextbox: ' + idOfTextbox);
   var textbox = document.getElementById(idOfTextbox);
   
-  // See if the date picker is already there, if so, remove it
+  // See if the date picker is already there, if so, remove it and do not create a new datepicker.
   x = textbox.parentNode.getElementsByTagName('div');
   for (i=0;i<x.length;i++) {
-    if (x[i].getAttribute('class')=='datepickerdropdown') {
+    if (x[i].getAttribute('class')==='datepickerdropdown') {
       textbox.parentNode.removeChild(x[i]);
-      return false;
+      return false; //Iteration will stop after the first (and only) div that is a 'datepickerdropdown'.
     }
   }
 
@@ -183,7 +177,7 @@ function showDatePicker(idOfTextbox) {
 
 // Adds an item after an existing one
 function insertAfter(newItem, existingItem) {
-      console.log('insertAfter with newItem: ' + newItem + ' and existingItem: ' + existingItem);
+      //console.log('insertAfter with newItem: ' + newItem + ' and existingItem: ' + existingItem);
 if (existingItem.nextSibling) { // Find the next sibling, and add newItem before it
     existingItem.parentNode.insertBefore(newItem, existingItem.nextSibling); 
   } else { // In case the existingItem has no sibling after itself, append it
@@ -193,7 +187,7 @@ if (existingItem.nextSibling) { // Find the next sibling, and add newItem before
 
 // This is called when the page loads, it searches for inputs where the class is 'datepicker'
 function datePickerInit() {
-    console.log('datePickerInit without parameter');
+    //console.log('datePickerInit without parameter');
   // Search for elements by class
   var allElements = document.getElementsByTagName("*");
   for (i=0; i<allElements.length; i++) {
@@ -215,9 +209,9 @@ function datePickerInit() {
 
 // Hook myself into the page load event
 if (window.addEventListener) { // W3C standard
-        console.log('window.addEventListener');
+        //console.log('window.addEventListener');
         window.addEventListener('load', datePickerInit, false);
 } else if (window.attachEvent) { // Internet Explorer <= 8 and Opera <= 6.0
-    console.log('window.attachEvent');
+    //console.log('window.attachEvent');
   window.attachEvent('onload', datePickerInit);
 }

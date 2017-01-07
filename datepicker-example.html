@@ -7,7 +7,11 @@
 
 </head> 
 <body> 
-  <p>Start Date/Time:<br /> 
+<?php
+$locale = locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+echo $locale;
+?>
+    <p>Start Date/Time:<br /> 
     <input id="start_dt" class='datepicker' size='11' /> 
   </p> 
   
