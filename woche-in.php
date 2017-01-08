@@ -82,7 +82,7 @@ echo $rückwärts_button_week_img;
 echo $vorwärts_button_week_img;
 echo "$submit_button_img";
 echo "<br><br>\n";
-echo "<div id=wochenAuswahl><input name=woche type=date value=".date('Y-m-d', strtotime($datum)).">";
+echo "<div id=wochenAuswahl><input name=woche type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
