@@ -24,16 +24,10 @@
  * @param array $Dienstplan
  * @return string The svg element
  */
-function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424) {
+function draw_image_dienstplan_vk($Dienstplan) {
     global $Mitarbeiter, $Ausbildung_mitarbeiter;
 
-        if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php'){
-            $cursor_style_box = 'move';
-            $cursor_style_break_box = 'cell';
-        } else {
-            $cursor_style_box = 'default';
-            $cursor_style_break_box = 'default';
-        }
+    $line = 0; //TODO: This will be hardcoded here. It could be calculated in a later use case.
 
 
     $bar_height = 20;
@@ -49,18 +43,23 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
     $Worker_style[2]="#BDE682";
     $Worker_style[3]="#B4B4B4";
      
-    $lines = count($Dienstplan[0]['VK']);
-    $svg_inner_height = $inner_margin_x * ($lines + 1) + $bar_height * $lines;
+    $days = count($Dienstplan);
+    $svg_inner_height = $inner_margin_x * ($days + 1) + $bar_height * $days;
     $svg_outer_height = $svg_inner_height + ($outer_margin_y * 2);
 
-    $first_start = min(array_map('time_from_text_to_int', $Dienstplan[0]['Dienstbeginn']));
-    $last_end = max(array_map('time_from_text_to_int', $Dienstplan[0]['Dienstende']));
+    foreach ($Dienstplan as $day => $Column) {
+        $day_starts[] = $Dienstplan[$day]['Dienstbeginn'][$line];
+        $day_ends[] = $Dienstplan[$day]['Dienstende'][$line];
+    }
+    
+    $first_start = min($day_starts);
+    $last_end = max($day_ends);
     $svg_inner_width = $inner_margin_x * 2 + ((ceil($last_end) - floor($first_start)) * $bar_width_factor);
     $svg_outer_width = $svg_inner_width + ($outer_margin_x * 2);
-//    echo "<pre>"; var_export($Dienstplan); echo "</pre>"; 
+    //echo "<pre>";var_dump($Times); echo "</pre>"; 
     /* $svg_text  = "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
       /*$svg_text .= "<?xml version='1.0' encoding='utf-8'?>\n"; */
-    $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' style='border: 1px solid #000000; cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
+    $svg_text .= "<svg id='svgimg' width='650'  style='border: 1px solid #000000;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
 //    $svg_text .= "\t<!--Rectangle as border-->\n";
 //    $svg_text .= "\t<rect x='$outer_margin_x' y='$outer_margin_y' width='$svg_inner_width' height='$svg_inner_height' stroke-width='1' stroke='black' style='fill:none;' />\n";
 
@@ -80,12 +79,18 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
     //draw the bars from start to end for every employee
     $svg_box_text = "\t<!--Boxes-->\n";
     $svg_break_box_text = '';
-    foreach ($Dienstplan[0]['VK'] as $line => $vk) {
-        $dienst_beginn = time_from_text_to_int($Dienstplan[0]['Dienstbeginn'][$line]);
-        $dienst_ende = time_from_text_to_int($Dienstplan[0]['Dienstende'][$line]);
-        $break_start = time_from_text_to_int($Dienstplan[0]['Mittagsbeginn'][$line]);
-        $break_end = time_from_text_to_int($Dienstplan[0]['Mittagsende'][$line]);
-        $working_hours = $Dienstplan[0]['Stunden'][$line];
+ //   print_debug_variable($Dienstplan);
+
+    foreach ($Dienstplan as $day => $Column) {
+//        echo "<pre>"; var_dump(time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line])); echo "</pre>"; 
+
+        $vk = $Dienstplan[$day]['VK'][$line];
+
+        $dienst_beginn = time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line]);
+        $dienst_ende = time_from_text_to_int($Dienstplan[$day]['Dienstende'][$line]);
+        $break_start = time_from_text_to_int($Dienstplan[$day]['Mittagsbeginn'][$line]);
+        $break_end = time_from_text_to_int($Dienstplan[$day]['Mittagsende'][$line]);
+        $working_hours = $Dienstplan[$day]['Stunden'][$line];
         $width_in_hours = $dienst_ende - $dienst_beginn;
         $break_width_in_hours = $break_end - $break_start;
 
@@ -110,20 +115,28 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
         $x_pos_box = $outer_margin_x + $inner_margin_x + ($dienst_beginn - floor($first_start)) * $bar_width_factor;
         $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $bar_width_factor);
         $x_pos_text = $x_pos_box;
-        $y_pos_box = $outer_margin_y + ($inner_margin_y * ($line + 1)) + ($bar_height * $line);
+        $y_pos_box = $outer_margin_y + ($inner_margin_y * ($day)) + ($bar_height * ($day - 1));
         $y_pos_text = $y_pos_box + $bar_height;
         $width = $width_in_hours * $bar_width_factor;
         $break_width = $break_width_in_hours * $bar_width_factor;
         $x_pos_text_secondary = $x_pos_text + $width;
+        if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php'){
+            $cursor_style_box = 'move';
+            $cursor_style_break_box = 'cell';
+        } else {
+            $cursor_style_box = 'default';
+            $cursor_style_break_box = 'default';
+        }
 
-        $svg_box_text .= "<g id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' style='cursor: $cursor_style_box;'>";
-        $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];' />\n";
-        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $Mitarbeiter[$vk] . "</text>\n";
-        $svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
+        $svg_box_text .= "<g id=work_box_$day transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' >";
+        $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];cursor: $cursor_style_box;' />\n";
+        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $Mitarbeiter[$vk] . "</text>\n";
+        $svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
         $svg_box_text .= "</g>";
 
-        $svg_box_text .= "\t<rect id=break_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $cursor_style_break_box;' />\n";
-    }
+        $svg_box_text .= "\t<rect id=break_box_$day transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $cursor_style_break_box;' />\n";
+
+        }
     $svg_text .= $svg_box_text;
     $svg_text .= $svg_grid_text;
 //    $svg_text .= $svg_break_box_text;
