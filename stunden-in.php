@@ -177,7 +177,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 
 			echo "\t\t\t\t<form method=POST>\n\t\t\t\t\t";
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
-			echo "<input type=date value=".date('Y-m-d')." name=datum>";
+			echo "<input type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d')." name=datum>";
 			echo "\n\t\t\t\t</td>\n";
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
 			echo "<input type=text id=grund name=grund>";
