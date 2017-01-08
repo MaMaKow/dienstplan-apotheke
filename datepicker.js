@@ -8,6 +8,13 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+//The locale of the browser is used to localize the date we are asking different language definitions as fallback mechanism.
+//The language is read from HTTP_ACCEPT_LANGUAGE by default.php and stored inside the HEAD by head.php
+var navigator_language = document.getElementsByTagName("HEAD")[0].lang; 
+if (!navigator_language){navigator_language = navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage;}
+//console.log(navigator_language);
+
 //Adds leading zeros to numbers
 function pad(number, size) {
     var number_string = number+"";
@@ -21,8 +28,7 @@ function getDateString(dt) {
 
 // Converts a date into 'July 2010' format
 function getMonthYearString(dt) {
-    selectedLocale = 'de-de'; 
-    month_string = dt.toLocaleString(selectedLocale, {month: 'long'}); //"numeric", "2-digit", "narrow", "short" and "long"
+    month_string = dt.toLocaleString(navigator_language, {month: 'long'}); //"numeric", "2-digit", "narrow", "short" and "long"
     return month_string + ' ' + dt.getFullYear();
     //console.log('getMonthYearString with dt: ' + dt);
   /*
@@ -88,7 +94,6 @@ function createCalendar(div, month) {
   nextMonthBn.onclick=chooseDate;
   nextMonthBn.setAttribute('date',new Date(month.getFullYear(),month.getMonth()+1,1,0,0,0,0).toString());
   var daysRow = tbl.insertRow(-1);
-  //TODO: toLocaleDateString() is probably a more clever way to do this:
   var today = new Date();
   for(i=0; i<7; i++){
     monday = new Date();
@@ -96,11 +101,7 @@ function createCalendar(div, month) {
     tag = new Date();
     tag.setDate(monday.getDate() + i);
     
-    //console.log(tag);
-    //console.log(tag.getDay());
-    //console.log("Montag: " + monday);
-    selectedLocale = 'de-de'; 
-    weekday_string = tag.toLocaleString(selectedLocale, {weekday: 'short'}); //narrow, short, long
+    weekday_string = tag.toLocaleString(navigator_language, {weekday: 'short'}); //narrow, short, long
     daysRow.insertCell(-1).innerHTML = weekday_string;
   }
   
@@ -184,10 +185,20 @@ if (existingItem.nextSibling) { // Find the next sibling, and add newItem before
     existingItem.parentNode.appendChild(newItem);
   }
 }
+//http://stackoverflow.com/questions/10193294/how-can-i-tell-if-a-browser-supports-input-type-date
+function browserSupportsOwnDateInput() {
+    var input = document.createElement('input');
+    input.setAttribute('type','date');
+
+    var notADateValue = 'not-a-date';
+    input.setAttribute('value', notADateValue); 
+
+    return (input.value !== notADateValue);
+}
 
 // This is called when the page loads, it searches for inputs where the class is 'datepicker'
 function datePickerInit() {
-    //console.log('datePickerInit without parameter');
+   if(browserSupportsOwnDateInput()){return false;} //We do not need a datepicker. This browser can handle the task on its own.
   // Search for elements by class
   var allElements = document.getElementsByTagName("*");
   for (i=0; i<allElements.length; i++) {

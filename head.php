@@ -1,4 +1,4 @@
-<head>
+<head<?php if(!empty($navigator_language)){echo " lang=$navigator_language";}?>>
   <meta charset=UTF-8>
   <title><?php echo $config['application_name'];?></title>
   <script type="text/javascript" src="javascript.js" ></script>

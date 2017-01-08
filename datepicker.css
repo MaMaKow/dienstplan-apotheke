@@ -6,9 +6,10 @@
   position:absolute;
   text-align:center;
 }
-.datepickerdropdown table {
+.datepickerdropdown table tr td {
   border-collapse:collapse;
   margin:auto;
+  padding:0 0 0 0; /*!important;*/
 }
 .datepickerdropdown input {
   font-family:monospace;

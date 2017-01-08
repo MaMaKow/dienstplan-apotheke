@@ -60,4 +60,6 @@ require_once 'db-verbindung.php';
 //echo $_SERVER['HTTP_USER_AGENT'] . "\n\n";
 $browser = get_browser(null, true);
 error_log('User: '.$user.", IP: ". $_SERVER['REMOTE_ADDR'].', Browser: '.$browser['browser']." = ".$_SERVER['HTTP_USER_AGENT']);
-?>
+
+$navigator_languages = preg_split('/[,;]/', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+$navigator_language = $navigator_languages[0]; //ignore the other options
