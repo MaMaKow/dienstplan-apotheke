@@ -12,14 +12,14 @@ $dienstplanCSV = '';
 for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
     $pseudo_datum = strtotime('+'.($wochentag - 1).' day', $pseudo_datum);
-    //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
+    //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gesetzt. Daher steht hier z.B. Montag statt Monday.
     $Wochentage[$wochentag] = strftime('%A', $pseudo_datum);
 }
 
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 //echo "<pre>";    var_export($_POST);        echo "</pre>";
-if (isset($_POST['submitGrundplan'])) {
+if (isset($_POST['submitDienstplan'])) {
     foreach ($_POST['Grundplan'] as $plan => $inhalt) {
         $Grundplan[$plan] = $inhalt;
     }
@@ -92,7 +92,7 @@ $abfrage = 'SELECT *
 FROM `Grundplan`
 WHERE `Wochentag` = "'.$wochentag.'"
 	AND `Mandant`="'.$mandant.'"
-	ORDER BY `Dienstbeginn`
+	ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`
 ;';
 $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
 unset($Grundplan);
@@ -147,6 +147,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $dienstplanCSV .= ', '.$row->Mandant;;
 	$dienstplanCSV.=", ".$worker_style."\n";
 }
+/*
 $filename = 'tmp/Dienstplan.csv';
 $myfile = fopen($filename, 'w') or die("Unable to open file $filename!");
 fwrite($myfile, $dienstplanCSV);
@@ -154,7 +155,7 @@ fclose($myfile);
 $dienstplanCSV = '';
 $command = ('./Dienstplan_image.sh '.escapeshellcmd('m'.$mandant.'_'.$wochentag));
 exec($command, $kommando_ergebnis);
-
+*/
 //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
  if (!isset($Grundplan[$wochentag])) {
      $Grundplan[$wochentag]['Wochentag'][] = $wochentag;
@@ -171,7 +172,7 @@ exec($command, $kommando_ergebnis);
 
  //Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
 //Dazu übersetzen wir unsere Variablen in die korrekten Namen für das übliche Histrogramm
-$Dienstplan = $Grundplan;
+$Dienstplan[0] = $Grundplan[$wochentag]; //We will use $Dienstplan[0] for functions that are written for the use with single days as a workaround.
 $tag = $wochentag;
 //Wir brauchen das pseudo_datum vom aktuellen Wochentag
 $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
@@ -341,10 +342,10 @@ if (!empty($Grundplan[$wochentag]["Dienstbeginn"]))
 	echo "\t\t<div class=above-image>\n";
 	echo "\t\t\t<div class=image>\n";
 	require_once 'image_dienstplan.php';
-        $svg_image_dienstplan = draw_image_dienstplan($Grundplan);
+        $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
         echo $svg_image_dienstplan;
         require_once 'image_histogramm.php';
-        $svg_image_histogramm = draw_image_histogramm($Grundplan);
+        $svg_image_histogramm = draw_image_histogramm($Dienstplan);
         echo "<br>\n";
         echo $svg_image_histogramm;
 	echo "\t\t\t</div>\n";

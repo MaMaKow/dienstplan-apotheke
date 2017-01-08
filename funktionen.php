@@ -120,3 +120,12 @@ function escape_sql_value($value) {
     }
     return $escaped_sql_value;
 }
+
+function print_debug_variable($variable){
+    global $$variable;
+    echo "<pre>$variable:\n";
+    var_export($$variable);
+    echo "</pre>\n";
+    return true;
+}
+

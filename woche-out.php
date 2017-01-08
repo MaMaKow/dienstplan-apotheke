@@ -78,7 +78,7 @@ $buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= $rückwärts_button_week_img;
 $buttons_div_html .= $vorwärts_button_week_img;
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+$buttons_div_html .= "\t\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
 $buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 $buttons_div_html .= "<br><br>";
 $buttons_div_html .= "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";

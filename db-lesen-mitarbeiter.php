@@ -13,7 +13,7 @@ unset($Mandanten_mitarbeiter);
 $abfrage = 'SELECT *
 	FROM `Mitarbeiter`
 	WHERE  `Beschäftigungsende` > "'.$sql_datum.'" OR `Beschäftigungsende` IS NULL
-	ORDER BY `VK` ASC
+	ORDER BY `VK` ASC, ISNULL(`Beschäftigungsende`) ASC, `Beschäftigungsende` ASC
 	;';
 $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
 while ($row = mysqli_fetch_object($ergebnis)) {
