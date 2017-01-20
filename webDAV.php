@@ -21,5 +21,4 @@ $textICS = schreiben_ics($Dienstplan);
 header('Content-type: text/Calendar');
 header('Content-Disposition: attachment; filename="Calendar.ics"');
 echo $textICS;
-//echo $textICS;
 ?>
