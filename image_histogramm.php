@@ -26,8 +26,10 @@ if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
     $newest_pep_date = strtotime($row->Datum);
     $today = time();
     $seconds_since_last_update = $today - $newest_pep_date;
-    if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) {
-        echo "<br><div class=warningmsg>Die PEP Information ist veraltet. Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
+    if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) { //3 months
+        echo "<br><div class=warningmsg>Die PEP Information ist veraltet. <br>"
+            . "Letzter Eintrag ".date('d.m.Y', strtotime($row->Datum)).". <br>"
+            . "Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
     }
 }
 require_once 'headcount-duty-roster.php';
