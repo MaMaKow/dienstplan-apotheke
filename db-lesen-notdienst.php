@@ -12,7 +12,7 @@ $abfrage="SELECT *
 		FROM `Notdienst`
 		WHERE `Datum` = '$sql_datum';";
 //		WHERE `Datum` = '$sql_datum' AND `Mandant` = '$mandant';"; //Derzeit werden alle Mandanten angezeigt. Schließlich sind wir ein Filialverbund.
-	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+	$ergebnis = mysqli_query_verbose($abfrage);
 	while($row = mysqli_fetch_object($ergebnis))
 	{
 		$notdienst['vk']=$row->VK;

@@ -1,8 +1,6 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan einer Woche  anzeigen.
 require 'default.php';
-require 'db-verbindung.php';
-
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=7;	//Dies ist eine Wochenansicht mit Wochenende
 

@@ -1,6 +1,5 @@
 <?php
 	require 'default.php';
-	require 'db-verbindung.php';
 	//Hole eine Liste aller Mitarbeiter
 	require 'db-lesen-mitarbeiter.php';
 	$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
@@ -31,7 +30,7 @@
 		WHERE `VK` = ".$vk."
 		ORDER BY `Beginn` ASC
 		";
-	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+	$ergebnis=  mysqli_query_verbose($abfrage);
 	$number_of_rows = mysqli_num_rows($ergebnis);
 	$tablebody=""; $i=1;
 	while ($row=mysqli_fetch_object($ergebnis))
@@ -60,7 +59,7 @@
 		$i++;
 	}
 	$abfrage='SELECT DISTINCT `Grund` FROM `Abwesenheit` ORDER BY `Grund` ASC';
-	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+	$ergebnis=  mysqli_query_verbose($abfrage);
 	$datalist= "<datalist id='gruende'>\n";
 	while($row = mysqli_fetch_object($ergebnis))
 	{

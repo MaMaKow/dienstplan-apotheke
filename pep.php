@@ -25,7 +25,7 @@ require_once 'default.php';
 
 /*
 $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 $row = mysqli_fetch_object($ergebnis);
 $newest_pep_date = strtotime($row->Datum);
 $today = time();
@@ -37,20 +37,20 @@ if ($seconds_since_last_update >= 60*60*24*30*3 ) {
 $abfrage = "SELECT create_time FROM INFORMATION_SCHEMA.TABLES
   WHERE table_schema = '" . $config['database_name'] . "'
   AND table_name = 'pep_year_month'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 $row = mysqli_fetch_object($ergebnis);
 $last_pep_update = strtotime($row->create_time);
 */
 
 $abfrage = "UPDATE dienstplan set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 $abfrage = "UPDATE dienstplan set Mittagsende = null WHERE Mittagsende = '00:00:00'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 
 $abfrage = "DROP TABLE IF EXISTS `pep_weekday_time`;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
    CREATE TABLE IF NOT EXISTS `pep_weekday_time` (
@@ -61,12 +61,12 @@ $abfrage = "
   PRIMARY KEY (`Uhrzeit`,`Wochentag`,`Mandant`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 
@@ -82,12 +82,12 @@ $abfrage = "
             Mandant
     ;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 DROP TABLE IF EXISTS `pep_month_day`;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 CREATE TABLE IF NOT EXISTS `pep_month_day` (
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `pep_month_day` (
   PRIMARY KEY (`day`,`branch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 
@@ -111,13 +111,13 @@ $abfrage = "
             `Mandant`
     ;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
     
 DROP TABLE IF EXISTS `pep_year_month`;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 CREATE TABLE IF NOT EXISTS `pep_year_month` (
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `pep_year_month` (
   PRIMARY KEY (`month`, `branch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
     
@@ -139,4 +139,4 @@ $abfrage = "
         GROUP BY MONTH(Datum), `Mandant`
     ;";
 //TODO: The above code gives a factor of about 0.2 for our smaller pharmacy. We have to check if that is a double factor together with the others!
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);

@@ -29,7 +29,7 @@
 
 			//Wir lesen die Öffnungszeiten aus der Datenbank.
 			$abfrage="SELECT * FROM Öffnungszeiten WHERE Wochentag = ".date('N', strtotime($datum))." AND Mandant = ".$mandant;
-			$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+			$ergebnis = mysqli_query_verbose($abfrage);
 			$row = mysqli_fetch_object($ergebnis);
 			if (!empty($row->Beginn) and !empty($row->Ende)) {
 				$tages_beginn=strtotime($row->Beginn);

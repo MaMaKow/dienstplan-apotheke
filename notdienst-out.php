@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
 $mandant = 1;    //Wir zeigen den Dienstplan standardmäßig für die "Hauptapotheke" Mandant 1
 
 $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
@@ -24,7 +23,7 @@ if (isset($year)) {
 require 'db-lesen-mandant.php';
 
 $abfrage = "SELECT * FROM Notdienst WHERE YEAR(Datum) = $year AND Mandant = $mandant";
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Notdienste['VK'][] = $row->VK;
     $Notdienste['Datum'][] = $row->Datum;

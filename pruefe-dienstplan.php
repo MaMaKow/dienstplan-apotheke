@@ -79,7 +79,7 @@ $abfrage  = "SELECT `first`.`VK`,"
         . " 	OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates primary key is VK+start+mandant
         . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
 //echo "$abfrage<br>\n";
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));	
+$ergebnis = mysqli_query_verbose($abfrage);	
 while($row = mysqli_fetch_array($ergebnis))
 {
     $Fehlermeldung[] = "Konflikt bei Mitarbeiter " 

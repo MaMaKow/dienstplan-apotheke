@@ -1,6 +1,5 @@
 <?php
 require "default.php";
-require "db-verbindung.php";
 $mandant = 1;    //Wir zeigen den Grundplan standardmäßig für die "Apotheke am Marienplatz"
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
@@ -45,7 +44,7 @@ WHERE `Wochentag` = "'.$wochentag.'"
 	AND `Mandant`="'.$mandant.'"
 	ORDER BY `Dienstbeginn`
 ;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
     $Grundplan[$wochentag]['VK'][] = $row->VK;

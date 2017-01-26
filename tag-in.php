@@ -1,7 +1,6 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
-require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Tagesansicht für einen einzelnen Tag.
 

@@ -4,7 +4,6 @@ Diese Liste wird dann ausgehängt und von den zuständigen Apothekern geführt.
 Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber bereits enthalten sein.*/
 
 	require 'default.php';
-	require 'db-verbindung.php';
 
 	if (isset($_POST["month"])) {
 	  $month=sanitize_user_input($_POST["month"]);
