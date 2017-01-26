@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
 require 'schreiben-tabelle.php';
 
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"

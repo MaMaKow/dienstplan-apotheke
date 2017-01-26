@@ -21,7 +21,7 @@
 if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
 //Check if the PEP information is still up-to-date:
     $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
-    $ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>" . mysqli_error($verbindungi)) and die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+    $ergebnis = mysqli_query_verbose($abfrage);
     $row = mysqli_fetch_object($ergebnis);
     $newest_pep_date = strtotime($row->Datum);
     $today = time();
@@ -46,18 +46,18 @@ function get_Erwartung($datum, $mandant) {
     $pep_mandant = $Pep_mandant[$mandant];
 
     $abfrage = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $pep_mandant and Wochentag = $sql_weekday";
-    $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+    $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
         $Packungen[$row->Uhrzeit] = $row->Mittelwert;
     }
 
     $abfrage = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $pep_mandant and `day` = $month_day";
-    $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+    $ergebnis = mysqli_query_verbose($abfrage);
     $row = mysqli_fetch_object($ergebnis);
     $factor_tag_im_monat = $row->factor;
 
     $abfrage = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $pep_mandant and `month` = $month";
-    $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+    $ergebnis = mysqli_query_verbose($abfrage);
     $row = mysqli_fetch_object($ergebnis);
     $factor_monat_im_jahr = $row->factor;
 

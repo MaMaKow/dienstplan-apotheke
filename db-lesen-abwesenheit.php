@@ -24,7 +24,7 @@
 	$abfrage="SELECT *
 		FROM `Abwesenheit`
 		WHERE `Beginn` <= '$sql_datum' AND `Ende` >= '$sql_datum' AND VK IN (".$mitarbeiterliste.")"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.
-	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+	$ergebnis=  mysqli_query_verbose($abfrage);
 	while($row = mysqli_fetch_object($ergebnis))
 	{
 		$Abwesende[]=$row->VK;

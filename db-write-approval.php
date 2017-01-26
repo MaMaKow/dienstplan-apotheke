@@ -21,7 +21,7 @@ foreach (array_keys($_POST['Dienstplan']) as $tag => $value) {
   }
   //The variable $user is set within the default.php
   $abfrage="INSERT INTO `approval` (date, branch, state, user) values ('$date', '$mandant', '$state', '$user') ON DUPLICATE KEY UPDATE date='$date', branch='$mandant', state='$state', user='$user'";
-  $ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+  $ergebnis = mysqli_query_verbose($abfrage);
 }
 
 

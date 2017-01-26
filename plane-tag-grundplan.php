@@ -4,7 +4,7 @@
 	$abfrage="SELECT * FROM `Grundplan`
 		WHERE `Wochentag` = '".date('N', strtotime($datum))."'
 		AND `Mandant` = '$mandant'";
-	$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+	$ergebnis = mysqli_query_verbose($abfrage);
 	while($row = mysqli_fetch_object($ergebnis))
 	{
 		//Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.

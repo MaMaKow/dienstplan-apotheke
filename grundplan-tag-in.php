@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
 $mandant = 1;    //Wir zeigen den Grundplan standardmäßig für die "Apotheke am Marienplatz"
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
@@ -27,7 +26,7 @@ if (isset($_POST['submitDienstplan'])) {
     foreach ($Grundplan as $wochentag => $value) {
         //First, the old values are deleted.
         $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
-        $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+        $ergebnis = mysqli_query_verbose($abfrage);
         //New values are composed from the Grundplan from $_POST.
         foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
             //Die einzelnen Zeilen im Grundplan
@@ -62,7 +61,7 @@ if (isset($_POST['submitDienstplan'])) {
                 //The new values are stored inside the database.
                 $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
 			             VALUES ('$VK', '$wochentag', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$kommentar', '$mandant')";
-                $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                $ergebnis = mysqli_query_verbose($abfrage);
             }
         }
     }
@@ -94,7 +93,7 @@ WHERE `Wochentag` = "'.$wochentag.'"
 	AND `Mandant`="'.$mandant.'"
 	ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`
 ;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 unset($Grundplan);
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;

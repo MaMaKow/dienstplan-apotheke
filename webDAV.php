@@ -1,7 +1,6 @@
 <?php
 //Wir erstellen eine umfassende Icalendar Datei (ICS). Diese kann dann von Kalenderprogrammen aboniert werden.
 require 'default.php';
-require 'db-verbindung.php';
 require 'db-lesen-mandant.php';
 $tage = 30;
 if (!isset($datum)) {

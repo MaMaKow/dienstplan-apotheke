@@ -8,7 +8,6 @@ require 'default.php';
 		</script>
 	<body>
 		<?php
-			require 'db-verbindung.php';
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
@@ -45,7 +44,7 @@ require 'default.php';
 					$abfrage="DELETE FROM `Stunden`
 						WHERE `VK` = ".$_GET['vk']." AND `Datum` = '".$_GET['datum']."'";
 					//echo "$abfrage";
-					$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+					$ergebnis = mysqli_query_verbose($abfrage);
 				}
 			}
 */
@@ -56,7 +55,7 @@ require 'default.php';
 									$abfrage = "DELETE FROM `Stunden`
 			WHERE `VK` = '$vk' AND `Datum` = '$datum'";
 					//		echo "$abfrage";
-									$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+									$ergebnis = mysqli_query_verbose($abfrage);
 							}
 					}
 					$auswahl_mitarbeiter = $vk;
@@ -84,7 +83,7 @@ require 'default.php';
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
 				";
-			$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+			$ergebnis = mysqli_query_verbose($abfrage);
 			$number_of_rows = mysqli_num_rows($ergebnis);
 			$tablebody=""; $i=1;
 			while ($row=mysqli_fetch_object($ergebnis))

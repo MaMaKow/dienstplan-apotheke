@@ -15,7 +15,7 @@ $abfrage = 'SELECT *
 	WHERE  `Beschäftigungsende` > "'.$sql_datum.'" OR `Beschäftigungsende` IS NULL
 	ORDER BY `VK` ASC, ISNULL(`Beschäftigungsende`) ASC, `Beschäftigungsende` ASC
 	;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 while ($row = mysqli_fetch_object($ergebnis)) {
     if ($row->Nachname != '') {
         $Mitarbeiter[$row->VK] = $row->Nachname;

@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
 require 'db-lesen-mandant.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
 

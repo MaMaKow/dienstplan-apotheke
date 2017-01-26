@@ -8,7 +8,6 @@ require 'default.php';
 		</script>
 	<body>
 		<?php
-            require 'db-verbindung.php';
             //Hole eine Liste aller Mitarbeiter
             require 'db-lesen-mitarbeiter.php';
             //$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
@@ -38,7 +37,7 @@ require 'default.php';
                 $abfrage = "DELETE FROM `Abwesenheit`
                 	WHERE `VK` = '$vk' AND `Beginn` = '$beginn'";
               //  		echo "$abfrage";
-                $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                $ergebnis = mysqli_query_verbose($abfrage);
     //                }
       //          }
                 $auswahl_mitarbeiter = $vk;
@@ -75,14 +74,15 @@ require 'default.php';
 				WHERE `VK` = '.$vk.'
 				ORDER BY `Beginn` ASC
 				';
-            $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+            $ergebnis = mysqli_query_verbose($abfrage);
             $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
-                $tablebody .= "\t\t\t<tr>\n\t\t\t\t<form onsubmit='return confirmDelete()' method=POST>";
+                $tablebody .= "\t\t\t<tr>"
+                        . "\n\t\t\t\t";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
-                $tablebody .= date('d.m.Y', strtotime($row->Beginn))." <input hidden name='auswahl_mitarbeiter' value='$vk'><input hidden name='beginn' value='$row->Beginn'><input class=no-print type=submit name=loeschen value='X' title='Diesen Datensatz löschen'>";
-                $tablebody .= "\n\t\t\t\t</td></form>\n";
+                $tablebody .= date('d.m.Y', strtotime($row->Beginn))." ";
+                $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
                 $tablebody .= date('d.m.Y', strtotime($row->Ende));
                 $tablebody .= "\n\t\t\t\t</td>\n";
@@ -96,11 +96,18 @@ require 'default.php';
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
                 $tablebody .= "$row->Tage";
                 $tablebody .= "\n\t\t\t\t</td>\n";
+                $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n\t\t\t\t\t"
+                        . "<button class='button_small'><form onsubmit='return confirmDelete()' method=POST>"
+                        . "<input hidden name='auswahl_mitarbeiter' value='$vk'>"
+                        . "<input hidden name='beginn' value='$row->Beginn'>"
+                        . "<input class=no-print type=submit name=loeschen value='X' title='Diesen Datensatz löschen'></form></button>";
+                $tablebody .= "<button class='button_small' height=1em><img height=100%  src='images/pencil-pictogram.svg'></button>";
+                $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\n\t\t\t</tr>\n";
                 ++$i;
             }
             $abfrage = 'SELECT DISTINCT `Grund` FROM `Abwesenheit` ORDER BY `Grund` ASC';
-            $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+            $ergebnis = mysqli_query_verbose($abfrage);
             $datalist = "<datalist id='gruende'>\n";
             while ($row = mysqli_fetch_object($ergebnis)) {
                 $datalist .= "\t<option value='$row->Grund'>\n";
@@ -146,7 +153,7 @@ echo "\t\t</form>\n";
 echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
 echo "<a class=no-print href=abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
 echo "\t\t\n";
-            echo "\t\t<table border=1>\n";
+            echo "\t\t<table id=absence_table border=1>\n";
 //Überschrift
             echo "\t\t\t<tr>\n
 				\t\t\t\t<th>\n
@@ -160,6 +167,8 @@ echo "\t\t\n";
 				\t\t\t\t</th>\n
 				\t\t\t\t<th>\n
 				\t\t\t\t\tTage\n
+				\t\t\t\t</th>\n
+				\t\t\t\t<th style='display: none;'>\n
 				\t\t\t\t</th>\n
 				\t\t\t</tr>\n";
 //Ausgabe

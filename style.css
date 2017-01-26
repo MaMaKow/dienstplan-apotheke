@@ -225,6 +225,17 @@ button {
     display: inline-block;
     font-size: 16px;
 }
+.button_small {
+    background-color: #BDE682;
+    border: none;
+    color: black;
+    padding: 0px 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: smaller;
+    margin: 0px 5px 0px 5px;
+}
 button:hover{
 	box-shadow: 0px 0px 10px #888888;
 }

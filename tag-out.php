@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
@@ -33,7 +32,7 @@ if (isset($datum))
 //Duty rosters have to be approved by the leader, before the staff can view them.
 unset($approval);
 $abfrage="SELECT state FROM `approval` WHERE date='$datum' AND branch='$mandant'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 while($row = mysqli_fetch_object($ergebnis)){
 	$approval=$row->state;
 }
