@@ -111,7 +111,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 
 	require 'db-lesen-notdienst.php';
-	if(isset($notdienst)){$head_table_html .= "<br> NOTDIENST ";}
+	if(isset($notdienst)){$head_table_html .= "<br> <em>NOTDIENST</em> ";}
 	$head_table_html .= "</td></a>\n";
 }
 $head_table_html .= "\t\t\t\t\t</tr></thead>";
