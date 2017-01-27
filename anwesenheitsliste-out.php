@@ -17,13 +17,20 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 	}
 	$start_datum=mktime( 0, 0, 0, $month, 1, $year );
 	$datum=$start_datum;
-	//Die Mitarbeiterliste benötigt ein $datum. Denn Mitarbeiter sind nicht auf ewig bei uns.
+
+        //The employee list needs a $datum, because nobody is working with us forever.
 	require 'db-lesen-mitarbeiter.php';
-	$Months = array();
+
+        $Months = array();
 	for( $i = 1; $i <= 12; $i++ ) {
 	    $Months[ $i ] = strftime( '%B', mktime( 0, 0, 0, $i, 1 ) );
 	}
-
+        $Years = array();
+        $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `dienstplan`";
+        $ergebnis = mysqli_query_verbose($abfrage);
+        while ($row = mysqli_fetch_object($ergebnis)) {
+            $Years[] = $row->year;
+        }
 ?>
 <HTML>
   <HEAD>
