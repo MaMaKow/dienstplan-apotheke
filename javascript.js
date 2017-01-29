@@ -60,7 +60,7 @@ function updateTage()
     }
     start.setDate(start.getDate() + 1);
   }
-  tageId.value 	= count;
+  tageId.innerHTML 	= count;
 }
 //This function is called by abwesenheit-in.php
 function checkUpdateTage ()
@@ -196,4 +196,38 @@ if (first_pass == second_pass && first_pass != "") {
   document.getElementById('approve_pass_img').style.display = 'none';
 }
 
+}
+
+function showEdit(beginn){
+    document.getElementById('save_' + beginn).style.display = 'inline';
+    document.getElementById('beginn_in_' + beginn).style.display = 'inline';
+    document.getElementById('beginn_out_' + beginn).style.display = 'none';
+    document.getElementById('ende_in_' + beginn).style.display = 'inline';
+    document.getElementById('ende_out_' + beginn).style.display = 'none';
+    document.getElementById('grund_in_' + beginn).style.display = 'inline';
+    document.getElementById('grund_out_' + beginn).style.display = 'none';
+    document.getElementById('edit_' + beginn).style.display = 'none';
+    document.getElementById('delete_' + beginn).style.display = 'none';
+    document.getElementById('cancel_' + beginn).style.display = 'inline';
+    //Hide the submit button for new data:
+    //This is not to confuse people when choosing the right button for submission of the data.
+    document.getElementById('save_new').style.display = 'none';
+    document.getElementById('input_line_new').style.display = 'none';
+
+}
+function cancelEdit(beginn){
+    document.getElementById('save_' + beginn).style.display = 'none';
+    document.getElementById('beginn_in_' + beginn).style.display = 'none';
+    document.getElementById('beginn_out_' + beginn).style.display = 'inline';
+    document.getElementById('ende_in_' + beginn).style.display = 'none';
+    document.getElementById('ende_out_' + beginn).style.display = 'inline';
+    document.getElementById('grund_in_' + beginn).style.display = 'none';
+    document.getElementById('grund_out_' + beginn).style.display = 'inline';
+    document.getElementById('edit_' + beginn).style.display = 'inline';
+    document.getElementById('delete_' + beginn).style.display = 'inline';
+    document.getElementById('cancel_' + beginn).style.display = 'none';
+    //
+    document.getElementById('save_new').style.display = 'inline';
+    document.getElementById('input_line_new').style.display = 'table-row';
+    return false;
 }
