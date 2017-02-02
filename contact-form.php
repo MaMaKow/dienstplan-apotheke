@@ -5,7 +5,7 @@
 			document.getElementById("contactForm").style.display = "inline";
 		}
 	</script>
-	<p><a href=#bottom onclick=unhideContactForm()>Wünsche, Kritik, Anregungen&nbsp+</a></p>
+	<p><a href=#bottom onclick=unhideContactForm()>Wünsche, Kritik, Anregungen&nbsp;+</a></p>
 	<form id=contactForm style=display:none method=POST>
 		<table>
 			<tr><td>Absender</td><td><input style=width:320px type="text" name=VK value=""></td></tr>

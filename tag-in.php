@@ -76,11 +76,7 @@ require 'pruefe-abwesenheit.php';
 
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 if (isset($Fehlermeldung))

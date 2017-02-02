@@ -59,15 +59,11 @@ foreach ($Dienstplan as $key => $Dienstplantag) {
 }
 $plan_anzahl = max($Plan_anzahl);
 
-//Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+//Produce the output:
+require 'head.php';
 require 'navigation.php';
 echo "<div class=main-area>\n";
-echo "\t\t<a href=woche-out.php?datum=".$datum.'>Kalenderwoche '.strftime('%V', strtotime($datum))."</a><br>\n";
+echo "\t\t<a href=woche-out.php?datum='".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 echo "\t\t<form id=myform method=post>\n";
 //Page heading:
 echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
@@ -147,7 +143,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     echo "\t\t\t\t</tr></thead><tr>\n";
     for ($i = 0; $i < count($Dienstplan); ++$i) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>&nbsp";
+        echo "\t\t\t\t\t<td align=right>";
         //Dienstbeginn
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Dienstbeginn'][$j]));
@@ -286,5 +282,5 @@ echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px'
 require 'contact-form.php';
 
 ?>
-	</body>
-<html>
+	</BODY>
+</HTML>

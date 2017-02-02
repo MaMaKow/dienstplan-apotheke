@@ -214,6 +214,16 @@ function showEdit(beginn){
     document.getElementById('save_new').style.display = 'none';
     document.getElementById('input_line_new').style.display = 'none';
 
+    var list = document.getElementsByClassName('edit_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'none';
+    }
+    var list = document.getElementsByClassName('delete_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'none';
+    }
 }
 function cancelEdit(beginn){
     document.getElementById('save_' + beginn).style.display = 'none';
@@ -229,5 +239,15 @@ function cancelEdit(beginn){
     //
     document.getElementById('save_new').style.display = 'inline';
     document.getElementById('input_line_new').style.display = 'table-row';
+    var list = document.getElementsByClassName('edit_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'inline';
+    }
+    var list = document.getElementsByClassName('delete_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'inline';
+    }
     return false;
 }

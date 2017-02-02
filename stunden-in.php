@@ -1,12 +1,9 @@
 <?php
 require 'default.php';
-?>
-<html>
-<?php require 'head.php';?>
+require 'head.php';?>
 <script>
 			window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
 		</script>
-	<body>
 		<?php
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';

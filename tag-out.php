@@ -67,11 +67,7 @@ $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 
 if (isset($Fehlermeldung))
@@ -94,7 +90,7 @@ if (isset($Warnmeldung))
 }
 
 echo "\t\t<div class=main-area>\n";
-echo "\t\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
+echo "\t\t\t<a href=woche-out.php?datum='".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 
 
 //Support for various branch clients.
@@ -198,7 +194,7 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile="";
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
-			echo "\t\t\t\t\t\t<td>&nbsp ";
+			echo "\t\t\t\t\t\t<td>&nbsp;";
 		}
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{

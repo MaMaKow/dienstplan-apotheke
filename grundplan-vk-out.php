@@ -57,18 +57,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
         $Grundplan[$wochentag]['Kommentar'][] = $row->Kommentar;
         $Grundplan[$wochentag]['Mandant'][] = $row->Mandant;
     }
-    //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
-    // if ( !isset($Grundplan[$wochentag]) )
-    // {
-    // 	$Grundplan[$wochentag]["Wochentag"][]=$wochentag;
-    // 	$Grundplan[$wochentag]["VK"][]="$auswahl_mitarbeiter";
-    // 	$Grundplan[$wochentag]["Dienstbeginn"][]="-";
-    // 	$Grundplan[$wochentag]["Dienstende"][]="-";
-    // 	$Grundplan[$wochentag]["Mittagsbeginn"][]="-";
-    // 	$Grundplan[$wochentag]["Mittagsende"][]="-";
-    // 	$Grundplan[$wochentag]["Stunden"][]="-";
-    // 	$Grundplan[$wochentag]["Kommentar"][]="-";
-    // }
     //Wir machen aus den Nummern 1 bis 7 wieder Wochentage
     // Wir wollen den Anfang der Woche und von dort aus unseren Tag
     $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
@@ -80,7 +68,6 @@ require 'db-lesen-woche-mitarbeiter.php'; //Lesen der in der Datenbank gespeiche
 require 'db-lesen-feiertag.php';
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax = max(array_keys($Mitarbeiter));
 foreach ($Grundplan as $key => $Grundplantag) {
     $Plan_anzahl[] = (count($Grundplantag['VK']));
@@ -89,17 +76,10 @@ $plan_anzahl = max($Plan_anzahl);
 
 //Produziere die Ausgabe
 ?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+<?php require 'head.php';
 require 'navigation.php';
 echo "<div class=main-area>\n";
-//echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 echo "\t\t<form id=myform method=post>\n";
-//$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
-//$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
-//$zeile="<br>";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
 $zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
@@ -129,7 +109,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>&nbsp";
+        echo "\t\t\t\t\t<td align=right>";
         //Dienstbeginn
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstbeginn'][$j]));
@@ -240,5 +220,5 @@ echo '<img src=images/mitarbeiter_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.
 require 'contact-form.php';
 
 ?>
-	</body>
-<html>
+	</BODY>
+</HTML>

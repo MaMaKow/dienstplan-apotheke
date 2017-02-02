@@ -1,14 +1,6 @@
 <?php
 require 'default.php';
-?>
-<html>
-<?php require 'head.php';?>
-		<script>
-			//window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
-		</script>
-	<body>
-		<?php
-            //Hole eine Liste aller Mitarbeiter
+//Hole eine Liste aller Mitarbeiter
             require 'db-lesen-mitarbeiter.php';
             //$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
             //Hole eine Liste aller Mandanten (Filialen)
@@ -92,7 +84,7 @@ require 'default.php';
             $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
-                $tablebody .= "\t\t\t<tr>"
+                $tablebody .= "\t\t\t<tr height=40em>"
                         . "<form method=POST>"
                         . "\n\t\t\t\t";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=beginn_out_".$row->Beginn.">";
@@ -109,20 +101,20 @@ require 'default.php';
                     $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=grund_out_".$row->Beginn.">";
                 }
                 $tablebody .= "$row->Grund"."</div>";
-                $tablebody .= "<input id=grund_in_".$row->Beginn." style='display: none;' type=text name='grund' value=".$row->Grund."> ";
+                $tablebody .= "<input id=grund_in_".$row->Beginn." style='display: none;' list='gruende' type=text name='grund' value=".$row->Grund."> ";
                 $tablebody .= "\n\t\t\t\t</div></td>\n";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
                 $tablebody .= "$row->Tage";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n\t\t\t\t\t"
                             . "<input hidden name='auswahl_mitarbeiter' value='$vk'>"
-                            . "<button type=submit id=delete_".$row->Beginn." class='button_small' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
+                            . "<button type=submit id=delete_".$row->Beginn." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
                                 . "<img height=100% src='images/delete.png'>\n"
                             . "</button>\n"
                             . "<button type=button id=cancel_".$row->Beginn." class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"".$row->Beginn."\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
                                 . "<img height=100% src='images/delete.png'>\n"
                             . "</button>\n"
-                            . "<button type=button id=edit_".$row->Beginn." class='button_small' title='Diese Zeile bearbeiten' height=1em name=command onclick=showEdit('".$row->Beginn."')>\n"
+                            . "<button type=button id=edit_".$row->Beginn." class='button_small edit_button' title='Diese Zeile bearbeiten' height=1em name=command onclick=showEdit('".$row->Beginn."')>\n"
                                 . "<img height=100% src='images/pencil-pictogram.svg'>\n"
                             . "</button>\n"
                             . "<button type=submit id=save_".$row->Beginn." class='button_small' title='Veränderungen dieser Zeile speichern' height=1em name=command value=replace style='display: none; border-radius: 32px;'>\n"
@@ -141,8 +133,10 @@ require 'default.php';
             }
             $datalist .= "</datalist>\n";
 
-//Hier beginnt die Ausgabe
+//Here beginns the output:
+require 'head.php';
 require 'navigation.php';
+
 if (isset($Fehlermeldung))
 {
 	echo "\t\t<div class=errormsg>\n";
