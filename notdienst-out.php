@@ -29,11 +29,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $Notdienste['Datum'][] = $row->Datum;
     $Notdienste['Mandant'][] = $row->Mandant;
 }
-?>
-
-<html>
-<?php require 'head.php';?>
-<body>
+require 'head.php';?>
 			<table border=1>
 				<tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
 				<?php

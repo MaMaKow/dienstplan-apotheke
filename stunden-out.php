@@ -1,10 +1,6 @@
 <?php
 require 'default.php';
-?>
-<html>
-<?php require 'head.php';?>
-<body>
-		<?php
+require 'head.php';
 require 'navigation.php';
 echo "<div class=main-area>\n";
 			//Hole eine Liste aller Mitarbeiter

@@ -223,23 +223,17 @@ button {
     background-color: #BDE682;
     border: none;
     color: black;
-    padding: 15px 32px;
+    padding: 1em 2em;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: medium;
 }
 .button_small {
-    background-color: #BDE682;
-    border: none;
-    color: black;
-    padding: 0px 0px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: smaller;
-    margin: 0px 0px 0px 5px;
-    padding: 5px 5px 5px 5px;
+    width: 1em;
+    height: 1em;
+    margin: 0px;
+    padding: 0.2em;
 }
 button:hover{
 	box-shadow: 0px 0px 10px #888888;
