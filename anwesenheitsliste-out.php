@@ -31,17 +31,8 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
         while ($row = mysqli_fetch_object($ergebnis)) {
             $Years[] = $row->year;
         }
-?>
-<HTML>
-  <HEAD>
-    <META charset=UTF-8>
-		<script type="text/javascript" src="javascript.js" ></script>
-		<LINK rel="stylesheet" type="text/css" href="style.css" media="all">
-		<LINK rel="stylesheet" type="text/css" href="print.css" media="print">
-  </HEAD>
-  <BODY>
-<?php
-	require 'navigation.php';
+require 'head.php';
+require 'navigation.php';
 ?>
     <FORM method=post class="no-print">
       <SELECT name=month onchange=this.form.submit()>

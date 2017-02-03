@@ -121,11 +121,7 @@ $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nich
 $VKmax = max(array_keys($Mitarbeiter));
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 
 //Hier beginnt die Normale Ausgabe.

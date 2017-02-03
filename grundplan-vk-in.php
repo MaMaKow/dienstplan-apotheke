@@ -125,12 +125,8 @@ foreach ($Grundplan as $key => $Grundplantag) {
 $plan_anzahl = max($Plan_anzahl);
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-<body>
+require 'head.php';?>
     <a name=top></a>
-
 <?php
 require 'navigation.php';
 echo "<div class=main-area>\n";

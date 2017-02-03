@@ -44,11 +44,7 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 
 
 //Produziere die Ausgabe
-?>
-<html moznomarginboxes> <!-- Wir wollen beim Ausdrucken keinen Header mit auf dem Papier. -->
-<?php require 'head.php';?>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 $main_div_html = "\t\t<div class='main-area'>\n";
 $date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
@@ -318,5 +314,5 @@ require 'contact-form.php';
 
 
 ?>
-	</body>
-<html>
+	</BODY>
+</HTML>
