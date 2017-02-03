@@ -66,11 +66,7 @@
 		$datalist.= "\t<option value='$row->Grund'>\n";
 	}
 	$datalist.= "</datalist>\n";
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-		<?php
+require 'head.php';
 require 'navigation.php';
 //Hier beginnt die Ausgabe
 echo "\t\t<div class=main-area>\n";

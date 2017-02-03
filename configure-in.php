@@ -134,13 +134,7 @@ $datalist_locales .= "</datalist>\n";
 //echo "<pre>"; var_export($new_config); echo "</pre>";
 
 
-?>
-
-
-
-<html>
-<?php require 'head.php';?>
-  <body>
+require 'head.php';?>
     <div style=font-size:larger>
       <H1>Installation</H1>
       <p>Bitte ergänzen Sie die folgenden Werte um den Dienstplan zu konfigurieren.</p>

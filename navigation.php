@@ -10,6 +10,9 @@
 			<?php require 'administration-in.php';?>
 		</div>
 		<?php
+//This file is part of nearly every page. But DO NOT include it inside head.php! It is not part and should not be part of e.g. install.php!
+
+
 //In the following lines we will define buttons for the use in other documents.
 
 $rückwärts_button_img='
