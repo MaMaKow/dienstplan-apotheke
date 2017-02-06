@@ -84,7 +84,7 @@ require 'default.php';
             $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
-                $tablebody .= "\t\t\t<tr height=40em>"
+                $tablebody .= "\t\t\t<tr style='height: 1em;'>"
                         . "<form method=POST>"
                         . "\n\t\t\t\t";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=beginn_out_".$row->Beginn.">";
@@ -101,28 +101,29 @@ require 'default.php';
                     $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=grund_out_".$row->Beginn.">";
                 }
                 $tablebody .= "$row->Grund"."</div>";
-                $tablebody .= "<input id=grund_in_".$row->Beginn." style='display: none;' list='gruende' type=text name='grund' value=".$row->Grund."> ";
-                $tablebody .= "\n\t\t\t\t</div></td>\n";
+                $tablebody .= "<input id=grund_in_".$row->Beginn." style='display: none;' list='gruende' type=text name='grund' value='".$row->Grund."'> ";
+                $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
                 $tablebody .= "$row->Tage";
                 $tablebody .= "\n\t\t\t\t</td>\n";
-                $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n\t\t\t\t\t"
-                            . "<input hidden name='auswahl_mitarbeiter' value='$vk'>"
-                            . "<button type=submit id=delete_".$row->Beginn." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
-                                . "<img height=100% src='images/delete.png'>\n"
-                            . "</button>\n"
-                            . "<button type=button id=cancel_".$row->Beginn." class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"".$row->Beginn."\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
-                                . "<img height=100% src='images/delete.png'>\n"
-                            . "</button>\n"
-                            . "<button type=button id=edit_".$row->Beginn." class='button_small edit_button' title='Diese Zeile bearbeiten' height=1em name=command onclick=showEdit('".$row->Beginn."')>\n"
-                                . "<img height=100% src='images/pencil-pictogram.svg'>\n"
-                            . "</button>\n"
-                            . "<button type=submit id=save_".$row->Beginn." class='button_small' title='Veränderungen dieser Zeile speichern' height=1em name=command value=replace style='display: none; border-radius: 32px;'>\n"
-                                . "<img height=100% src='images/save.png'>\n"
-                            . "</button>\n"
-                        . "</form>\n";
+                $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n"
+                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$vk'>\n"
+                            . "\t\t\t\t\t<button type=submit id=delete_".$row->Beginn." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
+                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/delete.png' alt='Diese Zeile löschen'>\n"
+                            . "\t\t\t\t\t</button>\n"
+                            . "\t\t\t\t\t<button type=button id=cancel_".$row->Beginn." class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"".$row->Beginn."\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
+                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/delete.png' alt='Bearbeitung abbrechen'>\n"
+                            . "\t\t\t\t\t</button>\n"
+                            . "\t\t\t\t\t<button type=button id=edit_".$row->Beginn." class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"".$row->Beginn."\")'>\n"
+                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
+                            . "\t\t\t\t\t</button>\n"
+                            . "\t\t\t\t\t<button type='submit' id='save_".$row->Beginn."' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
+                            . "\t\t\t\t\t</button>\n"
+                        . "";
                 $tablebody .= "\n\t\t\t\t</td>\n";
-                $tablebody .= "\n\t\t\t</tr>\n";
+                $tablebody .= "\t\t\t</form>\n"
+                        . "\t\t\t</tr>\n";
                 ++$i;
             }
             $abfrage = 'SELECT DISTINCT `Grund` FROM `Abwesenheit` ORDER BY `Grund` ASC';
@@ -157,26 +158,27 @@ if (isset($Feiertagsmeldung))
 }
 echo "<div class=main-area>\n";
 echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
+echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
 foreach ($Mitarbeiter as $vk => $name)
 {
 	if($vk == $auswahl_mitarbeiter)
 	{
-		echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+		echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
 	}
 	else {
-		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
 	}
 }
 echo "\t\t\t</select>\n";
 $submit_button = "\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo "\t\t</form>\n";
 echo "\t\t\t<H1>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
-echo "<a class=no-print href=abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
+echo "<a class=no-print href='abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter'>[Lesen]</a>";
 echo "\t\t\n";
-            echo "\t\t<table id=absence_table border=1>\n";
+            echo "\t\t<table id=absence_table>\n";
 //Überschrift
-            echo "\t\t\t<tr>\n"
+            echo "\t\t\t<thead>\n"
+                ."\t\t\t<tr>\n"
                 ."\t\t\t\t<th>\n"
                 ."\t\t\t\t\tBeginn\n"
                 ."\t\t\t\t</th>\n"
@@ -189,21 +191,28 @@ echo "\t\t\n";
                 ."\t\t\t\t<th>\n"
                 ."\t\t\t\t\tTage\n"
                 ."\t\t\t\t</th>\n"
-                ."\t\t\t\t<th style='display: none;'>\n"
+                ."\t\t\t\t<th>\n"
+                . ""
                 ."\t\t\t\t</th>\n"
-                ."\t\t\t</tr>\n";
+                ."\t\t\t</tr>\n"
+                ."\t\t\t</thead>\n";
 //Ausgabe
-            echo "$tablebody";
+            echo "\t\t\t<tbody>\n"
+                . "$tablebody"
+                . "\t\t\t</tbody>\n";
             //echo "\t\t</form>\n";
 //Eingabe. Der Saldo wird natürlich berechnet.
-            echo "\t\t<form method=POST>\n";
-            echo "<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter>";
-            echo "\t\t\t<tr class=no-print id=input_line_new>\n";
-            echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo '<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value='.date('Y-m-d').'>';
+            echo "\t\t\t<tfoot>"
+                . "\t\t\n";
+            echo "";
+            echo "\t\t\t<tr class=no-print id=input_line_new>\n"
+                    . "\t\t\t<form method=POST>\n";
+            echo "\t\t\t\t<td>\n\t\t\t\t\t"
+                    . "\t\t\t\t\t<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter>\n";
+            echo "\t\t\t\t\t<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=".date("Y-m-d").">";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo '<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value='.date('Y-m-d').'>';
+            echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=".date("Y-m-d").">";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
             echo "<input list='gruende' name=grund>";
@@ -212,14 +221,18 @@ echo "\t\t\n";
             echo "\t\t\t\t<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>\n\t\t\t\t\t";
             echo "1";
             echo "\n\t\t\t\t</td>\n";
-            echo "\n\t\t\t</tr>\n";
-            echo "\n\t\t\t<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";
-            echo "\t\t\t\t<td id=warning_message_td colspan='99'>\n\t\t\t\t\t";
+            echo "\t\t\t\t<td>\n";
+            echo "";
             echo "\n\t\t\t\t</td>\n";
             echo "\n\t\t\t</tr>\n";
+            echo "\n\t\t\t<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";
+            echo "\t\t\t\t<td id=warning_message_td colspan='5'>\n\t\t\t\t\t";
+            echo "\n\t\t\t\t</td>\n";
+            echo "\t\t\t</form>\n"
+                . "\t\t\t</tr>\n"
+                . "\t\t\t</tfoot>";
             echo "\t\t</table>\n";
             echo "<input type=submit id=save_new class=no-print name=submitStunden value='Eintragen'>";
-            echo "\t</form>";
 //echo "<pre>"; var_dump($_POST); echo "</pre>";
             echo "</div>\n";
 						require 'contact-form.php';

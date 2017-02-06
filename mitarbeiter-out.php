@@ -63,7 +63,7 @@ $plan_anzahl = max($Plan_anzahl);
 require 'head.php';
 require 'navigation.php';
 echo "<div class=main-area>\n";
-echo "\t\t<a href=woche-out.php?datum='".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
+echo "\t\t<a href='woche-out.php?datum=".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 echo "\t\t<form id=myform method=post>\n";
 //Page heading:
 echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
@@ -73,9 +73,9 @@ echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
 foreach ($Mitarbeiter as $vk => $name) {
     if ($vk == $auswahl_mitarbeiter) {
-        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>,';
+        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>';
     } else {
-        $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>,';
+        $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>';
     }
 }
 $zeile .= '</select>';
@@ -99,7 +99,7 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $datum = date('Y-m-d', strtoti
     require 'db-lesen-abwesenheit.php';
     $zeile = '';
     echo "\t\t\t\t\t<td width=".floor(100 / $tage).'%>';
-    echo '<a href=tag-out.php?datum='.$Dienstplan[$tag]['Datum'][0].'>';
+    echo "<a href='tag-out.php?datum=".$Dienstplan[$tag]['Datum'][0]."'>";
     $zeile .= '<input type=hidden size=2 name=Dienstplan['.$tag.'][Datum][0] value='.$Dienstplan[$tag]['Datum'][0].'>';
     $zeile .= strftime('%d.%m.', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
@@ -168,12 +168,12 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Mittagsende'][$j]));
         }
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Stunden'][$j] > 0) {
-            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Dienstplan[$i]['VK'][$j].'>'.$Dienstplan[$i]['Stunden'][$j].' Stunden</a>';
+            $zeile .= "<br><a href='stunden-out.php?auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>".$Dienstplan[$i]["Stunden"][$j]." Stunden</a>";
         }
-        if (isset($Dienstplan[$i]['VK'][$j]) and isset($Dienstplan[$i]['Mandant'][$j])) {
-            $zeile .= '<br>'.$Kurz_mandant[$Dienstplan[$i]['Mandant'][$j]];
+        if (isset($Dienstplan[$i]["VK"][$j]) and isset($Dienstplan[$i]["Mandant"][$j])) {
+            $zeile .= "<br>".$Kurz_mandant[$Dienstplan[$i]["Mandant"][$j]];
         }
-        $zeile .= '';
+        $zeile .= "";
 
         echo $zeile;
         echo "</td>\n";

@@ -256,12 +256,12 @@ for ($j = 0; $j < $VKcount; ++$j) {
             if ( $Grundplan[$wochentag]['VK'][$j] != $k) {
                 //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 
-                    $zeile .= '<option>'.$k.' '.$name.'</option>,';
+                    $zeile .= '<option>'.$k.' '.$name.'</option>';
             } else {
-              $zeile .= '<option selected>'.$k.' '.$name.'</option>,';
+              $zeile .= '<option selected>'.$k.' '.$name.'</option>';
             }
         } else {
-            $zeile .= '<option>'.$k.' '.$name.'</option>,';
+            $zeile .= '<option>'.$k.' '.$name.'</option>';
         }
     }
     $zeile .= "</select>\n";

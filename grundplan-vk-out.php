@@ -81,10 +81,10 @@ require 'navigation.php';
 echo "<div class=main-area>\n";
 echo "\t\t<form id=myform method=post>\n";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
+$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>';
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {
-        $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
+        $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>';
     }
 }
 $zeile .= '</select>';
@@ -138,7 +138,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsende'][$j]));
         }
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Stunden'][$j] > 0) {
-            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Grundplan[$wochentag]['VK'][$j].'>'.$Grundplan[$wochentag]['Stunden'][$j].' Stunden';
+            $zeile .= "<br><a href='stunden-out.php?auswahl_mitarbeiter=".$Grundplan[$wochentag]["VK"][$j]."'>".$Grundplan[$wochentag]["Stunden"][$j]." Stunden";
         }
         $zeile .= '';
 

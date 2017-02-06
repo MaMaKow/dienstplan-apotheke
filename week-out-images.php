@@ -74,7 +74,7 @@ require 'navigation.php';
             foreach ($Dienstplan as $day => $Column) {
                 echo "\t\t<div class=above-image style='$image_div_style'>\n";
                 echo "\t\t\t<div class=image>\n";
-                echo "<a href=tag-out.php?datum=" . $Dienstplan[$day]["Datum"][0] . ">";
+                echo "<a href='tag-out.php?datum=" . $Dienstplan[$day]["Datum"][0] . "'>";
                 echo strftime('%A, %d.%m.%Y', strtotime($Dienstplan[$day]['Datum'][0])) . " </a><br>\n";
                 if (empty(array_sum($Dienstplan[$day]['VK']))) {
                     echo "<svg width='$svg_width' height='$svg_height' style='border: 1px solid #000000;'></svg>";
