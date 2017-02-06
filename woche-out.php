@@ -80,7 +80,7 @@ $buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=".$datum."' class=no-p
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 
-$table_html = "\t\t\t\t<table border=0 rules=groups>\n";
+$table_html = "\t\t\t\t<table>\n";
 $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";
@@ -154,7 +154,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	require 'db-lesen-abwesenheit.php';
 	require 'db-lesen-feiertag.php';
 // TODO: I am not sure where to put the following line. There is an echo inside.
-	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
+//	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	if (isset($Abwesende)) {
 		foreach ($Abwesende as $key => $vk) {
 			if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
@@ -170,7 +170,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	//Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
 	if (isset($Urlauber))
 	{
-		$table_foot_html .= "\t\t\t\t\t<td align=left><b>Urlaub</b><br>";
+		$table_foot_html .= "\t\t\t\t\t<td><b>Urlaub</b><br>";
 		foreach($Urlauber as $value){
 			$table_foot_html .= "<a href='abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value."'>".$Mitarbeiter[$value]."</a><br>";
 		}
@@ -235,7 +235,7 @@ for ($tag=0; $tag<5; $tag++)
 //An leeren Wochen soll nicht gerechnet werden.
 if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) //array_column durchsucht alle Tage nach einem 'VK'.
 {
-        $week_hours_table_html = "\t\t\t\t<table border=0 rules=groups>\n";
+        $week_hours_table_html = "\t\t\t\t<table>\n";
         $week_hours_table_html .= "\t\t\t\t\t<tr>\n";
         $week_hours_table_html .= "\t\t\t\t\t\t<td colspan=5>";
 	$week_hours_table_html .= "<b>Wochenstunden</b>\n";
@@ -262,7 +262,7 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) //array_column 
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
 				if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
 						$differenz = round(array_sum($stunden), 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
-						$week_hours_table_html .= ' <b>( '.$differenz.' )</b>\n';
+						$week_hours_table_html .= " <b>( ".$differenz." )</b>\n";
 					}
 				} else {
 						if (round($Stunden_mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {

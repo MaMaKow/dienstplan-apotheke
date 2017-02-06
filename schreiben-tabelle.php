@@ -46,7 +46,7 @@ function schreiben_tabelle (array $Dienstplan){
 					// TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
 					//That might espacially occur during the development stage of this feature.
 				}
-				$table_html .=  "\t\t\t\t\t<td align=left>";
+				$table_html .=  "\t\t\t\t\t<td>";
 				if ($approval=="approved" OR $config['hide_disapproved']==false) {
 					$zeile="";
 					if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )

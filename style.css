@@ -90,14 +90,15 @@ a:hover
 /*	max-height: 60%;*/
 }
 
-img.inline_image
+img.inline-image
 {
     height: 1em;
 }
 
 input[type="time"]
 {
-	size: 5em;
+        width: 6em;
+	/*size: 5em;*/
 	font-family: monospace;
 	border-top: initial;
 	border-left: 3px dotted #FEFEFF;
@@ -243,6 +244,10 @@ button {
     display: inline-block;
     font-size: medium;
 }
+img.button-image
+{
+    height: 2em;
+}
 .button_small {
     width: 1em;
     height: 1em;
@@ -269,9 +274,6 @@ button:hover{
 	-ms-filter: brightness(0);
 	-o-filter: brightness(0);
 	filter: brightness(0);
-}
-.icon-grey {
-	/*background-color: red;*/
 }
 .btn-secondary {
 	background-color: #B4B4B4;
