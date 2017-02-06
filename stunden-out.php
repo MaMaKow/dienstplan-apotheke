@@ -40,7 +40,7 @@ echo "<div class=main-area>\n";
 			{
 				$tablebody.= "\t\t\t<tr>\n";
 				$tablebody.= "\t\t\t\t<td>";
-				$tablebody.= "<a href=tag-out.php?datum=".date('Y-m-d', strtotime($row->Datum)).">".date('d.m.Y', strtotime($row->Datum))."</a>";
+				$tablebody.= "<a href='tag-out.php?datum=".date("Y-m-d", strtotime($row->Datum))."'>".date("d.m.Y", strtotime($row->Datum))."</a>";
 				$tablebody.= "</td>\n";
 				$tablebody.= "\t\t\t\t<td>";
 				$tablebody.= "$row->Grund";
@@ -65,12 +65,12 @@ echo "<div class=main-area>\n";
 			//Hier beginnt die Ausgabe
 			echo "\t\t<form method=POST>\n";
 			echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-			echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
+			echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>\n";
 			for ($vk=1; $vk<$VKmax+1; $vk++)
 			{
 				if(isset($Mitarbeiter[$vk]))
 				{
-					echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+					echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
 				}
 			}
 

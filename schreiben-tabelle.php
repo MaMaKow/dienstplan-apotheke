@@ -4,7 +4,6 @@ function schreiben_tabelle (array $Dienstplan){
 		global $verbindungi, $config;
 		global $Warnmeldung, $Fehlermeldung, $Overlay_message;
 		$table_html = "";
-		$table_html .=  "\t\t\t\t</tr><tr>\n";
 		foreach($Dienstplan as $key => $Dienstplantag)
 		{
 			if(isset($Dienstplantag['VK']))
@@ -21,7 +20,7 @@ function schreiben_tabelle (array $Dienstplan){
 		for ($j=0; $j<$plan_anzahl; $j++)
 		{
 			if(isset($feiertag) && !isset($notdienst)){break 1;}
-			$table_html .=  "\t\t\t\t</tr></thead><tr>\n";
+			$table_html .=  "\t\t\t\t<tr>\n";
 			for ($i=0; $i<count($Dienstplan); $i++)
 			{//Mitarbeiter
 				//The following lines check for the state of approval.
@@ -52,7 +51,7 @@ function schreiben_tabelle (array $Dienstplan){
 					$zeile="";
 					if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 					{
-						$zeile.="<b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
+						$zeile.="<b><a href='mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>";
 						$zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 						$zeile.="</a></b> / ";
 						$zeile.=$Dienstplan[$i]["Stunden"][$j];

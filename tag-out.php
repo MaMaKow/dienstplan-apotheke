@@ -90,7 +90,7 @@ if (isset($Warnmeldung))
 }
 
 echo "\t\t<div class=main-area>\n";
-echo "\t\t\t<a href=woche-out.php?datum='".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
+echo "\t\t\t<a href='woche-out.php?datum=".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 
 
 //Support for various branch clients.
@@ -113,7 +113,7 @@ echo "<div class=no-print>";
 echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "<br><br>\n";
-echo "\t\t\t\t<a href=tag-in.php?datum=".$datum.">[Bearbeiten]</a>\n";
+echo "\t\t\t\t<a href='tag-in.php?datum=".$datum."'>[Bearbeiten]</a>\n";
 echo "<br><br>\n";
 //echo "</div>\n";
 
@@ -167,7 +167,7 @@ for ($j=0; $j<$VKcount; $j++)
 		$zeile="";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{
-			$zeile.="\t\t\t\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
+			$zeile.="\t\t\t\t\t\t<td><b><a href='mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>";
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.="</a></b> ";
 		}

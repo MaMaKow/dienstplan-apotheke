@@ -134,9 +134,9 @@ echo "\t\t<form id=myform method=post>\n";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submit_button_img').click()>";
 foreach ($Mitarbeiter as $vk => $name) {
     if ($vk == $auswahl_mitarbeiter) {
-        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>,';
+        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>';
     }else {
-      $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>,';
+      $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>';
     }
 }
 $zeile .= '</select>';
