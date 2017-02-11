@@ -30,7 +30,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $Notdienste['Mandant'][] = $row->Mandant;
 }
 require 'head.php';?>
-			<table border=1>
+			<table>
 				<tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
 				<?php
                     foreach ($Notdienste['Datum'] as $key => $datum) {

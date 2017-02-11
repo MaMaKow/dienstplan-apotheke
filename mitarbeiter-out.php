@@ -88,8 +88,7 @@ echo $zeile;
 echo "$rückwärts_button_week_img";
 echo "$vorwärts_button_week_img";
 echo '<br><br>';
-//echo "\t\t\t<table border=0 rules=groups style=width:99%>\n";
-echo "\t\t\t<table border=1>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 for ($tag = 0; $tag < count($Dienstplan); $tag++, $datum = date('Y-m-d', strtotime('+ 1 day', strtotime($datum)))) {
@@ -143,7 +142,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     echo "\t\t\t\t</tr></thead><tr>\n";
     for ($i = 0; $i < count($Dienstplan); ++$i) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>";
+        echo "\t\t\t\t\t<td>";
         //Dienstbeginn
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Dienstbeginn'][$j]));

@@ -147,7 +147,7 @@ echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wi
 echo "<br>";
 echo "<br>";
 
-echo "\t\t\t<table border=1>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 foreach ($Grundplan as $wochentag => $Plan) {
@@ -161,7 +161,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>&nbsp;";
+        echo "\t\t\t\t\t<td>&nbsp;";
         //Dienstbeginn
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
             $zeile .= '<input type=time name=Grundplan['.$wochentag."][Dienstbeginn][$j] value=";

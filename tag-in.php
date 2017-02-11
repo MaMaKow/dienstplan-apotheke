@@ -135,7 +135,7 @@ echo "\t\t\t<div id=wochenAuswahl>\n";
 echo "\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</div>\n";
-echo "\t\t\t<table border=0 rules=groups>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
@@ -170,7 +170,7 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
 		$zeile="";
-		echo "\t\t\t\t\t<td align=right>";
+		echo "\t\t\t\t\t<td>";
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1).">";
 		$zeile.="<option></option>";
 
@@ -215,7 +215,7 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
 		$zeile="";
-		echo "\t\t\t\t\t<td align=right>";
+		echo "\t\t\t\t\t<td>";
 		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
 		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
 		$zeile.=" Pause: <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[".$i."][Mittagsbeginn][".$j."] id=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value='";
