@@ -14,6 +14,11 @@ body
 	background-color: #FEFEFF;
 	font-family: sans-serif;
 }
+div
+{
+    margin: 10px;
+    border: 2px solid #FF0000;
+}
 table, th, td
 {
 	white-space: nowrap;
@@ -73,10 +78,16 @@ a:hover
 
 .main-area
 {
-	position: relative;
+        width: 100vw; 
+        position: relative;
 	float: left;
 	clear: left;
     	padding: 8px 8px 8px 8px;
+}
+#table_overlay_area
+{
+    width: 95vw; 
+    position: relative;
 }
 .above-image
 {

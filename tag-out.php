@@ -122,23 +122,18 @@ echo "<br><br>\n";
 echo "\t\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t<table border=0 >\n";
+echo "\t\t\t\t<table>\n";
 echo "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
 	echo "\t\t\t\t\t\t<td>";
-	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
+	$zeile.="<input type=hidden name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.="<input type=hidden name=mandant value=".$mandant.">";
 	$zeile.=strftime('%d.%m. ', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
-//	echo "</td>\n";
-//}
-//echo "\t\t\t\t\t</tr><tr>\n";
-//for ($i=0; $i<count($Dienstplan); $i++)
-//{//Wochentag
+        //Wochentag
 	$zeile="";
-//	echo "\t\t\t\t\t\t<td>";
 	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 	require 'db-lesen-feiertag.php';
@@ -159,15 +154,15 @@ for ($i=0; $i<count($Dienstplan); $i++)
 if ($approval=="approved" OR $config['hide_disapproved']==false) {
 for ($j=0; $j<$VKcount; $j++)
 {
-	//TODO The following line will prevent planning on hollidays. The problem ist, that we work might emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
+	//TODO The following line will prevent planning on hollidays. The problem is, that we might work emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
 	//if(isset($feiertag) && !isset($notdienst)){break 1;}
 	echo "\t\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
-		$zeile="";
+		$zeile="\t\t\t\t\t\t<td>";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{
-			$zeile.="\t\t\t\t\t\t<td><b><a href='mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>";
+			$zeile.="<b><a href='mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>";
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.="</a></b> ";
 		}
@@ -183,19 +178,12 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
 		echo $zeile;
-		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
-		{
 		echo "</td>\n";
-		}
 	}
 	echo "\t\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
-		$zeile="";
-		if (isset($Dienstplan[$i]["VK"][$j]))
-		{
-			echo "\t\t\t\t\t\t<td>&nbsp;";
-		}
+		$zeile="\t\t\t\t\t\t<td>&nbsp;";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.=" Pause: ";
@@ -206,11 +194,8 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.=" - ";
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
+		$zeile .= "\n\t\t\t\t\t\t</td>\n";
 		echo $zeile;
-		if (isset($Dienstplan[$i]["VK"][$j]))
-		{
-			echo "</td>\n";
-		}
 	}
 }
 echo "\t\t\t\t\t</tr>\n";

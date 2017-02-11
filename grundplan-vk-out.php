@@ -92,7 +92,7 @@ echo $zeile;
 $submit_button = "\t<input type=submit value=Absenden name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
-echo "\t\t\t<table border=1>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 foreach ($Grundplan as $wochentag => $Plan) {
@@ -109,7 +109,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>";
+        echo "\t\t\t\t\t<td>";
         //Dienstbeginn
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstbeginn'][$j]));

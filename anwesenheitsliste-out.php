@@ -58,7 +58,7 @@ require 'navigation.php';
         ?>
       </SELECT>
     </FORM>
-      <TABLE border=1>
+      <TABLE>
       <TR>
         <TD>Anwesenheit</TD>
         <?php foreach ($Mitarbeiter as $vk => $name) {

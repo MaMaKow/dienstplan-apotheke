@@ -84,7 +84,7 @@ echo "\t\t\t\t<a href='woche-out.php?datum=".$datum."' class=no-print>[Lesen]</a
 echo "<br><br>\n";
 echo "</div>";
 
-echo "\t<table border=0 rules=groups>\n";
+echo "\t<table>\n";
 echo "\t\t\t\t\t<thead>\n";
 echo "\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
@@ -107,14 +107,6 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	echo "</a></td>\n";
 
 }
-//if ( file_exists("dienstplan_".$datum.".png") )
-//{
-//echo "<td align=center valign=top rowspan=30 style=width:800px>";
-//echo "<img src=dienstplan_".$datum.".png?".filemtime('dienstplan_'.$datum.'.png')." style=width:90%;><br>"; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-//echo "<img src=histogramm_".$datum.".png?".filemtime('dienstplan_'.$datum.'.png')." style=width:90%;></td>";
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
-//}
-//echo "\t\t\t</tr><tr>\n";
 echo "\t\t\t\t\t</tr></thead><tbody><tr>";
 
 for ($j=0; $j<$VKcount; $j++)
@@ -124,7 +116,7 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
 		$zeile="";
-		echo "\t\t\t\t<td align=right>";
+		echo "\t\t\t\t<td>";
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1)."><option>";
 		$zeile.="</option>";
 		foreach ($Mitarbeiter as $k => $mitarbeiter)
@@ -167,7 +159,7 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
 		$zeile="";
-		echo "\t\t\t\t<td align=right>";
+		echo "\t\t\t\t<td>";
 		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
 		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
 		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value='";

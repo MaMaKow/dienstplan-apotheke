@@ -80,7 +80,7 @@ echo "<div class=main-area>\n";
 				echo $submit_button;
 				echo "\t\t\t<H1 class=only-print>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
 				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a><br><br></div>\n";
-				echo "\t\t<table border=1>\n";
+				echo "\t\t<table>\n";
 				//Überschrift
 				echo "\t\t\t<tr>\n".
 				"\t\t\t\t<th>Datum</th>\n".

@@ -145,7 +145,7 @@ echo "\t\t</form>\n";
 echo "<a class=no-print href=stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
 
 echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
-			echo "\t\t<table border=1>\n";
+			echo "\t\t<table>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n
 				\t\t\t\t<th>\n

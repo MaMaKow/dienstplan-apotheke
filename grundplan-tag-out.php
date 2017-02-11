@@ -159,7 +159,7 @@ echo "\t\t<form id=myform method=post>\n";
 echo "\t\t\t<div id=navigationsElemente>";
 echo "\t\t\t\t<a href=grundplan-tag-in.php?wochentag=".$wochentag.">[Bearbeiten]</a>\n";
 echo "\t\t\t</div>\n";
-echo "\t\t\t<table border=2>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 //Datum
     $zeile = '';
@@ -175,7 +175,7 @@ if (!isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) or !($Grundplan[$wochenta
     echo "\t\t\t\t</tr><tr>\n";
 //Mitarbeiter
         $zeile = '';
-    echo "\t\t\t\t\t<td align=right><b>";
+    echo "\t\t\t\t\t<td><b>";
     $zeile .= $Mitarbeiter[$Grundplan[$wochentag]["VK"][$j]]."</b> ";
     //Dienstbeginn
     if (isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) and $Grundplan[$wochentag]["Dienstbeginn"][$j] > 0) {
@@ -193,7 +193,6 @@ if (!isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) or !($Grundplan[$wochenta
     echo "\t\t\t\t<br>\n";
 //Mittagspause
         $zeile = "";
-    //echo "\t\t\t\t\t<td align=right>";
     if (isset($Grundplan[$wochentag]["VK"][$j]) and $Grundplan[$wochentag]["Mittagsbeginn"][$j] > 0) {
       $zeile .= " Pause: ";
         $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Mittagsbeginn"][$j]));

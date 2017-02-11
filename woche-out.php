@@ -12,6 +12,15 @@ $error_message_html = "";
 $warning_message_html = "";
 $overlay_message_html = "";
 
+$weekly_turns_div_html  = "<div id='weekly_turns' style='position: absolute;
+    right: 0px;
+    top: 0px;
+    margin: auto;
+    width: 10%;
+    padding: 10px;'>\n";
+$weekly_turns_div_html .= "Rezeptur:<br>\n";
+$weekly_turns_div_html .= "Puttich\n";
+$weekly_turns_div_html .= "</div>\n";
 
 $datum=date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
 require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
@@ -80,7 +89,7 @@ $buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=".$datum."' class=no-p
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 
-$table_html = "\t\t\t\t<table>\n";
+$table_html = "\t\t\t\t<table class=duty-rooster-table>\n";
 $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";
@@ -196,7 +205,9 @@ $table_foot_html .= "\t\t\t\t\t</tr>\n";
 $table_foot_html .= "\t\t\t\t\t</tfoot>\n";
 
 $table_html .= $table_foot_html;
-$table_html .= "\t\t\t\t</table>\n\t\t\t</div>";
+$table_html .= "\t\t\t\t</table>\n\t\t\t"
+        . "$weekly_turns_div_html"
+        . "</div>";
 
 $table_div_html = "<div id=table_overlay_area>";
 $table_div_html .= $overlay_message_html;
@@ -280,6 +291,7 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) //array_column 
 // echo $submit_button;
 $duty_roster_form_html .= "\t\t\t</form>\n";
 $main_div_html .= $duty_roster_form_html;
+
 $main_div_html .= "</div>\n";
 
 if (isset($Fehlermeldung))
@@ -309,6 +321,7 @@ echo $error_message_html;
 echo $warning_message_html;
 
 echo $main_div_html;
+
 require 'contact-form.php';
 
 
