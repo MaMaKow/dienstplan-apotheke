@@ -64,7 +64,7 @@ a:hover
 	float: left;
 	clear: both;
 	background-color: #BDE682;
-	width: 100%;
+	width: 95%;
 }
 
 .foot
@@ -73,12 +73,12 @@ a:hover
 	float: left;
 	clear: both;
 /*	background-color: #BDE682;*/
-	width: 100%;
+	width: 95%;
 }
 
 .main-area
 {
-        width: 100vw; 
+        width: 95%; 
         position: relative;
 	float: left;
 	clear: left;
@@ -86,7 +86,7 @@ a:hover
 }
 #table_overlay_area
 {
-    width: 95vw; 
+    width: 80%; 
     position: relative;
 }
 .above-image
@@ -264,6 +264,10 @@ img.button-image
     height: 1em;
     margin: 0px;
     padding: 0.15em;
+}
+.button_small > img {
+    height: 100%;
+    vertical-align: top;
 }
 button:hover{
 	box-shadow: 0px 0px 10px #888888;

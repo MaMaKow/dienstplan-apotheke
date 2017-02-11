@@ -200,9 +200,9 @@ if (first_pass == second_pass && first_pass != "") {
 
 function showEdit(beginn){
     document.getElementById('save_' + beginn).style.display = 'inline';
-    document.getElementById('beginn_in_' + beginn).style.display = 'inline';
+    document.getElementById('beginn_in_' + beginn).style.display = 'inline'; document.getElementById('beginn_in_' + beginn).className += 'datepicker'
     document.getElementById('beginn_out_' + beginn).style.display = 'none';
-    document.getElementById('ende_in_' + beginn).style.display = 'inline';
+    document.getElementById('ende_in_' + beginn).style.display = 'inline'; document.getElementById('ende_in_' + beginn).className += 'datepicker'
     document.getElementById('ende_out_' + beginn).style.display = 'none';
     document.getElementById('grund_in_' + beginn).style.display = 'inline';
     document.getElementById('grund_out_' + beginn).style.display = 'none';
@@ -213,6 +213,8 @@ function showEdit(beginn){
     //This is not to confuse people when choosing the right button for submission of the data.
     document.getElementById('save_new').style.display = 'none';
     document.getElementById('input_line_new').style.display = 'none';
+
+    datePickerInit();
 
     var list = document.getElementsByClassName('edit_button');
     var i;
@@ -227,9 +229,9 @@ function showEdit(beginn){
 }
 function cancelEdit(beginn){
     document.getElementById('save_' + beginn).style.display = 'none';
-    document.getElementById('beginn_in_' + beginn).style.display = 'none';
+    document.getElementById('beginn_in_' + beginn).style.display = 'none'; document.getElementById('beginn_in_' + beginn).classList.remove('datepicker');
     document.getElementById('beginn_out_' + beginn).style.display = 'inline';
-    document.getElementById('ende_in_' + beginn).style.display = 'none';
+    document.getElementById('ende_in_' + beginn).style.display = 'none'; document.getElementById('ende_in_' + beginn).classList.remove('datepicker');
     document.getElementById('ende_out_' + beginn).style.display = 'inline';
     document.getElementById('grund_in_' + beginn).style.display = 'none';
     document.getElementById('grund_out_' + beginn).style.display = 'inline';
@@ -244,10 +246,22 @@ function cancelEdit(beginn){
     for (i = 0; i < list.length; i++) {
         list[i].style.display = 'inline';
     }
+
     var list = document.getElementsByClassName('delete_button');
     var i;
     for (i = 0; i < list.length; i++) {
         list[i].style.display = 'inline';
     }
+
+   
+    var list = document.getElementsByClassName('datepickershow');
+    console.log(list);
+    var i;
+    for (i = 0; i < list.length; i++) {
+        console.log(list[i].parentElement);
+        list[i].parentElement.removeChild(list[i]);
+    }
+    var list = document.getElementsByClassName('datepickershow');
+    list[0].parentElement.removeChild(list[0]); //For some reason one datepicker survives the first deletion.
     return false;
 }
