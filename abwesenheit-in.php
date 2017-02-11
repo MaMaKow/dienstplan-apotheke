@@ -36,12 +36,13 @@ require 'default.php';
             }
 
             //We create new entries or edit old entries. (Empty values are not accepted.)
-            if ((isset($_POST['submitStunden']) or isset($_POST['command']) and 'replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING))
+            if ((isset($_POST['submitStunden']) or (isset($_POST['command']) and 'replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)))
                     and $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT)
-                    and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)
+                    and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)                    
                     and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
                     and $grund = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
                     ){
+                $tage = 0;
                 for ($tag = strtotime($beginn); $tag <= strtotime($ende); $tag = strtotime('+1 day', strtotime($datum))) {
                     $datum = date('Y-m-d', $tag);
                     if (date('w', strtotime($datum)) < 6 and date('w', strtotime($datum)) > 0) {
@@ -57,13 +58,17 @@ require 'default.php';
                 }
                 //var_export($tage);
                 if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)){
-                                    $abfrage = 'REPLACE INTO `Abwesenheit`';
+                    $beginn_old = filter_input(INPUT_POST, 'beginn_old', FILTER_SANITIZE_STRING);
+                    $abfrage = "DELETE FROM `Abwesenheit` WHERE `VK` = '$auswahl_mitarbeiter' AND `Beginn` = '$beginn_old'"; 
+                    //echo "$abfrage<br>\n";
+                                    $ergebnis = mysqli_query_verbose($abfrage);
                 } else {
-                                    $abfrage = 'INSERT INTO `Abwesenheit`';
+                    var_export(filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING));
                 }
-		$abfrage .= "(VK, Beginn, Ende, Tage, Grund) "
+                $abfrage = "INSERT INTO `Abwesenheit` "
+                        . "(VK, Beginn, Ende, Tage, Grund) "
                         . "VALUES (".$auswahl_mitarbeiter.", '".$beginn."', '".$ende."', '".$tage."', '".$grund."')";
-                //echo "$abfrage";
+                //echo "$abfrage<br>\n";
 		if( !($ergebnis = mysqli_query($verbindungi, $abfrage)) ) {
 			$error_string = mysqli_error($verbindungi);
 			if (strpos($error_string, 'Duplicate') !== false){
@@ -85,15 +90,16 @@ require 'default.php';
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
                 $tablebody .= "\t\t\t<tr style='height: 1em;'>"
-                        . "<form method=POST>"
+                        . "<form method=POST id='change_absence_entry_".$row->Beginn."'>"
                         . "\n\t\t\t\t";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=beginn_out_".$row->Beginn.">";
                 $tablebody .= date('d.m.Y', strtotime($row->Beginn))."</div>";
-                $tablebody .= "<input id=beginn_in_".$row->Beginn." style='display: none;' type=date class=datepicker name='beginn' value=".date('Y-m-d', strtotime($row->Beginn))."> ";
+                $tablebody .= "<input id=beginn_in_".$row->Beginn." style='display: none;' type=date name='beginn' value=".date('Y-m-d', strtotime($row->Beginn))." form='change_absence_entry_".$row->Beginn."'> ";
+                $tablebody .= "<input id=beginn_in_old_".$row->Beginn." style='display: none;' type=date name='beginn_old' value=".date('Y-m-d', strtotime($row->Beginn))." form='change_absence_entry_".$row->Beginn."'> ";
                 $tablebody .= "\n\t\t\t\t</td>\n";
-                $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=ende_out_".$row->Beginn.">";
+                $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=ende_out_".$row->Beginn." form='change_absence_entry_".$row->Beginn."'>";
                 $tablebody .= date('d.m.Y', strtotime($row->Ende))."</div>";
-                $tablebody .= "<input id=ende_in_".$row->Beginn." style='display: none;' type=date class=datepicker name='ende' value=".date('Y-m-d', strtotime($row->Ende))."> ";
+                $tablebody .= "<input id=ende_in_".$row->Beginn." style='display: none;' type=date name='ende' value=".date('Y-m-d', strtotime($row->Ende))." form='change_absence_entry_".$row->Beginn."'> ";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 if ($i == $number_of_rows) {
                     $tablebody .= "\t\t\t\t<td id=letzterGrund><div id=grund_out_".$row->Beginn.">\n\t\t\t\t\t";
@@ -101,24 +107,24 @@ require 'default.php';
                     $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=grund_out_".$row->Beginn.">";
                 }
                 $tablebody .= "$row->Grund"."</div>";
-                $tablebody .= "<input id=grund_in_".$row->Beginn." style='display: none;' list='gruende' type=text name='grund' value='".$row->Grund."'> ";
+                $tablebody .= "<input id=grund_in_".$row->Beginn." style='display: none;' list='gruende' type=text name='grund' value='".$row->Grund."' form='change_absence_entry_".$row->Beginn."'> ";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
                 $tablebody .= "$row->Tage";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n"
-                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$vk'>\n"
+                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$vk' form='change_absence_entry_".$row->Beginn."'>\n"
                             . "\t\t\t\t\t<button type=submit id=delete_".$row->Beginn." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
-                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/delete.png' alt='Diese Zeile löschen'>\n"
+                                . "\t\t\t\t\t\t<img src='images/delete.png' alt='Diese Zeile löschen'>\n"
                             . "\t\t\t\t\t</button>\n"
                             . "\t\t\t\t\t<button type=button id=cancel_".$row->Beginn." class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"".$row->Beginn."\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
-                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/delete.png' alt='Bearbeitung abbrechen'>\n"
+                                . "\t\t\t\t\t\t<img src='images/delete.png' alt='Bearbeitung abbrechen'>\n"
                             . "\t\t\t\t\t</button>\n"
                             . "\t\t\t\t\t<button type=button id=edit_".$row->Beginn." class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"".$row->Beginn."\")'>\n"
-                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
+                                . "\t\t\t\t\t\t<img src='images/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
                             . "\t\t\t\t\t</button>\n"
                             . "\t\t\t\t\t<button type='submit' id='save_".$row->Beginn."' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
-                                . "\t\t\t\t\t\t<img style='height: 100%' src='images/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
+                                . "\t\t\t\t\t\t<img src='images/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
                             . "\t\t\t\t\t</button>\n"
                         . "";
                 $tablebody .= "\n\t\t\t\t</td>\n";
@@ -206,16 +212,16 @@ echo "\t\t\n";
                 . "\t\t\n";
             echo "";
             echo "\t\t\t<tr class=no-print id=input_line_new>\n"
-                    . "\t\t\t<form method=POST>\n";
+                    . "\t\t\t<form method=POST id='new_absence_entry'>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t"
-                    . "\t\t\t\t\t<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter>\n";
-            echo "\t\t\t\t\t<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=".date("Y-m-d").">";
+                    . "\t\t\t\t\t<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter form='new_absence_entry'>\n";
+            echo "\t\t\t\t\t<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=".date("Y-m-d")." form='new_absence_entry'>";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=".date("Y-m-d").">";
+            echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=".date("Y-m-d")." form='new_absence_entry'>";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo "<input list='gruende' name=grund>";
+            echo "<input list='gruende' name=grund form='new_absence_entry'>";
             echo "$datalist";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>\n\t\t\t\t\t";
@@ -232,7 +238,7 @@ echo "\t\t\n";
                 . "\t\t\t</tr>\n"
                 . "\t\t\t</tfoot>";
             echo "\t\t</table>\n";
-            echo "<input type=submit id=save_new class=no-print name=submitStunden value='Eintragen'>";
+            echo "<input type=submit id=save_new class=no-print name=submitStunden value='Eintragen' form='new_absence_entry'>";
 //echo "<pre>"; var_dump($_POST); echo "</pre>";
             echo "</div>\n";
 						require 'contact-form.php';
