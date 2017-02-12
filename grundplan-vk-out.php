@@ -78,7 +78,7 @@ $plan_anzahl = max($Plan_anzahl);
 ?>
 <?php require 'head.php';
 require 'navigation.php';
-echo "<div class=main-area>\n";
+echo "<div id=main-area>\n";
 echo "\t\t<form id=myform method=post>\n";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
 $zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>';

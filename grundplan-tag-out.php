@@ -125,7 +125,7 @@ require 'head.php';
 require 'navigation.php';
 
 //Hier beginnt die Normale Ausgabe.
-echo "\t\t<div class=main-area>\n";
+echo "\t\t<div id=main-area>\n";
 echo "\t\t\t<form id=mandantenformular method=post>\n";
 //echo "\t\t\t\t<input type=hidden name=wochentag value=".$Grundplan[$wochentag]["Wochentag"][0].">\n";
 echo "\t\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";

@@ -129,7 +129,7 @@ require 'head.php';?>
     <a name=top></a>
 <?php
 require 'navigation.php';
-echo "<div class=main-area>\n";
+echo "<div id=main-area>\n";
 echo "\t\t<form id=myform method=post>\n";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submit_button_img').click()>";
 foreach ($Mitarbeiter as $vk => $name) {

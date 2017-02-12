@@ -2,7 +2,7 @@
 require 'default.php';
 require 'head.php';
 require 'navigation.php';
-echo "<div class=main-area>\n";
+echo "<div id=main-area>\n";
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
