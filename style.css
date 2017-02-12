@@ -14,18 +14,27 @@ body
 	background-color: #FEFEFF;
 	font-family: sans-serif;
 }
-div
-{
-    margin: 10px;
-    border: 2px solid #FF0000;
+@media screen {
+    div
+    {
+        margin: 3px;
+        border: 1px solid #FF0000;
+    }
+}
+@media print {
+    div
+    {
+        border: 1px solid #000;
+    }
 }
 table, th, td
 {
 	white-space: nowrap;
-	vertical-align: top;
-	font-size : 100%;
+	vertical-align: top;        
 	font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
-/*	border: 1px solid; */
+        /*
+        border: 1px solid;
+        */
 	border-collapse: collapse;
 	padding:0 1.0em 0.8em 0;
 }
@@ -76,7 +85,7 @@ a:hover
 	width: 95%;
 }
 
-.main-area
+#main-area
 {
         width: 95%; 
         position: relative;
@@ -84,9 +93,15 @@ a:hover
 	clear: left;
     	padding: 8px 8px 8px 8px;
 }
+#duty-rooster-table
+{
+    width: 85%;
+    font-size: 1.2vw;
+
+}
 #table_overlay_area
 {
-    width: 80%; 
+    width: 100%; 
     position: relative;
 }
 .above-image

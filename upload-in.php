@@ -68,7 +68,7 @@
 			}
 		?>
 		<p style=height:2em></p>
-		<div class=main-area>
+		<div id=main-area>
 			<form action="upload-in.php" method="post" enctype="multipart/form-data">
 				Eine PEP-Datei zum Hochladen auswählen:<br>
 				<input type="file" name="fileToUpload" id="fileToUpload"><br>

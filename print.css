@@ -9,7 +9,9 @@
 }
 a, body
 {
-    zoom: 50%;
+    /*
+    zoom: 70%;
+    */
     color: #000000; /*!important;*/
 }
 .no-print, .no-print *
@@ -29,20 +31,26 @@ a, body
 tr.wochenende {
     -webkit-print-color-adjust: exact;
 }
-.main-area
+#main-area
 {
     /*
     height: 210mm;
     width: 297mm;
     */
+    width: 100%;
 }
 #table_overlay_area
 {
+    /*
     height: 210mm;
     width: 297mm;
+    */
+    width: 100%;
 }
-.duty-rooster-table
+#duty-rooster-table
 {
-    height: 168mm;
-    width: 238mm;
+    /*
+    width: 334mm;
+    */
+    width: 85%;
 }

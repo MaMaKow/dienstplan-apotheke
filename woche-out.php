@@ -13,6 +13,7 @@ $warning_message_html = "";
 $overlay_message_html = "";
 
 $weekly_turns_div_html  = "<div id='weekly_turns' style='position: absolute;
+    border: 1px solid #000;
     right: 0px;
     top: 0px;
     margin: auto;
@@ -55,15 +56,15 @@ $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer 
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
-$main_div_html = "\t\t<div class='main-area'>\n";
+$main_div_html = "\t\t<div id='main-area'>\n";
 $date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
 $branch_form_html = "";
-$branch_form_html .= "\t\t<form id=branch_form method=post>\n";
+$branch_form_html .= "\t\t<form id=branch_form method=post class='no-print'>\n";
 $branch_form_html .= "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
-$branch_form_html .= "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
+$branch_form_html .= "\t\t\t<select class='large' name=mandant onchange=this.form.submit()>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
@@ -89,7 +90,7 @@ $buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=".$datum."' class=no-p
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 
-$table_html = "\t\t\t\t<table class=duty-rooster-table>\n";
+$table_html = "\t\t\t\t<table id=duty-rooster-table>\n";
 $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";

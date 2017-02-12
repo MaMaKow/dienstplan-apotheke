@@ -125,7 +125,7 @@ if (isset($Fehlermeldung))
 	}
 	echo "\t\t</div>";
 }
-echo "<div class=main-area>\n";
+echo "<div id=main-area>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
 foreach ($Mitarbeiter as $vk => $name)

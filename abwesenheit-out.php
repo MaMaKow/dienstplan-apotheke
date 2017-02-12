@@ -69,7 +69,7 @@
 require 'head.php';
 require 'navigation.php';
 //Hier beginnt die Ausgabe
-echo "\t\t<div class=main-area>\n";
+echo "\t\t<div id=main-area>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
 for ($vk=1; $vk<$VKmax+1; $vk++)
