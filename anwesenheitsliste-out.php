@@ -4,6 +4,7 @@ Diese Liste wird dann ausgehängt und von den zuständigen Apothekern geführt.
 Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber bereits enthalten sein.*/
 
 	require 'default.php';
+        require 'db-lesen-abwesenheit.php';
 
 	if (isset($_POST["month"])) {
 	  $month=sanitize_user_input($_POST["month"]);
@@ -74,7 +75,7 @@ require 'navigation.php';
                     echo '<TD></TD>';
                 }
             } else {
-                require 'db-lesen-abwesenheit.php';
+                list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
                 require 'db-lesen-notdienst.php';
                 echo '<TR><TD style="padding-bottom: 0">'.strftime('%a %d.%m.%Y', $datum).'</TD>';
                 foreach ($Mitarbeiter as $vk => $name) {

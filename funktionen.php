@@ -5,8 +5,7 @@
          * @param int $days The number of days until expiration.
          * @return null
         */
-	function create_cookie($cookie_name, $cookie_value, $days=7)
-	{
+	function create_cookie($cookie_name, $cookie_value, $days=7){
 		if ( isset($cookie_name) AND isset($cookie_value) )
 		{
 			setcookie($cookie_name, $cookie_value, time() + (86400 * $days), "/"); // 86400 = 1 day
