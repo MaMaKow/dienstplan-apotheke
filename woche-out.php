@@ -1,6 +1,7 @@
 <?php
 require 'default.php';
 require 'schreiben-tabelle.php';
+require 'db-lesen-abwesenheit.php';
 
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=6;	//Dies ist eine Wochenansicht ohne Sonntag
@@ -12,16 +13,6 @@ $error_message_html = "";
 $warning_message_html = "";
 $overlay_message_html = "";
 
-$weekly_turns_div_html  = "<div id='weekly_turns' style='position: absolute;
-    border: 1px solid #000;
-    right: 0px;
-    top: 0px;
-    margin: auto;
-    width: 10%;
-    padding: 10px;'>\n";
-$weekly_turns_div_html .= "Rezeptur:<br>\n";
-$weekly_turns_div_html .= "Puttich\n";
-$weekly_turns_div_html .= "</div>\n";
 
 $datum=date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
 require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
@@ -31,6 +22,10 @@ $montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der W
 $montags_differenzString="-".$montags_differenz." day";
 $datum=strtotime($montags_differenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum); $konstantes_datum=$datum;
+for ($i = 0; $i < $tage; $i++){
+    $Week_dates_unix[] = strtotime(' +' . $i . ' days', strtotime($datum));
+    //echo date("d.m.Y", end($Week_dates_unix)) . "<br>\n";
+}
 if (isset($datum))
 {
 	create_cookie("datum", $datum, 0.5); //Diese Funktion muss vor dem ersten echo durchgeführt werden.
@@ -49,6 +44,12 @@ $Dienstplan=db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur f�
 
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
+
+//Build a div containing assignment of tasks:
+require 'task-rotation.php';
+//TODO: Works only for "Rezeptur" right now!
+$task = "Rezeptur";
+$weekly_rotation_div_html = task_rotation_main($Week_dates_unix, $task);
 
 
 
@@ -161,7 +162,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 {
 	$datum=($Dienstplan[$i]['Datum'][0]);
 	unset($Urlauber, $Kranke);
-	require 'db-lesen-abwesenheit.php';
+        list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
 	require 'db-lesen-feiertag.php';
 // TODO: I am not sure where to put the following line. There is an echo inside.
 //	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
@@ -207,7 +208,7 @@ $table_foot_html .= "\t\t\t\t\t</tfoot>\n";
 
 $table_html .= $table_foot_html;
 $table_html .= "\t\t\t\t</table>\n\t\t\t"
-        . "$weekly_turns_div_html"
+        . "$weekly_rotation_div_html"
         . "</div>";
 
 $table_div_html = "<div id=table_overlay_area>";
@@ -279,7 +280,7 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) //array_column 
 				} else {
 						if (round($Stunden_mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
 								$differenz = round(array_sum($stunden), 1) - round($Stunden_mitarbeiter[$mitarbeiter], 1);
-								$week_hours_table_html .= ' <b>( '.$differenz.' )</b>\n';
+								$week_hours_table_html .= " <b>( ".$differenz." )</b>\n";
 						}
 				}
 

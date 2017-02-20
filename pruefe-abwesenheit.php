@@ -8,7 +8,7 @@ if (!isset($i)) {
 }
 	unset($Urlauber, $Kranke, $Abwesende);
 	$datum=$Dienstplan[$i]['Datum'][0];
-	require 'db-lesen-abwesenheit.php';
+        list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
 	if(isset($Dienstplan[$i]['VK']))
 	{
 		$Eingesetzte_mitarbeiter=array_values($Dienstplan[$i]['VK']);

@@ -34,6 +34,7 @@ $Dienstplan=db_lesen_tage($tage, $mandant);
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
+list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
 
 if( array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 AND !isset($feiertag)) //Samstag und Sonntag planen wir nicht.
 {

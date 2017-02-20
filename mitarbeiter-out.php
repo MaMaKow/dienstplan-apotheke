@@ -1,5 +1,6 @@
 <?php
 require 'default.php';
+require 'db-lesen-abwesenheit.php';
 require 'db-lesen-mandant.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
 
@@ -95,7 +96,7 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $datum = date('Y-m-d', strtoti
     //Datum
     require 'db-lesen-feiertag.php';
     require 'db-lesen-notdienst.php';
-    require 'db-lesen-abwesenheit.php';
+    list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
     $zeile = '';
     echo "\t\t\t\t\t<td width=".floor(100 / $tage).'%>';
     echo "<a href='tag-out.php?datum=".$Dienstplan[$tag]['Datum'][0]."'>";

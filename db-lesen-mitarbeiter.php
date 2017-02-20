@@ -33,9 +33,14 @@ while ($row = mysqli_fetch_object($ergebnis)) {
             $Approbierte_mitarbeiter[$row->VK] = $row->Nachname;
         }
         if ($row->Wareneingang == true) {
-            //Wer kann einen Wareneingang machen?
+            //Who is ble to book goods inward?
 
             $Wareneingang_Mitarbeiter[$row->VK] = $row->Nachname;
+        }
+        if (isset($mandant) && $row->Mandant == $mandant && $row->Rezeptur == true) {
+            //Who is working in the formulation area?
+
+            $Rezeptur_Mitarbeiter[$row->VK] = $row->Nachname;
         }
     }
 }
