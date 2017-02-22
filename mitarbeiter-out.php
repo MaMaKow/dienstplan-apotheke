@@ -126,7 +126,7 @@ echo "\t\t\t\t<br>\n";
     $zeile .= strftime('%A', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
     echo '</a>';
-    if (isset($Abwesende)  AND  array_search($auswahl_mitarbeiter, $Abwesende) !== false) {
+    if (isset($Abwesende[$auswahl_mitarbeiter])) {
         echo '<br>'.$Abwesenheits_grund[$auswahl_mitarbeiter];
         if (!isset($feiertag) and date('N', strtotime($datum)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.

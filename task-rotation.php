@@ -114,14 +114,14 @@ function task_rotation_set_worker($date_unix, $task) {
                 list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($temp_date_sql);
 
                 //In case the person is ill or on holidays, someone else has to take the turn:
-                if (isset($Abwesende) and array_search($rotation_vk, $Abwesende) !== false) {
+                if (isset($Abwesende[$rotation_vk])) {
                     $Standard_rotation_vk = $rotation_vk;
-                    if (empty(array_diff(array_keys($Rezeptur_Mitarbeiter), $Abwesende))) {
+                    if (empty(array_diff(array_keys($Rezeptur_Mitarbeiter), array_keys($Abwesende)))) {
                         //There is nobody working:
                         $rotation_vk = NULL;
                         continue;
                     }
-                    while (isset($Abwesende) and array_search($rotation_vk, $Abwesende) !== false) {
+                    while (isset($Abwesende[$rotation_vk])) {
                         if (FALSE === next($Rezeptur_Mitarbeiter)) {
                             reset($Rezeptur_Mitarbeiter);
                         }

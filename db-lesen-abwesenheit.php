@@ -27,8 +27,7 @@ function db_lesen_abwesenheit($date)
 	$ergebnis=  mysqli_query_verbose($abfrage);
 	while($row = mysqli_fetch_object($ergebnis))
 	{
-		$Abwesende[]=$row->VK;
-		$Abwesenheits_grund[$row->VK]=$row->Grund;
+		$Abwesende[$row->VK]=$row->Grund;
 		if ($row->Grund=="Urlaub")
 		{
 			$Urlauber[]=$row->VK;
