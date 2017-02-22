@@ -61,7 +61,7 @@ if (!isset($i)) {
 	}
 	if (isset($Abwesende))
 	{
-		foreach($Abwesende as $abwesender)
+		foreach($Abwesende as $abwesender => $grund)
 		{
 			foreach($Eingesetzte_mitarbeiter as $anwesender)
 			{
@@ -75,7 +75,7 @@ if (!isset($i)) {
 		{
 			foreach($Arbeitende_abwesende as $arbeitender_abwesender)
 			{
-				$Fehlermeldung[]=$Mitarbeiter[$arbeitender_abwesender]." ist abwesend (".$Abwesenheits_grund[$arbeitender_abwesender].") und sollte nicht im Dienstplan stehen.";
+				$Fehlermeldung[]=$Mitarbeiter[$arbeitender_abwesender]." ist abwesend (".$Abwesende[$arbeitender_abwesender].") und sollte nicht im Dienstplan stehen.";
 			}
 		}
 	}
@@ -84,7 +84,7 @@ if (!isset($i)) {
 	if (count($Eingesetzte_mitarbeiter)>3)
 	{
 		$Mitarbeiter_differenz=array_diff(array_keys($Mandanten_mitarbeiter), $Eingesetzte_mitarbeiter);
-		if(isset($Abwesende)){$Mitarbeiter_differenz=array_diff($Mitarbeiter_differenz, $Abwesende);}
+		if(isset($Abwesende)){$Mitarbeiter_differenz=array_diff($Mitarbeiter_differenz, array_keys($Abwesende));}
 		if (!empty($Mitarbeiter_differenz))
 		{
 			$fehler="Es sind folgende Mitarbeiter nicht eingesetzt: ";

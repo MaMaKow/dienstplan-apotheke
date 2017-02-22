@@ -44,7 +44,7 @@
 	while($row = mysqli_fetch_object($ergebnis))
 	{
 		//Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
-		if( isset($Abwesende) AND array_search($row->VK, $Abwesende) !== false)
+		if( isset($Abwesende[$row->VK]))
 		{
 			$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n"; continue 1;
 		}
@@ -99,7 +99,7 @@
 		foreach($Mandanten_mitarbeiter as $vk => $nachname)
 		{
 			//Wer krank oder im Urlaub ist, der erscheint hier nicht.
-			if( isset($Abwesende) AND array_search($vk, $Abwesende) !== false)
+			if( isset($Abwesende[$vk]))
 			{
 				//nächster bitte
 				continue;

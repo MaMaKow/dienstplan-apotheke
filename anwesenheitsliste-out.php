@@ -79,23 +79,23 @@ require 'navigation.php';
                 require 'db-lesen-notdienst.php';
                 echo '<TR><TD style="padding-bottom: 0">'.strftime('%a %d.%m.%Y', $datum).'</TD>';
                 foreach ($Mitarbeiter as $vk => $name) {
-                    if (isset($Abwesende) and array_search($vk, $Abwesende) !== false) {
-                        if (preg_match('/Krank/i', $Abwesenheits_grund[$vk])) {
+                    if (isset($Abwesende[$vk])) {
+                        if (preg_match('/Krank/i', $Abwesende[$vk])) {
                             $grund_string = 'K';
-                        } elseif (preg_match('/Kur/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Kur/i', $Abwesende[$vk])) {
                             $grund_string = 'K';
-                        } elseif (preg_match('/Urlaub/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Urlaub/i', $Abwesende[$vk])) {
                             $grund_string = 'U';
-                        } elseif (preg_match('/Elternzeit/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Elternzeit/i', $Abwesende[$vk])) {
                             $grund_string = 'E';
-                        } elseif (preg_match('/Nicht angestellt/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Nicht angestellt/i', $Abwesende[$vk])) {
                             $grund_string = 'N/A';
-                        }elseif (preg_match('/Notdienst/i', $Abwesenheits_grund[$vk])) {
+                        }elseif (preg_match('/Notdienst/i', $Abwesende[$vk])) {
                             $grund_string = 'NA';
                         } else {
-                            $grund_string = mb_substr($Abwesenheits_grund[$vk], 0, 3);
+                            $grund_string = mb_substr($Abwesende[$vk], 0, 3);
                         }
-                        echo '<TD style="padding-bottom: 0" title="'.$Abwesenheits_grund[$vk].'">'.$grund_string.'</TD>';
+                        echo '<TD style="padding-bottom: 0" title="'.$Abwesende[$vk].'">'.$grund_string.'</TD>';
                     } elseif (isset($notdienst) and $notdienst['vk'] == $vk) {
                         echo '<TD style="padding-bottom: 0">N</TD>';
                     } else {
