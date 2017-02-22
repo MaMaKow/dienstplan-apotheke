@@ -9,10 +9,10 @@ function examine_duty_roster ()
     //Diese Datei zählt Anwesende, Approbierte, Ware-Menschen,...
     require_once 'headcount-duty-roster.php';
 
-    if (isset($Approbierten_anwesende) and isset($tages_ende)) {
+    if (isset($Approbierten_anwesende) and isset($tages_ende) and isset($tages_beginn)) {
         //Wir überprüfen ob zu jeder Zeit Approbierte anwesend sind.
         foreach ($Approbierten_anwesende as $zeit => $anwesende_approbierte) {
-            if ($anwesende_approbierte === 0 and $zeit != $tages_ende) {
+            if ($anwesende_approbierte === 0 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
               if (!isset($attendant_error)) {
                 $Fehlermeldung[] = 'Um '.date('H:i', $zeit).' Uhr ist kein Approbierter anwesend.';
                 //We avoid to flood everything with errors for every 5 minutes in which noone is there.
@@ -27,7 +27,7 @@ function examine_duty_roster ()
     } else {
         echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.<br>\n";
     }
-    if (isset($Wareneingang_Anwesende) and isset($tages_ende)) {
+    if (isset($Wareneingang_Anwesende) and isset($tages_ende) and isset($tages_beginn)) {
             //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
             // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($tages_ende)
         foreach ($Wareneingang_Anwesende as $zeit => $anwesende_wareneingang) {
@@ -46,8 +46,6 @@ function examine_duty_roster ()
         echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Ware-Menschen.<br>\n";
     }
     if (isset($Anwesende) and isset($tages_ende)) {
-            //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
-            // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($tages_ende)
         foreach ($Anwesende as $zeit => $anwesende) {
             if ($anwesende < 2 and $zeit < $tages_ende and $zeit > $tages_beginn) {
                 if (!isset($attendant_error)) {
