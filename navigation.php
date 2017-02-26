@@ -79,6 +79,23 @@ $submit_disapproval_button_img='
 		</button>';
 //	<input type=submit value=Ablehnen name='submit_disapproval'>\n";
 
+function make_select_employee($auswahl_mitarbeiter) {
+    global $Mitarbeiter;
+    $text = "\t\t<form method='POST' id='select_employee'>\n";
+    $text .= "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
+    foreach ($Mitarbeiter as $vk => $name) {
+        if ($vk == $auswahl_mitarbeiter) {
+            $text .= "\t\t\t\t<option value=$vk selected>" . $vk . " " . $Mitarbeiter[$vk] . "</option>\n";
+        } else {
+            $text .= "\t\t\t\t<option value=$vk>" . $vk . " " . $Mitarbeiter[$vk] . "</option>\n";
+        }
+    }
+    $text .= "\t\t\t</select>\n";
+    $text .= "\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
+    $text .= "\t\t</form>\n";
+    $text .= "\t\t\t<H1 class='only-print'>" . $Mitarbeiter[$auswahl_mitarbeiter] . "</H1>\n";
+    return $text;
+}
 
 
 

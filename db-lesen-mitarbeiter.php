@@ -15,6 +15,7 @@ $abfrage = 'SELECT *
 	WHERE  `Beschäftigungsende` > "'.$sql_datum.'" OR `Beschäftigungsende` IS NULL
 	ORDER BY `VK` ASC, ISNULL(`Beschäftigungsende`) ASC, `Beschäftigungsende` ASC
 	;';
+//echo "$abfrage<br>\n";
 $ergebnis = mysqli_query_verbose($abfrage);
 while ($row = mysqli_fetch_object($ergebnis)) {
     if ($row->Nachname != '') {
@@ -42,5 +43,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
 
             $Rezeptur_Mitarbeiter[$row->VK] = $row->Nachname;
         }
+    } else {
+        echo "ACHTUNG ACHTUNG ES GIBT KEINEN NACHNAMEN!<br>\n";
     }
 }
