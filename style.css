@@ -5,10 +5,6 @@ Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
 */
-.only-print
-{
-	display: none;
-}
 body
 {
 	background-color: #FEFEFF;
@@ -55,13 +51,17 @@ a:hover
 {
 	text-decoration: underline;
 }
+.only-print
+{
+	display: none;
+}
 .head
 {
     	display: inline-block;
 	float: left;
 	clear: both;
 	background-color: #BDE682;
-	width: 95%;
+	width: 100%;
 }
 
 .foot
@@ -72,7 +72,11 @@ a:hover
 /*	background-color: #BDE682;*/
 	width: 95%;
 }
-
+.clear_left
+{
+    display:  block;
+    margin-top: 5px;
+}
 #main-area
 {
         width: 95%; 
@@ -136,7 +140,13 @@ select:hover
 {
 	border: 3px dotted #BDE682;
 }
-
+label
+{
+    margin-top: 0.5em;
+    /*
+    display: block;
+    */
+}
 .overlay
 {
 	position: absolute;
@@ -172,7 +182,7 @@ select:hover
 	clear: both;
 	background-color: #73AC22;
     	padding: 0px 15px 0px 15px;
-    	margin: 0px 15px 0px 0px;
+    	margin: 0px 15px 1em 0px;
 	z-index: 10;
 }
 .warningmsg
@@ -183,7 +193,7 @@ select:hover
 	clear: both;
 	background-color: #BDE682;
     	padding: 0px 15px 0px 15px;
-    	margin: 0px 15px 0px 0px;
+    	margin: 0px 15px 1em 0px;
 	z-index: 10;
 }
 ul {
@@ -224,6 +234,7 @@ img.worker-img:hover {
 }
 .large {
 	font-size: xx-large;
+        margin-bottom: 1em;
 }
 .hint {
 	font-size: small;

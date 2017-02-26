@@ -112,18 +112,25 @@ function hex2rgb($hexstring) {
 }
 
 function escape_sql_value($value) {
-    if ($value === 'null') {
+    if ('NULL' == $value or 'null' == $value) {
+        //echo "$value is null<br>\n";
         return $value;
     } else {
-        $escaped_sql_value = '\''.$value.'\'';
+        //echo "$value is not null<br>\n";
+        return "'" . $value . "'";
     }
-    return $escaped_sql_value;
+}
+function null_from_post_to_mysql($value) {
+    if('' === $value){
+        return 'NULL';
+    } else {
+        return $value;
+    }
 }
 
 function print_debug_variable($variable){
-    global $$variable;
-    echo "<pre>$variable:\n";
-    var_export($$variable);
+    echo "<pre>\n";
+    var_export($variable);
     echo "</pre>\n";
     return true;
 }
