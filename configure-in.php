@@ -180,8 +180,8 @@ require 'head.php';?>
               >
             </td>
             <td width=90%>
-              <img id="approve_pass_img"    style="display:none" src="images/approve.png" height="20em">
-              <img id="disapprove_pass_img" style="display:none" src="images/disapprove.png" height="20em">
+              <img id="approve_pass_img"    style="display:none" src="img/approve.png" height="20em">
+              <img id="disapprove_pass_img" style="display:none" src="img/disapprove.png" height="20em">
               <!--
               <input type="text" id=clear_pass>
           -->
