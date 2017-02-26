@@ -7,11 +7,7 @@ This is a TODO list.
 * Konfiguration
 * Dokumentation
 
-
 - database Ware-Termine / Ware-PEP
-- database PEP-Information in der Datenbank / PEP-xxx.php tragen in diese Datenbank ein. Average statt Median.
 
 The page stunden-in.php has its own confirmDelete(link) which differs from the one in javascript.js!
 Is this a problem? Do we need two?
-
-* I would like to build the images directly within php and not to store them in files.
