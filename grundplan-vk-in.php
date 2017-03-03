@@ -1,7 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
-
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //Hole Informationen über die Mandanten
@@ -49,12 +47,12 @@ if (isset($Grundplan)) {
             if (isset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant)) {
                 //First, the old values are deleted.
                 $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$Mandant' AND VK='$VK'";
-                $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                $ergebnis = mysqli_query_verbose($abfrage);
                 //Second, new values are inserted.
                 $abfrage = "INSERT INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Kommentar, Stunden, Mandant)
 					      VALUES ('$VK', '$wochentag', '$Dienstbeginn', '$Dienstende', '$Mittagsbeginn', '$Mittagsende', '$Kommentar', '$Stunden', '$Mandant')";
                 unset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant);
-                $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                $ergebnis = mysqli_query_verbose($abfrage);
             }
             //echo "<br>";
         }
@@ -69,7 +67,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 		WHERE `Wochentag` = "'.$wochentag.'"
 			AND `VK`="'.$auswahl_mitarbeiter.'"
 		;';
-    $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+    $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
         $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
         $Grundplan[$wochentag]['VK'][] = $row->VK;
@@ -120,7 +118,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 }
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax = max(array_keys($Mitarbeiter));
 foreach ($Grundplan as $key => $Grundplantag) {
     $Plan_anzahl[] = (count($Grundplantag['VK']));
@@ -128,40 +125,29 @@ foreach ($Grundplan as $key => $Grundplantag) {
 $plan_anzahl = max($Plan_anzahl);
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-<body>
+require 'head.php';?>
     <a name=top></a>
-
 <?php
 require 'navigation.php';
-echo "<div class=main-area>\n";
-//echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime("%V", strtotime($datum))."</a><br>\n";
+echo "<div id=main-area>\n";
 echo "\t\t<form id=myform method=post>\n";
-//$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Rückwärts"	name="submitWocheRückwärts">\n";echo $Rückwärts_button;
-//$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value="1 Woche Vorwärts"	name="submitWocheVorwärts">\n";echo $Vorwärts_button;
-//$zeile="<br>";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submit_button_img').click()>";
-//$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
 foreach ($Mitarbeiter as $vk => $name) {
     if ($vk == $auswahl_mitarbeiter) {
-        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>,';
+        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>';
     }else {
-      $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>,';
+      $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>';
     }
 }
 $zeile .= '</select>';
 echo $zeile;
 echo "<br>";
 echo "<br>";
-//$submit_button = "\t<input type=submit value=Absenden name=submitAuswahlMitarbeiter id=submitAuswahlMitarbeiter class=no-print>\n"; 
 echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo "<br>";
 echo "<br>";
-//echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
-echo "\t\t\t<table border=1>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 foreach ($Grundplan as $wochentag => $Plan) {
@@ -175,7 +161,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>&nbsp";
+        echo "\t\t\t\t\t<td>&nbsp;";
         //Dienstbeginn
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
             $zeile .= '<input type=time name=Grundplan['.$wochentag."][Dienstbeginn][$j] value=";
@@ -196,7 +182,6 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
                     }
                     $zeile .= '>';
                 }
-        $zeile .= '&nbsp ';
         echo $zeile;
 
         //Mittagspause

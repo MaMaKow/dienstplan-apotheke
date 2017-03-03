@@ -1,14 +1,10 @@
 <?php
 require 'default.php';
-?>
-<html>
-<?php require 'head.php';?>
+require 'head.php';?>
 <script>
 			window.setTimeout(leavePage, 900000); //Leave the page after x milliseconds of waiting. 900'000 = 15 Minutes.
 		</script>
-	<body>
 		<?php
-			require 'db-verbindung.php';
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
@@ -45,7 +41,7 @@ require 'default.php';
 					$abfrage="DELETE FROM `Stunden`
 						WHERE `VK` = ".$_GET['vk']." AND `Datum` = '".$_GET['datum']."'";
 					//echo "$abfrage";
-					$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+					$ergebnis = mysqli_query_verbose($abfrage);
 				}
 			}
 */
@@ -56,7 +52,7 @@ require 'default.php';
 									$abfrage = "DELETE FROM `Stunden`
 			WHERE `VK` = '$vk' AND `Datum` = '$datum'";
 					//		echo "$abfrage";
-									$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+									$ergebnis = mysqli_query_verbose($abfrage);
 							}
 					}
 					$auswahl_mitarbeiter = $vk;
@@ -84,7 +80,7 @@ require 'default.php';
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
 				";
-			$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+			$ergebnis = mysqli_query_verbose($abfrage);
 			$number_of_rows = mysqli_num_rows($ergebnis);
 			$tablebody=""; $i=1;
 			while ($row=mysqli_fetch_object($ergebnis))
@@ -129,18 +125,17 @@ if (isset($Fehlermeldung))
 	}
 	echo "\t\t</div>";
 }
-echo "<div class=main-area>\n";
+echo "<div id=main-area>\n";
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-//echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
 foreach ($Mitarbeiter as $vk => $name)
 {
 	if($vk == $auswahl_mitarbeiter)
 	{
-		echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+		echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
 	}
 	else {
-		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+		echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
 	}
 }
 echo "\t\t\t</select>\n";
@@ -150,7 +145,7 @@ echo "\t\t</form>\n";
 echo "<a class=no-print href=stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Lesen]</a>";
 
 echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
-			echo "\t\t<table border=1>\n";
+			echo "\t\t<table>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n
 				\t\t\t\t<th>\n
@@ -177,7 +172,7 @@ echo "\t\t<form onsubmit='return confirmDelete()' method=POST>\n";
 
 			echo "\t\t\t\t<form method=POST>\n\t\t\t\t\t";
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
-			echo "<input type=date value=".date('Y-m-d')." name=datum>";
+			echo "<input type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d')." name=datum>";
 			echo "\n\t\t\t\t</td>\n";
 			echo "\t\t\t\t<td>\n\t\t\t\t\t";
 			echo "<input type=text id=grund name=grund>";

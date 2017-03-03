@@ -1,7 +1,6 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
-$mandant = 1;    //First branch is allways the dafault.
+$mandant = 1;    //First branch is allways the default.
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
@@ -27,7 +26,7 @@ if (isset($_POST['submitDienstplan'])) {
     foreach ($Grundplan as $wochentag => $value) {
         //First, the old values are deleted.
         $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
-        $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+        $ergebnis = mysqli_query_verbose($abfrage);
         //New values are composed from the Grundplan from $_POST.
         foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
             //Die einzelnen Zeilen im Grundplan
@@ -62,7 +61,7 @@ if (isset($_POST['submitDienstplan'])) {
                 //The new values are stored inside the database.
                 $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
 			             VALUES ('$VK', '$wochentag', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$kommentar', '$mandant')";
-                $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                $ergebnis = mysqli_query_verbose($abfrage);
             }
         }
     }
@@ -94,7 +93,7 @@ WHERE `Wochentag` = "'.$wochentag.'"
 	AND `Mandant`="'.$mandant.'"
 	ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`
 ;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 unset($Grundplan);
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
@@ -191,16 +190,12 @@ $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nich
 $VKmax = max(array_keys($Mitarbeiter));
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 
 //Hier beginnt die Normale Ausgabe.
 echo "\t\t<H1>Grundplan Tagesansicht</H1>\n";
-echo "\t\t<div class=main-area>\n";
+echo "\t\t<div id=main-area>\n";
 echo "\t\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t\t<input type=hidden name=wochentag value=".$Grundplan[$wochentag]["Wochentag"][0].">\n";
 echo "\t\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
@@ -237,7 +232,7 @@ echo "<br>";
 echo "<br>";
 echo "\t\t\t\t<a href=grundplan-tag-out.php?wochentag=".$wochentag.">[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
-echo "\t\t\t<table border=2>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 //Datum
     $zeile = '';
@@ -250,23 +245,19 @@ for ($j = 0; $j < $VKcount; ++$j) {
     echo "\t\t\t\t</tr><tr>\n";
 //Mitarbeiter
         $zeile = '';
-    echo "\t\t\t\t\t<td align=right>";
-    $zeile .= '<select name=Grundplan['.$wochentag.'][VK]['.$j.'] tabindex='.(($wochentag * $VKcount * 5) + ($j * 5) + 1).'><option>';
-//    if (isset($Grundplan[$wochentag]['VK'][$j]) && isset($Mitarbeiter[$Grundplan[$wochentag]['VK'][$j]])) {
-        //$zeile .= $Grundplan[$wochentag]['VK'][$j].' '.$Mitarbeiter[$Grundplan[$wochentag]['VK'][$j]];
-//    }
-    $zeile .= '</option>';
+    echo "\t\t\t\t\t<td>";
+    $zeile .= "<select name=Grundplan[".$wochentag."][VK][".$j."] tabindex=".(($wochentag * $VKcount * 5) + ($j * 5) + 1)."><option value=''>&nbsp;</option>";
     foreach ($Mitarbeiter as $k => $name) {
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
             if ( $Grundplan[$wochentag]['VK'][$j] != $k) {
                 //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 
-                    $zeile .= '<option>'.$k.' '.$name.'</option>,';
+                    $zeile .= "<option value='$k'>".$k." ".$name."</option>";
             } else {
-              $zeile .= '<option selected>'.$k.' '.$name.'</option>,';
+              $zeile .= "<option value='$k' selected>".$k." ".$name."</option>";
             }
         } else {
-            $zeile .= '<option>'.$k.' '.$name.'</option>,';
+            $zeile .= "<option value='$k'>".$k." ".$name."</option>";
         }
     }
     $zeile .= "</select>\n";
@@ -284,11 +275,11 @@ for ($j = 0; $j < $VKcount; ++$j) {
         $zeile .= $Grundplan[$wochentag]['Kommentar'][$j];
     }
     $zeile .= "\">\n";
-    $zeile .= "\t\t\t\t\t\t<input type=time size=1 name=Grundplan[".$wochentag.'][Dienstbeginn]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 2).' value=';
+    $zeile .= "\t\t\t\t\t\t<input type=time name=Grundplan[".$wochentag.'][Dienstbeginn]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 2).' value=';
     if (isset($Grundplan[$wochentag]['Dienstbeginn'][$j]) and $Grundplan[$wochentag]['Dienstbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstbeginn'][$j]));
     }
-    $zeile .= '> bis <input type=time size=1 name=Grundplan['.$wochentag.'][Dienstende]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 3).' value=';
+    $zeile .= '> bis <input type=time name=Grundplan['.$wochentag.'][Dienstende]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 3).' value=';
         //Dienstende
         if (isset($Grundplan[$wochentag]['Dienstende'][$j]) and $Grundplan[$wochentag]['Dienstende'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstende'][$j]));
@@ -301,12 +292,12 @@ for ($j = 0; $j < $VKcount; ++$j) {
     echo "\t\t\t\t</tr><tr>\n";
 //Mittagspause
         $zeile = '';
-    echo "\t\t\t\t\t<td align=right>";
-    $zeile .= ' Pause: <input type=time size=1 name=Grundplan['.$wochentag.'][Mittagsbeginn]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 4).' value=';
+    echo "\t\t\t\t\t<td>";
+    $zeile .= ' Pause: <input type=time name=Grundplan['.$wochentag.'][Mittagsbeginn]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 4).' value=';
     if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
     }
-    $zeile .= '> bis <input type=time size=1 name=Grundplan['.$wochentag.'][Mittagsende]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 5).' value=';
+    $zeile .= '> bis <input type=time name=Grundplan['.$wochentag.'][Mittagsende]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 5).' value=';
     if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsende'][$j]));
     }

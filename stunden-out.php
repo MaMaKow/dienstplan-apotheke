@@ -1,13 +1,8 @@
 <?php
 require 'default.php';
-?>
-<html>
-<?php require 'head.php';?>
-<body>
-		<?php
+require 'head.php';
 require 'navigation.php';
-echo "<div class=main-area>\n";
-			require 'db-verbindung.php';
+echo "<div id=main-area>\n";
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
@@ -38,14 +33,14 @@ echo "<div class=main-area>\n";
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
 				";
-			$ergebnis=mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+			$ergebnis = mysqli_query_verbose($abfrage);
 			$number_of_rows = mysqli_num_rows($ergebnis);
 			$tablebody=""; $i=1;
 			while ($row=mysqli_fetch_object($ergebnis))
 			{
 				$tablebody.= "\t\t\t<tr>\n";
 				$tablebody.= "\t\t\t\t<td>";
-				$tablebody.= "<a href=tag-out.php?datum=".date('Y-m-d', strtotime($row->Datum)).">".date('d.m.Y', strtotime($row->Datum))."</a>";
+				$tablebody.= "<a href='tag-out.php?datum=".date("Y-m-d", strtotime($row->Datum))."'>".date("d.m.Y", strtotime($row->Datum))."</a>";
 				$tablebody.= "</td>\n";
 				$tablebody.= "\t\t\t\t<td>";
 				$tablebody.= "$row->Grund";
@@ -70,12 +65,12 @@ echo "<div class=main-area>\n";
 			//Hier beginnt die Ausgabe
 			echo "\t\t<form method=POST>\n";
 			echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>\n";
-			echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>,\n";
+			echo "\t\t\t\t<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter." ".$Mitarbeiter[$auswahl_mitarbeiter]."</option>\n";
 			for ($vk=1; $vk<$VKmax+1; $vk++)
 			{
 				if(isset($Mitarbeiter[$vk]))
 				{
-					echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>,\n";
+					echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
 				}
 			}
 
@@ -85,7 +80,7 @@ echo "<div class=main-area>\n";
 				echo $submit_button;
 				echo "\t\t\t<H1 class=only-print>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
 				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a><br><br></div>\n";
-				echo "\t\t<table border=1>\n";
+				echo "\t\t<table>\n";
 				//Überschrift
 				echo "\t\t\t<tr>\n".
 				"\t\t\t\t<th>Datum</th>\n".
