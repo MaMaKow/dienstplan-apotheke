@@ -173,12 +173,6 @@ function updatesaldo()
 }
 
 //The following function is used by install.php
-/*
-$("#second_pass").on("keyup change blur paste cut click", function() {
-
-});
-*/
-
 function compare_passwords () {
 var first_pass = document.getElementById('first_pass').value;
 var second_pass = document.getElementById('second_pass').value;
@@ -196,6 +190,25 @@ if (first_pass == second_pass && first_pass != "") {
   document.getElementById('approve_pass_img').style.display = 'none';
 }
 
+}
+function update_pep() {
+    var filename = document.getElementById("filename").value;
+//    document.getElementById("xmlhttpresult").innerHTML = "<div class=warningmsg><p>working on: " + filename+"</p></div>";
+    document.getElementById("xmlhttpresult").innerHTML = "<p>working on: " + filename+"</p>";
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+//        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState >= 3 && this.status == 200) {
+            document.getElementById("xmlhttpresult").innerHTML = this.responseText;
+        }
+    };
+    xmlhttp.open("GET", "pep.php?filename=" + filename, true);
+    xmlhttp.send();
+}
+function reset_update_pep() {
+    document.getElementById("xmlhttpresult").innerHTML = "";
+    document.getElementById("javascriptmessage").innerHTML = "";
+    document.getElementById("phpscriptmessages").innerHTML = "";
 }
 
 function showEdit(beginn){
@@ -227,6 +240,7 @@ function showEdit(beginn){
         list[i].style.display = 'none';
     }
 }
+
 function cancelEdit(beginn){
     document.getElementById('save_' + beginn).style.display = 'none';
     document.getElementById('beginn_in_' + beginn).style.display = 'none'; document.getElementById('beginn_in_' + beginn).classList.remove('datepicker');
