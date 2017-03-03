@@ -39,7 +39,7 @@ function task_rotation_get_worker($date_unix, $task) {
     //TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?
     //Setup a table in the database:
     $abfrage = "CREATE TABLE IF NOT EXISTS "
-            . "`apotheke`.`task_rotation` ( "
+            . "`task_rotation` ( "
             . "`date` DATE NOT NULL , "
             . "`task` VARCHAR(64) NOT NULL , "
             . "`VK` TINYINT NOT NULL , "
