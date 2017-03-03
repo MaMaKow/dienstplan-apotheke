@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <?php
-// TODO: I want a reminder inside the woche-in.php and tag-in.php (maybe within post-auswertung) if the last update is older then 3 months.
 	require "default.php";
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-		<?php
-			require 'navigation.php';
-			echo "<p style=height:2em></p>";
+        require 'head.php';
+        require 'navigation.php';
 			if(isset($_POST["submit"]))
 			{
 				define ('SITE_ROOT', realpath(dirname(__FILE__)));
@@ -53,7 +47,8 @@
 
 
 		?>
-		<div class=main-area>
+		<p style=height:2em></p>
+		<div id=main-area>
 			<form action="upload-in.php" method="post" enctype="multipart/form-data">
 				Eine PEP-Datei zum Hochladen auswählen:<br>
                                 <input type="file" name="fileToUpload" id="fileToUpload" onchange="reset_update_pep()"><br>

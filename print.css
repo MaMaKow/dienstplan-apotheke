@@ -1,26 +1,56 @@
 @page
 {
-	margin: 0.5cm;
-	size: landscape;
+    margin: 0.5cm;
+    size: landscape;
+    /*
+    height: 210mm;
+    width: 297mm;
+    */
 }
 a, body
 {
-	color: #000000; /*!important;*/
+    /*
+    zoom: 70%;
+    */
+    color: #000000; /*!important;*/
 }
 .no-print, .no-print *
 {
-	/*Elemente die nicht gedruckt werden sollen.*/
-	display: none !important;
+    /*Elemente die nicht gedruckt werden sollen.*/
+    display: none !important;
 }
 .only-print
 {
-	display: block;
+    display: block;
 }
 .page-break
 {
-	display: block;
-	page-break-before: always;
+    display: block;
+    page-break-before: always;
 }
 tr.wochenende {
     -webkit-print-color-adjust: exact;
+}
+#main-area
+{
+    /*
+    height: 210mm;
+    width: 297mm;
+    */
+    width: 100%;
+}
+#table_overlay_area
+{
+    /*
+    height: 210mm;
+    width: 297mm;
+    */
+    width: 100%;
+}
+#duty-rooster-table
+{
+    /*
+    width: 334mm;
+    */
+    width: 85%;
 }

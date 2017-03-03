@@ -1,7 +1,6 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
-require 'db-verbindung.php';
 $mandant=1;	//Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Tagesansicht für einen einzelnen Tag.
 
@@ -35,6 +34,7 @@ $Dienstplan=db_lesen_tage($tage, $mandant);
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
+list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
 
 if( array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum))<6 AND !isset($feiertag)) //Samstag und Sonntag planen wir nicht.
 {
@@ -77,11 +77,7 @@ require 'pruefe-abwesenheit.php';
 
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 if (isset($Fehlermeldung))
@@ -104,7 +100,7 @@ if (isset($Warnmeldung))
 }
 
 //Hier beginnt die Normale Ausgabe.
-echo "<div class=main-area>\n";
+echo "<div id=main-area>\n";
 echo "\t\tKalenderwoche ".strftime('%V', strtotime($datum))."<br><div class=only-print><b>". $Mandant[$mandant] ."</b></div><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
@@ -134,13 +130,13 @@ echo "$submit_approval_button_img";
 echo "$submit_disapproval_button_img";
 echo "<br><br>\n";
 
-echo "\t\t\t\t<a href=tag-out.php?datum=".$datum.">[Lesen]</a>\n";
+echo "\t\t\t\t<a href='tag-out.php?datum=".$datum."'>[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
-echo "\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+echo "\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</div>\n";
-echo "\t\t\t<table border=0 rules=groups>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
@@ -175,7 +171,7 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
 		$zeile="";
-		echo "\t\t\t\t\t<td align=right>";
+		echo "\t\t\t\t\t<td>";
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1).">";
 		$zeile.="<option></option>";
 
@@ -185,33 +181,33 @@ for ($j=0; $j<$VKcount; $j++)
 			{
 				if ( isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j]!=$k ) //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 				{
-					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>";
 				}
 				elseif ( isset($Mitarbeiter[$k]) )
 				{
-					$zeile.="<option value=$k selected>".$k." ".$Mitarbeiter[$k]."</option>,"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
+					$zeile.="<option value=$k selected>".$k." ".$Mitarbeiter[$k]."</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
 				}
 			}
 			elseif ( isset($Mitarbeiter[$k]) )
 			{
-					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option value=$k>".$k." ".$Mitarbeiter[$k]."</option>";
 			}
 		}
 		$zeile.="</select>\n";
 		//Dienstbeginn
 		$zeile.="\t\t\t\t\t\t<input type=hidden name=Dienstplan[".$i."][Datum][".$j."] value=".$Dienstplan[0]["Datum"][0].">\n";
-		$zeile.="\t\t\t\t\t\t<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[".$i."][Dienstbeginn][".$j."] id=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
+		$zeile.="\t\t\t\t\t\t<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[".$i."][Dienstbeginn][".$j."] id=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value='";
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=5 class=Dienstplan_Dienstende name=Dienstplan[".$i."][Dienstende][".$j."] id=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
+		$zeile.="'> bis <input type=time size=5 class=Dienstplan_Dienstende name=Dienstplan[".$i."][Dienstende][".$j."] id=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value='";
 		//Dienstende
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
-		$zeile.=">";
+		$zeile.="'>";
 		echo $zeile;
 
 		echo "</td>\n";
@@ -220,20 +216,20 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
 		$zeile="";
-		echo "\t\t\t\t\t<td align=right>";
+		echo "\t\t\t\t\t<td>";
 		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
 		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-		$zeile.=" Pause: <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[".$i."][Mittagsbeginn][".$j."] id=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
+		$zeile.=" Pause: <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[".$i."][Mittagsbeginn][".$j."] id=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value='";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=5 class=Dienstplan_Mittagsende name=Dienstplan[".$i."][Mittagsende][".$j."] id=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
+		$zeile.="'> bis <input type=time size=5 class=Dienstplan_Mittagsende name=Dienstplan[".$i."][Mittagsende][".$j."] id=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value='";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
-		$zeile.=">";
+		$zeile.="'>";
 		$zeile.="<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[".$i."][Kommentar][".$j."] value=\"";
 		if (isset($Dienstplan[$i]["Kommentar"][$j]))
 		{

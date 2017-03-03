@@ -5,10 +5,6 @@ Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
 */
-.only-print
-{
-	display: none;
-}
 body
 {
 	background-color: #FEFEFF;
@@ -17,12 +13,26 @@ body
 table, th, td
 {
 	white-space: nowrap;
-	vertical-align: top;
-	font-size : 100%;
+	vertical-align: top;        
 	font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
-/*	border: 1px solid; */
 	border-collapse: collapse;
 	padding:0 1.0em 0.8em 0;
+}
+thead
+{
+    border-bottom-style: solid;
+    border-bottom-color: black;
+    border-bottom-width: 1px;
+}
+tfoot
+{
+    border-top-style: solid;
+    border-top-color: black;
+    border-top-width: 1px;
+}
+table.table_with_border td
+{
+    border: solid 1px #000;
 }
 td
 {
@@ -41,6 +51,10 @@ a:hover
 {
 	text-decoration: underline;
 }
+.only-print
+{
+	display: none;
+}
 .head
 {
     	display: inline-block;
@@ -56,19 +70,30 @@ a:hover
 	float: left;
 	clear: both;
 /*	background-color: #BDE682;*/
-	width: 100%;
+	width: 95%;
 }
-
-.main-area
+.clear_left
 {
-	position: relative;
+    display:  block;
+    margin-top: 5px;
+}
+#main-area
+{
+        width: 95%; 
+        position: relative;
 	float: left;
 	clear: left;
     	padding: 8px 8px 8px 8px;
 }
-img
+#duty-rooster-table
 {
-/*	max-height: 50%;*/
+    width: 85%;
+    font-size: 1.18vw;
+}
+#table_overlay_area
+{
+    width: 100%; 
+    position: relative;
 }
 .above-image
 {
@@ -81,9 +106,16 @@ img
 /*	width: 60%;*/
 /*	max-height: 60%;*/
 }
+
+img.inline-image
+{
+    height: 1em;
+}
+
 input[type="time"]
 {
-	size: 5em;
+        width: 6em;
+	/*size: 5em;*/
 	font-family: monospace;
 	border-top: initial;
 	border-left: 3px dotted #FEFEFF;
@@ -108,7 +140,13 @@ select:hover
 {
 	border: 3px dotted #BDE682;
 }
-
+label
+{
+    margin-top: 0.5em;
+    /*
+    display: block;
+    */
+}
 .overlay
 {
 	position: absolute;
@@ -143,6 +181,8 @@ select:hover
 	float: left;
 	clear: both;
 	background-color: #73AC22;
+    	padding: 0px 15px 0px 15px;
+    	margin: 0px 15px 1em 0px;
 	z-index: 10;
 }
 .warningmsg
@@ -152,6 +192,8 @@ select:hover
 	float: left;
 	clear: both;
 	background-color: #BDE682;
+    	padding: 0px 15px 0px 15px;
+    	margin: 0px 15px 1em 0px;
 	z-index: 10;
 }
 ul {
@@ -192,6 +234,7 @@ img.worker-img:hover {
 }
 .large {
 	font-size: xx-large;
+        margin-bottom: 1em;
 }
 .hint {
 	font-size: small;
@@ -219,11 +262,25 @@ button {
     background-color: #BDE682;
     border: none;
     color: black;
-    padding: 15px 32px;
+    padding: 1em 2em;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: medium;
+}
+img.button-image
+{
+    height: 2em;
+}
+.button_small {
+    width: 1em;
+    height: 1em;
+    margin: 0px;
+    padding: 0.15em;
+}
+.button_small > img {
+    height: 100%;
+    vertical-align: top;
 }
 button:hover{
 	box-shadow: 0px 0px 10px #888888;
@@ -246,9 +303,6 @@ button:hover{
 	-o-filter: brightness(0);
 	filter: brightness(0);
 }
-.icon-grey {
-	/*background-color: red;*/
-}
 .btn-secondary {
 	background-color: #B4B4B4;
 }
@@ -260,4 +314,15 @@ button:hover{
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   not supported by any browser */
+}
+
+#weekly_rotation
+{
+    font-family: monospace;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    margin: auto;
+    width: 10%;
+    padding: 5px;
 }

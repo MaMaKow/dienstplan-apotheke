@@ -5,11 +5,11 @@
 			document.getElementById("contactForm").style.display = "inline";
 		}
 	</script>
-	<p><a href=#bottom onclick=unhideContactForm()>Wünsche, Kritik, Anregungen&nbsp+</a></p>
+	<p><a href=#bottom onclick=unhideContactForm()>Wünsche, Kritik, Anregungen&nbsp;+</a></p>
 	<form id=contactForm style=display:none method=POST>
 		<table>
 			<tr><td>Absender</td><td><input style=width:320px type="text" name=VK value=""></td></tr>
-			<tr><td>Nachricht</td><td><textarea style=width:320px name=nachricht rows=5></textarea></td><tr>
+			<tr><td>Nachricht</td><td><textarea style=width:320px name=nachricht rows=5></textarea></td></tr>
 			<tr><td>Kontaktadresse</td><td><input style=width:320px type="email" name=email value=""></td></tr>
 		</table>
 		<input type="hidden" name=dienstplan value="<?php var_export($Dienstplan)?>">
@@ -66,4 +66,4 @@
 ?>
 <a target="_blank" href="https://github.com/MaMaKow/dienstplan-apotheke/issues/new">Einen Programmfehler melden</a>
 </div>
-<a name=bottom></a>
+<div id=bottom></div>

@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=1;	//Dies ist eine Wochenansicht ohne Wochenende
@@ -33,7 +32,7 @@ if (isset($datum))
 //Duty rosters have to be approved by the leader, before the staff can view them.
 unset($approval);
 $abfrage="SELECT state FROM `approval` WHERE date='$datum' AND branch='$mandant'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 while($row = mysqli_fetch_object($ergebnis)){
 	$approval=$row->state;
 }
@@ -68,11 +67,7 @@ $VKmax=max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 
 if (isset($Fehlermeldung))
@@ -94,8 +89,8 @@ if (isset($Warnmeldung))
 	echo "\t\t</div>\n";
 }
 
-echo "\t\t<div class=main-area>\n";
-echo "\t\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
+echo "\t\t<div id=main-area>\n";
+echo "\t\t\t<a href='woche-out.php?datum=".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
 
 
 //Support for various branch clients.
@@ -118,37 +113,33 @@ echo "<div class=no-print>";
 echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "<br><br>\n";
-echo "\t\t\t\t<a href=tag-in.php?datum=".$datum.">[Bearbeiten]</a>\n";
+echo "\t\t\t\t<a href='tag-in.php?datum=".$datum."'>[Bearbeiten]</a>\n";
 echo "<br><br>\n";
 //echo "</div>\n";
 
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
 //echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
-echo "\t\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+echo "\t\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t<table border=0 >\n";
+echo "\t\t\t\t<table>\n";
 echo "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
 	echo "\t\t\t\t\t\t<td>";
-	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
+	$zeile.="<input type=hidden name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.="<input type=hidden name=mandant value=".$mandant.">";
 	$zeile.=strftime('%d.%m. ', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
-//	echo "</td>\n";
-//}
-//echo "\t\t\t\t\t</tr><tr>\n";
-//for ($i=0; $i<count($Dienstplan); $i++)
-//{//Wochentag
+        //Wochentag
 	$zeile="";
-//	echo "\t\t\t\t\t\t<td>";
 	$zeile.=strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
 	require 'db-lesen-feiertag.php';
 	if(isset($feiertag)){echo " ".$feiertag." ";}
 	require_once 'db-lesen-abwesenheit.php';
+        list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
 	require 'db-lesen-notdienst.php';
 	if(isset($notdienst['mandant'])){
 		echo "<br>NOTDIENST<br>";
@@ -164,15 +155,15 @@ for ($i=0; $i<count($Dienstplan); $i++)
 if ($approval=="approved" OR $config['hide_disapproved']==false) {
 for ($j=0; $j<$VKcount; $j++)
 {
-	//TODO The following line will prevent planning on hollidays. The problem ist, that we work might emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
+	//TODO The following line will prevent planning on hollidays. The problem is, that we might work emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
 	//if(isset($feiertag) && !isset($notdienst)){break 1;}
 	echo "\t\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
-		$zeile="";
+		$zeile="\t\t\t\t\t\t<td>";
 		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 		{
-			$zeile.="\t\t\t\t\t\t<td><b><a href=mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j].">";
+			$zeile.="<b><a href='mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>";
 			$zeile.=$Dienstplan[$i]["VK"][$j]." ".$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 			$zeile.="</a></b> ";
 		}
@@ -188,19 +179,12 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
 		echo $zeile;
-		if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
-		{
 		echo "</td>\n";
-		}
 	}
 	echo "\t\t\t\t\t</tr><tr>\n";
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
-		$zeile="";
-		if (isset($Dienstplan[$i]["VK"][$j]))
-		{
-			echo "\t\t\t\t\t\t<td>&nbsp ";
-		}
+		$zeile="\t\t\t\t\t\t<td>&nbsp;";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.=" Pause: ";
@@ -211,11 +195,8 @@ for ($j=0; $j<$VKcount; $j++)
 			$zeile.=" - ";
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
+		$zeile .= "\n\t\t\t\t\t\t</td>\n";
 		echo $zeile;
-		if (isset($Dienstplan[$i]["VK"][$j]))
-		{
-			echo "</td>\n";
-		}
 	}
 }
 echo "\t\t\t\t\t</tr>\n";

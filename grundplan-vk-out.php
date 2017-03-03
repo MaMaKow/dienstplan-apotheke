@@ -1,7 +1,5 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
-
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 
@@ -29,7 +27,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 		WHERE `Wochentag` = "'.$wochentag.'"
 			AND `VK`="'.$auswahl_mitarbeiter.'"
 		;';
-    $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+    $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
         $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
         $Grundplan[$wochentag]['VK'][] = $row->VK;
@@ -59,18 +57,6 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
         $Grundplan[$wochentag]['Kommentar'][] = $row->Kommentar;
         $Grundplan[$wochentag]['Mandant'][] = $row->Mandant;
     }
-    //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
-    // if ( !isset($Grundplan[$wochentag]) )
-    // {
-    // 	$Grundplan[$wochentag]["Wochentag"][]=$wochentag;
-    // 	$Grundplan[$wochentag]["VK"][]="$auswahl_mitarbeiter";
-    // 	$Grundplan[$wochentag]["Dienstbeginn"][]="-";
-    // 	$Grundplan[$wochentag]["Dienstende"][]="-";
-    // 	$Grundplan[$wochentag]["Mittagsbeginn"][]="-";
-    // 	$Grundplan[$wochentag]["Mittagsende"][]="-";
-    // 	$Grundplan[$wochentag]["Stunden"][]="-";
-    // 	$Grundplan[$wochentag]["Kommentar"][]="-";
-    // }
     //Wir machen aus den Nummern 1 bis 7 wieder Wochentage
     // Wir wollen den Anfang der Woche und von dort aus unseren Tag
     $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
@@ -82,7 +68,6 @@ require 'db-lesen-woche-mitarbeiter.php'; //Lesen der in der Datenbank gespeiche
 require 'db-lesen-feiertag.php';
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax = max(array_keys($Mitarbeiter));
 foreach ($Grundplan as $key => $Grundplantag) {
     $Plan_anzahl[] = (count($Grundplantag['VK']));
@@ -91,22 +76,15 @@ $plan_anzahl = max($Plan_anzahl);
 
 //Produziere die Ausgabe
 ?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+<?php require 'head.php';
 require 'navigation.php';
-echo "<div class=main-area>\n";
-//echo "\t\t<a href=woche-out.php?datum=".$datum.">Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
+echo "<div id=main-area>\n";
 echo "\t\t<form id=myform method=post>\n";
-//$Rückwärts_button="\t\t\t<input type=submit 	class=no-print	value='1 Woche Rückwärts'	name='submitWocheRückwärts'>\n";echo $Rückwärts_button;
-//$Vorwärts_button="\t\t\t<input type=submit 	class=no-print	value='1 Woche Vorwärts'	name='submitWocheVorwärts'>\n";echo $Vorwärts_button;
-//$zeile="<br>";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>,';
+$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>';
 for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
     if (isset($Mitarbeiter[$vk])) {
-        $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>,';
+        $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>';
     }
 }
 $zeile .= '</select>';
@@ -114,7 +92,7 @@ echo $zeile;
 $submit_button = "\t<input type=submit value=Absenden name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
-echo "\t\t\t<table border=1>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 foreach ($Grundplan as $wochentag => $Plan) {
@@ -131,7 +109,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>&nbsp";
+        echo "\t\t\t\t\t<td>";
         //Dienstbeginn
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstbeginn'][$j]));
@@ -160,7 +138,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsende'][$j]));
         }
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Stunden'][$j] > 0) {
-            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Grundplan[$wochentag]['VK'][$j].'>'.$Grundplan[$wochentag]['Stunden'][$j].' Stunden';
+            $zeile .= "<br><a href='stunden-out.php?auswahl_mitarbeiter=".$Grundplan[$wochentag]["VK"][$j]."'>".$Grundplan[$wochentag]["Stunden"][$j]." Stunden";
         }
         $zeile .= '';
 
@@ -242,5 +220,5 @@ echo '<img src=images/mitarbeiter_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.
 require 'contact-form.php';
 
 ?>
-	</body>
-<html>
+	</BODY>
+</HTML>

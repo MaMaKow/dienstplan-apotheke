@@ -1,7 +1,6 @@
 <?php
 require "default.php";
-require "db-verbindung.php";
-$mandant = 1;    
+$mandant = 1;    //First branch is allways the default.
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
@@ -45,7 +44,7 @@ WHERE `Wochentag` = "'.$wochentag.'"
 	AND `Mandant`="'.$mandant.'"
 	ORDER BY `Dienstbeginn`
 ;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
     $Grundplan[$wochentag]['VK'][] = $row->VK;
@@ -122,15 +121,11 @@ $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nich
 $VKmax = max(array_keys($Mitarbeiter));
 
 //Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-<body>
-<?php
+require 'head.php';
 require 'navigation.php';
 
 //Hier beginnt die Normale Ausgabe.
-echo "\t\t<div class=main-area>\n";
+echo "\t\t<div id=main-area>\n";
 echo "\t\t\t<form id=mandantenformular method=post>\n";
 //echo "\t\t\t\t<input type=hidden name=wochentag value=".$Grundplan[$wochentag]["Wochentag"][0].">\n";
 echo "\t\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
@@ -164,7 +159,7 @@ echo "\t\t<form id=myform method=post>\n";
 echo "\t\t\t<div id=navigationsElemente>";
 echo "\t\t\t\t<a href=grundplan-tag-in.php?wochentag=".$wochentag.">[Bearbeiten]</a>\n";
 echo "\t\t\t</div>\n";
-echo "\t\t\t<table border=2>\n";
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 //Datum
     $zeile = '';
@@ -180,7 +175,7 @@ if (!isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) or !($Grundplan[$wochenta
     echo "\t\t\t\t</tr><tr>\n";
 //Mitarbeiter
         $zeile = '';
-    echo "\t\t\t\t\t<td align=right><b>";
+    echo "\t\t\t\t\t<td><b>";
     $zeile .= $Mitarbeiter[$Grundplan[$wochentag]["VK"][$j]]."</b> ";
     //Dienstbeginn
     if (isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) and $Grundplan[$wochentag]["Dienstbeginn"][$j] > 0) {
@@ -198,7 +193,6 @@ if (!isset($Grundplan[$wochentag]["Dienstbeginn"][$j]) or !($Grundplan[$wochenta
     echo "\t\t\t\t<br>\n";
 //Mittagspause
         $zeile = "";
-    //echo "\t\t\t\t\t<td align=right>";
     if (isset($Grundplan[$wochentag]["VK"][$j]) and $Grundplan[$wochentag]["Mittagsbeginn"][$j] > 0) {
       $zeile .= " Pause: ";
         $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Mittagsbeginn"][$j]));

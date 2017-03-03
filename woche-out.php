@@ -1,7 +1,7 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
 require 'schreiben-tabelle.php';
+require 'db-lesen-abwesenheit.php';
 
 $mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
 $tage=6;	//Dies ist eine Wochenansicht ohne Sonntag
@@ -22,6 +22,10 @@ $montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der W
 $montags_differenzString="-".$montags_differenz." day";
 $datum=strtotime($montags_differenzString, strtotime($datum));
 $datum=date('Y-m-d', $datum); $konstantes_datum=$datum;
+for ($i = 0; $i < $tage; $i++){
+    $Week_dates_unix[] = strtotime(' +' . $i . ' days', strtotime($datum));
+    //echo date("d.m.Y", end($Week_dates_unix)) . "<br>\n";
+}
 if (isset($datum))
 {
 	create_cookie("datum", $datum, 0.5); //Diese Funktion muss vor dem ersten echo durchgeführt werden.
@@ -41,25 +45,27 @@ $Dienstplan=db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur f�
 $VKcount=count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax=max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 
+//Build a div containing assignment of tasks:
+require 'task-rotation.php';
+//TODO: Works only for "Rezeptur" right now!
+$task = "Rezeptur";
+$weekly_rotation_div_html = task_rotation_main($Week_dates_unix, $task);
+
 
 
 
 //Produziere die Ausgabe
-?>
-<html moznomarginboxes> <!-- Wir wollen beim Ausdrucken keinen Header mit auf dem Papier. -->
-<?php require 'head.php';?>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
-$main_div_html = "\t\t<div class='main-area'>\n";
+$main_div_html = "\t\t<div id='main-area'>\n";
 $date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
 $branch_form_html = "";
-$branch_form_html .= "\t\t<form id=branch_form method=post>\n";
+$branch_form_html .= "\t\t<form id=branch_form method=post class='no-print'>\n";
 $branch_form_html .= "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
-$branch_form_html .= "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
+$branch_form_html .= "\t\t\t<select class='large' name=mandant onchange=this.form.submit()>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
 	if ($key!=$mandant)
@@ -78,21 +84,21 @@ $buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= $rückwärts_button_week_img;
 $buttons_div_html .= $vorwärts_button_week_img;
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t\t<input name=tag type=date value=".date('Y-m-d', strtotime($datum)).">\n";
+$buttons_div_html .= "\t\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
 $buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t<a href=woche-in.php?datum=".$datum." class=no-print>[Bearbeiten]</a>\n";
+$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=".$datum."' class=no-print>[Bearbeiten]</a>\n";
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 
-$table_html = "\t\t\t\t<table border=0 rules=groups>\n";
+$table_html = "\t\t\t\t<table id=duty-rooster-table>\n";
 $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$head_table_html .= "\t\t\t\t\t\t<td>";
-	$head_table_html .= "<a href=tag-out.php?datum=".$Dienstplan[$i]["Datum"][0].">";
+	$head_table_html .= "<a href='tag-out.php?datum=".$Dienstplan[$i]["Datum"][0]."'>";
 	$head_table_html .= strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	$head_table_html .= " \n";
 	$head_table_html .= "<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
@@ -112,8 +118,8 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	}
 
 	require 'db-lesen-notdienst.php';
-	if(isset($notdienst)){$head_table_html .= "<br> NOTDIENST ";}
-	$head_table_html .= "</td></a>\n";
+	if(isset($notdienst)){$head_table_html .= "<br> <em>NOTDIENST</em> ";}
+	$head_table_html .= "</a></td>\n";
 }
 $head_table_html .= "\t\t\t\t\t</tr></thead>";
 $table_html .= $head_table_html;
@@ -147,17 +153,19 @@ foreach ($Mandant as $filiale => $Name) {
 
 $table_html .= "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";
-$table_foot_html = "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
+$table_foot_html = "\t\t\t\t\t<tfoot>"
+        //. "<tr class=page-break></tr>"
+        . "\n\t\t\t\t\t\t<tr>\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i=0; $i<count($Dienstplan); $i++)
 {
 	$datum=($Dienstplan[$i]['Datum'][0]);
 	unset($Urlauber, $Kranke);
-	require 'db-lesen-abwesenheit.php';
+        list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
 	require 'db-lesen-feiertag.php';
 // TODO: I am not sure where to put the following line. There is an echo inside.
-	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
+//	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	if (isset($Abwesende)) {
 		foreach ($Abwesende as $key => $vk) {
 			if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
@@ -173,9 +181,9 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	//Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
 	if (isset($Urlauber))
 	{
-		$table_foot_html .= "\t\t\t\t\t<td align=left><b>Urlaub</b><br>";
+		$table_foot_html .= "\t\t\t\t\t<td><b>Urlaub</b><br>";
 		foreach($Urlauber as $value){
-			$table_foot_html .= "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";
+			$table_foot_html .= "<a href='abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value."'>".$Mitarbeiter[$value]."</a><br>";
 		}
 	}
 	else
@@ -186,7 +194,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	{
 		$table_foot_html .= "\t\t<br><b>Krank</b><br>";
 		foreach($Kranke as $value){
-			$table_foot_html .= "<a href=abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value.">".$Mitarbeiter[$value]."</a><br>";
+			$table_foot_html .= "<a href='abwesenheit-out.php?datum=".$datum."&auswahl_mitarbeiter=".$value."'>".$Mitarbeiter[$value]."</a><br>";
 		}
 		$table_foot_html .= "</td>\n";
 	}
@@ -199,7 +207,9 @@ $table_foot_html .= "\t\t\t\t\t</tr>\n";
 $table_foot_html .= "\t\t\t\t\t</tfoot>\n";
 
 $table_html .= $table_foot_html;
-$table_html .= "\t\t\t\t</table>\n\t\t\t</div>";
+$table_html .= "\t\t\t\t</table>\n\t\t\t"
+        . "$weekly_rotation_div_html"
+        . "</div>";
 
 $table_div_html = "<div id=table_overlay_area>";
 $table_div_html .= $overlay_message_html;
@@ -207,11 +217,8 @@ $table_div_html .= $table_html;
 
 
 $duty_roster_form_html .= $table_div_html;
-$week_hours_table_html = "\t\t\t\t<table border=0 rules=groups>\n";
 
 //Wir zeichnen jetzt die Wochenstunden der Mitarbeiter. In dieser Ansicht werden ausschließlich die Tage Montag bis Freitag betrachtet. Dies ist ein Unterschied zur Mitarbeiteransicht. Dort werden alle Wochentage berücksichtigt.
-$week_hours_table_html .= "\t\t\t\t\t<tr>\n";
-$week_hours_table_html .= "\t\t\t\t\t\t<td colspan=5>\n";
 // TODO: $tag<5; should be a configurable variable. It might be 6 or seven in other pharmacies.
 for ($tag=0; $tag<5; $tag++)
 {
@@ -241,7 +248,12 @@ for ($tag=0; $tag<5; $tag++)
 //An leeren Wochen soll nicht gerechnet werden.
 if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) //array_column durchsucht alle Tage nach einem 'VK'.
 {
-	$week_hours_table_html .= "<b>Wochenstunden</b><tr>";
+        $week_hours_table_html = "\t\t\t\t<table>\n";
+        $week_hours_table_html .= "\t\t\t\t\t<tr>\n";
+        $week_hours_table_html .= "\t\t\t\t\t\t<td colspan=5>";
+	$week_hours_table_html .= "<b>Wochenstunden</b>\n";
+        $week_hours_table_html .= "\t\t\t\t\t\t</td>\n"
+                . "\t\t\t\t\t<tr>\n";
 	ksort($Stunden);
 	$i=0;$j=1; //Zähler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
 	foreach($Stunden as $mitarbeiter => $stunden)
@@ -250,39 +262,38 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) //array_column 
 		$i++; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
 		if($i>=$tage)
 		{
-			$week_hours_table_html .= "</tr><tr>";
+			$week_hours_table_html .= "\t\t\t\t\t</tr><tr>\n";
 			$i=0;//$j++;
 		}
-		$week_hours_table_html .= "<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden);
+		$week_hours_table_html .= "\t\t\t\t\t\t<td>".$Mitarbeiter[$mitarbeiter]." ".array_sum($stunden);
 		$week_hours_table_html .= " / ";
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-				$week_hours_table_html .= round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
+				$week_hours_table_html .= round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1)."\n";
 		} else {
-				$week_hours_table_html .= round($Stunden_mitarbeiter[$mitarbeiter], 1);
+				$week_hours_table_html .= round($Stunden_mitarbeiter[$mitarbeiter], 1)."\n";
 		}
 		if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
 				if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
 						$differenz = round(array_sum($stunden), 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
-						$week_hours_table_html .= ' <b>( '.$differenz.' )</b>';
+						$week_hours_table_html .= " <b>( ".$differenz." )</b>\n";
 					}
 				} else {
 						if (round($Stunden_mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
 								$differenz = round(array_sum($stunden), 1) - round($Stunden_mitarbeiter[$mitarbeiter], 1);
-								$week_hours_table_html .= ' <b>( '.$differenz.' )</b>';
+								$week_hours_table_html .= " <b>( ".$differenz." )</b>\n";
 						}
 				}
 
-		$week_hours_table_html .= "</td>";
+		$week_hours_table_html .= "\t\t\t\t\t\t</td>\n";
 	}
-	$week_hours_table_html .= "</tr>";
+        $week_hours_table_html .= "\t\t\t\t\t</tr>\n";
+        $week_hours_table_html .= "\t\t\t\t</table>\n";
+        $duty_roster_form_html .= $week_hours_table_html;
 }
-$week_hours_table_html .= "\t\t\t\t\t\t</td>\n";
-$week_hours_table_html .= "\t\t\t\t\t</tr>\n";
-$week_hours_table_html .= "\t\t\t\t</table>\n";
-$duty_roster_form_html .= $week_hours_table_html;
 // echo $submit_button;
 $duty_roster_form_html .= "\t\t\t</form>\n";
 $main_div_html .= $duty_roster_form_html;
+
 $main_div_html .= "</div>\n";
 
 if (isset($Fehlermeldung))
@@ -312,6 +323,7 @@ echo $error_message_html;
 echo $warning_message_html;
 
 echo $main_div_html;
+
 require 'contact-form.php';
 
 
@@ -319,5 +331,5 @@ require 'contact-form.php';
 
 
 ?>
-	</body>
-<html>
+	</BODY>
+</HTML>

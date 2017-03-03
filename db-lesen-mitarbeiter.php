@@ -15,7 +15,8 @@ $abfrage = 'SELECT *
 	WHERE  `Beschäftigungsende` > "'.$sql_datum.'" OR `Beschäftigungsende` IS NULL
 	ORDER BY `VK` ASC, ISNULL(`Beschäftigungsende`) ASC, `Beschäftigungsende` ASC
 	;';
-$ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+//echo "$abfrage<br>\n";
+$ergebnis = mysqli_query_verbose($abfrage);
 while ($row = mysqli_fetch_object($ergebnis)) {
     if ($row->Nachname != '') {
         $Mitarbeiter[$row->VK] = $row->Nachname;
@@ -33,9 +34,16 @@ while ($row = mysqli_fetch_object($ergebnis)) {
             $Approbierte_mitarbeiter[$row->VK] = $row->Nachname;
         }
         if ($row->Wareneingang == true) {
-            //Wer kann einen Wareneingang machen?
+            //Who is ble to book goods inward?
 
             $Wareneingang_Mitarbeiter[$row->VK] = $row->Nachname;
         }
+        if (isset($mandant) && $row->Mandant == $mandant && $row->Rezeptur == true) {
+            //Who is working in the formulation area?
+
+            $Rezeptur_Mitarbeiter[$row->VK] = $row->Nachname;
+        }
+    } else {
+        echo "ACHTUNG ACHTUNG ES GIBT KEINEN NACHNAMEN!<br>\n";
     }
 }
