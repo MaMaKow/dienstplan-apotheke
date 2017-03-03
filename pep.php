@@ -34,10 +34,14 @@ function read_file_write_db ($filename){
             $handle = fopen($filename, "r");
             if ($handle) {
                 while (($line = fgets($handle)) !== false) {
-//                    $hash = hash('sha265', $line); //The hash is stored binary in the database.
-                    $hash = md5($line); //The hash is stored binary in the database.
+                    $hash = hash('sha265', $line); //The hash is stored binary in the database.
+                    //For updates into the old database:
+                    //ALTER TABLE `pep` ADD `hash` BINARY(32) NOT NULL FIRST;
+                    //UPDATE `pep` SET hash = UNHEX(SHA2(CONCAT(`Datum`, `Zeit`, `Anzahl`, `Mandant`), 0))
+                    //ALTER TABLE `pep` DROP PRIMARY KEY, ADD PRIMARY KEY(`hash`);
+
                     //$hash_hex = bin2hex($hash);
-//                  echo "$hash: $line";
+//                  echo "$hash_hex: $line";
                     $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the 
 //                    list($pep['date'][], $pep['time'][], $pep['sales_value'][], $pep['sales_count'][], $pep['foo'][], $pep['branch'][]) = explode(';', $line_string) AND $pep['hash'][] = $hash;
                     list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);

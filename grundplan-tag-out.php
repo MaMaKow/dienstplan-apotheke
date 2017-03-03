@@ -1,7 +1,7 @@
 <?php
 require "default.php";
 require "db-verbindung.php";
-$mandant = 1;    //Wir zeigen den Grundplan standardmäßig für die "Apotheke am Marienplatz"
+$mandant = 1;    
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
