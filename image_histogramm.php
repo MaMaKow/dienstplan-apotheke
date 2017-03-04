@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-//    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
 
-if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
-//Check if the PEP information is still up-to-date:
+//    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
+function check_timeliness_of_pep_data() {
+    //Check if the PEP information is still up-to-date:
     $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
     $ergebnis = mysqli_query_verbose($abfrage);
     $row = mysqli_fetch_object($ergebnis);
@@ -28,13 +28,18 @@ if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
     $seconds_since_last_update = $today - $newest_pep_date;
     if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) { //3 months
         echo "<br><div class=warningmsg>Die PEP Information ist veraltet. <br>"
-            . "Letzter Eintrag ".date('d.m.Y', strtotime($row->Datum)).". <br>"
-            . "Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
+        . "Letzter Eintrag " . date('d.m.Y', strtotime($row->Datum)) . ". <br>"
+        . "Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
     }
 }
-require_once 'headcount-duty-roster.php';
 
 function get_Erwartung($datum, $mandant) {
+    global $Dienstplan, $Anwesende;
+    require_once 'headcount-duty-roster.php';
+    if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
+        check_timeliness_of_pep_data($param);
+    }
+
     global $verbindungi;
     global $Pep_mandant;
 
@@ -69,12 +74,6 @@ function get_Erwartung($datum, $mandant) {
     return $Erwartung;
 }
 
-/**
- * @var float $factor_employee The number of drug packages that can be sold per employee within a certail time.
- */
-$factor_employee = 6;
-//TODO: Erwartung should be moved into the databasecompletely!
-// We need the reader for Erwartung here or inside a seperate function file!
 
 /**
  * 
@@ -82,12 +81,16 @@ $factor_employee = 6;
  * @global int $mandant
  * @global string $datum
  * @global array $Anwesende
+ * @global float $factor_employee The number of drug packages that can be sold per employee within a certail time.
  * @return string The canvas element
  */
 function draw_image_histogramm($Dienstplan) {
     global $mandant, $Anwesende, $datum;
     global $factor_employee;
+    $factor_employee = 6;
 
+//TODO: Erwartung should be moved into the databasecompletely!
+// We need the reader for Erwartung here or inside a seperate function file!
 //    var_export($Anwesende);
     $Erwartung = get_Erwartung($datum, $mandant);
 //    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
@@ -171,20 +174,20 @@ function draw_image_histogramm($Dienstplan) {
 }
 
 function draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time) {
-    global $Anwesende, $Changing_times;
+    global $Anwesende, $Anwesende;
     global $factor_employee;
     $canvas_text = "ctx.beginPath();\n";
     $canvas_text .= "ctx.setLineDash([]);\n";
     $canvas_text .= "ctx.lineWidth=5;\n";
-    foreach ($Changing_times as $time) {
-        $unix_time = strtotime($time);
-        $time_float = time_from_text_to_int($time);
+    foreach ($Anwesende as $unix_time => $anwesende) {
+        $time_float = time_from_text_to_int(date('H:i:s', $unix_time));
         $x_pos_line_start = $x_pos_line_end;
         $y_pos_line_start = $y_pos_line_end;
         $x_pos_line_end = ($time_float - $start_time) * $width_factor + $outer_margin_x;
         $y_pos_line_end = $Anwesende[$unix_time] * $height_factor * -1 * $factor_employee;
         if (empty($x_pos_line_start)) {
-            continue;
+            $y_pos_line_start = 0;
+            //continue;
         } //Skipping the first round.
 
         $canvas_text .= ""

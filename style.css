@@ -5,18 +5,25 @@ Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
 */
+@media screen {
+    div
+    {
+        margin: 3px;
+        border: 1px solid #FF0000;
+    }
+}
 body
 {
-	background-color: #FEFEFF;
-	font-family: sans-serif;
+    background-color: #FEFEFF;
+    font-family: sans-serif;
 }
 table, th, td
 {
-	white-space: nowrap;
-	vertical-align: top;        
-	font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
-	border-collapse: collapse;
-	padding:0 1.0em 0.8em 0;
+    white-space: nowrap;
+    vertical-align: top;        
+    font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
+    border-collapse: collapse;
+    padding:0 1.0em 0.8em 0;
 }
 thead
 {
@@ -36,41 +43,41 @@ table.table_with_border td
 }
 td
 {
-	white-space: nowrap; vertical-align: top;
+    white-space: nowrap; vertical-align: top;
 }
 th
 {
-	text-align: left;
+    text-align: left;
 }
 a
 {
-	text-decoration: none;
-	color: #73AC22;
+    text-decoration: none;
+    color: #73AC22;
 }
 a:hover
 {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 .only-print
 {
-	display: none;
+    display: none;
 }
 .head
 {
-    	display: inline-block;
-	float: left;
-	clear: both;
-	background-color: #BDE682;
-	width: 100%;
+    display: inline-block;
+    float: left;
+    clear: both;
+    background-color: #BDE682;
+    width: 100%;
 }
 
 .foot
 {
-	display: inline-block;
-	float: left;
-	clear: both;
-/*	background-color: #BDE682;*/
-	width: 95%;
+    display: inline-block;
+    float: left;
+    clear: both;
+    /*	background-color: #BDE682;*/
+    width: 95%;
 }
 .clear_left
 {
@@ -79,11 +86,11 @@ a:hover
 }
 #main-area
 {
-        width: 95%; 
-        position: relative;
-	float: left;
-	clear: left;
-    	padding: 8px 8px 8px 8px;
+    width: 95%; 
+    position: relative;
+    float: left;
+    clear: left;
+    padding: 8px 8px 8px 8px;
 }
 #duty-rooster-table
 {
@@ -95,16 +102,13 @@ a:hover
     width: 100%; 
     position: relative;
 }
-.above-image
-{
-}
 .image
 {
-	position: relative;
-	float: left;
-	overflow:auto;
-/*	width: 60%;*/
-/*	max-height: 60%;*/
+    position: relative;
+    float: left;
+    overflow:auto;
+    /*	width: 60%;*/
+    /*	max-height: 60%;*/
 }
 
 img.inline-image
@@ -114,31 +118,31 @@ img.inline-image
 
 input[type="time"]
 {
-        width: 6em;
-	/*size: 5em;*/
-	font-family: monospace;
-	border-top: initial;
-	border-left: 3px dotted #FEFEFF;
-	border-right: 3px dotted #FEFEFF;
-	border-bottom: 3px dotted #FEFEFF;
+    width: 6em;
+    /*size: 5em;*/
+    font-family: monospace;
+    border-top: initial;
+    border-left: 3px dotted #FEFEFF;
+    border-right: 3px dotted #FEFEFF;
+    border-bottom: 3px dotted #FEFEFF;
 }
 input[type="time"]:hover
 {
-	border: 3px dotted #BDE682;
+    border: 3px dotted #BDE682;
 }
 select
 {
-	color: #73AC22;
-	background-color: #FEFEFF;
+    color: #73AC22;
+    background-color: #FEFEFF;
 
-	border-top: 3px dotted #B4B4B4;
-	border-left: 3px dotted #B4B4B4;
-	border-right: 3px dotted #B4B4B4;
-	border-bottom: 3px dotted #B4B4B4;
+    border-top: 3px dotted #B4B4B4;
+    border-left: 3px dotted #B4B4B4;
+    border-right: 3px dotted #B4B4B4;
+    border-bottom: 3px dotted #B4B4B4;
 }
 select:hover
 {
-	border: 3px dotted #BDE682;
+    border: 3px dotted #BDE682;
 }
 label
 {
@@ -149,114 +153,114 @@ label
 }
 .overlay
 {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	/*
-	left: 25%;
-	top:25%;
-	*/
-	margin-top: 1.2em;
-	text-align: center;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	/*
-	float: left;
-	clear: both;
-	*/
-	background-color: #73AC22;
-	opacity: 0.8;
-	z-index: -10;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*
+    left: 25%;
+    top:25%;
+    */
+    margin-top: 1.2em;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*
+    float: left;
+    clear: both;
+    */
+    background-color: #73AC22;
+    opacity: 0.8;
+    z-index: -10;
 }
 .overlay:hover
 {
-	opacity: 0.2;
-	z-index: -10;
+    opacity: 0.2;
+    z-index: -10;
 }
 .errormsg
 {
-	position: relative;
-	top:0;
-	float: left;
-	clear: both;
-	background-color: #73AC22;
-    	padding: 0px 15px 0px 15px;
-    	margin: 0px 15px 1em 0px;
-	z-index: 10;
+    position: relative;
+    top:0;
+    float: left;
+    clear: both;
+    background-color: #73AC22;
+    padding: 0px 15px 0px 15px;
+    margin: 0px 15px 1em 0px;
+    z-index: 10;
 }
 .warningmsg
 {
-	position: relative;
-	top:0;
-	float: left;
-	clear: both;
-	background-color: #BDE682;
-    	padding: 0px 15px 0px 15px;
-    	margin: 0px 15px 1em 0px;
-	z-index: 10;
+    position: relative;
+    top:0;
+    float: left;
+    clear: both;
+    background-color: #BDE682;
+    padding: 0px 15px 0px 15px;
+    margin: 0px 15px 1em 0px;
+    z-index: 10;
 }
 ul {
-    	display: block;
-    	list-style-type: none;
-    	margin: 0;
-    	padding: 0;
+    display: block;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 li {
-	float: left;
-	border: 1px solid #73AC22;
+    float: left;
+    border: 1px solid #73AC22;
 }
 
 li a {
-    	display: inline-block;
-	text-align:center;
-	background-color: #BDE682;
-    	color: #000;
-    	padding: 8px 8px 8px 8px;
+    display: inline-block;
+    text-align:center;
+    background-color: #BDE682;
+    color: #000;
+    padding: 8px 8px 8px 8px;
 }
 li a:hover {
-	background-color: #73AC22;
-	color: #FFFFFF;
+    background-color: #73AC22;
+    color: #FFFFFF;
 }
 tr.wochenende {
     background-color: #B4B4B4;
 }
 img.worker-img {
-	border: 5px solid #B4B4B4;
-	clear: left;
-	position: relative;
-	float: left;
-	height: 64px;
+    border: 5px solid #B4B4B4;
+    clear: left;
+    position: relative;
+    float: left;
+    height: 64px;
 }
 img.worker-img:hover {
-	height: auto;
-	width: 90%;
+    height: auto;
+    width: 90%;
 }
 .large {
-	font-size: xx-large;
-        margin-bottom: 1em;
+    font-size: xx-large;
+    margin-bottom: 1em;
 }
 .hint {
-	font-size: small;
-	font-weight: lighter;
-	text-align: left;
+    font-size: small;
+    font-weight: lighter;
+    text-align: left;
 }
 .table {
-	display:block;
-	border: 5px;
-	width: 10%;
+    display:block;
+    border: 5px;
+    width: 10%;
 }
 .row {
-	display:block;
+    display:block;
 }
 .cell-header {
-	font-weight: bold;
+    font-weight: bold;
 }
 .cell {
-	display:inline-block;
+    display:inline-block;
 }
 button.next {
-	background-color: #73AC22;
+    background-color: #73AC22;
 }
 button {
     background-color: #BDE682;
@@ -283,37 +287,37 @@ img.button-image
     vertical-align: top;
 }
 button:hover{
-	box-shadow: 0px 0px 10px #888888;
+    box-shadow: 0px 0px 10px #888888;
 }
 .btn-save {
-	background-color: #73AC22;
-	color: white;
+    background-color: #73AC22;
+    color: white;
 }
 .icon-white {
-	-webkit-filter: brightness(0) invert(100%);
-	-moz-filter: brightness(0) invert(100%);
-	-ms-filter: brightness(0) invert(100%);
-	-o-filter: brightness(0) invert(100%);
-	filter: brightness(0) invert(100%);
+    -webkit-filter: brightness(0) invert(100%);
+    -moz-filter: brightness(0) invert(100%);
+    -ms-filter: brightness(0) invert(100%);
+    -o-filter: brightness(0) invert(100%);
+    filter: brightness(0) invert(100%);
 }
 .icon-black {
-	-webkit-filter: brightness(0);
-	-moz-filter: brightness(0);
-	-ms-filter: brightness(0);
-	-o-filter: brightness(0);
-	filter: brightness(0);
+    -webkit-filter: brightness(0);
+    -moz-filter: brightness(0);
+    -ms-filter: brightness(0);
+    -o-filter: brightness(0);
+    filter: brightness(0);
 }
 .btn-secondary {
-	background-color: #B4B4B4;
+    background-color: #B4B4B4;
 }
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Chrome/Safari/Opera */
-     -khtml-user-select: none; /* Konqueror */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  not supported by any browser */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          not supported by any browser */
 }
 
 #weekly_rotation
@@ -325,4 +329,18 @@ button:hover{
     margin: auto;
     width: 10%;
     padding: 5px;
+}
+#mandantenformular
+{
+    clear: left;
+}
+#bottom
+{
+    position: absolute;
+    bottom: 0;
+}
+#myform
+{
+    float: left;    
+    clear: left;
 }

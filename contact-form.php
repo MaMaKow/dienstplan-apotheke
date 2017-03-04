@@ -66,4 +66,4 @@
 ?>
 <a target="_blank" href="https://github.com/MaMaKow/dienstplan-apotheke/issues/new">Einen Programmfehler melden</a>
 </div>
-<div id=bottom></div>
+<div id='bottom'></div>

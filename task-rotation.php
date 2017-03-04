@@ -136,7 +136,6 @@ function task_rotation_set_worker($date_unix, $task) {
     } else {
         //If there is noone anywhere in the past we just take the first person in the array.
         $rotation_vk = key($Rezeptur_Mitarbeiter);
-        echo "date: $date_sql";
         $abfrage = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$date_sql', '$rotation_vk')";
         $ergebnis = mysqli_query_verbose($abfrage);
     }
