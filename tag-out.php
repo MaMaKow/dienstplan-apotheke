@@ -1,7 +1,7 @@
 <?php
 require 'default.php';
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
-$mandant = 1; //Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
+$mandant = 1; //First branch is allways the default.
 $tage = 1; //Dies ist eine Wochenansicht ohne Wochenende
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
@@ -50,12 +50,10 @@ require 'db-lesen-mitarbeiter.php';
 //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-tage.php';
 $Dienstplan = db_lesen_tage($tage, $mandant);
-//require "zeichne-histogramm.php";
-$VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
+foreach ($Dienstplan as $day => $roster) {
+    $max_vk_count_in_rooster_days = max($max_vk_count_in_rooster_days, count($roster["VK"]));
+}
 $VKmax = max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
-//Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
-//Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
 
@@ -102,7 +100,7 @@ echo "<br><br>\n";
 //echo "</div>\n";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
 //echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
-echo "\t\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
+echo "\t\t\t\t\t<input name='tag' type='date' id='dateChooserInput' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t\t</div>\n";
 echo "\t\t\t\t<table>\n";
@@ -136,7 +134,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     echo "</td>\n";
 }
 if ($approval == "approved" OR $config['hide_disapproved'] == false) {
-    for ($j = 0; $j < $VKcount; $j++) {
+    for ($j = 0; $j < $max_vk_count_in_rooster_days; $j++) {
         //TODO The following line will prevent planning on hollidays. The problem is, that we might work emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
         //if(isset($feiertag) && !isset($notdienst)){break 1;}
         echo "\t\t\t\t\t</tr><tr>\n";
