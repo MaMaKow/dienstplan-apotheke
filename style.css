@@ -178,12 +178,16 @@ label
     opacity: 0.2;
     z-index: -10;
 }
-.errormsg
+.error_container
 {
     position: relative;
-    top:0;
     float: left;
-    clear: both;
+    top:0;
+    max-width: 650px;
+    
+}
+.errormsg
+{
     background-color: #73AC22;
     padding: 0px 15px 0px 15px;
     margin: 0px 15px 1em 0px;
@@ -194,7 +198,6 @@ label
     position: relative;
     top:0;
     float: left;
-    clear: both;
     background-color: #BDE682;
     padding: 0px 15px 0px 15px;
     margin: 0px 15px 1em 0px;

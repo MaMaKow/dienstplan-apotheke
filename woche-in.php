@@ -1,7 +1,7 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan einer Woche  anzeigen.
 require 'default.php';
-$mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
+$mandant=1;	//First branch is allways the default.
 $tage=7;	//Dies ist eine Wochenansicht mit Wochenende
 
 

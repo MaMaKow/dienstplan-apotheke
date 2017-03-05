@@ -3,7 +3,7 @@ require 'default.php';
 require 'schreiben-tabelle.php';
 require 'db-lesen-abwesenheit.php';
 
-$mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
+$mandant=1;	//First branch is allways the default.
 $tage=6;	//Dies ist eine Wochenansicht ohne Sonntag
 
 $datenübertragung="";

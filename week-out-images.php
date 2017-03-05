@@ -1,7 +1,7 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
-$mandant = 1; //Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
+$mandant = 1; //First branch is allways the default.
 $tage = 7; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 
