@@ -105,7 +105,7 @@ a:hover
 .image
 {
     position: relative;
-    float: left;
+    float: right;
     overflow:auto;
     /*	width: 60%;*/
     /*	max-height: 60%;*/
@@ -181,7 +181,7 @@ label
 .error_container
 {
     position: relative;
-    float: left;
+    float: right;
     top:0;
     max-width: 650px;
     
