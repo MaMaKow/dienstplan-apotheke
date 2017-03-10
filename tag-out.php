@@ -60,21 +60,24 @@ require 'navigation.php';
 
 echo "\t\t<div id=main-area>\n";
 echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>Kalenderwoche " . strftime('%V', strtotime($datum)) . "</a><br>\n";
-if (isset($Fehlermeldung)) {
-    echo "\t\t<div class=errormsg>\n";
-    foreach ($Fehlermeldung as $fehler) {
-        echo "\t\t\t<H1>" . $fehler . "</H1>\n";
+if (isset($Fehlermeldung) or isset($Warnmeldung)) {
+    echo "<div class=error_container>";
+    if (isset($Fehlermeldung)) {
+        echo "\t\t<div class=errormsg>\n";
+        foreach ($Fehlermeldung as $fehler) {
+            echo "\t\t\t<H1>" . $fehler . "</H1>\n";
+        }
+        echo "\t\t</div>";
     }
-    echo "\t\t</div>";
-}
-if (isset($Warnmeldung)) {
-    echo "\t\t<div class=warningmsg>\n";
-    foreach ($Warnmeldung as $warnung) {
-        echo "\t\t\t<H2>" . $warnung . "</H2>\n";
+    if (isset($Warnmeldung)) {
+        echo "\t\t<div class=warningmsg>\n";
+        foreach ($Warnmeldung as $warnung) {
+            echo "\t\t\t<H2>" . $warnung . "</H2>\n";
+        }
+        echo "\t\t</div>\n";
     }
-    echo "\t\t</div>\n";
+    echo "</div>";
 }
-
 
 
 //Support for various branch clients.
