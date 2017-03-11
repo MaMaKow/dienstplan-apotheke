@@ -12,9 +12,9 @@ if (!$verbindungi->set_charset("utf8")) {
 //    printf("Current character set: %s\n", $verbindungi->character_set_name());
 }
 
-function mysqli_query_verbose($query) {
-    $result = mysqli_query($GLOBALS['verbindungi'], $query)
-            or $message = "Error: $query <br>".  \mysqli_error($GLOBALS['verbindungi'])
+function mysqli_query_verbose($sql_query) {
+    $result = mysqli_query($GLOBALS['verbindungi'], $sql_query)
+            or $message = "Error: $sql_query <br>".  \mysqli_error($GLOBALS['verbindungi'])
             and error_log($message) 
             and die($message);
     return $result;
