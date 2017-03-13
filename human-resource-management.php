@@ -1,22 +1,22 @@
 <?php
 function read_employee_data_from_database($auswahl_mitarbeiter) {
-    $abfrage = "SELECT * FROM `mitarbeiter` WHERE `VK` = '$auswahl_mitarbeiter'";
+    $abfrage = "SELECT * FROM `employees` WHERE `id` = '$auswahl_mitarbeiter'";
     //echo "$abfrage<br>\n";
     $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
-        $Worker["worker_id"] = $row->VK;
-        $Worker["first_name"] = $row->Vorname;
-        $Worker["last_name"] = $row->Nachname;
-        $Worker["profession"] = $row->Ausbildung;
-        $Worker["working_hours"] = $row->Stunden;
-        $Worker["working_week_hours"] = $row->Arbeitswochenstunden;
-        $Worker["holidays"] = $row->Urlaubstage;
-        $Worker["lunch_break_minutes"] = $row->Mittag;
-        $Worker["goods_receipt"] = $row->Wareneingang;
-        $Worker["compounding"] = $row->Rezeptur;
-        $Worker["branch"] = $row->Mandant;
-        $Worker["start_of_employment"] = $row->Beschäftigungsbeginn;
-        $Worker["end_of_employment"] = $row->Beschäftigungsende;
+        $Worker["worker_id"] = $row->id;
+        $Worker["first_name"] = $row->first_name;
+        $Worker["last_name"] = $row->last_name;
+        $Worker["profession"] = $row->profession;
+        $Worker["working_hours"] = $row->working_hours;
+        $Worker["working_week_hours"] = $row->working_week_hours;
+        $Worker["holidays"] = $row->holidays;
+        $Worker["lunch_break_minutes"] = $row->lunch_break_minutes;
+        $Worker["goods_receipt"] = $row->goods_receipt;
+        $Worker["compounding"] = $row->compounding;
+        $Worker["branch"] = $row->branch;
+        $Worker["start_of_employment"] = $row->start_of_employment;
+        $Worker["end_of_employment"] = $row->end_of_employment;
         //print_debug_variable($Worker);
     }
     return $Worker;
@@ -38,13 +38,13 @@ function write_employee_data_to_database() {
         $Worker["start_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING)));
         $Worker["end_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING)));
 
-        $abfrage = "REPLACE INTO `mitarbeiter` (  
-        `VK`, `Vorname`, `Nachname`,
-        `Ausbildung`,
-        `Stunden`, `Arbeitswochenstunden`, `Urlaubstage`, `Mittag`,
-        `Wareneingang`, `Rezeptur`,
-        `Mandant`,
-        `Beschäftigungsbeginn`, `Beschäftigungsende`
+        $abfrage = "REPLACE INTO `employees` (  
+        `id`, `first_name`, `last_name`,
+        `profession`,
+        `working_hours`, `working_week_hours`, `holidays`, `lunch_break_minutes`,
+        `goods_receipt`, `compounding`,
+        `branch`,
+        `start_of_employment`, `end_of_employment`
         )
         VALUES ("
                 . $Worker['worker_id'] . ", "
@@ -61,7 +61,7 @@ function write_employee_data_to_database() {
                 . $Worker['start_of_employment'] . ", "
                 . $Worker['end_of_employment']
                 . ")";
-        //echo "$abfrage<br>\n";
+//        echo "$abfrage<br>\n";
         $ergebnis = mysqli_query_verbose($abfrage);
         return $ergebnis;
     }  else {
@@ -120,5 +120,6 @@ function make_checkbox_ability($ability, $label, $checked) {
     return $text;
 }
 
-
+//CREATE TRIGGER backup_employee_data AFTER INSERT ON employees FOR EACH ROW INSERT INTO employees_backup SELECT * FROM employees WHERE employees.id = NEW.id;
+//ALTER TABLE `employees` CHANGE `pseudo_id` `pseudo_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, CHANGE `id` `id` SMALLINT UNSIGNED NOT NULL, CHANGE `Nachname` `last_name` VARCHAR(35) CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL, CHANGE `Vorname` `first_name` VARCHAR(35) CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL, CHANGE `Ausbildung` `profession` SET('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL, CHANGE `Stunden` `working_hours` FLOAT NOT NULL DEFAULT '40', CHANGE `Arbeitswochenstunden` `working_week_hours` FLOAT NOT NULL DEFAULT '38.5', CHANGE `Urlaubstage` `holidays` TINYINT(11) NOT NULL DEFAULT '28', CHANGE `Mittag` `lunch_break_minutes` TINYINT(11) NOT NULL DEFAULT '30', CHANGE `Wareneingang` `goods_receipt` TINYINT(1) NULL DEFAULT NULL, CHANGE `Rezeptur` `compounding` TINYINT(1) NULL DEFAULT NULL, CHANGE `Mandant` `branch` INT(11) NOT NULL DEFAULT '1', CHANGE `Beschäftigungsbeginn` `start_of_employment` DATE NOT NULL, CHANGE `Beschäftigungsende` `end_of_employment` DATE NULL DEFAULT NULL, CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ?>
