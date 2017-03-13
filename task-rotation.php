@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function task_rotation_main($Dates, $task) {
+function task_rotation_main($Dates_unix, $task) {
     global $Mitarbeiter;
     $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
     $weekly_rotation_div_html .= $task . ":<br>\n";
-    foreach ($Dates as $date) {
+    foreach ($Dates_unix as $date_unix) {
         unset($rotation_vk);
-        $rotation_vk = task_rotation_get_worker($date, $task);
-        $weekly_rotation_div_html .= strftime("%a", $date) . ": ";
+        $rotation_vk = task_rotation_get_worker($date_unix, $task);
+        $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
         $weekly_rotation_div_html .= $Mitarbeiter[$rotation_vk] . "<br>\n";
     }
     $weekly_rotation_div_html .= "</div>\n";
@@ -49,12 +49,15 @@ function task_rotation_get_worker($date_unix, $task) {
 
     //Was this day already planned?
     $abfrage = "SELECT * FROM `task_rotation` WHERE `task` = '$task' and `date` = '$date_sql'";
+  //  print_debug_variable($abfrage);
     $ergebnis = mysqli_query_verbose($abfrage);
     $row = mysqli_fetch_object($ergebnis);
     if (!empty($row->task)) {
+        //print_debug_variable("VK taken from DB");
         $rotation_vk = $row->VK;
         return $rotation_vk;
     } else {
+//        print_debug_variable("VK has to be chosen...");
         $rotation_vk = task_rotation_set_worker($date_unix, $task);
         if (!empty($rotation_vk)) {
             return $rotation_vk;
@@ -76,16 +79,19 @@ function task_rotation_set_worker($date_unix, $task) {
     $task_workers_count = count($Rezeptur_Mitarbeiter);
 
     $abfrage = "SELECT * FROM `task_rotation` WHERE `date` <= '$date_sql' and `task` = '$task' ORDER BY `date` DESC LIMIT 1";
+    //print_debug_variable($abfrage);
     $ergebnis = mysqli_query_verbose($abfrage);
     $row = mysqli_fetch_object($ergebnis);
     if (!empty($row->date)) {
         $last_date = $row->date;
         //If nobody is stored to do a task. Then we have to decide, whos is up to do it.
         $last_date_unix = strtotime($last_date);
+        //print_debug_variable($last_date_unix);
         for ($temp_date = strtotime(' +1 day', $last_date_unix); $temp_date <= $date_unix; $temp_date = strtotime(' +1 day', $temp_date)) {
             $from_date_sql = date("Y-m-d", strtotime("- $task_workers_count WEEKS SUNDAY", $temp_date));
             $to_date_sql = date("Y-m-d", strtotime("- 1 WEEKS SUNDAY", $temp_date));
             $temp_date_sql = date("Y-m-d", $temp_date);
+            //print_debug_variable($Rezeptur_Mitarbeiter);
             foreach ($Rezeptur_Mitarbeiter as $vk => $name) {
                 $abfrage = "SELECT `VK`, COUNT(`date`) as `count`"
                         . "FROM `task_rotation` "
@@ -96,6 +102,7 @@ function task_rotation_set_worker($date_unix, $task) {
                         . "ORDER BY COUNT(`date`) ASC, `VK` ASC ";
                 $ergebnis = mysqli_query_verbose($abfrage);
                 $row = mysqli_fetch_object($ergebnis);
+                //print_debug_variable($row);
                 if (!empty($row->count)) {
                     $Rezeptur_Count[$vk] = $row->count;
                 } else {
@@ -104,6 +111,7 @@ function task_rotation_set_worker($date_unix, $task) {
             }
             reset($Rezeptur_Mitarbeiter);
             $next_VK = current(array_keys($Rezeptur_Count, min($Rezeptur_Count)));
+            //print_debug_variable($Rezeptur_Count); 
             if (!empty($next_VK)) {
                 $run_iterator = 0;
                 while (key($Rezeptur_Mitarbeiter) != $next_VK and $run_iterator++ < count($Rezeptur_Mitarbeiter)) {
@@ -137,6 +145,7 @@ function task_rotation_set_worker($date_unix, $task) {
         //If there is noone anywhere in the past we just take the first person in the array.
         $rotation_vk = key($Rezeptur_Mitarbeiter);
         $abfrage = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$date_sql', '$rotation_vk')";
+        //print_debug_variable($abfrage);
         $ergebnis = mysqli_query_verbose($abfrage);
     }
     return $rotation_vk;
