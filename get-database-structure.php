@@ -52,8 +52,30 @@ function write_new_table_data() {
     return TRUE;
 }
 
-if (delete_old_table_data() and write_new_table_data()) {
+function write_new_trigger_data() {
+//Then we collect the new data and write it to files:
+    $sql_query = "SHOW TRIGGERS";
+    $sql_result_with_triggers = mysqli_query_verbose($sql_query);
+    while ($trigger_row = mysqli_fetch_array($sql_result_with_triggers)) {
+        $trigger_name = $trigger_row["Trigger"];
+        $sql_query = "SHOW CREATE TRIGGER " . $trigger_name;
+        $sql_result = mysqli_query_verbose($sql_query);
+        while ($row = mysqli_fetch_array($sql_result)) {
+            $trigger_structure_create = $row['SQL Original Statement'];
+            $file_name = iconv("UTF-8", "ISO-8859-1", $trigger_name); //This is necessary for Microsoft Windows to recognise special chars.
+            //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
+            if (!file_put_contents('src/sql/' . $file_name . '.sql', $trigger_structure_create)) {
+                return FALSE;
+            }
+        }
+    }
+   return TRUE;
+}
+
+if (delete_old_table_data() and write_new_table_data() and write_new_trigger_data()) {
     echo "<p>New sql table structure files have been written.</p>";
 } else {
     echo "<p>Error while writing sql table structure files.</p>";
 }
+//TODO: Triggers should also be saved.
+//Have another look into: https://www.slideshare.net/jonoxer/selfhealing-databases-managing-schema-updates-in-the-field/18-Missing_column_Record_schema_changes
