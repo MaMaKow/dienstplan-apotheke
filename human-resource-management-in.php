@@ -26,7 +26,6 @@ require 'navigation.php';
 
 echo make_select_employee($auswahl_mitarbeiter);
 ?>
-<div class="warningmsg">CAVE! <b>VK-Nummer</b> und <b>Beschäftigungsbeginn</b> sind <em>Primärschlüssel</em>. Bitte sorgfältig eingeben! Korrekturen sind aufwändig und benötigen direkten Zugang zur Datenbank.</div>
 <form method='POST' id='human_resource_management'>
 
     <p>

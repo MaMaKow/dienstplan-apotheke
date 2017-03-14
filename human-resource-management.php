@@ -70,7 +70,7 @@ function write_employee_data_to_database() {
 }
 
 function make_radio_profession_list($checked) {
-    $abfrage = "SHOW COLUMNS FROM `mitarbeiter` LIKE 'Ausbildung'";
+    $abfrage = "SHOW COLUMNS FROM `employees` LIKE 'profession'";
     $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_array($ergebnis)) {
         $set_column = $row["Type"];
@@ -90,7 +90,12 @@ function make_radio_profession_list($checked) {
         $text .= "&nbsp;<a title='Einen weiteren Beruf hinzufügen' id=button_new_profession>[Neu]</a>";
         //$text .= "</fieldset>\n";
     }
-    return $text;
+    if (!empty($text)){
+        return $text;
+    } else {
+        error_log("Error while trying to build a list of professions.");
+        return FALSE;
+    }
 }
 
 function make_radio_branch_list($checked) {

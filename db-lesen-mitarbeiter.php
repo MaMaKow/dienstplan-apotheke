@@ -47,4 +47,4 @@ while ($row = mysqli_fetch_object($ergebnis)) {
         echo "ACHTUNG ACHTUNG ES GIBT KEINEN NACHNAMEN!<br>\n";
     }
 }
-print_debug_variable(["\$mandant", $mandant, "\$Rezeptur_Mitarbeiter", $Rezeptur_Mitarbeiter]);
+//print_debug_variable(["\$mandant", $mandant, "\$Rezeptur_Mitarbeiter", $Rezeptur_Mitarbeiter]);
