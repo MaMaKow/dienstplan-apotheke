@@ -70,7 +70,7 @@ echo $rückwärts_button_week_img;
 echo $vorwärts_button_week_img;
 echo "$submit_button_img";
 echo "<br><br>\n";
-echo "<div id=wochenAuswahl><input name=woche type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">";
+echo "<div id=wochenAuswahl><input name=woche type=date id=date_chooser_input class='datepicker' value=".date('Y-m-d', strtotime($datum)).">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
@@ -222,17 +222,9 @@ echo "\t</table>\n";
 echo "</form>\n";
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-/*
-if (isset($Fehlermeldung))
-{
-	echo "\t\t<div class=overlay><H1>".$fehler."<H1></div>";
-	foreach($Fehlermeldung as $fehler)
-	{
-		echo "\t\t<<H1>".$fehler."<H1>";
-	}
-	echo "</div>";
-}
-*/
+require_once 'src/php/build-warning-messages.php';
+echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+
 require 'contact-form.php';
 echo "</body>";
 ?>

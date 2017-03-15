@@ -57,25 +57,10 @@
 		</div>
             <?php
             //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-		if (isset($Fehlermeldung))
-		{
-                    echo "<div class=errormsg>\n";
-                    foreach($Fehlermeldung as $fehler)
-                    {
-                        echo "\t\t\t<H1>".$fehler."</H1>\n";
-                    }
-			echo "</div>";
-		}
-		echo "<div class=warningmsg>\n";
-                if (isset($Message))
-                {
-                    echo '<div id=phpscriptmessages>';
-                    foreach($Message as $message)
-                    {
-			echo "\t\t\t<p>".$message."</p>\n";
-                    }
-                    echo '</div>';
-		}
+
+require_once 'src/php/build-warning-messages.php';
+echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+
                 echo "\t\t\t<p id=xmlhttpresult></p>\n";
                 echo "\t\t\t<p id=javascriptmessage></p>\n";
 		echo "\t\t</div>";

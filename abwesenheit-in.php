@@ -144,25 +144,20 @@ require 'default.php';
 require 'head.php';
 require 'navigation.php';
 
-if (isset($Fehlermeldung))
-{
-	echo "\t\t<div class=errormsg>\n";
-	foreach($Fehlermeldung as $fehler)
-	{
-		echo "\t\t\t<H1>".$fehler."</H1>\n";
-	}
-	echo "\t\t</div>";
-}
-if (isset($Feiertagsmeldung))
-{
-	echo "\t\t<div class=warningmsg>\n<H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
-	foreach($Feiertagsmeldung as $feiertag)
-	{
-		echo "\t\t\t<p>".$feiertag."</p>\n";
-	}
-	echo "\t\t</div>";
-}
 echo "<div id=main-area>\n";
+
+require_once 'src/php/build-warning-messages.php';
+echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+
+if (isset($Feiertagsmeldung)) {
+    echo "\t\t<div class=error_container>\n";
+    echo "\t\t\t<div class=warningmsg>\n<H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
+    foreach ($Feiertagsmeldung as $feiertag) {
+        echo "\t\t\t\t<p>" . $feiertag . "</p>\n";
+    }
+    echo "\t\t\t</div>\n";
+    echo "\t\t</div>\n";
+}
 echo "\t\t<form method=POST>\n";
 echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
 foreach ($Mitarbeiter as $vk => $name)

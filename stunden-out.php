@@ -35,7 +35,7 @@ echo "<div id=main-area>\n";
 				";
 			$ergebnis = mysqli_query_verbose($abfrage);
 			$number_of_rows = mysqli_num_rows($ergebnis);
-			$tablebody=""; $i=1;
+			$tablebody="\t\t\t<tbody>\n"; $i=1;
 			while ($row=mysqli_fetch_object($ergebnis))
 			{
 				$tablebody.= "\t\t\t<tr>\n";
@@ -57,10 +57,11 @@ echo "<div id=main-area>\n";
 					$tablebody.= "\t\t\t\t<td>";
 				}
 				$tablebody.= "$row->Saldo"; $saldo=$row->Saldo; //Wir tragen den Saldo mit uns fort.
-				$tablebody.= "</td>\n";
-				$tablebody.= "\n\t\t\t</tr>\n";
+				$tablebody.= "\t\t\t\t</td>\n";
+				$tablebody.= "\t\t\t</tr>\n";
 				$i++;
 			}
+                                        $tablebody.=  "\t\t\t</tbody>\n";
 
 			//Hier beginnt die Ausgabe
 			echo "\t\t<form method=POST>\n";
@@ -82,12 +83,12 @@ echo "<div id=main-area>\n";
 				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a><br><br></div>\n";
 				echo "\t\t<table>\n";
 				//Überschrift
-				echo "\t\t\t<tr>\n".
+				echo "\t\t\t<thead><tr>\n".
 				"\t\t\t\t<th>Datum</th>\n".
 				"\t\t\t\t<th>Grund</th>\n".
 				"\t\t\t\t<th>Stunden</th>\n".
 				"\t\t\t\t<th>Saldo</th>\n".
-				"\t\t\t</tr>\n";
+				"\t\t\t</tr></thead>\n";
 //Ausgabe
 			echo "$tablebody";
 			echo "\t\t</table>\n";
