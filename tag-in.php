@@ -76,25 +76,11 @@ require 'navigation.php';
 
 //Hier beginnt die Normale Ausgabe.
 echo "<div id=main-area>\n";
+
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
-if (isset($Fehlermeldung) or isset($Warnmeldung)) {
-    echo "<div class=error_container>";
-    if (isset($Fehlermeldung)) {
-        echo "\t\t<div class=errormsg>\n";
-        foreach ($Fehlermeldung as $fehler) {
-            echo "\t\t\t<H1>" . $fehler . "</H1>\n";
-        }
-        echo "</div>\n";
-    }
-    if (isset($Warnmeldung)) {
-        echo "\t\t<div class=warningmsg>\n";
-        foreach ($Warnmeldung as $warnung) {
-            echo "\t\t\t<H2>" . $warnung . "</H2>\n";
-        }
-        echo "</div>\n";
-    }
-    echo "</div>";
-}
+require_once 'src/php/build-warning-messages.php';
+echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+
 echo "\t\tKalenderwoche " . strftime('%V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=" . $Dienstplan[0]["Datum"][0] . ">\n";
@@ -126,7 +112,7 @@ echo "<br><br>\n";
 echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
-echo "\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
+echo "\t\t\t\t<input name=tag type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<table>\n";

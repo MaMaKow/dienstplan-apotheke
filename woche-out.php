@@ -84,7 +84,7 @@ $buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= $rückwärts_button_week_img;
 $buttons_div_html .= $vorwärts_button_week_img;
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t\t<input name=tag type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
+$buttons_div_html .= "\t\t\t\t\t<input name=tag type=date id=date_chooser_input class='datepicker' value=".date('Y-m-d', strtotime($datum)).">\n";
 $buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 $buttons_div_html .= "<br><br>";
 $buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=".$datum."' class=no-print>[Bearbeiten]</a>\n";
@@ -296,30 +296,10 @@ $main_div_html .= $duty_roster_form_html;
 
 $main_div_html .= "</div>\n";
 
-if (isset($Fehlermeldung))
-{
-	$error_message_html .= "\t\t<div class=errormsg>\n";
-	$Fehlermeldung=array_unique($Fehlermeldung);
-	foreach($Fehlermeldung as $fehler)
-	{
-		$error_message_html .= "\t\t\t<H1>".$fehler."</H1>\n";
-	}
-	$error_message_html .= "\t\t</div>";
-}
 
-if (isset($Warnmeldung))
-{
-	$warning_message_html .= "\t\t<div class=warningmsg>\n";
-	$Warnmeldung=array_unique($Warnmeldung);
-	foreach($Warnmeldung as $warnung)
-	{
-		$warning_message_html .= "\t\t\t<H2>".$warnung."</H2>\n";
-	}
-	$warning_message_html .= "\t\t</div>\n";
-}
+require_once 'src/php/build-warning-messages.php';
+$warning_message_html = build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-
-echo $error_message_html;
 echo $warning_message_html;
 
 echo $main_div_html;

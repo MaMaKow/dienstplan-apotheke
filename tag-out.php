@@ -60,25 +60,9 @@ require 'navigation.php';
 
 echo "\t\t<div id=main-area>\n";
 echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>Kalenderwoche " . strftime('%V', strtotime($datum)) . "</a><br>\n";
-if (isset($Fehlermeldung) or isset($Warnmeldung)) {
-    echo "<div class=error_container>";
-    if (isset($Fehlermeldung)) {
-        echo "\t\t<div class=errormsg>\n";
-        foreach ($Fehlermeldung as $fehler) {
-            echo "\t\t\t<H1>" . $fehler . "</H1>\n";
-        }
-        echo "\t\t</div>";
-    }
-    if (isset($Warnmeldung)) {
-        echo "\t\t<div class=warningmsg>\n";
-        foreach ($Warnmeldung as $warnung) {
-            echo "\t\t\t<H2>" . $warnung . "</H2>\n";
-        }
-        echo "\t\t</div>\n";
-    }
-    echo "</div>";
-}
 
+require_once 'src/php/build-warning-messages.php';
+echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 //Support for various branch clients.
 echo "\t\t\t<form id=mandantenformular method=post>\n";
@@ -103,7 +87,7 @@ echo "<br><br>\n";
 //echo "</div>\n";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
 //echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
-echo "\t\t\t\t\t<input name='tag' type='date' id='dateChooserInput' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
+echo "\t\t\t\t\t<input name='tag' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t\t</div>\n";
 echo "\t\t\t\t<table>\n";
