@@ -135,7 +135,7 @@ require 'default.php';
                         . "\t\t\t</tr>\n";
                 ++$i;
             }
-            $abfrage = 'SELECT DISTINCT `Grund` FROM `Abwesenheit` ORDER BY `Grund` ASC';
+            $abfrage = "SELECT `Grund` FROM `Abwesenheit`  GROUP BY `Grund` HAVING COUNT(*) > 3 ORDER BY `Grund` ASC";
             $ergebnis = mysqli_query_verbose($abfrage);
             $datalist = "<datalist id='gruende'>\n";
             while ($row = mysqli_fetch_object($ergebnis)) {
