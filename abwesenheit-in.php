@@ -1,6 +1,6 @@
 <?php
 require 'default.php';
-//Hole eine Liste aller Mitarbeiter
+    //Hole eine Liste aller Mitarbeiter
             require 'db-lesen-mitarbeiter.php';
             //$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
             //Hole eine Liste aller Mandanten (Filialen)
@@ -37,11 +37,14 @@ require 'default.php';
 
             //We create new entries or edit old entries. (Empty values are not accepted.)
             if ((isset($_POST['submitStunden']) or (isset($_POST['command']) and 'replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)))
-                    and $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT)
                     and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)                    
                     and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
                     and $grund = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
                     ){
+                $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
+                if ($auswahl_mitarbeiter === FALSE){
+                    return FALSE;
+                }
                 $tage = 0;
                 for ($tag = strtotime($beginn); $tag <= strtotime($ende); $tag = strtotime('+1 day', strtotime($datum))) {
                     $datum = date('Y-m-d', $tag);
@@ -62,8 +65,6 @@ require 'default.php';
                     $abfrage = "DELETE FROM `Abwesenheit` WHERE `VK` = '$auswahl_mitarbeiter' AND `Beginn` = '$beginn_old'"; 
                     //echo "$abfrage<br>\n";
                                     $ergebnis = mysqli_query_verbose($abfrage);
-                } else {
-                    var_export(filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING));
                 }
                 $abfrage = "INSERT INTO `Abwesenheit` "
                         . "(VK, Beginn, Ende, Tage, Grund) "
@@ -79,6 +80,8 @@ require 'default.php';
 				die("Error: $abfrage <br>".mysqli_error($verbindungi));
 			}
 		}
+            } else {
+                print_debug_variable(["No insert", filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT)]);
             }
             $vk = $auswahl_mitarbeiter;
             $abfrage = 'SELECT * FROM `Abwesenheit`
@@ -174,7 +177,7 @@ echo "\t\t\t</select>\n";
 $submit_button = "\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
 echo "\t\t</form>\n";
 echo "\t\t\t<H1 class='only-print'>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
-echo "<a class=no-print href='abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter'><br>[Lesen]</a>";
+echo "<a class=no-print href='abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter'>[Lesen]</a>";
 echo "\t\t\n";
             echo "\t\t<table id=absence_table>\n";
 //Überschrift
