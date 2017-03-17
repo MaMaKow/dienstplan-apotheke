@@ -4,7 +4,7 @@
 require 'default.php';
 $mandant = 1; //First branch is allways the default.
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
-
+$tag = 0;
 $datenübertragung = "";
 $dienstplanCSV = "";
 
@@ -34,13 +34,15 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
-
-if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND date('N', strtotime($datum)) < 6 AND ! isset($feiertag)) { //Samstag und Sonntag planen wir nicht.
+require_once 'plane-tag-grundplan.php';
+$Principle_roster = get_principle_roster($datum, $mandant, $tag);
+if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND !isset($feiertag)) { //Samstag und Sonntag planen wir nicht.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
-//	unset ($Dienstplan);
-    require_once 'plane-tag-grundplan.php';
+    //$Roster_sorted_without_lunch = sort_roster_array($Principle_roster);
+    $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
+
 }
 if (array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0])) {
     //require "zeichne-histogramm.php";

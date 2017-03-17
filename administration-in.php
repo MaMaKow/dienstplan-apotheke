@@ -5,6 +5,6 @@
                                     <li><a href=grundplan-vk-in.php>Grundplan Mitarbeiteransicht</a></li>
                                     <li><a href=/phpmyadmin>PhpMyAdmin</a></li>
                                     <li><a href=upload-in.php>PEP-Upload</a></li>
-                                    <li><a href=logout.php>Logout</a></li>
+                                    <li><a href=human-resource-management-in.php>Mitarbeiterverwaltung</a></li>
 				</ul>
 			</div>

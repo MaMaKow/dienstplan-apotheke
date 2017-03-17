@@ -31,7 +31,7 @@ function examine_duty_roster ()
             //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
             // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($tages_ende)
         foreach ($Wareneingang_Anwesende as $zeit => $anwesende_wareneingang) {
-            if ($anwesende_wareneingang === 0 and $zeit < $tages_ende and $zeit > $tages_beginn) {
+            if ($anwesende_wareneingang === 0 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
               if (!isset($attendant_error)) {
                 $Warnmeldung[] = 'Um '.date('H:i', $zeit).' Uhr ist niemand für den Wareneingang anwesend.';
                 //break 1; //We avoid to flood everything with errors for every 5 minutes in which noone is there.

@@ -2,15 +2,18 @@
 require 'default.php';
 //print_debug_variable($_POST);
 require 'human-resource-management.php';
+write_employee_data_to_database(); //$success = write_employee_data_to_database();
 require 'db-lesen-mitarbeiter.php';
 //print_debug_variable($Mitarbeiter);
 require 'db-lesen-mandant.php';
-if (isset($_POST['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
-} elseif (isset($_GET['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
-} elseif (isset($_COOKIE['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
+if (isset($_POST["worker_id"])){
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT);    
+} elseif (isset($_POST["auswahl_mitarbeiter"])) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
+} elseif (isset($_GET["auswahl_mitarbeiter"])) {
+    $auswahl_mitarbeiter = filter_input(INPUT_GET, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
+} elseif (isset($_COOKIE["auswahl_mitarbeiter"])) {
+    $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
 } else {
     $auswahl_mitarbeiter = 1;
 }
@@ -18,7 +21,6 @@ if (isset($auswahl_mitarbeiter)) {
     create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
 
-write_employee_data_to_database(); //$success = write_employee_data_to_database();
 $Worker = read_employee_data_from_database($auswahl_mitarbeiter);
 
 require 'head.php';

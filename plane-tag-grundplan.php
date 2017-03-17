@@ -1,9 +1,15 @@
 <?php
-	//Daten aus der Datenbank aubrufen
-	if(!isset($tag)){$tag=0;}
-	$abfrage="SELECT * FROM `Grundplan`
-		WHERE `Wochentag` = '".date('N', strtotime($datum))."'
-		AND `Mandant` = '$mandant'";
+function get_principle_roster($date_sql, $branch = 1, $tag = 0){
+   
+    global $Abwesende;
+    if(is_null($tag)){
+        $tag = 0;
+    }
+    //Get principle roster data from the database
+	$abfrage="SELECT * FROM `Grundplan`"
+		. "WHERE `Wochentag` = '" . date("N", strtotime($date_sql)) . "'"
+		. "AND `Mandant` = '$branch'"
+                . "ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`";
 	$ergebnis = mysqli_query_verbose($abfrage);
 	while($row = mysqli_fetch_object($ergebnis))
 	{
@@ -18,18 +24,21 @@
 			//$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist nicht angestellt.<br>\n";
 			continue 1;
 		}
-		$Dienstplan[$tag]['Datum'][]=$datum;
+		$Dienstplan[$tag]['Datum'][]=$date_sql;
 		$Dienstplan[$tag]['VK'][]=$row->VK;
-		$Dienstplan[$tag]['Dienstbeginn'][]=$row->Dienstbeginn;
-		$Dienstplan[$tag]['Dienstende'][]=$row->Dienstende;
+		$Dienstplan[$tag]['Dienstbeginn'][] = date("H:i", strtotime($row->Dienstbeginn));
+		$Dienstplan[$tag]['Dienstende'][] = date("H:i", strtotime($row->Dienstende));
 		$Dienstplan[$tag]['Mittagsbeginn'][]=$row->Mittagsbeginn;
 		//echo $Mitarbeiter[$row->VK].": ".$row->Mittagsbeginn."<br>\n";
 		//TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
 		$Dienstplan[$tag]['Mittagsende'][]=$row->Mittagsende;
 		$Dienstplan[$tag]['Stunden'][]=$row->Stunden;
 	}
+        return $Dienstplan;
+}
 
-
+function sort_roster_array($Dienstplan) {
+    
 	if(!empty($Dienstplan[$tag]['VK']))
 	{
 		/*Um die Reihenfolge vernünftig zu sortieren, rechnen wir zunächst in Unix-Sekunden um.*/
@@ -37,10 +46,15 @@
 		/*Dann sortieren wir ALLE Elemente des Arrays nach der soeben ermittelten Reihenfolge.*/
 		array_multisort($Sort_order, $Dienstplan[$tag]['Dienstbeginn'], $Dienstplan[$tag]['Dienstende'],$Dienstplan[$tag]['Mittagsbeginn'],$Dienstplan[$tag]['Mittagsende'], $Dienstplan[$tag]['VK']);
 	}
+        return $Dienstplan;
+}
 
-//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; 
-
-	//Hier entsteht die Mittagspausenvergabe.
+function determine_lunch_breaks($Dienstplan, $tag) {
+    global $Mittag_mitarbeiter;
+    if(is_null($tag)){
+        $tag = 0;
+    }
+    //Hier entsteht die Mittagspausenvergabe.
 	if( !empty($Dienstplan[$tag]['VK']) ) //Haben wir überhaupt einen Dienstplan?
 	{
 		$Besetzte_mittags_beginne=array_map('strtotime', $Dienstplan[$tag]['Mittagsbeginn']);//Zeiten, zu denen schon jemand mit dem Essen beginnt.
@@ -83,4 +97,6 @@
 		}
 
 	}
+        return $Dienstplan;
+}
 ?>
