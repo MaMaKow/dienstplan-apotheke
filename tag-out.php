@@ -56,6 +56,7 @@ foreach ($Dienstplan as $day => $roster) {
 $VKmax = max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 
 echo "\t\t<div id=main-area>\n";

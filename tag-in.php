@@ -75,6 +75,7 @@ require 'pruefe-abwesenheit.php';
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 //Hier beginnt die Normale Ausgabe.
 echo "<div id=main-area>\n";

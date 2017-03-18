@@ -1,7 +1,4 @@
-<?php require 'src/html/menu.html';
-
-
-
+<?php
 //In the following lines we will define buttons for the use in other documents.
 
 $rückwärts_button_img="

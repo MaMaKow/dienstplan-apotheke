@@ -146,6 +146,7 @@ require 'default.php';
 //Here beginns the output:
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 echo "<div id=main-area>\n";
 

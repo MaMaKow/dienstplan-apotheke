@@ -3,6 +3,7 @@
 	require "default.php";
         require 'head.php';
         require 'navigation.php';
+require 'src/html/menu.html';
 			if(isset($_POST["submit"]))
 			{
 				define ('SITE_ROOT', realpath(dirname(__FILE__)));

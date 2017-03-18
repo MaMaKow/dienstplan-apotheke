@@ -88,6 +88,7 @@ if (empty($saldo)) {
 //Start of output:
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 echo "<div id=main-area>\n";
 
 require_once 'src/php/build-warning-messages.php';
