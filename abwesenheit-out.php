@@ -71,23 +71,9 @@ require 'navigation.php';
 require 'src/html/menu.html';
 //Hier beginnt die Ausgabe
 echo "\t\t<div id=main-area>\n";
-echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
-for ($vk=1; $vk<$VKmax+1; $vk++)
-{
-	if(isset($Mitarbeiter[$vk]))
-	{
-		if ($vk == $auswahl_mitarbeiter) {
-			echo "\t\t\t\t<option value=$vk selected>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
-		} else {
-			echo "\t\t\t\t<option value=$vk>".$vk." ".$Mitarbeiter[$vk]."</option>\n";
-		}
 
-	}
-}
-echo "\t\t\t</select>\n";
-$submit_button="\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo "<br>\t\t\t<H1 class='only-print'>".$Mitarbeiter[$auswahl_mitarbeiter]."</H1>\n";
+echo build_select_employee($auswahl_mitarbeiter);
+
 echo "<a class=no-print href='abwesenheit-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter'><br>[Bearbeiten]</a>";
 			echo "\t\t<table>\n";
 //Überschrift

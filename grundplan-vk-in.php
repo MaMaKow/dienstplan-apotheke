@@ -131,22 +131,8 @@ require 'head.php';?>
 require 'navigation.php';
 require 'src/html/menu.html';
 echo "<div id=main-area>\n";
-echo "\t\t<form id=myform method=post>\n";
-$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submit_button_img').click()>";
-foreach ($Mitarbeiter as $vk => $name) {
-    if ($vk == $auswahl_mitarbeiter) {
-        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>';
-    }else {
-      $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>';
-    }
-}
-$zeile .= '</select>';
-echo $zeile;
-echo "<br>";
-echo "<br>";
+echo build_select_employee($auswahl_mitarbeiter);
 echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo "<br>";
-echo "<br>";
 
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";

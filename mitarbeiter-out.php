@@ -30,7 +30,6 @@ if (isset($_POST['submitAuswahlMitarbeiter'])) {
 if (isset($auswahl_mitarbeiter)) {
     create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
-
 if (isset($datum)) {
     // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
     $montags_differenz = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
@@ -66,25 +65,8 @@ require 'navigation.php';
 require 'src/html/menu.html';
 echo "<div id=main-area>\n";
 echo "\t\t<a href='woche-out.php?datum=".$datum."'>Kalenderwoche ".strftime('%V', strtotime($datum))."</a><br>\n";
-echo "\t\t<form id=myform method=post>\n";
-//Page heading:
-echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
 
-
-//Chose which worker to view:
-$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-foreach ($Mitarbeiter as $vk => $name) {
-    if ($vk == $auswahl_mitarbeiter) {
-        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>';
-    } else {
-        $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>';
-    }
-}
-$zeile .= '</select>';
-//name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-$zeile .= "\t<input style=display:none type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
-$zeile .= '<br><br>';
-echo $zeile;
+echo build_select_employee($auswahl_mitarbeiter);
 
 //Navigation between the weeks:
 echo "$rückwärts_button_week_img";
@@ -99,9 +81,9 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $datum = date('Y-m-d', strtoti
     require 'db-lesen-notdienst.php';
     list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
     $zeile = '';
-    echo "\t\t\t\t\t<td width=".floor(100 / $tage).'%>';
+    echo "\t\t\t\t\t<td>";
     echo "<a href='tag-out.php?datum=".$Dienstplan[$tag]['Datum'][0]."'>";
-    $zeile .= '<input type=hidden size=2 name=Dienstplan['.$tag.'][Datum][0] value='.$Dienstplan[$tag]['Datum'][0].'>';
+    $zeile .= "<input type=hidden name=Dienstplan[".$tag."][Datum][0] value=".$Dienstplan[$tag]["Datum"][0]." form='select_employee'>";
     $zeile .= strftime('%d.%m.', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
     if (isset($feiertag)) {
@@ -218,8 +200,6 @@ echo "\t\t\t\t\t</td>\n";
 echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t</tfoot>\n";
 echo "\t\t\t</table>\n";
-// echo $submit_button;
-echo "\t\t</form>\n";
 
 //Jetzt wird ein Bild gezeichnet, dass den Stundenplan des Mitarbeiters wiedergibt.
 foreach (array_keys($Dienstplan) as $tag) {
@@ -274,7 +254,12 @@ if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png'
 {
   echo '<img class=worker-img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
   }
-echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print onclick=location='webdav.php?auswahl_mitarbeiter=$auswahl_mitarbeiter&datum=$start_datum' title='Download ics Kalender Datei'><img src=img/download.png width=32px><br>ICS Datei</button>\n";
+echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print " //TODO: Put this into style.css
+    . "onclick='location=\"webdav.php?auswahl_mitarbeiter=$auswahl_mitarbeiter&datum=$start_datum\"' "
+    . "title='Download ics Kalender Datei'>"
+        . "<img src=img/download.png style='width:32px' alt='Download ics Kalender Datei'>"
+        . "<br>ICS Datei"
+    . "</button>\n";
 echo "</div>\n";
 
 
