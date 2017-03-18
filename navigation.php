@@ -1,20 +1,5 @@
-    <div class="head no-print">
-        <ul>
-            <li><a href=woche-out.php>Wochenansicht</a></li>
-            <li><a href=tag-out.php>Tagesansicht</a></li>
-            <li><a href=mitarbeiter-out.php>Personenansicht</a></li>
-            <li><a href=stunden-out.php>Überstunden</a></li>
-            <li><a href=abwesenheit-out.php title="Urlaub, Krankheit, Abwesenheit">Abwesenheit</a></li>
-            <li style=float:right>
-                <a onclick="toggle_show_administration()">
-                    <?php echo $user; ?>&nbsp;
-                    <img src=img/settings.png class="inline-image" alt="settings-button" title="Show settings">
-                </a></li>
-        </ul>
-        <?php require 'administration-in.php'; ?>
-    </div>
-<?php
-//This file is part of nearly every page. But DO NOT include it inside head.php! It is not part and should not be part of e.g. install.php!
+<?php require 'src/html/menu.html';
+
 
 
 //In the following lines we will define buttons for the use in other documents.
