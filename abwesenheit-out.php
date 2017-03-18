@@ -68,6 +68,7 @@
 	$datalist.= "</datalist>\n";
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 //Hier beginnt die Ausgabe
 echo "\t\t<div id=main-area>\n";
 echo "\t\t<form method=POST>\n";

@@ -34,6 +34,7 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 //Hier beginnt die Normale Ausgabe.
         echo "<div class='main-area no-print'>\n";

@@ -129,6 +129,7 @@ require 'head.php';?>
     <a name=top></a>
 <?php
 require 'navigation.php';
+require 'src/html/menu.html';
 echo "<div id=main-area>\n";
 echo "\t\t<form id=myform method=post>\n";
 $zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submit_button_img').click()>";

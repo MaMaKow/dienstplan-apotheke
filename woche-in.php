@@ -47,6 +47,7 @@ $VKcount = calculate_VKcount ($Dienstplan);
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 //Support for various branch clients.

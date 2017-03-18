@@ -25,6 +25,7 @@ $Worker = read_employee_data_from_database($auswahl_mitarbeiter);
 
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 echo make_select_employee($auswahl_mitarbeiter);
 ?>

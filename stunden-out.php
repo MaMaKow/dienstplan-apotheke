@@ -2,6 +2,7 @@
 require 'default.php';
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 echo "<div id=main-area>\n";
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';

@@ -123,6 +123,7 @@ $VKmax = max(array_keys($Mitarbeiter));
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 //Hier beginnt die Normale Ausgabe.
 echo "\t\t<div id=main-area>\n";
