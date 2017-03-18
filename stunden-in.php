@@ -94,20 +94,7 @@ echo "<div id=main-area>\n";
 require_once 'src/php/build-warning-messages.php';
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t<form method=POST>\n";
-echo "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
-foreach ($Mitarbeiter as $vk => $name) {
-    if ($vk == $auswahl_mitarbeiter) {
-        echo "\t\t\t\t<option value=$vk selected>" . $vk . " " . $Mitarbeiter[$vk] . "</option>\n";
-    } else {
-        echo "\t\t\t\t<option value=$vk>" . $vk . " " . $Mitarbeiter[$vk] . "</option>\n";
-    }
-}
-echo "\t\t\t</select>\n";
-$submit_button = "\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
-echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo "\t\t\t<H1 class=only-print>" . $Mitarbeiter[$auswahl_mitarbeiter] . "</H1>\n";
-echo "\t\t</form>\n";
+echo build_select_employee($auswahl_mitarbeiter);
 echo "<a class=no-print href='stunden-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter'>[Lesen]</a>\n";
 
 echo "\t\t<table>\n";

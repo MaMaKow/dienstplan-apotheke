@@ -59,7 +59,7 @@ $submit_disapproval_button_img="
 			Ablehnen
 		</button>";
 
-function make_select_employee($auswahl_mitarbeiter) {
+function build_select_employee($auswahl_mitarbeiter) {
     global $Mitarbeiter;
     $text = "\t\t<form method='POST' id='select_employee'>\n";
     $text .= "\t\t\t<select name=auswahl_mitarbeiter class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";

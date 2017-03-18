@@ -27,7 +27,7 @@ require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';
 
-echo make_select_employee($auswahl_mitarbeiter);
+echo build_select_employee($auswahl_mitarbeiter);
 ?>
 <form method='POST' id='human_resource_management'>
 

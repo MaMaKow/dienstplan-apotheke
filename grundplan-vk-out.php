@@ -80,18 +80,7 @@ $plan_anzahl = max($Plan_anzahl);
 require 'navigation.php';
 require 'src/html/menu.html';
 echo "<div id=main-area>\n";
-echo "\t\t<form id=myform method=post>\n";
-$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-$zeile .= "<option value=$auswahl_mitarbeiter>".$auswahl_mitarbeiter.' '.$Mitarbeiter[$auswahl_mitarbeiter].'</option>';
-for ($vk = 1; $vk < $VKmax + 1; ++$vk) {
-    if (isset($Mitarbeiter[$vk])) {
-        $zeile .= "<option value=$vk>".$vk.' '.$Mitarbeiter[$vk].'</option>';
-    }
-}
-$zeile .= '</select>';
-echo $zeile;
-$submit_button = "\t<input type=submit value=Absenden name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n"; echo $submit_button; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-echo '<H1>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
+echo build_select_employee($auswahl_mitarbeiter);
 
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
