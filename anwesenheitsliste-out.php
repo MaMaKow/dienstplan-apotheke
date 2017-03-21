@@ -27,7 +27,7 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 	    $Months[ $i ] = strftime( '%B', mktime( 0, 0, 0, $i, 1 ) );
 	}
         $Years = array();
-        $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `dienstplan`";
+        $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
         $ergebnis = mysqli_query_verbose($abfrage);
         while ($row = mysqli_fetch_object($ergebnis)) {
             $Years[] = $row->year;
