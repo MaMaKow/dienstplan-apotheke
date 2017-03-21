@@ -80,9 +80,7 @@ require 'default.php';
 				die("Error: $abfrage <br>".mysqli_error($verbindungi));
 			}
 		}
-            } else {
-                print_debug_variable(["No insert", filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT)]);
-            }
+            } 
             $vk = $auswahl_mitarbeiter;
             $abfrage = 'SELECT * FROM `Abwesenheit`
 				WHERE `VK` = '.$vk.'
