@@ -112,9 +112,20 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
          */
     }
     $datum = $Dienstplan[0]['Datum'][0];
-} elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) {
+} elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) { 
+    //TODO: These lines should be changed to the ones below for every file
     $datum = $_POST['Dienstplan'][0]['Datum'][0];
     $datum = strtotime('+1 week', strtotime($datum));
+    $datum = date('Y-m-d', $datum);
+}  elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['date']) && isset($_POST['selected_employee'])) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
+    $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
+    $datum = strtotime('+1 week', strtotime($datum));
+    $datum = date('Y-m-d', $datum);
+}  elseif (isset($_POST['submitWocheRückwärts']) && isset($_POST['date']) && isset($_POST['selected_employee'])) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
+    $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
+    $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 } elseif (isset($_POST['submitWocheRückwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) {
     $datum = $_POST['Dienstplan'][0]['Datum'][0];
