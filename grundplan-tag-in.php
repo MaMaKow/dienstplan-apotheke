@@ -146,15 +146,6 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $dienstplanCSV .= ', '.$row->Mandant;;
 	$dienstplanCSV.=", ".$worker_style."\n";
 }
-/*
-$filename = 'tmp/Dienstplan.csv';
-$myfile = fopen($filename, 'w') or die("Unable to open file $filename!");
-fwrite($myfile, $dienstplanCSV);
-fclose($myfile);
-$dienstplanCSV = '';
-$command = ('./Dienstplan_image.sh '.escapeshellcmd('m'.$mandant.'_'.$wochentag));
-exec($command, $kommando_ergebnis);
-*/
 //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
  if (!isset($Grundplan[$wochentag])) {
      $Grundplan[$wochentag]['Wochentag'][] = $wochentag;
@@ -327,7 +318,6 @@ if (isset($Kranke)) {
 echo "\t\t\t</table>\n";
 echo "$submit_button";
 echo "\t\t</form>\n";
-echo '</div>';
 if (!empty($Grundplan[$wochentag]["Dienstbeginn"]))
 {
     //TODO: This does not work yet. PLease check Dienstplan equals Grundplan?
@@ -343,6 +333,7 @@ if (!empty($Grundplan[$wochentag]["Dienstbeginn"]))
 	echo "\t\t\t</div>\n";
 	echo "\t\t</div>\n";
 }
+echo '</div>';
 
 require 'contact-form.php';
 
