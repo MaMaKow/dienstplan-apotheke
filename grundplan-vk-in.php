@@ -4,7 +4,6 @@ require 'default.php';
 require 'db-lesen-mitarbeiter.php';
 //Hole Informationen über die Mandanten
 require 'db-lesen-mandant.php';
-
 //$datenübertragung="";
 $grundplanCSV = '';
 $tage = 7;
@@ -22,18 +21,24 @@ if (isset($auswahl_mitarbeiter)) {
     create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
 if (isset($_POST['submitDienstplan'])) {
+    $Allowed_columns = ["VK", "wochentag", "Dienstbeginn", "Dienstende", "Mittagsbeginn", "Mittagsende", "Kommentar", "Stunden", "Mandant"];
     $max_zeilen = -1;
     foreach ($_POST['Grundplan'] as $wochentag => $Spalten) {
         foreach ($Spalten as $spalte => $Zeilen) {
-            foreach ($Zeilen as $key => $zeile) {
-                $Grundplan[$wochentag][$spalte][$key] = $zeile;
-                //${$spalte}=$zeile;
-                $max_zeilen = max($max_zeilen, $key);
+            if (in_array($spalte, $Allowed_columns)) {
+                foreach ($Zeilen as $row_number => $zeile) {
+                    $Grundplan[$wochentag][$spalte][$row_number] = filter_var($zeile, FILTER_SANITIZE_STRING);
+                    $max_zeilen = max($max_zeilen, $row_number);
+                }
+            } else {
+                //Security breach!
+                //The user data submitted within $_POST[$Grundplan] contains data that is not supposed to be there.
             }
         }
     }
 }
 if (isset($Grundplan)) {
+    unset($Sql_query_list);
     //echo "VK: $auswahl_mitarbeiter<br>\n";
     for ($zeile = 0; $zeile <= $max_zeilen; ++$zeile) {
         foreach ($Grundplan as $wochentag => $Spalten) {
@@ -41,21 +46,21 @@ if (isset($Grundplan)) {
             foreach ($Spalten as $spalte => $Zeilen) {
                 if (isset($Zeilen[$zeile])) {
                     ${$spalte} = $Zeilen[$zeile];
-                    //echo "$spalte: ".${$spalte}."<br>\n";
                 }
             }
             if (isset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant)) {
                 //First, the old values are deleted.
-                $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$Mandant' AND VK='$VK'";
+                $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND VK='$VK'";
                 $ergebnis = mysqli_query_verbose($abfrage);
                 //Second, new values are inserted.
-                $abfrage = "INSERT INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Kommentar, Stunden, Mandant)
+                $Sql_query_list[] = "INSERT INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Kommentar, Stunden, Mandant)
 					      VALUES ('$VK', '$wochentag', '$Dienstbeginn', '$Dienstende', '$Mittagsbeginn', '$Mittagsende', '$Kommentar', '$Stunden', '$Mandant')";
                 unset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant);
-                $ergebnis = mysqli_query_verbose($abfrage);
             }
-            //echo "<br>";
         }
+    }
+    foreach ($Sql_query_list as $sql_query) {
+        $result = mysqli_query_verbose($sql_query);
     }
 }
 
@@ -132,7 +137,10 @@ require 'navigation.php';
 require 'src/html/menu.html';
 echo "<div id=main-area>\n";
 echo build_select_employee($auswahl_mitarbeiter);
+
+echo "<form method='POST' id='change_principle_roster_employee'>";
 echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
+echo "</form>";
 
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
@@ -147,27 +155,27 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     echo "\t\t\t\t</tr></thead><tr>\n";
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
-        $zeile = '';
+        $zeile = "";
         echo "\t\t\t\t\t<td>&nbsp;";
         //Dienstbeginn
-        if (isset($Grundplan[$wochentag]['VK'][$j])) {
-            $zeile .= '<input type=time name=Grundplan['.$wochentag."][Dienstbeginn][$j] value=";
-            if (empty($Grundplan[$wochentag]['Dienstbeginn'][$j])) {
-                $zeile .= '';
+        if (isset($Grundplan[$wochentag]["VK"][$j])) {
+            $zeile .= "<input type=time name=Grundplan[" . $wochentag . "][Dienstbeginn][$j] value=";
+            if (empty($Grundplan[$wochentag]["Dienstbeginn"][$j])) {
+                $zeile .= "";
             } else {
-                $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstbeginn'][$j]));
+                $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Dienstbeginn"][$j]));
             }
-            $zeile .= '>';
+            $zeile .= " form='change_principle_roster_employee'>";
         }
         //Dienstende
                 if (isset($Grundplan[$wochentag]['VK'][$j])) {
-                    $zeile .= ' bis <input type=time name=Grundplan['.$wochentag."][Dienstende][$j] value=";
-                    if (empty($Grundplan[$wochentag]['Dienstende'][$j])) {
-                        $zeile .= '';
+                    $zeile .= " bis <input type=time name=Grundplan[" . $wochentag . "][Dienstende][$j] value=";
+                    if (empty($Grundplan[$wochentag]["Dienstende"][$j])) {
+                        $zeile .= "";
                     } else {
-                        $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstende'][$j]));
+                        $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Dienstende"][$j]));
                     }
-                    $zeile .= '>';
+                    $zeile .= " form='change_principle_roster_employee'>";
                 }
         echo $zeile;
 
@@ -178,10 +186,10 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= ' Pause: ';
             $zeile .= '<input type=time name=Grundplan['.$wochentag."][Mittagsbeginn][$j] value=";
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
-            $zeile .= '>';
+            $zeile .= " form='change_principle_roster_employee'>";
             $zeile .= ' bis <input type=time name=Grundplan['.$wochentag."][Mittagsende][$j] value=";
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsende'][$j]));
-            $zeile .= ">\n";
+            $zeile .= " form='change_principle_roster_employee'>\n";
         } else {
                 $zeile .= "<div class=mittags_ersatz>";
             if (!empty($Grundplan[$wochentag]['Pause'][$j])) {
@@ -194,28 +202,35 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             }
             $zeile .= ' <a href=#top onclick=unhide_mittag()>+</a></div>';
             $zeile .= '<div class=mittags_input style=display:none>';
-            $zeile .= 'Pause: <input type=time name=Grundplan['.$wochentag."][Mittagsbeginn][$j] value=> bis ";
-            $zeile .= "<input type=time name=Grundplan[$wochentag][Mittagsende][$j] value=> <a href=#top onclick=rehide_mittag()>-</a></div>";
+            $zeile .= 'Pause: <input type=time name=Grundplan['.$wochentag."][Mittagsbeginn][$j]  form='change_principle_roster_employee'> bis ";
+            $zeile .= "<input type=time name=Grundplan[$wochentag][Mittagsende][$j]  form='change_principle_roster_employee'> <a href=#top onclick=rehide_mittag()>-</a></div>";
         }
                 //Mittagsende
         if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Mandant'][$j])) {
-            $zeile .= "<br>\n".$Kurz_mandant[$Grundplan[$wochentag]['Mandant'][$j]];
-            $zeile .= "<input type=hidden name=Grundplan[$wochentag][Mandant][$j] value=".$Grundplan[$wochentag]['Mandant'][$j].">\n";
-        }
-                //if (isset($Grundplan[$wochentag]["VK"][$j]))  {
-                if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Kommentar'][$j])) {
-                    $zeile .= "<input type=hidden name=Grundplan[$wochentag][Kommentar][$j] value=\"".$Grundplan[$wochentag]['Kommentar'][$j]."\">\n";
+            $zeile .= "<br>\n";
+            $zeile .= "<select name=Grundplan[$wochentag][Mandant][$j] form='change_principle_roster_employee'>\n";
+            foreach ($Kurz_mandant as $filiale => $name) {
+                if ($filiale != $Grundplan[$wochentag]['Mandant'][$j]) {
+                    $zeile .= "\t\t\t\t\t<option value=" . $filiale . '>' . $name . "</option>\n";
                 } else {
-                    $zeile .= "<input type=hidden name=Grundplan[$wochentag][Kommentar][$j] value=\"\">\n";
+                    $zeile .= "\t\t\t\t\t<option value=" . $filiale . ' selected>' . $name . "</option>\n";
+                }
+            }
+
+        }
+                if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Kommentar'][$j])) {
+                    $zeile .= "<input type=hidden name=Grundplan[$wochentag][Kommentar][$j] value='".$Grundplan[$wochentag]["Kommentar"][$j]."' form='change_principle_roster_employee'>\n";
+                } else {
+                    $zeile .= "<input type=hidden name=Grundplan[$wochentag][Kommentar][$j] form='change_principle_roster_employee'>\n";
                 }
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
-            $zeile .= "<input type=hidden name=Grundplan[$wochentag][VK][$j] value=\"".$Grundplan[$wochentag]['VK'][$j]."\">\n";
+            $zeile .= "<input type=hidden name=Grundplan[$wochentag][VK][$j] value='".$Grundplan[$wochentag]["VK"][$j]."' form='change_principle_roster_employee'>\n";
         }
-        if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Stunden'][$j])) {
-            $zeile .= "<input type=hidden name=Grundplan[$wochentag][Stunden][$j] value=".$Grundplan[$wochentag]['Stunden'][$j].">\n";
-            $zeile .= ' '.$Grundplan[$wochentag]['Stunden'][$j].' Stunden';
+        if (isset($Grundplan[$wochentag]["VK"][$j]) and isset($Grundplan[$wochentag]["Stunden"][$j])) {
+            $zeile .= "<input type=hidden name=Grundplan[$wochentag][Stunden][$j] value=".$Grundplan[$wochentag]["Stunden"][$j]." form='change_principle_roster_employee'>\n";
+            $zeile .= " " . $Grundplan[$wochentag]["Stunden"][$j] . " Stunden";
         }
-        $zeile .= '';
+        $zeile .= "";
 
         echo $zeile;
         echo "</td>\n";
@@ -233,11 +248,11 @@ foreach ($Grundplan as $wochentag => $value) {
     if ($wochentag>=6) {
       continue 1;
     }
-    foreach ($Grundplan[$wochentag]['Stunden'] as $key => $stunden) {
+    foreach ($Grundplan[$wochentag]["Stunden"] as $key => $stunden) {
         $Stunden[$auswahl_mitarbeiter][] = $stunden;
     }
 }
-echo 'Wochenstunden ';
+echo "Wochenstunden ";
 ksort($Stunden);
 $i = 1;$j = 1; //Zahler für den Stunden-Array (wir wollen nach je x Elementen einen Umbruch)
 foreach ($Stunden as $mitarbeiter => $stunden) {
@@ -246,7 +261,7 @@ foreach ($Stunden as $mitarbeiter => $stunden) {
     echo $Stunden_mitarbeiter[$mitarbeiter];
     if ($Stunden_mitarbeiter[$mitarbeiter] != array_sum($stunden)) {
         $differenz = array_sum($stunden) - $Stunden_mitarbeiter[$mitarbeiter];
-        echo ' <b>( '.$differenz.' )</b>';
+        echo " <b>( " . $differenz . " )</b>";
     }
 }
 echo "\t\t\t\t\t</td>\n";
@@ -255,59 +270,13 @@ echo "\t\t\t\t</tfoot>\n";
 echo "\t\t\t</table>\n";
 
 //$submit_button = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";echo "$submit_button";
-echo "\t\t</form>\n";
+//echo "\t\t</form>\n";
 echo "</div>\n";
-
-//Jetzt wird ein Bild gezeichnet, dass den Stundenplan des Mitarbeiters wiedergibt.
-foreach (array_keys($Grundplan) as $wochentag) {
-    break;
-    foreach ($Grundplan[$wochentag]['VK'] as $key => $vk) {
-        //Die einzelnen Zeilen im Grundplan
-
-        if (!empty($vk)) {
-            //Wir ignorieren die nicht ausgefüllten Felder
-
-            $vk = $auswahl_mitarbeiter;
-            $dienstbeginn = $Grundplan[$wochentag]['Dienstbeginn'][$key];
-            $dienstende = $Grundplan[$wochentag]['Dienstende'][$key];
-            $mittagsbeginn = $Grundplan[$wochentag]['Mittagsbeginn'][$key]; //if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
-            $mittagsende = $Grundplan[$wochentag]['Mittagsende'][$key]; //if(empty($Mittagsende)){$Mittagsende="0:00";}
-//			$kommentar="Noch nicht eingebaut"
-            $stunden = $Grundplan[$wochentag]['Stunden'][$key];    //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
-            if (empty($mittagsbeginn)) {
-                $mittagsbeginn = '0:00';
-            }
-            if (empty($mittagsende)) {
-                $mittagsende = '0:00';
-            }
-            $grundplanCSV .= '" '.$Wochentag[$wochentag]."\", $vk, $wochentag";
-            $grundplanCSV .= ', '.$dienstbeginn;
-            $grundplanCSV .= ', '.$dienstende;
-            $grundplanCSV .= ', '.$mittagsbeginn;
-            $grundplanCSV .= ', '.$mittagsende;
-            $grundplanCSV .= ', "'.$stunden." \"\n";
-        }
-    }
-}
-/*
-$filename = 'tmp/Mitarbeiter.csv';
-$myfile = fopen($filename, 'w') or die( "Unable to open file $filename!");
-fwrite($myfile, $grundplanCSV);
-fclose($myfile);
-$grundplanCSV = '';
-$command = ('./Mitarbeiter_image.sh '.escapeshellcmd($vk));
-exec($command, $kommando_ergebnis);
-
-*/
-//$Dienstplan[0] = $Grundplan[$wochentag]; //We will use $Dienstplan[0] for functions that are written for the use with single days as a workaround.
 
 require_once 'image_dienstplan_vk.php';
         $svg_image_dienstplan = draw_image_dienstplan_vk($Grundplan);
         echo $svg_image_dienstplan;
 
-//echo '<img src=images/mitarbeiter_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$vk.'.png').' style=width:70%;><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-
-//echo "<pre>";    var_export($Grundplan);        echo "</pre>";
 
 require 'contact-form.php';
 
