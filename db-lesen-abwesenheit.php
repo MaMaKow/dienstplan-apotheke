@@ -15,6 +15,9 @@ function db_lesen_abwesenheit($date)
 
 	//We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
         //TODO: Build an option to delete future vacations of people when leaving.
+        if(!isset($Mitarbeiter)){
+            require "db-lesen-mitarbeiter.php";
+        }
         $mitarbeiterliste="";
 	foreach ($Mitarbeiter as $VK => $nachname) {
 		$mitarbeiterliste.=$VK.", ";
