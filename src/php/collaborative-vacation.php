@@ -45,11 +45,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 background-color: lightgray;
             }
             span.absent_employee_container{
-                border: solid red thin;
+                /*border: solid red thin;*/
                 float: right;
                 width: 2em;
+                background-color: #B4B4B4;
             }
+            span.Apotheker{
+                background-color: #73AC22;
+            }
+            span.PI{
+                background-color: #73AC22;
+            }
+            span.PTA{
+                background-color: #BDE682;
+            }
+            span.PKA{
+                background-color: #B4B4B4;
+            }
+
         </style>
+        <script type="text/javascript">
+            function get_element_below_pointer() {
+                var x = event.clientX,
+                        y = event.clientY,
+                        element_mouse_is_over = document.elementFromPoint(x, y);
+                document.getElementById('script_test_container').innerHTML = element_mouse_is_over;
+                insert_div(element_mouse_is_over);
+                return element_mouse_is_over;
+            }
+            function insert_div(element_mouse_is_over) {
+                var existing_div = document.getElementById('test');
+                if (existing_div) {
+                    existing_div.parentNode.removeChild(existing_div);
+                }
+
+                var div = document.createElement('div');
+                element_mouse_is_over.appendChild(div);
+                var rect = element_mouse_is_over.getBoundingClientRect();
+                div.style.left = rect.left;
+                div.style.top = rect.top;
+                div.style.position = 'absolute';
+                div.style.backgroundColor = 'inherit';
+                div.id = 'test';
+                div.class = 'input_box_div'
+                div.innerHTML = '<span class="msg">Hello world.</span>';
+            }
+        </script>
     </head>
     <body>
         <?php
@@ -64,7 +105,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         $current_month_name = date("F", $start_date);
         $current_year = date("Y", $start_date);
 
-        echo "<div class=year_container>";
+        echo "<div id='script_test_container'></div>\n";
+        echo "<div class=year_container onclick=get_element_below_pointer()>\n";
         echo $current_year . "<br>\n";
         echo "<div class=month_container>";
         echo $current_month_name . "<br>\n";
@@ -73,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             if ($current_month < date("n", $date_unix)) {
                 $current_month = date("n", $date_unix);
                 $current_month_name = date("F", $date_unix);
-                echo "</div class=month_container>";
+                echo "</div>";
                 echo "<div class=month_container>";
                 echo $current_month_name . "<br>\n";
             }
@@ -82,10 +124,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             if ($current_week_day_number < 6) {
                 $paragraph_weekday_class = "weekday";
                 if (isset($Abwesende)) {
-
-                    $absent_employees_containers = "<span class='absent_employee_container'>";
-                    $absent_employees_containers .= implode(array_keys($Abwesende), "</span><span class='absent_employee_container'>");
-                    $absent_employees_containers .= "</span>";
+                    unset($absent_employees_containers);
+                    foreach ($Abwesende as $employee_id => $reason) {
+                        $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]'>";
+                        $absent_employees_containers .= $employee_id;
+                        $absent_employees_containers .= "</span>\n";
+                    }
                 } else {
                     $absent_employees_containers = "";
                 }
@@ -102,11 +146,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 . $paragraph_weekday_class
                 . "'>"
                 . $date_text
+                . "\n"
                 . "</p>\n";
             }
         }
-        echo "</div class=year_container>";
-        echo "</div class=month_container>";
+        echo "\n</div>\n";
+        echo "</div>\n";
         ?>
     </body>
 </html>
