@@ -62,23 +62,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             span.PKA{
                 background-color: #B4B4B4;
             }
-
+            div.input_box_div{
+                position: absolute;
+                background-color: inherit;
+                padding: 1em;
+                /*margin: 2em;*/
+            }
         </style>
         <script type="text/javascript">
             function get_element_below_pointer() {
                 var x = event.clientX,
                         y = event.clientY,
                         element_mouse_is_over = document.elementFromPoint(x, y);
-                document.getElementById('script_test_container').innerHTML = element_mouse_is_over;
                 insert_div(element_mouse_is_over);
                 return element_mouse_is_over;
             }
             function insert_div(element_mouse_is_over) {
-                var existing_div = document.getElementById('test');
+                var existing_div = document.getElementById('input_box_div');
                 if (existing_div) {
-                    existing_div.parentNode.removeChild(existing_div);
+                    if (!is_descendant(existing_div, element_mouse_is_over) && !is_descendant(element_mouse_is_over, existing_div)) {
+                        console.log('Destroying ' + existing_div);
+                        console.log(element_mouse_is_over + ' is not a child of ' + existing_div);
+                        existing_div.parentNode.removeChild(existing_div);
+                    } else {
+                        return false; //Do not remove and rebuild when clicking inside the form.
+                    }
                 }
-
+                //var prototype = document.getElementById('input_box_prototype');
                 var div = document.createElement('div');
                 element_mouse_is_over.appendChild(div);
                 var rect = element_mouse_is_over.getBoundingClientRect();
@@ -86,10 +96,63 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 div.style.top = rect.top;
                 div.style.position = 'absolute';
                 div.style.backgroundColor = 'inherit';
-                div.id = 'test';
-                div.class = 'input_box_div'
-                div.innerHTML = '<span class="msg">Hello world.</span>';
+                div.id = 'input_box_div';
+                div.className = 'input_box_div'
+                fill_input_box_from_prototype(div);
+                /*
+                 var list = div.children;
+                 var i;
+                 for (i = 0; i < list.length; i++) {
+                 current_item = list[i];
+                 if ('input_box_form_inactive' == current_item.id) {
+                 current_item.id = 'input_box_form';
+                 }
+                 }*/
+                //prefill_input_box_form(div);
+
             }
+            function prefill_input_box_form(div) {
+                console.log('prefill_input_box_form with: ' + div)
+                employee_id = document.getElementById('employee_id_select');
+                employee_id_options = employee_id.options;
+                console.log(employee_id.namedItem('employee_id_option_7').index);
+                index_of_employee_id_option = employee_id.namedItem('employee_id_option_7').index;
+                employee_id.selectedIndex = index_of_employee_id_option;
+                //console.log('employee_id_options ' + employee_id_options);
+                for (i = 0; i < employee_id_options.length; i++) {
+                    current_item = employee_id_options[i];
+                    console.log('current_item ' + current_item.id);
+                    if ('employee_id_option_7' == current_item.id) {
+                        current_item.text = 'FOO';
+                        console.log('found it!');
+                    }
+                }
+            }
+            function is_descendant(parent, child) {
+                var node = child.parentNode;
+                while (node != null) {
+                    if (node == parent) {
+                        return true;
+                    }
+                    node = node.parentNode;
+                }
+                return false;
+            }
+
+            function fill_input_box_from_prototype(div) {
+                var secondary_element = document.getElementById(div.id);
+                var filename = 'src/php/collaborative-vacation-input-box.php';
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    //if (this.readyState == 4 && this.status == 200) {
+                    if (xmlhttp.readyState >= 3 && xmlhttp.status == 200) {
+                        secondary_element.innerHTML = xmlhttp.responseText;
+                    }
+                };
+                xmlhttp.open("GET", filename, true);
+                xmlhttp.send();
+            }
+
         </script>
     </head>
     <body>
@@ -106,7 +169,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         $current_year = date("Y", $start_date);
 
         echo "<div id='script_test_container'></div>\n";
-        echo "<div class=year_container onclick=get_element_below_pointer()>\n";
+        echo "<div class=year_container>\n";
         echo $current_year . "<br>\n";
         echo "<div class=month_container>";
         echo $current_month_name . "<br>\n";
@@ -126,7 +189,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 if (isset($Abwesende)) {
                     unset($absent_employees_containers);
                     foreach ($Abwesende as $employee_id => $reason) {
-                        $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]'>";
+                        $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick=get_element_below_pointer()>";
                         $absent_employees_containers .= $employee_id;
                         $absent_employees_containers .= "</span>\n";
                     }
