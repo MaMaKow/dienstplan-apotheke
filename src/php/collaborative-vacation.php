@@ -99,21 +99,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 div.id = 'input_box_div';
                 div.className = 'input_box_div'
                 fill_input_box_from_prototype(div);
-                /*
-                 var list = div.children;
-                 var i;
-                 for (i = 0; i < list.length; i++) {
-                 current_item = list[i];
-                 if ('input_box_form_inactive' == current_item.id) {
-                 current_item.id = 'input_box_form';
-                 }
-                 }*/
-                //prefill_input_box_form(div);
+                div = document.getElementById('input_box_div');
+                var list = div.children;
+                console.log(div);
+                var i;
+                for (i = 0; i < list.length; i++) {
+                    current_item = list[i];
+                    console.log(current_item);
+                    if ('input_box_form_inactive' == current_item.id) {
+                        current_item.id = 'input_box_form';
+                    }
+                }
+                employee_id = document.getElementById('script_test_container');
+                console.log(employee_id);
+                prefill_input_box_form(div);
 
             }
             function prefill_input_box_form(div) {
-                console.log('prefill_input_box_form with: ' + div)
+                console.log('prefill_input_box_form with: ' + div);
                 employee_id = document.getElementById('employee_id_select');
+                employee_id_option = document.getElementById('employee_id_option_7');
+                console.log(employee_id_option);
                 employee_id_options = employee_id.options;
                 console.log(employee_id.namedItem('employee_id_option_7').index);
                 index_of_employee_id_option = employee_id.namedItem('employee_id_option_7').index;
