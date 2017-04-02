@@ -28,6 +28,10 @@
         }
         ?>
     </select>
+    <img src="" style="width: 0" alt="" 
+         onerror="prefill_input_box_form(); this.parentNode.removeChild(this);"
+         comment="This element is necessary to allow interaction of javascript with this element. After the execution, it is removed."
+         />
     <input type="date" name="start_date">
     <input type="date" name="end_date">
     <input type="submit">
