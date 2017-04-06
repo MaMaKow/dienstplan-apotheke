@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 ?>
-<form id="input_box_form">
+<form id="input_box_form" method="POST">
     <select name="employee_id" id="employee_id_select">
-<?php
+        <?php
         require_once "../../default.php";
         require_once "../../db-lesen-mitarbeiter.php";
         foreach ($Mitarbeiter as $employee_id => $last_name) {
@@ -32,7 +32,11 @@
          onerror="prefill_input_box_form(); this.parentNode.removeChild(this);"
          comment="This element is necessary to allow interaction of javascript with this element. After the execution, it is removed."
          />
-    <input type="date" name="start_date">
-    <input type="date" name="end_date">
-    <input type="submit">
+    <input type="date" id="input_box_form_start_date" name="start_date">
+    <input type="date" id="input_box_form_end_date" name="end_date">
+    <input type="text" id="input_box_form_reason" name="reason" list='reasons'>
+    <button type="submit" value="save" name="command" >Speichern</button>
+    <button type="submit" value="delete" name="command">Löschen</button>
+    <input type="hidden" id="employee_id_old" name="employee_id_old">
+    <input type="hidden" id="input_box_form_start_date_old" name="start_date_old">
 </form>
