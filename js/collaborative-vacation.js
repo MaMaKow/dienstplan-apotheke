@@ -133,6 +133,7 @@ function prefill_input_box_form() {
         document.getElementById('input_box_form_start_date_old').value = absence_details.start;
         document.getElementById('employee_id_old').value = absence_details.employee_id;
     } else if (window.highlight_absence_create_from_date_sql && window.highlight_absence_create_to_date_sql) {
+        document.getElementById("input_box_form_button_delete").style.display = "none";
         var employee_id_select = document.getElementById('employee_id_select');
         var employee_id_options = employee_id_select.options;
         for (var i = 0; i < employee_id_options.length; i++) {
@@ -151,7 +152,7 @@ function prefill_input_box_form() {
             document.getElementById('input_box_form_start_date').value = from_date_sql;
             document.getElementById('input_box_form_end_date').value = to_date_sql;
         }
-        //document.getElementById('input_box_form_reason').value = ;
+        document.getElementById('input_box_form_reason').value = "Urlaub";
         //In order to remove the old entry we need the former values
         //TODO: Check if this works for
         //$query = "DELETE FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
