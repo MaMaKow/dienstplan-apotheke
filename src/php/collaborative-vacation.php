@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <head>
         <meta charset="UTF-8">
         <title></title>
+        <script>
+            var employee_id = <?php echo json_encode($employee_id, JSON_HEX_TAG); ?>;
+        </script>
         <SCRIPT type="text/javascript" src="js/collaborative-vacation.js" ></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="css/collaborative-vacation.css" media="all">
     </head>
@@ -108,54 +111,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $current_month = date("n", $date_unix);
                 $current_month_name = date("F", $date_unix);
                 echo "</div>";
-                echo "<div class=month_container>";
+                echo "<div class='month_container'>";
                 echo $current_month_name . "<br>\n";
             }
             $date_text = date("D d", $date_unix);
             $current_week_day_number = date("N", $date_unix);
+
+
+
+            if (isset($Abwesende)) {
+                unset($absent_employees_containers);
+                foreach ($Abwesende as $employee_id => $reason) {
+                    $Absence = get_absence_data_specific($date_sql, $employee_id);
+                    //print_debug_variable($Absence);
+
+                    $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
+                    $absent_employees_containers .= $employee_id;
+                    $absent_employees_containers .= "</span>\n";
+                }
+            } else {
+                $absent_employees_containers = "";
+            }
+            $p_html = "<p class='day_paragraph noselect ";
             if ($current_week_day_number < 6 and ! $is_holiday) {
                 $paragraph_weekday_class = "weekday";
-                if (isset($Abwesende)) {
-                    unset($absent_employees_containers);
-                    foreach ($Abwesende as $employee_id => $reason) {
-                        $Absence = get_absence_data_specific($date_sql, $employee_id);
-                        //print_debug_variable($Absence);
-
-                        $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div()' absence_details='" . json_encode($Absence) . "'>";
-                        $absent_employees_containers .= $employee_id;
-                        $absent_employees_containers .= "</span>\n";
-                    }
-                } else {
-                    $absent_employees_containers = "";
-                }
-                echo "<p class='day_paragraph "
-                . $paragraph_weekday_class
-                . "'>"
-                . $date_text
-                . " "
-                . $absent_employees_containers
-                . "</p>\n";
-            } elseif ($is_holiday) {
-                $paragraph_weekday_class = "weekend";
-                echo "<p class='day_paragraph "
-                . $paragraph_weekday_class
-                . "'>"
-                . $date_text
-                . "\n"
-                . "<span class='holiday'>" . $is_holiday . "</span>"
-                . "\n"
-                . "</p>\n";
             } else {
                 $paragraph_weekday_class = "weekend";
-                echo "<p class='day_paragraph "
-                . $paragraph_weekday_class
-                . "'>"
-                . $date_text
-                . "\n"
-                . "</p>\n";
             }
+            $p_html .= $paragraph_weekday_class;
+//                $p_html_javascript = "' onclick='insert_form_div(\"create\")'";
+            $p_html_javascript .= " onmousedown='highlight_absence_create_start()'";
+            $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate()'";
+            $p_html_javascript .= " onmouseup='highlight_absence_create_end()'";
+            $p_html_attributes = " date_sql='$date_sql'";
+            $p_html_attributes .= " date_unix='$date_unix'>";
+            $p_html_content = $date_text . " ";
+            if ($current_week_day_number < 6 and ! $is_holiday) {
+                $p_html_content .= $absent_employees_containers;
+            }
+            if ($is_holiday) {
+                $p_html_content .= "<span class='holiday'>" . $is_holiday . "</span>\n";
+            }
+            $p_html .= $p_html_javascript;
+            $p_html .= $p_html_attributes;
+            $p_html .= $p_html_content;
+            $p_html .= "</p>\n";
+            echo $p_html;
         }
-        echo "\n</div>\n";
+        echo "\t</div>\n";
         echo "</div>\n";
         ?>
     </body>
