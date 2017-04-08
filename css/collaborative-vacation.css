@@ -27,6 +27,7 @@ div.month_container{
 }
 p.day_paragraph{
     border: solid black thin;
+    cursor: pointer;
     margin-bottom: 0em;
     margin-top: 0em;
     /*-webkit-margin-before: 0em;*/
@@ -37,11 +38,15 @@ p.weekday{
 p.weekend{
     background-color: lightgray;
 }
+p.highlight{
+    background: linear-gradient(180deg, #BDE682 0, #73AC22 100%), #B4B4B4;
+}
+
 span.holiday{
     font-size: xx-small;
 }
 span.absent_employee_container{
-    /*border: solid red thin;*/
+    cursor: zoom-in;
     float: right;
     width: 2em;
     background-color: #B4B4B4;
@@ -63,4 +68,13 @@ div.input_box_div{
     background-color: inherit;
     padding: 1em;
     /*margin: 2em;*/
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          not supported by any browser */
 }
