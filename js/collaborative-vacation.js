@@ -17,14 +17,20 @@
 
 
 "use strict";
-/*function remove_form_div_on_escape(){
- 
- evt = evt || window.event;
- if (evt.keyCode == 27) {
- alert("Esc was pressed");
- }
- }
- */
+function remove_form_div_on_escape() {
+    var evt = evt || window.event;
+    if (evt.keyCode == 27) {
+        var existing_div = document.getElementById('input_box_div');
+        if (existing_div) {
+            delete window.highlight_absence_create_intermediate_date_unix;
+            delete window.highlight_absence_create_from_date_unix;
+            draw_style_highlight_absence_create();
+            existing_div.parentNode.removeChild(existing_div);
+        }
+
+    }
+}
+
 function highlight_absence_create_start() {
     var x = event.clientX;
     var y = event.clientY;
@@ -33,7 +39,8 @@ function highlight_absence_create_start() {
     var date_sql_from = element_mouse_is_over.attributes.date_sql.nodeValue;
     window.highlight_absence_create_from_date_unix = date_unix_from;
     window.highlight_absence_create_from_date_sql = date_sql_from;
-    element_mouse_is_over.className = element_mouse_is_over.className + " highlight";
+    element_mouse_is_over.classList.add("highlight");
+    //element_mouse_is_over.style.background = "linear-gradient(180deg, #00ABE7 0, #0081AF 100%), #B4B4B4";
     delete window.highlight_absence_create_intermediate_date_unix;
     delete window.highlight_absence_create_to_date_unix;
     draw_style_highlight_absence_create();
@@ -59,7 +66,7 @@ function draw_style_highlight_absence_create() {
         var date_range_min = Math.min(window.highlight_absence_create_intermediate_date_unix, window.highlight_absence_create_from_date_unix);
         var date_range_max = Math.max(window.highlight_absence_create_intermediate_date_unix, window.highlight_absence_create_from_date_unix);
         if (date_unix_current <= date_range_max && date_unix_current >= date_range_min) {
-            list_of_day_paragraphs[i].className = list_of_day_paragraphs[i].className + " highlight";
+            list_of_day_paragraphs[i].classList.add("highlight");
         } else {
             list_of_day_paragraphs[i].classList.remove("highlight");
         }
@@ -86,11 +93,11 @@ function insert_form_div(edit_create) {
     var x = event.clientX;
     var y = event.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
-    var existing_div = document.getElementById('input_box_div');
     if ("create" === edit_create && "SPAN" === element_mouse_is_over.tagName) {
         //Create mode firing together with edit mode -> abort!
         return false;
     }
+    var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
         if ("HTML" !== element_mouse_is_over.tagName && !is_descendant(existing_div, element_mouse_is_over)) {
             existing_div.parentNode.removeChild(existing_div);
@@ -105,7 +112,7 @@ function insert_form_div(edit_create) {
     div.style.top = rect.top;
     div.style.position = 'absolute';
     if ("create" == edit_create) {
-        div.style.backgroundColor = '#B4B4B4';
+        div.style.backgroundColor = '#00ABE7';
     } else {
         div.style.backgroundColor = 'inherit';
     }
@@ -159,6 +166,13 @@ function prefill_input_box_form() {
 
         document.getElementById('input_box_form_start_date_old').value = "null";
         document.getElementById('employee_id_old').value = "null";
+
+    }
+    //Add a handler to BODY to catch [Esc] for closing the div.
+    if (document.body.addEventListener) { // For all major browsers, except IE 8 and earlier
+        document.body.addEventListener("keyup", remove_form_div_on_escape);
+    } else if (x.attachEvent) { // For IE 8 and earlier versions
+        document.body.attachEvent("keyup", remove_form_div_on_escape);
     }
 }
 function is_descendant(parent, child) {

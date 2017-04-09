@@ -18,6 +18,14 @@
 
 div.year_container{
     width: 120em;
+    /*Disable selection of elements to allow drag-and.drop functions:*/
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          not supported by any browser */
 }
 div.month_container{
     font-family: monospace;
@@ -33,13 +41,13 @@ p.day_paragraph{
     /*-webkit-margin-before: 0em;*/
 }
 p.weekday{
-    background-color: transparent;
+    background-color: #FEFEFF;
 }
 p.weekend{
     background-color: lightgray;
 }
 p.highlight{
-    background: linear-gradient(180deg, #BDE682 0, #73AC22 100%), #B4B4B4;
+    background: linear-gradient(180deg, #00ABE7 0, #0081AF 100%), #B4B4B4;
 }
 
 span.holiday{
