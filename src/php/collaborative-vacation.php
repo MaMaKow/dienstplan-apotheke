@@ -138,7 +138,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             } else {
                 $paragraph_weekday_class = "weekend";
             }
-            $p_html .= $paragraph_weekday_class;
+            $p_html .= $paragraph_weekday_class . "'";
 //                $p_html_javascript = "' onclick='insert_form_div(\"create\")'";
             $p_html_javascript .= " onmousedown='highlight_absence_create_start()'";
             $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate()'";
