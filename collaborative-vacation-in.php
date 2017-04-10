@@ -11,5 +11,13 @@ if (isset($_POST['employee_id'])) {
 if (isset($employee_id)) {
     create_cookie("employee_id", $employee_id, 30);
 }
+require "src/php/calculate-holidays.php";
 require_once "src/php/collaborative-vacation.php";
+require "head.php";
+handle_user_data_input();
+echo build_datalist();
+echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";
+echo build_absence_year($year);
 ?>
+    </BODY>
+</HTML>

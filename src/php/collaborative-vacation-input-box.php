@@ -35,8 +35,8 @@
     <input type="date" id="input_box_form_start_date" name="start_date">
     <input type="date" id="input_box_form_end_date" name="end_date">
     <input type="text" id="input_box_form_reason" name="reason" list='reasons'>
-    <button type="submit" value="save" name="command" >Speichern</button>
-    <button type="submit" value="delete" name="command" id="input_box_form_button_delete">Löschen</button>
+    <button type="submit" value="save" name="command" class="button_tight">Speichern</button>
+    <button type="submit" value="delete" name="command" id="input_box_form_button_delete" class="button_tight">Löschen</button>
     <input type="hidden" id="employee_id_old" name="employee_id_old">
     <input type="hidden" id="input_box_form_start_date_old" name="start_date_old">
 </form>
