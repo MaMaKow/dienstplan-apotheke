@@ -19,6 +19,7 @@
 "use strict";
 function remove_form_div_on_escape(evt) {
     evt = evt || window.event;
+    window.highlight_event = evt;
     if (evt.keyCode == 27) {
         var existing_div = document.getElementById('input_box_div');
         if (existing_div) {
@@ -33,11 +34,14 @@ function remove_form_div_on_escape(evt) {
 
 function highlight_absence_create_start(evt) {
     var evt = evt || window.event;
+    window.highlight_event = evt;
     var x = evt.clientX;
     var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
-    var date_unix_from = element_mouse_is_over.attributes.date_unix.nodeValue;
-    var date_sql_from = element_mouse_is_over.attributes.date_sql.nodeValue;
+    var date_unix_from_attribute = element_mouse_is_over.attributes.date_unix || element_mouse_is_over.parentNode.attributes.date_unix;
+    var date_unix_from = date_unix_from_attribute.nodeValue;
+    var date_sql_from_attribute = element_mouse_is_over.attributes.date_sql || element_mouse_is_over.parentNode.attributes.date_sql;
+    var date_sql_from = date_sql_from_attribute.nodeValue;
     window.highlight_absence_create_from_date_unix = date_unix_from;
     window.highlight_absence_create_from_date_sql = date_sql_from;
     element_mouse_is_over.classList.add("highlight");
@@ -49,6 +53,7 @@ function highlight_absence_create_start(evt) {
 
 function highlight_absence_create_intermediate(evt) {
     evt = evt || window.event;
+    window.highlight_event = evt;
     if (1 == detectLeftButton(evt)) { //Only if the left mouse button is pressed down
         var x = evt.clientX;
         var y = evt.clientY;
@@ -79,6 +84,7 @@ function draw_style_highlight_absence_create() {
 }
 function highlight_absence_create_end(evt) {
     evt = evt || window.event;
+    window.highlight_event = evt;
     var x = evt.clientX;
     var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
@@ -94,8 +100,9 @@ function highlight_absence_create_end(evt) {
 }
 
 function insert_form_div(edit_create) {
-    var x = event.clientX;
-    var y = event.clientY;
+    var evt = evt || window.event || window.highlight_event;
+    var x = evt.clientX;
+    var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
     if ("create" === edit_create && "SPAN" === element_mouse_is_over.tagName) {
         //Create mode firing together with edit mode -> abort!
