@@ -97,9 +97,9 @@ $row = mysqli_fetch_object($ergebnis);
 $last_pep_update = strtotime($row->create_time);
 */
 
-$abfrage = "UPDATE dienstplan set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
+$abfrage = "UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
 $ergebnis = mysqli_query_verbose($abfrage);
-$abfrage = "UPDATE dienstplan set Mittagsende = null WHERE Mittagsende = '00:00:00'";
+$abfrage = "UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:00:00'";
 $ergebnis = mysqli_query_verbose($abfrage);
 
 
