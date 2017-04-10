@@ -17,8 +17,8 @@
 
 
 "use strict";
-function remove_form_div_on_escape() {
-    var evt = evt || window.event;
+function remove_form_div_on_escape(evt) {
+    evt = evt || window.event;
     if (evt.keyCode == 27) {
         var existing_div = document.getElementById('input_box_div');
         if (existing_div) {
@@ -31,9 +31,10 @@ function remove_form_div_on_escape() {
     }
 }
 
-function highlight_absence_create_start() {
-    var x = event.clientX;
-    var y = event.clientY;
+function highlight_absence_create_start(evt) {
+    var evt = evt || window.event;
+    var x = evt.clientX;
+    var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
     var date_unix_from = element_mouse_is_over.attributes.date_unix.nodeValue;
     var date_sql_from = element_mouse_is_over.attributes.date_sql.nodeValue;
@@ -45,10 +46,12 @@ function highlight_absence_create_start() {
     delete window.highlight_absence_create_to_date_unix;
     draw_style_highlight_absence_create();
 }
-function highlight_absence_create_intermediate() {
-    if (1 == event.buttons) { //Only if the left mouse button is pressed down
-        var x = event.clientX;
-        var y = event.clientY;
+
+function highlight_absence_create_intermediate(evt) {
+    evt = evt || window.event;
+    if (1 == detectLeftButton(evt)) { //Only if the left mouse button is pressed down
+        var x = evt.clientX;
+        var y = evt.clientY;
         var element_mouse_is_over = document.elementFromPoint(x, y);
         if (element_mouse_is_over.attributes.date_unix) {
             var date_unix_intermediate = element_mouse_is_over.attributes.date_unix.nodeValue;
@@ -74,9 +77,10 @@ function draw_style_highlight_absence_create() {
     }
 
 }
-function highlight_absence_create_end() {
-    var x = event.clientX;
-    var y = event.clientY;
+function highlight_absence_create_end(evt) {
+    evt = evt || window.event;
+    var x = evt.clientX;
+    var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
     //var date_sql_from = window.highlight_absence_create_from_date_sql;
     if (element_mouse_is_over.attributes.date_sql) {
@@ -184,6 +188,14 @@ function is_descendant(parent, child) {
         node = node.parentNode;
     }
     return false;
+}
+function detectLeftButton(evt) {
+    evt = evt || window.event;
+    if ("buttons" in evt) {
+        return evt.buttons == 1;
+    }
+    var button = evt.which || evt.button;
+    return button == 1;
 }
 
 function fill_input_box_from_prototype(div) {

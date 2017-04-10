@@ -134,9 +134,9 @@ function build_absence_year($year) {
         }
         $p_html .= $paragraph_weekday_class . "'";
 //                $p_html_javascript = "' onclick='insert_form_div(\"create\")'";
-        $p_html_javascript = " onmousedown='highlight_absence_create_start()'";
-        $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate()'";
-        $p_html_javascript .= " onmouseup='highlight_absence_create_end()'";
+        $p_html_javascript = " onmousedown='highlight_absence_create_start(event)'";
+        $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate(event)'";
+        $p_html_javascript .= " onmouseup='highlight_absence_create_end(event)'";
         $p_html_attributes = " date_sql='$date_sql'";
         $p_html_attributes .= " date_unix='$date_unix'>";
         $p_html_content = $date_text . " ";
