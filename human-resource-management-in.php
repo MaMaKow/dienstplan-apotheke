@@ -62,7 +62,7 @@ echo build_select_employee($auswahl_mitarbeiter);
         <input type='date' name='end_of_employment' id="end_of_employment" value="<?php echo $Worker["end_of_employment"] ?>">
     </p><p>
 
-        <input type=submit id=save_new class='no-print clear_left' name=submitStunden value='Eintragen' form='human_resource_management'>
+        <input type=submit id=save_new class='no-print' name=submitStunden value='Eintragen' form='human_resource_management'>
     </p>
 
 </form>
