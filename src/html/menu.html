@@ -1,20 +1,17 @@
 <!--
 This file is part of nearly every page. But DO NOT include it inside head.php! It is not part and should not be part of e.g. install.php!
 -->
-    <div class="head no-print">
-        <ul>
-            <li><a href=woche-out.php>Wochenansicht</a></li>
-            <li><a href=tag-out.php>Tagesansicht</a></li>
-            <li><a href=mitarbeiter-out.php>Personenansicht</a></li>
-            <li><a href=stunden-out.php>Überstunden</a></li>
-            <li><a href=abwesenheit-out.php title="Urlaub, Krankheit, Abwesenheit">Abwesenheit</a></li>
-            <li style=float:right>
-                <a onclick="toggle_show_administration()">
-                    <?php echo $user; ?>&nbsp;
-                    <img src=img/settings.png class="inline-image" alt="settings-button" title="Show settings">
-                </a></li>
-        </ul>
-        <div  id="administration" style="display:none; clear:both;">
+<nav id="nav" class="no-print">
+    <ul id="navigation">
+        <li><a href=woche-out.php>Wochenansicht</a></li>
+        <li><a href=tag-out.php>Tagesansicht</a></li>
+        <li><a href=mitarbeiter-out.php>Personenansicht</a></li>
+        <li><a href=stunden-out.php>Überstunden</a></li>
+        <li><a href=abwesenheit-out.php title="Urlaub, Krankheit, Abwesenheit">Abwesenheit</a></li>
+        <li><a>
+                Administration
+                <img src=img/settings.png class="inline-image" alt="settings-button" title="Show settings">
+            </a>
             <ul>
                 <li><a href=anwesenheitsliste-out.php>Anwesenheitsliste</a></li>
                 <li><a href=grundplan-tag-in.php>Grundplan Tagesansicht</a></li>
@@ -23,5 +20,9 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
                 <li><a href=upload-in.php>PEP-Upload</a></li>
                 <li><a href=human-resource-management-in.php>Mitarbeiterverwaltung</a></li>
             </ul>
-        </div>
-    </div>
+        </li>
+        <li style=float:right>
+            <a><?php echo $user; ?>&nbsp;</a>
+        </li>
+    </ul>
+</nav>
