@@ -1,6 +1,6 @@
 <?php
 
-if (!file_exists('./config/config.php') and ! file_exists('../config/config.php')) {
+if (!file_exists('./config/config.php') and !file_exists('../config/config.php') and !file_exists('../../config/config.php')) {
     die("The application does not seem to be installed. Please see the <a href=install.php>installation page</a>!");
 }
 
@@ -18,13 +18,11 @@ if (isset($config['LC_TIME'])) {
 }
 
 //Setup the encoding for multibyte functions:
-//This is currently only needed by anwesenheitsliste.php
 if (isset($config['mb_internal_encoding'])) {
     mb_internal_encoding($config['mb_internal_encoding']); //Dies ist notwendig für die Verarbeitung von UTF-8 Zeichen mit einigen funktionen wie mb_substr
 } else {
     mb_internal_encoding('UTF-8'); //Dies ist notwendig für die Verarbeitung von UTF-8 Zeichen mit einigen funktionen wie mb_substr
 }
-
 //Setup if errors should be reorted to the user:
 if (isset($config['error_reporting'])) {
     error_reporting($config['error_reporting']);

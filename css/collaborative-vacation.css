@@ -1,0 +1,89 @@
+/* 
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+div.year_container{
+    width: 120em;
+    /*Disable selection of elements to allow drag-and.drop functions:*/
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          not supported by any browser */
+}
+div.month_container{
+    font-family: monospace;
+    width: 12em;
+    float: left;
+    /*display: inline-block;*/
+}
+p.day_paragraph{
+    border: solid black thin;
+    cursor: pointer;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    /*-webkit-margin-before: 0em;*/
+}
+p.weekday{
+    background-color: #FEFEFF;
+}
+p.weekend{
+    background-color: lightgray;
+}
+p.highlight{
+    background: linear-gradient(180deg, #00ABE7 0, #0081AF 100%), #B4B4B4;
+}
+
+span.holiday{
+    font-size: xx-small;
+}
+span.absent_employee_container{
+    cursor: zoom-in;
+    float: right;
+    width: 2em;
+    background-color: #B4B4B4;
+}
+span.Apotheker{
+    background-color: #73AC22;
+}
+span.PI{
+    background-color: #73AC22;
+}
+span.PTA{
+    background-color: #BDE682;
+}
+span.PKA{
+    background-color: #B4B4B4;
+}
+div.input_box_div{
+    position: absolute;
+    background-color: inherit;
+    padding: 1em;
+    /*margin: 2em;*/
+}
+button.button_tight{
+    background-color: buttonface;
+    box-sizing: border-box;
+    padding: 0px;
+    text-align: center;
+    text-decoration: none;
+    border-width: 2px;
+    border-style: outset;
+    border-color: buttonface;
+    border-image: initial;}
