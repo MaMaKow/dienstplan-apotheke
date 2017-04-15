@@ -51,7 +51,7 @@ function echo_table_diff() {
             $diff = Diff::compare($table_structure_create_old, $table_structure_create_new);
             if (0 !== array_sum(array_column($diff, 1))) {
                 echo $table_name . ":<br>\n";
-                echo Diff::toTable($diff);
+                echo Diff::toTable($diff, '', '');
             }
             //print_debug_variable($diff);
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
@@ -92,8 +92,8 @@ echo "<HTML><HEAD><STYLE>
         background:rgb(255,224,224);
       }
       .diffUnmodified span, td.diffUnmodified {
-        font-size: 0.1em;
-        line-height: 0.1;
+        font-size: 0.8em;
+        /*line-height: 0.5;*/
       }
 
       .diffInserted span{
