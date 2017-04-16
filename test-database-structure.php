@@ -21,20 +21,6 @@ require "default.php";
 // include the Diff class
 require_once 'src/php/class.Diff.php';
 
-//First we delete the old files:
-function delete_old_table_data() {
-// This is to make sure, that any deleted tables in the database do not reappear.
-    $files_to_be_deleted = glob('src/sql/*.sql'); // get all file names
-    foreach ($files_to_be_deleted as $file) { // iterate files
-        if (is_file($file)) {
-            if (!unlink($file)) { // delete file
-                return FALSE;
-            }
-        }
-    }
-    return TRUE;
-}
-
 function echo_table_diff() {
 //Then we collect the new data and write it to files:
     $sql_query = "SHOW TABLES";
@@ -57,7 +43,35 @@ function echo_table_diff() {
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
         }
     }
+    $Triggers = get_new_trigger_data();
+    foreach ($Triggers as $trigger_name => $trigger_data) {
+        $file_name = iconv("UTF-8", "ISO-8859-1", $trigger_name); //This is necessary for Microsoft Windows to recognise special chars.
+        $file_name = 'src/sql/' . $file_name . '.sql';
+        $trigger_structure_create_old = file_get_contents($file_name);
+        $diff = Diff::compare($trigger_structure_create_old, $trigger_data);
+        if (0 !== array_sum(array_column($diff, 1))) {
+            echo $trigger_name . ":<br>\n";
+            echo Diff::toTable($diff, '', '');
+        }
+    }
     return TRUE;
+}
+
+
+function get_new_trigger_data() {
+//Then we collect the new data and write it to files:
+    $sql_query = "SHOW TRIGGERS";
+    $sql_result_with_triggers = mysqli_query_verbose($sql_query);
+    while ($trigger_row = mysqli_fetch_array($sql_result_with_triggers)) {
+        $trigger_name = $trigger_row["Trigger"];
+        $sql_query = "SHOW CREATE TRIGGER " . $trigger_name;
+        $sql_result = mysqli_query_verbose($sql_query);
+        while ($row = mysqli_fetch_array($sql_result)) {
+            $trigger_structure_create = $row['SQL Original Statement'];
+            $Triggers[$trigger_name] = $trigger_structure_create;
+        }
+    }
+    return $Triggers;
 }
 
 // output the result of comparing two files as a table
@@ -106,34 +120,3 @@ echo "<HTML><HEAD><STYLE>
       }
 }</STYLE></HEAD><BODY>";
 echo_table_diff();
-
-function write_new_trigger_data() {
-//Then we collect the new data and write it to files:
-    $sql_query = "SHOW TRIGGERS";
-    $sql_result_with_triggers = mysqli_query_verbose($sql_query);
-    while ($trigger_row = mysqli_fetch_array($sql_result_with_triggers)) {
-        $trigger_name = $trigger_row["Trigger"];
-        $sql_query = "SHOW CREATE TRIGGER " . $trigger_name;
-        $sql_result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_array($sql_result)) {
-            $trigger_structure_create = $row['SQL Original Statement'];
-            $file_name = iconv("UTF-8", "ISO-8859-1", $trigger_name); //This is necessary for Microsoft Windows to recognise special chars.
-            //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
-            if (!file_put_contents('src/sql/' . $file_name . '.sql', $trigger_structure_create)) {
-                return FALSE;
-            }
-        }
-    }
-    return TRUE;
-}
-
-/*
-if (delete_old_table_data() and write_new_table_data() and write_new_trigger_data()) {
-    echo "<p>New sql table structure files have been written.</p>";
-} else {
-    echo "<p>Error while writing sql table structure files.</p>";
-}
- * 
- */
-//TODO: Triggers should also be saved.
-//Have another look into: https://www.slideshare.net/jonoxer/selfhealing-databases-managing-schema-updates-in-the-field/18-Missing_column_Record_schema_changes
