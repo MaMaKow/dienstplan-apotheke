@@ -9,4 +9,4 @@ CREATE TABLE `wunschplan` (
   `Stunden` varchar(64) DEFAULT NULL,
   `Mandant` varchar(64) NOT NULL DEFAULT '1',
   PRIMARY KEY (`VK`,`Wochentag`,`Mandant`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1

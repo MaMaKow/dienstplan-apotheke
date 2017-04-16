@@ -11,4 +11,4 @@ CREATE TABLE `dienstplan` (
   `user` varchar(64) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`VK`,`Datum`,`Dienstbeginn`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
