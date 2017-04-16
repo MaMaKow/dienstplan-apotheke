@@ -18,22 +18,25 @@
  */
 require "default.php";
 
-//First we delete the old files:
+//We delete the old files:
 function delete_old_table_data() {
-// This is to make sure, that any deleted tables in the database do not reappear.
-    $files_to_be_deleted = glob('src/sql/*.sql'); // get all file names
+    // This is to make sure, that any deleted tables in the database do not reappear.
+    global $New_table_files;
+    $Old_table_files = glob('src/sql/*.sql'); // get all file names
+    $files_to_be_deleted = array_diff($Old_table_files, $New_table_files);
     foreach ($files_to_be_deleted as $file) { // iterate files
         if (is_file($file)) {
-            if (!unlink($file)) { // delete file
-                return FALSE;
-            }
+              if (!unlink($file)) { // delete file
+              return FALSE;
+              }
         }
     }
     return TRUE;
 }
 
 function write_new_table_data() {
-//Then we collect the new data and write it to files:
+    //Collect the new data and write it to files:
+    global $New_table_files;
     $sql_query = "SHOW TABLES";
     $sql_result_with_tables = mysqli_query_verbose($sql_query);
     while ($table_row = mysqli_fetch_array($sql_result_with_tables)) {
@@ -43,8 +46,10 @@ function write_new_table_data() {
         while ($row = mysqli_fetch_array($sql_result)) {
             $table_structure_create = $row['Create Table'];
             $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
+            $file_name = 'src/sql/' . $file_name . '.sql';
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
-            if (!file_put_contents('src/sql/' . $file_name . '.sql', $table_structure_create)) {
+            $New_table_files[] = $file_name;
+            if (!file_put_contents($file_name, $table_structure_create)) {
                 return FALSE;
             }
         }
@@ -53,7 +58,8 @@ function write_new_table_data() {
 }
 
 function write_new_trigger_data() {
-//Then we collect the new data and write it to files:
+    //Collect the new data and write it to files:
+    global $New_table_files;
     $sql_query = "SHOW TRIGGERS";
     $sql_result_with_triggers = mysqli_query_verbose($sql_query);
     while ($trigger_row = mysqli_fetch_array($sql_result_with_triggers)) {
@@ -64,15 +70,17 @@ function write_new_trigger_data() {
             $trigger_structure_create = $row['SQL Original Statement'];
             $file_name = iconv("UTF-8", "ISO-8859-1", $trigger_name); //This is necessary for Microsoft Windows to recognise special chars.
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
-            if (!file_put_contents('src/sql/' . $file_name . '.sql', $trigger_structure_create)) {
+            $file_name = 'src/sql/' . $file_name . '.sql';
+            $New_table_files[] = $file_name;
+            if (!file_put_contents($file_name, $trigger_structure_create)) {
                 return FALSE;
             }
         }
     }
-   return TRUE;
+    return TRUE;
 }
 
-if (delete_old_table_data() and write_new_table_data() and write_new_trigger_data()) {
+if (write_new_table_data() and write_new_trigger_data() and delete_old_table_data()) {
     echo "<p>New sql table structure files have been written.</p>";
 } else {
     echo "<p>Error while writing sql table structure files.</p>";
