@@ -9,4 +9,4 @@ CREATE TABLE `grundplan` (
   `Stunden` float DEFAULT NULL,
   `Mandant` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`VK`,`Wochentag`,`Mandant`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
