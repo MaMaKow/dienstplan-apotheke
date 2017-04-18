@@ -36,8 +36,10 @@ function echo_table_diff() {
             $table_structure_create_old = file_get_contents($file_name);
             $diff = Diff::compare($table_structure_create_old, $table_structure_create_new);
             if (0 !== array_sum(array_column($diff, 1))) {
-                echo $table_name . ":<br>\n";
+                echo "<p>Changes in table " . $table_name . ":</p>\n";
                 echo Diff::toTable($diff, '', '');
+            } else {
+                echo "<p>Table " . $table_name . " without changes</p>\n";
             }
             //print_debug_variable($diff);
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
@@ -50,13 +52,14 @@ function echo_table_diff() {
         $trigger_structure_create_old = file_get_contents($file_name);
         $diff = Diff::compare($trigger_structure_create_old, $trigger_data);
         if (0 !== array_sum(array_column($diff, 1))) {
-            echo $trigger_name . ":<br>\n";
+            echo "<p>Changes in trigger " . $trigger_name . ":</p>\n";
             echo Diff::toTable($diff, '', '');
+        } else {
+            echo "<p>Trigger " . $trigger_name . " without changes</p>\n";
         }
     }
     return TRUE;
 }
-
 
 function get_new_trigger_data() {
 //Then we collect the new data and write it to files:
