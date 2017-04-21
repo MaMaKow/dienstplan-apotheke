@@ -61,7 +61,7 @@ if (isset($Abwesende)) {
 }
 
 //Let us check if everyone is there:
-if (NULL !== $Principle_roster and FALSE !== $holiday) {
+if (NULL !== $Principle_roster and FALSE === $holiday) {
     $Principle_roster_workers = $Principle_roster[$tag]["VK"];
     $Available_roster_workers = array_unique(array_merge(array_keys($Mandanten_mitarbeiter), $Principle_roster_workers)); //We combine the employees in the branch and the employees in the principle roster.
     $Mitarbeiter_differenz = array_diff($Available_roster_workers, $Eingesetzte_mitarbeiter);
