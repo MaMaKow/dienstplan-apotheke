@@ -1,10 +1,34 @@
-<head<?php if(!empty($navigator_language)){echo " lang=$navigator_language";}?>>
-  <meta charset=UTF-8>
-  <title><?php echo $config['application_name'];?></title>
-  <script type="text/javascript" src="javascript.js" ></script>
-  <link rel="stylesheet" type="text/css" href="datepicker.css" /> 
-  <script type="text/javascript" src="datepicker.js"></script>
-  <noscript>Sorry, your browser does not support JavaScript!</noscript>
-  <link rel="stylesheet" type="text/css" href="style.css" media="all">
-  <link rel="stylesheet" type="text/css" href="print.css" media="print">
-</head>
+<!DOCTYPE html>
+<!--
+Copyright (C) 2017 Mandelkow
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<HTML>
+    <HEAD<?php if (!empty($navigator_language)) {
+    echo " lang=$navigator_language";
+} ?>>
+        <META charset=UTF-8>
+        <TITLE><?php echo $config['application_name']; ?></TITLE>
+        <SCRIPT type="text/javascript" src="javascript.js" ></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="datepicker.css" /> 
+        <SCRIPT type="text/javascript" src="datepicker.js"></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="style.css" media="all">
+        <LINK rel="stylesheet" type="text/css" href="print.css" media="print">
+        <!--The following two files are relevant only to collaborative-vacation-in.php-->
+        <!--TODO: Maybe we should load them only where necessary.-->
+        <SCRIPT type="text/javascript" src="js/collaborative-vacation.js" ></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="css/collaborative-vacation.css" media="all">
+    </HEAD>
+    <BODY>

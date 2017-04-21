@@ -7,11 +7,21 @@ This is a TODO list.
 * Konfiguration
 * Dokumentation
 
-
 - database Ware-Termine / Ware-PEP
-- database PEP-Information in der Datenbank / PEP-xxx.php tragen in diese Datenbank ein. Average statt Median.
 
 The page stunden-in.php has its own confirmDelete(link) which differs from the one in javascript.js!
 Is this a problem? Do we need two?
 
-* I would like to build the images directly within php and not to store them in files.
+Bring all the files into proper directories:
+https://github.com/php-pds/skeleton
+bin/              # command-line files
+config/           # configuration files
+docs/             # documentation files
+public/           # web files
+resources/        # other resource files
+src/              # PHP source code files
+tests/            # test files
+CHANGELOG(.*)     # change notes
+CONTRIBUTING(.*)  # contribution guidelines
+LICENSE(.*)       # licensing information
+README(.*)        # read-me-first file

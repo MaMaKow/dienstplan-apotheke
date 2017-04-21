@@ -15,8 +15,7 @@ function db_lesen_tage($tage, $mandant, $VKmandant='[0-9]*')
 global $datum, $verbindungi, $Mitarbeiter;
 	//Abruf der gespeicherten Daten aus der Datenbank
 	//$tage ist die Anzahl der Tage. 5 Tage = Woche; 1 Tag = 1 Tag.
-	//$mandant 1 ist der Marienplatz, 2 ist die Helenenstraße. Mandant 0 wird für den Chef, Frau Zapel, Frau Köhler und andere genutzt, die nicht jeden Tag im Plan stehen sollen.
-//	$tag=$datum;
+	//Branch #0 can be used for the boss, the cleaning lady, and other special people, who do not regularly appear in the roster.
 
 	//We need information about the qualification of the workers:
 	require 'db-lesen-mitarbeiter.php';
@@ -24,9 +23,9 @@ global $datum, $verbindungi, $Mitarbeiter;
 	for ($i=0; $i<$tage; $i++)
 	{
 		$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));
-		$abfrage='SELECT DISTINCT Dienstplan.* FROM `Dienstplan` LEFT JOIN Mitarbeiter ON Dienstplan.VK=Mitarbeiter.VK WHERE Dienstplan.Mandant = "'.$mandant.'" AND `Datum` = "'.$tag.'" AND Mitarbeiter.Mandant REGEXP "^'.$VKmandant.'$" ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
+		$abfrage='SELECT DISTINCT Dienstplan.* FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id WHERE Dienstplan.Mandant = "'.$mandant.'" AND `Datum` = "'.$tag.'" AND employees.branch REGEXP "^'.$VKmandant.'$" ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
 //		$abfrage='SELECT * FROM `Dienstplan` WHERE `Datum` = "'.$tag.'" AND `Mandant` = "'.$mandant.'" ORDER BY `Dienstbeginn` ASC, `Mittagsbeginn` ASC;';
-		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+		$ergebnis = mysqli_query_verbose($abfrage);
 		$dienstplanCSV="";
 
 		while($row = mysqli_fetch_object($ergebnis))

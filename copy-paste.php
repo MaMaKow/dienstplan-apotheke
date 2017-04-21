@@ -15,7 +15,7 @@ if ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
 		$datum=date('Y-m-d', $datum);
 		$abfrage="SELECT COUNT(*) FROM `Dienstplan` WHERE `Datum` = '$datum' AND `Mandant` = '$mandant'";
 		echo "$tag $abfrage<br>\n";
-		$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+		$ergebnis = mysqli_query_verbose($abfrage);
 		$row = mysqli_fetch_row($ergebnis);
 		if ($row[0] == 0) //Wenn in dem Tag noch gar nichts eingetragen ist.
 		{
@@ -46,7 +46,7 @@ if ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
 						VALUES ('$VK', '$datum', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$mandant')";
 //					echo "<pre>";	var_export($Dienstplan);    	echo "</pre>"; 
 //					echo "$abfrage<br>\n";
-					$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+					$ergebnis = mysqli_query_verbose($abfrage);
 					$Datenübertragung="Die Daten wurden in die Datenbank eingetragen.<br>\n";
 				}
 			}

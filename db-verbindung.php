@@ -1,4 +1,5 @@
 <?php
+global $verbindungi;
 $verbindungi = new mysqli("localhost", $config['database_user'], $config['database_password'] , $config['database_name'] );
 if (mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
@@ -10,4 +11,13 @@ if (!$verbindungi->set_charset("utf8")) {
 } else {
 //    printf("Current character set: %s\n", $verbindungi->character_set_name());
 }
+
+function mysqli_query_verbose($sql_query) {
+    $result = mysqli_query($GLOBALS['verbindungi'], $sql_query)
+            or $message = "Error: $sql_query <br>".  \mysqli_error($GLOBALS['verbindungi'])
+            and error_log($message) 
+            and die($message);
+    return $result;
+}
+
 ?>

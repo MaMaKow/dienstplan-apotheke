@@ -8,7 +8,7 @@
 		if (!empty($Dienstplan[$tag]["Dienstbeginn"]))
 		{
 			$abfrage="SELECT * FROM Öffnungszeiten WHERE Wochentag = ".date('N', strtotime($datum))." AND Mandant = ".$mandant;
-			$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+			$ergebnis = mysqli_query_verbose($abfrage);
 			$row = mysqli_fetch_object($ergebnis);
 			if (!empty($row->Beginn) and !empty($row->Ende)) {
 				$tages_beginn=strtotime($row->Beginn);
@@ -81,7 +81,7 @@
 				$faktor_tagimmonat=$Tagimmonat['median'][date('n', strtotime($datum))-1]/$durchschnittstag;
 
 				$abfrage="SELECT * FROM pep_weekday_time WHERE Wochentag = ".(date('w', strtotime($datum))+1)." AND Mandant = $mandant ";
-				$ergebnis = mysqli_query($verbindungi, $abfrage) OR die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+				$ergebnis = mysqli_query_verbose($abfrage);
 				while ($row = mysqli_fetch_object($ergebnis)) {
 						$Wochentag['uhrzeit'][]=$row->Uhrzeit;
 						//$Wochentag['median'][]=$row->Median;

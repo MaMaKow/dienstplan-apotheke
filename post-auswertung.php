@@ -35,12 +35,12 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
         //TODO: We should manage situations, where an entry already exists better.
         $abfrage = "INSERT IGNORE INTO `approval` (date, state, branch, user)
 			VALUES ('$datum', 'not_yet_approved', '$mandant', '$user')";
-        $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+        $ergebnis = mysqli_query_verbose($abfrage);
         $abfrage = "DELETE FROM `Dienstplan`
 			WHERE `Datum` = '$datum'
 			AND `Mandant` = '$mandant'
 			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
-        $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+        $ergebnis = mysqli_query_verbose($abfrage);
         foreach ($Dienstplan[$tag]['VK'] as $key => $VK) { //Die einzelnen Zeilen im Dienstplan
             if ( !empty($VK) AND $VK != 'null' ) { //Wir ignorieren die nicht ausgefüllten Felder
                 // TODO: Do we still need to explode? Or is only the number sent in POST?
@@ -77,7 +77,7 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
                                         .", ".escape_sql_value($user)
                                         .")";
 //        echo "<pre>\$abfrage:\n"; echo $abfrage; echo "</pre>"; //die;
-                $ergebnis = mysqli_query($verbindungi, $abfrage) OR die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+                $ergebnis = mysqli_query_verbose($abfrage);
 //				echo "$abfrage<br>\n";
 /*                //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
                 if (empty($mittagsbeginn)) {
@@ -112,9 +112,20 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
          */
     }
     $datum = $Dienstplan[0]['Datum'][0];
-} elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) {
+} elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) { 
+    //TODO: These lines should be changed to the ones below for every file
     $datum = $_POST['Dienstplan'][0]['Datum'][0];
     $datum = strtotime('+1 week', strtotime($datum));
+    $datum = date('Y-m-d', $datum);
+}  elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['date']) && isset($_POST['selected_employee'])) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
+    $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
+    $datum = strtotime('+1 week', strtotime($datum));
+    $datum = date('Y-m-d', $datum);
+}  elseif (isset($_POST['submitWocheRückwärts']) && isset($_POST['date']) && isset($_POST['selected_employee'])) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
+    $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
+    $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 } elseif (isset($_POST['submitWocheRückwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) {
     $datum = $_POST['Dienstplan'][0]['Datum'][0];

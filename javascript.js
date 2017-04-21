@@ -60,7 +60,7 @@ function updateTage()
     }
     start.setDate(start.getDate() + 1);
   }
-  tageId.value 	= count;
+  tageId.innerHTML 	= count;
 }
 //This function is called by abwesenheit-in.php
 function checkUpdateTage ()
@@ -173,12 +173,6 @@ function updatesaldo()
 }
 
 //The following function is used by install.php
-/*
-$("#second_pass").on("keyup change blur paste cut click", function() {
-
-});
-*/
-
 function compare_passwords () {
 var first_pass = document.getElementById('first_pass').value;
 var second_pass = document.getElementById('second_pass').value;
@@ -196,4 +190,92 @@ if (first_pass == second_pass && first_pass != "") {
   document.getElementById('approve_pass_img').style.display = 'none';
 }
 
+}
+function update_pep() {
+    var filename = document.getElementById("filename").value;
+//    document.getElementById("xmlhttpresult").innerHTML = "<div class=warningmsg><p>working on: " + filename+"</p></div>";
+    document.getElementById("xmlhttpresult").innerHTML = "<p>working on: " + filename+"</p>";
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+//        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState >= 3 && this.status == 200) {
+            document.getElementById("xmlhttpresult").innerHTML = this.responseText;
+        }
+    };
+    xmlhttp.open("GET", "pep.php?filename=" + filename, true);
+    xmlhttp.send();
+}
+function reset_update_pep() {
+    document.getElementById("xmlhttpresult").innerHTML = "";
+    document.getElementById("javascriptmessage").innerHTML = "";
+    document.getElementById("phpscriptmessages").innerHTML = "";
+}
+
+function showEdit(beginn){
+    document.getElementById('save_' + beginn).style.display = 'inline';
+    document.getElementById('beginn_in_' + beginn).style.display = 'inline'; document.getElementById('beginn_in_' + beginn).className += 'datepicker'
+    document.getElementById('beginn_out_' + beginn).style.display = 'none';
+    document.getElementById('ende_in_' + beginn).style.display = 'inline'; document.getElementById('ende_in_' + beginn).className += 'datepicker'
+    document.getElementById('ende_out_' + beginn).style.display = 'none';
+    document.getElementById('grund_in_' + beginn).style.display = 'inline';
+    document.getElementById('grund_out_' + beginn).style.display = 'none';
+    document.getElementById('edit_' + beginn).style.display = 'none';
+    document.getElementById('delete_' + beginn).style.display = 'none';
+    document.getElementById('cancel_' + beginn).style.display = 'inline';
+    //Hide the submit button for new data:
+    //This is not to confuse people when choosing the right button for submission of the data.
+    document.getElementById('save_new').style.display = 'none';
+    document.getElementById('input_line_new').style.display = 'none';
+
+    datePickerInit();
+
+    var list = document.getElementsByClassName('edit_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'none';
+    }
+    var list = document.getElementsByClassName('delete_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'none';
+    }
+}
+
+function cancelEdit(beginn){
+    document.getElementById('save_' + beginn).style.display = 'none';
+    document.getElementById('beginn_in_' + beginn).style.display = 'none'; document.getElementById('beginn_in_' + beginn).classList.remove('datepicker');
+    document.getElementById('beginn_out_' + beginn).style.display = 'inline';
+    document.getElementById('ende_in_' + beginn).style.display = 'none'; document.getElementById('ende_in_' + beginn).classList.remove('datepicker');
+    document.getElementById('ende_out_' + beginn).style.display = 'inline';
+    document.getElementById('grund_in_' + beginn).style.display = 'none';
+    document.getElementById('grund_out_' + beginn).style.display = 'inline';
+    document.getElementById('edit_' + beginn).style.display = 'inline';
+    document.getElementById('delete_' + beginn).style.display = 'inline';
+    document.getElementById('cancel_' + beginn).style.display = 'none';
+    //
+    document.getElementById('save_new').style.display = 'inline';
+    document.getElementById('input_line_new').style.display = 'table-row';
+    var list = document.getElementsByClassName('edit_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'inline';
+    }
+
+    var list = document.getElementsByClassName('delete_button');
+    var i;
+    for (i = 0; i < list.length; i++) {
+        list[i].style.display = 'inline';
+    }
+
+   
+    var list = document.getElementsByClassName('datepickershow');
+    console.log(list);
+    var i;
+    for (i = 0; i < list.length; i++) {
+        console.log(list[i].parentElement);
+        list[i].parentElement.removeChild(list[i]);
+    }
+    var list = document.getElementsByClassName('datepickershow');
+    list[0].parentElement.removeChild(list[0]); //For some reason one datepicker survives the first deletion.
+    return false;
 }

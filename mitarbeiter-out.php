@@ -1,8 +1,9 @@
 <?php
 require 'default.php';
-require 'db-verbindung.php';
+require 'db-lesen-abwesenheit.php';
 require 'db-lesen-mandant.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
+require "src/php/calculate-holidays.php";
 
 //$datenübertragung="";
 $dienstplanCSV = '';
@@ -22,21 +23,22 @@ if (isset($_POST['submitAuswahlMitarbeiter'])) {
     $Plan = $_POST['Dienstplan'];
     $datum = $Plan[0]['Datum'][0];
     //echo $datum;
-} elseif (isset($_POST['submitWocheRückwärts']) or isset($_POST['submitWocheVorwärts'])) {
-    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
 } elseif (!isset($auswahl_mitarbeiter)) {
     $auswahl_mitarbeiter = 1;
 }
 if (isset($auswahl_mitarbeiter)) {
     create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
-
 if (isset($datum)) {
     // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
     $montags_differenz = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
     $montags_differenzString = '-'.$montags_differenz.' day';
     $datum = strtotime($montags_differenzString, strtotime($datum));
+    $date_unix = $datum;
+    $date_sql = date('Y-m-d', $date_unix);
     $datum = date('Y-m-d', $datum);
+    $date_sql_start = $date_sql;
+
 }
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
@@ -50,7 +52,6 @@ if (!isset($Mitarbeiter[$auswahl_mitarbeiter])) {
 }
 //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-woche-mitarbeiter.php';
-require 'db-lesen-feiertag.php';
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 //end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
@@ -60,59 +61,42 @@ foreach ($Dienstplan as $key => $Dienstplantag) {
 }
 $plan_anzahl = max($Plan_anzahl);
 
-//Produziere die Ausgabe
-?>
-<html>
-<?php require 'head.php';?>
-	<body>
-<?php
+//Produce the output:
+require 'head.php';
 require 'navigation.php';
-echo "<div class=main-area>\n";
-echo "\t\t<a href=woche-out.php?datum=".$datum.'>Kalenderwoche '.strftime('%V', strtotime($datum))."</a><br>\n";
-echo "\t\t<form id=myform method=post>\n";
-//Page heading:
-echo '<H1 class=only-print>'.$Mitarbeiter[$auswahl_mitarbeiter].'</H1>';
+require 'src/html/menu.html';
+echo "<div id=main-area>\n";
+echo "\t\t<a href='woche-out.php?datum=".$date_unix."'>Kalenderwoche ".strftime('%V', $date_unix)."</a><br>\n";
 
-
-//Chose which worker to view:
-$zeile = "<select name=auswahl_mitarbeiter class='no-print large' onChange=document.getElementById('submitAuswahlMitarbeiter').click()>";
-foreach ($Mitarbeiter as $vk => $name) {
-    if ($vk == $auswahl_mitarbeiter) {
-        $zeile .= "<option value=$vk selected>".$vk.' '.$name.'</option>,';
-    } else {
-        $zeile .= "<option value=$vk>".$vk.' '.$name.'</option>,';
-    }
-}
-$zeile .= '</select>';
-//name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
-$zeile .= "\t<input style=display:none type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
-$zeile .= '<br><br>';
-echo $zeile;
+echo build_select_employee($auswahl_mitarbeiter);
 
 //Navigation between the weeks:
+echo "<form method='POST' id=navigate_time>";
+echo "\t\t\t<input type=hidden name=date value=".$date_sql." form='navigate_time'>\n";
+echo "\t\t\t<input type=hidden name=selected_employee value=".$auswahl_mitarbeiter." form='navigate_time'>\n";
 echo "$rückwärts_button_week_img";
 echo "$vorwärts_button_week_img";
-echo '<br><br>';
-//echo "\t\t\t<table border=0 rules=groups style=width:99%>\n";
-echo "\t\t\t<table border=1>\n";
+echo '</form>';
+echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
-for ($tag = 0; $tag < count($Dienstplan); $tag++, $datum = date('Y-m-d', strtotime('+ 1 day', strtotime($datum)))) {
-    //Datum
-    require 'db-lesen-feiertag.php';
+for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strtotime('+ 1 day', $date_unix))) {
+    $date_unix = strtotime($date_sql);
     require 'db-lesen-notdienst.php';
-    require 'db-lesen-abwesenheit.php';
+    list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($date_sql);
     $zeile = '';
-    echo "\t\t\t\t\t<td width=".floor(100 / $tage).'%>';
-    echo '<a href=tag-out.php?datum='.$Dienstplan[$tag]['Datum'][0].'>';
-    $zeile .= '<input type=hidden size=2 name=Dienstplan['.$tag.'][Datum][0] value='.$Dienstplan[$tag]['Datum'][0].'>';
+    echo "\t\t\t\t\t<td>";
+    //Datum
+    echo "<a href='tag-out.php?datum=".$Dienstplan[$tag]['Datum'][0]."'>";
+    $zeile .= "<input type=hidden name=Dienstplan[".$tag."][Datum][0] value=".$Dienstplan[$tag]["Datum"][0]." form='select_employee'>";
     $zeile .= strftime('%d.%m.', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
-    if (isset($feiertag)) {
-        echo ' '.$feiertag.' ';
-        if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter]) and date('N', strtotime($datum)) < 6) {
+    $holiday = is_holiday($date_unix);
+    if (FALSE !== $holiday) {
+        echo ' '.$holiday.' ';
+        if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter]) and date('N', strtotime($date_sql)) < 6) {
             $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $Stunden_mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
-        } elseif( date('N', strtotime($datum)) < 6) {
+        } elseif( date('N', strtotime($date_sql)) < 6) {
             $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
         }
     }
@@ -131,9 +115,9 @@ echo "\t\t\t\t<br>\n";
     $zeile .= strftime('%A', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
     echo '</a>';
-    if (isset($Abwesende)  AND  array_search($auswahl_mitarbeiter, $Abwesende) !== false) {
+    if (isset($Abwesende[$auswahl_mitarbeiter])) {
         echo '<br>'.$Abwesenheits_grund[$auswahl_mitarbeiter];
-        if (!isset($feiertag) and date('N', strtotime($datum)) < 6) {
+        if (FALSE !== $holiday and date('N', strtotime($date_sql)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter])) {
                 $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $Stunden_mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
@@ -148,7 +132,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     echo "\t\t\t\t</tr></thead><tr>\n";
     for ($i = 0; $i < count($Dienstplan); ++$i) {
         $zeile = '';
-        echo "\t\t\t\t\t<td align=right>&nbsp";
+        echo "\t\t\t\t\t<td>";
         //Dienstbeginn
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Dienstbeginn'][$j]));
@@ -173,12 +157,12 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Mittagsende'][$j]));
         }
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Stunden'][$j] > 0) {
-            $zeile .= '<br><a href=stunden-out.php?auswahl_mitarbeiter='.$Dienstplan[$i]['VK'][$j].'>'.$Dienstplan[$i]['Stunden'][$j].' Stunden</a>';
+            $zeile .= "<br><a href='stunden-out.php?auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>".$Dienstplan[$i]["Stunden"][$j]." Stunden</a>";
         }
-        if (isset($Dienstplan[$i]['VK'][$j]) and isset($Dienstplan[$i]['Mandant'][$j])) {
-            $zeile .= '<br>'.$Kurz_mandant[$Dienstplan[$i]['Mandant'][$j]];
+        if (isset($Dienstplan[$i]["VK"][$j]) and isset($Dienstplan[$i]["Mandant"][$j])) {
+            $zeile .= "<br>".$Kurz_mandant[$Dienstplan[$i]["Mandant"][$j]];
         }
-        $zeile .= '';
+        $zeile .= "";
 
         echo $zeile;
         echo "</td>\n";
@@ -222,13 +206,10 @@ echo "\t\t\t\t\t</td>\n";
 echo "\t\t\t\t</tr>\n";
 echo "\t\t\t\t</tfoot>\n";
 echo "\t\t\t</table>\n";
-// echo $submit_button;
-echo "\t\t</form>\n";
-echo "</div>\n";
 
 //Jetzt wird ein Bild gezeichnet, dass den Stundenplan des Mitarbeiters wiedergibt.
 foreach (array_keys($Dienstplan) as $tag) {
-    $datum = $Dienstplan[$tag]['Datum'][0];
+    $date_sql = $Dienstplan[$tag]['Datum'][0];
     foreach ($Dienstplan[$tag]['VK'] as $key => $vk) {
         //Die einzelnen Zeilen im Dienstplan
 
@@ -259,7 +240,7 @@ foreach (array_keys($Dienstplan) as $tag) {
                 $mittagsende = '0:00';
             }
             //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
-            $dienstplanCSV .= '" '.strftime('%A', strtotime($datum)).'"'.", $vk, ".strftime('%w', strtotime($datum));
+            $dienstplanCSV .= '" '.strftime('%A', strtotime($date_sql)).'"'.", $vk, ".strftime('%w', strtotime($date_sql));
             $dienstplanCSV .= ', '.$dienstbeginn;
             $dienstplanCSV .= ', '.$dienstende;
             $dienstplanCSV .= ', '.$mittagsbeginn;
@@ -279,7 +260,13 @@ if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png'
 {
   echo '<img class=worker-img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
   }
-echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print onclick=location='webdav.php?auswahl_mitarbeiter=$auswahl_mitarbeiter&datum=$start_datum' title='Download ics Kalender Datei'><img src=images/download.png width=32px><br>ICS Datei</button>\n";
+echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print " //TODO: Put this into style.css
+    . "onclick='location=\"webdav.php?auswahl_mitarbeiter=$auswahl_mitarbeiter&datum=$date_sql_start\"' "
+    . "title='Download ics Kalender Datei'>"
+        . "<img src=img/download.png style='width:32px' alt='Download ics Kalender Datei'>"
+        . "<br>ICS Datei"
+    . "</button>\n";
+echo "</div>\n";
 
 
 //echo "<pre>";	var_export($_POST);    	echo "</pre>";
@@ -287,5 +274,5 @@ echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px'
 require 'contact-form.php';
 
 ?>
-	</body>
-<html>
+	</BODY>
+</HTML>
