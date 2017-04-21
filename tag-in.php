@@ -2,6 +2,8 @@
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
+require "src/php/calculate-holidays.php";
+
 $mandant = 1; //First branch is allways the default.
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
@@ -16,6 +18,7 @@ $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl 
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+$date_unix = strtotime($datum);
 if (isset($mandant)) {
     create_cookie("mandant", $mandant, 30);
 }
@@ -31,12 +34,12 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 //echo "<pre>\$Dienstplan:\n";	var_export($Dienstplan);    	echo "</pre>";die;
 /* Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen. */
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
-require 'db-lesen-feiertag.php';
 require_once 'db-lesen-abwesenheit.php';
 list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
+$feiertag = is_holiday($date_unix);
 require_once 'plane-tag-grundplan.php';
 $Principle_roster = get_principle_roster($datum, $mandant, $tag);
-if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND !isset($feiertag)) { //Samstag und Sonntag planen wir nicht.
+if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND FALSE !== $feiertag) { //Samstag und Sonntag planen wir nicht.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
@@ -121,6 +124,7 @@ echo "\t\t\t</div>\n";
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
+    //TODO: This loop probably is not necessary. Is there any case where $i ist not 0?
     $zeile = "";
     echo "\t\t\t\t\t<td>";
     $zeile.="<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
@@ -131,8 +135,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $zeile = "";
     $zeile.=strftime('%A ', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
-    require 'db-lesen-feiertag.php';
-    if (isset($feiertag)) {
+    if (FALSE !== $feiertag) {
         echo " " . $feiertag . " ";
     }
     require 'db-lesen-notdienst.php';
