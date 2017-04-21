@@ -247,7 +247,7 @@ ul#navigation ul, ul#navigation ul li ul{
     list-style-type: none;
     padding-left: 0;
     margin-top: 0.4em;
-    z-index:  5;
+    z-index:  20;
     position: absolute;
 }
 ul#navigation ul li {
