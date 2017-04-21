@@ -109,11 +109,11 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	require 'db-lesen-feiertag.php';
 	if(isset($feiertag)){$head_table_html .= " <br>".$feiertag." ";}
 	if (isset($feiertag) AND date('N', strtotime($datum))<6) {
-		foreach ($Mandanten_mitarbeiter as $vk => $nachname) {
-			if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
-					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $Stunden_mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
+		foreach ($Mandanten_mitarbeiter as $employee_id => $nachname) {
+			if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
+					$bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
 			} else {
-					$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
+					$bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
 			}
 		}
 	}
@@ -168,13 +168,13 @@ for ($i=0; $i<count($Dienstplan); $i++)
 // TODO: I am not sure where to put the following line. There is an echo inside.
 //	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
 	if (isset($Abwesende)) {
-		foreach ($Abwesende as $key => $vk) {
+		foreach ($Abwesende as $employee_id => $reason) {
 			if (!isset($feiertag) AND date('N', strtotime($datum))<6) {
 					//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
-					if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$vk])) {
-							$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $Stunden_mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
+					if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
+							$bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
 					} else {
-							$bereinigte_Wochenstunden_Mitarbeiter[$vk] = $bereinigte_Wochenstunden_Mitarbeiter[$vk] - $Stunden_mitarbeiter[$vk] / 5;
+							$bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
 					}
 			}
 		}
