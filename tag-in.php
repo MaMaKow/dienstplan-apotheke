@@ -36,10 +36,10 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require_once 'db-lesen-abwesenheit.php';
 list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
-$feiertag = is_holiday($date_unix);
+$holiday = is_holiday($date_unix);
 require_once 'plane-tag-grundplan.php';
 $Principle_roster = get_principle_roster($datum, $mandant, $tag);
-if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND FALSE !== $feiertag) { //Samstag und Sonntag planen wir nicht.
+if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND FALSE === $holiday) { //No plans on Saturday, SUnday and holidays.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
@@ -135,8 +135,8 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $zeile = "";
     $zeile.=strftime('%A ', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
-    if (FALSE !== $feiertag) {
-        echo " " . $feiertag . " ";
+    if (FALSE !== $holiday) {
+        echo " " . $holiday . " ";
     }
     require 'db-lesen-notdienst.php';
     if (isset($notdienst['mandant'])) {
@@ -149,8 +149,6 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     echo "</td>\n";
 }
 for ($j = 0; $j < $VKcount; $j++) {
-    //TODO The following line will prevent planning on hollidays. The problem ist, that we work might emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
-    //if(isset($feiertag) && !isset($notdienst)){break 1;}
     echo "\t\t\t\t</tr><tr>\n";
     for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
         $zeile = "";

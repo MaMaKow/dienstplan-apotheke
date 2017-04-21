@@ -91,9 +91,9 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     $zeile .= "<input type=hidden name=Dienstplan[".$tag."][Datum][0] value=".$Dienstplan[$tag]["Datum"][0]." form='select_employee'>";
     $zeile .= strftime('%d.%m.', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
-    $feiertag = is_holiday($date_unix);
-    if (FALSE !== $feiertag) {
-        echo ' '.$feiertag.' ';
+    $holiday = is_holiday($date_unix);
+    if (FALSE !== $holiday) {
+        echo ' '.$holiday.' ';
         if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter]) and date('N', strtotime($date_sql)) < 6) {
             $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $Stunden_mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
         } elseif( date('N', strtotime($date_sql)) < 6) {
@@ -117,7 +117,7 @@ echo "\t\t\t\t<br>\n";
     echo '</a>';
     if (isset($Abwesende[$auswahl_mitarbeiter])) {
         echo '<br>'.$Abwesenheits_grund[$auswahl_mitarbeiter];
-        if (!isset($feiertag) and date('N', strtotime($date_sql)) < 6) {
+        if (FALSE !== $holiday and date('N', strtotime($date_sql)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter])) {
                 $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $Stunden_mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
