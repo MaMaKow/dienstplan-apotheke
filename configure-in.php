@@ -134,19 +134,13 @@ $datalist_locales .= "</datalist>\n";
 //echo "<pre>"; var_export($new_config); echo "</pre>";
 
 
-?>
-
-
-
-<html>
-<?php require 'head.php';?>
-  <body>
+require 'head.php';?>
     <div style=font-size:larger>
       <H1>Installation</H1>
       <p>Bitte ergänzen Sie die folgenden Werte um den Dienstplan zu konfigurieren.</p>
       <form class="" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <pre><?php //echo "$datalist_locales";?></pre>
-        <table border="5" width=10%>
+        <table width=10%>
           <th colspan="99">
             Database settings
             <p class="hint">
@@ -186,8 +180,8 @@ $datalist_locales .= "</datalist>\n";
               >
             </td>
             <td width=90%>
-              <img id="approve_pass_img"    style="display:none" src="images/approve.png" height="20em">
-              <img id="disapprove_pass_img" style="display:none" src="images/disapprove.png" height="20em">
+              <img id="approve_pass_img"    style="display:none" src="img/approve.png" height="20em">
+              <img id="disapprove_pass_img" style="display:none" src="img/disapprove.png" height="20em">
               <!--
               <input type="text" id=clear_pass>
           -->

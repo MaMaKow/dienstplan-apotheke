@@ -198,7 +198,8 @@ function browserSupportsOwnDateInput() {
 
 // This is called when the page loads, it searches for inputs where the class is 'datepicker'
 function datePickerInit() {
-   if(browserSupportsOwnDateInput()){return false;} //We do not need a datepicker. This browser can handle the task on its own.
+    console.log('picking dates');
+    if(browserSupportsOwnDateInput()){return false;} //We do not need a datepicker. This browser can handle the task on its own.
   // Search for elements by class
   var allElements = document.getElementsByTagName("*");
   for (i=0; i<allElements.length; i++) {

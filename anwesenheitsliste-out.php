@@ -4,7 +4,7 @@ Diese Liste wird dann ausgehängt und von den zuständigen Apothekern geführt.
 Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber bereits enthalten sein.*/
 
 	require 'default.php';
-	require 'db-verbindung.php';
+        require 'db-lesen-abwesenheit.php';
 
 	if (isset($_POST["month"])) {
 	  $month=sanitize_user_input($_POST["month"]);
@@ -18,24 +18,23 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 	}
 	$start_datum=mktime( 0, 0, 0, $month, 1, $year );
 	$datum=$start_datum;
-	//Die Mitarbeiterliste benötigt ein $datum. Denn Mitarbeiter sind nicht auf ewig bei uns.
+
+        //The employee list needs a $datum, because nobody is working with us forever.
 	require 'db-lesen-mitarbeiter.php';
-	$Months = array();
+
+        $Months = array();
 	for( $i = 1; $i <= 12; $i++ ) {
 	    $Months[ $i ] = strftime( '%B', mktime( 0, 0, 0, $i, 1 ) );
 	}
-
-?>
-<HTML>
-  <HEAD>
-    <META charset=UTF-8>
-		<script type="text/javascript" src="javascript.js" ></script>
-		<LINK rel="stylesheet" type="text/css" href="style.css" media="all">
-		<LINK rel="stylesheet" type="text/css" href="print.css" media="print">
-  </HEAD>
-  <BODY>
-<?php
-	require 'navigation.php';
+        $Years = array();
+        $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+        $ergebnis = mysqli_query_verbose($abfrage);
+        while ($row = mysqli_fetch_object($ergebnis)) {
+            $Years[] = $row->year;
+        }
+require 'head.php';
+require 'navigation.php';
+require 'src/html/menu.html';
 ?>
     <FORM method=post class="no-print">
       <SELECT name=month onchange=this.form.submit()>
@@ -61,7 +60,7 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
         ?>
       </SELECT>
     </FORM>
-      <TABLE border=1>
+      <TABLE class="table_with_border">
       <TR>
         <TD>Anwesenheit</TD>
         <?php foreach ($Mitarbeiter as $vk => $name) {
@@ -77,27 +76,27 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
                     echo '<TD></TD>';
                 }
             } else {
-                require 'db-lesen-abwesenheit.php';
+                list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
                 require 'db-lesen-notdienst.php';
                 echo '<TR><TD style="padding-bottom: 0">'.strftime('%a %d.%m.%Y', $datum).'</TD>';
                 foreach ($Mitarbeiter as $vk => $name) {
-                    if (isset($Abwesende) and array_search($vk, $Abwesende) !== false) {
-                        if (preg_match('/Krank/i', $Abwesenheits_grund[$vk])) {
+                    if (isset($Abwesende[$vk])) {
+                        if (preg_match('/Krank/i', $Abwesende[$vk])) {
                             $grund_string = 'K';
-                        } elseif (preg_match('/Kur/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Kur/i', $Abwesende[$vk])) {
                             $grund_string = 'K';
-                        } elseif (preg_match('/Urlaub/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Urlaub/i', $Abwesende[$vk])) {
                             $grund_string = 'U';
-                        } elseif (preg_match('/Elternzeit/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Elternzeit/i', $Abwesende[$vk])) {
                             $grund_string = 'E';
-                        } elseif (preg_match('/Nicht angestellt/i', $Abwesenheits_grund[$vk])) {
+                        } elseif (preg_match('/Nicht angestellt/i', $Abwesende[$vk])) {
                             $grund_string = 'N/A';
-                        }elseif (preg_match('/Notdienst/i', $Abwesenheits_grund[$vk])) {
+                        }elseif (preg_match('/Notdienst/i', $Abwesende[$vk])) {
                             $grund_string = 'NA';
                         } else {
-                            $grund_string = mb_substr($Abwesenheits_grund[$vk], 0, 3);
+                            $grund_string = mb_substr($Abwesende[$vk], 0, 3);
                         }
-                        echo '<TD style="padding-bottom: 0" title="'.$Abwesenheits_grund[$vk].'">'.$grund_string.'</TD>';
+                        echo '<TD style="padding-bottom: 0" title="'.$Abwesende[$vk].'">'.$grund_string.'</TD>';
                     } elseif (isset($notdienst) and $notdienst['vk'] == $vk) {
                         echo '<TD style="padding-bottom: 0">N</TD>';
                     } else {

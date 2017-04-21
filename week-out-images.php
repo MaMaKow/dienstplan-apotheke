@@ -1,8 +1,7 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
-require 'db-verbindung.php';
-$mandant = 1; //Wir zeigen den Dienstplan standardmäßig für die "Apotheke am Marienplatz"
+$mandant = 1; //First branch is allways the default.
 $tage = 7; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 
@@ -33,12 +32,9 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 
 
 //Produziere die Ausgabe
-?>
-<html>
-    <?php require 'head.php'; ?>
-    <body>
-        <?php
-        require 'navigation.php';
+require 'head.php';
+require 'navigation.php';
+require 'src/html/menu.html';
 
 //Hier beginnt die Normale Ausgabe.
         echo "<div class='main-area no-print'>\n";
@@ -79,7 +75,7 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
             foreach ($Dienstplan as $day => $Column) {
                 echo "\t\t<div class=above-image style='$image_div_style'>\n";
                 echo "\t\t\t<div class=image>\n";
-                echo "<a href=tag-out.php?datum=" . $Dienstplan[$day]["Datum"][0] . ">";
+                echo "<a href='tag-out.php?datum=" . $Dienstplan[$day]["Datum"][0] . "'>";
                 echo strftime('%A, %d.%m.%Y', strtotime($Dienstplan[$day]['Datum'][0])) . " </a><br>\n";
                 if (empty(array_sum($Dienstplan[$day]['VK']))) {
                     echo "<svg width='$svg_width' height='$svg_height' style='border: 1px solid #000000;'></svg>";

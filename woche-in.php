@@ -1,9 +1,7 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan einer Woche  anzeigen.
 require 'default.php';
-require 'db-verbindung.php';
-
-$mandant=1;	//Wir zeigen den Dienstplan für die "Apotheke am Marienplatz"
+$mandant=1;	//First branch is allways the default.
 $tage=7;	//Dies ist eine Wochenansicht mit Wochenende
 
 
@@ -47,18 +45,9 @@ $VKcount = calculate_VKcount ($Dienstplan);
 
 
 //Produziere die Ausgabe
-?>
-<html>
-	<head>
-		<meta charset=UTF-8>
-		<script type="text/javascript" src="javascript.js" ></script>
-		<noscript>Sorry, your browser does not support JavaScript!</noscript>
-		<link rel="stylesheet" type="text/css" href="style.css" media="all">
-		<link rel="stylesheet" type="text/css" href="print.css" media="print">
-	</head>
-	<body>
-<?php
+require 'head.php';
 require 'navigation.php';
+require 'src/html/menu.html';
 
 echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 //Support for various branch clients.
@@ -82,27 +71,27 @@ echo $rückwärts_button_week_img;
 echo $vorwärts_button_week_img;
 echo "$submit_button_img";
 echo "<br><br>\n";
-echo "<div id=wochenAuswahl><input name=woche type=date id=dateChooserInput class='datepicker' value=".date('Y-m-d', strtotime($datum)).">";
+echo "<div id=wochenAuswahl><input name=woche type=date id=date_chooser_input class='datepicker' value=".date('Y-m-d', strtotime($datum)).">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
 echo "$submit_approval_button_img";
 echo "$submit_disapproval_button_img";
 echo "<br><br>\n";
-echo "\t\t\t\t<a href=woche-out.php?datum=".$datum." class=no-print>[Lesen]</a>\n";
+echo "\t\t\t\t<a href='woche-out.php?datum=".$datum."' class=no-print>[Lesen]</a>\n";
 // TODO: The button should be inactive when the approval already was done.
 //$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";
 //$submit_disapproval_button="\t\t\t\t<input type=submit value=Ablehnen name='submit_disapproval'>\n";
 echo "<br><br>\n";
 echo "</div>";
 
-echo "\t<table border=0 rules=groups>\n";
+echo "\t<table>\n";
 echo "\t\t\t\t\t<thead>\n";
 echo "\t\t\t<tr>\n";
 for ($i=0; $i<count($Dienstplan); $i++)
 {//Datum
 	$zeile="";
-	echo "\t\t\t\t<td><a href=tag-in.php?datum=".$Dienstplan[$i]["Datum"][0].">";
+	echo "\t\t\t\t<td><a href='tag-in.php?datum=".$Dienstplan[$i]["Datum"][0]."'>";
 	$zeile.="<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
 	$zeile.=strftime('%d.%m.', strtotime( $Dienstplan[$i]["Datum"][0]));
 	echo $zeile;
@@ -119,14 +108,6 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	echo "</a></td>\n";
 
 }
-//if ( file_exists("dienstplan_".$datum.".png") )
-//{
-//echo "<td align=center valign=top rowspan=30 style=width:800px>";
-//echo "<img src=dienstplan_".$datum.".png?".filemtime('dienstplan_'.$datum.'.png')." style=width:90%;><br>"; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-//echo "<img src=histogramm_".$datum.".png?".filemtime('dienstplan_'.$datum.'.png')." style=width:90%;></td>";
-//echo "<td></td>";//Wir fügen hier eine Spalte ein, weil im IE9 die Tabelle über die Seite hinaus geht.
-//}
-//echo "\t\t\t</tr><tr>\n";
 echo "\t\t\t\t\t</tr></thead><tbody><tr>";
 
 for ($j=0; $j<$VKcount; $j++)
@@ -136,7 +117,7 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mitarbeiter
 		$zeile="";
-		echo "\t\t\t\t<td align=right>";
+		echo "\t\t\t\t<td>";
 		$zeile.="<select name=Dienstplan[".$i."][VK][".$j."] tabindex=".(($i*$VKcount*5) + ($j*5) + 1)."><option>";
 		$zeile.="</option>";
 		foreach ($Mitarbeiter as $k => $mitarbeiter)
@@ -145,32 +126,32 @@ for ($j=0; $j<$VKcount; $j++)
 			{
 				if ( isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j]!=$k ) //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 				{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>";
 				}
 				else
 				{
-					$zeile.="<option selected>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option selected>".$k." ".$Mitarbeiter[$k]."</option>";
 				}
 			}
 			elseif ( isset($Mitarbeiter[$k]) )
 			{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>,";
+					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>";
 			}
 		}
 		$zeile.="</select>";
 		//Dienstbeginn
-		$zeile.=" <input type=time size=1 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value=";
+		$zeile.=" <input type=time size=1 name=Dienstplan[".$i."][Dienstbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 2 )." value='";
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=1 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value=";
+		$zeile.="'> bis <input type=time size=1 name=Dienstplan[".$i."][Dienstende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 3 )." value='";
 		//Dienstende
 		if (isset($Dienstplan[$i]["VK"][$j]))
 		{
 			$zeile.=strftime('%H:%M',strtotime($Dienstplan[$i]["Dienstende"][$j]));
 		}
-		$zeile.=">";
+		$zeile.="'>";
 		echo $zeile;
 
 		echo "\t\t\t\t</td>\n";
@@ -179,20 +160,20 @@ for ($j=0; $j<$VKcount; $j++)
 	for ($i=0; $i<count($Dienstplan); $i++)
 	{//Mittagspause
 		$zeile="";
-		echo "\t\t\t\t<td align=right>";
+		echo "\t\t\t\t<td>";
 		$zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
 		$zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value=";
+		$zeile.=" Pause: <input type=time size=1 name=Dienstplan[".$i."][Mittagsbeginn][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 4 )." value='";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
 		}
-		$zeile.="> bis <input type=time size=1 name=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value=";
+		$zeile.="'> bis <input type=time size=1 name=Dienstplan[".$i."][Mittagsende][".$j."] tabindex=".($i*$VKcount*5 + $j*5 + 5 )." value='";
 		if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0 )
 		{
 			$zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
 		}
-		$zeile.=">";
+		$zeile.="'>";
 		$zeile.="<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[".$i."][Kommentar][".$j."] value=\"";
 		if (isset($Dienstplan[$i]["Kommentar"][$j]))
 		{
@@ -207,7 +188,9 @@ for ($j=0; $j<$VKcount; $j++)
 echo "\t\t\t</tr>\n";
 echo "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t\t<tfoot><tr class=page-break></tr>\n";
+echo "\t\t\t\t\t<tfoot>"
+//. "<tr class=page-break></tr>"
+        . "\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 echo "\t\t\t<tr>\n";
@@ -240,17 +223,9 @@ echo "\t</table>\n";
 echo "</form>\n";
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-/*
-if (isset($Fehlermeldung))
-{
-	echo "\t\t<div class=overlay><H1>".$fehler."<H1></div>";
-	foreach($Fehlermeldung as $fehler)
-	{
-		echo "\t\t<<H1>".$fehler."<H1>";
-	}
-	echo "</div>";
-}
-*/
+require_once 'src/php/build-warning-messages.php';
+echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+
 require 'contact-form.php';
 echo "</body>";
 ?>

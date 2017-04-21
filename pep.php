@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2016 Mandelkow
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,35 +22,90 @@
 //sleep(8);
 
 require_once 'default.php';
+//error_log("We are inside pep.php");
+set_time_limit(0); //Do not stop execution even if we take a LONG time to finish.
+ignore_user_abort(true);
 
-/*
-$abfrage = "SELECT max(Datum) as Datum FROM `pep`";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
-$row = mysqli_fetch_object($ergebnis);
-$newest_pep_date = strtotime($row->Datum);
-$today = time();
-$seconds_since_last_update = $today - $newest_pep_date;
-if ($seconds_since_last_update >= 60*60*24*30*3 ) {
-    $Warnmeldung[] = "PEP Information veraltet. Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!";
+function read_file_write_db ($filename){
+    echo 'Working on: '.$filename."<br>\n";
+    global $verbindungi;
+    $pattern = "~^upload/I[0-9]+\.asy$~";
+        if (preg_match($pattern, $filename)) {
+            $handle = fopen($filename, "r");
+            if ($handle) {
+                while (($line = fgets($handle)) !== false) {
+                    $hash = hash('sha265', $line); //The hash is stored binary in the database.
+                    //For updates into the old database:
+                    //ALTER TABLE `pep` ADD `hash` BINARY(32) NOT NULL FIRST;
+                    //UPDATE `pep` SET hash = UNHEX(SHA2(CONCAT(`Datum`, `Zeit`, `Anzahl`, `Mandant`), 0))
+                    //ALTER TABLE `pep` DROP PRIMARY KEY, ADD PRIMARY KEY(`hash`);
+
+                    //$hash_hex = bin2hex($hash);
+//                  echo "$hash_hex: $line";
+                    $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the 
+//                    list($pep['date'][], $pep['time'][], $pep['sales_value'][], $pep['sales_count'][], $pep['foo'][], $pep['branch'][]) = explode(';', $line_string) AND $pep['hash'][] = $hash;
+                    list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
+                    $sql_date = date('Y-m-d', strtotime($date));
+                    $abfrage = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES ('$hash', '$sql_date', '$time', '$sales_count', '$branch')";
+//                    echo "$abfrage<br>\n";
+                    $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+
+                    }
+                    echo 'Finished processing.<br>';
+//                var_export($pep);
+//                echo $pep['date'][0].", ".$pep['time'][0].", ".$pep['sales_value'][0].", ".$pep['sales_count'][0].", ".$pep['foo'][0].", ".$pep['branch'][0].", ".$pep['hash'][0];
+                fclose($handle);
+                if (unlink($filename)) { //delete the file
+                    echo 'The file '.$filename.' was deleted.<br>';
+                } else {
+                    echo 'Error while deleting '.$filename.'<br>';
+                        }
+            } else {
+                // error opening the file.
+            }
+        } else {
+            echo "$filename does not match the pattern.<br>\n";
+        }
+    
 }
 
-$abfrage = "SELECT create_time FROM INFORMATION_SCHEMA.TABLES
+$filename = filter_input(INPUT_GET, 'filename', FILTER_SANITIZE_STRING);
+if (!empty($filename)) {
+    read_file_write_db($filename);
+} else {
+    error_log("no \$filename was given");
+    foreach (glob("upload/I*.asy") as $filename) {
+        read_file_write_db($filename);
+    }
+}
+/*
+  $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
+  $ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+  $row = mysqli_fetch_object($ergebnis);
+  $newest_pep_date = strtotime($row->Datum);
+  $today = time();
+  $seconds_since_last_update = $today - $newest_pep_date;
+  if ($seconds_since_last_update >= 60*60*24*30*3 ) {
+  $Warnmeldung[] = "PEP Information veraltet. Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!";
+  }
+
+  $abfrage = "SELECT create_time FROM INFORMATION_SCHEMA.TABLES
   WHERE table_schema = '" . $config['database_name'] . "'
   AND table_name = 'pep_year_month'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 $row = mysqli_fetch_object($ergebnis);
 $last_pep_update = strtotime($row->create_time);
 */
 
-$abfrage = "UPDATE dienstplan set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
-$abfrage = "UPDATE dienstplan set Mittagsende = null WHERE Mittagsende = '00:00:00'";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$abfrage = "UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
+$ergebnis = mysqli_query_verbose($abfrage);
+$abfrage = "UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:00:00'";
+$ergebnis = mysqli_query_verbose($abfrage);
 
 
 $abfrage = "DROP TABLE IF EXISTS `pep_weekday_time`;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
    CREATE TABLE IF NOT EXISTS `pep_weekday_time` (
@@ -61,12 +116,12 @@ $abfrage = "
   PRIMARY KEY (`Uhrzeit`,`Wochentag`,`Mandant`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 
@@ -82,12 +137,12 @@ $abfrage = "
             Mandant
     ;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 DROP TABLE IF EXISTS `pep_month_day`;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 CREATE TABLE IF NOT EXISTS `pep_month_day` (
@@ -97,11 +152,9 @@ CREATE TABLE IF NOT EXISTS `pep_month_day` (
   PRIMARY KEY (`day`,`branch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
-
-
     INSERT INTO `pep_month_day`
         SELECT DAYOFMONTH(`Datum`),
             SUM(`Anzahl`)/COUNT(DISTINCT `Datum`)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`),
@@ -111,13 +164,12 @@ $abfrage = "
             `Mandant`
     ;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
-    
-DROP TABLE IF EXISTS `pep_year_month`;
+    DROP TABLE IF EXISTS `pep_year_month`;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
 CREATE TABLE IF NOT EXISTS `pep_year_month` (
@@ -127,10 +179,9 @@ CREATE TABLE IF NOT EXISTS `pep_year_month` (
   PRIMARY KEY (`month`, `branch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);
 
-$abfrage = "
-    
+$abfrage = "    
     INSERT INTO `pep_year_month`
         SELECT MONTH(Datum),
             SUM(Anzahl)/COUNT(DISTINCT Datum)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`),
@@ -139,4 +190,4 @@ $abfrage = "
         GROUP BY MONTH(Datum), `Mandant`
     ;";
 //TODO: The above code gives a factor of about 0.2 for our smaller pharmacy. We have to check if that is a double factor together with the others!
-$ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
+$ergebnis = mysqli_query_verbose($abfrage);

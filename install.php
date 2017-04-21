@@ -70,7 +70,7 @@ if (empty($_POST)) {
   require 'db-verbindung.php'; //needs $config['database_user'], $config['database_password'] and $config['database_name']
   //$abfrage = "CREATE DATABASE IF NOT EXISTS `".$config['database_name']."` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;";
   $abfrage = "CREATE DATABASE IF NOT EXISTS `Apotheketest` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;";
-  $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+  $ergebnis = mysqli_query_verbose($abfrage);
   // TODO: /var/www/html/phpBB3/install/index.php shows an example of the information needed.
 }
 
@@ -161,17 +161,7 @@ foreach ($exec_result as $key => $installed_locale) {
 }
 $datalist_locales .= "</datalist>\n";
 
-
-//echo "<pre>"; var_export($new_config); echo "</pre>";
-
-
-?>
-
-
-
-<html>
-<?php require 'head.php';?>
-  <body>
+require 'head.php';?>
     <div style=font-size:larger>
       <H1>Installation</H1>
       <p>Bitte ergänzen Sie die folgenden Werte um den Dienstplan zu konfigurieren.</p>
@@ -217,8 +207,8 @@ $datalist_locales .= "</datalist>\n";
               >
             </div>
             <div class="cell" width=90%>
-              <img id="approve_pass_img"    style="display:none" src="images/approve.png" height="20em">
-              <img id="disapprove_pass_img" style="display:none" src="images/disapprove.png" height="20em">
+              <img id="approve_pass_img"    style="display:none" src="img/approve.png" height="20em">
+              <img id="disapprove_pass_img" style="display:none" src="img/disapprove.png" height="20em">
               <!--
               <input type="text" id=clear_pass>
           -->
