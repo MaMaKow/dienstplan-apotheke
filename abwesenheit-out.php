@@ -27,8 +27,8 @@
 	}
 	$vk=$auswahl_mitarbeiter;
 	$abfrage="SELECT * FROM `absence`
-		WHERE `VK` = ".$vk."
-		ORDER BY `Beginn` ASC
+		WHERE `employee_id` = ".$vk."
+		ORDER BY `start` ASC
 		";
 	$ergebnis=  mysqli_query_verbose($abfrage);
 	$number_of_rows = mysqli_num_rows($ergebnis);
