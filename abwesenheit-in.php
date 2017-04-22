@@ -134,7 +134,7 @@ require 'default.php';
                         . "\t\t\t</tr>\n";
                 ++$i;
             }
-            $abfrage = "SELECT `Grund` FROM `absence`  GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
+            $abfrage = "SELECT `reason` FROM `absence`  GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
             $ergebnis = mysqli_query_verbose($abfrage);
             $datalist = "<datalist id='reasons'>\n";
             while ($row = mysqli_fetch_object($ergebnis)) {
