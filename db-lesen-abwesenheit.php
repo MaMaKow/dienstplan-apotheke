@@ -20,15 +20,13 @@ function db_lesen_abwesenheit($date) {
     if (!isset($Mitarbeiter)) {
         require "db-lesen-mitarbeiter.php";
     }
-    $mitarbeiterliste = "";
-    foreach ($Mitarbeiter as $VK => $nachname) {
-        $mitarbeiterliste.=$VK . ", ";
-    }
-    $mitarbeiterliste = substr($mitarbeiterliste, 0, -2); //The last comma has to be cut off.
-
-    $abfrage = "SELECT *
-		FROM `absence`
-		WHERE `start` <= '$sql_date' AND `end` >= '$sql_date' AND `employee_id` IN (" . $mitarbeiterliste . ")"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.
+    $mitarbeiterliste = implode(", ", array_keys($Mitarbeiter));
+    
+    $abfrage = "SELECT * FROM `absence` "
+            . "WHERE `start` <= '$sql_date' "
+            . "AND `end` >= '$sql_date' "
+            . "AND `employee_id` IN (" . $mitarbeiterliste . ")"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.
+    //TODO: The above query does not discriminate between approved an non-approved vacations.
     $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
         $Abwesende[$row->employee_id] = $row->reason;
@@ -66,7 +64,7 @@ function calculate_absence_days($start_date_string, $end_date_string) {
     }
     $days = 0;
     for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix = strtotime('+1 day', $date_unix)) {
-        if (intval(date('w', $date_unix)) !== 6 and intval(date('w', $date_unix)) !== 0 and ! is_holiday($date_unix)) {
+        if (6 !== intval(date('w', $date_unix)) and 0 !== intval(date('w', $date_unix)) and FALSE === is_holiday($date_unix)) {
             $days++;
         }
     }

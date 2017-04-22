@@ -26,7 +26,7 @@
 		create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 	}
 	$vk=$auswahl_mitarbeiter;
-	$abfrage="SELECT * FROM `Abwesenheit`
+	$abfrage="SELECT * FROM `absence`
 		WHERE `VK` = ".$vk."
 		ORDER BY `Beginn` ASC
 		";
@@ -37,35 +37,28 @@
 	{
 		$tablebody.= "\t\t\t<tr>\n";
 		$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-		$tablebody.= date('d.m.Y', strtotime($row->Beginn));
+		$tablebody.= date('d.m.Y', strtotime($row->start));
 		$tablebody.= "\n\t\t\t\t</td>\n";
 		$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-		$tablebody.= date('d.m.Y', strtotime($row->Ende));
+		$tablebody.= date('d.m.Y', strtotime($row->end));
 		$tablebody.= "\n\t\t\t\t</td>\n";
 		if($i == $number_of_rows)
 		{
+                        //TODO: This whole part might be unnecessary. We might remove it with some testing.
 			$tablebody.= "\t\t\t\t<td id=letzterGrund>\n\t\t\t\t\t";
 		}
 		else
 		{
 			$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
 		}
-		$tablebody.= "$row->Grund";
+		$tablebody.= "$row->reason";
 		$tablebody.= "\n\t\t\t\t</td>\n";
 		$tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-		$tablebody.= "$row->Tage";
+		$tablebody.= "$row->days";
 		$tablebody.= "\n\t\t\t\t</td>\n";
 		$tablebody.= "\n\t\t\t</tr>\n";
 		$i++;
 	}
-	$abfrage='SELECT DISTINCT `Grund` FROM `Abwesenheit` ORDER BY `Grund` ASC';
-	$ergebnis=  mysqli_query_verbose($abfrage);
-	$datalist= "<datalist id='gruende'>\n";
-	while($row = mysqli_fetch_object($ergebnis))
-	{
-		$datalist.= "\t<option value='$row->Grund'>\n";
-	}
-	$datalist.= "</datalist>\n";
 require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';

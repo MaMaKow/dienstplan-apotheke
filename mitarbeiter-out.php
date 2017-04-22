@@ -116,7 +116,7 @@ echo "\t\t\t\t<br>\n";
     echo $zeile;
     echo '</a>';
     if (isset($Abwesende[$auswahl_mitarbeiter])) {
-        echo '<br>'.$Abwesenheits_grund[$auswahl_mitarbeiter];
+        echo '<br>'.$Abwesende[$auswahl_mitarbeiter];
         if (FALSE !== $holiday and date('N', strtotime($date_sql)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter])) {
