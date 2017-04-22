@@ -26,8 +26,8 @@ require 'default.php';
   //                  foreach ($Beginne as $beginn => $X) {
                 $vk = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
                 $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
-                $abfrage = "DELETE FROM `Abwesenheit`
-                	WHERE `VK` = '$vk' AND `Beginn` = '$beginn'";
+                $abfrage = "DELETE FROM `absence`
+                	WHERE `employee_id` = '$vk' AND `start` = '$beginn'";
               //  		echo "$abfrage";
                 $ergebnis = mysqli_query_verbose($abfrage);
     //                }
@@ -62,13 +62,14 @@ require 'default.php';
                 //var_export($tage);
                 if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)){
                     $beginn_old = filter_input(INPUT_POST, 'beginn_old', FILTER_SANITIZE_STRING);
-                    $abfrage = "DELETE FROM `Abwesenheit` WHERE `VK` = '$auswahl_mitarbeiter' AND `Beginn` = '$beginn_old'"; 
+                    $abfrage = "DELETE FROM `absence` WHERE `employee_id` = '$auswahl_mitarbeiter' AND `start` = '$beginn_old'"; 
                     //echo "$abfrage<br>\n";
                                     $ergebnis = mysqli_query_verbose($abfrage);
                 }
-                $abfrage = "INSERT INTO `Abwesenheit` "
-                        . "(VK, Beginn, Ende, Tage, Grund) "
-                        . "VALUES (".$auswahl_mitarbeiter.", '".$beginn."', '".$ende."', '".$tage."', '".$grund."')";
+                $approval = "approved"; //TODO: There will be a time to handle cases of non-approved holidays!
+                $abfrage = "INSERT INTO `absence` "
+                        . "(employee_id, start, end, days, reason, user, approval) "
+                        . "VALUES ('$auswahl_mitarbeiter', '$beginn', '$ende', '$tage', '$grund', '$user', '$approval')";
                 //echo "$abfrage<br>\n";
 		if( !($ergebnis = mysqli_query($verbindungi, $abfrage)) ) {
 			$error_string = mysqli_error($verbindungi);
@@ -82,49 +83,49 @@ require 'default.php';
 		}
             } 
             $vk = $auswahl_mitarbeiter;
-            $abfrage = 'SELECT * FROM `Abwesenheit`
-				WHERE `VK` = '.$vk.'
-				ORDER BY `Beginn` ASC
+            $abfrage = 'SELECT * FROM `absence`
+				WHERE `employee_id` = '.$vk.'
+				ORDER BY `start` ASC
 				';
             $ergebnis = mysqli_query_verbose($abfrage);
             $number_of_rows = mysqli_num_rows($ergebnis);
             $tablebody = ''; $i = 1;
             while ($row = mysqli_fetch_object($ergebnis)) {
                 $tablebody .= "\t\t\t<tr style='height: 1em;'>"
-                        . "<form method=POST id='change_absence_entry_".$row->Beginn."'>"
+                        . "<form method=POST id='change_absence_entry_".$row->start."'>"
                         . "\n\t\t\t\t";
-                $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=beginn_out_".$row->Beginn.">";
-                $tablebody .= date('d.m.Y', strtotime($row->Beginn))."</div>";
-                $tablebody .= "<input id=beginn_in_".$row->Beginn." style='display: none;' type=date name='beginn' value=".date('Y-m-d', strtotime($row->Beginn))." form='change_absence_entry_".$row->Beginn."'> ";
-                $tablebody .= "<input id=beginn_in_old_".$row->Beginn." style='display: none;' type=date name='beginn_old' value=".date('Y-m-d', strtotime($row->Beginn))." form='change_absence_entry_".$row->Beginn."'> ";
+                $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=beginn_out_".$row->start.">";
+                $tablebody .= date('d.m.Y', strtotime($row->start))."</div>";
+                $tablebody .= "<input id=beginn_in_".$row->start." style='display: none;' type=date name='beginn' value=".date('Y-m-d', strtotime($row->start))." form='change_absence_entry_".$row->start."'> ";
+                $tablebody .= "<input id=beginn_in_old_".$row->start." style='display: none;' type=date name='beginn_old' value=".date('Y-m-d', strtotime($row->start))." form='change_absence_entry_".$row->start."'> ";
                 $tablebody .= "\n\t\t\t\t</td>\n";
-                $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=ende_out_".$row->Beginn." form='change_absence_entry_".$row->Beginn."'>";
-                $tablebody .= date('d.m.Y', strtotime($row->Ende))."</div>";
-                $tablebody .= "<input id=ende_in_".$row->Beginn." style='display: none;' type=date name='ende' value=".date('Y-m-d', strtotime($row->Ende))." form='change_absence_entry_".$row->Beginn."'> ";
+                $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=ende_out_".$row->start." form='change_absence_entry_".$row->start."'>";
+                $tablebody .= date('d.m.Y', strtotime($row->end))."</div>";
+                $tablebody .= "<input id=ende_in_".$row->start." style='display: none;' type=date name='ende' value=".date('Y-m-d', strtotime($row->end))." form='change_absence_entry_".$row->start."'> ";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 if ($i == $number_of_rows) {
-                    $tablebody .= "\t\t\t\t<td id=letzterGrund><div id=grund_out_".$row->Beginn.">\n\t\t\t\t\t";
+                    $tablebody .= "\t\t\t\t<td id=letzterGrund><div id=grund_out_".$row->start.">\n\t\t\t\t\t";
                 } else {
-                    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=grund_out_".$row->Beginn.">";
+                    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=grund_out_".$row->start.">";
                 }
-                $tablebody .= "$row->Grund"."</div>";
-                $tablebody .= "<input id=grund_in_".$row->Beginn." style='display: none;' list='gruende' type=text name='grund' value='".$row->Grund."' form='change_absence_entry_".$row->Beginn."'> ";
+                $tablebody .= "$row->reason"."</div>";
+                $tablebody .= "<input id=grund_in_".$row->start." style='display: none;' list='reasons' type=text name='grund' value='".$row->reason."' form='change_absence_entry_".$row->start."'> ";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
-                $tablebody .= "$row->Tage";
+                $tablebody .= "$row->days";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n"
-                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$vk' form='change_absence_entry_".$row->Beginn."'>\n"
-                            . "\t\t\t\t\t<button type=submit id=delete_".$row->Beginn." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
+                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$vk' form='change_absence_entry_".$row->start."'>\n"
+                            . "\t\t\t\t\t<button type=submit id=delete_".$row->start." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
                                 . "\t\t\t\t\t\t<img src='img/delete.png' alt='Diese Zeile löschen'>\n"
                             . "\t\t\t\t\t</button>\n"
-                            . "\t\t\t\t\t<button type=button id=cancel_".$row->Beginn." class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"".$row->Beginn."\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
+                            . "\t\t\t\t\t<button type=button id=cancel_".$row->start." class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"".$row->start."\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
                                 . "\t\t\t\t\t\t<img src='img/delete.png' alt='Bearbeitung abbrechen'>\n"
                             . "\t\t\t\t\t</button>\n"
-                            . "\t\t\t\t\t<button type=button id=edit_".$row->Beginn." class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"".$row->Beginn."\")'>\n"
+                            . "\t\t\t\t\t<button type=button id=edit_".$row->start." class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"".$row->start."\")'>\n"
                                 . "\t\t\t\t\t\t<img src='img/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
                             . "\t\t\t\t\t</button>\n"
-                            . "\t\t\t\t\t<button type='submit' id='save_".$row->Beginn."' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+                            . "\t\t\t\t\t<button type='submit' id='save_".$row->start."' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
                                 . "\t\t\t\t\t\t<img src='img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
                             . "\t\t\t\t\t</button>\n"
                         . "";
@@ -133,11 +134,11 @@ require 'default.php';
                         . "\t\t\t</tr>\n";
                 ++$i;
             }
-            $abfrage = "SELECT `Grund` FROM `Abwesenheit`  GROUP BY `Grund` HAVING COUNT(*) > 3 ORDER BY `Grund` ASC";
+            $abfrage = "SELECT `reason` FROM `absence`  GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
             $ergebnis = mysqli_query_verbose($abfrage);
-            $datalist = "<datalist id='gruende'>\n";
+            $datalist = "<datalist id='reasons'>\n";
             while ($row = mysqli_fetch_object($ergebnis)) {
-                $datalist .= "\t<option value='$row->Grund'>\n";
+                $datalist .= "\t<option value='$row->reason'>\n";
             }
             $datalist .= "</datalist>\n";
 
@@ -204,7 +205,7 @@ echo "\t\t\n";
             echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=".date("Y-m-d")." form='new_absence_entry'>";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";
-            echo "<input list='gruende' name=grund form='new_absence_entry'>";
+            echo "<input list='reasons' name=grund form='new_absence_entry'>";
             echo "$datalist";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>\n\t\t\t\t\t";
