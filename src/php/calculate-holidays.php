@@ -18,16 +18,26 @@
  */
 
 /**
- * This function returns an array of timestamp corresponding to french holidays
+ * This function returns an array of timestamp corresponding to french holidays.
+ * 
  * Taken from http://php.net/manual/en/function.easter-date.php#96686
+ * Caution! Holidays often are not equal within a complete country. See for example the complex granularity of "Corpus Christi" in Germany: https://de.wikipedia.org/wiki/Fronleichnam#Deutschland
+ * 
  * TODO: See https://github.com/citco/carbon/blob/master/src/Carbon.php for more ideas
+ * 
+ * @param int $year An integer value representing a unix time.
+ * @param string $country A country as a distinct national entity in the format ISO 3166 ALPHA-2 (e.g. "DE").
  */
-function get_holidays($year = null, $country = "de") {
+function get_holidays($year = null, $country = "DE") {
     if ($year === null) {
         $year = intval(date("Y"));
     }
 
-    $easter_date = easter_date($year); //Easter[en] = Ostersonntag[de] = Pâques[fr]
+    /** 
+     * @var int unix time of easter this $year
+     * //Easter[en] = Ostersonntag[de] = Pâques[fr]
+     */
+    $easter_date = easter_date($year); 
     $easter_day = date("j", $easter_date);
     $easter_month = date("n", $easter_date);
     $easter_year = date("Y", $easter_date);
@@ -87,20 +97,13 @@ function get_holidays($year = null, $country = "de") {
     );
 
     switch ($country) {
-        case "de":
-        case "Germany":
-        case "Deutschland":
+        case "DE":
             $Holidays = $German_holidays;
             break;
-        case "fr":
-        case "France":
-        case "Frankreich":
+        case "FR":
             $Holidays = $French_holidays;
             break;
-        case "en":
-        case "Vereinigtes Königreich":
-        case "United Kingdom":
-        case "United Kingdom of Great Britain and Northern Ireland":
+        case "EN":
             $Holidays = $British_holidays;
             break;
         default:
@@ -109,7 +112,16 @@ function get_holidays($year = null, $country = "de") {
 
     return $Holidays;
 }
-
+/**
+ * Test if a day is a holiday.
+ * 
+ * This function returns FALSE if a day is not a holiday.
+ * This function returns the string $holiday if a day is a holiday.
+ * 
+ * @param int $date_unix unix time.
+ * 
+ * @return boolean|string FALSE or name of holiday.
+ */
 function is_holiday($date_unix) {
     $year = intval(date("Y", $date_unix));
     $Holidays = get_holidays($year); //TODO: The application is oblivious to countries right now. Use $Holidays = get_holidays($year, $country); if that values becomes available.

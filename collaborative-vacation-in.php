@@ -14,6 +14,7 @@ if (isset($employee_id)) {
 require "src/php/calculate-holidays.php";
 require_once "src/php/collaborative-vacation.php";
 require "head.php";
+require 'src/html/menu.html';
 handle_user_data_input();
 echo build_datalist();
 echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";

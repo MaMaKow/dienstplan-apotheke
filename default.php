@@ -1,5 +1,4 @@
 <?php
-
 if (!file_exists('./config/config.php') and !file_exists('../config/config.php') and !file_exists('../../config/config.php')) {
     die("The application does not seem to be installed. Please see the <a href=install.php>installation page</a>!");
 }
@@ -13,7 +12,7 @@ require_once "funktionen.php";
 if (isset($config['LC_TIME'])) {
     setlocale(LC_TIME, $config['LC_TIME']);
 } else {
-    setlocale(LC_TIME, 'de_DE.utf8');
+    setlocale(LC_TIME, 'de_DE.utf8', 'de_DE@euro', 'de_DE', 'de', 'ge', 'deu-deu');
     //setlocale(LC_ALL, 'de_DE'); // Leider versteht die Datenbank dann nicht mehr, was die Kommata sollen.
 }
 

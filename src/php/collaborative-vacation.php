@@ -1,4 +1,5 @@
 <?php
+
 /*
   Copyright (C) 2017 Mandelkow
 
@@ -16,6 +17,16 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Build a datalist for easy input of absence entries.
+ * 
+ * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krank").
+ * Only reasons that have been used at least 4 times are shown. (HAVING COUNT(*) > 3)
+ * 
+ * TODO: This function could also be used by abwesenheit-in.php.
+ * 
+ * @return string $datalist HTML datalist element.
+ */
 function build_datalist() {
     //Build a datalist with common reasons fo absence:
     $query = "SELECT `reason` FROM `absence` GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
@@ -28,6 +39,13 @@ function build_datalist() {
     return $datalist;
 }
 
+/**
+ * Handle the user input.
+ * 
+ * @global int $year
+ * 
+ * @return void
+ */
 function handle_user_data_input() {
     //Work on user data:
     global $year;
@@ -41,6 +59,16 @@ function handle_user_data_input() {
     }
 }
 
+/**
+ * Fill new entries into absence table or change, delete old entries.
+ * 
+ * The approval status of new entries defaults to "not_yet_approved".
+ * Old entries keep their approval state.
+ * TODO: THere is no approval-tool for administrator users yet.
+ * 
+ * @global type $user from default.php
+ * @return void 
+ */
 function write_user_input_to_database() {
     global $user;
     $employee_id = filter_input(INPUT_POST, employee_id, FILTER_SANITIZE_NUMBER_INT);
@@ -50,6 +78,8 @@ function write_user_input_to_database() {
     $command = filter_input(INPUT_POST, command, FILTER_SANITIZE_STRING);
     $employee_id_old = filter_input(INPUT_POST, employee_id_old, FILTER_SANITIZE_STRING);
     $start_date_old_string = filter_input(INPUT_POST, start_date_old, FILTER_SANITIZE_STRING);
+
+    //Decide on $approval state
     $query = "SELECT `approval` FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
     $result = mysqli_query_verbose($query);
     $row = mysqli_fetch_object($result);
@@ -58,9 +88,22 @@ function write_user_input_to_database() {
     } else {
         $approval = $row->approval;
     }
+
+    /**
+     * Delete old entries
+     * $employee_id_old and $start_date_old_string are NULL for new entries. Therefore there will be no deletions.
+     */
     $query = "DELETE FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
     $result = mysqli_query_verbose($query);
+
+    /*
+     * Insert new entry data into the table absence.
+     */
     if ("save" === $command) {
+        /*
+         * The function calculate_absence_days() currenty is defined within "db-lesen-abwesenheit.php".
+         * TODO: Maybe there should be a common library/class for all the (common) absence functions.
+         */
         $days = calculate_absence_days($start_date_string, $end_date_string);
         $query = "INSERT INTO absence ("
                 . " `employee_id`,"
@@ -83,27 +126,47 @@ function write_user_input_to_database() {
     }
 }
 
+/**
+ * Build the HTML code of the calendar.
+ * 
+ * The calendar is a div of the year containing divs of months containing paragraphs of days.
+ * Each day paragraph contains the day of week and day number.
+ * It may contain spans with the name of a holiday or
+ * spans with the employee_id numbers of absent employees.
+ * Absence is not shown on holidays and on weekends. 
+ * The absence spans are colored differently for different professions.
+ * 
+ * 
+ * @param int $year
+ * @global array[string] $Ausbildung_mitarbeiter Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
+ * @return string HTML div element containing a calendar with absences.
+ */
 function build_absence_year($year) {
     global $Ausbildung_mitarbeiter;
 
-
     $start_date = mktime(0, 0, 0, 1, 1, $year);
     $current_month = date("n", $start_date);
-    $current_month_name = date("F", $start_date);
+    //print_debug_variable(strftime("äöüÄÖÜß %B", 1490388361));
+    //$system_encoding = mb_detect_encoding(strftime("äöüÄÖÜß %B", 1490388361), "auto");
+    //print_debug_variable("\$system_encoding", $system_encoding);
+    //$current_month_name = mb_convert_encoding(strftime("%B", $date_unix), "UTF-8", 'Windows-1252');
+    $current_month_name = get_utf8_month_name($date_unix);
     $current_year = date("Y", $start_date);
 
     $year_container_html = "<div class=year_container>\n";
-    $year_container_html .= $current_year . "<br>\n";
+    $year_container_html .= $current_year . "<br>\n"; //TODO: Make a select input here to let the user input a year.
     $month_container_html = "<div class=month_container>";
     $month_container_html .= $current_month_name . "<br>\n";
-    for ($date_unix = $start_date; $date_unix < strtotime("+ 1 year", $start_date); $date_unix += 24 * 60 * 60) {
+    $one_day_in_seconds = 24 * 60 * 60;
+    for ($date_unix = $start_date; $date_unix < strtotime("+ 1 year", $start_date); $date_unix += $one_day_in_seconds) {
         $date_sql = date('Y-m-d', $date_unix);
         $is_holiday = is_holiday($date_unix);
-        list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($date_unix);
+        list($Abwesende,, ) = db_lesen_abwesenheit($date_unix);
 
         if ($current_month < date("n", $date_unix)) {
+            /** begin a new month div */
             $current_month = date("n", $date_unix);
-            $current_month_name = date("F", $date_unix);
+            $current_month_name = get_utf8_month_name($date_unix);
             $month_container_html .= "</div>";
             $month_container_html .= "<div class='month_container'>";
             $month_container_html .= $current_month_name . "<br>\n";
@@ -157,4 +220,5 @@ function build_absence_year($year) {
     $year_container_html .= "</div>\n";
     return $year_container_html;
 }
+
 ?>
