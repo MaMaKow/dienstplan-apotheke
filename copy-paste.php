@@ -57,4 +57,3 @@ if ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
 		}
 	}
 }
-?>

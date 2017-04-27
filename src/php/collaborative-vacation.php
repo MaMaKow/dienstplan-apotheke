@@ -220,5 +220,3 @@ function build_absence_year($year) {
     $year_container_html .= "</div>\n";
     return $year_container_html;
 }
-
-?>

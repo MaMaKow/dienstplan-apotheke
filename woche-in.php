@@ -228,4 +228,3 @@ echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 require 'contact-form.php';
 echo "</body>";
-?>

@@ -105,4 +105,3 @@ global $datum, $verbindungi, $Mitarbeiter;
 		return 0;
 	}
 }
-?>

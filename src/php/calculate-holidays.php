@@ -132,5 +132,3 @@ function is_holiday($date_unix) {
     }
     return FALSE;
 }
-
-?>

@@ -339,4 +339,3 @@ require 'contact-form.php';
 
 echo "\t</body>\n";
 echo '</html>';
-?>

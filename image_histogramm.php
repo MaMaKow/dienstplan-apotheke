@@ -201,6 +201,3 @@ function draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $he
 
     return $canvas_text;
 }
-
-//echo '<pre>';    var_export(draw_image_dienstplan_add_headcount());   echo '</pre>';
-?>

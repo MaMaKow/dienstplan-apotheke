@@ -85,4 +85,3 @@ if (NULL !== $Principle_roster and FALSE === $holiday) {
         $Fehlermeldung[] = $fehler;
     }
 }
-?>

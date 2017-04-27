@@ -158,4 +158,3 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
 } else {
     //Es gibt nichts im $_POST mit dem wir etwas anfangen können.
 }
-?>
