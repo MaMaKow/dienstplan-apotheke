@@ -49,14 +49,6 @@ if (isset($_SERVER['REMOTE_USER'])) {
 //Create a connection to the database:
 require_once 'db-verbindung.php';
 
-/*TODO: The following lines are a form of tracking.
- * They HAVE TO be removed in a future version!
- * Collecting user data will only happen for specific reasons!
- * I am very interested in the browsers that are used for viewing the application.
- */
-//echo $_SERVER['HTTP_USER_AGENT'] . "\n\n";
-$browser = get_browser(null, true);
-error_log('User: '.$user.", IP: ". $_SERVER['REMOTE_ADDR'].', Browser: '.$browser['browser']." = ".$_SERVER['HTTP_USER_AGENT']);
 
 $navigator_languages = preg_split('/[,;]/', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 $navigator_language = $navigator_languages[0]; //ignore the other options
