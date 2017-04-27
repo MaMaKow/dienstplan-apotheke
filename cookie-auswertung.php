@@ -16,4 +16,3 @@
 	{
 		$year=$_COOKIE["year"];
 	}
-?>

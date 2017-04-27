@@ -23,7 +23,3 @@ foreach (array_keys($_POST['Dienstplan']) as $tag => $value) {
   $abfrage="INSERT INTO `approval` (date, branch, state, user) values ('$date', '$mandant', '$state', '$user') ON DUPLICATE KEY UPDATE date='$date', branch='$mandant', state='$state', user='$user'";
   $ergebnis = mysqli_query_verbose($abfrage);
 }
-
-
-
-?>

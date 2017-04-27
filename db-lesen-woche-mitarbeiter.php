@@ -37,4 +37,3 @@ for ($i=0; $i<$tage; $i++)
 		$Dienstplan[$i]["Kommentar"][]="-";
 	}
 }
-?>

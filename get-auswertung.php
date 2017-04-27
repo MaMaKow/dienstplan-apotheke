@@ -16,4 +16,3 @@ if (!empty($_GET))
 		$auswahl_mitarbeiter=sanitize_user_input($_GET['auswahl_mitarbeiter']);
 	}
 }
-?>

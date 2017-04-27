@@ -14,4 +14,3 @@ $config = array(
 //Diese Datei kann später mit folgendem Befehl neu geschrieben werden:
 //	file_put_contents('config/config.php', '<?php  $config =' . var_export($config, true) . ';');
 
-?>

@@ -99,4 +99,3 @@ function determine_lunch_breaks($Dienstplan, $tag) {
 	}
         return $Dienstplan;
 }
-?>

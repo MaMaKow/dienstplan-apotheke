@@ -11,4 +11,3 @@
 	{
 		$feiertag=$row->Name;
 	}
-?>

@@ -45,6 +45,3 @@ require 'head.php';?>
 		</table>
 	</body>
 </html>
-<?php
-//echo "<pre>"; var_export($Notdienste); echo "<pre>";
-?>

@@ -124,7 +124,3 @@ function make_checkbox_ability($ability, $label, $checked) {
     $text .= ">";
     return $text;
 }
-
-//CREATE TRIGGER backup_employee_data AFTER INSERT ON employees FOR EACH ROW INSERT INTO employees_backup SELECT * FROM employees WHERE employees.id = NEW.id;
-//ALTER TABLE `employees` CHANGE `pseudo_id` `pseudo_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, CHANGE `id` `id` SMALLINT UNSIGNED NOT NULL, CHANGE `Nachname` `last_name` VARCHAR(35) CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL, CHANGE `Vorname` `first_name` VARCHAR(35) CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL, CHANGE `Ausbildung` `profession` SET('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL, CHANGE `Stunden` `working_hours` FLOAT NOT NULL DEFAULT '40', CHANGE `Arbeitswochenstunden` `working_week_hours` FLOAT NOT NULL DEFAULT '38.5', CHANGE `Urlaubstage` `holidays` TINYINT(11) NOT NULL DEFAULT '28', CHANGE `Mittag` `lunch_break_minutes` TINYINT(11) NOT NULL DEFAULT '30', CHANGE `Wareneingang` `goods_receipt` TINYINT(1) NULL DEFAULT NULL, CHANGE `Rezeptur` `compounding` TINYINT(1) NULL DEFAULT NULL, CHANGE `Mandant` `branch` INT(11) NOT NULL DEFAULT '1', CHANGE `Beschäftigungsbeginn` `start_of_employment` DATE NOT NULL, CHANGE `Beschäftigungsende` `end_of_employment` DATE NULL DEFAULT NULL, CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-?>

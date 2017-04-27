@@ -129,4 +129,3 @@
 			echo "<br>Kein Dienstplan gefunden beim Zeichnen des Histogramms.<br>\n";
 		}
 
-?>

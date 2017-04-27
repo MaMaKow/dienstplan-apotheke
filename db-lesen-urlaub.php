@@ -11,4 +11,3 @@
 	{
 		$Urlauber[]=$row->VK;
 	}
-?>

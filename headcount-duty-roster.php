@@ -121,5 +121,3 @@
                     $Warnmeldung[] = "Kein Dienstplan gefunden beim Zeichnen des Histogramms.";
 //			echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 		}
-
-?>

@@ -146,5 +146,3 @@ function draw_image_dienstplan_vk($Dienstplan) {
     //header("Content-type: image/svg+xml");
     return $svg_text;
 }
-
-?>

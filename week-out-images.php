@@ -95,4 +95,3 @@ require 'src/html/menu.html';
 
         echo "\t</body>\n";
         echo "</html>";
-        ?>
