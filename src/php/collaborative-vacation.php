@@ -154,7 +154,25 @@ function build_absence_year($year) {
     $current_year = date("Y", $start_date);
 
     $year_container_html = "<div class=year_container>\n";
-    $year_container_html .= $current_year . "<br>\n"; //TODO: Make a select input here to let the user input a year.
+
+    //The following lines for the year select are common code with anwesenheitsliste-out.php
+    $Years = array();
+    $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+    $ergebnis = mysqli_query_verbose($abfrage);
+    while ($row = mysqli_fetch_object($ergebnis)) {
+        $Years[] = $row->year;
+    }
+    $year_input_select = "<form id='select_year'><select name=year onchange=this.form.submit()>";
+    foreach ($Years as $year_number) {
+        $year_input_select .= "<option value=$year_number";
+        if ($year_number == $current_year) {
+            $year_input_select .= " SELECTED ";
+        }
+        $year_input_select .= ">$year_number</option>\n";
+    }
+    $year_input_select .= "</select></form>";
+
+    $year_container_html .= $year_input_select;
     $month_container_html = "<div class=month_container>";
     $month_container_html .= $current_month_name . "<br>\n";
     $one_day_in_seconds = 24 * 60 * 60;
@@ -202,6 +220,14 @@ function build_absence_year($year) {
         $p_html_javascript .= " onmouseup='highlight_absence_create_end(event)'";
         $p_html_attributes = " date_sql='$date_sql'";
         $p_html_attributes .= " date_unix='$date_unix'>";
+        /*
+         * TODO: Use data-* attributes to store the data in a valid way:
+         * https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes
+          $p_html_attributes = " data-date_sql='$date_sql'";
+          $p_html_attributes .= " data-date_unix='$date_unix'>";
+         * Or store all the data in one array for javascript somewhere at the beginning of the page.
+         * Perhaps even use that one data to reduce the amount of SQL calls in PHP
+         */
         $p_html_content = $date_text . " ";
         if ($current_week_day_number < 6 and ! $is_holiday) {
             $p_html_content .= $absent_employees_containers;
