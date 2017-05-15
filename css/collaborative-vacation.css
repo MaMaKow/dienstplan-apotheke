@@ -59,16 +59,23 @@ span.absent_employee_container{
     width: 2em;
     background-color: #B4B4B4;
 }
-span.Apotheker{
+span.absent_employee_container.not_yet_approved{
+    background-color: #FEFEFF;
+}
+span.absent_employee_container.Apotheker{
     background-color: #73AC22;
 }
-span.PI{
+span.absent_employee_container.not_yet_approved.Apotheker{
+    background-color: #FEFEFF;
+    color: #73AC22;
+}
+span.absent_employee_container.PI{
     background-color: #73AC22;
 }
-span.PTA{
+span.absent_employee_container.PTA{
     background-color: #BDE682;
 }
-span.PKA{
+span.absent_employee_container.PKA{
     background-color: #B4B4B4;
 }
 div.input_box_div{
@@ -86,4 +93,5 @@ button.button_tight{
     border-width: 2px;
     border-style: outset;
     border-color: buttonface;
-    border-image: initial;}
+    border-image: initial;
+}
