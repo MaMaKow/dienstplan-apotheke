@@ -17,8 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//Here we build the output of errors and warnings.
-//We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
+/**
+ * Build the output of errors and warnings.
+ * 
+ * We display the errors, which we collected in $Fehlermeldung and $Warnmeldung
+ * The errors are assembled in a div "error_container".
+ * 
+ * @param array $Fehlermeldung An array of strings of errors.
+ * @param array $Warnmeldung An array of strings of warnings.
+ * 
+ * @return string HTML code with error containers.
+ */
 function build_warning_messages($Fehlermeldung, $Warnmeldung) {
     if (isset($Fehlermeldung) or isset($Warnmeldung)) {
         $text_html = "\t\t\t<div class=error_container>\n";

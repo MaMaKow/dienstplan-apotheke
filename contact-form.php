@@ -1,5 +1,10 @@
 <div class="foot no-print">
 	<script>
+            /**
+             * Displays the element "contactForm".
+             * 
+             * @returns void
+             */
 		function unhideContactForm()
 		{
 			document.getElementById("contactForm").style.display = "inline";

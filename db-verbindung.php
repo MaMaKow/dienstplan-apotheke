@@ -19,5 +19,3 @@ function mysqli_query_verbose($sql_query) {
             and die($message);
     return $result;
 }
-
-?>

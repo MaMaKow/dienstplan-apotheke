@@ -54,3 +54,8 @@ tr.wochenende {
     */
     width: 85%;
 }
+table#duty-rooster-table
+{
+    width: 85%;
+    font-size: 3.5mm;
+}

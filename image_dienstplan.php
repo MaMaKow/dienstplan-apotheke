@@ -133,5 +133,3 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
     //header("Content-type: image/svg+xml");
     return $svg_text;
 }
-
-?>

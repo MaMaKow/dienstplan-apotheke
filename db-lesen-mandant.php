@@ -13,4 +13,3 @@ while($row = mysqli_fetch_object($ergebnis))
                 $Pep_mandant[$row->Mandant]=$row->PEP;
 	}
 }
-?>

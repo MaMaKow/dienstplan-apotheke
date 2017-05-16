@@ -18,4 +18,3 @@ $abfrage="SELECT *
 		$notdienst['vk']=$row->VK;
 		$notdienst['mandant']=$row->Mandant;
 	}
-?>
