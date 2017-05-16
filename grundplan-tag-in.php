@@ -168,7 +168,6 @@ $tag = $wochentag;
 $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
 $pseudo_datum = strtotime('+'.($wochentag - 1).' day', $pseudo_datum);
 $datum = date('Y-m-d', $pseudo_datum);
-//require 'zeichne-histogramm.php';
 
 //$Grundplan=db_lesen_tage($tage, $mandant);
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/

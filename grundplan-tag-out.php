@@ -112,7 +112,6 @@ $tag = $wochentag;
 $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
 $pseudo_datum = strtotime('+'.($wochentag - 1).' day', $pseudo_datum);
 $datum = date('Y-m-d', $pseudo_datum);
-require 'zeichne-histogramm.php';
 
 //$Grundplan=db_lesen_tage($tage, $mandant);
 
