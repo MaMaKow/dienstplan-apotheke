@@ -1,5 +1,4 @@
 <?php
-
 if (!file_exists('./config/config.php') and !file_exists('../config/config.php') and !file_exists('../../config/config.php')) {
     die("The application does not seem to be installed. Please see the <a href=install.php>installation page</a>!");
 }
@@ -13,7 +12,7 @@ require_once "funktionen.php";
 if (isset($config['LC_TIME'])) {
     setlocale(LC_TIME, $config['LC_TIME']);
 } else {
-    setlocale(LC_TIME, 'de_DE.utf8');
+    setlocale(LC_TIME, 'de_DE.utf8', 'de_DE@euro', 'de_DE', 'de', 'ge', 'deu-deu');
     //setlocale(LC_ALL, 'de_DE'); // Leider versteht die Datenbank dann nicht mehr, was die Kommata sollen.
 }
 
@@ -50,14 +49,6 @@ if (isset($_SERVER['REMOTE_USER'])) {
 //Create a connection to the database:
 require_once 'db-verbindung.php';
 
-/*TODO: The following lines are a form of tracking.
- * They HAVE TO be removed in a future version!
- * Collecting user data will only happen for specific reasons!
- * I am very interested in the browsers that are used for viewing the application.
- */
-//echo $_SERVER['HTTP_USER_AGENT'] . "\n\n";
-$browser = get_browser(null, true);
-error_log('User: '.$user.", IP: ". $_SERVER['REMOTE_ADDR'].', Browser: '.$browser['browser']." = ".$_SERVER['HTTP_USER_AGENT']);
 
 $navigator_languages = preg_split('/[,;]/', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 $navigator_language = $navigator_languages[0]; //ignore the other options

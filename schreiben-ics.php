@@ -60,4 +60,3 @@ fclose($myfile);
 */
     return $textICS;
 }
-?>

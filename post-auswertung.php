@@ -78,38 +78,8 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
                                         .")";
 //        echo "<pre>\$abfrage:\n"; echo $abfrage; echo "</pre>"; //die;
                 $ergebnis = mysqli_query_verbose($abfrage);
-//				echo "$abfrage<br>\n";
-/*                //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
-                if (empty($mittagsbeginn)) {
-                    $mittagsbeginn = "0:00";
-                }
-                if (empty($mittagsende)) {
-                    $mittagsende = "0:00";
-                }
-                if (!isset($Mitarbeiter)) {
-                    require 'db-lesen-mitarbeiter.php';
-                }
-                $dienstplanCSV.=$Mitarbeiter[$VK] . ", $VK, $datum";
-                $dienstplanCSV.=", " . $dienstbeginn;
-                $dienstplanCSV.=", " . $dienstende;
-                $dienstplanCSV.=", " . $mittagsbeginn;
-                $dienstplanCSV.=", " . $mittagsende;
-                $dienstplanCSV.=", " . $stunden;
-                $dienstplanCSV.=", " . $mandant . "\n";
-                */
             }
         }
-        /*
-          $filename = "tmp/Dienstplan.csv";
-          $myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
-          fwrite($myfile, $dienstplanCSV);
-          fclose($myfile);
-          $dienstplanCSV="";
-          $command=('./Dienstplan_image.sh '.escapeshellcmd("m".$mandant."_".$datum));
-          exec($command, $kommando_ergebnis);
-          //Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
-          //require "zeichne-histogramm.php";
-         */
     }
     $datum = $Dienstplan[0]['Datum'][0];
 } elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) { 
@@ -158,4 +128,3 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
 } else {
     //Es gibt nichts im $_POST mit dem wir etwas anfangen können.
 }
-?>

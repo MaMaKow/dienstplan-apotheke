@@ -70,5 +70,3 @@ function calculate_absence_days($start_date_string, $end_date_string) {
     }
     return $days;
 }
-
-?>

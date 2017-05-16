@@ -76,7 +76,3 @@ function build_select_employee($auswahl_mitarbeiter) {
     $text .= "\t\t\t<H1 class='only-print'>" . $Mitarbeiter[$auswahl_mitarbeiter] . "</H1>\n";
     return $text;
 }
-
-
-
-		 ?>

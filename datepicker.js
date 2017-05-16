@@ -15,26 +15,42 @@ var navigator_language = document.getElementsByTagName("HEAD")[0].lang;
 if (!navigator_language){navigator_language = navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage;}
 //console.log(navigator_language);
 
-//Adds leading zeros to numbers
+/*
+ * Adds leading zeros to numbers.
+ * 
+ * @param float number
+ * @param int size Number of characters in final string.
+ * @returns {pad.number_string|String}
+ */
 function pad(number, size) {
     var number_string = number+"";
     while (number_string.length < size) number_string = "0" + number_string;
     return number_string;
 }
-// Converts a date into 'YYYY-MM-DD' format
-function getDateString(dt) {
-    return dt.getFullYear() + '-' + pad((dt.getMonth()+1), 2) +  '-' + pad(dt.getDate(), 2);
+/*
+ * Converts a date into 'YYYY-MM-DD' format
+ * 
+ * @param object date
+ * @returns {String}
+ */
+function getDateString(date) {
+    return date.getFullYear() + '-' + pad((date.getMonth()+1), 2) +  '-' + pad(date.getDate(), 2);
 }
 
-// Converts a date into 'July 2010' format
-function getMonthYearString(dt) {
-    month_string = dt.toLocaleString(navigator_language, {month: 'long'}); //"numeric", "2-digit", "narrow", "short" and "long"
-    return month_string + ' ' + dt.getFullYear();
-    //console.log('getMonthYearString with dt: ' + dt);
+/*
+ * Converts a date into 'July 2010' format
+ * 
+ * @param object date
+ * @returns {String}
+ */
+function getMonthYearString(date) {
+    month_string = date.toLocaleString(navigator_language, {month: 'long'}); //"numeric", "2-digit", "narrow", "short" and "long"
+    return month_string + ' ' + date.getFullYear();
+    //console.log('getMonthYearString with date: ' + date);
   /*
     return ['January','February','March','April','May','June','July',
-          'August','September','October','November','December'][dt.getMonth()] +
-         ' ' + dt.getFullYear();
+          'August','September','October','November','December'][date.getMonth()] +
+         ' ' + date.getFullYear();
          */
 }
 
