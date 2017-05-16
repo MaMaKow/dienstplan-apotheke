@@ -48,7 +48,6 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
 
 }
 if (array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0])) {
-    //require "zeichne-histogramm.php";
     require 'pruefe-dienstplan.php';
 }
 
