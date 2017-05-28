@@ -15,36 +15,68 @@ if (isset($_POST['datum'])) {
 
 if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
 //                echo "<pre>\$_POST-Dienstplan:"; var_export($_POST['Dienstplan']); echo "</pre>\n";
-    foreach ($_POST['Dienstplan'] as $plan => $inhalt_tag) {
+    foreach ($_POST['Dienstplan'] as $day_number => $inhalt_tag) {
+        $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
         foreach ($inhalt_tag as $column => $lines) {
-            foreach ($lines as $linenumber => $line) {
-                if ($line === '') {
+            $column = filter_var($column, FILTER_SANITIZE_STRING);
+            $Columns[$column] = $column; //Will be needed to sice out empty rows later.
+            foreach ($lines as $line_number => $line) {
+                $line = filter_var($line, FILTER_SANITIZE_STRING);
+                $line_number = filter_var($line_number, FILTER_SANITIZE_NUMBER_INT);
+                if ('' === $line) {
                     //Empty fields should be inserted as null values inside the database.
                     //TODO: Should we make an exeption for Comments?
                     $line = 'null';
                 }
-                //TODO: Is it a security issue, that we use $column and $linenumber directly? Do we have to sanitize those?
-                $Dienstplan[$plan][$column][$linenumber] = sanitize_user_input($line);
+                $Dienstplan[$day_number][$column][$line_number] = $line;
             }
         }
     }
-//                echo "<pre>Dienstplan:"; var_export($Dienstplan); echo "</pre>\n";
+
+    //Slice out empty rows in all columns:
+    foreach ($Dienstplan[$tag]["VK"] as $line_number => $employee_id){
+        if ( 'null' === $employee_id){
+            foreach ($Columns as $column){
+                unset($Dienstplan[$tag][$column][$line_number]);
+            }
+        }
+    }
+
     foreach (array_keys($Dienstplan) as $tag) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
-        $datum = $Dienstplan[$tag]['Datum'][0];
+        $date_sql = $Dienstplan[$tag]['Datum'][0];
         //The following lines will add an entry for every day in the table approval.
         //TODO: We should manage situations, where an entry already exists better.
         $abfrage = "INSERT IGNORE INTO `approval` (date, state, branch, user)
-			VALUES ('$datum', 'not_yet_approved', '$mandant', '$user')";
+			VALUES ('$date_sql', 'not_yet_approved', '$mandant', '$user')";
         $ergebnis = mysqli_query_verbose($abfrage);
-        $abfrage = "DELETE FROM `Dienstplan`
-			WHERE `Datum` = '$datum'
-			AND `Mandant` = '$mandant'
+
+        $query = "SELECT * FROM `Dienstplan`
+			WHERE `Datum` = '$date_sql'
+                            AND `Mandant` = '$mandant'
 			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
-        $ergebnis = mysqli_query_verbose($abfrage);
-        foreach ($Dienstplan[$tag]['VK'] as $key => $VK) { //Die einzelnen Zeilen im Dienstplan
-            if ( !empty($VK) AND $VK != 'null' ) { //Wir ignorieren die nicht ausgefüllten Felder
-                // TODO: Do we still need to explode? Or is only the number sent in POST?
-                list($VK) = explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
+        $result = mysqli_query_verbose($query);
+        while ($row = mysqli_fetch_object($result)) {
+            $Dienstplan_old[$tag]["VK"][] = $row->VK;
+            $Dienstplan_old[$tag]["Dienstbeginn"][] = $row->Dienstbeginn;
+            $Dienstplan_old[$tag]["Dienstende"][] = $row->Dienstende;
+            $Dienstplan_old[$tag]["Mittagsbeginn"][] = $row->Mittagsbeginn;
+            $Dienstplan_old[$tag]["Mittagsende"][] = $row->Mittagsende;
+            $Dienstplan_old[$tag]["Mandant"][] = $row->Mandant;
+            $Dienstplan_old[$tag]["Kommentar"][] = $row->Kommentar;
+        }
+
+        $Deleted_employee_id_list = array_diff($Dienstplan_old[$tag]["VK"], $Dienstplan[$tag]["VK"]);
+        //$Inserted_employee_id_list = array_diff($Dienstplan[$tag]["VK"], $Dienstplan_old[$tag]["VK"]);
+        if (array() !== $Deleted_employee_id_list) {
+            $abfrage = "DELETE FROM `Dienstplan`"
+                    . " WHERE `Datum` = '$date_sql'"
+                    . " AND `VK` IN (" . implode(', ', $Deleted_employee_id_list) .")"
+                    . " AND `Mandant` = '$mandant';"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
+            $ergebnis = mysqli_query_verbose($abfrage);
+        }
+
+        foreach ($Dienstplan[$tag]['VK'] as $key => $employee_id) { //Die einzelnen Zeilen im Dienstplan
+            
                 $dienstbeginn = $Dienstplan[$tag]["Dienstbeginn"][$key];
                 $dienstende = $Dienstplan[$tag]["Dienstende"][$key];
                 $mittagsbeginn = $Dienstplan[$tag]["Mittagsbeginn"][$key];
@@ -66,7 +98,7 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
                     $stunden = $sekunden / 3600;
                 }
                 $abfrage = "REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user)
-					VALUES ($VK, ".escape_sql_value($datum)
+					VALUES ($employee_id, ".escape_sql_value($date_sql)
                                         .", ".escape_sql_value($dienstbeginn)
                                         .", ".escape_sql_value($dienstende)
                                         .", ".escape_sql_value($mittagsbeginn)
@@ -78,13 +110,13 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
                                         .")";
 //        echo "<pre>\$abfrage:\n"; echo $abfrage; echo "</pre>"; //die;
                 $ergebnis = mysqli_query_verbose($abfrage);
-            }
+            
         }
     }
     $datum = $Dienstplan[0]['Datum'][0];
 } elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) { 
     //TODO: These lines should be changed to the ones below for every file
-    $datum = $_POST['Dienstplan'][0]['Datum'][0];
+    $date_sql = filter_var($_POST['Dienstplan'][0]['Datum'][0], FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 }  elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['date']) && isset($_POST['selected_employee'])) {
