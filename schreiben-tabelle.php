@@ -33,14 +33,14 @@ function schreiben_tabelle (array $Dienstplan){
 					$approval=$row->state;
 				}
 				if (isset($approval)) {
-					if ($approval=="approved") {
+					if ($approval=="approved" OR FALSE == $config['hide_disapproved']) {
 						//$Overlay_message[]="Alles ist gut.";
 					} elseif ($approval=="not_yet_approved") {
 						$Overlay_message[]="Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
 					} elseif ($approval=="disapproved") {
 						$Overlay_message[]="Der Dienstplan wird noch überarbeitet!";
 					}
-				} else {
+				} elseif ( TRUE == $config['hide_disapproved']) {
 					$approval="not_yet_approved";
 					$Overlay_message[]="Fehlende Daten in der Tabelle `approval`";
 					// TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
