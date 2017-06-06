@@ -1,3 +1,6 @@
 <?php
-	header("HTTP/1.1 401 Unauthorized");
+
+if (session_start() and session_destroy()) {
+    echo "Logout erfolgreich";
+}
 ?>
