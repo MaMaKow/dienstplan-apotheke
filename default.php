@@ -50,6 +50,5 @@ if (isset($_SERVER['REMOTE_USER'])) {
 require_once 'db-verbindung.php';
 //session management
 require_once 'src/php/class.sessions.php';
-
 $navigator_languages = preg_split('/[,;]/', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 $navigator_language = $navigator_languages[0]; //ignore the other options

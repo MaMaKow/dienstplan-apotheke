@@ -1,10 +1,8 @@
 <?php
 require '../../default.php';
 session_start();
-print_debug_variable($_GET["referrer"]);
 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
-print_debug_variable($referrer);
-
+    
 if (isset($_GET['login'])) {
     $user_name = $_POST['user_name'];
     $password = $_POST['password'];
@@ -18,6 +16,7 @@ if (isset($_GET['login'])) {
     //Überprüfung des Passworts
     if ($user !== false && password_verify($password, $user['password'])) {
         $_SESSION['userid'] = $user['id'];
+        $_SESSION['user_name'] = $user['user_name'];
         if (!empty($referrer)) {
             header("Location:" . $referrer);
         }  else {

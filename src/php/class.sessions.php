@@ -17,25 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (isset($_SERVER['REMOTE_USER'])) {
-    $user = $_SERVER['REMOTE_USER'];
-} else {
-    $user = "IP " . $_SERVER['REMOTE_ADDR'];
-}
-
+/*
 //header("strict-transport-security: max-age=31536000");
-header("strict-transport-security: max-age=0");
+//header("strict-transport-security: max-age=0");
 if (empty($_SERVER["HTTPS"]) OR $_SERVER["HTTPS"] != "on") {
-    /*
       header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
       exit();
-     */
+    
 }
+*/
+
 session_start();
-$_SESSION['username'] = $user;
-if (!isset($_SESSION['userid'])) {
-    header("Location:" . "login.php?referrer=" . $_SERVER["REQUEST_URI"]);
-    die('Bitte zuerst <a href="login.php">einloggen</a>');
+if (!isset($_SESSION['userid']) and 'login.php' !== basename($_SERVER['SCRIPT_NAME']) and 'register.php' !== basename($_SERVER['SCRIPT_NAME']) ) {
+    //test if the current file is on the top level or deeper in the second level.
+    if(strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')){
+        $location = "login.php";
+    } else {
+        $location = "src/php/login.php";
+    }
+    header("Location:" . $location . "?referrer=" . $_SERVER["REQUEST_URI"]);
+    die('Bitte zuerst <a href="' . $location . '?referrer=' . $_SERVER["REQUEST_URI"] . '">einloggen</a>');
 }
 /*
  * e dot mortoray at ecircle dot com ¶8 years ago
@@ -45,9 +46,6 @@ if (!isset($_SESSION['userid'])) {
  */
 if (!isset($_SESSION['last_access']) || (time() - $_SESSION['last_access']) > 60)
     $_SESSION['last_access'] = time();
-
-echo SID;
-echo $_SESSION['zaehler'];
 
 /**
  * Description of class
