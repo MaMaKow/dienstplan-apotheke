@@ -7,7 +7,7 @@ if (mysqli_connect_errno()) {
     exit();
 }
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=' . $config['database_name'], $config['database_user'], $config['database_password']);
+    $pdo = new PDO('mysql:host=localhost;charset=utf8;dbname=' . $config['database_name'], $config['database_user'], $config['database_password'], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
 } catch (PDOException $e) {
     print "Error!: " . $e->getMessage() . "<br/>";
     die();

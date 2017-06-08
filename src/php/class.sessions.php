@@ -33,11 +33,6 @@ if (empty($_SERVER["HTTPS"]) OR $_SERVER["HTTPS"] != "on") {
 }
 session_start();
 $_SESSION['username'] = $user;
-if (!isset($_SESSION['zaehler'])) {
-    $_SESSION['zaehler'] = 0;
-} else {
-    $_SESSION['zaehler'] ++;
-}
 if (!isset($_SESSION['userid'])) {
     header("Location:" . "login.php?referrer=" . $_SERVER["REQUEST_URI"]);
     die('Bitte zuerst <a href="login.php">einloggen</a>');
