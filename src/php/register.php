@@ -51,7 +51,7 @@ if(isset($_GET['register'])) {
  $user = $statement->fetch();
  
  if($user !== false) {
- echo 'Diese E-Mail-Adresse ist bereits vergeben<br>';
+ echo 'Dieser Benutzername ist bereits vergeben<br>';
  $error = true;
  } 
  }
@@ -60,7 +60,7 @@ if(isset($_GET['register'])) {
  if(!$error) { 
  $password_hash = password_hash($password, PASSWORD_DEFAULT);
  
- $statement = $pdo->prepare("INSERT INTO users (user_name, password) VALUES (:user_name, :password)");
+ $statement = $pdo->prepare("INSERT INTO users (user_name, password, status) VALUES (:user_name, :password, 'inactive')");
  $result = $statement->execute(array('user_name' => $user_name, 'password' => $password_hash));
  
  if($result) { 
