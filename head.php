@@ -21,14 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 } ?>>
         <META charset=UTF-8>
         <TITLE><?php echo $config['application_name']; ?></TITLE>
-        <SCRIPT type="text/javascript" src="javascript.js" ></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="datepicker.css" /> 
-        <SCRIPT type="text/javascript" src="datepicker.js"></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="style.css" media="all">
-        <LINK rel="stylesheet" type="text/css" href="print.css" media="print">
+        <SCRIPT type="text/javascript" src="<?php echo get_root_folder();?>javascript.js" ></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="<?php echo get_root_folder();?>datepicker.css" /> 
+        <SCRIPT type="text/javascript" src="<?php echo get_root_folder();?>datepicker.js"></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="<?php echo get_root_folder();?>style.css" media="all">
+        <LINK rel="stylesheet" type="text/css" href="<?php echo get_root_folder();?>print.css" media="print">
         <!--The following two files are relevant only to collaborative-vacation-in.php-->
         <!--TODO: Maybe we should load them only where necessary.-->
-        <SCRIPT type="text/javascript" src="js/collaborative-vacation.js" ></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="css/collaborative-vacation.css" media="all">
+        <SCRIPT type="text/javascript" src="<?php echo get_root_folder();?>js/collaborative-vacation.js" ></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="<?php echo get_root_folder();?>css/collaborative-vacation.css" media="all">
     </HEAD>
     <BODY>

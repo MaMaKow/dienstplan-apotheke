@@ -1,6 +1,5 @@
 <?php
 require '../../default.php';
-session_start();
 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
     
 if (isset($_GET['login'])) {
@@ -20,9 +19,8 @@ if (isset($_GET['login'])) {
         if (!empty($referrer)) {
             header("Location:" . $referrer);
         }  else {
-            echo "No Referrer <br>\n";
+            header("Location:" . get_root_folder());
         }
-        die('Login erfolgreich. Weiter zu <a href="geheim.php">internen Bereich</a>');
     } else {
         $errorMessage = "Benutzername oder Passwort war ungültig<br>";
     }
