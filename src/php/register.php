@@ -16,83 +16,69 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../default.php';
-session_start();
-?>
-<!DOCTYPE html> 
-<html> 
-    <head>
-        <title>Registrierung</title> 
-    </head> 
-    <body>
+require "../../head.php";
+$showFormular = true; //Variable ob das Registrierungsformular anezeigt werden soll
 
-        <?php
-        $showFormular = true; //Variable ob das Registrierungsformular anezeigt werden soll
+if (isset($_GET['register'])) {
+    $error = false;
+    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $password = $_POST['password'];
+    $password2 = $_POST['password2'];
 
-        if (isset($_GET['register'])) {
-            $error = false;
-            $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-            $password = $_POST['password'];
-            $password2 = $_POST['password2'];
+    if (strlen($password) == 0) {
+        echo 'Bitte ein Passwort angeben<br>';
+        $error = true;
+    }
+    if ($password != $password2) {
+        echo 'Die Passwörter müssen übereinstimmen<br>';
+        $error = true;
+    }
 
-            if (strlen($password) == 0) {
-                echo 'Bitte ein Passwort angeben<br>';
-                $error = true;
-            }
-            if ($password != $password2) {
-                echo 'Die Passwörter müssen übereinstimmen<br>';
-                $error = true;
-            }
+    //Überprüfe, dass die E-Mail-Adresse noch nicht registriert wurde
+    if (!$error) {
+        $statement = $pdo->prepare("SELECT * FROM users WHERE user_name = :user_name");
+        $result = $statement->execute(array('user_name' => $user_name));
+        $user = $statement->fetch();
 
-            //Überprüfe, dass die E-Mail-Adresse noch nicht registriert wurde
-            if (!$error) {
-                $statement = $pdo->prepare("SELECT * FROM users WHERE user_name = :user_name");
-                $result = $statement->execute(array('user_name' => $user_name));
-                $user = $statement->fetch();
-
-                if ($user !== false) {
-                    echo 'Dieser Benutzername ist bereits vergeben<br>';
-                    $error = true;
-                }
-            }
-
-            //Keine Fehler, wir können den Nutzer registrieren
-            if (!$error) {
-                $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-                $statement = $pdo->prepare("INSERT INTO users (user_name, password, email, status) VALUES (:user_name, :password, 'inactive')");
-                $result = $statement->execute(array('user_name' => $user_name, 'password' => $password_hash, 'email' => $email));
-
-                if ($result) {
-                    echo 'Du wurdest erfolgreich registriert. <a href="login.php">Zum Login</a>';
-                    $showFormular = false;
-                } else {
-                    echo 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
-                }
-            }
+        if ($user !== false) {
+            echo 'Dieser Benutzername ist bereits vergeben<br>';
+            $error = true;
         }
+    }
 
-        if ($showFormular) {
-            ?>
+    //Keine Fehler, wir können den Nutzer registrieren
+    if (!$error) {
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-            <form action="?register=1" method="post">
-                Benutzername:<br>
-                <input type="text" size="40" maxlength="250" name="user_name" required><br><br>
-                Email:<br>
-                <input type="email" size="40" maxlength="250" name="email" required><br><br>
+        $statement = $pdo->prepare("INSERT INTO users (user_name, password, email, status) VALUES (:user_name, :password, :email, 'inactive')");
+        $result = $statement->execute(array('user_name' => $user_name, 'password' => $password_hash, 'email' => $email));
 
-                Dein Passwort:<br>
-                <input type="password" size="40" name="password" required><br>
+        if ($result) {
+            echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
+            $showFormular = false;
+        } else {
+            echo 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
+        }
+    }
+}
 
-                Passwort wiederholen:<br>
-                <input type="password" size="40" maxlength="250" name="password2" required><br><br>
+if ($showFormular) {
+    echo "<div class=register_form_div>";
+    echo "<H1>" . $config['application_name'] . "</H1>\n";
+    ?>
+    <form action="?register=1" method="post">
+        <input type="text" size="40" maxlength="250" name="user_name" required placeholder="Benutzername"><br>
+        <input type="email" size="40" maxlength="250" name="email" required placeholder="Email"><br>
+        <input type="password" size="40" name="password" required placeholder="Passwort"><br>
+        <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
+        <input type="submit" value="Abschicken">
+    </form>
+    </div>
 
-                <input type="submit" value="Abschicken">
-            </form>
+    <?php
+} //Ende von if($showFormular)
+?>
 
-            <?php
-        } //Ende von if($showFormular)
-        ?>
-
-    </body>
+</body>
 </html>
