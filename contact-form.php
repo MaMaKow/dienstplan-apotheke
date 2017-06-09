@@ -65,7 +65,7 @@
 		}
 		else
 		{
-			echo "Fehler beim Versendet der Nachricht. Das tut mir Leid.";
+			echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.";
 		}
 	}
 ?>
