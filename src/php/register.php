@@ -64,7 +64,7 @@ if (isset($_GET['register'])) {
 }
 
 if ($showFormular) {
-    echo "<div class=register_form_div>";
+    echo "<div class=centered_form_div>";
     echo "<H1>" . $config['application_name'] . "</H1>\n";
     ?>
     <form action="?register=1" method="post">

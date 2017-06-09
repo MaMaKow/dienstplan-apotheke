@@ -384,7 +384,7 @@ div#bottom
     float: left;    
     clear: left;
 }
-div.register_form_div {
+div.centered_form_div {
     text-align: center;
     padding: 10px;
     border: 3px solid #73AC22;
@@ -393,6 +393,6 @@ div.register_form_div {
     width: 10%;
     */
 }
-div.register_form_div form input {
+div.centered_form_div form input {
     margin-bottom: 1em;
 }
