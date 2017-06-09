@@ -74,10 +74,28 @@ if ($showFormular) {
         <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
         <input type="submit" value="Abschicken">
     </form>
+<p class="hint">Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email.</p>
     </div>
 
     <?php
 } //Ende von if($showFormular)
+function send_mail_about_registration($user_name) {
+    global $config;
+    $message_subject = 'Neuer Benutzer wurde angelegt';
+    $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm "
+            . $config["application_name"]
+            . " hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
+            . dirname($_SERVER["PHP_SELF"]) . "register_approve.php'>bestätigt werden.</a>";
+    $header = 'From: ' . $config['contact_email'] . "\r\n";
+    $header.= 'X-Mailer: PHP/' . phpversion();
+    $sent_result = mail($config['contact_email'], $message_subject, $message_text, $header);
+    if ($sent_result) {
+        echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
+    } else {
+        echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.<br>\n";
+    }
+}
+
 ?>
 
 </body>

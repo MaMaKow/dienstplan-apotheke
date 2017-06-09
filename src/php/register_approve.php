@@ -18,10 +18,16 @@
  */
 require_once "../../default.php";
 
-if($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT)){
+if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT)) {
+    //activate the user account:
     $statement = $pdo->prepare("UPDATE `users` SET `status` = 'active' WHERE `id` = :id");
     $result = $statement->execute(array('id' => $approve_id));
-} elseif($disapprove_id = filter_input(INPUT_POST, 'disapprove', FILTER_SANITIZE_NUMBER_INT)) {
+    //Get information about the user:
+    $statement = $pdo->prepare("SELECT * FROM users WHERE `id` = :id");
+    $result = $statement->execute();
+    $User = $statement->fetch();
+    send_mail_about_registration_approval($User["user_name"], $User["email"]);
+} elseif ($disapprove_id = filter_input(INPUT_POST, 'disapprove', FILTER_SANITIZE_NUMBER_INT)) {
     $statement = $pdo->prepare("UPDATE `users` SET `status` = 'blocked' WHERE `id` = :id");
     $result = $statement->execute(array('id' => $disapprove_id));
 }
@@ -41,4 +47,26 @@ if ($statement->rowCount() > 0) {
 } else {
     echo "Hier gibt es nichts zu tun.";
 }
+
+function send_mail_about_registration_approval($user_name, $recipient) {
+    global $config;
+    $message_subject = 'Benutzer wurde aktiviert';
+    $message_text = "Hallo " . $user_name . ", Sie haben sich im Dienstplanprogramm "
+            . $config["application_name"]
+            . " angemeldet. Die Anmeldung wurde bestätigt. Sie können sich jetzt <a href='"
+            . dirname($_SERVER["PHP_SELF"]) . "login.php'>anmelden.</a>";
+    $header = 'From: ' . $config['contact_email'] . "\r\n";
+    $header.= 'X-Mailer: PHP/' . phpversion();
+    $sent_result = mail($recipient, $message_subject, $message_text, $header);
+    if ($sent_result) {
+        echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
+    } else {
+        echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.<br>\n";
+    }
+}
+
+/*
+TODO: Add Mail to user here
+TODO: Add Mail to admin inside login script
  
+ */
