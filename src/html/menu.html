@@ -64,7 +64,13 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
         </ul>
     </li>
     <li style=float:right>
-        <a><?php echo $user; ?>&nbsp;</a>
+        <a><?php echo $_SESSION['user_name']; ?>&nbsp;</a>
+                <ul>
+            <li>
+                <a href=src/php/logout.php title="Benutzer abmelden">Logout</a>
+            </li>
+        </ul>
+
     </li>
 </ul>
 </nav>
