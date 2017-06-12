@@ -17,7 +17,8 @@ function secret_folder_is_secure($folder = "/tmp/") {
     $dir_above2 = substr($dirname, 0, strrpos($dir_above1, "/"));
     $filename = "http://" . $_SERVER["HTTP_HOST"] . $dir_above2 . $folder;
 
-    list($response, $Response_remains) = get_headers($filename);
+    $Response = get_headers($filename);
+    $response = $Response[0];
     $response_code = substr($response, strpos($response, " "), (strrpos($response, " ") - strpos($response, " ")));
     if (200 == $response_code) {
         $error_message = "Warning! The directory <a href='$filename'>$filename</a> seems to be world visible. Please make sure that the directory is not accessible by the public!";
@@ -29,8 +30,8 @@ function secret_folder_is_secure($folder = "/tmp/") {
         return TRUE;
     } else {
         $error_message = "Error! The result could not be interpreted for the directory $filename. The server returned: '$response'. Please make sure that the directory is not accessible by the public!<br>";
-        foreach ($Response_remains as $key => $response_http) {
-            $error_message = $key . ": " . $response_http . "<br>\n";
+        foreach ($Response as $key => $response_http) {
+            $error_message .= $key . ": " . $response_http . "<br>\n";
                     
         }
         return $error_message;
