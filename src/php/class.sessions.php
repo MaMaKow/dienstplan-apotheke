@@ -18,14 +18,14 @@
  */
 
 /*
-//header("strict-transport-security: max-age=31536000");
-//header("strict-transport-security: max-age=0");
-if (empty($_SERVER["HTTPS"]) OR $_SERVER["HTTPS"] != "on") {
+header("strict-transport-security: max-age=31536000");
+*/
+header("strict-transport-security: max-age=60");
+if (empty("localhost" != $_SERVER["HTTP_HOST"] AND ($_SERVER["HTTPS"]) OR $_SERVER["HTTPS"] != "on")) {
       header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
       exit();
     
 }
-*/
 
 session_start();
 if (!isset($_SESSION['userid']) and 'login.php' !== basename($_SERVER['SCRIPT_NAME']) and 'register.php' !== basename($_SERVER['SCRIPT_NAME']) ) {
