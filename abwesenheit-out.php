@@ -7,15 +7,15 @@
 	require 'db-lesen-mandant.php';
 	if(isset($_POST['auswahl_mitarbeiter']))
 	{
-		$auswahl_mitarbeiter=$_POST['auswahl_mitarbeiter'];
+		$auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 	}
 	elseif(isset($_GET['auswahl_mitarbeiter']))
 	{
-		$auswahl_mitarbeiter=$_GET['auswahl_mitarbeiter'];
+		$auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 	}
 	elseif(isset($_COOKIE['auswahl_mitarbeiter']))
 	{
-		$auswahl_mitarbeiter=$_COOKIE['auswahl_mitarbeiter'];
+		$auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 	}
 	else
 	{
@@ -89,7 +89,6 @@ echo "<a class=no-print href='abwesenheit-in.php?auswahl_mitarbeiter=$auswahl_mi
 			echo "\t\t</table>\n";
 			echo "\t</form>";
 			echo "\t\t</div>\n";
-//		echo "<pre>"; var_dump($_POST); echo "</pre>";
 			require 'contact-form.php';
 		?>
 

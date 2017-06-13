@@ -5,7 +5,7 @@ if ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
 	$datenempfang="Die Daten wurden empfangen.<br>\n";
 	foreach ( $_POST['Dienstplan'] as $plan => $inhalt )
 	{
-		$Dienstplan[$plan]=$inhalt;
+		$Dienstplan[filter_var($plan, FILTER_SANITIZE_STRING)] = filter_var($inhalt, FILTER_SANITIZE_STRING);
 	}
 //	echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 	foreach(array_keys($Dienstplan) as $tag ) //Hier sollte eigentlich nur ein einziger Tag ankommen. Oder wir bauen es auch in die Woche ein.

@@ -19,7 +19,6 @@ if (empty($_POST)) {
     }
   }
   $config = $new_config;
-  //echo "<pre>"; var_export($_POST); echo "</pre>";
   //Create a config directory if it does not yet exist.
   if (!is_dir('./config')) {
     if (!mkdir('./config', 0664, true)) {
