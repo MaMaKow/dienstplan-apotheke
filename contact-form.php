@@ -31,13 +31,13 @@
 	if( isset($_POST['VK']) )
 	{
 		$nachricht.= "Die Nachricht stammt von:";
-		$nachricht.= $_POST['VK'];
+		$nachricht.= filter_input(INPUT_POST, 'VK', FILTER_SANITIZE_STRING);
 		$nachricht.= "\n\n";
 	}
 	if( isset($_POST['nachricht']) )
 	{
 		$nachricht.= "<<<Nachricht<<<\n";
-		$nachricht.= $_POST['nachricht'];
+		$nachricht.= filter_input(INPUT_POST, 'nachricht', FILTER_SANITIZE_STRING);
 		$nachricht.= "\n";
 		$nachricht.= ">>>   >>>\n";
 		$nachricht.= "\n\n";
@@ -45,7 +45,7 @@
 	if( isset($_POST['dienstplan']) )
 	{
 		$nachricht.= "<<<Dienstplan<<<\n";
-		$nachricht.= $_POST['dienstplan'];
+		$nachricht.= filter_input(INPUT_POST, 'dienstplan', FILTER_SANITIZE_STRING);
 		$nachricht.= "\n";
 		$nachricht.= ">>>   >>>";
 		$nachricht.= "\n\n";
@@ -53,7 +53,7 @@
 	$header = 'From: '.$config['contact_email']."\r\n" ;
 	if( isset($_POST['email'])  )
 	{
-		$header.= 'Reply-To: '.$_POST['email'] . "\r\n" ;
+		$header.= 'Reply-To: ' . filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING) . "\r\n" ;
 	}
 	$header.= 'X-Mailer: PHP/' . phpversion();
 	if(isset($_POST['submitContactForm']))

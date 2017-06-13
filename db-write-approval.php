@@ -1,7 +1,7 @@
 <?php
+$tage=count($_POST['Dienstplan']);
 foreach (array_keys($_POST['Dienstplan']) as $tag => $value) {
-  $date=$_POST['Dienstplan'][$tag]['Datum'][0];
-  $tage=count($_POST['Dienstplan']);
+  $date = filter_var($_POST['Dienstplan'][$tag]['Datum'][0], FILTER_SANITIZE_STRING);
   /*
   if ($tage == 1) { $period="day"; }
   elseif ($tage > 1 and $tage <= 7){ $period="week";}
@@ -10,9 +10,9 @@ foreach (array_keys($_POST['Dienstplan']) as $tag => $value) {
   //unknown period of time.
   }
   */
-  if (isset($_POST['submit_approval'])) {
+  if (filter_has_var(INPUT_POST, 'submit_approval')) {
     $state="approved";
-  } elseif (isset($_POST['submit_disapproval'])) {
+  } elseif (filter_has_var(INPUT_POST, 'submit_disapproval')) {
     $state="disapproved";
   } else {
     //no state is given.
