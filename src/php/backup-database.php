@@ -17,17 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'default.php';
+require_once '../../default.php';
 
-$sql_query = "SELECT TABLE_NAME FROM `TABLES` WHERE `TABLE_SCHEMA` = " . $config['database_name'];
-mysqli_query_verbose($sql_query);
-while ($row = mysqli_fetch_object($ergebnis)) {
+$sql_query = "SELECT TABLE_NAME FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" . $config['database_name'] . "'";
+$result = mysqli_query_verbose($sql_query);
+while ($row = mysqli_fetch_object($result)) {
     $Table_names[] = $row->TABLE_NAME;
-    echo "Found table $row->TABLE_NAME<br>\n";
 }
 
-foreach ($Table_names as $key => $table_name){
-    echo "Working on $table_name...<br>\n";
-    $backup_file = get_root_folder() . "tmp/$table_name.sql";
-    $sql = "SELECT * INTO OUTFILE '$backup_file' FROM $table_name";
+foreach ($Table_names as $key => $table_name) {
+    $dirname = __DIR__;
+    //This script lies within /src/php/ so therefore we have to move up by two levels:
+    $dirname = str_replace('\\', '/', $dirname);
+    $dir_above1 = substr($dirname, 0, strrpos($dirname, '/'));
+    $dir_above2 = substr($dirname, 0, strrpos($dir_above1, '/'));
+
+    $backup_file = $dir_above2 . "/tmp/$table_name.sql";
+    $backup_file = iconv("UTF-8", "ISO-8859-1", $backup_file); //This is necessary for Microsoft Windows to recognise special chars.
+
+    $sql_query = "SELECT * INTO OUTFILE '$backup_file' FROM $table_name";
+    $result = mysqli_query_verbose($sql_query);
 }
