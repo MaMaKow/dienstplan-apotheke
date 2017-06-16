@@ -19,11 +19,11 @@ require "cookie-auswertung.php"; //Auswerten der per COOKIE gespeicherten Daten.
 require "get-auswertung.php"; //Auswerten der per GET übergebenen Daten.
 
 
-if (isset($_POST['mandant'])) {
-    $mandant = htmlspecialchars($_POST['mandant']);
+if (filter_has_var(INPUT_POST, 'mandant')) {
+    $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
 }
-if (isset($_POST['wochentag'])) {
-    $wochentag = htmlspecialchars($_POST['wochentag']);
+if (filter_has_var(INPUT_POST, 'wochentag')) {
+    $mandant = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } else {
     $wochentag = 1;
 }

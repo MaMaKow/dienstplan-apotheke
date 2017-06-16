@@ -17,10 +17,9 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-//echo "<pre>";    var_export($_POST);        echo "</pre>";
-if (isset($_POST['submitDienstplan'])) {
+if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
     foreach ($_POST['Grundplan'] as $plan => $inhalt) {
-        $Grundplan[$plan] = $inhalt;
+        $Grundplan[filter_var($plan, FILTER_SANITIZE_STRING)] = filter_var($inhalt, FILTER_SANITIZE_STRING);
     }
 
     foreach ($Grundplan as $wochentag => $value) {
@@ -67,11 +66,11 @@ if (isset($_POST['submitDienstplan'])) {
     }
 }
 
-if (isset($_POST['mandant'])) {
-    $mandant = htmlspecialchars($_POST['mandant']);
+if (filter_has_var(INPUT_POST, 'mandant')) {
+    $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
 }
-if (isset($_POST['wochentag'])) {
-    $wochentag = htmlspecialchars($_POST['wochentag']);
+if (filter_has_var(INPUT_POST, 'wochentag')) {
+    $mandant = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } elseif (!empty($Grundplan)) {
     list($wochentag) = array_keys($Grundplan);
 } else {

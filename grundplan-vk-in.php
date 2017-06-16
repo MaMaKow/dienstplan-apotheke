@@ -11,8 +11,8 @@ $tage = 7;
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 //require "post-auswertung.php"; //Auswerten der per POST übergebenen Daten.
-if (isset($_POST['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
+if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 } elseif (!isset($auswahl_mitarbeiter)) {
     $auswahl_mitarbeiter = 1;
 }
@@ -20,19 +20,25 @@ if (isset($_POST['auswahl_mitarbeiter'])) {
 if (isset($auswahl_mitarbeiter)) {
     create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
 }
-if (isset($_POST['submitDienstplan'])) {
+if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
     $Allowed_columns = ["VK", "wochentag", "Dienstbeginn", "Dienstende", "Mittagsbeginn", "Mittagsende", "Kommentar", "Stunden", "Mandant"];
     $max_zeilen = -1;
     foreach ($_POST['Grundplan'] as $wochentag => $Spalten) {
         foreach ($Spalten as $spalte => $Zeilen) {
             if (in_array($spalte, $Allowed_columns)) {
                 foreach ($Zeilen as $row_number => $zeile) {
-                    $Grundplan[$wochentag][$spalte][$row_number] = filter_var($zeile, FILTER_SANITIZE_STRING);
+                    $wochentag = filter_var($wochentag, FILTER_SANITIZE_NUMBER_INT);
+                    $spalte = filter_var($spalte, FILTER_SANITIZE_STRING);
+                    $row_number = filter_var($row_number, FILTER_SANITIZE_NUMBER_INT);
+                    $zeile = filter_var($zeile, FILTER_SANITIZE_STRING);
+                    $Grundplan[$wochentag][$spalte][$row_number] = $zeile;
+                    /* @var $max_zeilen int */
                     $max_zeilen = max($max_zeilen, $row_number);
                 }
             } else {
                 //Security breach!
                 //The user data submitted within $_POST[$Grundplan] contains data that is not supposed to be there.
+                //TODO: We could write this into some log file. But there is no real logging yet.
             }
         }
     }

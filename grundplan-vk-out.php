@@ -10,8 +10,8 @@ $tage = 7;
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 //require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (isset($_POST['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
+if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 } elseif (!isset($auswahl_mitarbeiter)) {
     $auswahl_mitarbeiter = 1;
 }
