@@ -32,8 +32,8 @@ echo "<H1>" . $config['application_name'] . "</H1>\n";
 ?>
 
 <form action="?login=1&referrer=<?php echo $referrer; ?>" method="post">
-    <input type="text" size="40" maxlength="250" name="user_name" placeholder="Benutzername"><br>
-    <input type="password" size="40" name="password" placeholder="Passwort"><br>
+    <input type="text" size="25" maxlength="250" name="user_name" placeholder="Benutzername"><br>
+    <input type="password" size="25" name="password" placeholder="Passwort"><br>
     <input type="submit"><br>
     <?php
     if (isset($errorMessage)) {
@@ -41,5 +41,6 @@ echo "<H1>" . $config['application_name'] . "</H1>\n";
     }
     ?>
 </form> 
+</div>
 </body>
 </html>
