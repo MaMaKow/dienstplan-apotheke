@@ -78,8 +78,8 @@ foreach ($Mandant as $filiale => $name) {
     }
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";
-echo "\t\t\t<form id=myform method=post>\n";
-echo "<div class=no-print>";
+echo "<div id=navigation_form_div class=no-print>\n";
+echo "\t\t\t<form id=navigation_form method=post>\n";
 echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "<br><br>\n";
@@ -90,14 +90,16 @@ echo "<br><br>\n";
 //echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
 echo "\t\t\t\t\t<input name='tag' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+echo "\t\t\t</form>\n";
 echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t<table>\n";
+echo "\t\t\t\t<div id=roster_table_div>\n";
+echo "\t\t\t\t<table id=roster_table>\n";
 echo "\t\t\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this is just one day.//Datum
     $zeile = "";
-    echo "\t\t\t\t\t\t<td>";
-    $zeile.="<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
-    $zeile.="<input type=hidden name=mandant value=" . $mandant . ">";
+    echo "\t\t\t\t\t\t<td>\n";
+    $zeile.="<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">\n";
+    $zeile.="<input type=hidden name=mandant value=" . $mandant . ">\n";
     $zeile.=strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
     //Wochentag
@@ -183,9 +185,10 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         echo "</td></tr>\n";
     }
 }
-echo "\t\t\t\t</table>\n";
+echo "\t\t\t\t\t</table>\n";
+echo "\t\t\t\t</div>\n";
+
 //echo $submit_button; Kein Schreibrecht in der Leseversion
-echo "\t\t\t</form>\n";
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empty($Dienstplan[0]["Dienstbeginn"])) {
     echo "\t\t\t<div class=image>\n";
     echo draw_image_dienstplan($Dienstplan);
