@@ -190,7 +190,7 @@ echo "\t\t\t\t</div>\n";
 
 //echo $submit_button; Kein Schreibrecht in der Leseversion
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empty($Dienstplan[0]["Dienstbeginn"])) {
-    echo "\t\t\t<div class=image>\n";
+    echo "\t\t\t<div id=roster_image_div class=image>\n";
     echo draw_image_dienstplan($Dienstplan);
     echo "<br>\n";
     echo "<br>\n";

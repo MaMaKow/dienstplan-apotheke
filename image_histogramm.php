@@ -117,7 +117,7 @@ function draw_image_histogramm($Dienstplan) {
     $x_start = $outer_margin_x / $width_factor;
     $y_start = $outer_margin_y / $height_factor * -1;
 
-    $canvas_text = "<canvas style='border: 1px solid #000000;' id='canvas_histogram' width='$canvas_width' height='$canvas_height' >\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
+    $canvas_text = "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height' >\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
     $canvas_text .= "<script>\n";
     $canvas_text .= "var c = document.getElementById('canvas_histogram');\n";
     $canvas_text .= "var ctx = c.getContext('2d');\n";

@@ -7,7 +7,7 @@ $rückwärts_button_img="
 				<img src='img/backward.png' class='button-image' alt='Einen Tag rückwärts'>
 			</i>
 			<br>
-			1 Tag Rückwärts
+			1 Tag rückwärts
 		</button>";
 $vorwärts_button_img="
 		<button type='submit' class='btn-primary no-print' value='' name='submitVorwärts'>
@@ -15,7 +15,7 @@ $vorwärts_button_img="
 				<img src='img/foreward.png' class='button-image' alt='Einen Tag vorwärts'>
 			</i>
 			<br>
-			1 Tag Vorwärts
+			1 Tag vorwärts
 		</button>";
 $rückwärts_button_week_img="
 		<button type='submit' class='btn-primary no-print' value='' name='submitWocheRückwärts'>
@@ -23,15 +23,15 @@ $rückwärts_button_week_img="
 				<img src='img/backward.png' class='button-image' alt='Eine Woche rückwärts'>
 			</i>
 			<br>
-			1 Woche Rückwärts
+			1 Woche rückwärts
 		</button>";
 $vorwärts_button_week_img="
 		<button type='submit' class='btn-primary no-print' value='' name='submitWocheVorwärts'>
 			<i class='icon-black'>
-				<img src='img/foreward.png' class='button-image' alt='Eine Woche Vorwärts'>
+				<img src='img/foreward.png' class='button-image' alt='Eine Woche vorwärts'>
 			</i>
 			<br>
-			1 Woche Vorwärts
+			1 Woche vorwärts
 		</button>";
 $submit_button_img="
 		<button type='submit' id='submit_button_img' class='btn-primary btn-save no-print' value=Absenden name='submitDienstplan'>

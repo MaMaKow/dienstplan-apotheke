@@ -57,12 +57,10 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
     $last_end = max(array_map('time_from_text_to_int', $Dienstplan[0]['Dienstende']));
     $svg_inner_width = $inner_margin_x * 2 + ((ceil($last_end) - floor($first_start)) * $bar_width_factor);
     $svg_outer_width = $svg_inner_width + ($outer_margin_x * 2);
-//    echo "<pre>"; var_export($Dienstplan); echo "</pre>"; 
     /* $svg_text  = "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
       /*$svg_text .= "<?xml version='1.0' encoding='utf-8'?>\n"; */
-    $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' style='border: 1px solid #000000; cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
-//    $svg_text .= "\t<!--Rectangle as border-->\n";
-//    $svg_text .= "\t<rect x='$outer_margin_x' y='$outer_margin_y' width='$svg_inner_width' height='$svg_inner_height' stroke-width='1' stroke='black' style='fill:none;' />\n";
+    //$svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
+    $svg_text .= "<svg id='svgimg' width='$svg_width' class='noselect' cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
 
     $svg_grid_text = "\t<!--Grid-->\n";
     for ($time = floor($first_start); $time <= ceil($last_end); $time = $time + 2) {

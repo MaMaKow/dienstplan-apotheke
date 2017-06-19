@@ -338,6 +338,10 @@ button:hover{
     -o-filter: brightness(0);
     filter: brightness(0);
 }
+.btn-primary {
+    width: 138px;
+    padding: 0.5em;
+}
 .btn-secondary {
     background-color: #B4B4B4;
 }
@@ -396,8 +400,26 @@ div#roster_table_div span.roster_table_lunch_break_span {
 
 @media screen and (max-width: 628px) {
     #roster_table_div {
-        background-color: red;
         width: 100%
+    }
+    #roster_image_div{
+        width: 100%;
+    }
+    #roster_image_div svg, #roster_image_div canvas{
+        width: 100%;
+        border: 0;
+    }
+}
+@media screen and (min-width: 629px) {
+    #roster_table_div {
+        max-width: 45%;
+    }
+    #roster_image_div{
+        width: 54%;
+    }
+    #roster_image_div svg, #roster_image_div canvas{
+        width: 99%;
+        border: 1px solid #000000;
     }
 }
 div.centered_form_div {
