@@ -380,10 +380,25 @@ div#bottom
     float: left;    
     clear: left;
 }
-#roster_table_div
+div#roster_table_div
 {
     float: left;    
     clear: left;
+}
+div#roster_table_div td {
+    white-space: normal;
+}
+
+div#roster_table_div span.roster_table_lunch_break_span {
+    white-space: nowrap;
+    font-size: smaller;
+}
+
+@media screen and (max-width: 628px) {
+    #roster_table_div {
+        background-color: red;
+        width: 100%
+    }
 }
 div.centered_form_div {
     text-align: center;
