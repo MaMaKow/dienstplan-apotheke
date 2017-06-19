@@ -1,7 +1,7 @@
 <?php
 
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
-if (isset($_POST['mandant'])) {
+if (filter_has_var(INPUT_POST, 'mandant')) {
     if (is_int((int) $_POST['mandant'])) {
         $mandant = htmlspecialchars($_POST['mandant']);
     } else {
@@ -9,11 +9,11 @@ if (isset($_POST['mandant'])) {
     }
 }
 
-if (isset($_POST['datum'])) {
+if (filter_has_var(INPUT_POST, 'datum')) {
     $datum = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
 }
 
-if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
+if (filter_has_var(INPUT_POST, 'submitDienstplan') && count($_POST['Dienstplan']) > 0) {
 //                echo "<pre>\$_POST-Dienstplan:"; var_export($_POST['Dienstplan']); echo "</pre>\n";
     foreach ($_POST['Dienstplan'] as $day_number => $inhalt_tag) {
         $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
@@ -119,12 +119,12 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
     $date_sql = filter_var($_POST['Dienstplan'][0]['Datum'][0], FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-}  elseif (isset($_POST['submitWocheVorwärts']) && isset($_POST['date']) && isset($_POST['selected_employee'])) {
+}  elseif (isset($_POST['submitWocheVorwärts']) && filter_has_var(INPUT_POST, 'date') && isset($_POST['selected_employee'])) {
     $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
     $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-}  elseif (isset($_POST['submitWocheRückwärts']) && isset($_POST['date']) && isset($_POST['selected_employee'])) {
+}  elseif (isset($_POST['submitWocheRückwärts']) && filter_has_var(INPUT_POST, 'date') && isset($_POST['selected_employee'])) {
     $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
     $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
     $datum = strtotime('-1 week', strtotime($datum));
@@ -142,17 +142,17 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
     $datum = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
     $datum = strtotime('-1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (isset($_POST['wochenAuswahl']) && isset($_POST['woche'])) {
+} elseif (filter_has_var(INPUT_POST, 'wochenAuswahl') && filter_has_var(INPUT_POST, 'woche')) {
     $datum = $_POST['woche'];
     $montags_differenz = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
     $montags_differenzString = "-" . $montags_differenz . " day";
     $datum = strtotime($montags_differenzString, strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (isset($_POST['tagesAuswahl']) && isset($_POST['tag'])) {
+} elseif (filter_has_var(INPUT_POST, 'tagesAuswahl') && filter_has_var(INPUT_POST, 'tag')) {
     $datum = $_POST['tag'];
-} elseif (isset($_POST['tagesAuswahl']) && isset($_POST['woche'])) {
+} elseif (filter_has_var(INPUT_POST, 'tagesAuswahl') && filter_has_var(INPUT_POST, 'woche')) {
     $datum = $_POST['woche'];
-} elseif (isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0) {
+} elseif (filter_has_var(INPUT_POST, 'submitCopyPaste') && count($_POST['Dienstplan']) > 0) {
     require 'copy-paste.php';
 } elseif ((isset($_POST['submit_approval']) or isset($_POST['submit_disapproval'])) && count($_POST['Dienstplan']) > 0) {
     require 'db-write-approval.php';
