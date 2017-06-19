@@ -133,7 +133,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 $zeile = "\t\t\t\t\t\t<td>";
                 $zeile.="<b><a href='mitarbeiter-out.php?datum=" . $Dienstplan[$i]["Datum"][0] . "&auswahl_mitarbeiter=" . $Dienstplan[$i]["VK"][$j] . "'>";
                 $zeile.=$Dienstplan[$i]["VK"][$j] . " " . $Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
-                $zeile.="</a></b> ";
+                $zeile.="</a></b><span> ";
                 if (isset($Dienstplan[$i]["VK"][$j])) {
                     //Dienstbeginn
                     $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
@@ -142,13 +142,13 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                     $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstende"][$j]));
                 }
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-                    $zeile.= "\t\t\t\t\t<br>\n";
+                    $zeile.= "\t\t\t\t\t</span><span class=roster_table_lunch_break_span>\n";
                     $zeile.=" Pause: ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
                     $zeile.=" - ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
                 }
-                $zeile .= "\n\t\t\t\t\t\t</td>\n";
+                $zeile .= "</span>\n\t\t\t\t\t\t</td>\n";
                 echo $zeile;
             }
         }
