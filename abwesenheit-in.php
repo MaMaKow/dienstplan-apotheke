@@ -5,7 +5,7 @@ require 'default.php';
             //$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
             //Hole eine Liste aller Mandanten (Filialen)
             require 'db-lesen-mandant.php';
-            if (isset($_POST['auswahl_mitarbeiter'])) {
+            if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
                 $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
             } elseif (isset($_GET['auswahl_mitarbeiter'])) {
                 $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
@@ -36,7 +36,7 @@ require 'default.php';
             }
 
             //We create new entries or edit old entries. (Empty values are not accepted.)
-            if ((isset($_POST['submitStunden']) or (isset($_POST['command']) and 'replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)))
+            if ((filter_has_var(INPUT_POST, 'submitStunden') or (filter_has_var(INPUT_POST, 'command') and 'replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)))
                     and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)                    
                     and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
                     and $grund = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)

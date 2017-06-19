@@ -4,7 +4,7 @@ require 'default.php';
 require 'db-lesen-mitarbeiter.php';
 //Get a list of branches:
 require 'db-lesen-mandant.php';
-if (isset($_POST['auswahl_mitarbeiter'])) {
+if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
     $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
 } elseif (isset($_GET['auswahl_mitarbeiter'])) {
     $auswahl_mitarbeiter = $_GET['auswahl_mitarbeiter'];
@@ -18,7 +18,7 @@ if (isset($auswahl_mitarbeiter)) {
 }
 
 //Deleting rows of data:
-if (isset($_POST['loeschen'])) {
+if (filter_has_var(INPUT_POST, 'loeschen')) {
     foreach ($_POST['loeschen'] as $vk => $Daten) {
         foreach ($Daten as $datum => $X) {
             $abfrage = "DELETE FROM `Stunden`
@@ -30,7 +30,7 @@ if (isset($_POST['loeschen'])) {
 }
 
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
-if (isset($_POST['submitStunden']) and isset($_POST['auswahl_mitarbeiter']) and isset($_POST['datum']) and isset($_POST['stunden']) and isset($_POST['saldo']) and isset($_POST['grund'])) {
+if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'auswahl_mitarbeiter') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
     $abfrage = "INSERT INTO `Stunden`
 						(VK, Datum, Stunden, Saldo, Grund)
 						VALUES (" . $_POST['auswahl_mitarbeiter'] . ", '" . $_POST['datum'] . "', " . $_POST['stunden'] . ", " . $_POST['saldo'] . ", '" . $_POST['grund'] . "')";
