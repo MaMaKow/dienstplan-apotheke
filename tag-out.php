@@ -14,6 +14,7 @@ $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl 
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+$date_sql = $datum;
 if (isset($mandant)) {
     create_cookie("mandant", $mandant, 30);
 }
@@ -64,20 +65,7 @@ echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>Kalenderwoche " . strft
 
 require_once 'src/php/build-warning-messages.php';
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
-
-//Support for various branch clients.
-echo "\t\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t\t<input type=hidden name=datum value=" . $Dienstplan[0]["Datum"][0] . ">\n";
-echo "\t\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
-//echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $filiale => $name) {
-    if ($filiale != $mandant) {
-        echo "\t\t\t\t\t<option value=" . $filiale . ">" . $name . "</option>\n";
-    } else {
-        echo "\t\t\t\t\t<option value=" . $filiale . " selected>" . $name . "</option>\n";
-    }
-}
-echo "\t\t\t\t</select>\n\t\t\t</form>\n";
+echo build_select_branch($mandant, $date_sql);
 echo "<div id=navigation_form_div class=no-print>\n";
 echo "\t\t\t<form id=navigation_form method=post>\n";
 echo "$rückwärts_button_img";
