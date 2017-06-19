@@ -133,12 +133,13 @@ if (isset($_POST['submitDienstplan']) && count($_POST['Dienstplan']) > 0) {
     $datum = $_POST['Dienstplan'][0]['Datum'][0];
     $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (isset($_POST['submitVorwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) {
-    $datum = $_POST['Dienstplan'][0]['Datum'][0];
+} elseif (isset($_POST['submitVorwärts']) && filter_has_var(INPUT_POST, 'tag')) {
+    print_debug_variable("Wir sind da!");
+    $datum = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (isset($_POST['submitRückwärts']) && isset($_POST['Dienstplan'][0]['Datum'][0])) {
-    $datum = $_POST['Dienstplan'][0]['Datum'][0];
+} elseif (isset($_POST['submitRückwärts']) && filter_has_var(INPUT_POST, 'tag')) {
+    $datum = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
     $datum = strtotime('-1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 } elseif (isset($_POST['wochenAuswahl']) && isset($_POST['woche'])) {
