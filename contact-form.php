@@ -28,13 +28,13 @@
 	$trace = debug_backtrace();
 	$nachricht.= $trace[0]['file'];
 	$nachricht.= "\n\n";
-	if( isset($_POST['VK']) )
+	if( filter_has_var(INPUT_POST, 'VK') )
 	{
 		$nachricht.= "Die Nachricht stammt von:";
 		$nachricht.= filter_input(INPUT_POST, 'VK', FILTER_SANITIZE_STRING);
 		$nachricht.= "\n\n";
 	}
-	if( isset($_POST['nachricht']) )
+	if( filter_has_var(INPUT_POST, 'nachricht') )
 	{
 		$nachricht.= "<<<Nachricht<<<\n";
 		$nachricht.= filter_input(INPUT_POST, 'nachricht', FILTER_SANITIZE_STRING);
@@ -42,7 +42,7 @@
 		$nachricht.= ">>>   >>>\n";
 		$nachricht.= "\n\n";
 	}
-	if( isset($_POST['dienstplan']) )
+	if( filter_has_var(INPUT_POST, 'dienstplan') )
 	{
 		$nachricht.= "<<<Dienstplan<<<\n";
 		$nachricht.= filter_input(INPUT_POST, 'dienstplan', FILTER_SANITIZE_STRING);
@@ -51,12 +51,12 @@
 		$nachricht.= "\n\n";
 	}
 	$header = 'From: '.$config['contact_email']."\r\n" ;
-	if( isset($_POST['email'])  )
+	if( filter_has_var(INPUT_POST, 'email')  )
 	{
 		$header.= 'Reply-To: ' . filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING) . "\r\n" ;
 	}
 	$header.= 'X-Mailer: PHP/' . phpversion();
-	if(isset($_POST['submitContactForm']))
+	if(filter_has_var(INPUT_POST, 'submitContactForm'))
 	{
 		$versendet=mail($empfaenger, $betreff, $nachricht, $header);
 		if ($versendet)

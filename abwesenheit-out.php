@@ -5,7 +5,7 @@
 	$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
 	//Hole eine Liste aller Mandanten (Filialen)
 	require 'db-lesen-mandant.php';
-	if(isset($_POST['auswahl_mitarbeiter']))
+	if(filter_has_var(INPUT_POST, 'auswahl_mitarbeiter'))
 	{
 		$auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 	}

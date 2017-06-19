@@ -6,12 +6,12 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
 	require 'default.php';
         require 'db-lesen-abwesenheit.php';
 
-	if (isset($_POST["month"])) {
+	if (filter_has_var(INPUT_POST, "month")) {
 	  $month=sanitize_user_input($_POST["month"]);
 	  } else {
 	  $month=date("n");
 	}
-	if (isset($_POST["year"])) {
+	if (filter_has_var(INPUT_POST, "year")) {
 	  $year=sanitize_user_input($_POST["year"]);
 	  } else {
 	  $year=date("Y");

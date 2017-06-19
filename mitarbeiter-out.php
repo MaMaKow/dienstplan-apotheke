@@ -18,7 +18,7 @@ $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl 
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (isset($_POST['submitAuswahlMitarbeiter'])) {
+if (filter_has_var(INPUT_POST, 'submitAuswahlMitarbeiter')) {
     $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
     $Plan = $_POST['Dienstplan'];
     $datum = $Plan[0]['Datum'][0];

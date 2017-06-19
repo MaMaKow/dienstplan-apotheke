@@ -49,12 +49,12 @@ function build_datalist() {
 function handle_user_data_input() {
     //Work on user data:
     global $year;
-    if (isset($_POST["year"])) {
+    if (filter_has_var(INPUT_POST, "year")) {
         $year = filter_input(INPUT_POST, "year", FILTER_SANITIZE_NUMBER_INT);
     } else {
         $year = date("Y");
     }
-    if (isset($_POST['command'])) {
+    if (filter_has_var(INPUT_POST, 'command')) {
         write_user_input_to_database();
     }
 }

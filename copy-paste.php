@@ -1,6 +1,6 @@
 <?php
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
-if ( isset($_POST['submitCopyPaste']) && count($_POST['Dienstplan']) > 0 )
+if ( filter_has_var(INPUT_POST, 'submitCopyPaste') && count($_POST['Dienstplan']) > 0 )
 {
 	$datenempfang="Die Daten wurden empfangen.<br>\n";
 	foreach ( $_POST['Dienstplan'] as $plan => $inhalt )

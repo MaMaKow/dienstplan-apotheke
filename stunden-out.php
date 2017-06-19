@@ -9,7 +9,7 @@ echo "<div id=main-area>\n";
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
 			//Hole eine Liste aller Mandanten (Filialen)
 			require 'db-lesen-mandant.php';
-			if(isset($_POST['submitAuswahlMitarbeiter']))
+			if(filter_has_var(INPUT_POST, 'submitAuswahlMitarbeiter'))
 			{
 				$auswahl_mitarbeiter=$_POST['auswahl_mitarbeiter'];
 			}
