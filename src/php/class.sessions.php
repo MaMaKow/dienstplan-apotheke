@@ -18,28 +18,7 @@
  */
 
 /*
-header("strict-transport-security: max-age=31536000");
-*/
-header("strict-transport-security: max-age=60");
-if (empty("localhost" != $_SERVER["HTTP_HOST"] AND ($_SERVER["HTTPS"]) OR $_SERVER["HTTPS"] != "on")) {
-      header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
-      exit();
-    
-}
-
-session_start();
-if (!isset($_SESSION['userid']) and 'login.php' !== basename($_SERVER['SCRIPT_NAME']) and 'register.php' !== basename($_SERVER['SCRIPT_NAME']) ) {
-    //test if the current file is on the top level or deeper in the second level.
-    if(strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')){
-        $location = "login.php";
-    } else {
-        $location = "src/php/login.php";
-    }
-    header("Location:" . $location . "?referrer=" . $_SERVER["REQUEST_URI"]);
-    die('Bitte zuerst <a href="' . $location . '?referrer=' . $_SERVER["REQUEST_URI"] . '">einloggen</a>');
-}
-/*
- * e dot mortoray at ecircle dot com ¶8 years ago
+ * e dot mortoray at ecircle dot com
  * There is a nuance we found with session timing out although the user is still active in the session.  The problem has to do with never modifying the session variable. 
  * The GC will clear the session data files based on their last modification time.  Thus if you never modify the session, you simply read from it, then the GC will eventually clean up. 
  * To prevent this you need to ensure that your session is modified within the GC delete time.  You can accomplish this like below. 
@@ -48,10 +27,84 @@ if (!isset($_SESSION['last_access']) || (time() - $_SESSION['last_access']) > 60
     $_SESSION['last_access'] = time();
 
 /**
- * Description of class
+ * This class handles the session management, login, logout and permissions of users.
  *
  * @author Mandelkow
  */
 class sessions {
-//put your code here
+
+    private $Privilege = array();
+
+    public function __construct() {
+        session_start();
+
+        /*
+         * Interpret $_SERVER values
+         */
+        $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
+        $http_host = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
+        $https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_STRING);
+        $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_STRING);
+        /*
+         * TODO: On a production server the max-age value should probably be set to one year:
+         * header("strict-transport-security: max-age=31536000");
+         * for now we present a value of one minute while writing and debugging the code.
+         */
+        header("strict-transport-security: max-age=60");
+        /* Force HTTPS:
+         * We make an exception for localhost. If data is not sent through the net, there is no absolute need for HTTPS.
+         * People are still free to use it on their own. Administrators are able to force it in Apache (or any other web server).
+         */
+        if ("localhost" != $http_host AND ( empty($https) OR $https != "on")) {
+            header("Location: https://" . $http_host . $request_uri);
+            die("<p>Dieses Programm erfordert die Nutzung von <a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>. Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>");
+        }
+
+        /*
+         * Force a new visitor to identify as a user (=login):
+         * The redirect obviously is not necessary on the login-page and on the register-page.
+         */
+        if (!isset($_SESSION['userid']) and 'login.php' !== basename($script_name) and 'register.php' !== basename($script_name)) {
+            /*
+             * Test if the current file is on the top level or deeper in the second level:
+             */
+            if (strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')) {
+                $location = "login.php";
+            } else {
+                $location = "src/php/login.php";
+            }
+            header("Location:" . $location . "?referrer=" . $request_uri);
+            die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>');
+        }
+    }
+
+    private function read_Privileges_from_database() {
+        global $pdo;
+        $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `user_id` = :user_id");
+        $statement->execute(array('user_id' => $this->user_id));
+        while ($privilege_data = $statement->fetch()) {
+            $this->Privilege[$privilege_data->privilege] = TRUE;
+        }
+        return;
+    }
+
+    /*
+     * Check if the logged-in user has a specefied permission
+     * @return boolean TRUE for exisiting permission, FALSE for missing permission.
+     */
+    public function user_has_privilege($privilege) {
+        if (!isset($this->Privilege)) {
+            /*
+             * Privileges are read only once per session.
+             * If permissions are revoked or granted during a session, this will take effect only after a logout(=session_destroy()).
+             */
+            $this->read_Privileges_from_database();
+        }
+        if (TRUE === $this->Privilege[$privilege]) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
 }
