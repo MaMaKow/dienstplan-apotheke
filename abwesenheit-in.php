@@ -149,7 +149,6 @@ require 'src/html/menu.html';
 
 echo "<div id=main-area>\n";
 
-require_once 'src/php/build-warning-messages.php';
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 if (isset($Feiertagsmeldung)) {

@@ -1,6 +1,7 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan einer Woche  anzeigen.
 require 'default.php';
+
 $mandant=1;	//First branch is allways the default.
 $tage=7;	//Dies ist eine Wochenansicht mit Wochenende
 
@@ -48,6 +49,11 @@ $VKcount = calculate_VKcount ($Dienstplan);
 require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';
+if(!$session->user_has_privilege('create_roster')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
+    die();
+}
 
 echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 //Support for various branch clients.
@@ -223,7 +229,7 @@ echo "\t</table>\n";
 echo "</form>\n";
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-require_once 'src/php/build-warning-messages.php';
+
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 require 'contact-form.php';

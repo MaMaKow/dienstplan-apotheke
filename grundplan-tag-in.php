@@ -182,6 +182,11 @@ $VKmax = max(array_keys($Mitarbeiter));
 require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';
+if(!$session->user_has_privilege('create_roster')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
+    die();
+}
 
 //Hier beginnt die Normale Ausgabe.
 echo "\t\t<H1>Grundplan Tagesansicht</H1>\n";

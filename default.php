@@ -48,7 +48,13 @@ if (isset($_SERVER['REMOTE_USER'])) {
 
 //Create a connection to the database:
 require_once 'db-verbindung.php';
+
 //session management
 require_once 'src/php/class.sessions.php';
-$navigator_languages = preg_split('/[,;]/', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+$session = new sessions;
+
+require_once 'src/php/build-warning-messages.php';
+
+
+$navigator_languages = preg_split('/[,;]/', filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_STRING));
 $navigator_language = $navigator_languages[0]; //ignore the other options
