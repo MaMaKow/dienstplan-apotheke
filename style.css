@@ -1,4 +1,4 @@
-    /*
+/*
 Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizard.asp
 #BDE682, foreground, light green
 #73AC22, contrast, strong green
@@ -431,4 +431,18 @@ div.centered_form_div {
 }
 div.centered_form_div form input {
     margin-bottom: 1em;
+}
+nav ul#navigation_tiles {
+    list-style-type: none;
+    display: block;
+    margin: 0;
+    padding: 0;
+
+}
+nav ul#navigation_tiles li {
+    float: left;
+}
+nav ul li a img.image_tiles{
+    height: 128px;
+    width: 128px;
 }
