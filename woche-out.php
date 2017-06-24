@@ -298,7 +298,7 @@ $main_div_html .= $duty_roster_form_html;
 $main_div_html .= "</div>\n";
 
 
-require_once 'src/php/build-warning-messages.php';
+
 $warning_message_html = build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo $warning_message_html;

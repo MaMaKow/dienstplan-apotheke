@@ -59,7 +59,7 @@ require 'src/html/menu.html';
             <?php
             //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
 
-require_once 'src/php/build-warning-messages.php';
+
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
                 echo "\t\t\t<p id=xmlhttpresult></p>\n";

@@ -4,6 +4,7 @@
 require 'default.php';
 require "src/php/calculate-holidays.php";
 
+
 $mandant = 1; //First branch is allways the default.
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
@@ -76,12 +77,16 @@ require 'pruefe-abwesenheit.php';
 require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';
+if(!$session->user_has_privilege('create_roster')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
+    die();
+}
 
 //Hier beginnt die Normale Ausgabe.
 echo "<div id=main-area>\n";
 
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
-require_once 'src/php/build-warning-messages.php';
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo "\t\tKalenderwoche " . strftime('%V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";

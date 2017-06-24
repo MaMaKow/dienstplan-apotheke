@@ -91,7 +91,7 @@ require 'navigation.php';
 require 'src/html/menu.html';
 echo "<div id=main-area>\n";
 
-require_once 'src/php/build-warning-messages.php';
+
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo build_select_employee($auswahl_mitarbeiter);

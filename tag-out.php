@@ -63,7 +63,7 @@ require 'src/html/menu.html';
 echo "\t\t<div id=main-area>\n";
 echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>Kalenderwoche " . strftime('%V', strtotime($datum)) . "</a><br>\n";
 
-require_once 'src/php/build-warning-messages.php';
+
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo build_select_branch($mandant, $date_sql);
 echo "<div id=navigation_form_div class=no-print>\n";

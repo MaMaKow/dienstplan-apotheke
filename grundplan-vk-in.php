@@ -141,6 +141,11 @@ require 'head.php';?>
 <?php
 require 'navigation.php';
 require 'src/html/menu.html';
+if(!$session->user_has_privilege('create_roster')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
+    die();
+}
 echo "<div id=main-area>\n";
 echo build_select_employee($auswahl_mitarbeiter);
 
