@@ -17,6 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once "../../default.php";
+require_once "../../head.php";
+require '../../navigation.php';
+require '../../src/html/menu.html';
+
+if(!$session->user_has_privilege('administration')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    die();
+}
+
 
 if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT)) {
     //activate the user account:
@@ -51,10 +60,10 @@ if ($statement->rowCount() > 0) {
 function send_mail_about_registration_approval($user_name, $recipient) {
     global $config;
     $message_subject = 'Benutzer wurde aktiviert';
-    $message_text = "Hallo " . $user_name . ", Sie haben sich im Dienstplanprogramm "
+    $message_text = "Hallo " . $user_name . ", Sie haben sich im Dienstplanprogramm '"
             . $config["application_name"]
-            . " angemeldet. Die Anmeldung wurde bestätigt. Sie können sich jetzt <a href='"
-            . dirname($_SERVER["PHP_SELF"]) . "login.php'>anmelden.</a>";
+            . "' angemeldet. Die Anmeldung wurde bestätigt. Sie können sich jetzt <a href='"
+            . dirname($_SERVER["PHP_SELF"]) . "login.php'>anmelden.</a>"; /*TODO: Insert hostname maybe?*/
     $header = 'From: ' . $config['contact_email'] . "\r\n";
     $header.= 'X-Mailer: PHP/' . phpversion();
     $sent_result = mail($recipient, $message_subject, $message_text, $header);
