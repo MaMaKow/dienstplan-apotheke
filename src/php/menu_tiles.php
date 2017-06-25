@@ -5,7 +5,7 @@ require_once get_root_folder() . 'head.php';
 <nav id="nav" class="no-print">
     <ul id="navigation_tiles">
         <li>
-            <a href=woche-out.php><img src="<?php echo get_root_folder() ?>img/week.svg" class="image_tiles"></a>
+            <a href=woche-out.php><img src="<?php echo get_root_folder() ?>img/week_2.svg" class="image_tiles"></a>
         </li>
         <li>
             <a href=tag-out.php><img src="<?php echo get_root_folder() ?>img/day.svg" class="image_tiles"></a>            
