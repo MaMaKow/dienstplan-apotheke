@@ -38,7 +38,7 @@ if ($statement->rowCount() > 0) {
     echo "<H1>Inaktive Benutzer</H1>";
     echo "<form method='POST' id='register_approve'>";
     while ($User = $statement->fetch()) {
-        echo "<p>" . $User["user_name"] . ", " . $User["email"] . ", erstellt: " . $User["created_at"]
+        echo "<p>" . $User["user_name"] . ", VK " . $User["employee_id"]  . ", " . $User["email"] . ", erstellt: " . $User["created_at"]
         . " <button type='submit' form='register_approve' name=approve value=" . $User["id"] . " title='Benutzer bestätigen'>Bestätigen</button>"
         . " <button type='submit' form='register_approve' name=disapprove value=" . $User["id"] . " title='Benutzer löschen'>Löschen</button>"
         . "</p>";

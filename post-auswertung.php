@@ -139,7 +139,6 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && count($Dienstplan) > 0) {
     $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 } elseif (filter_has_var(INPUT_POST, 'submitVorwärts') && filter_has_var(INPUT_POST, 'tag')) {
-    print_debug_variable("Wir sind da!");
     $datum = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);

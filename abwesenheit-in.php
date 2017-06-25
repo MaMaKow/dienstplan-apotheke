@@ -146,6 +146,10 @@ require 'default.php';
 require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';
+if(!$session->user_has_privilege('create_absence')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    die();
+}
 
 echo "<div id=main-area>\n";
 
