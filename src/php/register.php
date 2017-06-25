@@ -84,10 +84,10 @@ if ($showFormular) {
 function send_mail_about_registration($user_name) {
     global $config;
     $message_subject = 'Neuer Benutzer wurde angelegt';
-    $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm "
+    $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
             . $config["application_name"]
-            . " hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . dirname($_SERVER["PHP_SELF"]) . "register_approve.php'>bestätigt werden.</a>";
+            . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
+            . dirname($_SERVER["PHP_SELF"]) . "register_approve.php'>bestätigt werden.</a>";/*TODO: Insert hostname maybe?*/
     $header = 'From: ' . $config['contact_email'] . "\r\n";
     $header.= 'X-Mailer: PHP/' . phpversion();
     $sent_result = mail($config['contact_email'], $message_subject, $message_text, $header);

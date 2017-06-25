@@ -34,13 +34,6 @@ if (!isset($_SESSION['last_access']) || (time() - $_SESSION['last_access']) > 60
  */
 class sessions {
     /*
-     * @var $Privileges array of permissions such as edit_roster.
-     * The array is built in the form array(edit_roster => TRUE, create_roster => TRUE)
-     * Permissions, which are not given to the user are not FALSE. The are simply not present.
-     */
-
-    private $Privileges;
-    /*
      * @var $user_id int 
      */
     private $user_id;
@@ -101,8 +94,9 @@ class sessions {
         $statement->execute(array('user_id' => $this->user_id));
         //$statement->debugDumpParams();
         while ($privilege_data = $statement->fetch()) {
-            $this->Privileges[$privilege_data[privilege]] = TRUE;
+            $Privileges[$privilege_data[privilege]] = TRUE;
         }
+        $_SESSION['Privileges'] = $Privileges;
         return;
     }
 
@@ -112,24 +106,82 @@ class sessions {
      */
 
     public function user_has_privilege($privilege) {
-        if (empty($this->Privileges)) {
+        if (empty($_SESSION['Privileges'])) {
             /*
              * Privileges are read only once per session.
              * If permissions are revoked or granted during a session, this will take effect only after a logout(=session_destroy()).
              */
             $this->read_Privileges_from_database();
         }
-        if (TRUE === $this->Privileges[$privilege]) {
+        if (TRUE === $_SESSION['Privileges'][$privilege]) {
             return TRUE;
         } else {
             return FALSE;
         }
     }
 
+    public function login() {
+        global $pdo;
+        /*
+         * Interpret POST data:
+         */
+        $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+
+        /*
+         * Get user data:
+         */
+        $statement = $pdo->prepare("SELECT * FROM users WHERE `user_name` = :user_name AND `status` = 'active'");
+        $result = $statement->execute(array('user_name' => $user_name));
+        $user = $statement->fetch();
+
+        /*
+         * Check for multiple failed login attempts
+         * If a user has tried to login 3 times in a row, he is blocked for 5 minutes.
+         * The number of failed attempts is reset to 0 on every successfull login.
+         */
+        if (3 <= $user['failed_login_attempts'] and strtotime('-5min') <= strtotime($user['failed_login_attempt_time'])) {
+            $errorMessage .= "<p>Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.</p>";
+            return $errorMessage;
+            //$blocked = TRUE;
+        }
+
+        //Check the password:
+        if ($user !== false && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['user_name'];
+            $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = 0 WHERE `user_name` = :user_name");
+            $result = $statement->execute(array('user_name' => $user['user_name']));
+
+            $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
+            if (!empty($referrer)) {
+                header("Location:" . $referrer);
+            } else {
+                header("Location:" . get_root_folder());
+            }
+        } else {
+            $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = IFNULL(failed_login_attempts, 0)+1 WHERE `user_name` = :user_name");
+            $result = $statement->execute(array('user_name' => $user['user_name']));
+            $errorMessage .= "Benutzername oder Passwort war ungültig<br>";
+            return $errorMessage;
+        }
+        return;
+    }
+
     public function escalate_session($user_name, $user_password) {
         session_write_close();
+        print_debug_variable(['$_SESSION before escalation ', $_SESSION]);
         session_id("escalated_session");
         session_start();
+        print_debug_variable(['$_SESSION after escalation ', $_SESSION]);
+        /*
+         * TODO:
+         * Write a form which can be loaded via Javascript
+         * Login into second session here.
+         * Forget that session as fast as possible.
+         */
+        session_write_close();
+        session_id("regular");
     }
 
 }
