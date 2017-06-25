@@ -25,6 +25,10 @@ $Worker = read_employee_data_from_database($auswahl_mitarbeiter);
 require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';
+if(!$session->user_has_privilege('create_employee')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    die();
+}
 
 echo build_select_employee($auswahl_mitarbeiter);
 ?>

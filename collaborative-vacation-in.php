@@ -15,6 +15,11 @@ require "src/php/calculate-holidays.php";
 require_once "src/php/collaborative-vacation.php";
 require "head.php";
 require 'src/html/menu.html';
+if(!$session->user_has_privilege('request_own_absence') and !$session->user_has_privilege('create_absence')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Beantragen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    die();
+}
+
 handle_user_data_input();
 echo build_datalist();
 echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";

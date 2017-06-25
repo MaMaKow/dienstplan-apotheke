@@ -22,6 +22,7 @@ $showFormular = true; //Variable ob das Registrierungsformular anezeigt werden s
 if (isset($_GET['register'])) {
     $error = false;
     $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
     $password2 = $_POST['password2'];
@@ -35,7 +36,7 @@ if (isset($_GET['register'])) {
         $error = true;
     }
 
-    //Überprüfe, dass die E-Mail-Adresse noch nicht registriert wurde
+    //Überprüfe, dass der Benutzer noch nicht registriert wurde
     if (!$error) {
         $statement = $pdo->prepare("SELECT * FROM users WHERE user_name = :user_name");
         $result = $statement->execute(array('user_name' => $user_name));
@@ -51,8 +52,8 @@ if (isset($_GET['register'])) {
     if (!$error) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $statement = $pdo->prepare("INSERT INTO users (user_name, password, email, status) VALUES (:user_name, :password, :email, 'inactive')");
-        $result = $statement->execute(array('user_name' => $user_name, 'password' => $password_hash, 'email' => $email));
+        $statement = $pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
+        $result = $statement->execute(array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
 
         if ($result) {
             echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
@@ -69,6 +70,7 @@ if ($showFormular) {
     ?>
     <form action="?register=1" method="post">
         <input type="text" size="40" maxlength="250" name="user_name" required placeholder="Benutzername"><br>
+        <input type="text" size="40" maxlength="250" name="employee_id" required placeholder="VK Nummer"><br>
         <input type="email" size="40" maxlength="250" name="email" required placeholder="Email"><br>
         <input type="password" size="40" name="password" required placeholder="Passwort"><br>
         <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
