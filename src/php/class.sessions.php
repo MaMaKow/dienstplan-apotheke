@@ -36,6 +36,7 @@ class sessions {
     /*
      * @var $user_id int 
      */
+
     private $user_id;
 
     public function __construct() {
@@ -89,10 +90,10 @@ class sessions {
 
     private function read_Privileges_from_database() {
         global $pdo;
-        //$statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `user_id` = :user_id");
+//$statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `user_id` = :user_id");
         $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `user_id` = :user_id");
         $statement->execute(array('user_id' => $this->user_id));
-        //$statement->debugDumpParams();
+//$statement->debugDumpParams();
         while ($privilege_data = $statement->fetch()) {
             $Privileges[$privilege_data[privilege]] = TRUE;
         }
@@ -120,14 +121,14 @@ class sessions {
         }
     }
 
-    public function login() {
+    public function login($user_name, $user_password, $redirect = TRUE) {
         global $pdo;
         /*
          * Interpret POST data:
          */
-        $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
-        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-
+        $user_name = $user_name OR filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
+        $user_password = $user_password OR filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+        print_debug_variable(['$user_name', $user_name, '$user_password', $user_password]);
         /*
          * Get user data:
          */
@@ -143,26 +144,33 @@ class sessions {
         if (3 <= $user['failed_login_attempts'] and strtotime('-5min') <= strtotime($user['failed_login_attempt_time'])) {
             $errorMessage .= "<p>Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.</p>";
             return $errorMessage;
-            //$blocked = TRUE;
+//$blocked = TRUE;
         }
 
-        //Check the password:
-        if ($user !== false && password_verify($password, $user['password'])) {
+//Check the password:
+        if ($user !== false && password_verify($user_password, $user['password'])) {
+            print_debug_variable("Login success");
+//Fill $_SESSION data on success:
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['user_name'];
+//Reset failed_login_attempts
             $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = 0 WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
 
-            $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
-            if (!empty($referrer)) {
-                header("Location:" . $referrer);
-            } else {
-                header("Location:" . get_root_folder());
+            if ($redirect) {
+                $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
+                if (!empty($referrer)) {
+                    header("Location:" . $referrer);
+                } else {
+                    header("Location:" . get_root_folder());
+                }
             }
         } else {
+            print_debug_variable("Login failed");
+//Register failed_login_attempts
             $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = IFNULL(failed_login_attempts, 0)+1 WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
-            $errorMessage .= "Benutzername oder Passwort war ungültig<br>";
+            $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             return $errorMessage;
         }
         return;
@@ -173,6 +181,7 @@ class sessions {
         print_debug_variable(['$_SESSION before escalation ', $_SESSION]);
         session_id("escalated_session");
         session_start();
+        $this->login($user_name, $user_password, FALSE);
         print_debug_variable(['$_SESSION after escalation ', $_SESSION]);
         /*
          * TODO:
@@ -180,8 +189,12 @@ class sessions {
          * Login into second session here.
          * Forget that session as fast as possible.
          */
-        session_write_close();
-        session_id("regular");
     }
 
+    public function close_escalated_session() {
+        session_write_close();
+        session_destroy();
+        session_id("regular");
+        session_start();
+    }
 }
