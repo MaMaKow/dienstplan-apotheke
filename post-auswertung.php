@@ -2,12 +2,14 @@
 
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
 function get_Dienstplan_from_POST_secure() {
-    foreach ($Dienstplan as $day_number => $inhalt_tag) {
+    global $Columns; //Will be needed to sice out empty rows later.
+    foreach ($_POST['Dienstplan'] as $day_number => $inhalt_tag) {
         $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
         foreach ($inhalt_tag as $column => $Lines) {
             $column = filter_var($column, FILTER_SANITIZE_STRING);
             $Columns[$column] = $column; //Will be needed to sice out empty rows later.
-            foreach ($Lines as $line_number => $line) {
+            foreach ($Lines as $line_number => $line) 
+{
                 $line = filter_var($line, FILTER_SANITIZE_STRING);
                 $line_number = filter_var($line_number, FILTER_SANITIZE_NUMBER_INT);
                 if ('' === $line) {
@@ -37,7 +39,6 @@ if (filter_has_var(INPUT_POST, 'mandant')) {
 if (filter_has_var(INPUT_POST, 'datum')) {
     $datum = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
 }
-
 if (filter_has_var(INPUT_POST, 'submitDienstplan') && count($Dienstplan) > 0) {
 
     //Slice out empty rows in all columns:
@@ -114,7 +115,6 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && count($Dienstplan) > 0) {
                     . ", " . escape_sql_value($kommentar)
                     . ", " . escape_sql_value($user)
                     . ")";
-//        echo "<pre>\$abfrage:\n"; echo $abfrage; echo "</pre>"; //die;
             $ergebnis = mysqli_query_verbose($abfrage);
         }
     }
