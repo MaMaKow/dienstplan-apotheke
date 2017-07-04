@@ -46,7 +46,6 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
     //$Roster_sorted_without_lunch = sort_roster_array($Principle_roster);
     $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
-
 }
 if (array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0])) {
     require 'pruefe-dienstplan.php';
@@ -77,8 +76,10 @@ require 'pruefe-abwesenheit.php';
 require 'head.php';
 require 'navigation.php';
 require 'src/html/menu.html';
-if(!$session->user_has_privilege('create_roster')){
-    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+if (!$session->user_has_privilege('create_roster')) {
+    $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
+    $escalation_authentication = get_script_folder() . "session-escalation-login.php?referrer=" . $request_uri;
+    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator. <a href=$escalation_authentication>&rarr;Rechte erweitern</a>"]);
     //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
     die();
 }
