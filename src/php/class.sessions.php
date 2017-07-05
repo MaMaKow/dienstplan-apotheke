@@ -40,8 +40,16 @@ class sessions {
     private $user_id;
 
     public function __construct() {
-        session_id("regular");
         session_start();
+        //print_debug_variable(['session_id()', session_id()]);
+        //print_debug_variable(['$_SESSION', $_SESSION]);
+        if (TRUE === $_SESSION['escalated']) {
+            if (5 <= ++$_SESSION['escalated_count']) {
+                $this->close_escalated_session();
+            }
+        }
+        //print_debug_variable(['session_id()', session_id()]);
+        //print_debug_variable(['$_SESSION', $_SESSION]);
 
         /*
          * Interpret $_SERVER values:
@@ -155,11 +163,12 @@ class sessions {
             //Fill $_SESSION data on success:
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['user_name'];
+            print_debug_variable("Login successfull!");
             //Reset failed_login_attempts
             $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = 0 WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
 
-            if ($redirect) {
+            if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
                 if (!empty($referrer)) {
                     header("Location:" . $referrer);
@@ -178,11 +187,14 @@ class sessions {
     }
 
     public function escalate_session() {
-        session_write_close();
+        //session_write_close();
         print_debug_variable(['$_SESSION before escalation ', $_SESSION]);
-        session_id("escalated_session");
+        //session_id("escalated_session");
         session_start();
-        $this->login();
+        $_SESSION['before_escalation'] = $_SESSION;
+        $this->login(NULL, NULL, TRUE);
+        $_SESSION['escalated'] = TRUE;
+        $_SESSION['escalated_count'] = 0;
         print_debug_variable(['$_SESSION after escalation ', $_SESSION]);
         /*
          * TODO:
@@ -193,10 +205,13 @@ class sessions {
     }
 
     public function close_escalated_session() {
-        session_write_close();
+        $_Session_temp = $_SESSION['before_escalation'];
+        //print_debug_variable(['$_SESSION before deescalation ', $_SESSION]);
+        //session_write_close();
         session_destroy();
-        session_id("regular");
         session_start();
+        $_SESSION = $_Session_temp;
+        //print_debug_variable(['$_SESSION after deescalation ', $_SESSION]);
     }
 
 }
