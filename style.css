@@ -1,4 +1,4 @@
-    /*
+/*
 Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizard.asp
 #BDE682, foreground, light green
 #73AC22, contrast, strong green
@@ -431,4 +431,23 @@ div.centered_form_div {
 }
 div.centered_form_div form input {
     margin-bottom: 1em;
+}
+#escalation_div {
+    z-index: -90;
+    position: fixed;
+    top: -10%;
+    left: -10%;
+    width: 200%;
+    height: 200%;
+    margin: 0;
+    padding: 0;
+    background-color: red;
+    opacity: 0.2;
+}
+#escalation_div ~ nav, #escalation_div ~ nav ul li, #escalation_div ~ nav ul, #escalation_div ~ nav ul li a, #escalation_div ~ nav ul li a:hover {
+    background-color: #e6828b;
+    border-color: #e6828b;    
+}
+#escalation_div ~ div button {
+    background-color: #e6828b;
 }

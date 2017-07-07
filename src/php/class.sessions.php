@@ -180,38 +180,42 @@ class sessions {
             //Register failed_login_attempts
             $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = IFNULL(failed_login_attempts, 0)+1 WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
-            $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             return $errorMessage;
         }
         return;
     }
 
     public function escalate_session() {
-        //session_write_close();
-        print_debug_variable(['$_SESSION before escalation ', $_SESSION]);
-        //session_id("escalated_session");
         session_start();
         $_SESSION['before_escalation'] = $_SESSION;
         $this->login(NULL, NULL, TRUE);
         $_SESSION['escalated'] = TRUE;
         $_SESSION['escalated_count'] = 0;
-        print_debug_variable(['$_SESSION after escalation ', $_SESSION]);
-        /*
-         * TODO:
-         * Write a form which can be loaded via Javascript
-         * Login into second session here.
-         * Forget that session as fast as possible.
-         */
     }
 
     public function close_escalated_session() {
         $_Session_temp = $_SESSION['before_escalation'];
-        //print_debug_variable(['$_SESSION before deescalation ', $_SESSION]);
-        //session_write_close();
         session_destroy();
         session_start();
         $_SESSION = $_Session_temp;
-        //print_debug_variable(['$_SESSION after deescalation ', $_SESSION]);
+    }
+
+    public function build_escalation_div() {
+        if (TRUE === $_SESSION['escalated']) {
+            return "<div id=escalation_div></div>";
+        }
+    }
+
+    public function logout() {
+        if (TRUE === $_SESSION['escalated']) {
+            $this->close_escalated_session();
+        } else {
+
+            if (session_start() and session_destroy()) {
+                echo "Logout erfolgreich";
+            }
+            header("Location: " . get_script_folder() . "login.php");
+        }
     }
 
 }
