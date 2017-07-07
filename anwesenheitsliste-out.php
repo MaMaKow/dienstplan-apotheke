@@ -34,7 +34,7 @@ Bekannte Urlaubszeiten, und sonstige Abwesenheiten sollten in der Tabelle aber b
         }
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 ?>
     <FORM method=post class="no-print">
       <SELECT name=month onchange=this.form.submit()>

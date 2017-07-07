@@ -57,7 +57,7 @@ $weekly_rotation_div_html = task_rotation_main($Week_dates_unix, $task);
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 $main_div_html = "\t\t<div id='main-area'>\n";
 $date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>Kalenderwoche ".strftime('%V', strtotime($datum))."</div>\n";
 $main_div_html .= $date_info_line_html;

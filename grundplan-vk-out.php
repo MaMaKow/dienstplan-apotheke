@@ -78,7 +78,7 @@ $plan_anzahl = max($Plan_anzahl);
 ?>
 <?php require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 echo build_select_employee($auswahl_mitarbeiter);
 

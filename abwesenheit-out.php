@@ -61,7 +61,7 @@
 	}
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
 echo "\t\t<div id=main-area>\n";
 

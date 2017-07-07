@@ -75,7 +75,7 @@ require 'pruefe-abwesenheit.php';
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('create_roster')) {
     $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
     $escalation_authentication = get_script_folder() . "session-escalation-login.php?referrer=" . $request_uri;
