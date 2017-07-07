@@ -17,27 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * e dot mortoray at ecircle dot com
- * There is a nuance we found with session timing out although the user is still active in the session.  The problem has to do with never modifying the session variable. 
- * The GC will clear the session data files based on their last modification time.  Thus if you never modify the session, you simply read from it, then the GC will eventually clean up. 
- * To prevent this you need to ensure that your session is modified within the GC delete time.  You can accomplish this like below. 
- */
-if (!isset($_SESSION['last_access']) || (time() - $_SESSION['last_access']) > 60) {
-    $_SESSION['last_access'] = time();
-}
-
 /**
  * This class handles the session management, login, logout and permissions of users.
  *
  * @author Mandelkow
  */
 class sessions {
-    /*
-     * @var $user_id int 
-     */
-
-    private $user_id;
 
     public function __construct() {
         session_start();
@@ -58,10 +43,6 @@ class sessions {
         $http_host = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
         $https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_STRING);
         $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_STRING);
-        /*
-         * Interpret $_SESSION values:
-         */
-        $this->user_id = $_SESSION['user_id'];
 
         /*
          * TODO: On a production server the max-age value should probably be set to one year:
@@ -94,12 +75,25 @@ class sessions {
             header("Location:" . $location . "?referrer=" . $request_uri);
             die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>');
         }
+        $this->keep_alive();
+    }
+
+    private function keep_alive() {
+        /*
+         * e dot mortoray at ecircle dot com
+         * There is a nuance we found with session timing out although the user is still active in the session.  The problem has to do with never modifying the session variable. 
+         * The GC will clear the session data files based on their last modification time.  Thus if you never modify the session, you simply read from it, then the GC will eventually clean up. 
+         * To prevent this you need to ensure that your session is modified within the GC delete time.  You can accomplish this like below. 
+         */
+        if (!isset($_SESSION['last_access']) || (time() - $_SESSION['last_access']) > 60) {
+            $_SESSION['last_access'] = time();
+        }
     }
 
     private function read_Privileges_from_database() {
         global $pdo;
         $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `user_id` = :user_id");
-        $statement->execute(array('user_id' => $this->user_id));
+        $statement->execute(array('user_id' => $_SESSION['user_id']));
         while ($privilege_data = $statement->fetch()) {
             $Privileges[$privilege_data[privilege]] = TRUE;
         }
@@ -180,6 +174,7 @@ class sessions {
             //Register failed_login_attempts
             $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = IFNULL(failed_login_attempts, 0)+1 WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
+            $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             return $errorMessage;
         }
         return;
