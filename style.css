@@ -4,6 +4,7 @@ Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #73AC22, contrast, strong green
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
+#E6828B; alert, red
 */
 @media screen {
     div
@@ -445,9 +446,9 @@ div.centered_form_div form input {
     opacity: 0.2;
 }
 #escalation_div ~ nav, #escalation_div ~ nav ul li, #escalation_div ~ nav ul, #escalation_div ~ nav ul li a, #escalation_div ~ nav ul li a:hover {
-    background-color: #e6828b;
-    border-color: #e6828b;    
+    background-color: #E6828B;
+    border-color: #E6828B;
 }
 #escalation_div ~ div button {
-    background-color: #e6828b;
+    background-color: #E6828B;
 }
