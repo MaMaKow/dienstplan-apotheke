@@ -204,6 +204,12 @@ class sessions {
     public function logout() {
         if (TRUE === $_SESSION['escalated']) {
             $this->close_escalated_session();
+            $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
+            if (!empty($referrer)) {
+                header("Location:" . $referrer);
+            } else {
+                header("Location:" . get_root_folder());
+            }
         } else {
 
             if (session_start() and session_destroy()) {
@@ -211,6 +217,13 @@ class sessions {
             }
             header("Location: " . get_script_folder() . "login.php");
         }
+    }
+
+    public function build_logout_button() {
+        $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
+        $text_html = '<a href="' . get_root_folder() . 'src/php/logout.php?referrer=' . $request_uri . '" title="Benutzer abmelden">Logout</a>';
+
+        return $text_html;
     }
 
 }
