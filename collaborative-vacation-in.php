@@ -14,7 +14,7 @@ if (isset($employee_id)) {
 require "src/php/calculate-holidays.php";
 require_once "src/php/collaborative-vacation.php";
 require "head.php";
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 if(!$session->user_has_privilege('request_own_absence') and !$session->user_has_privilege('create_absence')){
     echo build_warning_messages("",["Die notwendige Berechtigung zum Beantragen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();

@@ -88,7 +88,7 @@ if (empty($saldo)) {
 //Start of output:
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 if(!$session->user_has_privilege('create_roster')){
     echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();

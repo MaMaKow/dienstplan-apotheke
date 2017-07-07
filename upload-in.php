@@ -3,7 +3,7 @@
 require "default.php";
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('administration')) {
     echo build_warning_messages("", ["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();

@@ -64,7 +64,7 @@ $plan_anzahl = max($Plan_anzahl);
 //Produce the output:
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 echo "\t\t<a href='woche-out.php?datum=".$date_unix."'>Kalenderwoche ".strftime('%V', $date_unix)."</a><br>\n";
 
