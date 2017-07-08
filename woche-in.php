@@ -81,9 +81,11 @@ echo "<div id=wochenAuswahl><input name=woche type=date id=date_chooser_input cl
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
+if($session->user_has_privilege('approve_roster')){
 echo "$submit_approval_button_img";
 echo "$submit_disapproval_button_img";
 echo "<br><br>\n";
+}
 echo "\t\t\t\t<a href='woche-out.php?datum=".$datum."' class=no-print>[Lesen]</a>\n";
 // TODO: The button should be inactive when the approval already was done.
 //$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";

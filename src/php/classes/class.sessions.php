@@ -122,6 +122,15 @@ class sessions {
         }
     }
 
+    public function exit_on_missing_privilege($privilege) {
+        if (!$this->user_has_privilege($privilege)) {
+            $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
+            $escalation_authentication = get_script_folder() . "session-escalation-login.php?referrer=" . $request_uri;
+            echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator. <a href=$escalation_authentication>&rarr;Rechte erweitern</a>"]);
+            exit();
+        }
+    }
+
     public function login($user_name, $user_password, $redirect = TRUE) {
         global $pdo;
         /*

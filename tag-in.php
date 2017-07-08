@@ -76,13 +76,7 @@ require 'pruefe-abwesenheit.php';
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('create_roster')) {
-    $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
-    $escalation_authentication = get_script_folder() . "session-escalation-login.php?referrer=" . $request_uri;
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator. <a href=$escalation_authentication>&rarr;Rechte erweitern</a>"]);
-    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
-    die();
-}
+$session->exit_on_missing_privilege('create_roster');
 
 //Hier beginnt die Normale Ausgabe.
 echo "<div id=main-area>\n";
@@ -114,9 +108,12 @@ echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "$submit_button_img";
 echo "<br><br>\n";
+if($session->user_has_privilege('approve_roster')){
 echo "$submit_approval_button_img";
 echo "$submit_disapproval_button_img";
 echo "<br><br>\n";
+    
+}
 
 echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[Lesen]</a>\n";
 echo "\t\t\t</div>\n";

@@ -39,7 +39,7 @@ if (filter_has_var(INPUT_POST, 'mandant')) {
 if (filter_has_var(INPUT_POST, 'datum')) {
     $datum = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
 }
-if (filter_has_var(INPUT_POST, 'submitDienstplan') && count($Dienstplan) > 0) {
+if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
 
     //Slice out empty rows in all columns:
     foreach ($Dienstplan[$tag]["VK"] as $line_number => $employee_id) {
@@ -156,9 +156,7 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && count($Dienstplan) > 0) {
     $datum = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 } elseif (filter_has_var(INPUT_POST, 'tagesAuswahl') && filter_has_var(INPUT_POST, 'woche')) {
     $datum = filter_input(INPUT_POST, 'woche', FILTER_SANITIZE_STRING);
-} elseif (filter_has_var(INPUT_POST, 'submitCopyPaste') && count($Dienstplan) > 0) {
-    require 'copy-paste.php';
-} elseif ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0) {
+} elseif ($session->user_has_privilege('approve_roster') && (filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0) {
     require 'db-write-approval.php';
     $datum = $Dienstplan[0]['Datum'][0];
 // TODO: Is this save? Is the key 0 allways set?
