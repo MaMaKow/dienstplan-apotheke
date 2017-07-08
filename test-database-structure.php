@@ -19,7 +19,7 @@
 require "default.php";
 
 // include the Diff class
-require_once 'src/php/class.Diff.php';
+require_once 'src/php/classes/class.diff.php';
 
 function echo_table_diff() {
 //Then we collect the new data and write it to files:
