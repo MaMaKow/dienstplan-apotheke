@@ -50,7 +50,7 @@ if (isset($_SERVER['REMOTE_USER'])) {
 require_once 'db-verbindung.php';
 
 //session management
-require_once 'src/php/class.sessions.php';
+require_once 'src/php/classes/class.sessions.php';
 $session = new sessions;
 
 require_once 'src/php/build-warning-messages.php';
