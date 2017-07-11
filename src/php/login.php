@@ -3,6 +3,7 @@ require '../../default.php';
 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
 
 if (filter_has_var(INPUT_GET, 'login')) {
+    new dBug($session);
     $errorMessage = $session->login();
 }
 require "../../head.php";
