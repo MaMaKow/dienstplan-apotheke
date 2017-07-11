@@ -142,7 +142,6 @@ class sessions {
         if (NULL === $user_password) {
             $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_STRING);
         }
-        print_debug_variable(['$user_name', $user_name, '$user_password', $user_password, '$_POST', $_POST]);
         /*
          * Get user data:
          */
