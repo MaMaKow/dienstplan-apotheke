@@ -26,15 +26,11 @@ class sessions {
 
     public function __construct() {
         session_start();
-        //print_debug_variable(['session_id()', session_id()]);
-        //print_debug_variable(['$_SESSION', $_SESSION]);
-        if (TRUE === $_SESSION['escalated']) {
+        if (!empty($_SESSION['escalated']) AND TRUE === $_SESSION['escalated']) {
             if (5 <= ++$_SESSION['escalated_count']) {
                 $this->close_escalated_session();
             }
         }
-        //print_debug_variable(['session_id()', session_id()]);
-        //print_debug_variable(['$_SESSION', $_SESSION]);
 
         /*
          * Interpret $_SERVER values:
@@ -56,7 +52,7 @@ class sessions {
          */
         if ("localhost" != $http_host AND ( empty($https) OR $https != "on")) {
             header("Location: https://" . $http_host . $request_uri);
-            die("<p>Dieses Programm erfordert die Nutzung von <a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>. Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>");
+            die("<p>Dieses Programm erfordert die Nutzung von <a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>. Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
         }
 
         /*
@@ -131,7 +127,7 @@ class sessions {
         }
     }
 
-    public function login($user_name, $user_password, $redirect = TRUE) {
+    public function login($user_name = NULL, $user_password = NULL, $redirect = TRUE) {
         global $pdo;
         /*
          * Interpret POST data:
@@ -141,6 +137,9 @@ class sessions {
         }
         if (NULL === $user_password) {
             $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_STRING);
+        }
+        if (empty($user_password) OR empty($user_name)) {
+            exit("No login credentials were given.\n");
         }
         /*
          * Get user data:
@@ -161,11 +160,9 @@ class sessions {
 
         //Check the password:
         if ($user !== false && password_verify($user_password, $user['password'])) {
-            print_debug_variable("Login success");
             //Fill $_SESSION data on success:
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['user_name'];
-            print_debug_variable("Login successfull!");
             //Reset failed_login_attempts
             $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = 0 WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
@@ -235,3 +232,4 @@ class sessions {
     }
 
 }
+
