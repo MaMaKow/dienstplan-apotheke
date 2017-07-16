@@ -9,11 +9,11 @@
 	{
 		$auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 	}
-	elseif(isset($_GET['auswahl_mitarbeiter']))
+	elseif(filter_has_var(INPUT_GET, 'auswahl_mitarbeiter'))
 	{
 		$auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 	}
-	elseif(isset($_COOKIE['auswahl_mitarbeiter']))
+	elseif(filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter'))
 	{
 		$auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 	}

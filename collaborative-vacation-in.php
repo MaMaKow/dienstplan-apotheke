@@ -5,7 +5,7 @@ require_once "db-lesen-mitarbeiter.php";
 require_once "db-lesen-abwesenheit.php";
 if (filter_has_var(INPUT_POST, 'employee_id')) {
     $employee_id = filter_input(INPUT_POST, employee_id, FILTER_SANITIZE_NUMBER_INT);
-} elseif (isset($_COOKIE['employee_id'])) {
+} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
     $employee_id = filter_input(INPUT_COOKIE, employee_id, FILTER_SANITIZE_NUMBER_INT);
 }
 if (isset($employee_id)) {
