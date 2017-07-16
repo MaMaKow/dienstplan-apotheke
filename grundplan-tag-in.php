@@ -225,13 +225,13 @@ echo "\t\t\t<div id=navigationsElemente>";
 echo "$submit_button_img";
 echo "<br>";
 echo "<br>";
-echo "\t\t\t\t<a href=grundplan-tag-out.php?wochentag=".$wochentag.">[Lesen]</a>\n";
+echo "\t\t\t\t<a href=grundplan-tag-out.php?wochentag=" . htmlentities($wochentag) . ">[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 //Datum
     $zeile = '';
-    $zeile .= '<input type=hidden name=Grundplan['.$wochentag.'][Wochentag][0] value='.$Grundplan[$wochentag]['Wochentag'][0].'>';
+    $zeile .= '<input type=hidden name=Grundplan['.$wochentag.'][Wochentag][0] value=' . htmlentities($Grundplan[$wochentag]['Wochentag'][0]).'>';
     $zeile .= '<input type=hidden name=mandant value='.$mandant.'>';
     echo $zeile;
 //Wochentag
@@ -259,7 +259,7 @@ for ($j = 0; $j < $VKcount; ++$j) {
     //Dienstbeginn
     $zeile .= "\t\t\t\t\t\t<input type=hidden name=Grundplan[".$wochentag.'][Wochentag]['.$j.'] value=';
     if (isset($Grundplan[$wochentag]['Wochentag'][$j])) {
-        $zeile .= $Grundplan[$wochentag]['Wochentag'][$j];
+        $zeile .= htmlentities($Grundplan[$wochentag]['Wochentag'][$j]);
     } else {
         $zeile .= $wochentag;
     }
@@ -267,7 +267,7 @@ for ($j = 0; $j < $VKcount; ++$j) {
     $zeile .=    ">\n";
     $zeile .= "\t\t\t\t\t\t<input type=hidden name=Grundplan[".$wochentag.'][Kommentar]['.$j.'] value="';
     if (isset($Grundplan[$wochentag]['Kommentar'][$j])) {
-        $zeile .= $Grundplan[$wochentag]['Kommentar'][$j];
+        $zeile .= htmlentities($Grundplan[$wochentag]['Kommentar'][$j]);
     }
     $zeile .= "\">\n";
     $zeile .= "\t\t\t\t\t\t<input type=time name=Grundplan[".$wochentag.'][Dienstbeginn]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 2).' value=';

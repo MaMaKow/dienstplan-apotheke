@@ -7,9 +7,9 @@ require 'default.php';
             require 'db-lesen-mandant.php';
             if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
                 $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
-            } elseif (isset($_GET['auswahl_mitarbeiter'])) {
+            } elseif (filter_has_var(INPUT_GET, 'auswahl_mitarbeiter')) {
                 $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
-            } elseif (isset($_COOKIE['auswahl_mitarbeiter'])) {
+            } elseif (filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter')) {
                 $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
             } else {
                 $auswahl_mitarbeiter = 1;
