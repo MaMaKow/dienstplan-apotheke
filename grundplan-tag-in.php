@@ -18,10 +18,8 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
-    foreach ($_POST['Grundplan'] as $plan => $inhalt) {
-        $Grundplan[filter_var($plan, FILTER_SANITIZE_STRING)] = filter_var($inhalt, FILTER_SANITIZE_STRING);
-    }
-
+    $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+    
     foreach ($Grundplan as $wochentag => $value) {
         //First, the old values are deleted.
         $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
