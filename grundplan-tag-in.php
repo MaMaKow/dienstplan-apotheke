@@ -1,5 +1,6 @@
 <?php
 require 'default.php';
+print_debug_variable($_POST);
 $mandant = 1;    //First branch is allways the default.
 $tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
@@ -68,7 +69,7 @@ if (filter_has_var(INPUT_POST, 'mandant')) {
     $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
 }
 if (filter_has_var(INPUT_POST, 'wochentag')) {
-    $mandant = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
+    $wochentag = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } elseif (!empty($Grundplan)) {
     list($wochentag) = array_keys($Grundplan);
 } else {

@@ -23,7 +23,7 @@ if (filter_has_var(INPUT_POST, 'mandant')) {
     $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
 }
 if (filter_has_var(INPUT_POST, 'wochentag')) {
-    $mandant = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
+    $wochentag = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } else {
     $wochentag = 1;
 }
