@@ -1,13 +1,8 @@
 <?php
 require 'default.php';
-print_debug_variable($_POST);
 $mandant = 1;    //First branch is allways the default.
-$tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
-
-$datenübertragung = '';
-$dienstplanCSV = '';
 
 for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
@@ -134,15 +129,6 @@ while ($row = mysqli_fetch_object($ergebnis)) {
 		//anybody else
 		$worker_style = 3;
 	}
-    //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
-    $dienstplanCSV .= $Mitarbeiter[$row->VK].", $row->VK, $wochentag";
-    $dienstplanCSV .= ', '.$row->Dienstbeginn;
-    $dienstplanCSV .= ', '.$row->Dienstende;
-    $dienstplanCSV .= ', '.$row->Mittagsbeginn;
-    $dienstplanCSV .= ', '.$row->Mittagsende;
-    $dienstplanCSV .= ', '.$row->Stunden;
-    $dienstplanCSV .= ', '.$row->Mandant;;
-	$dienstplanCSV.=", ".$worker_style."\n";
 }
 //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
  if (!isset($Grundplan[$wochentag])) {
@@ -167,10 +153,10 @@ $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
 $pseudo_datum = strtotime('+'.($wochentag - 1).' day', $pseudo_datum);
 $datum = date('Y-m-d', $pseudo_datum);
 
-//$Grundplan=db_lesen_tage($tage, $mandant);
+//$Grundplan=db_lesen_tage(1, $mandant);
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
 //foreach ($Mandant as $filiale => $name) {
-  //$Filialplan[$filiale]=db_lesen_tage($tage, $filiale, "[^".$filiale."]");
+  //$Filialplan[$filiale]=db_lesen_tage(1, $filiale, "[^".$filiale."]");
 //}
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
