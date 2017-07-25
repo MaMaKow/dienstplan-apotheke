@@ -5,11 +5,11 @@ require 'db-lesen-mitarbeiter.php';
 //Get a list of branches:
 require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
-} elseif (isset($_GET['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = $_GET['auswahl_mitarbeiter'];
-} elseif (isset($_COOKIE['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = $_COOKIE['auswahl_mitarbeiter'];
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_GET, 'auswahl_mitarbeiter')) {
+    $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter')) {
+    $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
 } else {
     $auswahl_mitarbeiter = min(array_keys($Mitarbeiter));
 }
@@ -32,8 +32,17 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
 if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'auswahl_mitarbeiter') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
     $abfrage = "INSERT INTO `Stunden`
-						(VK, Datum, Stunden, Saldo, Grund)
-						VALUES (" . $_POST['auswahl_mitarbeiter'] . ", '" . $_POST['datum'] . "', " . $_POST['stunden'] . ", " . $_POST['saldo'] . ", '" . $_POST['grund'] . "')";
+        (VK, Datum, Stunden, Saldo, Grund)
+        VALUES (" . filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT) 
+            . ", '" 
+            . filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING) 
+            . "', " 
+            . filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT) 
+            . ", " 
+            . filter_input(INPUT_POST, 'saldo', FILTER_SANITIZE_NUMBER_FLOAT) 
+            . ", '" 
+            . filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
+            . "')";
     if (!($ergebnis = mysqli_query($verbindungi, $abfrage))) {
         $error_string = mysqli_error($verbindungi);
         if (strpos($error_string, 'Duplicate') !== false) {
@@ -41,7 +50,7 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
         } else {
             //Are there other errors, that we should handle?
             error_log("Error: $abfrage <br>" . mysqli_error($verbindungi));
-            die("Error: $abfrage <br>" . mysqli_error($verbindungi));
+            die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
         }
     }
 }
