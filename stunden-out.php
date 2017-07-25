@@ -9,22 +9,15 @@ echo "<div id=main-area>\n";
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
 			//Hole eine Liste aller Mandanten (Filialen)
 			require 'db-lesen-mandant.php';
-			if(filter_has_var(INPUT_POST, 'submitAuswahlMitarbeiter'))
-			{
-				$auswahl_mitarbeiter=$_POST['auswahl_mitarbeiter'];
-			}
-			elseif(isset($_GET['auswahl_mitarbeiter']))
-			{
-				$auswahl_mitarbeiter=$_GET['auswahl_mitarbeiter'];
-			}
-			elseif(isset($_COOKIE['auswahl_mitarbeiter']))
-			{
-				$auswahl_mitarbeiter=$_COOKIE['auswahl_mitarbeiter'];
-			}
-			else
-			{
-				$auswahl_mitarbeiter=1;
-			}
+if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_GET, 'auswahl_mitarbeiter')) {
+    $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter')) {
+    $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+} else {
+    $auswahl_mitarbeiter = min(array_keys($Mitarbeiter));
+}
 			if (isset($auswahl_mitarbeiter))
 			{
 				create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.

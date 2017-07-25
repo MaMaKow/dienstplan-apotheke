@@ -19,8 +19,8 @@ require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if (filter_has_var(INPUT_POST, 'submitAuswahlMitarbeiter')) {
-    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
-    $Plan = $_POST['Dienstplan'];
+    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+    $Plan = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
     $datum = $Plan[0]['Datum'][0];
     //echo $datum;
 } elseif (!isset($auswahl_mitarbeiter)) {
