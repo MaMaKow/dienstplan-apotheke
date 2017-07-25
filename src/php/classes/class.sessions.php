@@ -25,6 +25,7 @@
 class sessions {
 
     public function __construct() {
+        ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
         session_start();
         if (!empty($_SESSION['escalated']) AND TRUE === $_SESSION['escalated']) {
             if (5 <= ++$_SESSION['escalated_count']) {
@@ -83,6 +84,10 @@ class sessions {
          */
         if (!isset($_SESSION['last_access']) || (time() - $_SESSION['last_access']) > 60) {
             $_SESSION['last_access'] = time();
+        }
+        if (!isset($_SESSION['last_regenerate_id']) || (time() - $_SESSION['last_regenerate_id']) > 15 * 60) {
+            session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id every once in a while.
+            $_SESSION['regenerate_id'] = time();
         }
     }
 
@@ -161,6 +166,7 @@ class sessions {
         //Check the password:
         if ($user !== false && password_verify($user_password, $user['password'])) {
             //Fill $_SESSION data on success:
+            session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id right before setting up login details.
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['user_name'];
             //Reset failed_login_attempts
