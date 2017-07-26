@@ -141,9 +141,7 @@ echo "\t\t\t\t</select>\n\t\t\t</form>\n";
 
 //Auswahl des Wochentages
 echo "\t\t\t<form id=wochentagformular method=post>\n";
-//echo "\t\t\t\t<input type=hidden name=mandant value=".$Grundplan[$wochentag]["Mandant"][0].">\n";
 echo "\t\t\t\t<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
-//echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
 foreach ($Wochentage as $key => $value) {
     //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
     if ($key != $wochentag) {

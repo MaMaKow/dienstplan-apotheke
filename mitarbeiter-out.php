@@ -66,7 +66,7 @@ require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "\t\t<a href='woche-out.php?datum=".$date_unix."'>Kalenderwoche ".strftime('%V', $date_unix)."</a><br>\n";
+echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'>Kalenderwoche " . strftime('%V', $date_unix) . "</a><br>\n";
 
 echo build_select_employee($auswahl_mitarbeiter);
 
@@ -267,9 +267,6 @@ echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px'
         . "<br>ICS Datei"
     . "</button>\n";
 echo "</div>\n";
-
-
-//echo "<pre>";	var_export($_POST);    	echo "</pre>";
 
 require 'contact-form.php';
 

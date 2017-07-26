@@ -2,7 +2,6 @@
 require 'default.php';
     //Hole eine Liste aller Mitarbeiter
             require 'db-lesen-mitarbeiter.php';
-            //$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
             //Hole eine Liste aller Mandanten (Filialen)
             require 'db-lesen-mandant.php';
             if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
@@ -21,18 +20,12 @@ require 'default.php';
 
             //Wir löschen Datensätze, wenn dies befohlen wird.
             if ($command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING) and 'delete' === $command) {
-                //$Loeschen = filter_input(INPUT_POST, 'loeschen', FILTER_REQUIRE_ARRAY);
-//                foreach ($Loeschen as $vk => $Beginne) {
-  //                  foreach ($Beginne as $beginn => $X) {
-                $vk = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
+                $employee_id = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
                 $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
                 $abfrage = "DELETE FROM `absence`
-                	WHERE `employee_id` = '$vk' AND `start` = '$beginn'";
-              //  		echo "$abfrage";
+                	WHERE `employee_id` = '$employee_id' AND `start` = '$beginn'";
                 $ergebnis = mysqli_query_verbose($abfrage);
-    //                }
-      //          }
-                $auswahl_mitarbeiter = $vk;
+                $auswahl_mitarbeiter = $employee_id;
             }
 
             //We create new entries or edit old entries. (Empty values are not accepted.)
@@ -82,9 +75,9 @@ require 'default.php';
 			}
 		}
             } 
-            $vk = $auswahl_mitarbeiter;
+            $employee_id = $auswahl_mitarbeiter;
             $abfrage = 'SELECT * FROM `absence`
-				WHERE `employee_id` = '.$vk.'
+				WHERE `employee_id` = '.$employee_id.'
 				ORDER BY `start` ASC
 				';
             $ergebnis = mysqli_query_verbose($abfrage);
@@ -115,7 +108,7 @@ require 'default.php';
                 $tablebody .= "$row->days";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n"
-                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$vk' form='change_absence_entry_".$row->start."'>\n"
+                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$employee_id' form='change_absence_entry_".$row->start."'>\n"
                             . "\t\t\t\t\t<button type=submit id=delete_".$row->start." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
                                 . "\t\t\t\t\t\t<img src='img/delete.png' alt='Diese Zeile löschen'>\n"
                             . "\t\t\t\t\t</button>\n"
@@ -226,7 +219,6 @@ echo "\t\t\n";
                 . "\t\t\t</tfoot>";
             echo "\t\t</table>\n";
             echo "<input type=submit id=save_new class=no-print name=submitStunden value='Eintragen' form='new_absence_entry'>";
-//echo "<pre>"; var_dump($_POST); echo "</pre>";
             echo "</div>\n";
 						require 'contact-form.php';
         ?>

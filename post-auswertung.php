@@ -1,13 +1,14 @@
 <?php
 
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
-function get_Dienstplan_from_POST_secure() {
+function get_Roster_from_POST_secure() {
     global $Columns; //Will be needed to sice out empty rows later.
-    foreach ($_POST['Dienstplan'] as $day_number => $inhalt_tag) {
+    $Roster_from_post = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+    foreach ($Roster_from_post as $day_number => $inhalt_tag) {
         $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
         foreach ($inhalt_tag as $column => $Lines) {
             $column = filter_var($column, FILTER_SANITIZE_STRING);
-            $Columns[$column] = $column; //Will be needed to sice out empty rows later.
+            $Columns[$column] = $column; //Will be needed to slice out empty rows later.
             foreach ($Lines as $line_number => $line) 
 {
                 $line = filter_var($line, FILTER_SANITIZE_STRING);
@@ -17,20 +18,20 @@ function get_Dienstplan_from_POST_secure() {
                     //TODO: Should we make an exeption for Comments?
                     $line = 'null';
                 }
-                $Dienstplan[$day_number][$column][$line_number] = $line;
+                $Roster[$day_number][$column][$line_number] = $line;
             }
         }
     }
-    return $Dienstplan;
+    return $Roster;
 }
 
 if (filter_has_var(INPUT_POST, 'Dienstplan')) {
-    $Dienstplan = get_Dienstplan_from_POST_secure();
+    $Dienstplan = get_Roster_from_POST_secure();
 }
 
 if (filter_has_var(INPUT_POST, 'mandant')) {
     if (is_int((int) filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_STRING))) {
-        $mandant = htmlspecialchars(filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_STRING));
+        $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_STRING);
     } else {
         throw new InvalidArgumentException("Ungültiger Wert für Mandant per POST übergeben");
     }

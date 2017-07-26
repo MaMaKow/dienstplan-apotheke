@@ -51,7 +51,9 @@ function schreiben_tabelle (array $Dienstplan){
 					$zeile="";
 					if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]) )
 					{
-						$zeile.="<b><a href='mitarbeiter-out.php?datum=".$Dienstplan[$i]["Datum"][0]."&auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>";
+						$zeile.="<b><a href='mitarbeiter-out.php?"
+                                                        . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0]) 
+                                                        . "&auswahl_mitarbeiter=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
 						$zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
 						$zeile.="</a></b> / ";
 						$zeile.=$Dienstplan[$i]["Stunden"][$j];
