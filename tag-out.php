@@ -71,7 +71,7 @@ echo "\t\t\t<form id=navigation_form method=post>\n";
 echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "<br><br>\n";
-echo "\t\t\t\t<a href='tag-in.php?datum=" . $datum . "'>[Bearbeiten]</a>\n";
+echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[Bearbeiten]</a>\n";
 echo "<br><br>\n";
 //echo "</div>\n";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
@@ -87,7 +87,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     $zeile = "";
     echo "\t\t\t\t\t\t<td>\n";
     $zeile.="<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">\n";
-    $zeile.="<input type=hidden name=mandant value=" . $mandant . ">\n";
+    $zeile.="<input type=hidden name=mandant value=" . htmlentities($mandant) . ">\n";
     $zeile.=strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
     //Wochentag
@@ -119,8 +119,10 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
             if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
                 $zeile = "\t\t\t\t\t\t<td>";
-                $zeile.="<b><a href='mitarbeiter-out.php?datum=" . $Dienstplan[$i]["Datum"][0] . "&auswahl_mitarbeiter=" . $Dienstplan[$i]["VK"][$j] . "'>";
-                $zeile.=$Dienstplan[$i]["VK"][$j] . " " . $Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
+                $zeile.="<b><a href='mitarbeiter-out.php?"
+                        . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0]) 
+                        . "&auswahl_mitarbeiter=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
+                $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]);
                 $zeile.="</a></b><span> ";
                 if (isset($Dienstplan[$i]["VK"][$j])) {
                     //Dienstbeginn
@@ -152,7 +154,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         $Filialplan[$filiale] = db_lesen_tage($tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
         if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
             echo "<tr><td><br></td></tr>";
-            echo "</tbody><tbody><tr><td colspan=$tage>" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
+            echo "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
             $table_html = schreiben_tabelle($Filialplan[$filiale]);
             echo $table_html;
         }

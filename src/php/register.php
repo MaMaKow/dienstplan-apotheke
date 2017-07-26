@@ -24,8 +24,8 @@ if (isset($_GET['register'])) {
     $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $password = $_POST['password'];
-    $password2 = $_POST['password2'];
+    $password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
+    $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
     if (strlen($password) == 0) {
         echo 'Bitte ein Passwort angeben<br>';

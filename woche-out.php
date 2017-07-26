@@ -103,7 +103,7 @@ for ($i=0; $i<count($Dienstplan); $i++)
 	$head_table_html .= strftime('%A', strtotime( $Dienstplan[$i]["Datum"][0]));
 	$head_table_html .= " \n";
 	$head_table_html .= "<input type=hidden size=2 name=Dienstplan[".$i."][Datum][0] value=".$Dienstplan[$i]["Datum"][0].">";
-	$head_table_html .= "<input type=hidden name=mandant value=".$mandant.">";
+	$head_table_html .= "<input type=hidden name=mandant value=" . htmlentities($mandant) . ">";
 	$head_table_html .= strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
 	$datum=($Dienstplan[$i]['Datum'][0]);
 	require 'db-lesen-feiertag.php';
@@ -146,7 +146,7 @@ foreach ($Mandant as $filiale => $Name) {
 	$Filialplan[$filiale]=db_lesen_tage($tage, $filiale, '['.$mandant.']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
 	if (!empty(array_column($Filialplan[$filiale], 'VK'))) //array_column durchsucht alle Tage nach einem 'VK'.
 	{
-		$table_html .= "</tbody><tbody><tr><td colspan=$tage>".$Kurz_mandant[$mandant]." in ".$Kurz_mandant[$filiale]."</td></tr>";
+		$table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
 		$table_body_html = schreiben_tabelle($Filialplan[$filiale]);
 		$table_html .= $table_body_html;
 	}

@@ -128,7 +128,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $zeile = "";
     echo "\t\t\t\t\t<td>";
     $zeile.="<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
-    $zeile.="<input type=hidden name=mandant value=" . $mandant . ">";
+    $zeile.="<input type=hidden name=mandant value=" . htmlentities($mandant) . ">";
     $zeile.=strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
 //Wochentag

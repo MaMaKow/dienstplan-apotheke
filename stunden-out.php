@@ -72,7 +72,6 @@ if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
 			echo "$tablebody";
 			echo "\t\t</table>\n";
 			echo "\t</form>\n";
-//			echo "<pre>"; var_dump($_POST); echo "</pre>";
 			echo "</div>\n";
 			require 'contact-form.php';
 		?>
