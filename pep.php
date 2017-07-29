@@ -29,7 +29,7 @@ ignore_user_abort(true);
 function read_file_write_db ($filename){
     echo 'Working on: '.$filename."<br>\n";
     global $verbindungi;
-    $pattern = "~^upload/I[0-9]+\.asy$~";
+    $pattern = "~^upload/.+_pep$~";
         if (preg_match($pattern, $filename)) {
             $handle = fopen($filename, "r");
             if ($handle) {
@@ -47,8 +47,7 @@ function read_file_write_db ($filename){
                     list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
                     $sql_date = date('Y-m-d', strtotime($date));
                     $abfrage = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES ('$hash', '$sql_date', '$time', '$sales_count', '$branch')";
-//                    echo "$abfrage<br>\n";
-                    $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                    $ergebnis = mysqli_query_verbose($abfrage);
 
                     }
                     echo 'Finished processing.<br>';
@@ -74,7 +73,7 @@ if (!empty($filename)) {
     read_file_write_db($filename);
 } else {
     error_log("no \$filename was given");
-    foreach (glob("upload/I*.asy") as $filename) {
+    foreach (glob("upload/*_pep") as $filename) {
         read_file_write_db($filename);
     }
 }

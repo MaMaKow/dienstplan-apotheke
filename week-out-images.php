@@ -39,7 +39,7 @@ require 'src/php/pages/menu.php';
 //Hier beginnt die Normale Ausgabe.
         echo "<div class='main-area no-print'>\n";
         echo "\t\t<form id=mandantenformular method=post>\n";
-        echo "\t\t\t<input type=hidden name=datum value=" . $Dienstplan[0]["Datum"][0] . ">\n";
+        echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
         echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
         foreach ($Mandant as $filiale => $name) {
@@ -54,7 +54,7 @@ require 'src/php/pages/menu.php';
         echo "\t\t\t<div id=navigationsElemente>";
         echo "$rückwärts_button_week_img";
         echo "$vorwärts_button_week_img";
-        echo "<input type=hidden size=2 name=Dienstplan[0][Datum][0] value=" . $Dienstplan[0]["Datum"][0] . ">";
+        echo "<input type=hidden size=2 name=Dienstplan[0][Datum][0] value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">";
         echo "<br><br>\n";
 
         echo "\t\t\t</div>\n";

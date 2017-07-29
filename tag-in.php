@@ -86,7 +86,7 @@ echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo "\t\tKalenderwoche " . strftime('%V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=" . $Dienstplan[0]["Datum"][0] . ">\n";
+echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
 echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 //echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
 foreach ($Mandant as $filiale => $name) {
@@ -169,7 +169,7 @@ for ($j = 0; $j < $VKcount; $j++) {
         }
         $zeile.="</select>\n";
         //Dienstbeginn
-        $zeile.="\t\t\t\t\t\t<input type=hidden name=Dienstplan[" . $i . "][Datum][" . $j . "] value=" . $Dienstplan[0]["Datum"][0] . ">\n";
+        $zeile.="\t\t\t\t\t\t<input type=hidden name=Dienstplan[" . $i . "][Datum][" . $j . "] value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
         $zeile.="\t\t\t\t\t\t<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] id=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 2 ) . " value='";
         if (isset($Dienstplan[$i]["VK"][$j])) {
             $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));

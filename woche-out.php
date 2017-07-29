@@ -65,7 +65,7 @@ $main_div_html .= $date_info_line_html;
 //Support for various branch clients.
 $branch_form_html = "";
 $branch_form_html .= "\t\t<form id=branch_form method=post class='no-print'>\n";
-$branch_form_html .= "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
+$branch_form_html .= "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
 $branch_form_html .= "\t\t\t<select class='large' name=mandant onchange=this.form.submit()>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
