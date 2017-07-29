@@ -195,3 +195,13 @@ function get_script_folder() {
     }
     return $script_folder;
 }
+
+/*
+ * This function will check if a given string represents a valid date.
+ * 
+ * @param $date_string string any string that is supposed to represent a date.
+ * @return bool validity of the date.
+ */
+function is_valid_date($date_string){
+    return (bool)strtotime($date_string);
+}
