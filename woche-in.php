@@ -58,7 +58,7 @@ if(!$session->user_has_privilege('create_roster')){
 echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 //Support for various branch clients.
 echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
+echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
 echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {

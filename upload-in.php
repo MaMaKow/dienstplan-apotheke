@@ -13,15 +13,12 @@ if (filter_has_var(INPUT_POST, "submit")) {
     define('SITE_ROOT', realpath(dirname(__FILE__)));
 
     $target_dir = "/upload/";
-    $target_file = SITE_ROOT . $target_dir . basename($_FILES["fileToUpload"]["name"]);
+    $target_file = SITE_ROOT . $target_dir . uniqid() . "_pep";
+    $upload_file_name = basename($_FILES["fileToUpload"]["name"]);
     $upload_ok = 1;
-    $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+    $file_type = pathinfo($upload_file_name, PATHINFO_EXTENSION);
 
-    if (file_exists($target_file)) {
-        // Check if file already exists
-        $Fehlermeldung[] = "Sorry, file already exists.";
-        $upload_ok = 0;
-    } elseif ($file_type != "asy") {
+    if ($file_type != "asy") {
         // Allow certain file formats
         $Fehlermeldung[] = "Sorry, only ASYS PEP files are allowed.";
         $upload_ok = 0;
@@ -31,9 +28,10 @@ if (filter_has_var(INPUT_POST, "submit")) {
         // if everything is ok, try to upload file
     } else {
         if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-            $Message[] = "The file " . basename($_FILES["fileToUpload"]["name"]) . " has been uploaded.";
+            $Message[] = "The file " . htmlentities(basename($_FILES["fileToUpload"]["name"])) . " has been uploaded.";
             $Message[] = "It will be processed in the background.";
-            echo "<input hidden type=text id=filename value=upload/" . $_FILES["fileToUpload"]["name"] . ">\n";
+            echo "<input hidden type=text id=filename value=upload/" . htmlentities($_FILES["fileToUpload"]["name"]) . ">\n";
+            echo "<input hidden type=text id=targetfilename value=" . htmlentities($target_file) . ">\n";
         } else {
             $Fehlermeldung[] = "Sorry, there was an error uploading your file.<br>\n";
         }

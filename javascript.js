@@ -193,6 +193,7 @@ if (first_pass == second_pass && first_pass != "") {
 }
 function update_pep() {
     var filename = document.getElementById("filename").value;
+    var targetfilename = document.getElementById("targetfilename").value;
 //    document.getElementById("xmlhttpresult").innerHTML = "<div class=warningmsg><p>working on: " + filename+"</p></div>";
     document.getElementById("xmlhttpresult").innerHTML = "<p>working on: " + filename+"</p>";
     var xmlhttp = new XMLHttpRequest();
@@ -202,7 +203,7 @@ function update_pep() {
             document.getElementById("xmlhttpresult").innerHTML = this.responseText;
         }
     };
-    xmlhttp.open("GET", "pep.php?filename=" + filename, true);
+    xmlhttp.open("GET", "pep.php?filename=" + targetfilename, true);
     xmlhttp.send();
 }
 function reset_update_pep() {
