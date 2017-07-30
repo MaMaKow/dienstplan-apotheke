@@ -38,8 +38,8 @@ function read_file_write_db($filename) {
                 continue;
             }
             $sql_date = date('Y-m-d', strtotime($date));
-            $abfrage = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES ('$hash', '$sql_date', '$time', '$sales_count', '$branch')";
-            $ergebnis = mysqli_query_verbose($abfrage);
+            $statement = $pdo->prepare("INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)");
+            $statement->execute(array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
         }
         echo 'Finished processing.<br>';
         fclose($handle);

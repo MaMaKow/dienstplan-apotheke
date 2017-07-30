@@ -1,6 +1,10 @@
 <?php
 
 require_once '../../default.php';
+if(!$session->user_has_privilege('administration')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    die();
+}
 echo test_folders(array("/tmp/", "/config/", "/upload/", "/tests/"));
 
 /*
@@ -15,21 +19,29 @@ function secret_folder_is_secure($folder = "/tmp/") {
     //This script lies within /src/php/ so therefore we have to move up by two levels:
     $dir_above1 = substr($dirname, 0, strrpos($dirname, "/"));
     $dir_above2 = substr($dirname, 0, strrpos($dir_above1, "/"));
-    $filename = "http://" . $_SERVER["HTTP_HOST"] . $dir_above2 . $folder;
+    $hostname = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
+    /*
+     * TODO: $hostname is not 100% secure. It might be possible to make requests in our name to different servers.
+     * The page can only be used/misused by logged in users with administration privileges.
+     * If there is the need to prevent this, a whitelist has to be put into the configuration file.
+     * Any given hostname then has to be checked against it then.
+     */
+    $url= "https://" . $hostname . $dir_above2 . $folder;
 
-    $Response = get_headers($filename);
+    $Response = get_headers($url);
     $response = $Response[0];
     $response_code = substr($response, strpos($response, " "), (strrpos($response, " ") - strpos($response, " ")));
     if (200 == $response_code) {
-        $error_message = "Warning! The directory <a href='$filename'>$filename</a> seems to be world visible. Please make sure that the directory is not accessible by the public!";
+        $error_message = "Warning! The directory <a href='$url'>$url</a> seems to be world visible. Please make sure that the directory is not accessible by the public!";
         return $error_message;
     } elseif (403 == $response_code) {
         return TRUE;
     } elseif (404 == $response_code) {
-        //TODO: This is an error. Some directory is missing. But we do not have any place to report it.
+        //TODO: This is an error. Some directory is missing. But we do not have a good place to report it.
+        error_log("The directory $folder is missing.");
         return TRUE;
     } else {
-        $error_message = "Error! The result could not be interpreted for the directory $filename. The server returned: '$response'. Please make sure that the directory is not accessible by the public!<br>";
+        $error_message = "Error! The result could not be interpreted for the directory $url. The server returned: '$response'. Please make sure that the directory is not accessible by the public!<br>";
         foreach ($Response as $key => $response_http) {
             $error_message .= $key . ": " . $response_http . "<br>\n";
                     
