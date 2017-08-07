@@ -220,8 +220,8 @@ foreach (array_keys($Dienstplan) as $tag) {
             $vk = $auswahl_mitarbeiter;
             $dienstbeginn = $Dienstplan[$tag]['Dienstbeginn'][$key];
             $dienstende = $Dienstplan[$tag]['Dienstende'][$key];
-            $mittagsbeginn = $Dienstplan[$tag]['Mittagsbeginn'][$key]; //if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
-            $mittagsende = $Dienstplan[$tag]['Mittagsende'][$key]; //if(empty($Mittagsende)){$Mittagsende="0:00";}
+            $mittagsbeginn = $Dienstplan[$tag]['Mittagsbeginn'][$key];
+            $mittagsende = $Dienstplan[$tag]['Mittagsende'][$key];
 //			$kommentar='Noch nicht eingebaut'
             if (isset($mittagsbeginn) && isset($mittagsende)) {
                 $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);

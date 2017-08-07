@@ -177,8 +177,8 @@ foreach (array_keys($Grundplan) as $wochentag) {
             $vk = $auswahl_mitarbeiter;
             $dienstbeginn = $Grundplan[$wochentag]['Dienstbeginn'][$key];
             $dienstende = $Grundplan[$wochentag]['Dienstende'][$key];
-            $mittagsbeginn = $Grundplan[$wochentag]['Mittagsbeginn'][$key]; //if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
-            $mittagsende = $Grundplan[$wochentag]['Mittagsende'][$key]; //if(empty($Mittagsende)){$Mittagsende="0:00";}
+            $mittagsbeginn = $Grundplan[$wochentag]['Mittagsbeginn'][$key];
+            $mittagsende = $Grundplan[$wochentag]['Mittagsende'][$key];
 //			$kommentar='Noch nicht eingebaut'
             $stunden = $Grundplan[$wochentag]['Stunden'][$key];    //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
             if (empty($mittagsbeginn)) {

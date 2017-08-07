@@ -7,7 +7,7 @@ require "config/config.php";
 //	file_put_contents('config/config.php', '<?php  $config =' . var_export($config, true) . ';');
 //We want some functions to be accessable in all scripts.
 require_once "funktionen.php";
-//require_once 'src/php/classes/class.dBug.php';
+require_once 'src/php/classes/class.dBug.php';
 //Setup the presentation of time values:
 if (isset($config['LC_TIME'])) {
     setlocale(LC_TIME, $config['LC_TIME']);

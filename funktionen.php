@@ -108,11 +108,12 @@ function hex2rgb($hexstring) {
 }
 
 function escape_sql_value($value) {
-    if ('NULL' == $value or 'null' == $value) {
+    if ('NULL' === $value or 'null' === $value) {
         //echo "$value is null<br>\n";
         return $value;
+    } elseif (NULL === $value) {
+        return 'NULL';
     } else {
-        //echo "$value is not null<br>\n";
         return "'" . $value . "'";
     }
 }
@@ -170,6 +171,7 @@ function get_utf8_month_name($date_unix) {
  * 
  * @return string path of the root folder of the application
  */
+
 function get_root_folder() {
     if (strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')) {
         $root_folder = "../../";
@@ -187,6 +189,7 @@ function get_root_folder() {
  * 
  * @return string path of the root folder of the application
  */
+
 function get_script_folder() {
     if (strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')) {
         $script_folder = "./";
@@ -202,6 +205,7 @@ function get_script_folder() {
  * @param $date_string string any string that is supposed to represent a date.
  * @return bool validity of the date.
  */
-function is_valid_date($date_string){
-    return (bool)strtotime($date_string);
+
+function is_valid_date($date_string) {
+    return (bool) strtotime($date_string);
 }

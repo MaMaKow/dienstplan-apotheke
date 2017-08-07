@@ -2,27 +2,92 @@
 
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
 function get_Roster_from_POST_secure() {
-    global $Columns; //Will be needed to sice out empty rows later.
+    global $Columns; //Will be needed to slice out empty rows later.
+    //The following statement requires PHP >= 7.0.0
+    //define("TIME_COLUMNS", array("Dienstbeginn", "Dienstende"));
+    $time_columns = array("Dienstbeginn", "Dienstende", "Mittagsbeginn", "Mittagsende");
+
     $Roster_from_post = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+
     foreach ($Roster_from_post as $day_number => $inhalt_tag) {
         $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
-        foreach ($inhalt_tag as $column => $Lines) {
-            $column = filter_var($column, FILTER_SANITIZE_STRING);
-            $Columns[$column] = $column; //Will be needed to slice out empty rows later.
-            foreach ($Lines as $line_number => $line) 
-{
+        foreach ($inhalt_tag as $column_name => $Lines) {
+            $column_name = filter_var($column_name, FILTER_SANITIZE_STRING);
+            $Columns[$column_name] = $column_name; //Will be needed to slice out empty rows later.
+            foreach ($Lines as $line_number => $line) {
                 $line = filter_var($line, FILTER_SANITIZE_STRING);
+                if (!empty($line) and in_array($column_name, $time_columns)) {
+                    $line = strftime('%H:%M:%S', strtotime($line));
+                }
                 $line_number = filter_var($line_number, FILTER_SANITIZE_NUMBER_INT);
                 if ('' === $line) {
                     //Empty fields should be inserted as null values inside the database.
                     //TODO: Should we make an exeption for Comments?
-                    $line = 'null';
+                    //$line = 'null';
+                    $line = NULL;
                 }
-                $Roster[$day_number][$column][$line_number] = $line;
+                $Roster[$day_number][$column_name][$line_number] = $line;
             }
         }
     }
     return $Roster;
+}
+
+function get_old_Roster_from_database($date_sql, $branch_id) {
+    $query = "SELECT * FROM `Dienstplan`
+			WHERE `Datum` = '$date_sql'
+                            AND `Mandant` = '$branch_id'
+			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
+    $result = mysqli_query_verbose($query);
+    while ($row = mysqli_fetch_object($result)) {
+        $Roster_old_day["Datum"][] = $row->Datum;
+        $Roster_old_day["VK"][] = $row->VK;
+        $Roster_old_day["Dienstbeginn"][] = $row->Dienstbeginn;
+        $Roster_old_day["Dienstende"][] = $row->Dienstende;
+        $Roster_old_day["Mittagsbeginn"][] = $row->Mittagsbeginn;
+        $Roster_old_day["Mittagsende"][] = $row->Mittagsende;
+        $Roster_old_day["Mandant"][] = $row->Mandant;
+        $Roster_old_day["Kommentar"][] = $row->Kommentar;
+    }
+    return $Roster_old_day;
+}
+
+function remove_changed_entries_from_database($date_sql, $branch_id, $Employee_id_list) {
+    if (!empty($Employee_id_list)) {
+        $sql_query = "DELETE FROM `Dienstplan`"
+                . " WHERE `Datum` = '$date_sql'"
+                . " AND `VK` IN (" . implode(', ', $Employee_id_list) . ")"
+                . " AND `Mandant` = '$branch_id';"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
+        mysqli_query_verbose($sql_query);
+    }
+}
+
+function insert_changed_entries_into_database($date_sql, $day_number, $branch_id, $Dienstplan, $Changed_roster_employee_id_list) {
+    foreach ($Dienstplan[$day_number]['VK'] as $key => $employee_id) { //Die einzelnen Zeilen im Dienstplan
+        if (!in_array($employee_id, $Changed_roster_employee_id_list)) {
+            continue;
+        }
+        if (isset($Dienstplan[$day_number]["Mittagsbeginn"][$key]) && isset($Dienstplan[$day_number]["Mittagsende"][$key])) {
+            $lunch_break = strtotime($Dienstplan[$day_number]["Mittagsende"][$key]) - strtotime($Dienstplan[$day_number]["Mittagsbeginn"][$key]);
+        } else {
+            $lunch_break = 0;
+        }
+        $working_seconds = strtotime($Dienstplan[$day_number]["Dienstende"][$key]) - strtotime($Dienstplan[$day_number]["Dienstbeginn"][$key]) - $lunch_break;
+        $working_hours = $working_seconds / 3600;
+        $sql_query = "REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user)
+            VALUES ($employee_id"
+                . ", " . escape_sql_value($date_sql)
+                . ", " . escape_sql_value($Dienstplan[$day_number]["Dienstbeginn"][$key])
+                . ", " . escape_sql_value($Dienstplan[$day_number]["Dienstende"][$key])
+                . ", " . escape_sql_value($Dienstplan[$day_number]["Mittagsbeginn"][$key])
+                . ", " . escape_sql_value($Dienstplan[$day_number]["Mittagsende"][$key])
+                . ", " . $working_hours
+                . ", " . $branch_id
+                . ", " . escape_sql_value($Dienstplan[$day_number]["Kommentar"][$key])
+                . ", " . escape_sql_value($_SESSION['user_name'])
+                . ")";
+        mysqli_query_verbose($sql_query);
+    }
 }
 
 if (filter_has_var(INPUT_POST, 'Dienstplan')) {
@@ -44,82 +109,46 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
 
     //Slice out empty rows in all columns:
     foreach ($Dienstplan[$tag]["VK"] as $line_number => $employee_id) {
-        if ('null' === $employee_id) {
-            foreach ($Columns as $column) {
-                unset($Dienstplan[$tag][$column][$line_number]);
+        if (NULL === $employee_id) {
+            foreach ($Columns as $column_name) {
+                unset($Dienstplan[$tag][$column_name][$line_number]);
             }
         }
     }
 
     foreach (array_keys($Dienstplan) as $tag) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
-        $date_sql = $Dienstplan[$tag]['Datum'][0];
+        $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
+        $date_sql = $Dienstplan[$tag]['Datum'][$roster_first_key];
         //The following lines will add an entry for every day in the table approval.
         //TODO: We should manage situations, where an entry already exists better.
-        $abfrage = "INSERT IGNORE INTO `approval` (date, state, branch, user)
+        $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
 			VALUES ('$date_sql', 'not_yet_approved', '$mandant', '$user')";
-        $ergebnis = mysqli_query_verbose($abfrage);
+        $ergebnis = mysqli_query_verbose($sql_query);
 
-        $query = "SELECT * FROM `Dienstplan`
-			WHERE `Datum` = '$date_sql'
-                            AND `Mandant` = '$mandant'
-			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
-        $result = mysqli_query_verbose($query);
-        while ($row = mysqli_fetch_object($result)) {
-            $Dienstplan_old[$tag]["VK"][] = $row->VK;
-            $Dienstplan_old[$tag]["Dienstbeginn"][] = $row->Dienstbeginn;
-            $Dienstplan_old[$tag]["Dienstende"][] = $row->Dienstende;
-            $Dienstplan_old[$tag]["Mittagsbeginn"][] = $row->Mittagsbeginn;
-            $Dienstplan_old[$tag]["Mittagsende"][] = $row->Mittagsende;
-            $Dienstplan_old[$tag]["Mandant"][] = $row->Mandant;
-            $Dienstplan_old[$tag]["Kommentar"][] = $row->Kommentar;
-        }
+        $Roster_old[$tag] = get_old_Roster_from_database($date_sql, $mandant);
 
-        $Deleted_employee_id_list = array_diff($Dienstplan_old[$tag]["VK"], $Dienstplan[$tag]["VK"]);
-        //$Inserted_employee_id_list = array_diff($Dienstplan[$tag]["VK"], $Dienstplan_old[$tag]["VK"]);
-        if (array() !== $Deleted_employee_id_list) {
-            $abfrage = "DELETE FROM `Dienstplan`"
-                    . " WHERE `Datum` = '$date_sql'"
-                    . " AND `VK` IN (" . implode(', ', $Deleted_employee_id_list) . ")"
-                    . " AND `Mandant` = '$mandant';"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
-            $ergebnis = mysqli_query_verbose($abfrage);
+        /*
+         * Remove deleted data rows:
+         * TODO: Find the changed or the deleted rows:
+         */
+        foreach ($Dienstplan[$tag]["VK"] as $key => $employee_id) {
+            $Comparison_keys = array_keys($Roster_old[$tag]["VK"], $employee_id);
+            foreach ($Comparison_keys as $comparison_key) {
+                foreach ($Dienstplan[$tag] as $column_name => $Column) {
+                    if ($Roster_old[$tag][$column_name][$comparison_key] !== $Dienstplan[$tag][$column_name][$key]) {
+                        $Changed_roster_employee_id_list[] = $employee_id;
+                    }
+                }
+            }
         }
-
-        foreach ($Dienstplan[$tag]['VK'] as $key => $employee_id) { //Die einzelnen Zeilen im Dienstplan
-            $dienstbeginn = $Dienstplan[$tag]["Dienstbeginn"][$key];
-            $dienstende = $Dienstplan[$tag]["Dienstende"][$key];
-            $mittagsbeginn = $Dienstplan[$tag]["Mittagsbeginn"][$key];
-            if (empty($Mittagsbeginn)) {
-                $Mittagsbeginn = "0:00";
-            }
-            $mittagsende = $Dienstplan[$tag]["Mittagsende"][$key];
-            if (empty($Mittagsende)) {
-                $Mittagsende = "0:00";
-            }
-            $kommentar = $Dienstplan[$tag]["Kommentar"][$key];
-            if (isset($mittagsbeginn) && isset($mittagsende)) {
-                $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
-                $mittagspause = strtotime($mittagsende) - strtotime($mittagsbeginn);
-                $sekunden = $sekunden - $mittagspause;
-                $stunden = $sekunden / 3600;
-            } else {
-                $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
-                $stunden = $sekunden / 3600;
-            }
-            $abfrage = "REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user)
-					VALUES ($employee_id, " . escape_sql_value($date_sql)
-                    . ", " . escape_sql_value($dienstbeginn)
-                    . ", " . escape_sql_value($dienstende)
-                    . ", " . escape_sql_value($mittagsbeginn)
-                    . ", " . escape_sql_value($mittagsende)
-                    . ", " . $stunden
-                    . ", " . $mandant
-                    . ", " . escape_sql_value($kommentar)
-                    . ", " . escape_sql_value($user)
-                    . ")";
-            $ergebnis = mysqli_query_verbose($abfrage);
-        }
+        $Changed_roster_employee_id_list = array_unique($Changed_roster_employee_id_list);
+        $Deleted_roster_employee_id_list = array_diff($Roster_old[$tag]["VK"], $Dienstplan[$tag]["VK"]);
+        //$Inserted_employee_id_list = array_diff($Dienstplan[$tag]["VK"], $Roster_old[$tag]["VK"]);
+        remove_changed_entries_from_database($date_sql, $mandant, $Deleted_roster_employee_id_list);
+        remove_changed_entries_from_database($date_sql, $mandant, $Changed_roster_employee_id_list);
+        insert_changed_entries_into_database($date_sql, $tag, $mandant, $Dienstplan, $Changed_roster_employee_id_list);
     }
-    $datum = $Dienstplan[0]['Datum'][0];
+    $datum = $date_sql;
 } elseif (filter_has_var(INPUT_POST, 'submitWocheVorwärts') && isset($Dienstplan[0]['Datum'][0])) {
     //TODO: These lines should be changed to the ones below for every file
     $date_sql = filter_var($Dienstplan[0]['Datum'][0], FILTER_SANITIZE_STRING);
