@@ -95,36 +95,42 @@ if (filter_has_var(INPUT_POST, 'Dienstplan')) {
 }
 
 if (filter_has_var(INPUT_POST, 'mandant')) {
-    if (is_int((int) filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_STRING))) {
-        $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_STRING);
-    } else {
-        throw new InvalidArgumentException("Ungültiger Wert für Mandant per POST übergeben");
-    }
+    $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
 }
 
 if (filter_has_var(INPUT_POST, 'datum')) {
     $datum = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
 }
-if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
 
+function remove_empty_rows($Roster, $tag, $Columns) {
     //Slice out empty rows in all columns:
-    foreach ($Dienstplan[$tag]["VK"] as $line_number => $employee_id) {
+    foreach ($Roster[$tag]["VK"] as $line_number => $employee_id) {
         if (NULL === $employee_id) {
             foreach ($Columns as $column_name) {
-                unset($Dienstplan[$tag][$column_name][$line_number]);
+                unset($Roster[$tag][$column_name][$line_number]);
             }
         }
     }
+    return $Roster;
+}
 
-    foreach (array_keys($Dienstplan) as $tag) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
-        $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
-        $date_sql = $Dienstplan[$tag]['Datum'][$roster_first_key];
-        //The following lines will add an entry for every day in the table approval.
+function insert_new_approval_into_database($date_sql, $branch_id) {
         //TODO: We should manage situations, where an entry already exists better.
         $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
-			VALUES ('$date_sql', 'not_yet_approved', '$mandant', '$user')";
+			VALUES ('$date_sql', 'not_yet_approved', '$branch_id', " . escape_sql_value($_SESSION['user_name']) . ")";
         $ergebnis = mysqli_query_verbose($sql_query);
+    
+    
+}
+if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
 
+    foreach (array_keys($Dienstplan) as $tag) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
+        $Dienstplan = remove_empty_rows($Dienstplan, $tag, $Columns);
+        $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
+        $date_sql = $Dienstplan[$tag]['Datum'][$roster_first_key];
+
+        //The following line will add an entry for every day in the table approval.
+        insert_new_approval_into_database($date_sql, $mandant);
         $Roster_old[$tag] = get_old_Roster_from_database($date_sql, $mandant);
 
         /*
@@ -186,7 +192,7 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
     $datum = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 } elseif (filter_has_var(INPUT_POST, 'tagesAuswahl') && filter_has_var(INPUT_POST, 'woche')) {
     $datum = filter_input(INPUT_POST, 'woche', FILTER_SANITIZE_STRING);
-} elseif ($session->user_has_privilege('approve_roster') && (filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0) {
+} elseif ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
     require 'db-write-approval.php';
     $datum = $Dienstplan[0]['Datum'][0];
 // TODO: Is this save? Is the key 0 allways set?
