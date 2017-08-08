@@ -35,9 +35,9 @@ function schreiben_tabelle (array $Dienstplan){
 				if (isset($approval)) {
 					if ($approval=="approved") {
 						//$Overlay_message[]="Alles ist gut.";
-					} elseif ($approval=="not_yet_approved") {
+					} elseif ($approval=="not_yet_approved" and TRUE === $config['hide_disapproved']) {
 						$Overlay_message[]="Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
-					} elseif ($approval=="disapproved") {
+					} elseif ($approval=="disapproved" and TRUE === $config['hide_disapproved']) {
 						$Overlay_message[]="Der Dienstplan wird noch überarbeitet!";
 					}
 				} else {
