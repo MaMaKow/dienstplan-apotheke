@@ -1,5 +1,4 @@
 <?php
-
 //Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
 function get_Roster_from_POST_secure() {
     global $Columns; //Will be needed to slice out empty rows later.
@@ -8,7 +7,10 @@ function get_Roster_from_POST_secure() {
     $time_columns = array("Dienstbeginn", "Dienstende", "Mittagsbeginn", "Mittagsende");
 
     $Roster_from_post = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-
+    $Roster_from_post_alt = filter_input(INPUT_POST, 'Dienstplan', FILTER_UNSAFE_RAW);
+    print_debug_variable($_POST['Dienstplan']);
+    print_debug_variable('$Roster_from_post_alt', $Roster_from_post_alt);
+    print_debug_variable('$Roster_from_post', $Roster_from_post);
     foreach ($Roster_from_post as $day_number => $inhalt_tag) {
         $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
         foreach ($inhalt_tag as $column_name => $Lines) {
@@ -58,7 +60,7 @@ function remove_changed_entries_from_database($date_sql, $branch_id, $Employee_i
                 . " WHERE `Datum` = '$date_sql'"
                 . " AND `VK` IN (" . implode(', ', $Employee_id_list) . ")"
                 . " AND `Mandant` = '$branch_id';"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
-        mysqli_query_verbose($sql_query);
+        mysqli_query_verbose($sql_query, TRUE);
     }
 }
 
@@ -86,7 +88,7 @@ function insert_changed_entries_into_database($date_sql, $day_number, $branch_id
                 . ", " . escape_sql_value($Dienstplan[$day_number]["Kommentar"][$key])
                 . ", " . escape_sql_value($_SESSION['user_name'])
                 . ")";
-        mysqli_query_verbose($sql_query);
+        mysqli_query_verbose($sql_query, TRUE);
     }
 }
 
@@ -149,11 +151,21 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
         }
         $Changed_roster_employee_id_list = array_unique($Changed_roster_employee_id_list);
         $Deleted_roster_employee_id_list = array_diff($Roster_old[$tag]["VK"], $Dienstplan[$tag]["VK"]);
-        //$Inserted_employee_id_list = array_diff($Dienstplan[$tag]["VK"], $Roster_old[$tag]["VK"]);
+        $Inserted_employee_id_list = array_diff($Dienstplan[$tag]["VK"], $Roster_old[$tag]["VK"]);
+        print_debug_variable('$tag', $tag);
+        print_debug_variable('$Dienstplan', $Dienstplan);
+        print_debug_variable('$Dienstplan[$tag]["VK"]', $Dienstplan[$tag]["VK"]);
+        print_debug_variable('$Inserted_employee_id_list', $Inserted_employee_id_list);
+        
+        //TODO: There should be a transaction here:
+        mysqli_query_verbose("START TRANSACTION");
         remove_changed_entries_from_database($date_sql, $mandant, $Deleted_roster_employee_id_list);
         remove_changed_entries_from_database($date_sql, $mandant, $Changed_roster_employee_id_list);
         insert_changed_entries_into_database($date_sql, $tag, $mandant, $Dienstplan, $Changed_roster_employee_id_list);
-    }
+        insert_changed_entries_into_database($date_sql, $tag, $mandant, $Dienstplan, $Inserted_employee_id_list);
+        mysqli_query_verbose("COMMIT");
+
+        }
     $datum = $date_sql;
 } elseif (filter_has_var(INPUT_POST, 'submitWocheVorwärts') && isset($Dienstplan[0]['Datum'][0])) {
     //TODO: These lines should be changed to the ones below for every file

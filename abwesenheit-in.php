@@ -48,7 +48,7 @@ require 'default.php';
                     //Now the holidays which are not on a weekend are substracted.
                     require 'db-lesen-feiertag.php';
                     if (isset($feiertag) and date('w', strtotime($datum)) < 6 and date('w', strtotime($datum)) > 0) {
-                        $Feiertagsmeldung[] = "$feiertag ($datum)<br>\n";
+                        $Feiertagsmeldung[] = htmlentities("$feiertag ($datum)<br>\n");
                         $tage--;
                     }
                 }
