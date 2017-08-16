@@ -134,16 +134,16 @@ for ($j=0; $j<$VKcount; $j++)
 			{
 				if ( isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j]!=$k ) //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 				{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>";
+					$zeile.="<option value=".$k.">".$k." ".$Mitarbeiter[$k]."</option>";
 				}
 				else
 				{
-					$zeile.="<option selected>".$k." ".$Mitarbeiter[$k]."</option>";
+					$zeile.="<option value=".$k." selected>".$k." ".$Mitarbeiter[$k]."</option>";
 				}
 			}
 			elseif ( isset($Mitarbeiter[$k]) )
 			{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>";
+					$zeile.="<option value=".$k.">".$k." ".$Mitarbeiter[$k]."</option>";
 			}
 		}
 		$zeile.="</select>";
