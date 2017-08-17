@@ -60,7 +60,7 @@ if (isset($Grundplan)) {
         }
     }
     foreach ($Sql_query_list as $sql_query) {
-        print_debug_variable($sql_query);
+        //print_debug_variable($sql_query);
         $result = mysqli_query_verbose($sql_query);
     }
 }

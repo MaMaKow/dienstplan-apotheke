@@ -17,7 +17,6 @@ function read_employee_data_from_database($auswahl_mitarbeiter) {
         $Worker["branch"] = $row->branch;
         $Worker["start_of_employment"] = $row->start_of_employment;
         $Worker["end_of_employment"] = $row->end_of_employment;
-        //print_debug_variable($Worker);
     }
     return $Worker;
 }

@@ -146,9 +146,7 @@ function build_absence_year($year) {
 
     $start_date = mktime(0, 0, 0, 1, 1, $year);
     $current_month = date("n", $start_date);
-    //print_debug_variable(strftime("äöüÄÖÜß %B", 1490388361));
     //$system_encoding = mb_detect_encoding(strftime("äöüÄÖÜß %B", 1490388361), "auto");
-    //print_debug_variable("\$system_encoding", $system_encoding);
     //$current_month_name = mb_convert_encoding(strftime("%B", $date_unix), "UTF-8", 'Windows-1252');
     $current_month_name = get_utf8_month_name($date_unix);
     $current_year = date("Y", $start_date);
@@ -198,7 +196,6 @@ function build_absence_year($year) {
             unset($absent_employees_containers);
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
-                //print_debug_variable($Absence);
 
                 $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
                 $absent_employees_containers .= $employee_id;
