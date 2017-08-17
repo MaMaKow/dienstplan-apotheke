@@ -15,9 +15,9 @@ require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if (isset($mandant)) {
     create_cookie("mandant", $mandant, 30);
 }
-$montags_differenz = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-$montags_differenzString = "-" . $montags_differenz . " day";
-$datum = strtotime($montags_differenzString, strtotime($datum));
+$monday_difference = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
+$monday_differenceString = "-" . $monday_difference . " day";
+$datum = strtotime($monday_differenceString, strtotime($datum));
 $datum = date('Y-m-d', $datum);
 if (isset($datum)) {
     create_cookie("datum", $datum, 0.5);
