@@ -18,9 +18,9 @@ $datum=date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl un
 require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
-$montags_differenzString="-".$montags_differenz." day";
-$datum=strtotime($montags_differenzString, strtotime($datum));
+$monday_difference=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
+$monday_differenceString="-".$monday_difference." day";
+$datum=strtotime($monday_differenceString, strtotime($datum));
 $datum=date('Y-m-d', $datum); $konstantes_datum=$datum;
 for ($i = 0; $i < $tage; $i++){
     $Week_dates_unix[] = strtotime(' +' . $i . ' days', strtotime($datum));

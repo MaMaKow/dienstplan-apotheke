@@ -10,10 +10,6 @@ $dienstplanCSV = '';
 $tage = 7;
 
 $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-// $montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
-// $montags_differenzString="-".$montags_differenz." day";
-// $datum=strtotime($montags_differenzString, strtotime($datum));
-// $datum=date('Y-m-d', $datum);
 
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
@@ -31,9 +27,9 @@ if (isset($auswahl_mitarbeiter)) {
 }
 if (isset($datum)) {
     // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
-    $montags_differenz = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-    $montags_differenzString = '-'.$montags_differenz.' day';
-    $datum = strtotime($montags_differenzString, strtotime($datum));
+    $monday_difference = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
+    $monday_differenceString = '-'.$monday_difference.' day';
+    $datum = strtotime($monday_differenceString, strtotime($datum));
     $date_unix = $datum;
     $date_sql = date('Y-m-d', $date_unix);
     $datum = date('Y-m-d', $datum);

@@ -101,12 +101,12 @@ if (filter_has_var(INPUT_POST, 'datum')) {
     $datum = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
 }
 
-function remove_empty_rows($Roster, $tag, $Columns) {
+function remove_empty_rows($Roster, $day_number, $Columns) {
     //Slice out empty rows in all columns:
-    foreach ($Roster[$tag]["VK"] as $line_number => $employee_id) {
+    foreach ($Roster[$day_number]["VK"] as $line_number => $employee_id) {
         if (NULL === $employee_id) {
             foreach ($Columns as $column_name) {
-                unset($Roster[$tag][$column_name][$line_number]);
+                unset($Roster[$day_number][$column_name][$line_number]);
             }
         }
     }
@@ -121,50 +121,50 @@ function insert_new_approval_into_database($date_sql, $branch_id) {
 }
 
 if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
-    foreach (array_keys($Dienstplan) as $tag) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
-        $Dienstplan = remove_empty_rows($Dienstplan, $tag, $Columns);
-        $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
-        if (!empty($Dienstplan[$tag]['Datum'][$roster_first_key])) {
-            $date_sql = $Dienstplan[$tag]['Datum'][$roster_first_key];
+    foreach (array_keys($Dienstplan) as $day_number) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
+        $Dienstplan = remove_empty_rows($Dienstplan, $day_number, $Columns);
+        $roster_first_key = min(array_keys($Dienstplan[$day_number]['Datum']));
+        if (!empty($Dienstplan[$day_number]['Datum'][$roster_first_key])) {
+            $date_sql = $Dienstplan[$day_number]['Datum'][$roster_first_key];
         } else {
             $date_sql = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
         }
         //The following line will add an entry for every day in the table approval.
         insert_new_approval_into_database($date_sql, $mandant);
-        $Roster_old[$tag] = get_old_Roster_from_database($date_sql, $mandant);
+        $Roster_old[$day_number] = get_old_Roster_from_database($date_sql, $mandant);
 
         /*
          * Remove deleted data rows:
          * TODO: Find the changed or the deleted rows:
          */
-        foreach ($Dienstplan[$tag]["VK"] as $key => $employee_id) {
-            $Comparison_keys = array_keys($Roster_old[$tag]["VK"], $employee_id);
+        foreach ($Dienstplan[$day_number]["VK"] as $key => $employee_id) {
+            $Comparison_keys = array_keys($Roster_old[$day_number]["VK"], $employee_id);
             foreach ($Comparison_keys as $comparison_key) {
-                foreach ($Dienstplan[$tag] as $column_name => $Column) {
-                    if ($Roster_old[$tag][$column_name][$comparison_key] !== $Dienstplan[$tag][$column_name][$key]) {
+                foreach ($Dienstplan[$day_number] as $column_name => $Column) {
+                    if ($Roster_old[$day_number][$column_name][$comparison_key] !== $Dienstplan[$day_number][$column_name][$key]) {
                         $Changed_roster_employee_id_list[] = $employee_id;
                     }
                 }
             }
         }
         $Changed_roster_employee_id_list = array_unique($Changed_roster_employee_id_list);
-        if (empty($Dienstplan[$tag]["VK"])) {
-            $Deleted_roster_employee_id_list = $Roster_old[$tag]["VK"];
+        if (empty($Dienstplan[$day_number]["VK"])) {
+            $Deleted_roster_employee_id_list = $Roster_old[$day_number]["VK"];
         } else {
-            $Deleted_roster_employee_id_list = array_diff($Roster_old[$tag]["VK"], $Dienstplan[$tag]["VK"]);
+            $Deleted_roster_employee_id_list = array_diff($Roster_old[$day_number]["VK"], $Dienstplan[$day_number]["VK"]);
         }
-        if (empty($Roster_old[$tag]["VK"])) {
-            $Inserted_employee_id_list = $Dienstplan[$tag]["VK"];
+        if (empty($Roster_old[$day_number]["VK"])) {
+            $Inserted_employee_id_list = $Dienstplan[$day_number]["VK"];
         } else {
-            $Inserted_employee_id_list = array_diff($Dienstplan[$tag]["VK"], $Roster_old[$tag]["VK"]);
+            $Inserted_employee_id_list = array_diff($Dienstplan[$day_number]["VK"], $Roster_old[$day_number]["VK"]);
         }
 
         //TODO: There should be a transaction here:
         mysqli_query_verbose("START TRANSACTION");
         remove_changed_entries_from_database($date_sql, $mandant, $Deleted_roster_employee_id_list);
         remove_changed_entries_from_database($date_sql, $mandant, $Changed_roster_employee_id_list);
-        insert_changed_entries_into_database($date_sql, $tag, $mandant, $Dienstplan, $Changed_roster_employee_id_list);
-        insert_changed_entries_into_database($date_sql, $tag, $mandant, $Dienstplan, $Inserted_employee_id_list);
+        insert_changed_entries_into_database($date_sql, $day_number, $mandant, $Dienstplan, $Changed_roster_employee_id_list);
+        insert_changed_entries_into_database($date_sql, $day_number, $mandant, $Dienstplan, $Inserted_employee_id_list);
         mysqli_query_verbose("COMMIT");
     }
     if (!empty($date_sql)) {
@@ -189,22 +189,22 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
     $datum = $Dienstplan[0]['Datum'][0];
     $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'submitVorwärts') && filter_has_var(INPUT_POST, 'tag')) {
+} elseif (filter_has_var(INPUT_POST, 'submitVorwärts') && filter_has_var(INPUT_POST, 'date_sql')) {
     $datum = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'submitRückwärts') && filter_has_var(INPUT_POST, 'tag')) {
+} elseif (filter_has_var(INPUT_POST, 'submitRückwärts') && filter_has_var(INPUT_POST, 'date_sql')) {
     $datum = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
     $datum = strtotime('-1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 } elseif (filter_has_var(INPUT_POST, 'wochenAuswahl') && filter_has_var(INPUT_POST, 'woche')) {
     $datum = filter_input(INPUT_POST, 'woche', FILTER_SANITIZE_STRING);
-    $montags_differenz = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-    $montags_differenzString = "-" . $montags_differenz . " day";
-    $datum = strtotime($montags_differenzString, strtotime($datum));
+    $monday_difference = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
+    $monday_differenceString = "-" . $monday_difference . " day";
+    $datum = strtotime($monday_differenceString, strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'tagesAuswahl') && filter_has_var(INPUT_POST, 'tag')) {
-    $datum = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
+} elseif (filter_has_var(INPUT_POST, 'tagesAuswahl') && filter_has_var(INPUT_POST, 'date_sql')) {
+    $datum = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
 } elseif (filter_has_var(INPUT_POST, 'tagesAuswahl') && filter_has_var(INPUT_POST, 'woche')) {
     $datum = filter_input(INPUT_POST, 'woche', FILTER_SANITIZE_STRING);
 } elseif ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
