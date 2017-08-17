@@ -3,7 +3,6 @@ require 'default.php';
 require 'human-resource-management.php';
 write_employee_data_to_database(); //$success = write_employee_data_to_database();
 require 'db-lesen-mitarbeiter.php';
-//print_debug_variable($Mitarbeiter);
 require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, "worker_id")){
     $auswahl_mitarbeiter = filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT);    

@@ -14,12 +14,9 @@ try {
 }// change character set to utf8
 if (!$verbindungi->set_charset("utf8")) {
     printf("Error loading character set utf8: %s\n", $verbindungi->error);
-} else {
-//    printf("Current character set: %s\n", $verbindungi->character_set_name());
 }
 
 function mysqli_query_verbose($sql_query, $inside_transaction = FALSE) {
-    //print_debug_variable($sql_query);
     $result = mysqli_query($GLOBALS['verbindungi'], $sql_query);
     if ($result === FALSE) {
         $message = "Error: $sql_query <br>" . \mysqli_error($GLOBALS['verbindungi']);

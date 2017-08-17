@@ -45,7 +45,6 @@ function echo_table_diff() {
             } else {
                 echo "<p>Table " . $table_name . " without changes</p>\n";
             }
-            //print_debug_variable($diff);
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
         }
     }

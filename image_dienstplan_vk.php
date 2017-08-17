@@ -79,7 +79,6 @@ function draw_image_dienstplan_vk($Dienstplan) {
     //draw the bars from start to end for every employee
     $svg_box_text = "\t<!--Boxes-->\n";
     $svg_break_box_text = '';
- //   print_debug_variable($Dienstplan);
 
     foreach ($Dienstplan as $day => $Column) {
 //        echo "<pre>"; var_dump(time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line])); echo "</pre>"; 

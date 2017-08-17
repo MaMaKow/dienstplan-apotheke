@@ -128,7 +128,6 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
             $date_sql = $Dienstplan[$tag]['Datum'][$roster_first_key];
         } else {
             $date_sql = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
-            print_debug_variable('$date_sql', $_POST);
         }
         //The following line will add an entry for every day in the table approval.
         insert_new_approval_into_database($date_sql, $mandant);
@@ -150,10 +149,8 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
         }
         $Changed_roster_employee_id_list = array_unique($Changed_roster_employee_id_list);
         if (empty($Dienstplan[$tag]["VK"])) {
-            print_debug_variable('$Roster_old[$tag]["VK"]', $Roster_old[$tag]["VK"]);
             $Deleted_roster_employee_id_list = $Roster_old[$tag]["VK"];
         } else {
-            print_debug_variable(['$Dienstplan[$tag]["VK"]', $Dienstplan[$tag]["VK"]]);
             $Deleted_roster_employee_id_list = array_diff($Roster_old[$tag]["VK"], $Dienstplan[$tag]["VK"]);
         }
         if (empty($Roster_old[$tag]["VK"])) {
@@ -161,8 +158,6 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
         } else {
             $Inserted_employee_id_list = array_diff($Dienstplan[$tag]["VK"], $Roster_old[$tag]["VK"]);
         }
-        new dBug($Deleted_roster_employee_id_list);
-        new dBug($Inserted_employee_id_list);
 
         //TODO: There should be a transaction here:
         mysqli_query_verbose("START TRANSACTION");
