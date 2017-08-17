@@ -59,7 +59,7 @@ require 'src/php/pages/menu.php';
 
         echo "\t\t\t</div>\n";
         echo "\t\t\t<div class=no-print id=wochenAuswahl>\n";
-        echo "\t\t\t\t<input name=tag type=date value=" . date('Y-m-d', strtotime($datum)) . ">\n";
+        echo "\t\t\t\t<input name=date_sql type=date value=" . date('Y-m-d', strtotime($datum)) . ">\n";
         echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
         echo "\t\t\t</div>\n";
         echo "\t\t</form>\n";
