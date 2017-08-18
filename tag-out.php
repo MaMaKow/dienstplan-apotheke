@@ -76,7 +76,7 @@ echo "<br><br>\n";
 //echo "</div>\n";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
 //echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
-echo "\t\t\t\t\t<input name='tag' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
+echo "\t\t\t\t\t<input name='date_sql' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</form>\n";
 echo "\t\t\t\t</div>\n";
