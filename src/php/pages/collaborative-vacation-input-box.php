@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once "../../default.php";
+require_once "../../../default.php";
 require_once "../../db-lesen-mitarbeiter.php";
 ?>
 <form id="input_box_form" method="POST">
