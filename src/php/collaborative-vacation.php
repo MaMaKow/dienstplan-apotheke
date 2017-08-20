@@ -282,7 +282,7 @@ function build_absence_month($year, $month_number) {
     $current_month_name = get_utf8_month_name($input_date);
     $current_year = date("Y", $input_date);
 
-    $year_container_html = "<div class=year_container>\n";
+    $month_container_html = "";
 
     //The following lines for the year select are common code with anwesenheitsliste-out.php
     $Years = array();
@@ -319,15 +319,15 @@ function build_absence_month($year, $month_number) {
     $month_input_select .= "</select></form>";
 
 
-    $year_container_html .= $year_input_select;
-    $year_container_html .= $month_input_select;
+    $month_container_html .= $year_input_select;
+    $month_container_html .= $month_input_select;
     $table_header_of_weekdays = "<tr>";
     for ($date_unix = $start_date; $date_unix < $start_date + 7*PDR_ONE_DAY_IN_SECONDS; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-        $table_header_of_weekdays .= "<td class=day_paragraph>" . strftime("%A", $date_unix) . "</td>";
+        $table_header_of_weekdays .= "<td class=day_column_head>" . strftime("%A", $date_unix) . "</td>";
     }
-    $table_header_of_weekdays .= "<tr>";
+    $table_header_of_weekdays .= "</tr>";
     
-    $week_container_html = "<table>"
+    $week_container_html = "<table class='month_container noselect'>"
             . "$table_header_of_weekdays"
             . "<tr class=week_container>";
     //$week_container_html .= $current_month_name . "<br>\n";
@@ -397,7 +397,6 @@ function build_absence_month($year, $month_number) {
         $week_container_html .= $p_html;
     }
     $week_container_html .= "\t</tr></table></div>\n";
-    $year_container_html .= $week_container_html;
-    $year_container_html .= "</div>\n";
-    return $year_container_html;
+    $month_container_html .= $week_container_html;
+    return $month_container_html;
 }
