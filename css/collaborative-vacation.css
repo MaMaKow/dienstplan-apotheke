@@ -31,7 +31,25 @@ div.month_container{
     font-family: monospace;
     width: 12em;
     float: left;
-    /*display: inline-block;*/
+    /*
+    display: inline-block;
+    */
+}
+table.month_container{
+    font-family: monospace;
+    margin: auto;
+    width: 90%;
+    /*
+    height: 90%;
+    */
+}
+tr.week_container{
+    font-family: monospace;
+    /*
+    width: 90%;
+    float: left;
+    display: inline-block;
+    */
 }
 p.day_paragraph{
     border: solid black thin;
@@ -40,22 +58,46 @@ p.day_paragraph{
     margin-top: 0em;
     /*-webkit-margin-before: 0em;*/
 }
-p.weekday{
-    background-color: #FEFEFF;
+td.day_paragraph{
+    border: solid black thin;
+    cursor: pointer;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    height: 5em;
+    font-family: monospace;
+
+    /*
+    -webkit-margin-before: 0em;
+    width: 10%;
+    */
 }
-p.weekend{
+td.day_paragraph.weekday{
+    width: 20%;
+}
+td.day_paragraph.adjacent_month{
     background-color: lightgray;
 }
-p.highlight{
+p.weekday, td.weekday{
+    background-color: #FEFEFF;
+}
+p.weekend, td.weekend{
+    background-color: #B4B4B4;
+}
+p.highlight, td.highlight{
     background: linear-gradient(180deg, #00ABE7 0, #0081AF 100%), #B4B4B4;
 }
 
 span.holiday{
     font-size: xx-small;
 }
-span.absent_employee_container{
+p span.absent_employee_container{
     cursor: zoom-in;
     float: right;
+    width: 2em;
+    background-color: #B4B4B4;
+}
+td span.absent_employee_container{
+    cursor: zoom-in;
     width: 2em;
     background-color: #B4B4B4;
 }
