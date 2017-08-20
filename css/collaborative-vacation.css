@@ -33,19 +33,36 @@ div.month_container{
     float: left;
     /*display: inline-block;*/
 }
-div.week_container, tr.week_container{
+table.month_container{
     font-family: monospace;
-    width: 10%;
+    width: 90%;
+    margin: auto;
+    /*
+    height: 90%;
+    */
+}
+tr.week_container{
+    font-family: monospace;
+    width: 90%;
     /*
     float: left;
     display: inline-block;
     */
 }
-p.day_paragraph, td.day_paragraph{
+p.day_paragraph{
     border: solid black thin;
     cursor: pointer;
     margin-bottom: 0em;
     margin-top: 0em;
+    /*-webkit-margin-before: 0em;*/
+}
+td.day_paragraph{
+    border: solid black thin;
+    cursor: pointer;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    width: 10%;
+    height: 5em;
     /*-webkit-margin-before: 0em;*/
 }
 p.weekday, td.weekday{

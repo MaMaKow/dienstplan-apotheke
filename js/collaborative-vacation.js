@@ -207,7 +207,7 @@ function detectLeftButton(evt) {
 
 function fill_input_box_from_prototype(div) {
     var secondary_element = document.getElementById(div.id);
-    var filename = get_php_script_folder() + '/pages/collaborative-vacation-input-box.php';
+    var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php';
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
