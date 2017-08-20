@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once "../../default.php";
-require_once "../../db-lesen-mitarbeiter.php";
+require_once "../../../default.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
 ?>
 <form id="input_box_form" method="POST">
     <select name="employee_id" id="employee_id_select">
         <?php
         foreach ($Mitarbeiter as $employee_id => $last_name) {
             echo "\t\t<option id='employee_id_option_$employee_id' value=$employee_id>";
-            echo "$last_name";
+            echo "$employee_id $last_name";
             echo "</option>\n";
         }
         ?>
