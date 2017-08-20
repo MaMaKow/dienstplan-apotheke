@@ -57,14 +57,20 @@ function handle_user_data_input() {
     global $month_number;
     if (filter_has_var(INPUT_POST, "year")) {
         $year = filter_input(INPUT_POST, "year", FILTER_SANITIZE_NUMBER_INT);
+    } elseif (filter_has_var(INPUT_COOKIE, "year")) {
+        $year = filter_input(INPUT_COOKIE, "year", FILTER_SANITIZE_NUMBER_INT);
     } else {
         $year = date("Y");
     }
     if (filter_has_var(INPUT_POST, "month_number")) {
         $month_number = filter_input(INPUT_POST, "month_number", FILTER_SANITIZE_NUMBER_INT);
+    } elseif (filter_has_var(INPUT_COOKIE, "month_number")) {
+        $month_number = filter_input(INPUT_COOKIE, "month_number", FILTER_SANITIZE_NUMBER_INT);
     } else {
         $month_number = date("n");
     }
+    create_cookie('month_number', $month_number, 1);
+    create_cookie('year', $year, 1);
     if (filter_has_var(INPUT_POST, 'command')) {
         write_user_input_to_database();
     }
@@ -271,11 +277,16 @@ function build_absence_year($year) {
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_month($year, $month_number) {
-    global $Ausbildung_mitarbeiter;
+    global $Mitarbeiter, $Ausbildung_mitarbeiter;
 
     $input_date = mktime(8, 0, 0, $month_number, 1, $year);
     $monday_difference = date('w', $input_date) - 1; //Get start of the week
-    $start_date = $input_date - ($monday_difference * PDR_ONE_DAY_IN_SECONDS);
+    if (-1 === $monday_difference) {
+        $extra_days = 7;
+    } else {
+        $extra_days = 0;
+    }
+    $start_date = $input_date - ($monday_difference + $extra_days) * PDR_ONE_DAY_IN_SECONDS;
     $end_date = $input_date + (7 * 5 - $monday_difference) * PDR_ONE_DAY_IN_SECONDS;
     $current_month = date("n", $input_date);
     $current_week = date("W", $input_date);
@@ -322,11 +333,11 @@ function build_absence_month($year, $month_number) {
     $month_container_html .= $year_input_select;
     $month_container_html .= $month_input_select;
     $table_header_of_weekdays = "<tr>";
-    for ($date_unix = $start_date; $date_unix < $start_date + 7*PDR_ONE_DAY_IN_SECONDS; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
+    for ($date_unix = $start_date; $date_unix < $start_date + 7 * PDR_ONE_DAY_IN_SECONDS; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $table_header_of_weekdays .= "<td class=day_column_head>" . strftime("%A", $date_unix) . "</td>";
     }
     $table_header_of_weekdays .= "</tr>";
-    
+
     $week_container_html = "<table class='month_container noselect'>"
             . "$table_header_of_weekdays"
             . "<tr class=week_container>";
@@ -356,8 +367,8 @@ function build_absence_month($year, $month_number) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
 
                 $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
-                $absent_employees_containers .= $employee_id;
-                $absent_employees_containers .= "</span>\n";
+                $absent_employees_containers .= $employee_id . " " . mb_substr($Mitarbeiter[$employee_id], 0, 4);
+                $absent_employees_containers .= "</span><br>\n";
             }
         } else {
             $absent_employees_containers = "";
@@ -368,7 +379,13 @@ function build_absence_month($year, $month_number) {
         } else {
             $paragraph_weekday_class = "weekend";
         }
-        $p_html .= $paragraph_weekday_class . "'";
+        if (date('n', $date_unix) !== date('n', $input_date)) {
+            $paragraph_adjacent_month_class = "adjacent_month";
+        } else {
+            $paragraph_adjacent_month_class = "";
+        }
+
+        $p_html .= $paragraph_weekday_class . " " . $paragraph_adjacent_month_class . "'";
 //                $p_html_javascript = "' onclick='insert_form_div(\"create\")'";
         $p_html_javascript = " onmousedown='highlight_absence_create_start(event)'";
         $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate(event)'";
