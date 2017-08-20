@@ -13,6 +13,7 @@ if (isset($employee_id)) {
 }
 require "src/php/calculate-holidays.php";
 require_once "src/php/collaborative-vacation.php";
+handle_user_data_input();
 require "head.php";
 require 'src/php/pages/menu.php';
 if(!$session->user_has_privilege('request_own_absence') and !$session->user_has_privilege('create_absence')){
@@ -20,7 +21,6 @@ if(!$session->user_has_privilege('request_own_absence') and !$session->user_has_
     die();
 }
 
-handle_user_data_input();
 echo build_datalist();
 echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";
 echo build_absence_month($year, $month_number);
