@@ -47,6 +47,7 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
                 <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>abwesenheit-in.php title="Urlaub, Krankheit, Abwesenheit">Abwesenheit Eingabe</a>
                 <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>abwesenheit-out.php title="Urlaub, Krankheit, Abwesenheit">Abwesenheit Ausgabe</a>
                 <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>collaborative-vacation-in.php title="Urlaub, Krankheit, Abwesenheit">Abwesenheit Jahresplan</a>
+                <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>collaborative-vacation-month-in.php title="Urlaub, Krankheit, Abwesenheit">Abwesenheit Monatsplan</a>
             </li>
         </ul>
     </li>
