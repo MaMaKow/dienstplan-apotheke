@@ -63,7 +63,7 @@ td.day_paragraph{
     cursor: pointer;
     margin-bottom: 0em;
     margin-top: 0em;
-    height: 5em;
+    min-height: 5em;
     font-family: monospace;
 
     /*
