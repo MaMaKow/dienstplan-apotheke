@@ -4,7 +4,7 @@ require 'schreiben-tabelle.php';
 require 'db-lesen-abwesenheit.php';
 
 $mandant = 1; //First branch is allways the default.
-$tage = 6; //Dies ist eine Wochenansicht ohne Sonntag
+$tage = 7; //One week
 
 $datenübertragung = "";
 $dienstplanCSV = "";
@@ -40,8 +40,6 @@ require 'db-lesen-mitarbeiter.php';
 require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan = db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
-require_once 'plane-tag-grundplan.php';
-$Principle_roster = get_principle_roster($datum, $mandant, 0, $tage);
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 //Build a div containing assignment of tasks:
@@ -126,7 +124,7 @@ $head_table_html .= "\t\t\t\t\t</tr></thead>";
 $table_html .= $head_table_html;
 
 $table_body_html = "<tbody>";
-$table_body_html .= schreiben_tabelle($Dienstplan);
+$table_body_html .= schreiben_tabelle($Dienstplan, $mandant);
 if (isset($Overlay_message)) {
     $overlay_message_html .= "\t\t<div class='overlay no-print'>\n";
     $Overlay_message = array_unique($Overlay_message);
@@ -144,8 +142,7 @@ foreach ($Mandant as $filiale => $Name) {
     $Filialplan[$filiale] = db_lesen_tage($tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
     if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
         $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
-        $Principle_roster = get_principle_roster($datum, $filiale, 0, $tage);
-        $table_body_html = schreiben_tabelle($Filialplan[$filiale]);
+        $table_body_html = schreiben_tabelle($Filialplan[$filiale], $filiale);
         $table_html .= $table_body_html;
     }
 }
