@@ -67,3 +67,6 @@ table#duty-rooster-table
     width: 99%;
     height: 48%;
 }
+strong{
+    font-style: italic;
+}

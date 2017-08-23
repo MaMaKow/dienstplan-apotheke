@@ -17,10 +17,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * @var PDR_ONE_DAY_IN_SECONDS The amount of seconds in one day.
- */
-define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
 
 /**
  * Build a datalist for easy input of absence entries.
