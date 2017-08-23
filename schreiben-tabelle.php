@@ -2,6 +2,7 @@
 
 function schreiben_tabelle(array $Dienstplan) {
     global $Mitarbeiter, $mandant;
+    global $Principle_roster;
     global $config;
     global $Warnmeldung, $Fehlermeldung, $Overlay_message;
     $table_html = "";
@@ -49,7 +50,21 @@ function schreiben_tabelle(array $Dienstplan) {
             if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 $zeile = "";
                 if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
-                    $zeile.="<b><a href='mitarbeiter-out.php?"
+                    $key_in_principle_roster = array_search($Dienstplan[$i]["VK"][$j], $Principle_roster[$i]["VK"]);
+                    if (
+                            FALSE !== $key_in_principle_roster
+                            and
+                            strtotime($Dienstplan[$i]["Dienstbeginn"][$j]) === strtotime($Principle_roster[$i]["Dienstbeginn"][$key_in_principle_roster])
+                            and
+                            strtotime($Dienstplan[$i]["Dienstende"][$j]) === strtotime($Principle_roster[$i]["Dienstende"][$key_in_principle_roster])
+                    ) {
+                        $emphasis_start = ""; //No emphasis
+                        $emphasis_end = ""; //No emphasis
+                    } else {
+                        $emphasis_start = "<strong>"; //Significant emphasis
+                        $emphasis_end = "</strong>"; //Significant emphasis
+                    }
+                    $zeile.="$emphasis_start<b><a href='mitarbeiter-out.php?"
                             . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0])
                             . "&auswahl_mitarbeiter=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
                     $zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
@@ -80,7 +95,7 @@ function schreiben_tabelle(array $Dienstplan) {
                     $zeile.=" - ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
                 }
-                $zeile.="";
+                $zeile.="$emphasis_end";
                 $table_html .= $zeile;
             }
             $table_html .= "</td>\n";

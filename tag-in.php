@@ -38,13 +38,13 @@ require_once 'db-lesen-abwesenheit.php';
 list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
 $holiday = is_holiday($date_unix);
 require_once 'plane-tag-grundplan.php';
-$Principle_roster = get_principle_roster($datum, $mandant, $tag);
+$Principle_roster = get_principle_roster($datum, $mandant, $tag, $tage);
 if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND FALSE === $holiday) { //No plans on Saturday, SUnday and holidays.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
-    //$Roster_sorted_without_lunch = sort_roster_array($Principle_roster);
-    $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
+    //sort_roster_array($Principle_roster);
+    $Dienstplan = determine_lunch_breaks($Principle_roster, $mandant, $tag, 1);
 }
 if (array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0])) {
     require 'pruefe-dienstplan.php';
