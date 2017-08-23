@@ -1,7 +1,7 @@
 <?php
 
-function schreiben_tabelle(array $Dienstplan) {
-    global $Mitarbeiter, $mandant;
+function schreiben_tabelle($Dienstplan, $branch) {
+    global $Mitarbeiter;
     global $Principle_roster;
     global $config;
     global $Warnmeldung, $Fehlermeldung, $Overlay_message;
@@ -15,6 +15,13 @@ function schreiben_tabelle(array $Dienstplan) {
     }
     $plan_anzahl = max($Plan_anzahl); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
 
+    require_once 'plane-tag-grundplan.php';
+    $roster_first_day_key = min(array_keys($Dienstplan));
+    $roster_first_row_key = min(array_keys($Dienstplan[$roster_first_day_key]['Datum']));
+    $roster_number_of_days = count(array_keys($Dienstplan));
+    $date_sql = $Dienstplan[$roster_first_day_key]["Datum"][$roster_first_row_key];
+    $Principle_roster = get_principle_roster($date_sql, $branch, $roster_first_day_key, $roster_number_of_days);
+
     for ($j = 0; $j < $plan_anzahl; $j++) {
         if (isset($feiertag) && !isset($notdienst)) {
             break 1;
@@ -23,9 +30,9 @@ function schreiben_tabelle(array $Dienstplan) {
         for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
             //The following lines check for the state of approval.
             //Duty rosters have to be approved by the leader, before the staff can view them.
-            $datum = $Dienstplan[$i]["Datum"][0];
+            $date_sql = $Dienstplan[$i]["Datum"][0];
             unset($approval);
-            $abfrage = "SELECT state FROM `approval` WHERE date='$datum' AND branch='$mandant'";
+            $abfrage = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch'";
             $ergebnis = mysqli_query_verbose($abfrage);
             while ($row = mysqli_fetch_object($ergebnis)) {
                 $approval = $row->state;

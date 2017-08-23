@@ -155,7 +155,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
             echo "<tr><td><br></td></tr>";
             echo "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
-            $table_html = schreiben_tabelle($Filialplan[$filiale]);
+            $table_html = schreiben_tabelle($Filialplan[$filiale], $filiale);
             echo $table_html;
         }
     }
