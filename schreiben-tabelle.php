@@ -2,7 +2,6 @@
 
 function schreiben_tabelle($Dienstplan, $branch) {
     global $Mitarbeiter;
-    global $Principle_roster;
     global $config;
     global $Warnmeldung, $Fehlermeldung, $Overlay_message;
     $table_html = "";
