@@ -21,6 +21,7 @@ require "config/config.php";
 //	file_put_contents('config/config.php', '<?php  $config =' . var_export($config, true) . ';');
 //We want some functions to be accessable in all scripts.
 require_once "funktionen.php";
+//For development and debugging:
 require_once 'src/php/classes/class.dBug.php';
 //Setup the presentation of time values:
 if (isset($config['LC_TIME'])) {
@@ -48,16 +49,6 @@ ini_set("error_log", "error.log");
 //We set it up to false in order not to disconcert new users.
 if (!isset($config['hide_disapproved'])) {
     $config['hide_disapproved'] = false;
-}
-
-
-//Define a value for the variable $user:
-//Currently we are working with htaccess file on the production server.
-//On the development server there is NO user management.
-if (isset($_SERVER['REMOTE_USER'])) {
-    $user = $_SERVER['REMOTE_USER'];
-} else {
-    $user = "IP " . $_SERVER['REMOTE_ADDR'];
 }
 
 //Create a connection to the database:

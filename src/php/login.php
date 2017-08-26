@@ -21,6 +21,7 @@ echo "<H1>" . $config['application_name'] . "</H1>\n";
     }
     ?>
 </form> 
+<p><a href="register.php">Neues Benutzerkonto anlegen</a></p>
 </div>
 </body>
 </html>

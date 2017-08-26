@@ -3,8 +3,8 @@
 global $verbindungi;
 $verbindungi = new mysqli("localhost", $config['database_user'], $config['database_password'], $config['database_name']);
 if (mysqli_connect_errno()) {
-    printf("Connect failed: %s\n", mysqli_connect_error());
-    exit();
+    error_log("Connect failed: %s\n", mysqli_connect_error() . " in file:" . __FILE__ . " on line:" . __LINE__);
+    die("<p>There was an error while connecting to the database. Please see the error log for more details!</p>");
 }
 try {
     $pdo = new PDO('mysql:host=localhost;charset=utf8;dbname=' . $config['database_name'], $config['database_user'], $config['database_password'], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
