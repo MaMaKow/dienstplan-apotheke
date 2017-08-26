@@ -28,11 +28,11 @@ if (isset($_GET['register'])) {
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
     if (strlen($password) == 0) {
-        echo 'Bitte ein Passwort angeben<br>';
+        $Error_message[] = 'Bitte ein Passwort angeben<br>';
         $error = true;
     }
     if ($password != $password2) {
-        echo 'Die Passwörter müssen übereinstimmen<br>';
+        $Error_message[] = 'Die Passwörter müssen übereinstimmen';
         $error = true;
     }
 
@@ -43,7 +43,7 @@ if (isset($_GET['register'])) {
         $user = $statement->fetch();
 
         if ($user !== false) {
-            echo 'Dieser Benutzername ist bereits vergeben<br>';
+            $Error_message[] = 'Dieser Benutzername ist bereits vergeben<br>';
             $error = true;
         }
     }
@@ -59,7 +59,8 @@ if (isset($_GET['register'])) {
             echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
             $showFormular = false;
         } else {
-            echo 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
+            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . $statement->errorInfo());
+            $Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
         }
     }
 }
@@ -69,25 +70,30 @@ if ($showFormular) {
     echo "<H1>" . $config['application_name'] . "</H1>\n";
     ?>
     <form action="?register=1" method="post">
-        <input type="text" size="40" maxlength="250" name="user_name" required placeholder="Benutzername"><br>
-        <input type="text" size="40" maxlength="250" name="employee_id" required placeholder="VK Nummer"><br>
-        <input type="email" size="40" maxlength="250" name="email" required placeholder="Email"><br>
+        <input type="text" size="40" maxlength="250" name="user_name" required placeholder="Benutzername" value="<?= $user_name ?>"><br>
+        <input type="text" size="40" maxlength="250" name="employee_id" required placeholder="VK Nummer" value="<?= $employee_id ?>"><br>
+        <input type="email" size="40" maxlength="250" name="email" required placeholder="Email" value="<?= $email ?>"><br>
         <input type="password" size="40" name="password" required placeholder="Passwort"><br>
         <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
-        <input type="submit" value="Abschicken">
+            <?php
+            require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
+            echo build_warning_messages($Error_message);
+            ?>
+            <input type="submit" value="Abschicken">
     </form>
-<p class="hint">Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email.</p>
+    <p class="hint">Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email.</p>
     </div>
 
     <?php
 } //Ende von if($showFormular)
+
 function send_mail_about_registration($user_name) {
     global $config;
     $message_subject = 'Neuer Benutzer wurde angelegt';
     $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
             . $config["application_name"]
             . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . dirname($_SERVER["PHP_SELF"]) . "register_approve.php'>bestätigt werden.</a>";/*TODO: Insert hostname maybe?*/
+            . dirname($_SERVER["PHP_SELF"]) . "register_approve.php'>bestätigt werden.</a>"; /* TODO: Insert hostname maybe? */
     $header = 'From: ' . $config['contact_email'] . "\r\n";
     $header.= 'X-Mailer: PHP/' . phpversion();
     $sent_result = mail($config['contact_email'], $message_subject, $message_text, $header);
@@ -97,7 +103,6 @@ function send_mail_about_registration($user_name) {
         echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.<br>\n";
     }
 }
-
 ?>
 
 </body>
