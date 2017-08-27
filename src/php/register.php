@@ -94,7 +94,7 @@ function send_mail_about_registration() {
     $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
             . $config["application_name"]
             . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . $_SERVER["HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"; /* TODO: Insert hostname maybe? */
+            . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"; /* TODO: Insert hostname maybe? */
     $headers = 'From: ' . $config['contact_email'] . "\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
