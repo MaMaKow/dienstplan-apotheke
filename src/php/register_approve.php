@@ -65,7 +65,8 @@ function send_mail_about_registration_approval($user_name, $recipient) {
             . "' angemeldet. Die Anmeldung wurde bestätigt. Sie können sich jetzt <a href='"
             . dirname($_SERVER["PHP_SELF"]) . "login.php'>anmelden.</a>"; /*TODO: Insert hostname maybe?*/
     $header = 'From: ' . $config['contact_email'] . "\r\n";
-    $header.= 'X-Mailer: PHP/' . phpversion();
+    $header.= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+    print_debug_variable($recipient, $message_subject, $message_text, $header);
     $sent_result = mail($recipient, $message_subject, $message_text, $header);
     if ($sent_result) {
         echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
