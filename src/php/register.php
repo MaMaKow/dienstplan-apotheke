@@ -76,11 +76,11 @@ if ($showFormular) {
         <input type="email" size="40" maxlength="250" name="email" required placeholder="Email" value="<?= $email ?>"><br>
         <input type="password" size="40" name="password" required placeholder="Passwort"><br>
         <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
-            <?php
-            require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
-            echo build_warning_messages($Error_message, array());
-            ?>
-            <input type="submit" value="Abschicken">
+        <?php
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
+        echo build_warning_messages($Error_message, array());
+        ?>
+        <input type="submit" value="Abschicken">
     </form>
     <p class="hint">Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email.</p>
     </div>
@@ -94,9 +94,12 @@ function send_mail_about_registration() {
     $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
             . $config["application_name"]
             . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . dirname($_SERVER["PHP_SELF"]) . "register_approve.php'>bestätigt werden.</a>"; /* TODO: Insert hostname maybe? */
-    $header = 'From: ' . $config['contact_email'] . "\r\n";
-    $header.= 'X-Mailer: PHP/' . phpversion();
+            . $_SERVER["HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"; /* TODO: Insert hostname maybe? */
+    $headers = 'From: ' . $config['contact_email'] . "\r\n";
+    $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+
     $sent_result = mail($config['contact_email'], $message_subject, $message_text, $header);
     if ($sent_result) {
         echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
