@@ -77,7 +77,7 @@ if ($showFormular) {
         <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
             <?php
             require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
-            echo build_warning_messages($Error_message);
+            echo build_warning_messages($Error_message, array());
             ?>
             <input type="submit" value="Abschicken">
     </form>
