@@ -56,6 +56,7 @@ if (isset($_GET['register'])) {
         $result = $statement->execute(array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
 
         if ($result) {
+            send_mail_about_registration();
             echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
             $showFormular = false;
         } else {
@@ -87,7 +88,7 @@ if ($showFormular) {
     <?php
 } //Ende von if($showFormular)
 
-function send_mail_about_registration($user_name) {
+function send_mail_about_registration() {
     global $config;
     $message_subject = 'Neuer Benutzer wurde angelegt';
     $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
