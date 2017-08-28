@@ -33,7 +33,7 @@ if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT
     $result = $statement->execute(array('id' => $approve_id));
     //Get information about the user:
     $statement = $pdo->prepare("SELECT * FROM users WHERE `id` = :id");
-    $result = $statement->execute();
+    $result = $statement->execute(array('id' => $approve_id));
     $User = $statement->fetch();
     send_mail_about_registration_approval($User["user_name"], $User["email"]);
 } elseif ($disapprove_id = filter_input(INPUT_POST, 'disapprove', FILTER_SANITIZE_NUMBER_INT)) {
@@ -59,15 +59,20 @@ if ($statement->rowCount() > 0) {
 
 function send_mail_about_registration_approval($user_name, $recipient) {
     global $config;
-    $message_subject = 'Benutzer wurde aktiviert';
-    $message_text = "Hallo " . $user_name . ", Sie haben sich im Dienstplanprogramm '"
+    $message_subject = quoted_printable_encode('Benutzer wurde aktiviert');
+    $message_text = quoted_printable_encode("<HTML><BODY>"
+            . "Hallo!\n Der Benutzer " . $user_name . ", ist im Dienstplanprogramm '"
             . $config["application_name"]
-            . "' angemeldet. Die Anmeldung wurde bestätigt. Sie können sich jetzt <a href='"
-            . dirname($_SERVER["PHP_SELF"]) . "login.php'>anmelden.</a>"; /*TODO: Insert hostname maybe?*/
-    $header = 'From: ' . $config['contact_email'] . "\r\n";
-    $header.= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-    print_debug_variable($recipient, $message_subject, $message_text, $header);
-    $sent_result = mail($recipient, $message_subject, $message_text, $header);
+            . "' angemeldet. Die Anmeldung wurde durch einen Administrator bestätigt. Sie können sich jetzt <a href='"
+            . "https://www." . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/login.php' target='_blank'>anmelden.</a>"
+            . "</BODY></HTML>"); 
+    $headers  = 'From: ' . $config['contact_email'] . "\r\n";
+    $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "Content-Transfer-Encoding: quoted-printable";
+
+    $sent_result = mail($recipient, $message_subject, $message_text, $headers);
     if ($sent_result) {
         echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
     } else {
@@ -75,8 +80,3 @@ function send_mail_about_registration_approval($user_name, $recipient) {
     }
 }
 
-/*
-TODO: Add Mail to user here
-TODO: Add Mail to admin inside login script
- 
- */

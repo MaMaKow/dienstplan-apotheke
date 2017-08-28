@@ -90,17 +90,20 @@ if ($showFormular) {
 
 function send_mail_about_registration() {
     global $config;
-    $message_subject = 'Neuer Benutzer wurde angelegt';
-    $message_text = "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
+    $message_subject = quoted_printable_encode('Neuer Benutzer wurde angelegt');
+    $message_text = quoted_printable_encode("<HTML><BODY>"
+            . "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
             . $config["application_name"]
             . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"; /* TODO: Insert hostname maybe? */
+            . "https://www." . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>" 
+            . "</BODY></HTML>");
     $headers = 'From: ' . $config['contact_email'] . "\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "Content-Transfer-Encoding: quoted-printable";
 
-    $sent_result = mail($config['contact_email'], $message_subject, $message_text, $header);
+    $sent_result = mail($config['contact_email'], $message_subject, $message_text, $headers);
     if ($sent_result) {
         echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
     } else {
