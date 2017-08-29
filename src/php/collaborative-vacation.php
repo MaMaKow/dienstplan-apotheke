@@ -17,7 +17,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /**
  * Build a datalist for easy input of absence entries.
  * 
@@ -83,7 +82,8 @@ function handle_user_data_input() {
  * @return void 
  */
 function write_user_input_to_database() {
-    global $user;
+    global $session;
+    
     $employee_id = filter_input(INPUT_POST, employee_id, FILTER_SANITIZE_NUMBER_INT);
     $start_date_string = filter_input(INPUT_POST, start_date, FILTER_SANITIZE_STRING);
     $end_date_string = filter_input(INPUT_POST, end_date, FILTER_SANITIZE_STRING);
@@ -92,11 +92,33 @@ function write_user_input_to_database() {
     $employee_id_old = filter_input(INPUT_POST, employee_id_old, FILTER_SANITIZE_STRING);
     $start_date_old_string = filter_input(INPUT_POST, start_date_old, FILTER_SANITIZE_STRING);
 
+    if ($session->user_has_privilege('create_absence')) {
+        /*
+         * User is allowed to write any input to the database.
+         */
+        $approval = "approved";
+    } elseif ($session->user_has_privilege('request_own_absence')) {
+        /*
+         * User is only allowed to ask for specific changes to the database.
+         */
+        if($_SESSION['user_employee_id'] !== $employee_id)
+        {
+            error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays for employee " . $employee_id);
+            return FALSE;
+        }
+        if($_SESSION['user_employee_id'] !== $employee_id_old)
+        {
+            error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays from employee " . $employee_id_old);
+            return FALSE;
+        }
+        $approval = "not_yet_approved";
+    }
+
     //Decide on $approval state
     $query = "SELECT `approval` FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
     $result = mysqli_query_verbose($query);
     $row = mysqli_fetch_object($result);
-    if (empty($row->approval)) {
+    if (empty($approval) and empty($row->approval)) {
         $approval = "not_yet_approved";
     } else {
         $approval = $row->approval;
@@ -133,7 +155,7 @@ function write_user_input_to_database() {
                 . " '$days',"
                 . " '$reason',"
                 . " '$approval',"
-                . " '$user'"
+                . " '" . $_SESSION['user_name'] . "'"
                 . ")";
         $result = mysqli_query_verbose($query);
     }
@@ -173,6 +195,8 @@ function build_absence_year($year) {
     while ($row = mysqli_fetch_object($ergebnis)) {
         $Years[] = $row->year;
     }
+    $Years[] = max($Years) + 1;
+
     $year_input_select = "<form id='select_year'><select name=year onchange=this.form.submit()>";
     foreach ($Years as $year_number) {
         $year_input_select .= "<option value=$year_number";
@@ -298,6 +322,8 @@ function build_absence_month($year, $month_number) {
     while ($row = mysqli_fetch_object($ergebnis)) {
         $Years[] = $row->year;
     }
+    $Years[] = max($Years) + 1;
+
     $year_input_select = "<form id='select_year' method=post><select name=year onchange=this.form.submit()>";
     foreach ($Years as $year_number) {
         $year_input_select .= "<option value=$year_number";

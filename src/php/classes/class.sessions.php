@@ -169,6 +169,7 @@ class sessions {
             session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id right before setting up login details.
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['user_name'];
+            $_SESSION['user_employee_id'] = $user['employee_id'];
             //Reset failed_login_attempts
             $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = 0 WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
