@@ -17,6 +17,7 @@ if (!$verbindungi->set_charset("utf8")) {
 }
 
 function mysqli_query_verbose($sql_query, $inside_transaction = FALSE) {
+    global $config;
     $result = mysqli_query($GLOBALS['verbindungi'], $sql_query);
     if ($result === FALSE) {
         $message = "Error: $sql_query <br>" . \mysqli_error($GLOBALS['verbindungi']);
@@ -25,6 +26,8 @@ function mysqli_query_verbose($sql_query, $inside_transaction = FALSE) {
             mysqli_query($GLOBALS['verbindungi'], "ROLLBACK");
         }
         die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+    } elseif (TRUE === $config['debug_mode']) {
+        error_log('SQL Query: ' . $sql_query);
     }
     return $result;
 }

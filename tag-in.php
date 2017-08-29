@@ -44,7 +44,7 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
     //sort_roster_array($Principle_roster);
-    $Dienstplan = determine_lunch_breaks($Principle_roster, $mandant, $tag, 1);
+    $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
 }
 if (array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0])) {
     require 'pruefe-dienstplan.php';
