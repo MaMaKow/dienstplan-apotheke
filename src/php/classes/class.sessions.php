@@ -60,7 +60,7 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        if (!isset($_SESSION['user_id']) and 'login.php' !== basename($script_name) and 'register.php' !== basename($script_name)) {
+        if (!isset($_SESSION['user_employee_id']) and 'login.php' !== basename($script_name) and 'register.php' !== basename($script_name)) {
             /*
              * Test if the current file is on the top level or deeper in the second level:
              */
@@ -93,8 +93,8 @@ class sessions {
 
     private function read_Privileges_from_database() {
         global $pdo;
-        $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `user_id` = :user_id");
-        $statement->execute(array('user_id' => $_SESSION['user_id']));
+        $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `employee_id` = :employee_id");
+        $statement->execute(array('employee_id' => $_SESSION['user_employee_id']));
         while ($privilege_data = $statement->fetch()) {
             $Privileges[$privilege_data[privilege]] = TRUE;
         }
@@ -167,7 +167,6 @@ class sessions {
         if ($user !== false && password_verify($user_password, $user['password'])) {
             //Fill $_SESSION data on success:
             session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id right before setting up login details.
-            $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['user_name'];
             $_SESSION['user_employee_id'] = $user['employee_id'];
             //Reset failed_login_attempts
