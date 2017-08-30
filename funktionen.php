@@ -128,9 +128,7 @@ function null_from_post_to_mysql($value) {
 
 function print_debug_variable($variable) {
     $argument_list = func_get_args();
-    echo "<pre>\n";
-    var_export($argument_list);
-    echo "</pre>\n";
+    error_log(var_export($argument_list, TRUE));
     return true;
 }
 

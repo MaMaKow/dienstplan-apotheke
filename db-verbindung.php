@@ -27,7 +27,7 @@ function mysqli_query_verbose($sql_query, $inside_transaction = FALSE) {
         }
         die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
     } elseif (TRUE === $config['debug_mode']) {
-        error_log('SQL Query: ' . $sql_query);
+        //error_log('SQL Query: ' . $sql_query);
     }
     return $result;
 }
