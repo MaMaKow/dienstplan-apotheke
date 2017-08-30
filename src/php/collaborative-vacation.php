@@ -106,7 +106,7 @@ function write_user_input_to_database() {
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays for employee " . $employee_id);
             return FALSE;
         }
-        if($_SESSION['user_employee_id'] !== $employee_id_old)
+        if("" === $employee_id_old and $_SESSION['user_employee_id'] !== $employee_id_old)
         {
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays from employee " . $employee_id_old);
             return FALSE;

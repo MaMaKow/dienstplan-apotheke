@@ -128,12 +128,12 @@ function insert_form_div(edit_create) {
         div.style.backgroundColor = 'inherit';
     }
     div.id = 'input_box_div';
-    div.className = 'input_box_div'
+    div.className = 'input_box_div';
     fill_input_box_from_prototype(div);
 }
 function prefill_input_box_form() {
     var input_box_div = document.getElementById('input_box_div');
-    var absence_details_json = input_box_div.parentNode.attributes.absence_details
+    var absence_details_json = input_box_div.parentNode.attributes.absence_details;
     if (absence_details_json) {
         //Obviously only exists in edit mode:
         var absence_details = JSON.parse(absence_details_json.nodeValue);
@@ -151,7 +151,9 @@ function prefill_input_box_form() {
         document.getElementById('input_box_form_start_date_old').value = absence_details.start;
         document.getElementById('employee_id_old').value = absence_details.employee_id;
     } else if (window.highlight_absence_create_from_date_sql && window.highlight_absence_create_to_date_sql) {
-        document.getElementById("input_box_form_button_delete").style.display = "none";
+        if (document.getElementById("input_box_form_button_delete")) {
+            document.getElementById("input_box_form_button_delete").style.display = "none";
+        }
         var employee_id_select = document.getElementById('employee_id_select');
         var employee_id_options = employee_id_select.options;
         for (var i = 0; i < employee_id_options.length; i++) {
@@ -207,7 +209,26 @@ function detectLeftButton(evt) {
 
 function fill_input_box_from_prototype(div) {
     var secondary_element = document.getElementById(div.id);
-    var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php';
+
+    /* 
+     * This following part is relevant only to the edit mode. ->
+     * The employee_id is transfered to the php script collaborative-vacation-input-box.php via GET
+     * It is necessary for the handling of session permissions.
+     */
+    var input_box_div = document.getElementById('input_box_div');
+    var absence_details_json = input_box_div.parentNode.attributes.absence_details;
+    if (absence_details_json) {
+        //Obviously only exists in edit mode:
+        var absence_details = JSON.parse(absence_details_json.nodeValue);
+        employee_id = absence_details.employee_id;
+    } else {
+        employee_id = null;
+    }
+    /*
+     * <- This previous part is relevant only to the edit mode.
+     */
+
+    var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php?employee_id=' + employee_id;
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {

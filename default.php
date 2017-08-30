@@ -44,7 +44,7 @@ if (isset($config['error_reporting'])) {
     error_reporting('E_ALL'); //debugging
 }
 ini_set("display_errors", 1); //debugging
-ini_set("error_log", "error.log");
+ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "/error.log");
 //Setup the default for hiding the duty roster before approval:
 //We set it up to false in order not to disconcert new users.
 if (!isset($config['hide_disapproved'])) {

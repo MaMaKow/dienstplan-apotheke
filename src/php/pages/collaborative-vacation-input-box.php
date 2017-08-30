@@ -17,6 +17,8 @@
  */
 require_once "../../../default.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
+
+$employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 ?>
 <form id="input_box_form" method="POST">
     <select name="employee_id" id="employee_id_select">
@@ -27,10 +29,15 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
                 echo "$employee_id $last_name";
                 echo "</option>\n";
             }
-        } elseif($session->user_has_privilege('request_own_absence')) {
-                echo "\t\t<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
-                echo $_SESSION['user_employee_id'] . " " . $Mitarbeiter[$_SESSION['user_employee_id']];
-                echo "</option>\n";
+        } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_id) {
+            echo "\t\t<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
+            echo $_SESSION['user_employee_id'] . " " . $Mitarbeiter[$_SESSION['user_employee_id']];
+            echo "</option>\n";
+        } else {
+            print_debug_variable("else someone else", $employee_id);
+            echo "\t\t<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
+            echo $employee_id . " " . $Mitarbeiter[$employee_id];
+            echo "</option>\n";
         }
         ?>
     </select>
@@ -41,8 +48,19 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
     <input type="date" id="input_box_form_start_date" name="start_date">
     <input type="date" id="input_box_form_end_date" name="end_date">
     <input type="text" id="input_box_form_reason" name="reason" list='reasons'>
-    <button type="submit" value="save" name="command" class="button_tight">Speichern</button>
-    <button type="submit" value="delete" name="command" id="input_box_form_button_delete" class="button_tight">Löschen</button>
+    <?php
+    if (
+            $session->user_has_privilege('create_absence')
+            or ( $session->user_has_privilege('request_own_absence')
+            and ( $_SESSION['user_employee_id'] === $employee_id
+            or "" === $employee_id)
+            )
+    ) {
+        ?>
+        <button type="submit" value="save" name="command" class="button_tight">Speichern</button>
+        <button type="submit" value="delete" name="command" id="input_box_form_button_delete" class="button_tight">Löschen</button>
+    <?php } ?>
+
     <input type="hidden" id="employee_id_old" name="employee_id_old">
     <input type="hidden" id="input_box_form_start_date_old" name="start_date_old">
 </form>
