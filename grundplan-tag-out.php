@@ -61,8 +61,8 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     } else {
         $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
                 //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                if ($sekunden - $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60 >= 6 * 3600) {
-                    $mittagspause = $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60;
+                if ($sekunden - $Mittag_mitarbeiter[$employee_id] * 60 >= 6 * 3600) {
+                    $mittagspause = $Mittag_mitarbeiter[$employee_id] * 60;
                     $sekunden = $sekunden - $mittagspause;
                 } else {
                     $mittagspause = false;

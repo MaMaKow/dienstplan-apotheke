@@ -121,7 +121,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 $zeile = "\t\t\t\t\t\t<td>";
                 $zeile.="<b><a href='mitarbeiter-out.php?"
                         . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0]) 
-                        . "&auswahl_mitarbeiter=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
+                        . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
                 $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]);
                 $zeile.="</a></b><span> ";
                 if (isset($Dienstplan[$i]["VK"][$j])) {

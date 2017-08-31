@@ -5,21 +5,21 @@ write_employee_data_to_database(); //$success = write_employee_data_to_database(
 require 'db-lesen-mitarbeiter.php';
 require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, "worker_id")){
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT);    
-} elseif (filter_has_var(INPUT_POST, "auswahl_mitarbeiter")) {
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
-} elseif (filter_has_var(INPUT_GET, "auswahl_mitarbeiter")) {
-    $auswahl_mitarbeiter = filter_input(INPUT_GET, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
-} elseif (filter_has_var(INPUT_COOKIE, "auswahl_mitarbeiter")) {
-    $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
+    $employee_id = filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT);    
+} elseif (filter_has_var(INPUT_POST, "employee_id")) {
+    $employee_id = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);
+} elseif (filter_has_var(INPUT_GET, "employee_id")) {
+    $employee_id = filter_input(INPUT_GET, "employee_id", FILTER_VALIDATE_INT);
+} elseif (filter_has_var(INPUT_COOKIE, "employee_id")) {
+    $employee_id = filter_input(INPUT_COOKIE, "employee_id", FILTER_VALIDATE_INT);
 } else {
-    $auswahl_mitarbeiter = 1;
+    $employee_id = 1;
 }
-if (isset($auswahl_mitarbeiter)) {
-    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
+if (isset($employee_id)) {
+    create_cookie('employee_id', $employee_id, 30);
 }
 
-$Worker = read_employee_data_from_database($auswahl_mitarbeiter);
+$Worker = read_employee_data_from_database($employee_id);
 
 require 'head.php';
 require 'navigation.php';
@@ -29,7 +29,7 @@ if(!$session->user_has_privilege('create_employee')){
     die();
 }
 
-echo build_select_employee($auswahl_mitarbeiter);
+echo build_select_employee($employee_id);
 ?>
 <form method='POST' id='human_resource_management'>
 

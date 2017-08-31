@@ -11,14 +11,14 @@ $tage = 7;
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 //require "post-auswertung.php"; //Auswerten der per POST übergebenen Daten.
-if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
-} elseif (!isset($auswahl_mitarbeiter)) {
-    $auswahl_mitarbeiter = 1;
+if (filter_has_var(INPUT_POST, 'employee_id')) {
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (!isset($employee_id)) {
+    $employee_id = 1;
 }
 
-if (isset($auswahl_mitarbeiter)) {
-    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
+if (isset($employee_id)) {
+    create_cookie('employee_id', $employee_id, 30);
 }
 if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
     $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
@@ -71,7 +71,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $abfrage = 'SELECT *
 		FROM `Grundplan`
 		WHERE `Wochentag` = "' . $wochentag . '"
-			AND `VK`="' . $auswahl_mitarbeiter . '"
+			AND `VK`="' . $employee_id . '"
 		;';
     $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
@@ -90,8 +90,8 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
         } else {
             $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
             //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-            if ($sekunden - $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60 >= 6 * 3600) {
-                $mittagspause = $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60;
+            if ($sekunden - $Mittag_mitarbeiter[$employee_id] * 60 >= 6 * 3600) {
+                $mittagspause = $Mittag_mitarbeiter[$employee_id] * 60;
                 $sekunden = $sekunden - $mittagspause;
             } else {
                 $mittagspause = false;
@@ -106,7 +106,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
     if (!isset($Grundplan[$wochentag])) {
         $Grundplan[$wochentag]["Wochentag"][] = $wochentag;
-        $Grundplan[$wochentag]["VK"][] = "$auswahl_mitarbeiter";
+        $Grundplan[$wochentag]["VK"][] = "$employee_id";
         $Grundplan[$wochentag]["Dienstbeginn"][] = null;
         $Grundplan[$wochentag]["Dienstende"][] = null;
         $Grundplan[$wochentag]["Mittagsbeginn"][] = null;
@@ -142,7 +142,7 @@ if (!$session->user_has_privilege('create_roster')) {
     die();
 }
 echo "<div id=main-area>\n";
-echo build_select_employee($auswahl_mitarbeiter);
+echo build_select_employee($employee_id);
 
 echo "<form method='POST' id='change_principle_roster_employee'>";
 echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
@@ -254,7 +254,7 @@ foreach ($Grundplan as $wochentag => $value) {
         continue 1;
     }
     foreach ($Grundplan[$wochentag]["Stunden"] as $key => $stunden) {
-        $Stunden[$auswahl_mitarbeiter][] = $stunden;
+        $Stunden[$employee_id][] = $stunden;
     }
 }
 echo "Wochenstunden ";

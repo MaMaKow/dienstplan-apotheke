@@ -4,28 +4,28 @@ require 'default.php';
             require 'db-lesen-mitarbeiter.php';
             //Hole eine Liste aller Mandanten (Filialen)
             require 'db-lesen-mandant.php';
-            if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
-                $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
-            } elseif (filter_has_var(INPUT_GET, 'auswahl_mitarbeiter')) {
-                $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
-            } elseif (filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter')) {
-                $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
+            if (filter_has_var(INPUT_POST, 'employee_id')) {
+                $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+            } elseif (filter_has_var(INPUT_GET, 'employee_id')) {
+                $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_VALIDATE_INT);
+            } elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
+                $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_VALIDATE_INT);
             } else {
-                $auswahl_mitarbeiter = 1;
+                $employee_id = 1;
             }
 
-            if (isset($auswahl_mitarbeiter)) {
-                create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
+            if (isset($employee_id)) {
+                create_cookie('employee_id', $employee_id, 30);
             }
 
             //Wir löschen Datensätze, wenn dies befohlen wird.
             if ($command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING) and 'delete' === $command) {
-                $employee_id = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
+                $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
                 $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
                 $abfrage = "DELETE FROM `absence`
                 	WHERE `employee_id` = '$employee_id' AND `start` = '$beginn'";
                 $ergebnis = mysqli_query_verbose($abfrage);
-                $auswahl_mitarbeiter = $employee_id;
+                $employee_id = $employee_id;
             }
 
             //We create new entries or edit old entries. (Empty values are not accepted.)
@@ -34,8 +34,8 @@ require 'default.php';
                     and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
                     and $grund = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
                     ){
-                $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_VALIDATE_INT);
-                if ($auswahl_mitarbeiter === FALSE){
+                $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+                if ($employee_id === FALSE){
                     return FALSE;
                 }
                 $tage = 0;
@@ -55,14 +55,14 @@ require 'default.php';
                 //var_export($tage);
                 if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)){
                     $beginn_old = filter_input(INPUT_POST, 'beginn_old', FILTER_SANITIZE_STRING);
-                    $abfrage = "DELETE FROM `absence` WHERE `employee_id` = '$auswahl_mitarbeiter' AND `start` = '$beginn_old'"; 
+                    $abfrage = "DELETE FROM `absence` WHERE `employee_id` = '$employee_id' AND `start` = '$beginn_old'"; 
                     //echo "$abfrage<br>\n";
                                     $ergebnis = mysqli_query_verbose($abfrage);
                 }
                 $approval = "approved"; //TODO: There will be a time to handle cases of non-approved holidays!
                 $abfrage = "INSERT INTO `absence` "
                         . "(employee_id, start, end, days, reason, user, approval) "
-                        . "VALUES ('$auswahl_mitarbeiter', '$beginn', '$ende', '$tage', '$grund', '$user', '$approval')";
+                        . "VALUES ('$employee_id', '$beginn', '$ende', '$tage', '$grund', '$user', '$approval')";
                 //echo "$abfrage<br>\n";
 		if( !($ergebnis = mysqli_query($verbindungi, $abfrage)) ) {
 			$error_string = mysqli_error($verbindungi);
@@ -75,7 +75,7 @@ require 'default.php';
 			}
 		}
             } 
-            $employee_id = $auswahl_mitarbeiter;
+            $employee_id = $employee_id;
             $abfrage = 'SELECT * FROM `absence`
 				WHERE `employee_id` = '.$employee_id.'
 				ORDER BY `start` ASC
@@ -108,7 +108,7 @@ require 'default.php';
                 $tablebody .= "$row->days";
                 $tablebody .= "\n\t\t\t\t</td>\n";
                 $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n"
-                            . "\t\t\t\t\t<input hidden name='auswahl_mitarbeiter' value='$employee_id' form='change_absence_entry_".$row->start."'>\n"
+                            . "\t\t\t\t\t<input hidden name='employee_id' value='$employee_id' form='change_absence_entry_".$row->start."'>\n"
                             . "\t\t\t\t\t<button type=submit id=delete_".$row->start." class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
                                 . "\t\t\t\t\t\t<img src='img/delete.png' alt='Diese Zeile löschen'>\n"
                             . "\t\t\t\t\t</button>\n"
@@ -157,9 +157,9 @@ if (isset($Feiertagsmeldung)) {
     echo "\t\t\t</div>\n";
     echo "\t\t</div>\n";
 }
-echo build_select_employee($auswahl_mitarbeiter);
+echo build_select_employee($employee_id);
 
-echo "<a class=no-print href='abwesenheit-out.php?auswahl_mitarbeiter=$auswahl_mitarbeiter'>[Lesen]</a>";
+echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[Lesen]</a>";
 echo "\t\t\n";
             echo "\t\t<table id=absence_table>\n";
 //Überschrift
@@ -194,7 +194,7 @@ echo "\t\t\n";
             echo "\t\t\t<tr class=no-print id=input_line_new>\n"
                     . "\t\t\t<form method=POST id='new_absence_entry'>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t"
-                    . "\t\t\t\t\t<input type=hidden name=auswahl_mitarbeiter value=$auswahl_mitarbeiter form='new_absence_entry'>\n";
+                    . "\t\t\t\t\t<input type=hidden name=employee_id value=$employee_id form='new_absence_entry'>\n";
             echo "\t\t\t\t\t<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=".date("Y-m-d")." form='new_absence_entry'>";
             echo "\n\t\t\t\t</td>\n";
             echo "\t\t\t\t<td>\n\t\t\t\t\t";

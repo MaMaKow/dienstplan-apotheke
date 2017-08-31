@@ -72,7 +72,7 @@ function schreiben_tabelle($Dienstplan, $branch) {
                     }
                     $zeile.="$emphasis_start<b><a href='mitarbeiter-out.php?"
                             . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0])
-                            . "&auswahl_mitarbeiter=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
+                            . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
                     $zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
                     $zeile.="</a></b> / ";
                     $zeile.=$Dienstplan[$i]["Stunden"][$j];

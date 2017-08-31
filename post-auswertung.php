@@ -176,12 +176,12 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
     $datum = strtotime('+1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 } elseif (filter_has_var(INPUT_POST, 'submitWocheVorwärts') && filter_has_var(INPUT_POST, 'date') && filter_has_var(INPUT_POST, 'selected_employee')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
+    $employee_id = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
     $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
 } elseif (filter_has_var(INPUT_POST, 'submitWocheRückwärts') && filter_has_var(INPUT_POST, 'date') && filter_has_var(INPUT_POST, 'selected_employee')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
+    $employee_id = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
     $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
     $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);

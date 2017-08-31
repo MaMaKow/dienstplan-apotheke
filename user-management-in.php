@@ -5,10 +5,10 @@ require 'db-lesen-mandant.php';
 print_debug_variable($_POST);
 if (filter_has_var(INPUT_POST, "user_employee_id")){
     $employee_id = filter_input(INPUT_POST, "user_employee_id", FILTER_VALIDATE_INT);    
-} elseif (filter_has_var(INPUT_GET, "auswahl_mitarbeiter")) {
-    $employee_id = filter_input(INPUT_GET, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
-} elseif (filter_has_var(INPUT_COOKIE, "auswahl_mitarbeiter")) {
-    $employee_id = filter_input(INPUT_COOKIE, "auswahl_mitarbeiter", FILTER_VALIDATE_INT);
+} elseif (filter_has_var(INPUT_GET, "employee_id")) {
+    $employee_id = filter_input(INPUT_GET, "employee_id", FILTER_VALIDATE_INT);
+} elseif (filter_has_var(INPUT_COOKIE, "employee_id")) {
+    $employee_id = filter_input(INPUT_COOKIE, "employee_id", FILTER_VALIDATE_INT);
 } else {
     $employee_id = $_SESSION['user_employee_id'];
 }

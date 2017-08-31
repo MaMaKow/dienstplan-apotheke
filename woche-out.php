@@ -177,7 +177,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {
     if (isset($Urlauber)) {
         $table_foot_html .= "\t\t\t\t\t<td><b>Urlaub</b><br>";
         foreach ($Urlauber as $value) {
-            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&auswahl_mitarbeiter=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
+            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&employee_id=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
         }
     } else {
         $table_foot_html .= "\t\t\t\t\t\t<td>";
@@ -185,7 +185,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {
     if (isset($Kranke)) {
         $table_foot_html .= "\t\t<br><b>Krank</b><br>";
         foreach ($Kranke as $value) {
-            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&auswahl_mitarbeiter=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
+            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&employee_id=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
         }
         $table_foot_html .= "</td>\n";
     } else {
