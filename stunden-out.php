@@ -9,20 +9,20 @@ echo "<div id=main-area>\n";
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
 			//Hole eine Liste aller Mandanten (Filialen)
 			require 'db-lesen-mandant.php';
-if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_GET, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+if (filter_has_var(INPUT_POST, 'employee_id')) {
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
+    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
+    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
-    $auswahl_mitarbeiter = min(array_keys($Mitarbeiter));
+    $employee_id = min(array_keys($Mitarbeiter));
 }
-			if (isset($auswahl_mitarbeiter))
+			if (isset($employee_id))
 			{
-				create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+				create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 			}
-			$vk=$auswahl_mitarbeiter;
+			$vk=$employee_id;
 			$abfrage="SELECT * FROM `Stunden`
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
@@ -58,8 +58,8 @@ if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
                                         $tablebody.=  "\t\t\t</tbody>\n";
 
                                 //Hier beginnt die Ausgabe
-                                echo build_select_employee($auswahl_mitarbeiter);
-				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a><br><br></div>\n";
+                                echo build_select_employee($employee_id);
+				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[Bearbeiten]</a><br><br></div>\n";
 				echo "\t\t<table>\n";
 				//Überschrift
 				echo "\t\t\t<thead><tr>\n".

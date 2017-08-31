@@ -5,27 +5,27 @@
 	$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
 	//Hole eine Liste aller Mandanten (Filialen)
 	require 'db-lesen-mandant.php';
-	if(filter_has_var(INPUT_POST, 'auswahl_mitarbeiter'))
+	if(filter_has_var(INPUT_POST, 'employee_id'))
 	{
-		$auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+		$employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 	}
-	elseif(filter_has_var(INPUT_GET, 'auswahl_mitarbeiter'))
+	elseif(filter_has_var(INPUT_GET, 'employee_id'))
 	{
-		$auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+		$employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 	}
-	elseif(filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter'))
+	elseif(filter_has_var(INPUT_COOKIE, 'employee_id'))
 	{
-		$auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+		$employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 	}
 	else
 	{
-			$auswahl_mitarbeiter=1;
+			$employee_id=1;
 	}
-	if (isset($auswahl_mitarbeiter))
+	if (isset($employee_id))
 	{
-		create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+		create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 	}
-	$vk=$auswahl_mitarbeiter;
+	$vk=$employee_id;
 	$abfrage="SELECT * FROM `absence`
 		WHERE `employee_id` = ".$vk."
 		ORDER BY `start` ASC
@@ -65,9 +65,9 @@ require 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
 echo "\t\t<div id=main-area>\n";
 
-echo build_select_employee($auswahl_mitarbeiter);
+echo build_select_employee($employee_id);
 
-echo "<a class=no-print href='abwesenheit-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter'><br>[Bearbeiten]</a>";
+echo "<a class=no-print href='abwesenheit-in.php?employee_id=$employee_id'><br>[Bearbeiten]</a>";
 			echo "\t\t<table>\n";
 //Überschrift
 			echo "\t\t\t<tr>\n

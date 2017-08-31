@@ -4,17 +4,17 @@ require 'default.php';
 require 'db-lesen-mitarbeiter.php';
 //Get a list of branches:
 require 'db-lesen-mandant.php';
-if (filter_has_var(INPUT_POST, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_GET, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_GET, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'auswahl_mitarbeiter')) {
-    $auswahl_mitarbeiter = filter_input(INPUT_COOKIE, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT);
+if (filter_has_var(INPUT_POST, 'employee_id')) {
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
+    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
+    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
-    $auswahl_mitarbeiter = min(array_keys($Mitarbeiter));
+    $employee_id = min(array_keys($Mitarbeiter));
 }
-if (isset($auswahl_mitarbeiter)) {
-    create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
+if (isset($employee_id)) {
+    create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 }
 
 //Deleting rows of data:
@@ -28,14 +28,14 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
             $ergebnis = mysqli_query_verbose($abfrage);
         }
     }
-    $auswahl_mitarbeiter = $employee_id;
+    $employee_id = $employee_id;
 }
 
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
-if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'auswahl_mitarbeiter') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
+if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
     $abfrage = "INSERT INTO `Stunden`
         (VK, Datum, Stunden, Saldo, Grund)
-        VALUES (" . filter_input(INPUT_POST, 'auswahl_mitarbeiter', FILTER_SANITIZE_NUMBER_INT) 
+        VALUES (" . filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT) 
             . ", '" 
             . filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING) 
             . "', " 
@@ -56,7 +56,7 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
         }
     }
 }
-$vk = $auswahl_mitarbeiter;
+$vk = $employee_id;
 $abfrage = "SELECT * FROM `Stunden`
 				WHERE `VK` = " . $vk . "
 				ORDER BY `Aktualisierung` ASC
@@ -108,8 +108,8 @@ if(!$session->user_has_privilege('create_roster')){
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo build_select_employee($auswahl_mitarbeiter);
-echo "<a class=no-print href='stunden-out.php?auswahl_mitarbeiter=" . htmlentities($auswahl_mitarbeiter) . "'>[Lesen]</a>\n";
+echo build_select_employee($employee_id);
+echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[Lesen]</a>\n";
 
 echo "\t\t<table>\n";
 //Heading
@@ -151,7 +151,7 @@ echo "\t\t\t</tr></tfoot>\n";
 echo "\t\t</table>\n";
 echo "\t\t<form method=POST id=insert_new_overtime>\n"
  . "\t\t\t<input class=no-print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime>\n"
- . "\t\t\t<input hidden name=auswahl_mitarbeiter value=" . htmlentities($auswahl_mitarbeiter) . " form=insert_new_overtime>\n"
+ . "\t\t\t<input hidden name=employee_id value=" . htmlentities($employee_id) . " form=insert_new_overtime>\n"
  . "\t\t</form>\n";
 echo "\t</div>\n";
 require 'contact-form.php';
