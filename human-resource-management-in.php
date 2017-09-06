@@ -29,7 +29,7 @@ if(!$session->user_has_privilege('create_employee')){
     die();
 }
 
-echo build_select_employee($employee_id);
+echo build_select_employee($employee_id, $Mitarbeiter);
 ?>
 <form method='POST' id='human_resource_management'>
 

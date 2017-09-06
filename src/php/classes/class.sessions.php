@@ -24,6 +24,15 @@
  */
 class sessions {
 
+    public static $Pdr_list_of_privileges = array(
+        'administration',
+        'create_employee',
+        'create_roster',
+        'approve_roster',
+        'create_absence',
+        'request_own_absence', 
+    );
+
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
         session_start();
@@ -238,4 +247,3 @@ class sessions {
     }
 
 }
-

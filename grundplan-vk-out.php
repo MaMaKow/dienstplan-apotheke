@@ -80,7 +80,7 @@ $plan_anzahl = max($Plan_anzahl);
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo build_select_employee($employee_id);
+echo build_select_employee($employee_id, $Mitarbeiter);
 
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";

@@ -64,7 +64,7 @@ require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'>Kalenderwoche " . strftime('%V', $date_unix) . "</a><br>\n";
 
-echo build_select_employee($employee_id);
+echo build_select_employee($employee_id, $Mitarbeiter);
 
 //Navigation between the weeks:
 echo "<form method='POST' id=navigate_time>";

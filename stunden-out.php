@@ -58,7 +58,7 @@ if (filter_has_var(INPUT_POST, 'employee_id')) {
                                         $tablebody.=  "\t\t\t</tbody>\n";
 
                                 //Hier beginnt die Ausgabe
-                                echo build_select_employee($employee_id);
+                                echo build_select_employee($employee_id, $Mitarbeiter);
 				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[Bearbeiten]</a><br><br></div>\n";
 				echo "\t\t<table>\n";
 				//Überschrift
