@@ -2,9 +2,8 @@
 require 'default.php';
 require 'db-lesen-mitarbeiter.php';
 require 'db-lesen-mandant.php';
-print_debug_variable($_POST);
-if (filter_has_var(INPUT_POST, "user_employee_id")){
-    $employee_id = filter_input(INPUT_POST, "user_employee_id", FILTER_VALIDATE_INT);    
+if (filter_has_var(INPUT_POST, "employee_id")) {
+    $employee_id = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);
 } elseif (filter_has_var(INPUT_GET, "employee_id")) {
     $employee_id = filter_input(INPUT_GET, "employee_id", FILTER_VALIDATE_INT);
 } elseif (filter_has_var(INPUT_COOKIE, "employee_id")) {
@@ -16,63 +15,100 @@ if (isset($employee_id)) {
     create_cookie('employee_id', $employee_id, 30);
 }
 
+
+function insert_user_data_into_database() {
+    $User["employee_id"] = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+    $User["privilege"] = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+
+    print_debug_variable($_POST, $User);
+    mysqli_query_verbose("START TRANSACTION");
+    $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = " . $User["employee_id"];
+    mysqli_query_verbose($sql_query);
+
+    foreach ($User["privilege"] as $privilege) {
+        $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES('" . $User["employee_id"] . "', '" . $privilege . "')";
+        mysqli_query_verbose($sql_query);
+        print_debug_variable($sql_query);
+    }
+    mysqli_query_verbose("COMMIT");
+}
+
+if (filter_has_var(INPUT_POST, 'submit_user_data')) {
+    insert_user_data_into_database();
+}
+
 function read_user_data_from_database($employee_id) {
     global $Mitarbeiter;
-    $abfrage = "SELECT * FROM `users` WHERE `employee_id` = '$employee_id'";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT * FROM `users` WHERE `employee_id` = '$employee_id'";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $User["employee_id"] = $row->employee_id;
         $User["user_name"] = $row->user_name;
         $User["email"] = $row->email;
         $User["status"] = $row->status;
         $User["last_name"] = $Mitarbeiter[$row->employee_id];
     }
+    $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = '$employee_id'";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
+        $User["privilege"][] = $row->privilege;
+    }
     return $User;
 }
-$User = read_user_data_from_database($employee_id);
 
+function read_user_list_from_database() {
+    $sql_query = "SELECT `employee_id`, `user_name` FROM `users` ORDER BY `employee_id` ASC";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
+        $User_list[$row->employee_id] = $row->user_name;
+    }
+    return $User_list;
+}
+
+$User = read_user_data_from_database($employee_id);
+$User_list = read_user_list_from_database();
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
-if(!$session->user_has_privilege('administration')){
-    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
+if (!$session->user_has_privilege('administration')) {
+    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();
 }
 
-echo build_select_employee($employee_id);
+
+
+echo build_select_employee($employee_id, $User_list);
+
+function build_checkbox_permission($privilege, $checked) {
+    $text = "<label for='$privilege'>$privilege: </label>";
+    $text .= "<input type='checkbox' name='privilege[]' value='$privilege' id='$privilege' ";
+    if ($checked) {
+        $text .= " checked='checked'";
+    }
+    $text .= ">";
+    return $text;
+}
+
 ?>
 <form method='POST' id='user_management'>
+    TODO: Get a good german wording!<br>
 
+    <input type='text' name='employee_id' id="employee_id" value="<?= $User["employee_id"] ?>" hidden='true'>
     <p>
-        <label for="employee_id">VK: </label>
-        <input type='text' name='employee_id' id="employee_id" value="<?php echo $User["employee_id"] ?>">
-        <label for="last_name">Nachname: </label>
-        <input type='text' name='last_name' id="last_name" value="<?php echo $User["last_name"] ?>">
-    </p><p>
-        <?php echo make_radio_profession_list($User["profession"]) ?>
-    </p><p>
-        <label for="working_hours">Stunden: </label>
-        <input type='number' min='0' step='any' name='working_hours' id='working_hours' value='<?php echo $User["working_hours"] ?>'>
-        <label for="working_week_hours">Arbeitswochenstunden: </label>
-        <input type='number' min='0' step='any' name='working_week_hours' id="working_week_hours" value="<?php echo $User["working_week_hours"] ?>">
-        <label for="lunch_break_minutes">Mittag: </label>
-        <input type='number' min='0' step='any' name='lunch_break_minutes' id="lunch_break_minutes" value="<?php echo $User["lunch_break_minutes"] ?>">
-    </p><p>
-        <label for="holidays">Urlaubstage: </label>
-        <input type='number' min='0' step='any' name='holidays' id="holidays" value="<?php echo $User["holidays"] ?>">
-    </p><p>
-        <?php echo make_radio_branch_list($User["branch"]); ?>
-    </p><p>
-        <?php echo make_checkbox_ability("goods_receipt", "Wareneingang", $User["goods_receipt"]); ?>
-        <?php echo make_checkbox_ability("compounding", "Rezeptur", $User["compounding"]); ?>
-    </p><p>
-        <label for="start_of_employment">Beschäftigungsbeginn: </label>
-        <input type='date' id="start_of_employment" name='start_of_employment' value="<?php echo $User["start_of_employment"] ?>">
-        <label for="end_of_employment">Beschäftigungsende:  </label>
-        <input type='date' name='end_of_employment' id="end_of_employment" value="<?php echo $User["end_of_employment"] ?>">
+        <?php
+        $sql_query = "SELECT DISTINCT `privilege` FROM `users_privileges`";
+        $result = mysqli_query_verbose($sql_query);
+        while ($row = mysqli_fetch_object($result)) {
+            $Privilege_types[] = $row->privilege;
+        }
+        foreach (sessions::$Pdr_list_of_privileges as $privilege) {
+            echo build_checkbox_permission($privilege, in_array($privilege, $User["privilege"]));
+            echo "<br>";
+        }
+        ?>
     </p><p>
 
-        <input type=submit id=save_new class='no-print' name=submitStunden value='Eintragen' form='user_management'>
+        <input type=submit id=save_new class='no-print' name=submit_user_data value='Eintragen' form='user_management'>
     </p>
 
 </form>

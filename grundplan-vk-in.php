@@ -142,7 +142,7 @@ if (!$session->user_has_privilege('create_roster')) {
     die();
 }
 echo "<div id=main-area>\n";
-echo build_select_employee($employee_id);
+echo build_select_employee($employee_id, $Mitarbeiter);
 
 echo "<form method='POST' id='change_principle_roster_employee'>";
 echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.

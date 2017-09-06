@@ -108,7 +108,7 @@ if(!$session->user_has_privilege('create_roster')){
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo build_select_employee($employee_id);
+echo build_select_employee($employee_id, $Mitarbeiter);
 echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[Lesen]</a>\n";
 
 echo "\t\t<table>\n";

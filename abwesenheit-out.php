@@ -65,7 +65,7 @@ require 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
 echo "\t\t<div id=main-area>\n";
 
-echo build_select_employee($employee_id);
+echo build_select_employee($employee_id, $Mitarbeiter);
 
 echo "<a class=no-print href='abwesenheit-in.php?employee_id=$employee_id'><br>[Bearbeiten]</a>";
 			echo "\t\t<table>\n";

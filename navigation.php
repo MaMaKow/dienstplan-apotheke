@@ -67,21 +67,21 @@ $submit_disapproval_button_img = "
  * @param int $employee_id
  * @return string HTML element
  */
-function build_select_employee($employee_id) {
-    global $Mitarbeiter;
+
+function build_select_employee($employee_id, $Employee_id_list) {
     $text = "\t\t<form method='POST' id='select_employee'>\n";
     $text .= "\t\t\t<select name=employee_id class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
-    foreach ($Mitarbeiter as $vk => $name) {
+    foreach ($Employee_id_list as $vk => $name) {
         if ($vk == $employee_id) {
-            $text .= "\t\t\t\t<option value=$vk selected>" . $vk . " " . $Mitarbeiter[$vk] . "</option>\n";
+            $text .= "\t\t\t\t<option value=$vk selected>" . $vk . " " . $Employee_id_list[$vk] . "</option>\n";
         } else {
-            $text .= "\t\t\t\t<option value=$vk>" . $vk . " " . $Mitarbeiter[$vk] . "</option>\n";
+            $text .= "\t\t\t\t<option value=$vk>" . $vk . " " . $Employee_id_list[$vk] . "</option>\n";
         }
     }
     $text .= "\t\t\t</select>\n";
     $text .= "\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
     $text .= "\t\t</form>\n";
-    $text .= "\t\t\t<H1 class='only-print'>" . $Mitarbeiter[$employee_id] . "</H1>\n";
+    $text .= "\t\t\t<H1 class='only-print'>" . $Employee_id_list[$employee_id] . "</H1>\n";
     return $text;
 }
 
@@ -93,9 +93,10 @@ function build_select_employee($employee_id) {
  * @param int $mandant
  * @return string HTML element
  */
+
 function build_select_branch($mandant, $date_sql) {
     global $Mandant;
-    $text  = "\t\t\t<div id=mandantenformular_div>\n";
+    $text = "\t\t\t<div id=mandantenformular_div>\n";
     $text .= "\t\t\t<form id=mandantenformular method=post>\n";
     $text .= "\t\t\t\t<input type=hidden name=datum value=" . $date_sql . ">\n";
     $text .= "\t\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
