@@ -136,7 +136,8 @@ class sessions {
         if (!$this->user_has_privilege($privilege)) {
             $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
             $escalation_authentication = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/session-escalation-login.php?referrer=" . $request_uri;
-            echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator. <a href=$escalation_authentication>&rarr;Rechte erweitern</a>"]);
+            //$missing_permission_text = gettext("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt.");
+            echo build_warning_messages("", [gettext("The permission to create a roster is missing."), "Bitte wenden Sie sich an einen Administrator. <a href=$escalation_authentication>&rarr;Rechte erweitern</a>"]);
             exit();
         }
     }

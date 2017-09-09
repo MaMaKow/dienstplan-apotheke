@@ -61,7 +61,7 @@ require 'src/php/pages/menu.php';
 
 
 echo "\t\t<div id=main-area>\n";
-echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>Kalenderwoche " . strftime('%V', strtotime($datum)) . "</a><br>\n";
+echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>". gettext("calendar week") . strftime(' %V', strtotime($datum)) . "</a><br>\n";
 
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);

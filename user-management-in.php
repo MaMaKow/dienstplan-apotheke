@@ -80,7 +80,7 @@ if (!$session->user_has_privilege('administration')) {
 echo build_select_employee($employee_id, $User_list);
 
 function build_checkbox_permission($privilege, $checked) {
-    $text = "<label for='$privilege'>$privilege: </label>";
+    $text = "<label for='$privilege'>" . gettext($privilege) . ": </label>";
     $text .= "<input type='checkbox' name='privilege[]' value='$privilege' id='$privilege' ";
     if ($checked) {
         $text .= " checked='checked'";
