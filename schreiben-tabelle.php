@@ -1,5 +1,4 @@
 <?php
-
 function schreiben_tabelle($Dienstplan, $branch) {
     global $Mitarbeiter;
     global $config;
