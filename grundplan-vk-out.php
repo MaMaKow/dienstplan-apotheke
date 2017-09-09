@@ -10,14 +10,14 @@ $tage = 7;
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 //require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (isset($_POST['auswahl_mitarbeiter'])) {
-    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
-} elseif (!isset($auswahl_mitarbeiter)) {
-    $auswahl_mitarbeiter = 1;
+if (filter_has_var(INPUT_POST, 'employee_id')) {
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (!isset($employee_id)) {
+    $employee_id = 1;
 }
 
-if (isset($auswahl_mitarbeiter)) {
-    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
+if (isset($employee_id)) {
+    create_cookie('employee_id', $employee_id, 30);
 }
 
 //Abruf der gespeicherten Daten aus der Datenbank
@@ -25,7 +25,7 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $abfrage = 'SELECT *
 		FROM `Grundplan`
 		WHERE `Wochentag` = "'.$wochentag.'"
-			AND `VK`="'.$auswahl_mitarbeiter.'"
+			AND `VK`="'.$employee_id.'"
 		;';
     $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
@@ -44,8 +44,8 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
         } else {
             $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
             //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-            if ($sekunden - $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60 >= 6 * 3600) {
-                $mittagspause = $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60;
+            if ($sekunden - $Mittag_mitarbeiter[$employee_id] * 60 >= 6 * 3600) {
+                $mittagspause = $Mittag_mitarbeiter[$employee_id] * 60;
                 $sekunden = $sekunden - $mittagspause;
             } else {
                 $mittagspause = false;
@@ -78,9 +78,9 @@ $plan_anzahl = max($Plan_anzahl);
 ?>
 <?php require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo build_select_employee($auswahl_mitarbeiter);
+echo build_select_employee($employee_id, $Mitarbeiter);
 
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
@@ -128,7 +128,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsende'][$j]));
         }
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Stunden'][$j] > 0) {
-            $zeile .= "<br><a href='stunden-out.php?auswahl_mitarbeiter=".$Grundplan[$wochentag]["VK"][$j]."'>".$Grundplan[$wochentag]["Stunden"][$j]." Stunden";
+            $zeile .= "<br><a href='stunden-out.php?employee_id=".$Grundplan[$wochentag]["VK"][$j]."'>".$Grundplan[$wochentag]["Stunden"][$j]." Stunden";
         }
         $zeile .= '';
 
@@ -174,11 +174,11 @@ foreach (array_keys($Grundplan) as $wochentag) {
         if (!empty($vk)) {
             //Wir ignorieren die nicht ausgefüllten Felder
 
-            $vk = $auswahl_mitarbeiter;
+            $vk = $employee_id;
             $dienstbeginn = $Grundplan[$wochentag]['Dienstbeginn'][$key];
             $dienstende = $Grundplan[$wochentag]['Dienstende'][$key];
-            $mittagsbeginn = $Grundplan[$wochentag]['Mittagsbeginn'][$key]; //if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
-            $mittagsende = $Grundplan[$wochentag]['Mittagsende'][$key]; //if(empty($Mittagsende)){$Mittagsende="0:00";}
+            $mittagsbeginn = $Grundplan[$wochentag]['Mittagsbeginn'][$key];
+            $mittagsende = $Grundplan[$wochentag]['Mittagsende'][$key];
 //			$kommentar='Noch nicht eingebaut'
             $stunden = $Grundplan[$wochentag]['Stunden'][$key];    //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
             if (empty($mittagsbeginn)) {

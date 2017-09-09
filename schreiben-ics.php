@@ -16,23 +16,29 @@ $textICS.="PRODID:-//Dr. Martin Mandelkow/martin-mandelkow.de//Apotheke am Marie
 //loop through the seven days of the week (might be less then seven)
 foreach(array_keys($Dienstplan) as $tag )
 {
-	$datum=$Dienstplan[$tag]["Datum"][0];
-        //Loop through the working times.
         //Mostly this will be only one. But there can be more.
-	foreach($Dienstplan[$tag]['VK'] as $key => $vk) 
+
+        $datum = $Dienstplan[$tag]["Datum"][0];
+        $same_employee_count = array();
+        //Loop through the working times.
+        foreach($Dienstplan[$tag]['VK'] as $key => $vk) 
 	{
                 //Ignore fields without data.
 		if ( !empty($vk) and $Dienstplan[$tag]["Dienstbeginn"][$key]!='-') 
 		{
 			//Processing the data
+                        $same_employee_count[$vk]++;
 			$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$key];
 			$dienstende=$Dienstplan[$tag]["Dienstende"][$key];
 			$mittags_beginn=$Dienstplan[$tag]["Mittagsbeginn"][$key];
 			$mittags_ende=$Dienstplan[$tag]["Mittagsende"][$key];
                         $mandant=$Mandant[$Dienstplan[$tag]["Mandant"][$key]];
+                        $mandant_adresse=$Mandant_adresse[$Dienstplan[$tag]["Mandant"][$key]];
+                        $mandant_number=$Dienstplan[$tag]["Mandant"][$key];
 			//Output the data as ICS
 			$textICS.="BEGIN:VEVENT\n";
-			$textICS.="UID:$datum-$vk@martin-mandelkow.de\n";
+			$textICS.="METHOD:REQUEST\n";
+			$textICS.="UID:$datum-$vk-$mandant_number-$same_employee_count[$vk]@martin-mandelkow.de\n";
 			$textICS.="DTSTAMP:".gmdate('Ymd\THis\Z')."\n";
 			$textICS.="LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n";
 			$textICS.="ORGANIZER;CN=Dr. Martin Mandelkow:MAILTO:dienstplan@martin-mandelkow.de\n";
@@ -45,6 +51,7 @@ foreach(array_keys($Dienstplan) as $tag )
                             $textICS.="Mittag von $mittags_beginn bis $mittags_ende ";
                         }
                         $textICS.="beinhaltet den Dienstplan für die $mandant.\n";
+			$textICS.="LOCATION:$mandant_adresse\n";
 			$textICS.="END:VEVENT\n";
 		}
 	}

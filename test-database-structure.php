@@ -17,9 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require "default.php";
+if(!$session->user_has_privilege('administration')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    die();
+}
 
 // include the Diff class
-require_once 'src/php/class.Diff.php';
+require_once 'src/php/classes/class.diff.php';
 
 function echo_table_diff() {
 //Then we collect the new data and write it to files:
@@ -41,7 +45,6 @@ function echo_table_diff() {
             } else {
                 echo "<p>Table " . $table_name . " without changes</p>\n";
             }
-            //print_debug_variable($diff);
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
         }
     }

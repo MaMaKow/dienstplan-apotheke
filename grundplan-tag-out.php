@@ -19,11 +19,11 @@ require "cookie-auswertung.php"; //Auswerten der per COOKIE gespeicherten Daten.
 require "get-auswertung.php"; //Auswerten der per GET übergebenen Daten.
 
 
-if (isset($_POST['mandant'])) {
-    $mandant = htmlspecialchars($_POST['mandant']);
+if (filter_has_var(INPUT_POST, 'mandant')) {
+    $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
 }
-if (isset($_POST['wochentag'])) {
-    $wochentag = htmlspecialchars($_POST['wochentag']);
+if (filter_has_var(INPUT_POST, 'wochentag')) {
+    $wochentag = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } else {
     $wochentag = 1;
 }
@@ -61,8 +61,8 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     } else {
         $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
                 //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                if ($sekunden - $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60 >= 6 * 3600) {
-                    $mittagspause = $Mittag_mitarbeiter[$auswahl_mitarbeiter] * 60;
+                if ($sekunden - $Mittag_mitarbeiter[$employee_id] * 60 >= 6 * 3600) {
+                    $mittagspause = $Mittag_mitarbeiter[$employee_id] * 60;
                     $sekunden = $sekunden - $mittagspause;
                 } else {
                     $mittagspause = false;
@@ -122,7 +122,7 @@ $VKmax = max(array_keys($Mitarbeiter));
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 
 //Hier beginnt die Normale Ausgabe.
 echo "\t\t<div id=main-area>\n";
@@ -141,9 +141,7 @@ echo "\t\t\t\t</select>\n\t\t\t</form>\n";
 
 //Auswahl des Wochentages
 echo "\t\t\t<form id=wochentagformular method=post>\n";
-//echo "\t\t\t\t<input type=hidden name=mandant value=".$Grundplan[$wochentag]["Mandant"][0].">\n";
 echo "\t\t\t\t<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
-//echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
 foreach ($Wochentage as $key => $value) {
     //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
     if ($key != $wochentag) {

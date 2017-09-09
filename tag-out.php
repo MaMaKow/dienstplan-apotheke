@@ -14,6 +14,7 @@ $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl 
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+$date_sql = $datum;
 if (isset($mandant)) {
     create_cookie("mandant", $mandant, 30);
 }
@@ -56,48 +57,37 @@ foreach ($Dienstplan as $day => $roster) {
 $VKmax = max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 
 
 echo "\t\t<div id=main-area>\n";
 echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>Kalenderwoche " . strftime('%V', strtotime($datum)) . "</a><br>\n";
 
-require_once 'src/php/build-warning-messages.php';
-echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-//Support for various branch clients.
-echo "\t\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t\t<input type=hidden name=datum value=" . $Dienstplan[0]["Datum"][0] . ">\n";
-echo "\t\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
-//echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $filiale => $name) {
-    if ($filiale != $mandant) {
-        echo "\t\t\t\t\t<option value=" . $filiale . ">" . $name . "</option>\n";
-    } else {
-        echo "\t\t\t\t\t<option value=" . $filiale . " selected>" . $name . "</option>\n";
-    }
-}
-echo "\t\t\t\t</select>\n\t\t\t</form>\n";
-echo "\t\t\t<form id=myform method=post>\n";
-echo "<div class=no-print>";
+echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+echo build_select_branch($mandant, $date_sql);
+echo "<div id=navigation_form_div class=no-print>\n";
+echo "\t\t\t<form id=navigation_form method=post>\n";
 echo "$rückwärts_button_img";
 echo "$vorwärts_button_img";
 echo "<br><br>\n";
-echo "\t\t\t\t<a href='tag-in.php?datum=" . $datum . "'>[Bearbeiten]</a>\n";
+echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[Bearbeiten]</a>\n";
 echo "<br><br>\n";
 //echo "</div>\n";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
 //echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
-echo "\t\t\t\t\t<input name='tag' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
+echo "\t\t\t\t\t<input name='date_sql' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+echo "\t\t\t</form>\n";
 echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t<table>\n";
+echo "\t\t\t\t<div id=roster_table_div>\n";
+echo "\t\t\t\t<table id=roster_table>\n";
 echo "\t\t\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this is just one day.//Datum
     $zeile = "";
-    echo "\t\t\t\t\t\t<td>";
-    $zeile.="<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
-    $zeile.="<input type=hidden name=mandant value=" . $mandant . ">";
+    echo "\t\t\t\t\t\t<td>\n";
+    $zeile.="<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">\n";
+    $zeile.="<input type=hidden name=mandant value=" . htmlentities($mandant) . ">\n";
     $zeile.=strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
     //Wochentag
@@ -129,9 +119,11 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
             if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
                 $zeile = "\t\t\t\t\t\t<td>";
-                $zeile.="<b><a href='mitarbeiter-out.php?datum=" . $Dienstplan[$i]["Datum"][0] . "&auswahl_mitarbeiter=" . $Dienstplan[$i]["VK"][$j] . "'>";
-                $zeile.=$Dienstplan[$i]["VK"][$j] . " " . $Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
-                $zeile.="</a></b> ";
+                $zeile.="<b><a href='mitarbeiter-out.php?"
+                        . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0]) 
+                        . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
+                $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]);
+                $zeile.="</a></b><span> ";
                 if (isset($Dienstplan[$i]["VK"][$j])) {
                     //Dienstbeginn
                     $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
@@ -140,13 +132,13 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                     $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstende"][$j]));
                 }
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-                    $zeile.= "\t\t\t\t\t<br>\n";
+                    $zeile.= "\t\t\t\t\t</span><span class=roster_table_lunch_break_span>\n";
                     $zeile.=" Pause: ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
                     $zeile.=" - ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
                 }
-                $zeile .= "\n\t\t\t\t\t\t</td>\n";
+                $zeile .= "</span>\n\t\t\t\t\t\t</td>\n";
                 echo $zeile;
             }
         }
@@ -162,8 +154,8 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         $Filialplan[$filiale] = db_lesen_tage($tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
         if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
             echo "<tr><td><br></td></tr>";
-            echo "</tbody><tbody><tr><td colspan=$tage>" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
-            $table_html = schreiben_tabelle($Filialplan[$filiale]);
+            echo "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
+            $table_html = schreiben_tabelle($Filialplan[$filiale], $filiale);
             echo $table_html;
         }
     }
@@ -183,11 +175,12 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         echo "</td></tr>\n";
     }
 }
-echo "\t\t\t\t</table>\n";
+echo "\t\t\t\t\t</table>\n";
+echo "\t\t\t\t</div>\n";
+
 //echo $submit_button; Kein Schreibrecht in der Leseversion
-echo "\t\t\t</form>\n";
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empty($Dienstplan[0]["Dienstbeginn"])) {
-    echo "\t\t\t<div class=image>\n";
+    echo "\t\t\t<div id=roster_image_div class=image>\n";
     echo draw_image_dienstplan($Dienstplan);
     echo "<br>\n";
     echo "<br>\n";

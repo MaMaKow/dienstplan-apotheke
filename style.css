@@ -4,16 +4,17 @@ Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #73AC22, contrast, strong green
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
+#E6828B; alert, red
 */
-/*
 @media screen {
     div
     {
+        /*
         margin: 3px;
         border: 1px solid #FF0000;
+        */
     }
 }
-*/
 body
 {
     background-color: #FEFEFF;
@@ -200,13 +201,6 @@ nav#nav{
     display: inline-block;
     width: 100%;
     background-color: #BDE682;
-    /*
-    clear: both;
-    float: left;
-    height: 39px;
-    */
-    padding-bottom: 0.5em;
-    padding-top: 0.5em;
 }
 nav ul#navigation {
     list-style-type: none;
@@ -215,46 +209,44 @@ nav ul#navigation {
     padding: 0;
 }
 nav ul#navigation li {
+    height: 2em; /*is equal to {nav ul#navigation li a}[line-height]*/
     float: left;
-
-    /*
-        border: 1px solid #73AC22;
-    */
 }
-
+nav ul#navigation li:last-child a {
+    font-style: italic;
+}
 nav ul#navigation li a {
+    border-left: 1px solid #73AC22;
+    display: inline-block;
+    text-align: center;
     background-color: #BDE682;
-    padding-bottom: 0.5em;
-    padding-left: 1.0em;
-    padding-right: 1.0em;
-    padding-top: 0.5em; 
-    color: #000;
+    color: #000000;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    line-height: 2em; /*is equal to {nav ul#navigation li}[height]*/
 }
 ul#navigation li a:hover {
     background-color: #73AC22;
     color: #FFFFFF;
 }
 nav ul#navigation li:hover > ul {
-    background-color: violet;
     display: block;
-    /*
-    display: block;
-        z-index: 999;
-    */
 }
 ul#navigation ul, ul#navigation ul li ul{
     display: none;
+    position: absolute;
     list-style-type: none;
     padding-left: 0;
-    margin-top: 0.4em;
+    margin-left: 2.0em;
     z-index:  20;
-    position: absolute;
+    background-color: violet;
 }
 ul#navigation ul li {
     clear: both;
     width: 100%;
 }
 ul#navigation ul li a {
+    font-style: inherit !important;
     display: inline-block;
     float: left;
     clear: both;
@@ -347,6 +339,10 @@ button:hover{
     -o-filter: brightness(0);
     filter: brightness(0);
 }
+.btn-primary {
+    width: 138px;
+    padding: 0.5em;
+}
 .btn-secondary {
     background-color: #B4B4B4;
 }
@@ -383,4 +379,76 @@ div#bottom
 {
     float: left;    
     clear: left;
+}
+#navigation_form_div
+{
+    float: left;    
+    clear: left;
+}
+div#roster_table_div
+{
+    float: left;    
+    clear: left;
+}
+div#roster_table_div td {
+    white-space: normal;
+}
+
+div#roster_table_div span.roster_table_lunch_break_span {
+    white-space: nowrap;
+    font-size: smaller;
+}
+
+@media screen and (max-width: 628px) {
+    #roster_table_div {
+        width: 100%
+    }
+    #roster_image_div{
+        width: 100%;
+    }
+    #roster_image_div svg, #roster_image_div canvas{
+        width: 100%;
+        border: 0;
+    }
+}
+@media screen and (min-width: 629px) {
+    #roster_table_div {
+        max-width: 45%;
+    }
+    #roster_image_div{
+        width: 54%;
+    }
+    #roster_image_div svg, #roster_image_div canvas{
+        width: 99%;
+        border: 1px solid #000000;
+    }
+}
+div.centered_form_div {
+    text-align: center;
+    padding: 10px;
+    border: 3px solid #73AC22;
+    max-width: 465px;
+    margin: auto;
+}
+div.centered_form_div form input {
+    margin-bottom: 1em;
+}
+#escalation_div {
+    z-index: -90;
+    position: fixed;
+    top: -10%;
+    left: -10%;
+    width: 200%;
+    height: 200%;
+    margin: 0;
+    padding: 0;
+    background-color: red;
+    opacity: 0.2;
+}
+#escalation_div ~ nav, #escalation_div ~ nav ul li, #escalation_div ~ nav ul, #escalation_div ~ nav ul li a, #escalation_div ~ nav ul li a:hover {
+    background-color: #E6828B;
+    border-color: #E6828B;
+}
+#escalation_div ~ div button {
+    background-color: #E6828B;
 }

@@ -2,34 +2,27 @@
 require 'default.php';
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 			//Hole eine Liste aller Mitarbeiter
 			require 'db-lesen-mitarbeiter.php';
 			$VKmax=max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
 			//Hole eine Liste aller Mandanten (Filialen)
 			require 'db-lesen-mandant.php';
-			if(isset($_POST['submitAuswahlMitarbeiter']))
+if (filter_has_var(INPUT_POST, 'employee_id')) {
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
+    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
+    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} else {
+    $employee_id = min(array_keys($Mitarbeiter));
+}
+			if (isset($employee_id))
 			{
-				$auswahl_mitarbeiter=$_POST['auswahl_mitarbeiter'];
+				create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 			}
-			elseif(isset($_GET['auswahl_mitarbeiter']))
-			{
-				$auswahl_mitarbeiter=$_GET['auswahl_mitarbeiter'];
-			}
-			elseif(isset($_COOKIE['auswahl_mitarbeiter']))
-			{
-				$auswahl_mitarbeiter=$_COOKIE['auswahl_mitarbeiter'];
-			}
-			else
-			{
-				$auswahl_mitarbeiter=1;
-			}
-			if (isset($auswahl_mitarbeiter))
-			{
-				create_cookie("auswahl_mitarbeiter", $auswahl_mitarbeiter, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
-			}
-			$vk=$auswahl_mitarbeiter;
+			$vk=$employee_id;
 			$abfrage="SELECT * FROM `Stunden`
 				WHERE `VK` = ".$vk."
 				ORDER BY `Aktualisierung` ASC
@@ -65,8 +58,8 @@ echo "<div id=main-area>\n";
                                         $tablebody.=  "\t\t\t</tbody>\n";
 
                                 //Hier beginnt die Ausgabe
-                                echo build_select_employee($auswahl_mitarbeiter);
-				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?auswahl_mitarbeiter=$auswahl_mitarbeiter>[Bearbeiten]</a><br><br></div>\n";
+                                echo build_select_employee($employee_id, $Mitarbeiter);
+				echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[Bearbeiten]</a><br><br></div>\n";
 				echo "\t\t<table>\n";
 				//Überschrift
 				echo "\t\t\t<thead><tr>\n".
@@ -79,7 +72,6 @@ echo "<div id=main-area>\n";
 			echo "$tablebody";
 			echo "\t\t</table>\n";
 			echo "\t</form>\n";
-//			echo "<pre>"; var_dump($_POST); echo "</pre>";
 			echo "</div>\n";
 			require 'contact-form.php';
 		?>

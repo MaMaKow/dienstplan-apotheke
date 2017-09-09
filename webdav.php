@@ -9,9 +9,9 @@ if (!isset($datum)) {
 }
 require 'db-lesen-mitarbeiter.php';
 require 'get-auswertung.php';
-if (!isset($auswahl_mitarbeiter)) {
+if (!isset($employee_id)) {
     //TODO: This should be an exeption. But how are those communicated within webdav format?
-    $auswahl_mitarbeiter = 1;
+    $employee_id = 1;
 }
 require 'db-lesen-woche-mitarbeiter.php';
 

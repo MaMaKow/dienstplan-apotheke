@@ -59,3 +59,14 @@ table#duty-rooster-table
     width: 85%;
     font-size: 3.5mm;
 }
+#roster_image_div{
+    width: 50%;
+    height: 100%;
+}
+#roster_image_div svg, #roster_image_div canvas{
+    width: 99%;
+    height: 48%;
+}
+strong{
+    font-style: italic;
+}

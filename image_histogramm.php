@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
 function check_timeliness_of_pep_data() {
     //Check if the PEP information is still up-to-date:
     $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
@@ -27,9 +26,10 @@ function check_timeliness_of_pep_data() {
     $today = time();
     $seconds_since_last_update = $today - $newest_pep_date;
     if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) { //3 months
-        echo "<br><div class=warningmsg>Die PEP Information ist veraltet. <br>"
+        $timeliness_warning_html = "<br><div class=warningmsg>Die PEP Information ist veraltet. <br>"
         . "Letzter Eintrag " . date('d.m.Y', strtotime($row->Datum)) . ". <br>"
         . "Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
+        return $timeliness_warning_html;
     }
 }
 
@@ -37,7 +37,7 @@ function get_Erwartung($datum, $mandant) {
     global $Dienstplan, $Anwesende;
     require_once 'headcount-duty-roster.php';
     if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
-        check_timeliness_of_pep_data($param);
+        echo check_timeliness_of_pep_data($param);
     }
 
     global $verbindungi;
@@ -91,9 +91,7 @@ function draw_image_histogramm($Dienstplan) {
 
 //TODO: Erwartung should be moved into the databasecompletely!
 // We need the reader for Erwartung here or inside a seperate function file!
-//    var_export($Anwesende);
     $Erwartung = get_Erwartung($datum, $mandant);
-//    echo '<pre>';    var_export($Erwartung);   echo '</pre>';
 
     $canvas_width = 650;
     $canvas_height = 300;
@@ -117,7 +115,7 @@ function draw_image_histogramm($Dienstplan) {
     $x_start = $outer_margin_x / $width_factor;
     $y_start = $outer_margin_y / $height_factor * -1;
 
-    $canvas_text = "<canvas style='border: 1px solid #000000;' id='canvas_histogram' width='$canvas_width' height='$canvas_height' >\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
+    $canvas_text = "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height' >\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
     $canvas_text .= "<script>\n";
     $canvas_text .= "var c = document.getElementById('canvas_histogram');\n";
     $canvas_text .= "var ctx = c.getContext('2d');\n";

@@ -2,6 +2,13 @@
 if (!file_exists('./config/config.php')) {
   die ("The application does not seem to be installed. Please see the <a href=install.php>installation page</a>!");
 }
+//session management
+require_once 'src/php/classes/class.sessions.php';
+$session = new sessions;
+if(!$session->user_has_privilege('administration')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    die();
+}
 
 require 'funktionen.php';
 
@@ -19,7 +26,6 @@ if (empty($_POST)) {
     }
   }
   $config = $new_config;
-  //echo "<pre>"; var_export($_POST); echo "</pre>";
   //Create a config directory if it does not yet exist.
   if (!is_dir('./config')) {
     if (!mkdir('./config', 0664, true)) {

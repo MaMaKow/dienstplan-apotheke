@@ -47,7 +47,7 @@ function examine_duty_roster ()
     }
     if (isset($Anwesende) and isset($tages_ende)) {
         foreach ($Anwesende as $zeit => $anwesende) {
-            if ($anwesende < 2 and $zeit < $tages_ende and $zeit > $tages_beginn) {
+            if ($anwesende < 2 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
                 if (!isset($attendant_error)) {
                   $Fehlermeldung[] = 'Um '.date('H:i', $zeit).' Uhr sind weniger als zwei Mitarbeiter anwesend.';
                   $attendant_error=true;

@@ -1,6 +1,7 @@
 <?php
 #Diese Seite wird den kompletten Dienstplan einer Woche  anzeigen.
 require 'default.php';
+
 $mandant=1;	//First branch is allways the default.
 $tage=7;	//Dies ist eine Wochenansicht mit Wochenende
 
@@ -16,9 +17,9 @@ $datum=date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl un
 require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
-$montags_differenzString="-".$montags_differenz." day";
-$datum=strtotime($montags_differenzString, strtotime($datum));
+$monday_difference=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
+$monday_differenceString="-".$monday_difference." day";
+$datum=strtotime($monday_differenceString, strtotime($datum));
 $datum=date('Y-m-d', $datum);
 if (isset($datum))
 {
@@ -47,12 +48,17 @@ $VKcount = calculate_VKcount ($Dienstplan);
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
+if(!$session->user_has_privilege('create_roster')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
+    die();
+}
 
 echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
 //Support for various branch clients.
 echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=".$Dienstplan[0]["Datum"][0].">\n";
+echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
 echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
 foreach ($Mandant as $key => $value) //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
 {
@@ -75,9 +81,11 @@ echo "<div id=wochenAuswahl><input name=woche type=date id=date_chooser_input cl
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
 //$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
+if($session->user_has_privilege('approve_roster')){
 echo "$submit_approval_button_img";
 echo "$submit_disapproval_button_img";
 echo "<br><br>\n";
+}
 echo "\t\t\t\t<a href='woche-out.php?datum=".$datum."' class=no-print>[Lesen]</a>\n";
 // TODO: The button should be inactive when the approval already was done.
 //$submit_approval_button="\t\t\t\t<input type=submit value=Genehmigen name='submit_approval'>\n";
@@ -126,16 +134,16 @@ for ($j=0; $j<$VKcount; $j++)
 			{
 				if ( isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j]!=$k ) //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
 				{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>";
+					$zeile.="<option value=".$k.">".$k." ".$Mitarbeiter[$k]."</option>";
 				}
 				else
 				{
-					$zeile.="<option selected>".$k." ".$Mitarbeiter[$k]."</option>";
+					$zeile.="<option value=".$k." selected>".$k." ".$Mitarbeiter[$k]."</option>";
 				}
 			}
 			elseif ( isset($Mitarbeiter[$k]) )
 			{
-					$zeile.="<option>".$k." ".$Mitarbeiter[$k]."</option>";
+					$zeile.="<option value=".$k.">".$k." ".$Mitarbeiter[$k]."</option>";
 			}
 		}
 		$zeile.="</select>";
@@ -223,7 +231,7 @@ echo "\t</table>\n";
 echo "</form>\n";
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-require_once 'src/php/build-warning-messages.php';
+
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 require 'contact-form.php';
