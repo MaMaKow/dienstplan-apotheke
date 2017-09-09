@@ -1,9 +1,9 @@
 CREATE TABLE `employees_backup` (
   `backup_id` int(11) NOT NULL AUTO_INCREMENT,
   `id` smallint(5) unsigned NOT NULL,
-  `last_name` varchar(35) CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL,
-  `first_name` varchar(35) CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL,
-  `profession` set('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL,
+  `last_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
+  `first_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
+  `profession` set('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') COLLATE latin1_german1_ci NOT NULL,
   `working_hours` float NOT NULL DEFAULT '40',
   `working_week_hours` float NOT NULL DEFAULT '38.5',
   `holidays` tinyint(11) NOT NULL DEFAULT '28',
@@ -15,4 +15,4 @@ CREATE TABLE `employees_backup` (
   `end_of_employment` date DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`backup_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=latin1
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci

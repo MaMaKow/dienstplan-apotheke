@@ -10,30 +10,26 @@ $dienstplanCSV = '';
 $tage = 7;
 
 $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-// $montags_differenz=date("w", strtotime($datum))-1; //Wir wollen den Anfang der Woche
-// $montags_differenzString="-".$montags_differenz." day";
-// $datum=strtotime($montags_differenzString, strtotime($datum));
-// $datum=date('Y-m-d', $datum);
 
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (isset($_POST['submitAuswahlMitarbeiter'])) {
-    $auswahl_mitarbeiter = $_POST['auswahl_mitarbeiter'];
-    $Plan = $_POST['Dienstplan'];
+if (filter_has_var(INPUT_POST, 'submitAuswahlMitarbeiter')) {
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+    $Plan = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
     $datum = $Plan[0]['Datum'][0];
     //echo $datum;
-} elseif (!isset($auswahl_mitarbeiter)) {
-    $auswahl_mitarbeiter = 1;
+} elseif (!isset($employee_id)) {
+    $employee_id = 1;
 }
-if (isset($auswahl_mitarbeiter)) {
-    create_cookie('auswahl_mitarbeiter', $auswahl_mitarbeiter, 30);
+if (isset($employee_id)) {
+    create_cookie('employee_id', $employee_id, 30);
 }
 if (isset($datum)) {
     // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
-    $montags_differenz = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-    $montags_differenzString = '-'.$montags_differenz.' day';
-    $datum = strtotime($montags_differenzString, strtotime($datum));
+    $monday_difference = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
+    $monday_differenceString = '-'.$monday_difference.' day';
+    $datum = strtotime($monday_differenceString, strtotime($datum));
     $date_unix = $datum;
     $date_sql = date('Y-m-d', $date_unix);
     $datum = date('Y-m-d', $datum);
@@ -42,13 +38,13 @@ if (isset($datum)) {
 }
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-if (!isset($Mitarbeiter[$auswahl_mitarbeiter])) {
+if (!isset($Mitarbeiter[$employee_id])) {
   //This happens if a coworker is not working with us anymore.
   //He can still be chosen within abwesenheit and stunden.
   //Therefore we will read his/her number in the cookie.
   //Now we just change it to someone, who is actually there:
-  $auswahl_mitarbeiter=min(array_keys($Mitarbeiter));
-  //die ("<H1>Mitarbeiter Nummer $auswahl_mitarbeiter ist nicht bekannt.</H1>");
+  $employee_id=min(array_keys($Mitarbeiter));
+  //die ("<H1>Mitarbeiter Nummer $employee_id ist nicht bekannt.</H1>");
 }
 //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-woche-mitarbeiter.php';
@@ -64,16 +60,16 @@ $plan_anzahl = max($Plan_anzahl);
 //Produce the output:
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "\t\t<a href='woche-out.php?datum=".$date_unix."'>Kalenderwoche ".strftime('%V', $date_unix)."</a><br>\n";
+echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'>Kalenderwoche " . strftime('%V', $date_unix) . "</a><br>\n";
 
-echo build_select_employee($auswahl_mitarbeiter);
+echo build_select_employee($employee_id, $Mitarbeiter);
 
 //Navigation between the weeks:
 echo "<form method='POST' id=navigate_time>";
 echo "\t\t\t<input type=hidden name=date value=".$date_sql." form='navigate_time'>\n";
-echo "\t\t\t<input type=hidden name=selected_employee value=".$auswahl_mitarbeiter." form='navigate_time'>\n";
+echo "\t\t\t<input type=hidden name=selected_employee value=".$employee_id." form='navigate_time'>\n";
 echo "$rückwärts_button_week_img";
 echo "$vorwärts_button_week_img";
 echo '</form>';
@@ -94,10 +90,10 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     $holiday = is_holiday($date_unix);
     if (FALSE !== $holiday) {
         echo ' '.$holiday.' ';
-        if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter]) and date('N', strtotime($date_sql)) < 6) {
-            $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $Stunden_mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
+        if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id]) and date('N', strtotime($date_sql)) < 6) {
+            $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
         } elseif( date('N', strtotime($date_sql)) < 6) {
-            $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
+            $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
         }
     }
     if (isset($notdienst)) {
@@ -115,14 +111,14 @@ echo "\t\t\t\t<br>\n";
     $zeile .= strftime('%A', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
     echo '</a>';
-    if (isset($Abwesende[$auswahl_mitarbeiter])) {
-        echo '<br>'.$Abwesende[$auswahl_mitarbeiter];
+    if (isset($Abwesende[$employee_id])) {
+        echo '<br>'.$Abwesende[$employee_id];
         if (FALSE !== $holiday and date('N', strtotime($date_sql)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
-            if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter])) {
-                $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $Stunden_mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
+            if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
+                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
             } else {
-                $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] = $bereinigte_Wochenstunden_Mitarbeiter[$auswahl_mitarbeiter] - $Stunden_mitarbeiter[$auswahl_mitarbeiter] / 5;
+                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
             }
         }
     }
@@ -157,7 +153,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Mittagsende'][$j]));
         }
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Stunden'][$j] > 0) {
-            $zeile .= "<br><a href='stunden-out.php?auswahl_mitarbeiter=".$Dienstplan[$i]["VK"][$j]."'>".$Dienstplan[$i]["Stunden"][$j]." Stunden</a>";
+            $zeile .= "<br><a href='stunden-out.php?employee_id=".$Dienstplan[$i]["VK"][$j]."'>".$Dienstplan[$i]["Stunden"][$j]." Stunden</a>";
         }
         if (isset($Dienstplan[$i]["VK"][$j]) and isset($Dienstplan[$i]["Mandant"][$j])) {
             $zeile .= "<br>".$Kurz_mandant[$Dienstplan[$i]["Mandant"][$j]];
@@ -217,11 +213,11 @@ foreach (array_keys($Dienstplan) as $tag) {
             //Wir ignorieren die nicht ausgefüllten Felder
 
         //	list($vk)=explode(' ', $vk); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
-            $vk = $auswahl_mitarbeiter;
+            $vk = $employee_id;
             $dienstbeginn = $Dienstplan[$tag]['Dienstbeginn'][$key];
             $dienstende = $Dienstplan[$tag]['Dienstende'][$key];
-            $mittagsbeginn = $Dienstplan[$tag]['Mittagsbeginn'][$key]; //if(empty($Mittagsbeginn)){$Mittagsbeginn="0:00";}
-            $mittagsende = $Dienstplan[$tag]['Mittagsende'][$key]; //if(empty($Mittagsende)){$Mittagsende="0:00";}
+            $mittagsbeginn = $Dienstplan[$tag]['Mittagsbeginn'][$key];
+            $mittagsende = $Dienstplan[$tag]['Mittagsende'][$key];
 //			$kommentar='Noch nicht eingebaut'
             if (isset($mittagsbeginn) && isset($mittagsende)) {
                 $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
@@ -261,15 +257,12 @@ if ( file_exists('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png'
   echo '<img class=worker-img src=images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png?'.filemtime('images/mitarbeiter_'.$Dienstplan[0]['Datum'][0].'_'.$vk.'.png').';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
   }
 echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print " //TODO: Put this into style.css
-    . "onclick='location=\"webdav.php?auswahl_mitarbeiter=$auswahl_mitarbeiter&datum=$date_sql_start\"' "
+    . "onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql_start\"' "
     . "title='Download ics Kalender Datei'>"
         . "<img src=img/download.png style='width:32px' alt='Download ics Kalender Datei'>"
         . "<br>ICS Datei"
     . "</button>\n";
 echo "</div>\n";
-
-
-//echo "<pre>";	var_export($_POST);    	echo "</pre>";
 
 require 'contact-form.php';
 

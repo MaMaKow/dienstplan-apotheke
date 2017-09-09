@@ -22,80 +22,40 @@
 //sleep(8);
 
 require_once 'default.php';
-//error_log("We are inside pep.php");
+//TODO: Does this work without login? Will the session management quit the upload?
 set_time_limit(0); //Do not stop execution even if we take a LONG time to finish.
 ignore_user_abort(true);
 
-function read_file_write_db ($filename){
-    echo 'Working on: '.$filename."<br>\n";
-    global $verbindungi;
-    $pattern = "~^upload/I[0-9]+\.asy$~";
-        if (preg_match($pattern, $filename)) {
-            $handle = fopen($filename, "r");
-            if ($handle) {
-                while (($line = fgets($handle)) !== false) {
-                    $hash = hash('sha265', $line); //The hash is stored binary in the database.
-                    //For updates into the old database:
-                    //ALTER TABLE `pep` ADD `hash` BINARY(32) NOT NULL FIRST;
-                    //UPDATE `pep` SET hash = UNHEX(SHA2(CONCAT(`Datum`, `Zeit`, `Anzahl`, `Mandant`), 0))
-                    //ALTER TABLE `pep` DROP PRIMARY KEY, ADD PRIMARY KEY(`hash`);
-
-                    //$hash_hex = bin2hex($hash);
-//                  echo "$hash_hex: $line";
-                    $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the 
-//                    list($pep['date'][], $pep['time'][], $pep['sales_value'][], $pep['sales_count'][], $pep['foo'][], $pep['branch'][]) = explode(';', $line_string) AND $pep['hash'][] = $hash;
-                    list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
-                    $sql_date = date('Y-m-d', strtotime($date));
-                    $abfrage = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES ('$hash', '$sql_date', '$time', '$sales_count', '$branch')";
-//                    echo "$abfrage<br>\n";
-                    $ergebnis = mysqli_query($verbindungi, $abfrage) or error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die("Error: $abfrage <br>".mysqli_error($verbindungi));
-
-                    }
-                    echo 'Finished processing.<br>';
-//                var_export($pep);
-//                echo $pep['date'][0].", ".$pep['time'][0].", ".$pep['sales_value'][0].", ".$pep['sales_count'][0].", ".$pep['foo'][0].", ".$pep['branch'][0].", ".$pep['hash'][0];
-                fclose($handle);
-                if (unlink($filename)) { //delete the file
-                    echo 'The file '.$filename.' was deleted.<br>';
-                } else {
-                    echo 'Error while deleting '.$filename.'<br>';
-                        }
-            } else {
-                // error opening the file.
+function read_file_write_db($filename) {
+    echo 'Working on input file.<br>\n';
+    $handle = fopen($filename, "r");
+    if ($handle) {
+        while (($line = fgets($handle)) !== false) {
+            $hash = hash('sha265', $line); //The hash is stored binary in the database.
+            $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the 
+            list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
+            if (!is_valid_date($date) OR ! is_valid_date($time) OR ! is_numeric($sales_count) OR ! is_numeric($branch)) {
+                continue;
             }
-        } else {
-            echo "$filename does not match the pattern.<br>\n";
+            $sql_date = date('Y-m-d', strtotime($date));
+            $statement = $pdo->prepare("INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)");
+            $statement->execute(array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
         }
-    
-}
-
-$filename = filter_input(INPUT_GET, 'filename', FILTER_SANITIZE_STRING);
-if (!empty($filename)) {
-    read_file_write_db($filename);
-} else {
-    error_log("no \$filename was given");
-    foreach (glob("upload/I*.asy") as $filename) {
-        read_file_write_db($filename);
+        echo 'Finished processing.<br>';
+        fclose($handle);
+        if (unlink($filename)) { //delete the file
+            echo 'The input file was deleted.<br>';
+        } else {
+            echo 'Error while deleting input file!<br>';
+        }
+    } else {
+        // error opening the file.
     }
 }
-/*
-  $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
-  $ergebnis = mysqli_query($verbindungi, $abfrage) OR error_log("Error: $abfrage <br>".mysqli_error($verbindungi)) and die ("Error: $abfrage <br>".mysqli_error($verbindungi));
-  $row = mysqli_fetch_object($ergebnis);
-  $newest_pep_date = strtotime($row->Datum);
-  $today = time();
-  $seconds_since_last_update = $today - $newest_pep_date;
-  if ($seconds_since_last_update >= 60*60*24*30*3 ) {
-  $Warnmeldung[] = "PEP Information veraltet. Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!";
-  }
 
-  $abfrage = "SELECT create_time FROM INFORMATION_SCHEMA.TABLES
-  WHERE table_schema = '" . $config['database_name'] . "'
-  AND table_name = 'pep_year_month'";
-$ergebnis = mysqli_query_verbose($abfrage);
-$row = mysqli_fetch_object($ergebnis);
-$last_pep_update = strtotime($row->create_time);
-*/
+foreach (glob("upload/*_pep") as $filename) {
+    read_file_write_db($filename);
+}
 
 $abfrage = "UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
 $ergebnis = mysqli_query_verbose($abfrage);
@@ -103,8 +63,7 @@ $abfrage = "UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:0
 $ergebnis = mysqli_query_verbose($abfrage);
 
 
-$abfrage = "DROP TABLE IF EXISTS `pep_weekday_time`;
-";
+$abfrage = "DROP TABLE IF EXISTS `pep_weekday_time`;";
 $ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
@@ -118,14 +77,10 @@ $abfrage = "
 ";
 $ergebnis = mysqli_query_verbose($abfrage);
 
-$abfrage = "
-DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';
-";
+$abfrage = "DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';";
 $ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "
-
-    
     INSERT INTO `pep_weekday_time`
         SELECT SEC_TO_TIME(round(TIME_TO_SEC(`Zeit`)/60/15)*15*60),
             WEEKDAY(Datum),
@@ -139,9 +94,7 @@ $abfrage = "
 ";
 $ergebnis = mysqli_query_verbose($abfrage);
 
-$abfrage = "
-DROP TABLE IF EXISTS `pep_month_day`;
-";
+$abfrage = "DROP TABLE IF EXISTS `pep_month_day`;";
 $ergebnis = mysqli_query_verbose($abfrage);
 
 $abfrage = "

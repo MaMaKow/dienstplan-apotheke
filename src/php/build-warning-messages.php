@@ -30,7 +30,7 @@
  */
 function build_warning_messages($Fehlermeldung, $Warnmeldung) {
     if (isset($Fehlermeldung) or isset($Warnmeldung)) {
-        $text_html = "\t\t\t<div class=error_container>\n";
+        $text_html = "\t\t\t<div class='error_container no-print'>\n";
         if (isset($Fehlermeldung)) {
             $text_html .= "\t\t\t\t<div class=errormsg>\n";
             foreach ($Fehlermeldung as $fehler) {

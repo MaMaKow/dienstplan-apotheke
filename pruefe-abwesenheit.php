@@ -82,6 +82,7 @@ if (NULL !== $Principle_roster and FALSE === $holiday) {
             $separator = ", <br>";
         }
         $fehler.="\n";
+        //TODO: A Warning would probably be enough.
         $Fehlermeldung[] = $fehler;
     }
 }

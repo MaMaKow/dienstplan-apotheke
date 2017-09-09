@@ -108,11 +108,12 @@ function hex2rgb($hexstring) {
 }
 
 function escape_sql_value($value) {
-    if ('NULL' == $value or 'null' == $value) {
+    if ('NULL' === $value or 'null' === $value) {
         //echo "$value is null<br>\n";
         return $value;
+    } elseif (NULL === $value) {
+        return 'NULL';
     } else {
-        //echo "$value is not null<br>\n";
         return "'" . $value . "'";
     }
 }
@@ -126,9 +127,8 @@ function null_from_post_to_mysql($value) {
 }
 
 function print_debug_variable($variable) {
-    echo "<pre>\n";
-    var_export($variable);
-    echo "</pre>\n";
+    $argument_list = func_get_args();
+    error_log(var_export($argument_list, TRUE));
     return true;
 }
 
@@ -160,4 +160,33 @@ function get_utf8_month_name($date_unix) {
         return utf8_encode($month_name);
     }
     return $month_name;
+}
+
+/*
+ * This function will guess the root folder
+ * 
+ * Currently there are only two options for the position of php files.
+ * They can be directly in the root folder, or they are in the folder ./src/php/ .
+ * 
+ * @return string path of the root folder of the application
+ */
+
+function get_root_folder() {
+    if (strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')) {
+        $root_folder = "../../";
+    } else {
+        $root_folder = "./";
+    }
+    return $root_folder;
+}
+
+/*
+ * This function will check if a given string represents a valid date.
+ * 
+ * @param $date_string string any string that is supposed to represent a date.
+ * @return bool validity of the date.
+ */
+
+function is_valid_date($date_string) {
+    return (bool) strtotime($date_string);
 }

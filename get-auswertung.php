@@ -1,18 +1,10 @@
 <?php
-//Hier schauen wir, welche Daten an uns übersendet wurden und aus welchem Formular sie stammen.
-//Im Gegensatz zu post-auswertung wird hier nach links gesucht, die über $_GET gesendet wurden.
-if (!empty($_GET))
-{
-	if (isset($_GET['datum']))
-	{
-		$datum=sanitize_user_input($_GET['datum']);
-	}
-	if (isset($_GET['mandant']))
-	{
-		$mandant=sanitize_user_input($_GET['mandant']);
-	}
-	if (isset($_GET['auswahl_mitarbeiter']))
-	{
-		$auswahl_mitarbeiter=sanitize_user_input($_GET['auswahl_mitarbeiter']);
-	}
+if (filter_has_var(INPUT_GET, 'datum')) {
+    $datum = filter_input(INPUT_GET, 'datum', FILTER_SANITIZE_STRING);
+}
+if (filter_has_var(INPUT_GET, 'mandant')) {
+    $mandant = filter_input(INPUT_GET, 'mandant', FILTER_SANITIZE_NUMBER_INT);
+}
+if (filter_has_var(INPUT_GET, 'employee_id')) {
+    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 }

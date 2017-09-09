@@ -9,6 +9,7 @@ while($row = mysqli_fetch_object($ergebnis))
 	if ($row->Kurzname != "" )
 	{
 		$Mandant[$row->Mandant]=$row->Name;
+		$Mandant_adresse[$row->Mandant]=$row->Adresse;
 		$Kurz_mandant[$row->Mandant]=$row->Kurzname;
                 $Pep_mandant[$row->Mandant]=$row->PEP;
 	}

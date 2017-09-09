@@ -42,9 +42,6 @@ function db_lesen_abwesenheit($date) {
 }
 
 function get_absence_data_specific($date_sql, $employee_id) {
-    global $verbindungi;
-
-
     $query = "SELECT *
 		FROM `absence`
 		WHERE `start` <= '$date_sql' AND `end` >= '$date_sql' AND `employee_id` = '$employee_id'";
@@ -57,6 +54,22 @@ function get_absence_data_specific($date_sql, $employee_id) {
     }
     return $Absence;
 }
+
+/*
+function get_all_absence_data_in_period($start_date_sql, $end_date_sql) {
+    $query = "SELECT *
+		FROM `absence`
+		WHERE `start` <= '$start_date_sql' AND `end` >= '$end_date_sql'";
+    $result = mysqli_query_verbose($query);
+    while ($row = mysqli_fetch_object($result)) {
+        $Absences[]['employee_id'] = $row->employee_id;
+        $Absences[]['reason'] = $row->reason;
+        $Absences[]['start'] = $row->start;
+        $Absences[]['end'] = $row->end;
+    }
+    return $Absences;
+}
+*/
 
 function calculate_absence_days($start_date_string, $end_date_string) {
     if (!function_exists('is_holiday')) {

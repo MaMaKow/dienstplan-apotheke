@@ -1,12 +1,8 @@
 <?php
 require 'default.php';
 $mandant = 1;    //First branch is allways the default.
-$tage = 1;    //Dies ist eine Tagesansicht für einen einzelnen Tag.
 
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
-
-$datenübertragung = '';
-$dienstplanCSV = '';
 
 for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
@@ -17,12 +13,9 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
 
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-//echo "<pre>";    var_export($_POST);        echo "</pre>";
-if (isset($_POST['submitDienstplan'])) {
-    foreach ($_POST['Grundplan'] as $plan => $inhalt) {
-        $Grundplan[$plan] = $inhalt;
-    }
-
+if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
+    $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+    
     foreach ($Grundplan as $wochentag => $value) {
         //First, the old values are deleted.
         $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
@@ -67,11 +60,11 @@ if (isset($_POST['submitDienstplan'])) {
     }
 }
 
-if (isset($_POST['mandant'])) {
-    $mandant = htmlspecialchars($_POST['mandant']);
+if (filter_has_var(INPUT_POST, 'mandant')) {
+    $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
 }
-if (isset($_POST['wochentag'])) {
-    $wochentag = htmlspecialchars($_POST['wochentag']);
+if (filter_has_var(INPUT_POST, 'wochentag')) {
+    $wochentag = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } elseif (!empty($Grundplan)) {
     list($wochentag) = array_keys($Grundplan);
 } else {
@@ -136,15 +129,6 @@ while ($row = mysqli_fetch_object($ergebnis)) {
 		//anybody else
 		$worker_style = 3;
 	}
-    //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
-    $dienstplanCSV .= $Mitarbeiter[$row->VK].", $row->VK, $wochentag";
-    $dienstplanCSV .= ', '.$row->Dienstbeginn;
-    $dienstplanCSV .= ', '.$row->Dienstende;
-    $dienstplanCSV .= ', '.$row->Mittagsbeginn;
-    $dienstplanCSV .= ', '.$row->Mittagsende;
-    $dienstplanCSV .= ', '.$row->Stunden;
-    $dienstplanCSV .= ', '.$row->Mandant;;
-	$dienstplanCSV.=", ".$worker_style."\n";
 }
 //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
  if (!isset($Grundplan[$wochentag])) {
@@ -169,10 +153,10 @@ $pseudo_datum = strtotime('-'.(date('w') - 1).' day', time());
 $pseudo_datum = strtotime('+'.($wochentag - 1).' day', $pseudo_datum);
 $datum = date('Y-m-d', $pseudo_datum);
 
-//$Grundplan=db_lesen_tage($tage, $mandant);
+//$Grundplan=db_lesen_tage(1, $mandant);
 /*Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen.*/
 //foreach ($Mandant as $filiale => $name) {
-  //$Filialplan[$filiale]=db_lesen_tage($tage, $filiale, "[^".$filiale."]");
+  //$Filialplan[$filiale]=db_lesen_tage(1, $filiale, "[^".$filiale."]");
 //}
 
 $VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
@@ -182,7 +166,12 @@ $VKmax = max(array_keys($Mitarbeiter));
 //Produziere die Ausgabe
 require 'head.php';
 require 'navigation.php';
-require 'src/html/menu.html';
+require 'src/php/pages/menu.php';
+if(!$session->user_has_privilege('create_roster')){
+    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
+    die();
+}
 
 //Hier beginnt die Normale Ausgabe.
 echo "\t\t<H1>Grundplan Tagesansicht</H1>\n";
@@ -202,7 +191,7 @@ echo "\t\t\t\t</select>\n\t\t\t</form>\n";
 
 //Auswahl des Wochentages
 echo "\t\t\t<form id=wochentagformular method=post>\n";
-echo "\t\t\t\t<input type=hidden name=mandant value=".$Grundplan[$wochentag]["Mandant"][0].">\n";
+echo "\t\t\t\t<input type=hidden name=mandant value=" . htmlentities($Grundplan[$wochentag]["Mandant"][0]) . ">\n";
 echo "\t\t\t\t<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
 foreach ($Wochentage as $temp_weekday => $value) {
@@ -221,13 +210,13 @@ echo "\t\t\t<div id=navigationsElemente>";
 echo "$submit_button_img";
 echo "<br>";
 echo "<br>";
-echo "\t\t\t\t<a href=grundplan-tag-out.php?wochentag=".$wochentag.">[Lesen]</a>\n";
+echo "\t\t\t\t<a href=grundplan-tag-out.php?wochentag=" . htmlentities($wochentag) . ">[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 //Datum
     $zeile = '';
-    $zeile .= '<input type=hidden name=Grundplan['.$wochentag.'][Wochentag][0] value='.$Grundplan[$wochentag]['Wochentag'][0].'>';
+    $zeile .= '<input type=hidden name=Grundplan['.$wochentag.'][Wochentag][0] value=' . htmlentities($Grundplan[$wochentag]['Wochentag'][0]).'>';
     $zeile .= '<input type=hidden name=mandant value='.$mandant.'>';
     echo $zeile;
 //Wochentag
@@ -255,7 +244,7 @@ for ($j = 0; $j < $VKcount; ++$j) {
     //Dienstbeginn
     $zeile .= "\t\t\t\t\t\t<input type=hidden name=Grundplan[".$wochentag.'][Wochentag]['.$j.'] value=';
     if (isset($Grundplan[$wochentag]['Wochentag'][$j])) {
-        $zeile .= $Grundplan[$wochentag]['Wochentag'][$j];
+        $zeile .= htmlentities($Grundplan[$wochentag]['Wochentag'][$j]);
     } else {
         $zeile .= $wochentag;
     }
@@ -263,7 +252,7 @@ for ($j = 0; $j < $VKcount; ++$j) {
     $zeile .=    ">\n";
     $zeile .= "\t\t\t\t\t\t<input type=hidden name=Grundplan[".$wochentag.'][Kommentar]['.$j.'] value="';
     if (isset($Grundplan[$wochentag]['Kommentar'][$j])) {
-        $zeile .= $Grundplan[$wochentag]['Kommentar'][$j];
+        $zeile .= htmlentities($Grundplan[$wochentag]['Kommentar'][$j]);
     }
     $zeile .= "\">\n";
     $zeile .= "\t\t\t\t\t\t<input type=time name=Grundplan[".$wochentag.'][Dienstbeginn]['.$j.'] tabindex='.($wochentag * $VKcount * 5 + $j * 5 + 2).' value=';
