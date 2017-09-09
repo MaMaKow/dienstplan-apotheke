@@ -56,7 +56,7 @@ require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 $main_div_html = "\t\t<div id='main-area'>\n";
-$date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>Kalenderwoche " . strftime('%V', strtotime($datum)) . "</div>\n";
+$date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.

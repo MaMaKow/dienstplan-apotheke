@@ -55,7 +55,7 @@ if(!$session->user_has_privilege('create_roster')){
     die();
 }
 
-echo "Kalenderwoche ".strftime('%V', strtotime($datum))."<br>\n";
+echo gettext("calendar week") . strftime(' %V', strtotime($datum)) . "<br>\n";
 //Support for various branch clients.
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";

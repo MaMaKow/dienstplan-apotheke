@@ -58,12 +58,5 @@ foreach(array_keys($Dienstplan) as $tag )
 }
 $textICS.="END:VCALENDAR\n";
 
-
-/*
-$filename = "ics/wochenkalender_".strftime('%V', strtotime($datum))."_".$vk.".ics"; //Die Datei bekommt den Namen der Kalenderwoche und des Mitarbeiters.
-$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
-fwrite($myfile, $textICS);
-fclose($myfile);
-*/
     return $textICS;
 }

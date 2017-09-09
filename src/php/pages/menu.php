@@ -4,11 +4,11 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
 <nav id="nav" class="no-print">
     <ul id="navigation">
         <li>
-            <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>woche-out.php>Wochenansicht</a>
+            <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>woche-out.php><?=gettext("Weekly view")?></a>
             <ul>
                 <li>
-                    <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>woche-in.php>Wochenansicht Eingabe</a>
-                    <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>woche-out.php>Wochenansicht Ausgabe</a>
+                    <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>woche-in.php><?=gettext("Weekly view input")?></a>
+                    <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/'?>woche-out.php><?=gettext("Weekly view output")?></a>
                 </li>
             </ul>
         </li>

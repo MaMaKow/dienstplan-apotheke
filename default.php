@@ -19,6 +19,15 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
 
 require "config/config.php";
 //	file_put_contents('config/config.php', '<?php  $config =' . var_export($config, true) . ';');
+//Setup if errors should be reorted to the user:
+if (isset($config['error_reporting'])) {
+    error_reporting($config['error_reporting']);
+} else {
+    error_reporting('E_ALL'); //debugging
+}
+ini_set("display_errors", 1); //debugging
+ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "/error.log");
+
 //We want some functions to be accessable in all scripts.
 require_once "funktionen.php";
 //For development and debugging:
@@ -30,21 +39,13 @@ if (isset($config['LC_TIME'])) {
     setlocale(LC_TIME, 'de_DE.utf8', 'de_DE@euro', 'de_DE', 'de', 'ge', 'deu-deu');
     //setlocale(LC_ALL, 'de_DE'); // Leider versteht die Datenbank dann nicht mehr, was die Kommata sollen.
 }
-
 //Setup the encoding for multibyte functions:
 if (isset($config['mb_internal_encoding'])) {
     mb_internal_encoding($config['mb_internal_encoding']); //Dies ist notwendig für die Verarbeitung von UTF-8 Zeichen mit einigen funktionen wie mb_substr
 } else {
     mb_internal_encoding('UTF-8'); //Dies ist notwendig für die Verarbeitung von UTF-8 Zeichen mit einigen funktionen wie mb_substr
 }
-//Setup if errors should be reorted to the user:
-if (isset($config['error_reporting'])) {
-    error_reporting($config['error_reporting']);
-} else {
-    error_reporting('E_ALL'); //debugging
-}
-ini_set("display_errors", 1); //debugging
-ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "/error.log");
+require_once 'src/php/localization.php';
 //Setup the default for hiding the duty roster before approval:
 //We set it up to false in order not to disconcert new users.
 if (!isset($config['hide_disapproved'])) {
