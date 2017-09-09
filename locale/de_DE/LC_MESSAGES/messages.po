@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-09-09 20:24+0200\n"
-"PO-Revision-Date: 2017-09-09 20:27+0200\n"
+"POT-Creation-Date: 2017-09-09 21:12+0200\n"
+"PO-Revision-Date: 2017-09-09 22:25+0200\n"
 "Last-Translator: \n"
 "Language-Team: MaMaKow\n"
 "Language: de_DE@formal\n"
@@ -43,6 +43,10 @@ msgstr "Kalenderwoche"
 msgid "The permission to create a roster is missing."
 msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 
+#: src/php/classes/class.sessions.php:245
+msgid "Logout"
+msgstr "Logout"
+
 #: src/php/pages/menu.php:7
 msgid "Weekly view"
 msgstr "Wochenansicht"
@@ -54,3 +58,79 @@ msgstr "Wochenansicht Eingabe"
 #: src/php/pages/menu.php:11
 msgid "Weekly view output"
 msgstr "Wochenansicht Ausgabe"
+
+#: src/php/pages/menu.php:16
+msgid "Dayly view"
+msgstr "Tagesansicht"
+
+#: src/php/pages/menu.php:19
+msgid "Daily input"
+msgstr "Tagesansicht Eingabe"
+
+#: src/php/pages/menu.php:20
+msgid "Daily output"
+msgstr "Tagesansicht Ausgabe"
+
+#: src/php/pages/menu.php:21 src/php/pages/menu.php:60
+msgid "Principle roster daily"
+msgstr "Grundplan Tagesansicht"
+
+#: src/php/pages/menu.php:25
+msgid "Employee"
+msgstr "Mitarbeiter"
+
+#: src/php/pages/menu.php:28
+msgid "Roster employee"
+msgstr "Mitarbeiteransicht"
+
+#: src/php/pages/menu.php:29 src/php/pages/menu.php:61
+msgid "Principle roster employee"
+msgstr "Grundplan Mitarbeiter"
+
+#: src/php/pages/menu.php:30 src/php/pages/menu.php:64
+msgid "Human resource management"
+msgstr "Mitarbeiterverwaltung"
+
+#: src/php/pages/menu.php:35
+msgid "Overtime"
+msgstr "Überstunden"
+
+#: src/php/pages/menu.php:38
+msgid "Overtime input"
+msgstr "Überstunden Eingabe"
+
+#: src/php/pages/menu.php:39
+msgid "Overtime output"
+msgstr "Überstunden Ausgabe"
+
+#: src/php/pages/menu.php:44
+msgid "Absence"
+msgstr "Abwesenheit"
+
+#: src/php/pages/menu.php:47
+msgid "Absence input"
+msgstr "Abwesenheit Eingabe"
+
+#: src/php/pages/menu.php:48
+msgid "Absence output"
+msgstr "Abwesenheit Ausgabe"
+
+#: src/php/pages/menu.php:49
+msgid "Absence annual plan"
+msgstr "Abwesenheit Jahresplan"
+
+#: src/php/pages/menu.php:50
+msgid "Absence monthly plan"
+msgstr "Abwesenheit Monatsplan"
+
+#: src/php/pages/menu.php:55
+msgid "Administration"
+msgstr "Administration"
+
+#: src/php/pages/menu.php:59
+msgid "Attendance list"
+msgstr "Anwesenheitsliste"
+
+#: src/php/pages/menu.php:63
+msgid "Upload deployment planning"
+msgstr "PEP-Upload"
