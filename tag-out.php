@@ -1,19 +1,26 @@
 <?php
 require 'default.php';
-#Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
+#This page will show the roster of one single day.
+/*
+ * @var $mandant int the id of the active branch.
+ * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
+ */
 $mandant = 1; //First branch is allways the default.
-$tage = 1; //Dies ist eine Wochenansicht ohne Wochenende
-//Hole eine Liste aller Mandanten (Filialen)
+/*
+ * @var $tage int Number of days to show.
+ */
+$tage = 1;
+//Get a list of all branches:
 require 'db-lesen-mandant.php';
 
 require_once 'db-lesen-abwesenheit.php';
 require_once 'image_dienstplan.php';
 require_once 'image_histogramm.php';
 
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+$datum = date('Y-m-d'); //This value will be overridden, if COOKIE, GET or POST contain another value."
+require 'cookie-auswertung.php';
+require 'get-auswertung.php';
+require 'post-auswertung.php';
 $date_sql = $datum;
 if (isset($mandant)) {
     create_cookie("mandant", $mandant, 30);
@@ -32,7 +39,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
 }
 if (isset($approval)) {
     if ($approval == "approved") {
-        //$Warnmeldung[]="Alles ist gut.";
+        //Everything is fine.
     } elseif ($approval == "not_yet_approved") {
         $Warnmeldung[] = "Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
     } elseif ($approval == "disapproved") {
@@ -46,15 +53,15 @@ if (isset($approval)) {
 }
 
 
-//Hole eine Liste aller Mitarbeiter
+//Get a list of all employees:
 require 'db-lesen-mitarbeiter.php';
-//Lesen der in der Datenbank gespeicherten Daten.
+//Read the roster data from the database:
 require 'db-lesen-tage.php';
 $Dienstplan = db_lesen_tage($tage, $mandant);
 foreach ($Dienstplan as $day => $roster) {
     $max_vk_count_in_rooster_days = max($max_vk_count_in_rooster_days, count($roster["VK"]));
 }
-$VKmax = max(array_keys($Mitarbeiter)); // Die höchste verwendete VK-Nummer
+$VKmax = max(array_keys($Mitarbeiter)); //The highest given employee_id
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
@@ -73,9 +80,6 @@ echo "$vorwärts_button_img";
 echo "<br><br>\n";
 echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[Bearbeiten]</a>\n";
 echo "<br><br>\n";
-//echo "</div>\n";
-//$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button; Leseversion
-//echo "\t\t\t\t<div id=wochenAuswahl class=no-print>\n";
 echo "\t\t\t\t\t<input name='date_sql' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</form>\n";
@@ -90,7 +94,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     $zeile.="<input type=hidden name=mandant value=" . htmlentities($mandant) . ">\n";
     $zeile.=strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
-    //Wochentag
+    //Weekday
     $zeile = "";
     $zeile.=strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
@@ -116,7 +120,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         //TODO The following line will prevent planning on hollidays. The problem is, that we might work emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
         //if(isset($feiertag) && !isset($notdienst)){break 1;}
         echo "\t\t\t\t\t</tr><tr>\n";
-        for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
+        for ($i = 0; $i < count($Dienstplan); $i++) {//Employees
             if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
                 $zeile = "\t\t\t\t\t\t<td>";
                 $zeile.="<b><a href='mitarbeiter-out.php?"
@@ -125,10 +129,10 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]);
                 $zeile.="</a></b><span> ";
                 if (isset($Dienstplan[$i]["VK"][$j])) {
-                    //Dienstbeginn
+                    //beginning of duty
                     $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
                     $zeile.=" - ";
-                    //Dienstende
+                    //end of duty
                     $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstende"][$j]));
                 }
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
@@ -151,8 +155,8 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         if ($mandant == $filiale) {
             continue 1;
         }
-        $Filialplan[$filiale] = db_lesen_tage($tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
-        if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
+        $Filialplan[$filiale] = db_lesen_tage($tage, $filiale, '[' . $mandant . ']'); //This function gets the roster of the branches.
+        if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column searches all days for some employee (VK)
             echo "<tr><td><br></td></tr>";
             echo "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
             $table_html = schreiben_tabelle($Filialplan[$filiale], $filiale);
@@ -178,7 +182,6 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
 echo "\t\t\t\t\t</table>\n";
 echo "\t\t\t\t</div>\n";
 
-//echo $submit_button; Kein Schreibrecht in der Leseversion
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empty($Dienstplan[0]["Dienstbeginn"])) {
     echo "\t\t\t<div id=roster_image_div class=image>\n";
     echo draw_image_dienstplan($Dienstplan);
@@ -192,7 +195,6 @@ echo "\t\t</div>\n";
 
 require 'contact-form.php';
 
-//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 ?>
 </body>
 </html>

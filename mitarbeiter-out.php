@@ -26,8 +26,8 @@ if (isset($employee_id)) {
     create_cookie('employee_id', $employee_id, 30);
 }
 if (isset($datum)) {
-    //This is a weekly overview. We will always begin with monday.
     /*
+     * This is a weekly overview. We will always begin with monday.
      * TODO: Perhaps include a configuration option to select Sunday as the first day of the week.
      */
     $monday_difference = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
