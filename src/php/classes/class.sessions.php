@@ -69,7 +69,7 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        if (!isset($_SESSION['user_employee_id']) and 'login.php' !== basename($script_name) and 'register.php' !== basename($script_name)) {
+        if (!isset($_SESSION['user_employee_id']) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php'))) {
             /*
              * Test if the current file is on the top level or deeper in the second level:
              */
