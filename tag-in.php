@@ -84,7 +84,7 @@ echo "<div id=main-area>\n";
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\tKalenderwoche " . strftime('%V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
+echo "\t\t" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
 echo "\t\t<form id=mandantenformular method=post>\n";
 echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][$roster_first_key]) . ">\n";
 echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
