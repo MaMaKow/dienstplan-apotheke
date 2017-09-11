@@ -26,7 +26,10 @@ if (isset($employee_id)) {
     create_cookie('employee_id', $employee_id, 30);
 }
 if (isset($datum)) {
-    // Dies ist eine Wochenansicht. Wir beginnen daher immer mit dem Montag.
+    /*
+     * This is a weekly overview. We will always begin with monday.
+     * TODO: Perhaps include a configuration option to select Sunday as the first day of the week.
+     */
     $monday_difference = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
     $monday_differenceString = '-'.$monday_difference.' day';
     $datum = strtotime($monday_differenceString, strtotime($datum));
@@ -62,7 +65,7 @@ require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'>Kalenderwoche " . strftime('%V', $date_unix) . "</a><br>\n";
+echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'> ". gettext("calendar week")  . strftime(' %V', $date_unix) . "</a><br>\n";
 
 echo build_select_employee($employee_id, $Mitarbeiter);
 

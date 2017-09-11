@@ -138,7 +138,6 @@ function print_debug_variable($variable) {
  * @return boolean True if Operating system is Windows.
  */
 function runing_on_windows() {
-    php_uname();
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         return true;
     }

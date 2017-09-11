@@ -27,6 +27,7 @@ set_time_limit(0); //Do not stop execution even if we take a LONG time to finish
 ignore_user_abort(true);
 
 function read_file_write_db($filename) {
+    global $pdo;
     echo 'Working on input file.<br>\n';
     $handle = fopen($filename, "r");
     if ($handle) {
@@ -44,16 +45,20 @@ function read_file_write_db($filename) {
         echo 'Finished processing.<br>';
         fclose($handle);
         if (unlink($filename)) { //delete the file
+            error_log('The input file was deleted.');
             echo 'The input file was deleted.<br>';
         } else {
+            error_log('Error while deleting input file!');
             echo 'Error while deleting input file!<br>';
         }
     } else {
-        // error opening the file.
+        error_log(error_get_last());
+        error_log('Error while opening input file!');
     }
 }
 
 foreach (glob("upload/*_pep") as $filename) {
+    error_log("pep.php is working on $filename");
     read_file_write_db($filename);
 }
 
