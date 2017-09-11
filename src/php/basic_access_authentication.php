@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2017 Mandelkow
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,13 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
     header('WWW-Authenticate: Basic realm="PDR"');
     header('HTTP/1.0 401 Unauthorized');
     echo "<H1>" . gettext("Forbidden") . "</H1>\n<p>" . gettext("You don't have permission to access this file.") . "</p>";
-    exit;
+    die();
 } else {
-    $session->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], FALSE);
+    $login_success = $session->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], FALSE);
+    if (TRUE !== $login_success) {
+        header('WWW-Authenticate: Basic realm="PDR"');
+        header('HTTP/1.0 401 Unauthorized');
+        echo "<H1>" . gettext("Forbidden") . "</H1>\n<p>" . gettext("You don't have permission to access this file.") . "</p>";
+        die();
+    }
 }

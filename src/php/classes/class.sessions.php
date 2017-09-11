@@ -190,6 +190,8 @@ class sessions {
                 } else {
                     header("Location:" . get_root_folder());
                 }
+            } else {
+                return TRUE;
             }
         } else {
             //Register failed_login_attempts
@@ -198,7 +200,7 @@ class sessions {
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             return $errorMessage;
         }
-        return;
+        return FALSE;
     }
 
     public function escalate_session() {
