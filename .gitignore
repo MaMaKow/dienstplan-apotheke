@@ -4,6 +4,7 @@
 config/
 documentation/
 
+
 # These files are for development purposes only: #
 ##################################################
 layout-test.html
@@ -12,6 +13,7 @@ style-test.css
 
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
+upload/
 tmp/
 *.ics
 *.csv
