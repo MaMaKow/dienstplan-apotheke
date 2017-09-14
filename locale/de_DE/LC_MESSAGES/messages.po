@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-09-09 21:12+0200\n"
-"PO-Revision-Date: 2017-09-09 22:25+0200\n"
+"POT-Creation-Date: 2017-09-12 23:20+0200\n"
+"PO-Revision-Date: 2017-09-12 23:20+0200\n"
 "Last-Translator: \n"
 "Language-Team: MaMaKow\n"
 "Language: de_DE@formal\n"
@@ -34,18 +34,32 @@ msgstr "Email"
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
 
-#: mitarbeiter-out.php:68 tag-in.php:87 tag-out.php:64 woche-in.php:58
+#: mitarbeiter-out.php:68 tag-in.php:87 tag-out.php:71 woche-in.php:58
 #: woche-out.php:59
 msgid "calendar week"
 msgstr "Kalenderwoche"
+
+#: src/php/basic_access_authentication.php:23
+#: src/php/basic_access_authentication.php:30
+msgid "Forbidden"
+msgstr ""
+
+#: src/php/basic_access_authentication.php:23
+#: src/php/basic_access_authentication.php:30
+msgid "You don't have permission to access this file."
+msgstr ""
 
 #: src/php/classes/class.sessions.php:140
 msgid "The permission to create a roster is missing."
 msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 
-#: src/php/classes/class.sessions.php:245
+#: src/php/classes/class.sessions.php:247
 msgid "Logout"
 msgstr "Logout"
+
+#: src/php/pages/lost_password.php:32
+msgid "Please enter your user name or email address!"
+msgstr "Bitte geben Sie entweder Ihren Benutzernamen oder Ihre Email-Adresse an!"
 
 #: src/php/pages/menu.php:7
 msgid "Weekly view"
