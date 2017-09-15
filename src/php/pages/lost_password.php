@@ -19,16 +19,14 @@ require '../../../default.php';
 
 if (filter_has_var(INPUT_GET, 'request_new_password')) {
     $token = sha1(uniqid());
+    print_debug_variable('$token is build: ', $token);
     $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_STRING);
     if (!empty($identifier)) {
-        $statement = $pdo->prepare("SELECT `employee_id` FROM `users` WHERE `employee_id` = :identifier OR `email` = :identifier OR `user_name` = :identifier");
+        $statement = $pdo->prepare("SELECT * FROM `users` WHERE `employee_id` = :identifier OR `email` = :identifier OR `user_name` = :identifier");
         $statement->execute(array('identifier' => $identifier));
         $user_data = $statement->fetch();
-        $employee_id = $user_data['employee_id'];
-
-
-        $row = $employee_id = $User['employee_id'] = $session->write_lost_password_token_to_database($employee_id, $token);
-        $session->send_mail_about_lost_password($user_name, $token);
+        $session->write_lost_password_token_to_database($user_data['employee_id'], $token);
+        $session->send_mail_about_lost_password($user_data['employee_id'], $user_data['user_name'], $user_data['email'], $token);
     }
 }
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
@@ -41,7 +39,7 @@ echo "<H1>" . $config['application_name'] . "</H1>\n";
     <p><?= gettext("Please enter your email address, user name or user id!") ?></p>
     <input type="text" size="25" maxlength="250" name="identifier" placeholder="<?= gettext("identifier") ?>"><br>
     <input type="submit"><br>
-        <?php
+    <?php
     if (!empty($error_message)) {
         build_error_message($error_message);
     }
