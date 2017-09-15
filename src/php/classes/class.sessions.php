@@ -69,7 +69,7 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        if (!isset($_SESSION['user_employee_id']) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php'))) {
+        if (!isset($_SESSION['user_employee_id']) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
             /*
              * Test if the current file is on the top level or deeper in the second level:
              */
@@ -87,9 +87,9 @@ class sessions {
     private function keep_alive() {
         /*
          * e dot mortoray at ecircle dot com
-         * There is a nuance we found with session timing out although the user is still active in the session.  The problem has to do with never modifying the session variable. 
-         * The GC will clear the session data files based on their last modification time.  Thus if you never modify the session, you simply read from it, then the GC will eventually clean up. 
-         * To prevent this you need to ensure that your session is modified within the GC delete time.  You can accomplish this like below. 
+         * There is a nuance we found with session timing out although the user is still active in the session.  The problem has to do with never modifying the session variable.
+         * The GC will clear the session data files based on their last modification time.  Thus if you never modify the session, you simply read from it, then the GC will eventually clean up.
+         * To prevent this you need to ensure that your session is modified within the GC delete time.  You can accomplish this like below.
          */
         if (!isset($_SESSION['last_access']) || (time() - $_SESSION['last_access']) > 60) {
             $_SESSION['last_access'] = time();
@@ -113,7 +113,7 @@ class sessions {
 
     /*
      * Check if the logged-in user has a specefied permission
-     * 
+     *
      * @return boolean TRUE for exisiting permission, FALSE for missing permission.
      */
 
@@ -248,7 +248,7 @@ class sessions {
         return $text_html;
     }
 
-    function send_mail_about_lost_password($user_name, $token) {
+    function send_mail_about_lost_password($employee_id, $user_name, $recipient, $token) {
         global $config;
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
@@ -259,7 +259,7 @@ class sessions {
                 . gettext("user name") . ": " . $user_name . ", "
                 . gettext("please visit")
                 . " <a href='"
-                . "https://www." . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/pages/reset_lost_password.php'>"
+                . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/reset_lost_password.php?employee_id=$employee_id&token=$token'>"
                 . gettext("this address")
                 . ".</a>"
                 . gettext("Your token is valid for 24 hours.")
@@ -270,7 +270,7 @@ class sessions {
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         $headers .= "Content-Transfer-Encoding: quoted-printable";
 
-        $sent_result = mail($config['contact_email'], $message_subject, $message_text, $headers);
+        $sent_result = mail($recipient, $message_subject, $message_text, $headers);
         if ($sent_result) {
             echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
         } else {
@@ -279,13 +279,18 @@ class sessions {
     }
 
     function write_lost_password_token_to_database($employee_id, $token) {
-        mysqli_query_verbose("CREATE TABLE IF NOT EXISTS `users_lost_password_token` (
+        if (!is_null($employee_id) and ! is_null($token)) {
+            mysqli_query_verbose("CREATE TABLE IF NOT EXISTS `users_lost_password_token` (
             `employee_id` tinyint(3) UNSIGNED NOT NULL,
             `token` binary(20) NOT NULL,
             `time_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;");
-        mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `time_created` >= NOW() - INTERVAL 1 DAY");
-        mysqli_query_verbose("INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES ('$employee_id', 'UNHEX($token)')");
+            mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
+            $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES ('$employee_id', UNHEX('$token'))";
+            mysqli_query_verbose($sql_query);
+            return TRUE;
+        }
+        return FALSE;
     }
 
 }
