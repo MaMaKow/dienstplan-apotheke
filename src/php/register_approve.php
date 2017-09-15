@@ -20,7 +20,6 @@ require_once "../../default.php";
 require_once "../../head.php";
 require '../../navigation.php';
 require '../../src/php/pages/menu.php';
-
 if(!$session->user_has_privilege('administration')){
     echo build_warning_messages("",["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();
@@ -29,16 +28,16 @@ if(!$session->user_has_privilege('administration')){
 
 if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT)) {
     //activate the user account:
-    $statement = $pdo->prepare("UPDATE `users` SET `status` = 'active' WHERE `id` = :id");
-    $result = $statement->execute(array('id' => $approve_id));
+    $statement = $pdo->prepare("UPDATE `users` SET `status` = 'active' WHERE `employee_id` = :employee_id");
+    $result = $statement->execute(array('employee_id' => $approve_id));
     //Get information about the user:
-    $statement = $pdo->prepare("SELECT * FROM users WHERE `id` = :id");
-    $result = $statement->execute(array('id' => $approve_id));
+    $statement = $pdo->prepare("SELECT * FROM users WHERE `employee_id` = :employee_id");
+    $result = $statement->execute(array('employee_id' => $approve_id));
     $User = $statement->fetch();
     send_mail_about_registration_approval($User["user_name"], $User["email"]);
 } elseif ($disapprove_id = filter_input(INPUT_POST, 'disapprove', FILTER_SANITIZE_NUMBER_INT)) {
-    $statement = $pdo->prepare("UPDATE `users` SET `status` = 'blocked' WHERE `id` = :id");
-    $result = $statement->execute(array('id' => $disapprove_id));
+    $statement = $pdo->prepare("UPDATE `users` SET `status` = 'blocked' WHERE `employee_id` = :employee_id");
+    $result = $statement->execute(array('employee_id' => $disapprove_id));
 }
 
 $statement = $pdo->prepare("SELECT * FROM users WHERE `status`= 'inactive'");
@@ -48,8 +47,8 @@ if ($statement->rowCount() > 0) {
     echo "<form method='POST' id='register_approve'>";
     while ($User = $statement->fetch()) {
         echo "<p>" . $User["user_name"] . ", VK " . $User["employee_id"]  . ", " . $User["email"] . ", erstellt: " . $User["created_at"]
-        . " <button type='submit' form='register_approve' name=approve value=" . $User["id"] . " title='Benutzer bestätigen'>Bestätigen</button>"
-        . " <button type='submit' form='register_approve' name=disapprove value=" . $User["id"] . " title='Benutzer löschen'>Löschen</button>"
+        . " <button type='submit' form='register_approve' name=approve value='" . $User["employee_id"] . "' title='Benutzer bestätigen'>Bestätigen</button>"
+        . " <button type='submit' form='register_approve' name=disapprove value=" . $User["employee_id"] . " title='Benutzer löschen'>Löschen</button>"
         . "</p>";
     }
     echo "</form>";
