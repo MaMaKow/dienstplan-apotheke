@@ -19,82 +19,79 @@ require '../../../default.php';
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
 
+function clean_up_after_password_change($employee_id) {
+    mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `employee_id` = $employee_id");
+}
+
+function lost_password_token_is_valid($employee_id, $token) {
+    $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = $employee_id and `token` = UNHEX('$token')";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
+    if (!empty($row->employee_id) and $employee_id === $row->employee_id) {
+        return TRUE; //The form is shown
+    } else {
+        echo build_warning_messages(gettext("Invalid token"));
+        return FALSE;
+    }
+}
+
 if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_id')) {
     $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
+    $statement = $pdo->prepare("SELECT * FROM `users` WHERE `employee_id` = :employee_id");
+    $statement->execute(array('employee_id' => $employee_id));
+    $User_data = $statement->fetch();
+    $user_name = $User_data['user_name'];
 
     /*
      * Remove expired tokens:
      */
     mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
-    $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `token` = UNHEX('$token')";
-    //$sql_query = "SELECT *, HEX(token) FROM `users_lost_password_token`";
-    $result = mysqli_query_verbose($sql_query);
-    $row = mysqli_fetch_object($result);
-    if (!empty($row->employee_id) and $employee_id === $row->employee_id) {
-        $show_formular = true; //The form is shown
-        //mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `employee_id` = $employee_id");
-        $statement = $pdo->prepare("SELECT * FROM `users` WHERE `employee_id` = :employee_id");
-        $statement->execute(array('employee_id' => $employee_id));
-        $user_data = $statement->fetch();
-        $user_name = $user_data['user_name'];
-    } else {
-        build_warning_messages(gettext("Invalid token"));
-    }
-} else {
-    echo "no token";
-    $error = false;
+    $show_formular = TRUE;
+} elseif (filter_has_var(INPUT_POST, 'employee_id')) {
+    $error = FALSE;
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+    $token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING);
     $password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
     if (strlen($password) == 0) {
         $Error_message[] = 'Bitte ein Passwort angeben<br>';
-        $error = true;
+        $error = TRUE;
     }
-    if ($password != $password2) {
+    if ($password !== $password2) {
         $Error_message[] = 'Die Passwörter müssen übereinstimmen';
-        $error = true;
+        $error = TRUE;
     }
 
-    //Überprüfe, dass der Benutzer noch nicht registriert wurde
-    if (!$error) {
-        $statement = $pdo->prepare("SELECT * FROM users WHERE user_name = :user_name");
-        $result = $statement->execute(array('user_name' => $user_name));
-        $user = $statement->fetch();
-
-        if ($user !== false) {
-            $Error_message[] = 'Dieser Benutzername ist bereits vergeben<br>';
-            $error = true;
-        }
-    }
-
-    //Keine Fehler, wir können den Nutzer registrieren
-    if (!$error) {
+    //No error, we can update the password in the database.
+    if (!$error and lost_password_token_is_valid($employee_id, $token)) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $statement = $pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
-        $result = $statement->execute(array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
+        $statement = $pdo->prepare("UPDATE users SET password = :password WHERE `employee_id` = :employee_id");
+        $result = $statement->execute(array('employee_id' => $employee_id, 'password' => $password_hash));
 
         if ($result) {
-            send_mail_about_registration();
-            echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
-            $show_formular = false;
+            clean_up_after_password_change($employee_id);
+            echo gettext('Your password has successfully been changed.'), " <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php'>" . gettext("Login") . "</a>";
+            $show_formular = FALSE;
         } else {
-            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . $statement->errorInfo());
-            $Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
+            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . print_r($statement->errorInfo(), TRUE));
+            //$Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
+            $Error_message[] = gettext("There was an error while saving the data.");
+            $show_formular = TRUE;
         }
     }
 }
 
-if ($show_formular) {
+if (TRUE === $show_formular and lost_password_token_is_valid($employee_id, $token)) {
     ?>
     <div class=centered_form_div>
         <H1><?= $config['application_name'] ?> </H1>
-        <form action="?register = 1" method="post">
+        <form action="reset_lost_password.php" method="post">
             <H2><?= $user_name ?></H2>
-            <input type="hidden" name="employee_id" value="<? = $employee_id
-                   ?>">
+            <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
+            <input type='hidden' name='token' value='<?= $token ?>'>
             <input type="password" size="40" name="password" required placeholder="Passwort"><br>
             <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
             <?php
@@ -105,28 +102,7 @@ if ($show_formular) {
     </div>
 
     <?php
-} //Ende von if($show_formular)
-
-function send_mail_about_updated_password() {
-    global $config;
-    $message_subject = quoted_printable_encode('Your password has been updated');
-    $message_text = quoted_printable_encode("<HTML><BODY>"
-            . ""
-            . "</BODY></HTML>");
-    $headers = 'From: ' . $config['contact_email'] . "\r\n";
-    $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-    $headers .= "Content-Transfer-Encoding: quoted-printable";
-
-    $sent_result = mail($config['contact_email'], $message_subject, $message_text, $headers);
-    if ($sent_result) {
-        echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
-    } else {
-        echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.<br>\n";
-        //print_debug_variable('$message_text', $message_text);
-    }
-}
+} //End of if($show_formular)
 ?>
 
 </BODY>
