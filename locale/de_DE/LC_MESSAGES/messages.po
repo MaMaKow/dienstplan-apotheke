@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-09-12 23:20+0200\n"
-"PO-Revision-Date: 2017-09-12 23:20+0200\n"
+"POT-Creation-Date: 2017-09-17 22:09+0200\n"
+"PO-Revision-Date: 2017-09-17 22:14+0200\n"
 "Last-Translator: \n"
 "Language-Team: MaMaKow\n"
 "Language: de_DE@formal\n"
@@ -39,16 +39,6 @@ msgstr "Einen Programmfehler melden"
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
-#: src/php/basic_access_authentication.php:23
-#: src/php/basic_access_authentication.php:30
-msgid "Forbidden"
-msgstr ""
-
-#: src/php/basic_access_authentication.php:23
-#: src/php/basic_access_authentication.php:30
-msgid "You don't have permission to access this file."
-msgstr ""
-
 #: src/php/classes/class.sessions.php:140
 msgid "The permission to create a roster is missing."
 msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
@@ -57,9 +47,45 @@ msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 msgid "Logout"
 msgstr "Logout"
 
-#: src/php/pages/lost_password.php:32
-msgid "Please enter your user name or email address!"
-msgstr "Bitte geben Sie entweder Ihren Benutzernamen oder Ihre Email-Adresse an!"
+#: src/php/classes/class.sessions.php:253
+msgid "Lost password"
+msgstr "Passwort vergessen"
+
+#: src/php/classes/class.sessions.php:255
+msgid ""
+"Dear User,\n"
+"\n"
+" in order to set a new password for"
+msgstr ""
+"Sehr geehrter Nutzer,\n"
+"\n"
+"um ein neues Passwort für"
+
+#: src/php/classes/class.sessions.php:259
+msgid "user name"
+msgstr "Benutzer"
+
+#: src/php/classes/class.sessions.php:260
+msgid "please visit"
+msgstr "besuchen Sie bitte"
+
+#: src/php/classes/class.sessions.php:263
+msgid "this address"
+msgstr "diese Adresse"
+
+#: src/php/classes/class.sessions.php:265
+msgid "Your token is valid for 24 hours."
+msgstr "Ihr Token ist 24 Stunden lang gültig."
+
+#: src/php/pages/lost_password.php:39
+msgid "Please enter your email address, user name or user id!"
+msgstr ""
+"Bitte geben Sie Ihren Benutzer-Namen, Ihre Benutzer-Kennung oder Ihre Email-"
+"Adresse an!"
+
+#: src/php/pages/lost_password.php:40
+msgid "identifier"
+msgstr "Bezeichner"
 
 #: src/php/pages/menu.php:7
 msgid "Weekly view"
@@ -148,3 +174,23 @@ msgstr "Anwesenheitsliste"
 #: src/php/pages/menu.php:63
 msgid "Upload deployment planning"
 msgstr "PEP-Upload"
+
+#: src/php/pages/reset_lost_password.php:33
+msgid "Invalid token"
+msgstr "Ungültiger Token"
+
+#: src/php/pages/reset_lost_password.php:102
+msgid "Your password has successfully been changed."
+msgstr "Ihr Passwort wurde erfolgreich geändert."
+
+#: src/php/pages/reset_lost_password.php:102
+msgid "Login"
+msgstr "Einloggen"
+
+#: src/php/pages/reset_lost_password.php:106
+msgid "There was an error while saving the data."
+msgstr "Beim Speichern der Daten trat ein Fehler auf."
+
+#: src/php/pages/reset_lost_password.php:111
+msgid "Missing input token"
+msgstr "Es wurde kein Token übergeben."
