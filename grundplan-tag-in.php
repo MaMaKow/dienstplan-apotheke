@@ -4,13 +4,16 @@ require 'default.php';
 $mandant = 1;    //First branch is allways the default.
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
 
-for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
-    $pseudo_datum = strtotime('-' . (date('w') - 1) . ' day', time());
-    $pseudo_datum = strtotime('+' . ($wochentag - 1) . ' day', $pseudo_datum);
-    //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gesetzt. Daher steht hier z.B. Montag statt Monday.
-    $Wochentage[$wochentag] = strftime('%A', $pseudo_datum);
+function get_weekday_names() {
+    for ($wochentag = 1; $wochentag <= 7; ++$wochentag) {
+        $pseudo_date = strtotime('-' . (date('w') - 1) . ' day', time());
+        $pseudo_date = strtotime('+' . ($wochentag - 1) . ' day', $pseudo_date);
+        $Wochentage[$wochentag] = strftime('%A', $pseudo_date);
+    }
+    return $Wochentage;
 }
 
+$Wochentage = get_weekday_names();
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
@@ -67,6 +70,8 @@ if (filter_has_var(INPUT_POST, 'wochentag')) {
     $wochentag = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } elseif (!empty($Grundplan)) {
     list($wochentag) = array_keys($Grundplan);
+} elseif (filter_has_var(INPUT_POST, 'datum')) {
+    $wochentag = date('w', strtotime(filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING)));
 } else {
     $wochentag = 1;
 }
@@ -148,9 +153,9 @@ if (!isset($Grundplan[$wochentag])) {
 $Dienstplan[0] = $Grundplan[$wochentag]; //We will use $Dienstplan[0] for functions that are written for the use with single days as a workaround.
 $tag = $wochentag;
 //Wir brauchen das pseudo_datum vom aktuellen Wochentag
-$pseudo_datum = strtotime('-' . (date('w') - 1) . ' day', time());
-$pseudo_datum = strtotime('+' . ($wochentag - 1) . ' day', $pseudo_datum);
-$datum = date('Y-m-d', $pseudo_datum);
+$pseudo_date = strtotime('-' . (date('w') - 1) . ' day', time());
+$pseudo_date = strtotime('+' . ($wochentag - 1) . ' day', $pseudo_date);
+$date_sql = date('Y-m-d', $pseudo_date);
 
 //$Grundplan=db_lesen_tage(1, $mandant);
 /* Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen. */

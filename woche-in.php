@@ -22,6 +22,7 @@ $monday_difference = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang d
 $monday_differenceString = "-" . $monday_difference . " day";
 $datum = strtotime($monday_differenceString, strtotime($datum));
 $datum = date('Y-m-d', $datum);
+$date_sql = $datum;
 if (isset($datum)) {
     create_cookie("datum", $datum, 0.5); //Diese Funktion muss vor dem ersten echo durchgeführt werden.
 }
@@ -56,18 +57,7 @@ if (!$session->user_has_privilege('create_roster')) {
 
 echo gettext("calendar week") . strftime(' %V', strtotime($datum)) . "<br>\n";
 //Support for various branch clients.
-echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
-echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
-foreach ($Mandant as $key => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
-    if ($key != $mandant) {
-        echo "\t\t\t\t<option value=" . $key . ">" . $value . "</option>\n";
-    } else {
-        echo "\t\t\t\t<option value=" . $key . " selected>" . $value . "</option>\n";
-    }
-}
-echo "\t\t\t</select>\n\t\t</form>\n";
-
+echo build_select_branch($mandant, $date_sql);
 echo "<form id=myform method=post>\n";
 echo "<div class=no-print>";
 echo $backward_button_week_img;
