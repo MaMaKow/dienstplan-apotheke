@@ -85,18 +85,7 @@ echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo "\t\t" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
-echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][$roster_first_key]) . ">\n";
-echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
-//echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $filiale => $name) {
-    if ($filiale != $mandant) {
-        echo "\t\t\t\t<option value=" . $filiale . ">" . $name . "</option>\n";
-    } else {
-        echo "\t\t\t\t<option value=" . $filiale . " selected>" . $name . "</option>\n";
-    }
-}
-echo "\t\t\t</select>\n\t\t</form>\n";
+echo build_select_branch($mandant, $date_sql);
 
 
 echo "\t\t<form id=myform method=post>\n";
@@ -104,11 +93,11 @@ echo "\t\t\t<div id=navigation_elements>";
 echo "$backward_button_img";
 echo "$forward_button_img";
 echo "$submit_button_img";
-echo "<br><br>\n";
+echo "<br>\n";
 if ($session->user_has_privilege('approve_roster')) {
     echo "$submit_approval_button_img";
     echo "$submit_disapproval_button_img";
-    echo "<br><br>\n";
+    echo "<br>\n";
 }
 
 echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[Lesen]</a>\n";

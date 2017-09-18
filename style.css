@@ -96,10 +96,10 @@ div#table_overlay_area
     width: 100%;
     position: relative;
 }
-div.image
+div.roster_plot_div
 {
     position: relative;
-    float: right;
+    float: left;
     overflow:auto;
     /*	width: 60%;*/
     /*	max-height: 60%;*/
