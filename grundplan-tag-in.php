@@ -197,8 +197,6 @@ echo "\t\t\t<div id=navigation_elements>";
 //$submit_button = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";
 echo "$submit_button_img";
 echo "<br>";
-echo "<br>";
-echo "\t\t\t\t<a href=grundplan-tag-out.php?wochentag=" . htmlentities($wochentag) . ">[Lesen]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
