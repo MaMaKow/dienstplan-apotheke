@@ -51,9 +51,9 @@ require 'src/php/pages/menu.php';
         }
         echo "\t\t\t</select>\n\t\t</form>\n";
         echo "\t\t<form id=myform method=post>\n";
-        echo "\t\t\t<div id=navigationsElemente>";
-        echo "$rückwärts_button_week_img";
-        echo "$vorwärts_button_week_img";
+        echo "\t\t\t<div id=navigation_elements>";
+        echo "$backward_button_week_img";
+        echo "$forward_button_week_img";
         echo "<input type=hidden size=2 name=Dienstplan[0][Datum][0] value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">";
         echo "<br><br>\n";
 

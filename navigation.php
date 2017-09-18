@@ -2,37 +2,37 @@
 
 //In the following lines we will define buttons for the use in other documents.
 
-$rückwärts_button_img = "
-		<button type='submit' class='btn-primary no-print' value='' name='submitRückwärts'>
+$backward_button_img = "
+		<button type='submit' class='btn-primary no-print' value='' name='submit_day_backward'>
 			<i class='icon-black'>
-				<img src='img/backward.png' class='button-image' alt='Einen Tag rückwärts'>
+				<img src='img/backward.png' class='button-image' alt='" . gettext("1 day backward") . "'>
 			</i>
 			<br>
-			1 Tag rückwärts
+			" . gettext("1 day backward") . "
 		</button>";
-$vorwärts_button_img = "
-		<button type='submit' class='btn-primary no-print' value='' name='submitVorwärts'>
+$forward_button_img = "
+		<button type='submit' class='btn-primary no-print' value='' name='submit_day_forward'>
 			<i class='icon-black'>
-				<img src='img/foreward.png' class='button-image' alt='Einen Tag vorwärts'>
+				<img src='img/foreward.png' class='button-image' alt='" . gettext("1 day forward") . "'>
 			</i>
 			<br>
-			1 Tag vorwärts
+			" . gettext("1 day forward") . "
 		</button>";
-$rückwärts_button_week_img = "
-		<button type='submit' class='btn-primary no-print' value='' name='submitWocheRückwärts'>
+$backward_button_week_img = "
+		<button type='submit' class='btn-primary no-print' value='' name='submit_week_backward'>
 			<i class='icon-black'>
-				<img src='img/backward.png' class='button-image' alt='Eine Woche rückwärts'>
+				<img src='img/backward.png' class='button-image' alt='" . gettext("1 week backward") . "'>
 			</i>
 			<br>
-			1 Woche rückwärts
+			" . gettext("1 week backward") . "
 		</button>";
-$vorwärts_button_week_img = "
-		<button type='submit' class='btn-primary no-print' value='' name='submitWocheVorwärts'>
+$forward_button_week_img = "
+		<button type='submit' class='btn-primary no-print' value='' name='submit_week_forward'>
 			<i class='icon-black'>
-				<img src='img/foreward.png' class='button-image' alt='Eine Woche vorwärts'>
+				<img src='img/foreward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
 			</i>
 			<br>
-			1 Woche vorwärts
+			" . gettext("1 week forward") . "
 		</button>";
 $submit_button_img = "
 		<button type='submit' id='submit_button_img' class='btn-primary btn-save no-print' value=Absenden name='submitDienstplan'>
@@ -44,33 +44,33 @@ $submit_button_img = "
 		</button>";
 // TODO: The button should be inactive when the approval already was done.
 $submit_approval_button_img = "
-		<button type='submit' class='btn-secondary no-print' value='Genehmigen' name='submit_approval'>
+		<button type='submit' class='btn-secondary no-print' value='approve' name='submit_approval'>
 			<i class='icon-grey'>
-				<img src='img/approve.png' class='button-image' alt='Genehmigen'>
+				<img src='img/approve.png' class='button-image' alt='" . gettext("1 day forward") . "'>
 			</i>
 			<br>
-			Genehmigen
+			" . gettext("Approve") . "
 		</button>";
 $submit_disapproval_button_img = "
-		<button type='submit' class='btn-secondary no-print' value='Ablehnen' name='submit_disapproval'>
+		<button type='submit' class='btn-secondary no-print' value='disapprove' name='submit_disapproval'>
 			<i class='icon-grey'>
-				<img src='img/disapprove.png' class='button-image' alt='Ablehnen'>
+				<img src='img/disapprove.png' class='button-image' alt='" . gettext("Disapprove") . "'>
 			</i>
 			<br>
-			Ablehnen
+			" . gettext("Disapprove") . "
 		</button>";
 
 /*
  * Build a form to select an employee.
- * 
- * 
+ *
+ *
  * @param int $employee_id
  * @return string HTML element
  */
 
 function build_select_employee($employee_id, $Employee_id_list) {
     $text = "\t\t<form method='POST' id='select_employee'>\n";
-    $text .= "\t\t\t<select name=employee_id class='no-print large' onChange='document.getElementById(\"submitAuswahlMitarbeiter\").click()'>\n";
+    $text .= "\t\t\t<select name=employee_id class='no-print large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
     foreach ($Employee_id_list as $vk => $name) {
         if ($vk == $employee_id) {
             $text .= "\t\t\t\t<option value=$vk selected>" . $vk . " " . $Employee_id_list[$vk] . "</option>\n";
@@ -79,7 +79,7 @@ function build_select_employee($employee_id, $Employee_id_list) {
         }
     }
     $text .= "\t\t\t</select>\n";
-    $text .= "\t\t\t<input hidden type=submit value=Auswahl name='submitAuswahlMitarbeiter' id='submitAuswahlMitarbeiter' class=no-print>\n";
+    $text .= "\t\t\t<input hidden type=submit value=select_employee name='submit_select_employee' id='submit_select_employee' class=no-print>\n";
     $text .= "\t\t</form>\n";
     $text .= "\t\t\t<H1 class='only-print'>" . $Employee_id_list[$employee_id] . "</H1>\n";
     return $text;
@@ -87,9 +87,9 @@ function build_select_employee($employee_id, $Employee_id_list) {
 
 /*
  * Build a form to select a branch.
- * 
+ *
  * Support for various branch clients.
- * 
+ *
  * @param int $mandant
  * @return string HTML element
  */

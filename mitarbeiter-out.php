@@ -14,7 +14,7 @@ $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl 
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (filter_has_var(INPUT_POST, 'submitAuswahlMitarbeiter')) {
+if (filter_has_var(INPUT_POST, 'submit_select_employee')) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $Plan = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
     $datum = $Plan[0]['Datum'][0];
@@ -73,8 +73,8 @@ echo build_select_employee($employee_id, $Mitarbeiter);
 echo "<form method='POST' id=navigate_time>";
 echo "\t\t\t<input type=hidden name=date value=".$date_sql." form='navigate_time'>\n";
 echo "\t\t\t<input type=hidden name=selected_employee value=".$employee_id." form='navigate_time'>\n";
-echo "$rückwärts_button_week_img";
-echo "$vorwärts_button_week_img";
+echo "$backward_button_week_img";
+echo "$forward_button_week_img";
 echo '</form>';
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";

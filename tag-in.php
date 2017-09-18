@@ -100,19 +100,15 @@ echo "\t\t\t</select>\n\t\t</form>\n";
 
 
 echo "\t\t<form id=myform method=post>\n";
-//echo "\t\t<form id=myform method=post action=test-post.php>\n";
-echo "\t\t\t<div id=navigationsElemente>";
-//$rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";
-//$vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";
-echo "$rückwärts_button_img";
-echo "$vorwärts_button_img";
+echo "\t\t\t<div id=navigation_elements>";
+echo "$backward_button_img";
+echo "$forward_button_img";
 echo "$submit_button_img";
 echo "<br><br>\n";
-if($session->user_has_privilege('approve_roster')){
-echo "$submit_approval_button_img";
-echo "$submit_disapproval_button_img";
-echo "<br><br>\n";
-    
+if ($session->user_has_privilege('approve_roster')) {
+    echo "$submit_approval_button_img";
+    echo "$submit_disapproval_button_img";
+    echo "<br><br>\n";
 }
 
 echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[Lesen]</a>\n";
