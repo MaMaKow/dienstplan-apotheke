@@ -36,9 +36,9 @@ echo "<H1>" . $config['application_name'] . "</H1>\n";
         echo $errorMessage;
     }
     ?>
-</form> 
-<p><a href="register.php">Neues Benutzerkonto anlegen</a></p>
-<p><a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>/src/php/pages/lost_password.php">Passwort vergessen</a></p>
+</form>
+<p class="unobtrusive"><a href="register.php"><?= gettext("Create new user account") ?></a></p>
+<p class="unobtrusive"><a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>/src/php/pages/lost_password.php"><?= gettext("Forgot password?") ?></a></p>
 </div>
 </body>
 </html>

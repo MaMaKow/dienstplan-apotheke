@@ -41,13 +41,13 @@ if (isset($approval)) {
     if ($approval == "approved") {
         //Everything is fine.
     } elseif ($approval == "not_yet_approved") {
-        $Warnmeldung[] = "Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
+        $Warnmeldung[] = gettext("The roster has not been approved by the administration!");
     } elseif ($approval == "disapproved") {
-        $Warnmeldung[] = "Der Dienstplan wird noch überarbeitet!";
+        $Warnmeldung[] = gettext("The roster is still beeing revised!");
     }
 } else {
     $approval = "not_yet_approved";
-    $Warnmeldung[] = "Fehlende Daten in der Tabelle `approval`";
+    $Warnmeldung[] = gettext("Missing data in table `approval`");
     // TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
     //That might espacially occur during the development stage of this feature.
 }
@@ -68,15 +68,15 @@ require 'src/php/pages/menu.php';
 
 
 echo "\t\t<div id=main-area>\n";
-echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>". gettext("calendar week") . strftime(' %V', strtotime($datum)) . "</a><br>\n";
+echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "</a><br>\n";
 
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo build_select_branch($mandant, $date_sql);
 echo "<div id=navigation_form_div class=no-print>\n";
 echo "\t\t\t<form id=navigation_form method=post>\n";
-echo "$rückwärts_button_img";
-echo "$vorwärts_button_img";
+echo "$backward_button_img";
+echo "$forward_button_img";
 echo "<br><br>\n";
 echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[Bearbeiten]</a>\n";
 echo "<br><br>\n";
@@ -124,7 +124,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
             if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
                 $zeile = "\t\t\t\t\t\t<td>";
                 $zeile.="<b><a href='mitarbeiter-out.php?"
-                        . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0]) 
+                        . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0])
                         . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
                 $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]);
                 $zeile.="</a></b><span> ";
@@ -194,7 +194,6 @@ if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empt
 echo "\t\t</div>\n";
 
 require 'contact-form.php';
-
 ?>
 </body>
 </html>

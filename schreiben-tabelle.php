@@ -1,4 +1,5 @@
 <?php
+
 function schreiben_tabelle($Dienstplan, $branch) {
     global $Mitarbeiter;
     global $config;
@@ -37,16 +38,16 @@ function schreiben_tabelle($Dienstplan, $branch) {
             }
             if (isset($approval)) {
                 if ($approval == "approved") {
-                    //$Overlay_message[]="Alles ist gut.";
+                    //Everything is fine.
                 } elseif ($approval == "not_yet_approved" and TRUE === $config['hide_disapproved']) {
-                    $Overlay_message[] = "Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
+                    $Overlay_message[] = gettext("The roster has not been approved by the administration!");
                 } elseif ($approval == "disapproved" and TRUE === $config['hide_disapproved']) {
-                    $Overlay_message[] = "Der Dienstplan wird noch überarbeitet!";
+                    $Overlay_message[] = gettext("The roster is still beeing revised!");
                 }
             } else {
                 $approval = "not_yet_approved";
                 if (TRUE === $config['hide_disapproved']) {
-                    $Overlay_message[] = "Fehlende Daten in der Tabelle `approval`";
+                    $Overlay_message[] = gettext("Missing data in table `approval`");
                     // TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
                     //That might espacially occur during the development stage of this feature.
                 }

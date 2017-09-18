@@ -82,7 +82,7 @@ if ($showFormular) {
         ?>
         <input type="submit" value="Abschicken">
     </form>
-    <p class="hint">Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email.</p>
+    <p class="hint"><?= gettext("The user account will be verified after the registration. This may take a while. You will be informed by email after the verification is complete.") ?></p>
     </div>
 
     <?php
@@ -95,7 +95,7 @@ function send_mail_about_registration() {
             . "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
             . $config["application_name"]
             . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . "https://www." . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>" 
+            . "https://www." . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"
             . "</BODY></HTML>");
     $headers = 'From: ' . $config['contact_email'] . "\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";

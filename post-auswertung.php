@@ -170,30 +170,30 @@ if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privile
     if (!empty($date_sql)) {
         $datum = $date_sql;
     }
-} elseif (filter_has_var(INPUT_POST, 'submitWocheVorwärts') && isset($Dienstplan[0]['Datum'][0])) {
+} elseif (filter_has_var(INPUT_POST, 'submit_week_forward') && isset($Dienstplan[0]['Datum'][0])) {
     //TODO: These lines should be changed to the ones below for every file
     $date_sql = filter_var($Dienstplan[0]['Datum'][0], FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'submitWocheVorwärts') && filter_has_var(INPUT_POST, 'date') && filter_has_var(INPUT_POST, 'selected_employee')) {
+} elseif (filter_has_var(INPUT_POST, 'submit_week_forward') && filter_has_var(INPUT_POST, 'date') && filter_has_var(INPUT_POST, 'selected_employee')) {
     $employee_id = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
     $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'submitWocheRückwärts') && filter_has_var(INPUT_POST, 'date') && filter_has_var(INPUT_POST, 'selected_employee')) {
+} elseif (filter_has_var(INPUT_POST, 'submit_week_backward') && filter_has_var(INPUT_POST, 'date') && filter_has_var(INPUT_POST, 'selected_employee')) {
     $employee_id = filter_input(INPUT_POST, 'selected_employee', FILTER_SANITIZE_NUMBER_INT);
     $datum = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING);
     $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'submitWocheRückwärts') && isset($Dienstplan[0]['Datum'][0])) {
+} elseif (filter_has_var(INPUT_POST, 'submit_week_backward') && isset($Dienstplan[0]['Datum'][0])) {
     $datum = $Dienstplan[0]['Datum'][0];
     $datum = strtotime('-1 week', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'submitVorwärts') && filter_has_var(INPUT_POST, 'date_sql')) {
+} elseif (filter_has_var(INPUT_POST, 'submit_day_forward') && filter_has_var(INPUT_POST, 'date_sql')) {
     $datum = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
     $datum = strtotime('+1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);
-} elseif (filter_has_var(INPUT_POST, 'submitRückwärts') && filter_has_var(INPUT_POST, 'date_sql')) {
+} elseif (filter_has_var(INPUT_POST, 'submit_day_backward') && filter_has_var(INPUT_POST, 'date_sql')) {
     $datum = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
     $datum = strtotime('-1 day', strtotime($datum));
     $datum = date('Y-m-d', $datum);
