@@ -20,7 +20,7 @@ if (filter_has_var(INPUT_POST, 'employee_id')) {
 if (isset($employee_id)) {
     create_cookie('employee_id', $employee_id, 30);
 }
-if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
+if (filter_has_var(INPUT_POST, 'submit_roster')) {
     $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 }
 if (isset($Grundplan)) {
@@ -189,7 +189,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         $zeile = '';
         echo "<br>\n\t\t\t\t";
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0 and $Grundplan[$wochentag]['Mittagsende'][$j] > 0) {
-            $zeile .= ' Pause: ';
+            $zeile .= ' " . gettext("break") . ": ';
             $zeile .= '<input type=time name=Grundplan[' . $wochentag . "][Mittagsbeginn][$j] value=";
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
             $zeile .= " form='change_principle_roster_employee'>";
@@ -199,16 +199,16 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         } else {
             $zeile .= "<div class=mittags_ersatz>";
             if (!empty($Grundplan[$wochentag]['Pause'][$j])) {
-                $zeile .= ' Pause: ';
+                $zeile .= " " . gettext("break") . ": ";
                 $zeile .= $Grundplan[$wochentag]['Pause'][$j];
                 $zeile .= ' min';
             } else {
-                //Wenn keine Pause vorgegeben ist und auch null Minuten Pause vorgesehen sind:
-                $zeile .= 'Keine Pause';
+                //If there is no break specified and no beak is intended:
+                $zeile .= gettext("No break");
             }
             $zeile .= ' <a href=#top onclick=unhide_mittag()>+</a></div>';
             $zeile .= '<div class=mittags_input style=display:none>';
-            $zeile .= 'Pause: <input type=time name=Grundplan[' . $wochentag . "][Mittagsbeginn][$j]  form='change_principle_roster_employee'> bis ";
+            $zeile .= gettext("break") . ": <input type=time name=Grundplan[" . $wochentag . "][Mittagsbeginn][$j]  form='change_principle_roster_employee'> bis ";
             $zeile .= "<input type=time name=Grundplan[$wochentag][Mittagsende][$j]  form='change_principle_roster_employee'> <a href=#top onclick=rehide_mittag()>-</a></div>";
         }
         //Mittagsende

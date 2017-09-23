@@ -13,7 +13,7 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
             </ul>
         </li>
         <li>
-            <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>tag-out.php><?= gettext("Dayly view") ?></a>
+            <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>tag-out.php><?= gettext("Daily view") ?></a>
             <ul>
                 <li>
                     <a href=<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>tag-in.php><?= gettext("Daily input") ?></a>
@@ -66,9 +66,9 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
     </li>
     <li>
         <a><?php echo $_SESSION['user_name']; ?>&nbsp;</a>
-                <ul>
+        <ul>
             <li>
-                <?php echo $session->build_logout_button();?>
+                <?php echo $session->build_logout_button(); ?>
             </li>
         </ul>
 

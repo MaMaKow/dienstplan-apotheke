@@ -94,7 +94,7 @@ function schreiben_tabelle($Dienstplan, $branch) {
                 $zeile = "";
                 $table_html .= "\t\t\t\t<br>\n";
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-                    $zeile.=" Pause: ";
+                    $zeile.=" " . gettext("break") . ": ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
                 }
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {

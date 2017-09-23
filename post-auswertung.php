@@ -120,7 +120,7 @@ function insert_new_approval_into_database($date_sql, $branch_id) {
     $ergebnis = mysqli_query_verbose($sql_query);
 }
 
-if (filter_has_var(INPUT_POST, 'submitDienstplan') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
+if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
     foreach (array_keys($Dienstplan) as $day_number) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
         $Dienstplan = remove_empty_rows($Dienstplan, $day_number, $Columns);
         $roster_first_key = min(array_keys($Dienstplan[$day_number]['Datum']));

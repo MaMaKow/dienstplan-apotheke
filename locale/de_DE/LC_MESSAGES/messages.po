@@ -1,18 +1,42 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-09-17 22:45+0200\n"
-"PO-Revision-Date: 2017-09-17 22:46+0200\n"
+"POT-Creation-Date: 2017-09-23 10:51+0200\n"
+"PO-Revision-Date: 2017-09-23 18:51+0200\n"
 "Last-Translator: \n"
 "Language-Team: MaMaKow\n"
 "Language: de_DE@formal\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.4\n"
 "X-Poedit-Basepath: ../../..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
+
+#: abwesenheit-in.php:162 stunden-in.php:112 tag-in.php:103 woche-in.php:77
+msgid "Read"
+msgstr "Lesen"
+
+#: abwesenheit-out.php:59 stunden-out.php:59 tag-out.php:81 woche-out.php:86
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: abwesenheit-out.php:64
+msgid "Start"
+msgstr "Beginn"
+
+#: abwesenheit-out.php:67
+msgid "End"
+msgstr "Ende"
+
+#: abwesenheit-out.php:70
+msgid "Reason"
+msgstr "Grund"
+
+#: abwesenheit-out.php:73
+msgid "Days"
+msgstr "Tage"
 
 #: contact-form.php:13
 msgid "Wishes, criticism, suggestions"
@@ -34,10 +58,64 @@ msgstr "Email"
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
 
-#: mitarbeiter-out.php:68 tag-in.php:87 tag-out.php:71 woche-in.php:58
+#: grundplan-vk-in.php:202 grundplan-vk-in.php:211 schreiben-tabelle.php:97
+#: tag-in.php:178 tag-out.php:140 woche-in.php:151
+msgid "break"
+msgstr "Pause"
+
+#: grundplan-vk-in.php:207
+msgid "No break"
+msgstr "Keine Pause"
+
+#: mitarbeiter-out.php:67 tag-in.php:87 tag-out.php:71 woche-in.php:58
 #: woche-out.php:59
 msgid "calendar week"
 msgstr "Kalenderwoche"
+
+#: navigation.php:8 navigation.php:11
+msgid "1 day backward"
+msgstr "1 Tag rückwärts"
+
+#: navigation.php:16 navigation.php:19 navigation.php:49
+msgid "1 day forward"
+msgstr "1 Tag vorwärts"
+
+#: navigation.php:24 navigation.php:27
+msgid "1 week backward"
+msgstr "1 Woche rückwärts"
+
+#: navigation.php:32 navigation.php:35
+msgid "1 week forward"
+msgstr "1 Woche vorwärts"
+
+#: navigation.php:40 navigation.php:43
+msgid "Save"
+msgstr "Speichern"
+
+#: navigation.php:52
+msgid "Approve"
+msgstr "Genehmigen"
+
+#: navigation.php:57 navigation.php:60
+msgid "Disapprove"
+msgstr "Ablehnen"
+
+#: pruefe-dienstplan.php:17
+#, php-format
+msgid "At %1s there is no authorized person present."
+msgstr "Um %1s Uhr ist kein Approbierter anwesend."
+
+#: schreiben-tabelle.php:43 tag-out.php:44
+msgid "The roster has not been approved by the administration!"
+msgstr "Dieser Dienstplan wurde noch nicht von der Leitung bestätigt."
+
+#: schreiben-tabelle.php:45 tag-out.php:46
+msgid "The roster is still beeing revised!"
+msgstr "Der Dienstplan wird noch überarbeitet."
+
+#: schreiben-tabelle.php:50 tag-out.php:50
+msgid "Missing data in table `approval`"
+msgstr "Fehlende Daten in der Tabelle `approval`"
 
 #: src/php/classes/class.sessions.php:140
 msgid "The permission to create a roster is missing."
@@ -79,7 +157,7 @@ msgstr "Ihr Token ist 24 Stunden lang gültig."
 
 #: src/php/login.php:40
 msgid "Create new user account"
-msgstr ""
+msgstr "Neuen Benutzer anlegen"
 
 #: src/php/login.php:41
 #, fuzzy
@@ -110,7 +188,9 @@ msgid "Weekly view output"
 msgstr "Wochenansicht Ausgabe"
 
 #: src/php/pages/menu.php:16
-msgid "Dayly view"
+#, fuzzy
+#| msgid "Dayly view"
+msgid "Daily view"
 msgstr "Tagesansicht"
 
 #: src/php/pages/menu.php:19
@@ -212,3 +292,8 @@ msgid ""
 msgstr ""
 "Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
 "Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
+
+#~ msgid "Day"
+#~ msgid_plural "Days"
+#~ msgstr[0] "Tag"
+#~ msgstr[1] "Tage"

@@ -100,7 +100,7 @@ if ($session->user_has_privilege('approve_roster')) {
     echo "<br>\n";
 }
 
-echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[Lesen]</a>\n";
+echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[" . gettext("Read") . "]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
 echo "\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
@@ -175,7 +175,7 @@ for ($j = 0; $j < $VKcount; $j++) {
         echo "\t\t\t\t\t<td>";
         $zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
         $zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-        $zeile.=" Pause: <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] id=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
+        $zeile.=" " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] id=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
         if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
             $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
         }
