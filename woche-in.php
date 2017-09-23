@@ -67,14 +67,14 @@ echo "<br><br>\n";
 echo "<div id=wochenAuswahl><input name=woche type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
-//$submit_button="\t<input type=submit value=Absenden name='submitDienstplan'>\n";echo $submit_button;
+//$submit_button="\t<input type=submit value=Absenden name='submit_roster'>\n";echo $submit_button;
 if ($session->user_has_privilege('approve_roster')) {
 // TODO: The button should be inactive when the approval already was done.
     echo "$submit_approval_button_img";
     echo "$submit_disapproval_button_img";
     echo "<br><br>\n";
 }
-echo "\t\t\t\t<a href='woche-out.php?datum=" . $datum . "' class=no-print>[Lesen]</a>\n";
+echo "\t\t\t\t<a href='woche-out.php?datum=" . $datum . "' class=no-print>[" . gettext("Read") . "]</a>\n";
 echo "<br><br>\n";
 echo "</div>";
 
@@ -148,7 +148,7 @@ for ($j = 0; $j < $VKcount; $j++) {
         echo "\t\t\t\t<td>";
         $zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
         $zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-        $zeile.=" Pause: <input type=time size=1 name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
+        $zeile.=" " . gettext("break") . ": <input type=time size=1 name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
         if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
             $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
         }

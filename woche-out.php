@@ -83,7 +83,7 @@ $buttons_div_html .= "<br><br>";
 $buttons_div_html .= "\t\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
 $buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=" . $datum . "' class=no-print>[Bearbeiten]</a>\n";
+$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=" . $datum . "' class=no-print>[" . gettext("Edit") . "]</a>\n";
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 

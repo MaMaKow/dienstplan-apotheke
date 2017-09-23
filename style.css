@@ -420,6 +420,7 @@ div#roster_table_div span.roster_table_lunch_break_span {
         max-width: 45%;
     }
     #roster_image_div{
+        float: right;
         width: 54%;
     }
     #roster_image_div svg, #roster_image_div canvas{

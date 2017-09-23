@@ -16,7 +16,7 @@ function get_weekday_names() {
 $Wochentage = get_weekday_names();
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-if (filter_has_var(INPUT_POST, 'submitDienstplan')) {
+if (filter_has_var(INPUT_POST, 'submit_roster')) {
     $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
     foreach ($Grundplan as $wochentag => $value) {
@@ -264,7 +264,7 @@ for ($j = 0; $j < $VKcount; ++$j) {
 //Mittagspause
     $zeile = '';
     echo "\t\t\t\t\t<td>";
-    $zeile .= ' Pause: <input type=time name=Grundplan[' . $wochentag . '][Mittagsbeginn][' . $j . '] tabindex=' . ($wochentag * $VKcount * 5 + $j * 5 + 4) . ' value=';
+    $zeile .= ' " . gettext("break") . ": <input type=time name=Grundplan[' . $wochentag . '][Mittagsbeginn][' . $j . '] tabindex=' . ($wochentag * $VKcount * 5 + $j * 5 + 4) . ' value=';
     if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
     }

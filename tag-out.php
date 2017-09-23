@@ -78,7 +78,7 @@ echo "\t\t\t<form id=navigation_form method=post>\n";
 echo "$backward_button_img";
 echo "$forward_button_img";
 echo "<br><br>\n";
-echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[Bearbeiten]</a>\n";
+echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[" . gettext("Edit") . "]</a>\n";
 echo "<br><br>\n";
 echo "\t\t\t\t\t<input name='date_sql' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
@@ -137,7 +137,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 }
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
                     $zeile.= "\t\t\t\t\t</span><span class=roster_table_lunch_break_span>\n";
-                    $zeile.=" Pause: ";
+                    $zeile.=" " . gettext("break") . ": ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
                     $zeile.=" - ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
