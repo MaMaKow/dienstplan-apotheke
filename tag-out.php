@@ -1,6 +1,7 @@
 <?php
 require 'default.php';
-#This page will show the roster of one single day.
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
+
 /*
  * @var $mandant int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
@@ -8,6 +9,7 @@ require 'default.php';
 $mandant = 1; //First branch is allways the default.
 /*
  * @var $tage int Number of days to show.
+ * This page will show the roster of one single day.
  */
 $tage = 1;
 //Get a list of all branches:
@@ -164,19 +166,8 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         }
     }
     echo "<tr><td><br></td></tr>";
-    if (isset($Urlauber)) {
-        echo "\t\t<tr><td><b>Urlaub</b><br>";
-        foreach ($Urlauber as $value) {
-            echo $Mitarbeiter[$value] . "<br>";
-        };
-        echo "</td></tr>\n";
-    }
-    if (isset($Kranke)) {
-        echo "\t\t<tr><td><b>Krank</b><br>";
-        foreach ($Kranke as $value) {
-            echo $Mitarbeiter[$value] . "<br>";
-        };
-        echo "</td></tr>\n";
+    if (isset($Abwesende)) {
+        echo build_absentees_row($Abwesende);
     }
 }
 echo "\t\t\t\t\t</table>\n";
