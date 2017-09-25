@@ -1,13 +1,12 @@
 <?php
 require 'default.php';
 require 'schreiben-tabelle.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
 require 'db-lesen-abwesenheit.php';
 
 $mandant = 1; //First branch is allways the default.
 $tage = 7; //One week
 
-$datenübertragung = "";
-$dienstplanCSV = "";
 
 $error_message_html = "";
 $warning_message_html = "";
@@ -173,23 +172,13 @@ for ($i = 0; $i < count($Dienstplan); $i++) {
             }
         }
     }
+
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
-    if (isset($Urlauber)) {
-        $table_foot_html .= "\t\t\t\t\t<td><b>Urlaub</b><br>";
-        foreach ($Urlauber as $value) {
-            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&employee_id=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
-        }
+
+    if (isset($Abwesende)) {
+        $table_foot_html .= build_absentees_column($Abwesende);
     } else {
-        $table_foot_html .= "\t\t\t\t\t\t<td>";
-    }
-    if (isset($Kranke)) {
-        $table_foot_html .= "\t\t<br><b>Krank</b><br>";
-        foreach ($Kranke as $value) {
-            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&employee_id=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
-        }
-        $table_foot_html .= "</td>\n";
-    } else {
-        $table_foot_html .= "</td>\n";
+        $table_foot_html .= "</td><td>";
     }
 }
 $table_foot_html .= "\t\t\t\t\t</tr>\n";

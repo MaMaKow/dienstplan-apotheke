@@ -52,6 +52,10 @@ th
 {
     text-align: left;
 }
+td.absentees_column{
+    white-space: normal;
+    font-size: smaller;
+}
 a
 {
     text-decoration: none;

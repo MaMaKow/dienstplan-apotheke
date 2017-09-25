@@ -2,6 +2,8 @@
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
+
 require "src/php/calculate-holidays.php";
 
 $mandant = 1; //First branch is allways the default.
@@ -84,7 +86,8 @@ echo "<div id=main-area>\n";
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
+echo "\t\t" . strftime(gettext("calendar week") . ' %V', strtotime($datum)) . "<br>";
+echo "<div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
 echo build_select_branch($mandant, $date_sql);
 
 
@@ -195,20 +198,10 @@ for ($j = 0; $j < $VKcount; $j++) {
 }
 echo "\t\t\t\t</tr>";
 
+
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-if (isset($Urlauber)) {
-    echo "\t\t<tr><td><b>Urlaub</b><br>";
-    foreach ($Urlauber as $value) {
-        echo $Mitarbeiter[$value] . "<br>";
-    };
-    echo "</td></tr>\n";
-}
-if (isset($Kranke)) {
-    echo "\t\t<tr><td><b>Krank</b><br>";
-    foreach ($Kranke as $value) {
-        echo $Mitarbeiter[$value] . "<br>";
-    };
-    echo "</td></tr>\n";
+if (isset($Abwesende)) {
+    echo build_absentees_row($Abwesende);
 }
 echo "\t\t\t</table>\n";
 echo "\t\t</form>\n";
@@ -219,14 +212,13 @@ if (!empty($Dienstplan[0]["Dienstbeginn"])) {
     require_once 'image_dienstplan.php';
     $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
     echo $svg_image_dienstplan;
+    echo "<br>\n";
     require_once 'image_histogramm.php';
     $svg_image_histogramm = draw_image_histogramm($Dienstplan);
-    echo "<br>\n";
     echo $svg_image_histogramm;
     echo "\t\t\t</div>\n";
 }
 echo "</div>";
-//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 
 require 'contact-form.php';
 
