@@ -279,21 +279,6 @@ for ($j = 0; $j < $VKcount; ++$j) {
 }
 echo "\t\t\t\t</tr>";
 
-//Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-if (isset($Urlauber)) {
-    echo "\t\t<tr><td><b>Urlaub</b><br>";
-    foreach ($Urlauber as $value) {
-        echo $Mitarbeiter[$value] . '<br>';
-    };
-    echo "</td></tr>\n";
-}
-if (isset($Kranke)) {
-    echo "\t\t<tr><td><b>Krank</b><br>";
-    foreach ($Kranke as $value) {
-        echo $Mitarbeiter[$value] . '<br>';
-    };
-    echo "</td></tr>\n";
-}
 echo "\t\t\t</table>\n";
 echo "$submit_button";
 echo "\t\t</form>\n";

@@ -2,6 +2,8 @@
 
 #Diese Seite wird den kompletten Dienstplan einer Woche  anzeigen.
 require 'default.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-abwesenheit.php";
 
 $mandant = 1; //First branch is allways the default.
 $tage = 7; //Dies ist eine Wochenansicht mit Wochenende
@@ -177,32 +179,11 @@ echo "\t\t\t\t\t<tfoot>"
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 echo "\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {
-    require 'pruefe-abwesenheit.php';
-    if (isset($Urlauber)) {
-        echo "\t\t<td><b>Urlaub</b><br>";
-        foreach ($Urlauber as $value) {
-            echo $Mitarbeiter[$value] . "<br>";
-        };
-        echo "</td>\n";
-    } else {
-        echo "\t\t<td></td>\n";
-    }
+    $Abwesende = db_lesen_abwesenheit($datum);
+    echo build_absentees_column($Abwesende);
 }
 echo "\t\t</tr>\n";
-echo "\t\t<tr>\n";
-for ($i = 0; $i < count($Dienstplan); $i++) {
-    require 'pruefe-abwesenheit.php';
-    if (isset($Kranke)) {
-        echo "\t\t<td><b>Krank</b><br>";
-        foreach ($Kranke as $value) {
-            echo $Mitarbeiter[$value] . "<br>";
-        };
-        echo "</td>\n";
-    } else {
-        echo "\t\t<td></td>\n";
-    }
-}
-echo "\t\t</tr>\n";
+
 echo "\t</table>\n";
 echo "</form>\n";
 

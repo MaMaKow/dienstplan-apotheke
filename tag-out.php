@@ -104,7 +104,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     if (isset($feiertag)) {
         echo " " . $feiertag . " ";
     }
-    list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
+    $Abwesende = db_lesen_abwesenheit($datum);
     require 'db-lesen-notdienst.php';
     if (isset($notdienst['mandant'])) {
         echo "<br>NOTDIENST<br>";

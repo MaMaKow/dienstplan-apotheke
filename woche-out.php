@@ -9,7 +9,6 @@ $tage = 7; //One week
 
 
 $error_message_html = "";
-$warning_message_html = "";
 $overlay_message_html = "";
 
 
@@ -155,8 +154,7 @@ $table_foot_html = "\t\t\t\t\t<tfoot>"
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i = 0; $i < count($Dienstplan); $i++) {
     $datum = ($Dienstplan[$i]['Datum'][0]);
-    unset($Urlauber, $Kranke);
-    list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
+    $Abwesende = db_lesen_abwesenheit($datum);
     require 'db-lesen-feiertag.php';
 // TODO: I am not sure where to put the following line. There is an echo inside.
 //	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
