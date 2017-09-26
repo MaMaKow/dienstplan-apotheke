@@ -81,7 +81,7 @@ echo "\t\t\t\t<tr>\n";
 for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strtotime('+ 1 day', $date_unix))) {
     $date_unix = strtotime($date_sql);
     require 'db-lesen-notdienst.php';
-    list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($date_sql);
+    $Abwesende = db_lesen_abwesenheit($date_sql);
     $zeile = '';
     echo "\t\t\t\t\t<td>";
     //Datum

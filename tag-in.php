@@ -37,7 +37,7 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 /* Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen. */
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require_once 'db-lesen-abwesenheit.php';
-list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
+$Abwesende = db_lesen_abwesenheit($datum);
 $holiday = is_holiday($date_unix);
 require_once 'plane-tag-grundplan.php';
 $Principle_roster = get_principle_roster($datum, $mandant, $tag, $tage);

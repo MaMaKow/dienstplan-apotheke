@@ -4,8 +4,8 @@ require 'human-resource-management.php';
 write_employee_data_to_database(); //$success = write_employee_data_to_database();
 require 'db-lesen-mitarbeiter.php';
 require 'db-lesen-mandant.php';
-if (filter_has_var(INPUT_POST, "worker_id")){
-    $employee_id = filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT);    
+if (filter_has_var(INPUT_POST, "worker_id")) {
+    $employee_id = filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT);
 } elseif (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);
 } elseif (filter_has_var(INPUT_GET, "employee_id")) {
@@ -24,8 +24,8 @@ $Worker = read_employee_data_from_database($employee_id);
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
-if(!$session->user_has_privilege('create_employee')){
-    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
+if (!$session->user_has_privilege('create_employee')) {
+    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();
 }
 
@@ -50,7 +50,7 @@ echo build_select_employee($employee_id, $Mitarbeiter);
         <label for="lunch_break_minutes">Mittag: </label>
         <input type='number' min='0' step='any' name='lunch_break_minutes' id="lunch_break_minutes" value="<?php echo $Worker["lunch_break_minutes"] ?>">
     </p><p>
-        <label for="holidays">Urlaubstage: </label>
+        <label for="holidays"><?= gettext("vacation days"); ?>: </label>
         <input type='number' min='0' step='any' name='holidays' id="holidays" value="<?php echo $Worker["holidays"] ?>">
     </p><p>
         <?php echo make_radio_branch_list($Worker["branch"]); ?>
