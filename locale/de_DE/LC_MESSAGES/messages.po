@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-09-23 10:51+0200\n"
-"PO-Revision-Date: 2017-09-23 18:51+0200\n"
+"POT-Creation-Date: 2017-09-27 09:14+0200\n"
+"PO-Revision-Date: 2017-09-27 09:14+0200\n"
 "Last-Translator: \n"
 "Language-Team: MaMaKow\n"
 "Language: de_DE@formal\n"
@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: abwesenheit-in.php:162 stunden-in.php:112 tag-in.php:103 woche-in.php:77
+#: abwesenheit-in.php:162 stunden-in.php:112 tag-in.php:106 woche-in.php:79
 msgid "Read"
 msgstr "Lesen"
 
-#: abwesenheit-out.php:59 stunden-out.php:59 tag-out.php:81 woche-out.php:86
+#: abwesenheit-out.php:59 stunden-out.php:59 tag-out.php:83 woche-out.php:84
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -59,7 +59,7 @@ msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
 
 #: grundplan-vk-in.php:202 grundplan-vk-in.php:211 schreiben-tabelle.php:97
-#: tag-in.php:178 tag-out.php:140 woche-in.php:151
+#: tag-in.php:181 tag-out.php:142 woche-in.php:153
 msgid "break"
 msgstr "Pause"
 
@@ -67,8 +67,16 @@ msgstr "Pause"
 msgid "No break"
 msgstr "Keine Pause"
 
-#: mitarbeiter-out.php:67 tag-in.php:87 tag-out.php:71 woche-in.php:58
-#: woche-out.php:59
+#: human-resource-management-in.php:53
+msgid "vacation days"
+msgstr ""
+
+#: js/collaborative-vacation.js:175
+msgid "Vacation"
+msgstr "Urlaub"
+
+#: mitarbeiter-out.php:67 tag-in.php:89 tag-out.php:73 woche-in.php:60
+#: woche-out.php:57
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
@@ -105,17 +113,23 @@ msgstr "Ablehnen"
 msgid "At %1s there is no authorized person present."
 msgstr "Um %1s Uhr ist kein Approbierter anwesend."
 
-#: schreiben-tabelle.php:43 tag-out.php:44
+#: schreiben-tabelle.php:43 tag-out.php:46
 msgid "The roster has not been approved by the administration!"
 msgstr "Dieser Dienstplan wurde noch nicht von der Leitung bestätigt."
 
-#: schreiben-tabelle.php:45 tag-out.php:46
+#: schreiben-tabelle.php:45 tag-out.php:48
 msgid "The roster is still beeing revised!"
 msgstr "Der Dienstplan wird noch überarbeitet."
 
-#: schreiben-tabelle.php:50 tag-out.php:50
+#: schreiben-tabelle.php:50 tag-out.php:52
 msgid "Missing data in table `approval`"
 msgstr "Fehlende Daten in der Tabelle `approval`"
+
+#: src/php/classes/build_html_roster_views.php:31
+#, fuzzy
+#| msgid "Absence"
+msgid "Absentees"
+msgstr "Abwesenheit"
 
 #: src/php/classes/class.sessions.php:140
 msgid "The permission to create a roster is missing."
