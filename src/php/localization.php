@@ -43,7 +43,7 @@ if (!$results) {
     exit('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
 }
 //TODO: Remove the following line:
-//bindtextdomain("messages", "./locale/nocache"); //This is only for debugging
-//bindtextdomain("messages", "./locale");
-//textdomain("messages");
+bindtextdomain("messages", "./locale/nocache"); //This is only for debugging
+bindtextdomain("messages", "./locale");
+textdomain("messages");
 bind_textdomain_codeset("messages", 'UTF-8');
