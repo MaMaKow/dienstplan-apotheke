@@ -16,18 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+        const PDR_HTTP_401_UNAUTHORIZED_RESPONSE_TEXT = "<H1>Unauthorized</H1><p>This server could not verify that you are authorized to access the document you requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn't understand how to supply the credentials required.</p>";
 if (!isset($_SERVER['PHP_AUTH_USER'])) {
     header('WWW-Authenticate: Basic realm="PDR"');
     header('HTTP/1.0 401 Unauthorized');
-    echo "<H1>" . gettext("Forbidden") . "</H1>\n<p>" . gettext("You don't have permission to access this file.") . "</p>";
-    die();
+    die(PDR_HTTP_401_UNAUTHORIZED_RESPONSE_TEXT);
 } else {
     $login_success = $session->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], FALSE);
     if (TRUE !== $login_success) {
         header('WWW-Authenticate: Basic realm="PDR"');
         header('HTTP/1.0 401 Unauthorized');
-        echo "<H1>" . gettext("Forbidden") . "</H1>\n<p>" . gettext("You don't have permission to access this file.") . "</p>";
-        die();
+        die(PDR_HTTP_401_UNAUTHORIZED_RESPONSE_TEXT);
     }
 }

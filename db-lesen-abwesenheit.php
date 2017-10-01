@@ -1,13 +1,15 @@
 <?php
 
 //TODO: We might rename this file /src/php/absence-management.php
-//
-//Dieses Script fragt nach den Mitarbeitern, die an $datum Urlaub haben.
-//Die Variable $datum muss hierzu bereits mit dem korrekten Wert gefüllt sein.
-//Der Zugang zu Datenbank muss bereits bestehen.
+/*
+ * This script gets a ist of absent employees
+ *
+ * @param date string date in the format 'Y-m-d' a unix date is accepted. This might be removed in the future
+ *
+ * @return array $Absentees array(employee_id => reason)
+ */
 function db_lesen_abwesenheit($date) {
-    global $Mitarbeiter, $verbindungi;
-    unset($Urlauber, $Kranke, $Abwesende);
+    global $Mitarbeiter;
     //Im folgenden prüfen wir, ob $datum bereis als UNIX timestamp vorliegt. Wenn es ein Timestamp ist, können wir direkt in 'Y-m-d' umrechnen. Wenn nicht, dann wandeln wir vorher um.
     if (is_numeric($date) && (int) $date == $date) {
         $sql_date = date('Y-m-d', $date);
@@ -21,24 +23,17 @@ function db_lesen_abwesenheit($date) {
         require "db-lesen-mitarbeiter.php";
     }
     $mitarbeiterliste = implode(", ", array_keys($Mitarbeiter));
-    
+
     $abfrage = "SELECT * FROM `absence` "
             . "WHERE `start` <= '$sql_date' "
             . "AND `end` >= '$sql_date' "
-            . "AND `employee_id` IN (" . $mitarbeiterliste . ")"; //Mitarbeiter, deren Urlaub schon begonnen hat, aber noch nicht beendet ist.
+            . "AND `employee_id` IN (" . $mitarbeiterliste . ")"; //Employees, whose absence has started but not ended yet.
     //TODO: The above query does not discriminate between approved an non-approved vacations.
     $ergebnis = mysqli_query_verbose($abfrage);
     while ($row = mysqli_fetch_object($ergebnis)) {
-        $Abwesende[$row->employee_id] = $row->reason;
-        if ($row->reason == "Urlaub") {
-            $Urlauber[] = $row->employee_id;
-        } elseif (preg_match('/Krank/i', $row->reason)) { //Auch Krank mit Kind sollte hier enthalten sein. //Außerdem suchen wir Case insensitive krank=Krank=kRaNk
-            $Kranke[] = $row->employee_id;
-        }
+        $Absentees[$row->employee_id] = $row->reason;
     }
-    return array($Abwesende, $Urlauber, $Kranke);
-//Anschließend müssen wir die Arrays wieder auseinander nehmen
-//list($Abwesende, $Urlauber, $Kranke)=db_lesen_abwesenheit($datum);
+    return $Absentees;
 }
 
 function get_absence_data_specific($date_sql, $employee_id) {
@@ -56,20 +51,20 @@ function get_absence_data_specific($date_sql, $employee_id) {
 }
 
 /*
-function get_all_absence_data_in_period($start_date_sql, $end_date_sql) {
-    $query = "SELECT *
-		FROM `absence`
-		WHERE `start` <= '$start_date_sql' AND `end` >= '$end_date_sql'";
-    $result = mysqli_query_verbose($query);
-    while ($row = mysqli_fetch_object($result)) {
-        $Absences[]['employee_id'] = $row->employee_id;
-        $Absences[]['reason'] = $row->reason;
-        $Absences[]['start'] = $row->start;
-        $Absences[]['end'] = $row->end;
-    }
-    return $Absences;
-}
-*/
+  function get_all_absence_data_in_period($start_date_sql, $end_date_sql) {
+  $query = "SELECT *
+  FROM `absence`
+  WHERE `start` <= '$start_date_sql' AND `end` >= '$end_date_sql'";
+  $result = mysqli_query_verbose($query);
+  while ($row = mysqli_fetch_object($result)) {
+  $Absences[]['employee_id'] = $row->employee_id;
+  $Absences[]['reason'] = $row->reason;
+  $Absences[]['start'] = $row->start;
+  $Absences[]['end'] = $row->end;
+  }
+  return $Absences;
+  }
+ */
 
 function calculate_absence_days($start_date_string, $end_date_string) {
     if (!function_exists('is_holiday')) {
