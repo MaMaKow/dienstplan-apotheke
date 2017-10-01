@@ -1,6 +1,7 @@
 <?php
 require 'default.php';
-#This page will show the roster of one single day.
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
+
 /*
  * @var $mandant int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
@@ -8,6 +9,7 @@ require 'default.php';
 $mandant = 1; //First branch is allways the default.
 /*
  * @var $tage int Number of days to show.
+ * This page will show the roster of one single day.
  */
 $tage = 1;
 //Get a list of all branches:
@@ -41,13 +43,13 @@ if (isset($approval)) {
     if ($approval == "approved") {
         //Everything is fine.
     } elseif ($approval == "not_yet_approved") {
-        $Warnmeldung[] = "Der Dienstplan wurde noch nicht von der Leitung bestätigt!";
+        $Warnmeldung[] = gettext("The roster has not been approved by the administration!");
     } elseif ($approval == "disapproved") {
-        $Warnmeldung[] = "Der Dienstplan wird noch überarbeitet!";
+        $Warnmeldung[] = gettext("The roster is still beeing revised!");
     }
 } else {
     $approval = "not_yet_approved";
-    $Warnmeldung[] = "Fehlende Daten in der Tabelle `approval`";
+    $Warnmeldung[] = gettext("Missing data in table `approval`");
     // TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
     //That might espacially occur during the development stage of this feature.
 }
@@ -68,17 +70,17 @@ require 'src/php/pages/menu.php';
 
 
 echo "\t\t<div id=main-area>\n";
-echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>". gettext("calendar week") . strftime(' %V', strtotime($datum)) . "</a><br>\n";
+echo "\t\t\t<a href='woche-out.php?datum=" . $datum . "'>" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "</a><br>\n";
 
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo build_select_branch($mandant, $date_sql);
 echo "<div id=navigation_form_div class=no-print>\n";
 echo "\t\t\t<form id=navigation_form method=post>\n";
-echo "$rückwärts_button_img";
-echo "$vorwärts_button_img";
+echo "$backward_button_img";
+echo "$forward_button_img";
 echo "<br><br>\n";
-echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[Bearbeiten]</a>\n";
+echo "\t\t\t\t<a href='tag-in.php?datum=" . htmlentities($datum) . "'>[" . gettext("Edit") . "]</a>\n";
 echo "<br><br>\n";
 echo "\t\t\t\t\t<input name='date_sql' type='date' id='date_chooser_input' class='datepicker' value='" . date('Y-m-d', strtotime($datum)) . "'>\n";
 echo "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
@@ -102,7 +104,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     if (isset($feiertag)) {
         echo " " . $feiertag . " ";
     }
-    list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
+    $Abwesende = db_lesen_abwesenheit($datum);
     require 'db-lesen-notdienst.php';
     if (isset($notdienst['mandant'])) {
         echo "<br>NOTDIENST<br>";
@@ -124,7 +126,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
             if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
                 $zeile = "\t\t\t\t\t\t<td>";
                 $zeile.="<b><a href='mitarbeiter-out.php?"
-                        . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0]) 
+                        . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0])
                         . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
                 $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]);
                 $zeile.="</a></b><span> ";
@@ -137,7 +139,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 }
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
                     $zeile.= "\t\t\t\t\t</span><span class=roster_table_lunch_break_span>\n";
-                    $zeile.=" Pause: ";
+                    $zeile.=" " . gettext("break") . ": ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
                     $zeile.=" - ";
                     $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
@@ -164,19 +166,8 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         }
     }
     echo "<tr><td><br></td></tr>";
-    if (isset($Urlauber)) {
-        echo "\t\t<tr><td><b>Urlaub</b><br>";
-        foreach ($Urlauber as $value) {
-            echo $Mitarbeiter[$value] . "<br>";
-        };
-        echo "</td></tr>\n";
-    }
-    if (isset($Kranke)) {
-        echo "\t\t<tr><td><b>Krank</b><br>";
-        foreach ($Kranke as $value) {
-            echo $Mitarbeiter[$value] . "<br>";
-        };
-        echo "</td></tr>\n";
+    if (isset($Abwesende)) {
+        echo build_absentees_row($Abwesende);
     }
 }
 echo "\t\t\t\t\t</table>\n";
@@ -194,7 +185,6 @@ if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empt
 echo "\t\t</div>\n";
 
 require 'contact-form.php';
-
 ?>
 </body>
 </html>

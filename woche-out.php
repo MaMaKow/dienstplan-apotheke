@@ -1,16 +1,14 @@
 <?php
 require 'default.php';
 require 'schreiben-tabelle.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
 require 'db-lesen-abwesenheit.php';
 
 $mandant = 1; //First branch is allways the default.
 $tage = 7; //One week
 
-$datenübertragung = "";
-$dienstplanCSV = "";
 
 $error_message_html = "";
-$warning_message_html = "";
 $overlay_message_html = "";
 
 
@@ -77,13 +75,13 @@ $main_div_html .= $branch_form_html;
 $duty_roster_form_html = "\t\t<form id=duty_roster_form method=post>\n";
 $buttons_div_html = "";
 $buttons_div_html .= "<div id=buttons_div class=no-print>";
-$buttons_div_html .= $rückwärts_button_week_img;
-$buttons_div_html .= $vorwärts_button_week_img;
+$buttons_div_html .= $backward_button_week_img;
+$buttons_div_html .= $forward_button_week_img;
 $buttons_div_html .= "<br><br>";
 $buttons_div_html .= "\t\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
 $buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=" . $datum . "' class=no-print>[Bearbeiten]</a>\n";
+$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=" . $datum . "' class=no-print>[" . gettext("Edit") . "]</a>\n";
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 
@@ -156,8 +154,7 @@ $table_foot_html = "\t\t\t\t\t<tfoot>"
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i = 0; $i < count($Dienstplan); $i++) {
     $datum = ($Dienstplan[$i]['Datum'][0]);
-    unset($Urlauber, $Kranke);
-    list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
+    $Abwesende = db_lesen_abwesenheit($datum);
     require 'db-lesen-feiertag.php';
 // TODO: I am not sure where to put the following line. There is an echo inside.
 //	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
@@ -173,23 +170,13 @@ for ($i = 0; $i < count($Dienstplan); $i++) {
             }
         }
     }
+
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
-    if (isset($Urlauber)) {
-        $table_foot_html .= "\t\t\t\t\t<td><b>Urlaub</b><br>";
-        foreach ($Urlauber as $value) {
-            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&employee_id=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
-        }
+
+    if (isset($Abwesende)) {
+        $table_foot_html .= build_absentees_column($Abwesende);
     } else {
-        $table_foot_html .= "\t\t\t\t\t\t<td>";
-    }
-    if (isset($Kranke)) {
-        $table_foot_html .= "\t\t<br><b>Krank</b><br>";
-        foreach ($Kranke as $value) {
-            $table_foot_html .= "<a href='abwesenheit-out.php?datum=" . $datum . "&employee_id=" . $value . "'>" . $Mitarbeiter[$value] . "</a><br>";
-        }
-        $table_foot_html .= "</td>\n";
-    } else {
-        $table_foot_html .= "</td>\n";
+        $table_foot_html .= "</td><td>";
     }
 }
 $table_foot_html .= "\t\t\t\t\t</tr>\n";

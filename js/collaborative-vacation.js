@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Mandelkow
  *
  * This program is free software: you can redistribute it and/or modify
@@ -172,7 +172,8 @@ function prefill_input_box_form() {
             document.getElementById('input_box_form_start_date').value = from_date_sql;
             document.getElementById('input_box_form_end_date').value = to_date_sql;
         }
-        document.getElementById('input_box_form_reason').value = "Urlaub";
+        //gettext("Vacation", document.getElementById('input_box_form_reason'), set_value);
+        gettext("Vacation", document.getElementById('input_box_form_reason'));
         //In order to remove the old entry we need the former values
         //TODO: Check if this works for
         //$query = "DELETE FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
@@ -210,7 +211,7 @@ function detectLeftButton(evt) {
 function fill_input_box_from_prototype(div) {
     var secondary_element = document.getElementById(div.id);
 
-    /* 
+    /*
      * This following part is relevant only to the edit mode. ->
      * The employee_id is transfered to the php script collaborative-vacation-input-box.php via GET
      * It is necessary for the handling of session permissions.

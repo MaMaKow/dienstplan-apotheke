@@ -23,7 +23,7 @@ body
 table, th, td
 {
     white-space: nowrap;
-    vertical-align: top;        
+    vertical-align: top;
     font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
     border-collapse: collapse;
     padding:0 1.0em 0.8em 0;
@@ -52,6 +52,10 @@ th
 {
     text-align: left;
 }
+td.absentees_column{
+    white-space: normal;
+    font-size: smaller;
+}
 a
 {
     text-decoration: none;
@@ -76,7 +80,7 @@ div.foot
 }
 div#main-area
 {
-    width: 95%; 
+    width: 95%;
     position: relative;
     float: left;
     clear: left;
@@ -93,13 +97,13 @@ table#duty-rooster-table
 }
 div#table_overlay_area
 {
-    width: 100%; 
+    width: 100%;
     position: relative;
 }
-div.image
+div.roster_plot_div
 {
     position: relative;
-    float: right;
+    float: left;
     overflow:auto;
     /*	width: 60%;*/
     /*	max-height: 60%;*/
@@ -272,6 +276,10 @@ img.worker-img:hover {
     font-size: xx-large;
     margin-bottom: 1em;
 }
+.unobtrusive{
+    font-size: smaller;
+    font-weight: lighter;
+}
 .hint {
     font-size: small;
     font-weight: lighter;
@@ -377,17 +385,17 @@ div#bottom
 }
 #myform
 {
-    float: left;    
+    float: left;
     clear: left;
 }
 #navigation_form_div
 {
-    float: left;    
+    float: left;
     clear: left;
 }
 div#roster_table_div
 {
-    float: left;    
+    float: left;
     clear: left;
 }
 div#roster_table_div td {
@@ -416,6 +424,7 @@ div#roster_table_div span.roster_table_lunch_break_span {
         max-width: 45%;
     }
     #roster_image_div{
+        float: right;
         width: 54%;
     }
     #roster_image_div svg, #roster_image_div canvas{

@@ -111,7 +111,7 @@ function task_rotation_set_worker($date_unix, $task) {
                 }
                 $rotation_vk = key($Rezeptur_Mitarbeiter); //will be overwritten if not present on thet day because of illnes or holidays
 
-                list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($temp_date_sql);
+                $Abwesende = db_lesen_abwesenheit($temp_date_sql);
 
                 //In case the person is ill or on holidays, someone else has to take the turn:
                 if (isset($Abwesende[$rotation_vk])) {

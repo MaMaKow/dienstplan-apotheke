@@ -109,7 +109,7 @@ echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo build_select_employee($employee_id, $Mitarbeiter);
-echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[Lesen]</a>\n";
+echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[" . gettext("Read") . "]</a>\n";
 
 echo "\t\t<table>\n";
 //Heading

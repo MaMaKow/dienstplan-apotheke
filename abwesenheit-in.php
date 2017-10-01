@@ -159,7 +159,7 @@ if (isset($Feiertagsmeldung)) {
 }
 echo build_select_employee($employee_id, $Mitarbeiter);
 
-echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[Lesen]</a>";
+echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[" . gettext("Read") . "]</a>";
 echo "\t\t\n";
             echo "\t\t<table id=absence_table>\n";
 //Überschrift

@@ -2,6 +2,8 @@
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
+
 require "src/php/calculate-holidays.php";
 
 $mandant = 1; //First branch is allways the default.
@@ -35,7 +37,7 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 /* Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen. */
 //$Filialplan=db_lesen_tage($tage, $filiale, '[^'.$filiale.']');
 require_once 'db-lesen-abwesenheit.php';
-list($Abwesende, $Urlauber, $Kranke) = db_lesen_abwesenheit($datum);
+$Abwesende = db_lesen_abwesenheit($datum);
 $holiday = is_holiday($date_unix);
 require_once 'plane-tag-grundplan.php';
 $Principle_roster = get_principle_roster($datum, $mandant, $tag, $tage);
@@ -84,38 +86,24 @@ echo "<div id=main-area>\n";
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "<br><div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
-echo "\t\t<form id=mandantenformular method=post>\n";
-echo "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][$roster_first_key]) . ">\n";
-echo "\t\t\t<select class='no-print large' name=mandant onchange=this.form.submit()>\n";
-//echo "\t\t\t\t<option value=".$mandant.">".$Mandant[$mandant]."</option>\n";
-foreach ($Mandant as $filiale => $name) {
-    if ($filiale != $mandant) {
-        echo "\t\t\t\t<option value=" . $filiale . ">" . $name . "</option>\n";
-    } else {
-        echo "\t\t\t\t<option value=" . $filiale . " selected>" . $name . "</option>\n";
-    }
-}
-echo "\t\t\t</select>\n\t\t</form>\n";
+echo "\t\t" . strftime(gettext("calendar week") . ' %V', strtotime($datum)) . "<br>";
+echo "<div class=only-print><b>" . $Mandant[$mandant] . "</b></div><br>\n";
+echo build_select_branch($mandant, $date_sql);
 
 
 echo "\t\t<form id=myform method=post>\n";
-//echo "\t\t<form id=myform method=post action=test-post.php>\n";
-echo "\t\t\t<div id=navigationsElemente>";
-//$rückwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Rückwärts'	name='submitRückwärts'>\n";
-//$vorwärts_button="\t\t\t\t<input type=submit 	value='1 Tag Vorwärts'	name='submitVorwärts'><br>\n";
-echo "$rückwärts_button_img";
-echo "$vorwärts_button_img";
+echo "\t\t\t<div id=navigation_elements>";
+echo "$backward_button_img";
+echo "$forward_button_img";
 echo "$submit_button_img";
-echo "<br><br>\n";
-if($session->user_has_privilege('approve_roster')){
-echo "$submit_approval_button_img";
-echo "$submit_disapproval_button_img";
-echo "<br><br>\n";
-    
+echo "<br>\n";
+if ($session->user_has_privilege('approve_roster')) {
+    echo "$submit_approval_button_img";
+    echo "$submit_disapproval_button_img";
+    echo "<br>\n";
 }
 
-echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[Lesen]</a>\n";
+echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[" . gettext("Read") . "]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
 echo "\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
@@ -190,7 +178,7 @@ for ($j = 0; $j < $VKcount; $j++) {
         echo "\t\t\t\t\t<td>";
         $zeile.="<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
         $zeile.="<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-        $zeile.=" Pause: <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] id=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
+        $zeile.=" " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] id=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
         if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
             $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
         }
@@ -210,20 +198,10 @@ for ($j = 0; $j < $VKcount; $j++) {
 }
 echo "\t\t\t\t</tr>";
 
+
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-if (isset($Urlauber)) {
-    echo "\t\t<tr><td><b>Urlaub</b><br>";
-    foreach ($Urlauber as $value) {
-        echo $Mitarbeiter[$value] . "<br>";
-    };
-    echo "</td></tr>\n";
-}
-if (isset($Kranke)) {
-    echo "\t\t<tr><td><b>Krank</b><br>";
-    foreach ($Kranke as $value) {
-        echo $Mitarbeiter[$value] . "<br>";
-    };
-    echo "</td></tr>\n";
+if (isset($Abwesende)) {
+    echo build_absentees_row($Abwesende);
 }
 echo "\t\t\t</table>\n";
 echo "\t\t</form>\n";
@@ -234,14 +212,13 @@ if (!empty($Dienstplan[0]["Dienstbeginn"])) {
     require_once 'image_dienstplan.php';
     $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
     echo $svg_image_dienstplan;
+    echo "<br>\n";
     require_once 'image_histogramm.php';
     $svg_image_histogramm = draw_image_histogramm($Dienstplan);
-    echo "<br>\n";
     echo $svg_image_histogramm;
     echo "\t\t\t</div>\n";
 }
 echo "</div>";
-//echo "<pre>";	var_export($Dienstplan);    	echo "</pre>";
 
 require 'contact-form.php';
 

@@ -37,7 +37,7 @@ if (runing_on_windows()) {
 putenv("LANGUAGE=$locale");
 putenv("LANG=$locale");
 //setlocale(LC_ALL, $locale);
-           setlocale(LC_MESSAGES, $locale);
+setlocale(LC_MESSAGES, $locale);
 $results = setlocale(LC_COLLATE, $locale);
 if (!$results) {
     exit('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
