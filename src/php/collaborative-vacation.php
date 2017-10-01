@@ -19,12 +19,12 @@
 
 /**
  * Build a datalist for easy input of absence entries.
- * 
+ *
  * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krank").
  * Only reasons that have been used at least 4 times are shown. (HAVING COUNT(*) > 3)
- * 
+ *
  * TODO: This function could also be used by abwesenheit-in.php.
- * 
+ *
  * @return string $datalist HTML datalist element.
  */
 function build_datalist() {
@@ -41,15 +41,16 @@ function build_datalist() {
 
 /**
  * Handle the user input.
- * 
+ *
  * @global int $year
- * 
+ *
  * @return void
  */
 function handle_user_data_input() {
     //Work on user data:
     global $year;
     global $month_number;
+    print_debug_variable($_POST);
     if (filter_has_var(INPUT_POST, "year")) {
         $year = filter_input(INPUT_POST, "year", FILTER_SANITIZE_NUMBER_INT);
     } elseif (filter_has_var(INPUT_COOKIE, "year")) {
@@ -73,17 +74,17 @@ function handle_user_data_input() {
 
 /**
  * Fill new entries into absence table or change, delete old entries.
- * 
+ *
  * The approval status of new entries defaults to "not_yet_approved".
  * Old entries keep their approval state.
  * TODO: THere is no approval-tool for administrator users yet.
- * 
+ *
  * @global type $user from default.php
- * @return void 
+ * @return void
  */
 function write_user_input_to_database() {
     global $session;
-    
+
     $employee_id = filter_input(INPUT_POST, employee_id, FILTER_SANITIZE_NUMBER_INT);
     $start_date_string = filter_input(INPUT_POST, start_date, FILTER_SANITIZE_STRING);
     $end_date_string = filter_input(INPUT_POST, end_date, FILTER_SANITIZE_STRING);
@@ -101,13 +102,11 @@ function write_user_input_to_database() {
         /*
          * User is only allowed to ask for specific changes to the database.
          */
-        if($_SESSION['user_employee_id'] !== $employee_id)
-        {
+        if ($_SESSION['user_employee_id'] !== $employee_id) {
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays for employee " . $employee_id);
             return FALSE;
         }
-        if("" === $employee_id_old and $_SESSION['user_employee_id'] !== $employee_id_old)
-        {
+        if ("" === $employee_id_old and $_SESSION['user_employee_id'] !== $employee_id_old) {
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays from employee " . $employee_id_old);
             return FALSE;
         }
@@ -163,15 +162,15 @@ function write_user_input_to_database() {
 
 /**
  * Build the HTML code of the calendar.
- * 
+ *
  * The calendar is a div of the year containing divs of months containing paragraphs of days.
  * Each day paragraph contains the day of week and day number.
  * It may contain spans with the name of a holiday or
  * spans with the employee_id numbers of absent employees.
- * Absence is not shown on holidays and on weekends. 
+ * Absence is not shown on holidays and on weekends.
  * The absence spans are colored differently for different professions.
- * 
- * 
+ *
+ *
  * @param int $year
  * @global array[string] $Ausbildung_mitarbeiter Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
  * @return string HTML div element containing a calendar with absences.
@@ -197,7 +196,7 @@ function build_absence_year($year) {
     }
     $Years[] = max($Years) + 1;
 
-    $year_input_select = "<form id='select_year'><select name=year onchange=this.form.submit()>";
+    $year_input_select = "<form id='select_year' method=post><select name=year onchange=this.form.submit()>";
     foreach ($Years as $year_number) {
         $year_input_select .= "<option value=$year_number";
         if ($year_number == $current_year) {
@@ -282,15 +281,15 @@ function build_absence_year($year) {
 
 /**
  * Build the HTML code of the calendar.
- * 
+ *
  * The calendar is a div of the month with adjacend weeks containing rows of weeks containing columns of days.
  * Each day column contains the day of week and day number.
  * It may contain spans with the name of a holiday or
  * spans with the employee_id numbers of absent employees.
- * Absence is not shown on holidays and on weekends. 
+ * Absence is not shown on holidays and on weekends.
  * The absence spans are colored differently for different professions.
- * 
- * 
+ *
+ *
  * @param int $year
  * @param int $month_number
  * @global array[string] $Ausbildung_mitarbeiter Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
