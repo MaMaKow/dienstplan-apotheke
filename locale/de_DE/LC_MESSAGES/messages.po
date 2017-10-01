@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-09-27 09:14+0200\n"
-"PO-Revision-Date: 2017-09-27 09:14+0200\n"
+"POT-Creation-Date: 2017-10-01 18:49+0200\n"
+"PO-Revision-Date: 2017-10-01 18:49+0200\n"
 "Last-Translator: \n"
 "Language-Team: MaMaKow\n"
 "Language: de_DE@formal\n"
@@ -69,9 +69,9 @@ msgstr "Keine Pause"
 
 #: human-resource-management-in.php:53
 msgid "vacation days"
-msgstr ""
+msgstr "Urlaubstage"
 
-#: js/collaborative-vacation.js:175
+#: js/collaborative-vacation.js:176
 msgid "Vacation"
 msgstr "Urlaub"
 
@@ -126,10 +126,8 @@ msgid "Missing data in table `approval`"
 msgstr "Fehlende Daten in der Tabelle `approval`"
 
 #: src/php/classes/build_html_roster_views.php:31
-#, fuzzy
-#| msgid "Absence"
 msgid "Absentees"
-msgstr "Abwesenheit"
+msgstr "Abwesende"
 
 #: src/php/classes/class.sessions.php:140
 msgid "The permission to create a roster is missing."
@@ -174,10 +172,8 @@ msgid "Create new user account"
 msgstr "Neuen Benutzer anlegen"
 
 #: src/php/login.php:41
-#, fuzzy
-#| msgid "Lost password"
 msgid "Forgot password?"
-msgstr "Passwort vergessen"
+msgstr "Passwort vergessen?"
 
 #: src/php/pages/lost_password.php:39
 msgid "Please enter your email address, user name or user id!"
@@ -202,8 +198,6 @@ msgid "Weekly view output"
 msgstr "Wochenansicht Ausgabe"
 
 #: src/php/pages/menu.php:16
-#, fuzzy
-#| msgid "Dayly view"
 msgid "Daily view"
 msgstr "Tagesansicht"
 
