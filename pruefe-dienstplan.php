@@ -1,7 +1,6 @@
 <?php
 
 function examine_duty_roster() {
-    global $verbindungi;
     global $Dienstplan, $mandant, $datum;
     global $Approbierte_mitarbeiter, $Wareneingang_Mitarbeiter, $Anwesende;
     //Variabkes that will be set here have to be global too, to make them visible outside.
@@ -24,7 +23,7 @@ function examine_duty_roster() {
             }
         }
     } else {
-        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.<br>\n";
     }
     if (isset($Wareneingang_Anwesende) and isset($tages_ende) and isset($tages_beginn)) {
         //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
@@ -41,8 +40,11 @@ function examine_duty_roster() {
             }
         }
     } else {
-        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Ware-Menschen.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Ware-Menschen.<br>\n";
     }
+
+
+    print_debug_variable('$tages_ende', '$Anwesende', $tages_ende, $Anwesende);
     if (isset($Anwesende) and isset($tages_ende)) {
         foreach ($Anwesende as $zeit => $anwesende) {
             if ($anwesende < 2 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
@@ -56,7 +58,7 @@ function examine_duty_roster() {
             }
         }
     } else {
-        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der Anwesenden.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der Anwesenden.";
     }
 }
 
@@ -73,7 +75,7 @@ $abfrage = "SELECT `first`.`VK`,"
         . " 	AND ((`first`.`Dienstbeginn` != `second`.`Dienstbeginn` )" //eliminate pure self-duplicates;
         . " 	OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates primary key is VK+start+mandant
         . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
-//echo "$abfrage<br>\n";
+
 $ergebnis = mysqli_query_verbose($abfrage);
 while ($row = mysqli_fetch_array($ergebnis)) {
     $Fehlermeldung[] = "Konflikt bei Mitarbeiter "
@@ -88,6 +90,5 @@ while ($row = mysqli_fetch_array($ergebnis)) {
             . " ("
             . $Kurz_mandant[$row['second_branch']]
             . ")!";
-    // echo "<pre>"; var_dump($row); echo "</pre><br>\n<br>\n";
 }
 examine_duty_roster();
