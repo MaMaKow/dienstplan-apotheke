@@ -264,15 +264,15 @@ for ($j = 0; $j < $VKcount; ++$j) {
 //Mittagspause
     $zeile = '';
     echo "\t\t\t\t\t<td>";
-    $zeile .= ' " . gettext("break") . ": <input type=time name=Grundplan[' . $wochentag . '][Mittagsbeginn][' . $j . '] tabindex=' . ($wochentag * $VKcount * 5 + $j * 5 + 4) . ' value=';
+    $zeile .= gettext("break") . ": <input type=time name=Grundplan[" . $wochentag . "][Mittagsbeginn][" . $j . "] tabindex='" . ($wochentag * $VKcount * 5 + $j * 5 + 4) . "' value='";
     if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
     }
-    $zeile .= '> bis <input type=time name=Grundplan[' . $wochentag . '][Mittagsende][' . $j . '] tabindex=' . ($wochentag * $VKcount * 5 + $j * 5 + 5) . ' value=';
+    $zeile .= "'> bis <input type=time name=Grundplan[" . $wochentag . "][Mittagsende][" . $j . "] tabindex='" . ($wochentag * $VKcount * 5 + $j * 5 + 5) . "' value='";
     if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsende'][$j]));
     }
-    $zeile .= '>';
+    $zeile .= "'>";
 
     echo $zeile;
     echo "</td>\n";
