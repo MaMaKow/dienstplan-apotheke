@@ -177,7 +177,6 @@ function write_user_input_to_database() {
  */
 function build_absence_year($year) {
     global $Ausbildung_mitarbeiter;
-
     $start_date = mktime(0, 0, 0, 1, 1, $year);
     $current_month = date("n", $start_date);
     //$system_encoding = mb_detect_encoding(strftime("äöüÄÖÜß %B", 1490388361), "auto");
@@ -212,7 +211,8 @@ function build_absence_year($year) {
     for ($date_unix = $start_date; $date_unix < strtotime("+ 1 year", $start_date); $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date('Y-m-d', $date_unix);
         $is_holiday = is_holiday($date_unix);
-        list($Abwesende,, ) = db_lesen_abwesenheit($date_unix);
+        $Abwesende = db_lesen_abwesenheit($date_unix);
+        print_debug_variable($Abwesende, $date_sql);
 
         if ($current_month < date("n", $date_unix)) {
             /** begin a new month div */
@@ -367,7 +367,7 @@ function build_absence_month($year, $month_number) {
 
         $date_sql = date('Y-m-d', $date_unix);
         $is_holiday = is_holiday($date_unix);
-        list($Abwesende,, ) = db_lesen_abwesenheit($date_unix);
+        $Abwesende = db_lesen_abwesenheit($date_unix);
 
         if ($current_week < date("W", $date_unix)) {
             /** begin a new month div */
