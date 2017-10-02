@@ -24,9 +24,12 @@ $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT
     <select name="employee_id" id="employee_id_select">
         <?php
         if ($session->user_has_privilege('create_absence')) {
-            foreach ($Mitarbeiter as $employee_id => $last_name) {
-                echo "\t\t<option id='employee_id_option_$employee_id' value=$employee_id>";
-                echo "$employee_id $last_name";
+            foreach ($Mitarbeiter as $employee_id_option => $last_name) {
+                if ($employee_id_option === $employee_id) {
+                    $option_selected = "selected";
+                }
+                echo "\t\t<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
+                echo "$employee_id_option $last_name";
                 echo "</option>\n";
             }
         } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_id) {
@@ -34,14 +37,13 @@ $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT
             echo $_SESSION['user_employee_id'] . " " . $Mitarbeiter[$_SESSION['user_employee_id']];
             echo "</option>\n";
         } else {
-            print_debug_variable("else someone else", $employee_id);
             echo "\t\t<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
             echo $employee_id . " " . $Mitarbeiter[$employee_id];
             echo "</option>\n";
         }
         ?>
     </select>
-    <img src="" style="width: 0" alt="" 
+    <img src="" style="width: 0" alt=""
          onerror="prefill_input_box_form(); this.parentNode.removeChild(this);"
          comment="This element is necessary to allow interaction of javascript with this element. After the execution, it is removed."
          />
