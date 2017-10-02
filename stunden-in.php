@@ -35,14 +35,14 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
 if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
     $abfrage = "INSERT INTO `Stunden`
         (VK, Datum, Stunden, Saldo, Grund)
-        VALUES (" . filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT) 
-            . ", '" 
-            . filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING) 
-            . "', " 
-            . filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT) 
-            . ", " 
-            . filter_input(INPUT_POST, 'saldo', FILTER_SANITIZE_NUMBER_FLOAT) 
-            . ", '" 
+        VALUES (" . filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT)
+            . ", '"
+            . filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING)
+            . "', "
+            . filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)
+            . ", "
+            . filter_input(INPUT_POST, 'saldo', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)
+            . ", '"
             . filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
             . "')";
     if (!($ergebnis = mysqli_query($verbindungi, $abfrage))) {
@@ -100,8 +100,8 @@ if (empty($saldo)) {
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
-if(!$session->user_has_privilege('create_roster')){
-    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+if (!$session->user_has_privilege('create_roster')) {
+    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();
 }
 
