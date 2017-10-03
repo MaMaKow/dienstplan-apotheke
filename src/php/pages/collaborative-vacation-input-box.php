@@ -20,7 +20,7 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
 
 $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 ?>
-<form id="input_box_form" method="POST">
+<form id="input_box_form" method="POST" onmousedown="stop_click_propagation();">
     <select name="employee_id" id="employee_id_select">
         <?php
         if ($session->user_has_privilege('create_absence')) {
@@ -66,3 +66,8 @@ $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT
     <input type="hidden" id="employee_id_old" name="employee_id_old">
     <input type="hidden" id="input_box_form_start_date_old" name="start_date_old">
 </form>
+<a title="<?= gettext("Close"); ?>" href="#" onclick="remove_form_div()">
+    <span id="remove_form_div_span">
+        x
+    </span>
+</a>
