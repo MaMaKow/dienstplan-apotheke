@@ -4,11 +4,11 @@
 config/
 documentation/
 
-
 # These files are for development purposes only: #
 ##################################################
 layout-test.html
 style-test.css
+tests/
 
 
 # Dateien, die im Dienstplan erzeugt werden #

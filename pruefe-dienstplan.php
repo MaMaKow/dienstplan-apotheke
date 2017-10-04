@@ -23,7 +23,7 @@ function examine_duty_roster() {
             }
         }
     } else {
-        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.";
     }
     if (isset($Wareneingang_Anwesende) and isset($tages_ende) and isset($tages_beginn)) {
         //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
@@ -44,7 +44,7 @@ function examine_duty_roster() {
     }
 
 
-    print_debug_variable('$tages_ende', '$Anwesende', $tages_ende, $Anwesende);
+    //print_debug_variable('$tages_ende', '$Anwesende', $tages_ende, $Anwesende);
     if (isset($Anwesende) and isset($tages_ende)) {
         foreach ($Anwesende as $zeit => $anwesende) {
             if ($anwesende < 2 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
@@ -91,4 +91,3 @@ while ($row = mysqli_fetch_array($ergebnis)) {
             . $Kurz_mandant[$row['second_branch']]
             . ")!";
 }
-examine_duty_roster();

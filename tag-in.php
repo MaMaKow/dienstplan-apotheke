@@ -48,8 +48,11 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
     //sort_roster_array($Principle_roster);
     $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
 }
-if (array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0])) {
+if ((array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0]))
+        and "7" !== date('N', strtotime($datum))
+        and ! is_holiday(strtotime($datum))) {
     require 'pruefe-dienstplan.php';
+    examine_duty_roster();
 }
 $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
 
