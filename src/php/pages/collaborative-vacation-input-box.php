@@ -18,7 +18,13 @@
 require_once "../../../default.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
 
-$employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+if (filter_has_var(INPUT_GET, 'employee_id')) {
+    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
+    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+} else {
+    $employee_id = $_SESSION['user_employee_id'];
+}
 ?>
 <form id="input_box_form" method="POST" onmousedown="stop_click_propagation();">
     <select name="employee_id" id="employee_id_select">

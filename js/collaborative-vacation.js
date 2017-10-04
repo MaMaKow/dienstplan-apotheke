@@ -258,14 +258,14 @@ function fill_input_box_from_prototype(div) {
         //Obviously only exists in edit mode:
         var absence_details = JSON.parse(absence_details_json.nodeValue);
         employee_id = absence_details.employee_id;
+        var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php?employee_id=' + employee_id;
     } else {
-        employee_id = null;
+        var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php';
     }
     /*
      * <- This previous part is relevant only to the edit mode.
      */
 
-    var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php?employee_id=' + employee_id;
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
