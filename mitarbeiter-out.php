@@ -4,8 +4,8 @@ require 'db-lesen-abwesenheit.php';
 require 'db-lesen-mandant.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
 require "src/php/calculate-holidays.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/class.emergency_service.php";
 
-//$datenübertragung="";
 $dienstplanCSV = '';
 $tage = 7;
 
@@ -80,26 +80,30 @@ echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strtotime('+ 1 day', $date_unix))) {
     $date_unix = strtotime($date_sql);
-    require 'db-lesen-notdienst.php';
+    $holiday = is_holiday($date_unix);
+    $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
     $Abwesende = db_lesen_abwesenheit($date_sql);
     $zeile = '';
     echo "\t\t\t\t\t<td>";
     //Datum
-    echo "<a href='tag-out.php?datum=" . $Dienstplan[$tag]['Datum'][0] . "'>";
+    echo "<a href='tag-out.php?datum=" . $Dienstplan[$tag]['Datum'][0] . "'";
+    if (FALSE !== $having_emergency_service) {
+        echo " title='" . $Mitarbeiter[$having_emergency_service["employee_id"]] . gettext(" is having emergency service at ") . $Mandant[$having_emergency_service["branch_id"]] . "'";
+    }
+    echo ">";
     $zeile .= "<input type=hidden name=Dienstplan[" . $tag . "][Datum][0] value=" . $Dienstplan[$tag]["Datum"][0] . " form='select_employee'>";
     $zeile .= strftime('%d.%m.', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
-    $holiday = is_holiday($date_unix);
     if (FALSE !== $holiday) {
-        echo ' ' . $holiday . ' ';
+        echo " <br><strong>" . $holiday . "</strong> ";
         if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id]) and date('N', strtotime($date_sql)) < 6) {
             $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
         } elseif (date('N', strtotime($date_sql)) < 6) {
             $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
         }
     }
-    if (isset($notdienst)) {
-        echo ' NOTDIENST ';
+    if (FALSE !== $having_emergency_service) {
+        echo " <br><strong>NOTDIENST</strong> ";
     }
 //	echo "</td>\n";
 //}
