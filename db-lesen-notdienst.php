@@ -8,12 +8,12 @@
 	} else {
 		$sql_datum=date('Y-m-d', strtotime($datum));
 	}
-$abfrage="SELECT *
+$sql_query="SELECT *
 		FROM `Notdienst`
 		WHERE `Datum` = '$sql_datum';";
 //		WHERE `Datum` = '$sql_datum' AND `Mandant` = '$mandant';"; //Derzeit werden alle Mandanten angezeigt. Schließlich sind wir ein Filialverbund.
-	$ergebnis = mysqli_query_verbose($abfrage);
-	while($row = mysqli_fetch_object($ergebnis))
+	$result = mysqli_query_verbose($sql_query);
+	while($row = mysqli_fetch_object($result))
 	{
 		$notdienst['vk']=$row->VK;
 		$notdienst['mandant']=$row->Mandant;

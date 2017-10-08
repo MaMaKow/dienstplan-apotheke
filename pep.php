@@ -62,16 +62,16 @@ foreach (glob("upload/*_pep") as $filename) {
     read_file_write_db($filename);
 }
 
-$abfrage = "UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
-$ergebnis = mysqli_query_verbose($abfrage);
-$abfrage = "UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:00:00'";
-$ergebnis = mysqli_query_verbose($abfrage);
+$sql_query = "UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
+$result = mysqli_query_verbose($sql_query);
+$sql_query = "UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:00:00'";
+$result = mysqli_query_verbose($sql_query);
 
 
-$abfrage = "DROP TABLE IF EXISTS `pep_weekday_time`;";
-$ergebnis = mysqli_query_verbose($abfrage);
+$sql_query = "DROP TABLE IF EXISTS `pep_weekday_time`;";
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "
+$sql_query = "
    CREATE TABLE IF NOT EXISTS `pep_weekday_time` (
   `Uhrzeit` time NOT NULL,
   `Wochentag` int(11) NOT NULL COMMENT '0=Monday',
@@ -80,12 +80,12 @@ $abfrage = "
   PRIMARY KEY (`Uhrzeit`,`Wochentag`,`Mandant`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';";
-$ergebnis = mysqli_query_verbose($abfrage);
+$sql_query = "DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';";
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "
+$sql_query = "
     INSERT INTO `pep_weekday_time`
         SELECT SEC_TO_TIME(round(TIME_TO_SEC(`Zeit`)/60/15)*15*60),
             WEEKDAY(Datum),
@@ -97,12 +97,12 @@ $abfrage = "
             Mandant
     ;
 ";
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "DROP TABLE IF EXISTS `pep_month_day`;";
-$ergebnis = mysqli_query_verbose($abfrage);
+$sql_query = "DROP TABLE IF EXISTS `pep_month_day`;";
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "
+$sql_query = "
 CREATE TABLE IF NOT EXISTS `pep_month_day` (
   `day` int(11) NOT NULL,
   `factor` float NOT NULL,
@@ -110,9 +110,9 @@ CREATE TABLE IF NOT EXISTS `pep_month_day` (
   PRIMARY KEY (`day`,`branch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "
+$sql_query = "
     INSERT INTO `pep_month_day`
         SELECT DAYOFMONTH(`Datum`),
             SUM(`Anzahl`)/COUNT(DISTINCT `Datum`)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`),
@@ -122,14 +122,14 @@ $abfrage = "
             `Mandant`
     ;
 ";
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "
+$sql_query = "
     DROP TABLE IF EXISTS `pep_year_month`;
 ";
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "
+$sql_query = "
 CREATE TABLE IF NOT EXISTS `pep_year_month` (
   `month` int(11) NOT NULL,
   `factor` float NOT NULL,
@@ -137,9 +137,9 @@ CREATE TABLE IF NOT EXISTS `pep_year_month` (
   PRIMARY KEY (`month`, `branch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ";
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);
 
-$abfrage = "    
+$sql_query = "    
     INSERT INTO `pep_year_month`
         SELECT MONTH(Datum),
             SUM(Anzahl)/COUNT(DISTINCT Datum)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`),
@@ -148,4 +148,4 @@ $abfrage = "
         GROUP BY MONTH(Datum), `Mandant`
     ;";
 //TODO: The above code gives a factor of about 0.2 for our smaller pharmacy. We have to check if that is a double factor together with the others!
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);

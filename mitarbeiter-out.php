@@ -40,20 +40,20 @@ if (isset($datum)) {
 }
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-if (!isset($Mitarbeiter[$employee_id])) {
+if (!isset($List_of_employees[$employee_id])) {
     //This happens if a coworker is not working with us anymore.
     //He can still be chosen within abwesenheit and stunden.
     //Therefore we will read his/her number in the cookie.
     //Now we just change it to someone, who is actually there:
-    $employee_id = min(array_keys($Mitarbeiter));
+    $employee_id = min(array_keys($List_of_employees));
     //die ("<H1>Mitarbeiter Nummer $employee_id ist nicht bekannt.</H1>");
 }
 //Lesen der in der Datenbank gespeicherten Daten.
 require 'db-lesen-woche-mitarbeiter.php';
 
-$VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
-$VKmax = max(array_keys($Mitarbeiter));
+$VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
+$VKmax = max(array_keys($List_of_employees));
 foreach ($Dienstplan as $key => $Dienstplantag) {
     $Plan_anzahl[] = (count($Dienstplantag['VK']));
 }
@@ -66,7 +66,7 @@ require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
 
-echo build_select_employee($employee_id, $Mitarbeiter);
+echo build_select_employee($employee_id, $List_of_employees);
 
 //Navigation between the weeks:
 echo "<form method='POST' id=navigate_time>";
@@ -88,7 +88,7 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     //Datum
     echo "<a href='tag-out.php?datum=" . $Dienstplan[$tag]['Datum'][0] . "'";
     if (FALSE !== $having_emergency_service) {
-        echo " title='" . $Mitarbeiter[$having_emergency_service["employee_id"]] . gettext(" is having emergency service at ") . $Mandant[$having_emergency_service["branch_id"]] . "'";
+        echo " title='" . $List_of_employees[$having_emergency_service["employee_id"]] . gettext(" is having emergency service at ") . $Mandant[$having_emergency_service["branch_id"]] . "'";
     }
     echo ">";
     $zeile .= "<input type=hidden name=Dienstplan[" . $tag . "][Datum][0] value=" . $Dienstplan[$tag]["Datum"][0] . " form='select_employee'>";
@@ -97,9 +97,9 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     if (FALSE !== $holiday) {
         echo " <br><strong>" . $holiday . "</strong> ";
         if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id]) and date('N', strtotime($date_sql)) < 6) {
-            $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+            $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
         } elseif (date('N', strtotime($date_sql)) < 6) {
-            $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+            $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
         }
     }
     if (FALSE !== $having_emergency_service) {
@@ -122,9 +122,9 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
         if (FALSE !== $holiday and date('N', strtotime($date_sql)) < 6) {
             //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
-                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
             } else {
-                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
             }
         }
     }
@@ -191,7 +191,7 @@ foreach ($Stunden as $mitarbeiter => $stunden) {
     if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
         echo round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
     } else {
-        echo round($Stunden_mitarbeiter[$mitarbeiter], 1);
+        echo round($List_of_employee_working_week_hours[$mitarbeiter], 1);
     }
     if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
         if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
@@ -199,8 +199,8 @@ foreach ($Stunden as $mitarbeiter => $stunden) {
             echo ' <b>( ' . $differenz . ' )</b>';
         }
     } else {
-        if (round($Stunden_mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
-            $differenz = round(array_sum($stunden), 1) - round($Stunden_mitarbeiter[$mitarbeiter], 1);
+        if (round($List_of_employee_working_week_hours[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
+            $differenz = round(array_sum($stunden), 1) - round($List_of_employee_working_week_hours[$mitarbeiter], 1);
             echo ' <b>( ' . $differenz . ' )</b>';
         }
     }

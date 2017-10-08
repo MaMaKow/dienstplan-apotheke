@@ -1,10 +1,10 @@
 <?php
 //Hole eine Liste aller Mandanten (Filialen).
-$abfrage='SELECT *
+$sql_query='SELECT *
 	FROM `Mandant`
 	;';
-$ergebnis = mysqli_query_verbose($abfrage);
-while($row = mysqli_fetch_object($ergebnis))
+$result = mysqli_query_verbose($sql_query);
+while($row = mysqli_fetch_object($result))
 {
 	if ($row->Kurzname != "" )
 	{

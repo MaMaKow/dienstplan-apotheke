@@ -6,13 +6,13 @@ $start_datum=$datum;
 for ($i=0; $i<$tage; $i++)
 {
 	$tag=date('Y-m-d', strtotime("+$i days", strtotime($start_datum)));
-	$abfrage='SELECT *
+	$sql_query='SELECT *
 		FROM `Dienstplan`
 		WHERE `Datum` = "'.$tag.'"
 			AND `VK`="'.$employee_id.'"
 		;';
-	$ergebnis = mysqli_query_verbose($abfrage);
-	while($row = mysqli_fetch_object($ergebnis))
+	$result = mysqli_query_verbose($sql_query);
+	while($row = mysqli_fetch_object($result))
 	{
 		$Dienstplan[$i]["Datum"][]=$row->Datum;
 		$Dienstplan[$i]["VK"][]=$row->VK;

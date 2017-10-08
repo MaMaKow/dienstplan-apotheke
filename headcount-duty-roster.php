@@ -24,9 +24,9 @@ if (!empty($Dienstplan[$tag]["Dienstbeginn"])) {
     }
 
     //Wir lesen die Öffnungszeiten aus der Datenbank.
-    $abfrage = "SELECT * FROM Öffnungszeiten WHERE Wochentag = " . date('N', strtotime($datum)) . " AND Mandant = " . $mandant;
-    $ergebnis = mysqli_query_verbose($abfrage);
-    $row = mysqli_fetch_object($ergebnis);
+    $sql_query = "SELECT * FROM Öffnungszeiten WHERE Wochentag = " . date('N', strtotime($datum)) . " AND Mandant = " . $mandant;
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
     if (!empty($row->Beginn) and ! empty($row->Ende)) {
         $tages_beginn = strtotime($row->Beginn);
         $tages_ende = strtotime($row->Ende);
