@@ -117,7 +117,7 @@ function insert_new_approval_into_database($date_sql, $branch_id) {
     //TODO: We should manage situations, where an entry already exists better.
     $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
 			VALUES ('$date_sql', 'not_yet_approved', '$branch_id', " . escape_sql_value($_SESSION['user_name']) . ")";
-    $ergebnis = mysqli_query_verbose($sql_query);
+    $result = mysqli_query_verbose($sql_query);
 }
 
 if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {

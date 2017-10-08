@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-10-01 18:49+0200\n"
-"PO-Revision-Date: 2017-10-01 18:49+0200\n"
+"POT-Creation-Date: 2017-10-08 22:22+0200\n"
+"PO-Revision-Date: 2017-10-08 22:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: MaMaKow\n"
 "Language: de_DE@formal\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: abwesenheit-in.php:162 stunden-in.php:112 tag-in.php:106 woche-in.php:79
+#: abwesenheit-in.php:162 stunden-in.php:112 tag-in.php:109 woche-in.php:79
 msgid "Read"
 msgstr "Lesen"
 
@@ -38,6 +38,10 @@ msgstr "Grund"
 msgid "Days"
 msgstr "Tage"
 
+#: anwesenheitsliste-out.php:109 anwesenheitsliste-out.php:110
+msgid "emergency service"
+msgstr "Notdienst"
+
 #: contact-form.php:13
 msgid "Wishes, criticism, suggestions"
 msgstr "Wünsche, Kritik, Anregungen"
@@ -58,8 +62,8 @@ msgstr "Email"
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
 
-#: grundplan-vk-in.php:202 grundplan-vk-in.php:211 schreiben-tabelle.php:97
-#: tag-in.php:181 tag-out.php:142 woche-in.php:153
+#: grundplan-tag-in.php:267 grundplan-vk-in.php:202 grundplan-vk-in.php:211
+#: schreiben-tabelle.php:97 tag-in.php:184 tag-out.php:142 woche-in.php:153
 msgid "break"
 msgstr "Pause"
 
@@ -71,14 +75,18 @@ msgstr "Keine Pause"
 msgid "vacation days"
 msgstr "Urlaubstage"
 
-#: js/collaborative-vacation.js:176
+#: js/collaborative-vacation.js:210
 msgid "Vacation"
 msgstr "Urlaub"
 
-#: mitarbeiter-out.php:67 tag-in.php:89 tag-out.php:73 woche-in.php:60
+#: mitarbeiter-out.php:67 tag-in.php:92 tag-out.php:73 woche-in.php:60
 #: woche-out.php:57
 msgid "calendar week"
 msgstr "Kalenderwoche"
+
+#: mitarbeiter-out.php:91
+msgid " is having emergency service at "
+msgstr " hat Notdienst in "
 
 #: navigation.php:8 navigation.php:11
 msgid "1 day backward"
@@ -108,7 +116,7 @@ msgstr "Genehmigen"
 msgid "Disapprove"
 msgstr "Ablehnen"
 
-#: pruefe-dienstplan.php:17
+#: pruefe-dienstplan.php:16
 #, php-format
 msgid "At %1s there is no authorized person present."
 msgstr "Um %1s Uhr ist kein Approbierter anwesend."
@@ -174,6 +182,10 @@ msgstr "Neuen Benutzer anlegen"
 #: src/php/login.php:41
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
+
+#: src/php/pages/collaborative-vacation-input-box.php:75
+msgid "Close"
+msgstr "Schießen"
 
 #: src/php/pages/lost_password.php:39
 msgid "Please enter your email address, user name or user id!"

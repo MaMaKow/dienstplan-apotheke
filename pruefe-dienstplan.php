@@ -62,7 +62,7 @@ function examine_duty_roster() {
     }
 }
 
-$abfrage = "SELECT `first`.`VK`,"
+$sql_query = "SELECT `first`.`VK`,"
         . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
         . " `first`.`Mandant` as first_branch,"
         . " `second`.`Dienstbeginn` as second_start, `second`.`Dienstende` as second_end,"
@@ -76,10 +76,10 @@ $abfrage = "SELECT `first`.`VK`,"
         . " 	OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates primary key is VK+start+mandant
         . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
 
-$ergebnis = mysqli_query_verbose($abfrage);
-while ($row = mysqli_fetch_array($ergebnis)) {
+$result = mysqli_query_verbose($sql_query);
+while ($row = mysqli_fetch_array($result)) {
     $Fehlermeldung[] = "Konflikt bei Mitarbeiter "
-            . $Mitarbeiter[$row['VK']]
+            . $List_of_employees[$row['VK']]
             . "<br>"
             . $row['first_start']
             . " bis " . $row['first_end']

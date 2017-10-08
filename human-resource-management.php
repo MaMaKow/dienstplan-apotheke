@@ -1,9 +1,9 @@
 <?php
 function read_employee_data_from_database($employee_id) {
-    $abfrage = "SELECT * FROM `employees` WHERE `id` = '$employee_id'";
-    //echo "$abfrage<br>\n";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT * FROM `employees` WHERE `id` = '$employee_id'";
+    //echo "$sql_query<br>\n";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Worker["worker_id"] = $row->id;
         $Worker["first_name"] = $row->first_name;
         $Worker["last_name"] = $row->last_name;
@@ -37,7 +37,7 @@ function write_employee_data_to_database() {
         $Worker["start_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING)));
         $Worker["end_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING)));
 
-        $abfrage = "REPLACE INTO `employees` (  
+        $sql_query = "REPLACE INTO `employees` (  
         `id`, `first_name`, `last_name`,
         `profession`,
         `working_hours`, `working_week_hours`, `holidays`, `lunch_break_minutes`,
@@ -60,18 +60,18 @@ function write_employee_data_to_database() {
                 . $Worker['start_of_employment'] . ", "
                 . $Worker['end_of_employment']
                 . ")";
-//        echo "$abfrage<br>\n";
-        $ergebnis = mysqli_query_verbose($abfrage);
-        return $ergebnis;
+//        echo "$sql_query<br>\n";
+        $result = mysqli_query_verbose($sql_query);
+        return $result;
     }  else {
         return FALSE;
     }
 }
 
 function make_radio_profession_list($checked) {
-    $abfrage = "SHOW COLUMNS FROM `employees` LIKE 'profession'";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_array($ergebnis)) {
+    $sql_query = "SHOW COLUMNS FROM `employees` LIKE 'profession'";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_array($result)) {
         $set_column = $row["Type"];
         $clean_set_column = str_replace(["set(", ")", "'"], "", $set_column);
         $Professions = explode(",", $clean_set_column);

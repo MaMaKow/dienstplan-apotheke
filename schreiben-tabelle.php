@@ -1,7 +1,7 @@
 <?php
 
 function schreiben_tabelle($Dienstplan, $branch) {
-    global $Mitarbeiter;
+    global $List_of_employees;
     global $config;
     global $Warnmeldung, $Fehlermeldung, $Overlay_message;
     $table_html = "";
@@ -31,9 +31,9 @@ function schreiben_tabelle($Dienstplan, $branch) {
             //Duty rosters have to be approved by the leader, before the staff can view them.
             $date_sql = $Dienstplan[$i]["Datum"][0];
             unset($approval);
-            $abfrage = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch'";
-            $ergebnis = mysqli_query_verbose($abfrage);
-            while ($row = mysqli_fetch_object($ergebnis)) {
+            $sql_query = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch'";
+            $result = mysqli_query_verbose($sql_query);
+            while ($row = mysqli_fetch_object($result)) {
                 $approval = $row->state;
             }
             if (isset($approval)) {
@@ -55,7 +55,7 @@ function schreiben_tabelle($Dienstplan, $branch) {
             $table_html .= "\t\t\t\t\t<td>";
             if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 $zeile = "";
-                if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
+                if (isset($Dienstplan[$i]["VK"][$j]) && isset($List_of_employees[$Dienstplan[$i]["VK"][$j]])) {
                     $key_in_principle_roster = array_search($Dienstplan[$i]["VK"][$j], $Principle_roster[$i]["VK"]);
                     if (
                             FALSE !== $key_in_principle_roster
@@ -73,7 +73,7 @@ function schreiben_tabelle($Dienstplan, $branch) {
                     $zeile.="$emphasis_start<b><a href='mitarbeiter-out.php?"
                             . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0])
                             . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
-                    $zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
+                    $zeile.=$List_of_employees[$Dienstplan[$i]["VK"][$j]];
                     $zeile.="</a></b> / ";
                     $zeile.=$Dienstplan[$i]["Stunden"][$j];
                     $zeile.=" ";

@@ -21,8 +21,8 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
 
     foreach ($Grundplan as $wochentag => $value) {
         //First, the old values are deleted.
-        $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
-        $ergebnis = mysqli_query_verbose($abfrage);
+        $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
+        $result = mysqli_query_verbose($sql_query);
         //New values are composed from the Grundplan from $_POST.
         foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
             //Die einzelnen Zeilen im Grundplan
@@ -42,12 +42,12 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
                 } else {
                     $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
                     //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                    if (!isset($Mitarbeiter)) {
+                    if (!isset($List_of_employees)) {
                         require 'db-lesen-mitarbeiter.php';
                     }
 
-                    if ($sekunden - $Mittag_mitarbeiter[$VK] * 60 >= 6 * 3600) {
-                        $mittagspause = $Mittag_mitarbeiter[$VK] * 60;
+                    if ($sekunden - $List_of_employee_lunch_break_minutes[$VK] * 60 >= 6 * 3600) {
+                        $mittagspause = $List_of_employee_lunch_break_minutes[$VK] * 60;
                         $sekunden = $sekunden - $mittagspause;
                     } else {
                         //Keine Mittagspause
@@ -55,9 +55,9 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
                     $stunden = round($sekunden / 3600, 1);
                 }
                 //The new values are stored inside the database.
-                $abfrage = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
+                $sql_query = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
 			             VALUES ('$VK', '$wochentag', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$kommentar', '$mandant')";
-                $ergebnis = mysqli_query_verbose($abfrage);
+                $result = mysqli_query_verbose($sql_query);
             }
         }
     }
@@ -85,15 +85,15 @@ require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
 
-$abfrage = 'SELECT *
+$sql_query = 'SELECT *
 FROM `Grundplan`
 WHERE `Wochentag` = "' . $wochentag . '"
 	AND `Mandant`="' . $mandant . '"
 	ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`
 ;';
-$ergebnis = mysqli_query_verbose($abfrage);
+$result = mysqli_query_verbose($sql_query);
 unset($Grundplan);
-while ($row = mysqli_fetch_object($ergebnis)) {
+while ($row = mysqli_fetch_object($result)) {
     $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
     $Grundplan[$wochentag]['VK'][] = $row->VK;
     $Grundplan[$wochentag]['Dienstbeginn'][] = $row->Dienstbeginn;
@@ -109,8 +109,8 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     } else {
         $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
         //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-        if ($sekunden - $Mittag_mitarbeiter[$row->VK] * 60 >= 6 * 3600) {
-            $mittagspause = $Mittag_mitarbeiter[$row->VK] * 60;
+        if ($sekunden - $List_of_employee_lunch_break_minutes[$row->VK] * 60 >= 6 * 3600) {
+            $mittagspause = $List_of_employee_lunch_break_minutes[$row->VK] * 60;
             $sekunden = $sekunden - $mittagspause;
         } else {
             $mittagspause = false;
@@ -122,13 +122,13 @@ while ($row = mysqli_fetch_object($ergebnis)) {
     $Grundplan[$wochentag]['Kommentar'][] = $row->Kommentar;
     $Grundplan[$wochentag]['Mandant'][] = $row->Mandant;
 
-    if ($Ausbildung_mitarbeiter[$row->VK] == "Apotheker") {
+    if ($List_of_employee_professions[$row->VK] == "Apotheker") {
         $worker_style = 1;
-    } elseif ($Ausbildung_mitarbeiter[$row->VK] == "PI") {
+    } elseif ($List_of_employee_professions[$row->VK] == "PI") {
         $worker_style = 1;
-    } elseif ($Ausbildung_mitarbeiter[$row->VK] == "PTA") {
+    } elseif ($List_of_employee_professions[$row->VK] == "PTA") {
         $worker_style = 2;
-    } elseif ($Ausbildung_mitarbeiter[$row->VK] == "PKA") {
+    } elseif ($List_of_employee_professions[$row->VK] == "PKA") {
         $worker_style = 3;
     } else {
         //anybody else
@@ -163,9 +163,9 @@ $date_sql = date('Y-m-d', $pseudo_date);
 //$Filialplan[$filiale]=db_lesen_tage(1, $filiale, "[^".$filiale."]");
 //}
 
-$VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
-$VKmax = max(array_keys($Mitarbeiter));
+$VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
+$VKmax = max(array_keys($List_of_employees));
 
 //Produziere die Ausgabe
 require 'head.php';
@@ -218,7 +218,7 @@ for ($j = 0; $j < $VKcount; ++$j) {
     $zeile = '';
     echo "\t\t\t\t\t<td>";
     $zeile .= "<select name=Grundplan[" . $wochentag . "][VK][" . $j . "] tabindex=" . (($wochentag * $VKcount * 5) + ($j * 5) + 1) . "><option value=''>&nbsp;</option>";
-    foreach ($Mitarbeiter as $k => $name) {
+    foreach ($List_of_employees as $k => $name) {
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
             if ($Grundplan[$wochentag]['VK'][$j] != $k) {
                 //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.

@@ -27,7 +27,7 @@ if (isset($Abwesende)) {
     }
     if (isset($Arbeitende_abwesende)) {
         foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
-            $Fehlermeldung[] = $Mitarbeiter[$arbeitender_abwesender] . " ist abwesend (" . $Abwesende[$arbeitender_abwesender] . ") und sollte nicht im Dienstplan stehen.";
+            $Fehlermeldung[] = $List_of_employees[$arbeitender_abwesender] . " ist abwesend (" . $Abwesende[$arbeitender_abwesender] . ") und sollte nicht im Dienstplan stehen.";
         }
     }
 }
@@ -45,7 +45,7 @@ if (NULL !== $Principle_roster and FALSE === $holiday) {
         $fehler = "Es sind folgende Mitarbeiter nicht eingesetzt: <br>\n";
         foreach ($Mitarbeiter_differenz as $arbeiter) {
             $position_in_principle_roster = array_search($arbeiter, $Principle_roster[$tag]["VK"]);
-            $fehler .= $separator . $Mitarbeiter[$arbeiter];
+            $fehler .= $separator . $List_of_employees[$arbeiter];
             $fehler .= " ("
                     . $Principle_roster[$tag]["Dienstbeginn"][$position_in_principle_roster]
                     . " - "

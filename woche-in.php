@@ -40,8 +40,8 @@ require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan = db_lesen_tage($tage, $mandant);
 require 'db-lesen-feiertag.php';
 
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
-$VKmax = max(array_keys($Mitarbeiter));
+//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
+$VKmax = max(array_keys($List_of_employees));
 $VKcount = calculate_VKcount($Dienstplan);
 
 
@@ -117,15 +117,15 @@ for ($j = 0; $j < $VKcount; $j++) {
         echo "\t\t\t\t<td>";
         $zeile.="<select name=Dienstplan[" . $i . "][VK][" . $j . "] tabindex=" . (($i * $VKcount * 5) + ($j * 5) + 1) . "><option>";
         $zeile.="</option>";
-        foreach ($Mitarbeiter as $k => $mitarbeiter) {
+        foreach ($List_of_employees as $k => $mitarbeiter) {
             if (isset($Dienstplan[$i]["VK"][$j])) {
-                if (isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j] != $k) { //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
-                    $zeile.="<option value=" . $k . ">" . $k . " " . $Mitarbeiter[$k] . "</option>";
+                if (isset($List_of_employees[$k]) and $Dienstplan[$i]["VK"][$j] != $k) { //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
+                    $zeile.="<option value=" . $k . ">" . $k . " " . $List_of_employees[$k] . "</option>";
                 } else {
-                    $zeile.="<option value=" . $k . " selected>" . $k . " " . $Mitarbeiter[$k] . "</option>";
+                    $zeile.="<option value=" . $k . " selected>" . $k . " " . $List_of_employees[$k] . "</option>";
                 }
-            } elseif (isset($Mitarbeiter[$k])) {
-                $zeile.="<option value=" . $k . ">" . $k . " " . $Mitarbeiter[$k] . "</option>";
+            } elseif (isset($List_of_employees[$k])) {
+                $zeile.="<option value=" . $k . ">" . $k . " " . $List_of_employees[$k] . "</option>";
             }
         }
         $zeile.="</select>";
