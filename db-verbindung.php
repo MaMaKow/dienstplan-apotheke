@@ -28,13 +28,13 @@ function pdo_query($sql_query, $bind_array = null, $inside_transaction = FALSE) 
         if (is_null($bind_array)) {
             $result = $pdo->execute($sql_query);
         } else {
-            $pdo->prepare($sql_query);
-            $result = $pdo->execute($bind_array);
+            $statement = $pdo->prepare($sql_query);
+            $result = $statement->execute($bind_array);
         }
         if ($result === FALSE) {
-            error_log("Error: $sql_query <br>" . mysqli_error($GLOBALS['verbindungi']));
+            error_log("Error: $sql_query <br>" . $pdo->errorInfo());
             if ($inside_transaction !== FALSE) {
-                mysqli_query($GLOBALS['verbindungi'], "ROLLBACK");
+                $pdo->rollBack();
             }
             die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
         }
