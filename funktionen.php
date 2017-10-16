@@ -13,7 +13,7 @@ function create_cookie($cookie_name, $cookie_value, $days = 7) {
 }
 
 /**
- * 
+ *
  * @param string $time_string
  * @return float time in hours
  */
@@ -43,7 +43,7 @@ function calculate_percentile($arr, $percentile) {
 }
 
 /**
- * 
+ *
  * @global array $Mandanten_mitarbeiter
  * @param array $Dienstplan
  * @return int
@@ -63,7 +63,7 @@ function calculate_VKcount($Dienstplan) {
 }
 
 /**
- * 
+ *
  * @param mixed $data
  * @return mixed
  */
@@ -73,7 +73,7 @@ function sanitize_user_input($data) {
 }
 
 /**
- * 
+ *
  * @param array $Dienstplan
  * @return array A list of tie points where the number of employees might change.
  */
@@ -134,7 +134,7 @@ function print_debug_variable($variable) {
 
 /**
  * Test if PHP is running on a Windows machine.
- * 
+ *
  * @return boolean True if Operating system is Windows.
  */
 function runing_on_windows() {
@@ -146,10 +146,10 @@ function runing_on_windows() {
 
 /**
  * Returns the localized name of the month correctly on Windows and *nix
- * 
+ *
  * On windows systems the function strftime() will not use utf8 encoding.
  * It ignores setlocale().
- * 
+ *
  * @param int $date_unix unix time.
  * @return string $month_name month name.
  */
@@ -163,10 +163,10 @@ function get_utf8_month_name($date_unix) {
 
 /*
  * This function will guess the root folder
- * 
+ *
  * Currently there are only two options for the position of php files.
  * They can be directly in the root folder, or they are in the folder ./src/php/ .
- * 
+ *
  * @return string path of the root folder of the application
  */
 
@@ -181,11 +181,19 @@ function get_root_folder() {
 
 /*
  * This function will check if a given string represents a valid date.
- * 
+ *
  * @param $date_string string any string that is supposed to represent a date.
  * @return bool validity of the date.
  */
 
 function is_valid_date($date_string) {
     return (bool) strtotime($date_string);
+}
+
+function tomorow_date_string($date_sql) {
+    return date('Y-m-d', strtotime($date_sql, '+1 day'));
+}
+
+function yesterday_date_string($date_sql) {
+    return date('Y-m-d', strtotime($date_sql, '-1 day'));
 }

@@ -30,7 +30,7 @@ if (filter_has_var(INPUT_GET, 'employee_id')) {
     <select name="employee_id" id="employee_id_select">
         <?php
         if ($session->user_has_privilege('create_absence')) {
-            foreach ($Mitarbeiter as $employee_id_option => $last_name) {
+            foreach ($List_of_employees as $employee_id_option => $last_name) {
                 if ($employee_id_option === $employee_id) {
                     $option_selected = "selected";
                 }
@@ -40,11 +40,11 @@ if (filter_has_var(INPUT_GET, 'employee_id')) {
             }
         } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_id) {
             echo "\t\t<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
-            echo $_SESSION['user_employee_id'] . " " . $Mitarbeiter[$_SESSION['user_employee_id']];
+            echo $_SESSION['user_employee_id'] . " " . $List_of_employees[$_SESSION['user_employee_id']];
             echo "</option>\n";
         } else {
             echo "\t\t<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
-            echo $employee_id . " " . $Mitarbeiter[$employee_id];
+            echo $employee_id . " " . $List_of_employees[$employee_id];
             echo "</option>\n";
         }
         ?>

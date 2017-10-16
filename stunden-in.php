@@ -11,7 +11,7 @@ if (filter_has_var(INPUT_POST, 'employee_id')) {
 } elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
     $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
-    $employee_id = min(array_keys($Mitarbeiter));
+    $employee_id = min(array_keys($List_of_employees));
 }
 if (isset($employee_id)) {
     create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
@@ -23,9 +23,9 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
     foreach ($Remove as $employee_id => $Data) {
         $employee_id = intval($employee_id);
         foreach ($Data as $date_sql => $X) {
-            $abfrage = "DELETE FROM `Stunden`
+            $sql_query = "DELETE FROM `Stunden`
 			WHERE `VK` = '$employee_id' AND `Datum` = '$date_sql'";
-            $ergebnis = mysqli_query_verbose($abfrage);
+            $result = mysqli_query_verbose($sql_query);
         }
     }
     $employee_id = $employee_id;
@@ -33,7 +33,7 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
 
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
 if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
-    $abfrage = "INSERT INTO `Stunden`
+    $sql_query = "INSERT INTO `Stunden`
         (VK, Datum, Stunden, Saldo, Grund)
         VALUES (" . filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT)
             . ", '"
@@ -45,27 +45,27 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
             . ", '"
             . filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
             . "')";
-    if (!($ergebnis = mysqli_query($verbindungi, $abfrage))) {
+    if (!($result = mysqli_query($verbindungi, $sql_query))) {
         $error_string = mysqli_error($verbindungi);
         if (strpos($error_string, 'Duplicate') !== false) {
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
             //Are there other errors, that we should handle?
-            error_log("Error: $abfrage <br>" . mysqli_error($verbindungi));
+            error_log("Error: $sql_query <br>" . mysqli_error($verbindungi));
             die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
         }
     }
 }
 $vk = $employee_id;
-$abfrage = "SELECT * FROM `Stunden`
+$sql_query = "SELECT * FROM `Stunden`
 				WHERE `VK` = " . $vk . "
 				ORDER BY `Aktualisierung` ASC
 				";
-$ergebnis = mysqli_query_verbose($abfrage);
-$number_of_rows = mysqli_num_rows($ergebnis);
+$result = mysqli_query_verbose($sql_query);
+$number_of_rows = mysqli_num_rows($result);
 $tablebody = "\t\t\t<tbody>\n";
 $i = 1;
-while ($row = mysqli_fetch_object($ergebnis)) {
+while ($row = mysqli_fetch_object($result)) {
     $tablebody.= "\t\t\t<tr>\n";
     $tablebody.= "\t\t\t\t<td>\n";
     $tablebody.= "\t\t\t\t\t<form onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
@@ -108,7 +108,7 @@ if (!$session->user_has_privilege('create_roster')) {
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo build_select_employee($employee_id, $Mitarbeiter);
+echo build_select_employee($employee_id, $List_of_employees);
 echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[" . gettext("Read") . "]</a>\n";
 
 echo "\t\t<table>\n";

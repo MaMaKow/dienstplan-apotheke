@@ -48,8 +48,11 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
     //sort_roster_array($Principle_roster);
     $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
 }
-if (array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0])) {
+if ((array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0]))
+        and "7" !== date('N', strtotime($datum))
+        and ! is_holiday(strtotime($datum))) {
     require 'pruefe-dienstplan.php';
+    examine_duty_roster();
 }
 $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
 
@@ -62,11 +65,11 @@ if (isset($notdienst['mandant'])) {
 
 
 //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//$VKcount=count($Mitarbeiter);
+//$VKcount=count($List_of_employees);
 $VKcount = calculate_VKcount($Dienstplan);
 
-//end($Mitarbeiter); $VKmax=key($Mitarbeiter); reset($Mitarbeiter); //Wir suchen nach der höchsten VK-Nummer VKmax.
-$VKmax = max(array_keys($Mitarbeiter));
+//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
+$VKmax = max(array_keys($List_of_employees));
 
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
 require 'pruefe-abwesenheit.php';
@@ -128,8 +131,8 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     }
     require 'db-lesen-notdienst.php';
     if (isset($notdienst['mandant'])) {
-        if (isset($Mitarbeiter[$notdienst['vk']])) {
-            echo "<br>NOTDIENST<br>" . $Mitarbeiter[$notdienst['vk']] . " / " . $Mandant[$notdienst['mandant']];
+        if (isset($List_of_employees[$notdienst['vk']])) {
+            echo "<br>NOTDIENST<br>" . $List_of_employees[$notdienst['vk']] . " / " . $Mandant[$notdienst['mandant']];
         } else {
             echo "<br>NOTDIENST<br>??? / " . $Mandant[$notdienst['mandant']];
         }
@@ -146,13 +149,13 @@ for ($j = 0; $j < $VKcount; $j++) {
 
         for ($k = 1; $k < $VKmax + 1; $k++) { //k=1 means that we will ignore any worker with a number smaller than one. Specific people like the cleaning lady will not be visible in the plan. But their holiday can still be organized with the holiday module.
             if (isset($Dienstplan[$i]["VK"][$j])) {
-                if (isset($Mitarbeiter[$k]) and $Dienstplan[$i]["VK"][$j] != $k) { //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
-                    $zeile.="<option value=$k>" . $k . " " . $Mitarbeiter[$k] . "</option>";
-                } elseif (isset($Mitarbeiter[$k])) {
-                    $zeile.="<option value=$k selected>" . $k . " " . $Mitarbeiter[$k] . "</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
+                if (isset($List_of_employees[$k]) and $Dienstplan[$i]["VK"][$j] != $k) { //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
+                    $zeile.="<option value=$k>" . $k . " " . $List_of_employees[$k] . "</option>";
+                } elseif (isset($List_of_employees[$k])) {
+                    $zeile.="<option value=$k selected>" . $k . " " . $List_of_employees[$k] . "</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
                 }
-            } elseif (isset($Mitarbeiter[$k])) {
-                $zeile.="<option value=$k>" . $k . " " . $Mitarbeiter[$k] . "</option>";
+            } elseif (isset($List_of_employees[$k])) {
+                $zeile.="<option value=$k>" . $k . " " . $List_of_employees[$k] . "</option>";
             }
         }
         $zeile.="</select>\n";

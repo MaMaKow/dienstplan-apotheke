@@ -22,9 +22,9 @@ require 'default.php';
             if ($command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING) and 'delete' === $command) {
                 $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
                 $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
-                $abfrage = "DELETE FROM `absence`
+                $sql_query = "DELETE FROM `absence`
                 	WHERE `employee_id` = '$employee_id' AND `start` = '$beginn'";
-                $ergebnis = mysqli_query_verbose($abfrage);
+                $result = mysqli_query_verbose($sql_query);
                 $employee_id = $employee_id;
             }
 
@@ -55,35 +55,35 @@ require 'default.php';
                 //var_export($tage);
                 if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)){
                     $beginn_old = filter_input(INPUT_POST, 'beginn_old', FILTER_SANITIZE_STRING);
-                    $abfrage = "DELETE FROM `absence` WHERE `employee_id` = '$employee_id' AND `start` = '$beginn_old'"; 
-                    //echo "$abfrage<br>\n";
-                                    $ergebnis = mysqli_query_verbose($abfrage);
+                    $sql_query = "DELETE FROM `absence` WHERE `employee_id` = '$employee_id' AND `start` = '$beginn_old'"; 
+                    //echo "$sql_query<br>\n";
+                                    $result = mysqli_query_verbose($sql_query);
                 }
                 $approval = "approved"; //TODO: There will be a time to handle cases of non-approved holidays!
-                $abfrage = "INSERT INTO `absence` "
+                $sql_query = "INSERT INTO `absence` "
                         . "(employee_id, start, end, days, reason, user, approval) "
                         . "VALUES ('$employee_id', '$beginn', '$ende', '$tage', '$grund', '$user', '$approval')";
-                //echo "$abfrage<br>\n";
-		if( !($ergebnis = mysqli_query($verbindungi, $abfrage)) ) {
+                //echo "$sql_query<br>\n";
+		if( !($result = mysqli_query($verbindungi, $sql_query)) ) {
 			$error_string = mysqli_error($verbindungi);
 			if (strpos($error_string, 'Duplicate') !== false){
 				$Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
 			} else {
 				//Are there other errors, that we should handle?
-                                error_log("Error: $abfrage <br>".mysqli_error($verbindungi));
-				die("Error: $abfrage <br>".mysqli_error($verbindungi));
+                                error_log("Error: $sql_query <br>".mysqli_error($verbindungi));
+				die("Error: $sql_query <br>".mysqli_error($verbindungi));
 			}
 		}
             } 
             $employee_id = $employee_id;
-            $abfrage = 'SELECT * FROM `absence`
+            $sql_query = 'SELECT * FROM `absence`
 				WHERE `employee_id` = '.$employee_id.'
 				ORDER BY `start` ASC
 				';
-            $ergebnis = mysqli_query_verbose($abfrage);
-            $number_of_rows = mysqli_num_rows($ergebnis);
+            $result = mysqli_query_verbose($sql_query);
+            $number_of_rows = mysqli_num_rows($result);
             $tablebody = ''; $i = 1;
-            while ($row = mysqli_fetch_object($ergebnis)) {
+            while ($row = mysqli_fetch_object($result)) {
                 $tablebody .= "\t\t\t<tr style='height: 1em;'>"
                         . "<form method=POST id='change_absence_entry_".$row->start."'>"
                         . "\n\t\t\t\t";
@@ -127,10 +127,10 @@ require 'default.php';
                         . "\t\t\t</tr>\n";
                 ++$i;
             }
-            $abfrage = "SELECT `reason` FROM `absence`  GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
-            $ergebnis = mysqli_query_verbose($abfrage);
+            $sql_query = "SELECT `reason` FROM `absence`  GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
+            $result = mysqli_query_verbose($sql_query);
             $datalist = "<datalist id='reasons'>\n";
-            while ($row = mysqli_fetch_object($ergebnis)) {
+            while ($row = mysqli_fetch_object($result)) {
                 $datalist .= "\t<option value='$row->reason'>\n";
             }
             $datalist .= "</datalist>\n";
@@ -157,7 +157,7 @@ if (isset($Feiertagsmeldung)) {
     echo "\t\t\t</div>\n";
     echo "\t\t</div>\n";
 }
-echo build_select_employee($employee_id, $Mitarbeiter);
+echo build_select_employee($employee_id, $List_of_employees);
 
 echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[" . gettext("Read") . "]</a>";
 echo "\t\t\n";

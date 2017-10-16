@@ -16,11 +16,40 @@ if (!$verbindungi->set_charset("utf8")) {
     printf("Error loading character set utf8: %s\n", $verbindungi->error);
 }
 
+/*
+ * This function uses PDO to access the database.
+ * If no bind_array is given, then the query will be executed directly.
+ * If a bind_array is there, then the sql_query will be interpreted as
+ */
+
+function pdo_query($sql_query, $bind_array = null, $inside_transaction = FALSE) {
+    try {
+        global $pdo;
+        if (is_null($bind_array)) {
+            $result = $pdo->execute($sql_query);
+        } else {
+            $statement = $pdo->prepare($sql_query);
+            $result = $statement->execute($bind_array);
+        }
+        if ($result === FALSE) {
+            error_log("Error: $sql_query <br>" . $pdo->errorInfo());
+            if ($inside_transaction !== FALSE) {
+                $pdo->rollBack();
+            }
+            die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+        }
+        return $result;
+    } catch (Exception $exc) {
+        print_debug_variable($exc->getTraceAsString());
+        die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+    }
+}
+
 function mysqli_query_verbose($sql_query, $inside_transaction = FALSE) {
     global $config;
     $result = mysqli_query($GLOBALS['verbindungi'], $sql_query);
     if ($result === FALSE) {
-        $message = "Error: $sql_query <br>" . \mysqli_error($GLOBALS['verbindungi']);
+        $message = "Error: $sql_query <br>" . mysqli_error($GLOBALS['verbindungi']);
         error_log($message);
         if ($inside_transaction !== FALSE) {
             mysqli_query($GLOBALS['verbindungi'], "ROLLBACK");

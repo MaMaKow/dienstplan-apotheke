@@ -34,9 +34,9 @@ if (isset($datum)) {
 //The following lines check for the state of approval.
 //Duty rosters have to be approved by the leader, before the staff can view them.
 unset($approval);
-$abfrage = "SELECT state FROM `approval` WHERE date='$datum' AND branch='$mandant'";
-$ergebnis = mysqli_query_verbose($abfrage);
-while ($row = mysqli_fetch_object($ergebnis)) {
+$sql_query = "SELECT state FROM `approval` WHERE date='$datum' AND branch='$mandant'";
+$result = mysqli_query_verbose($sql_query);
+while ($row = mysqli_fetch_object($result)) {
     $approval = $row->state;
 }
 if (isset($approval)) {
@@ -63,7 +63,7 @@ $Dienstplan = db_lesen_tage($tage, $mandant);
 foreach ($Dienstplan as $day => $roster) {
     $max_vk_count_in_rooster_days = max($max_vk_count_in_rooster_days, count($roster["VK"]));
 }
-$VKmax = max(array_keys($Mitarbeiter)); //The highest given employee_id
+$VKmax = max(array_keys($List_of_employees)); //The highest given employee_id
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
@@ -108,8 +108,8 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     require 'db-lesen-notdienst.php';
     if (isset($notdienst['mandant'])) {
         echo "<br>NOTDIENST<br>";
-        if (isset($Mitarbeiter[$notdienst['vk']])) {
-            echo $Mitarbeiter[$notdienst['vk']];
+        if (isset($List_of_employees[$notdienst['vk']])) {
+            echo $List_of_employees[$notdienst['vk']];
         } else {
             echo "???";
         }
@@ -123,12 +123,12 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         //if(isset($feiertag) && !isset($notdienst)){break 1;}
         echo "\t\t\t\t\t</tr><tr>\n";
         for ($i = 0; $i < count($Dienstplan); $i++) {//Employees
-            if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
+            if (isset($Dienstplan[$i]["VK"][$j]) && isset($List_of_employees[$Dienstplan[$i]["VK"][$j]])) {
                 $zeile = "\t\t\t\t\t\t<td>";
                 $zeile.="<b><a href='mitarbeiter-out.php?"
                         . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0])
                         . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
-                $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($Mitarbeiter[$Dienstplan[$i]["VK"][$j]]);
+                $zeile.= htmlentities($Dienstplan[$i]["VK"][$j]) . " " . htmlentities($List_of_employees[$Dienstplan[$i]["VK"][$j]]);
                 $zeile.="</a></b><span> ";
                 if (isset($Dienstplan[$i]["VK"][$j])) {
                     //beginning of duty

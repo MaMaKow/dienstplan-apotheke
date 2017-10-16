@@ -3,11 +3,11 @@
 //Der Zugang zu Datenbank muss bereits bestehen.
 	unset ($feiertag);
 	$sql_datum=date('Y-m-d', strtotime($datum));
-	$abfrage="SELECT * 
+	$sql_query="SELECT * 
 		FROM `Feiertage` 
 		WHERE `Datum` = '$sql_datum';"; 
-	$ergebnis=  mysqli_query_verbose($abfrage);
-	while($row = mysqli_fetch_object($ergebnis))
+	$result=  mysqli_query_verbose($sql_query);
+	while($row = mysqli_fetch_object($result))
 	{
 		$feiertag=$row->Name;
 	}
