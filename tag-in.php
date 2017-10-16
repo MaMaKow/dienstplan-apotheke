@@ -27,6 +27,8 @@ if (isset($mandant)) {
 if (isset($datum)) {
     create_cookie("datum", $datum, 0.5);
 }
+$date_sql = $datum;
+$date_unix = strtotime($date_sql);
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
