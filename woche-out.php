@@ -38,8 +38,8 @@ require 'db-lesen-mitarbeiter.php';
 require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
 $Dienstplan = db_lesen_tage($tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
-$VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
+$VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+$VKmax = max(array_keys($List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 //Build a div containing assignment of tasks:
 require 'task-rotation.php';
 //TODO: Works only for "Rezeptur" right now!
@@ -105,9 +105,9 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     if (isset($feiertag) AND date('N', strtotime($datum)) < 6) {
         foreach ($Mandanten_mitarbeiter as $employee_id => $nachname) {
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
-                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
             } else {
-                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
             }
         }
     }
@@ -163,9 +163,9 @@ for ($i = 0; $i < count($Dienstplan); $i++) {
             if (!isset($feiertag) AND date('N', strtotime($datum)) < 6) {
                 //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
                 if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
-                    $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $Stunden_mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+                    $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
                 } else {
-                    $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $Stunden_mitarbeiter[$employee_id] / 5;
+                    $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
                 }
             }
         }
@@ -237,12 +237,12 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) { //array_colum
             $week_hours_table_html .= "\t\t\t\t\t</tr><tr>\n";
             $i = 0; //$j++;
         }
-        $week_hours_table_html .= "\t\t\t\t\t\t<td>" . $Mitarbeiter[$mitarbeiter] . " " . array_sum($stunden);
+        $week_hours_table_html .= "\t\t\t\t\t\t<td>" . $List_of_employees[$mitarbeiter] . " " . array_sum($stunden);
         $week_hours_table_html .= " / ";
         if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
             $week_hours_table_html .= round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) . "\n";
         } else {
-            $week_hours_table_html .= round($Stunden_mitarbeiter[$mitarbeiter], 1) . "\n";
+            $week_hours_table_html .= round($List_of_employee_working_week_hours[$mitarbeiter], 1) . "\n";
         }
         if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
             if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
@@ -250,8 +250,8 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) { //array_colum
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
         } else {
-            if (round($Stunden_mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
-                $differenz = round(array_sum($stunden), 1) - round($Stunden_mitarbeiter[$mitarbeiter], 1);
+            if (round($List_of_employee_working_week_hours[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
+                $differenz = round(array_sum($stunden), 1) - round($List_of_employee_working_week_hours[$mitarbeiter], 1);
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
         }

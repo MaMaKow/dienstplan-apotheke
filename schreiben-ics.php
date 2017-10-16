@@ -2,13 +2,13 @@
 //Wir erstellen eine Icalendar Datei (ICS). Diese kann dann in einen Kalender importiert werden.
 /**
  * 
- * @global array $Mitarbeiter 
+ * @global array $List_of_employees 
  * @param array $Dienstplan
  * @return string $textICS the ICS text file
  */
 function schreiben_ics ($Dienstplan)
 {
-global $Mitarbeiter, $Mandant;
+global $List_of_employees, $Mandant;
 $textICS="";
 $textICS.="BEGIN:VCALENDAR\n";
 $textICS.="VERSION:2.0\n";
@@ -45,7 +45,7 @@ foreach(array_keys($Dienstplan) as $tag )
 			$textICS.="DTSTART;TZID=Europe/Berlin:".date('Ymd', strtotime($datum))."T".date('His', strtotime($dienstbeginn))."\n";
 			$textICS.="DTEND;TZID=Europe/Berlin:".date('Ymd', strtotime($datum))."T".date('His', strtotime($dienstende))."\n";
 			$textICS.="SUMMARY:$mandant\n";
-			$textICS.="DESCRIPTION:Kalenderdatei für VK ".$vk." (".$Mitarbeiter[$vk].") ";
+			$textICS.="DESCRIPTION:Kalenderdatei für VK ".$vk." (".$List_of_employees[$vk].") ";
                         if (!empty($mittags_beginn) and !empty($mittags_ende)) 
                         {
                             $textICS.="Mittag von $mittags_beginn bis $mittags_ende ";

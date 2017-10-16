@@ -19,9 +19,9 @@
 
 function check_timeliness_of_pep_data() {
     //Check if the PEP information is still up-to-date:
-    $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    $row = mysqli_fetch_object($ergebnis);
+    $sql_query = "SELECT max(Datum) as Datum FROM `pep`";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
     $newest_pep_date = strtotime($row->Datum);
     $today = time();
     $seconds_since_last_update = $today - $newest_pep_date;
@@ -50,20 +50,20 @@ function get_Erwartung($datum, $mandant) {
 
     $pep_mandant = $Pep_mandant[$mandant];
 
-    $abfrage = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $pep_mandant and Wochentag = $sql_weekday";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $pep_mandant and Wochentag = $sql_weekday";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Packungen[$row->Uhrzeit] = $row->Mittelwert;
     }
 
-    $abfrage = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $pep_mandant and `day` = $month_day";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    $row = mysqli_fetch_object($ergebnis);
+    $sql_query = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $pep_mandant and `day` = $month_day";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
     $factor_tag_im_monat = $row->factor;
 
-    $abfrage = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $pep_mandant and `month` = $month";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    $row = mysqli_fetch_object($ergebnis);
+    $sql_query = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $pep_mandant and `month` = $month";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
     $factor_monat_im_jahr = $row->factor;
 
     foreach ($Packungen as $time => $average) {

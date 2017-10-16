@@ -6,7 +6,7 @@ require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-$VKmax = max(array_keys($Mitarbeiter)); //Wir suchen die höchste VK-Nummer.
+$VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, 'employee_id')) {
@@ -16,21 +16,21 @@ if (filter_has_var(INPUT_POST, 'employee_id')) {
 } elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
     $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
-    $employee_id = min(array_keys($Mitarbeiter));
+    $employee_id = min(array_keys($List_of_employees));
 }
 if (isset($employee_id)) {
     create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 }
 $vk = $employee_id;
-$abfrage = "SELECT * FROM `Stunden`
+$sql_query = "SELECT * FROM `Stunden`
 				WHERE `VK` = " . $vk . "
 				ORDER BY `Aktualisierung` ASC
 				";
-$ergebnis = mysqli_query_verbose($abfrage);
-$number_of_rows = mysqli_num_rows($ergebnis);
+$result = mysqli_query_verbose($sql_query);
+$number_of_rows = mysqli_num_rows($result);
 $tablebody = "\t\t\t<tbody>\n";
 $i = 1;
-while ($row = mysqli_fetch_object($ergebnis)) {
+while ($row = mysqli_fetch_object($result)) {
     $tablebody.= "\t\t\t<tr>\n";
     $tablebody.= "\t\t\t\t<td>";
     $tablebody.= "<a href='tag-out.php?datum=" . date("Y-m-d", strtotime($row->Datum)) . "'>" . date("d.m.Y", strtotime($row->Datum)) . "</a>";
@@ -55,7 +55,7 @@ while ($row = mysqli_fetch_object($ergebnis)) {
 $tablebody.= "\t\t\t</tbody>\n";
 
 //Hier beginnt die Ausgabe
-echo build_select_employee($employee_id, $Mitarbeiter);
+echo build_select_employee($employee_id, $List_of_employees);
 echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[" . gettext("Edit") . "]</a><br><br></div>\n";
 echo "\t\t<table>\n";
 //Überschrift

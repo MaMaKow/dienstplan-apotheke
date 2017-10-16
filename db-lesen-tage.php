@@ -4,7 +4,7 @@
  * 
  * @global string $datum
  * @global object $verbindungi
- * @global array $Mitarbeiter
+ * @global array $List_of_employees
  * @param int $tage number of days (typically just 1 or 5, 6, 7)
  * @param int $mandant
  * @param string $VKmandant as regular expression
@@ -12,7 +12,7 @@
  */
 function db_lesen_tage($tage, $mandant, $VKmandant='[0-9]*')
 {
-global $datum, $verbindungi, $Mitarbeiter;
+global $datum, $verbindungi, $List_of_employees;
 	//Abruf der gespeicherten Daten aus der Datenbank
 	//$tage ist die Anzahl der Tage. 5 Tage = Woche; 1 Tag = 1 Tag.
 	//Branch #0 can be used for the boss, the cleaning lady, and other special people, who do not regularly appear in the roster.
@@ -23,12 +23,12 @@ global $datum, $verbindungi, $Mitarbeiter;
 	for ($i=0; $i<$tage; $i++)
 	{
 		$tag=date('Y-m-d', strtotime("+$i days", strtotime($datum)));
-		$abfrage='SELECT DISTINCT Dienstplan.* FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id WHERE Dienstplan.Mandant = "'.$mandant.'" AND `Datum` = "'.$tag.'" AND employees.branch REGEXP "^'.$VKmandant.'$" ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
-//		$abfrage='SELECT * FROM `Dienstplan` WHERE `Datum` = "'.$tag.'" AND `Mandant` = "'.$mandant.'" ORDER BY `Dienstbeginn` ASC, `Mittagsbeginn` ASC;';
-		$ergebnis = mysqli_query_verbose($abfrage);
+		$sql_query='SELECT DISTINCT Dienstplan.* FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id WHERE Dienstplan.Mandant = "'.$mandant.'" AND `Datum` = "'.$tag.'" AND employees.branch REGEXP "^'.$VKmandant.'$" ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
+//		$sql_query='SELECT * FROM `Dienstplan` WHERE `Datum` = "'.$tag.'" AND `Mandant` = "'.$mandant.'" ORDER BY `Dienstbeginn` ASC, `Mittagsbeginn` ASC;';
+		$result = mysqli_query_verbose($sql_query);
 		$dienstplanCSV="";
 
-		while($row = mysqli_fetch_object($ergebnis))
+		while($row = mysqli_fetch_object($result))
 		{
 			$Dienstplan[$i]["Datum"][]=$row->Datum;
 			$Dienstplan[$i]["VK"][]=$row->VK;
@@ -42,20 +42,20 @@ global $datum, $verbindungi, $Mitarbeiter;
 			if(empty($mittagsbeginn)){$mittagsbeginn="0:00";}
 			if(empty($mittagsende)){$mittagsende="0:00";}
 			//The next lines will be used for coloring the image dependent on the education of the workers:
-			if($Ausbildung_mitarbeiter[$row->VK] == "Apotheker"){
+			if($List_of_employee_professions[$row->VK] == "Apotheker"){
 				$worker_style = 1;
-			} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PI"){
+			} elseif ($List_of_employee_professions[$row->VK] == "PI"){
 				$worker_style = 1;
-			} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PTA"){
+			} elseif ($List_of_employee_professions[$row->VK] == "PTA"){
 				$worker_style = 2;
-			} elseif ($Ausbildung_mitarbeiter[$row->VK] == "PKA"){
+			} elseif ($List_of_employee_professions[$row->VK] == "PKA"){
 				$worker_style = 3;
 			} else{
 				//anybody else
 				$worker_style = 3;
 			}
 			//We write a file to feed the data to gnuplot for imaging.
-			$dienstplanCSV.=$Mitarbeiter[$row->VK].", $row->VK, $row->Datum";
+			$dienstplanCSV.=$List_of_employees[$row->VK].", $row->VK, $row->Datum";
 			$dienstplanCSV.=", ".$row->Dienstbeginn;
 			$dienstplanCSV.=", ".$row->Dienstende;
 			$dienstplanCSV.=", ".$row->Mittagsbeginn;

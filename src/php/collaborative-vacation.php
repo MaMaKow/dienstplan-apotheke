@@ -172,11 +172,11 @@ function write_user_input_to_database() {
  *
  *
  * @param int $year
- * @global array[string] $Ausbildung_mitarbeiter Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
+ * @global array[string] $List_of_employee_professions Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_year($year) {
-    global $Ausbildung_mitarbeiter;
+    global $List_of_employee_professions;
     $start_date = mktime(0, 0, 0, 1, 1, $year);
     $current_month = date("n", $start_date);
     //$system_encoding = mb_detect_encoding(strftime("äöüÄÖÜß %B", 1490388361), "auto");
@@ -188,9 +188,9 @@ function build_absence_year($year) {
 
     //The following lines for the year select are common code with anwesenheitsliste-out.php
     $Years = array();
-    $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Years[] = $row->year;
     }
     $Years[] = max($Years) + 1;
@@ -232,7 +232,7 @@ function build_absence_year($year) {
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
 
-                $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
+                $absent_employees_containers .= "<span class='absent_employee_container $List_of_employee_professions[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
                 $absent_employees_containers .= $employee_id;
                 $absent_employees_containers .= "</span>\n";
             }
@@ -292,11 +292,11 @@ function build_absence_year($year) {
  *
  * @param int $year
  * @param int $month_number
- * @global array[string] $Ausbildung_mitarbeiter Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
+ * @global array[string] $List_of_employee_professions Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_month($year, $month_number) {
-    global $Mitarbeiter, $Ausbildung_mitarbeiter;
+    global $List_of_employees, $List_of_employee_professions;
 
     $input_date = mktime(8, 0, 0, $month_number, 1, $year);
     $monday_difference = date('w', $input_date) - 1; //Get start of the week
@@ -316,9 +316,9 @@ function build_absence_month($year, $month_number) {
 
     //The following lines for the year select are common code with anwesenheitsliste-out.php
     $Years = array();
-    $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Years[] = $row->year;
     }
     $Years[] = max($Years) + 1;
@@ -387,8 +387,8 @@ function build_absence_month($year, $month_number) {
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
 
-                $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
-                $absent_employees_containers .= $employee_id . " " . mb_substr($Mitarbeiter[$employee_id], 0, 16);
+                $absent_employees_containers .= "<span class='absent_employee_container $List_of_employee_professions[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
+                $absent_employees_containers .= $employee_id . " " . mb_substr($List_of_employees[$employee_id], 0, 16);
                 $absent_employees_containers .= "</span><br>\n";
             }
         } else {

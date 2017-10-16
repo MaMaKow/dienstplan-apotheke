@@ -9,7 +9,7 @@
  * @return array $Absentees array(employee_id => reason)
  */
 function db_lesen_abwesenheit($date) {
-    global $Mitarbeiter;
+    global $List_of_employees;
     //Im folgenden prüfen wir, ob $datum bereis als UNIX timestamp vorliegt. Wenn es ein Timestamp ist, können wir direkt in 'Y-m-d' umrechnen. Wenn nicht, dann wandeln wir vorher um.
     if (is_numeric($date) && (int) $date == $date) {
         $sql_date = date('Y-m-d', $date);
@@ -19,18 +19,18 @@ function db_lesen_abwesenheit($date) {
 
     //We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
     //TODO: Build an option to delete future vacations of people when leaving.
-    if (!isset($Mitarbeiter)) {
+    if (!isset($List_of_employees)) {
         require "db-lesen-mitarbeiter.php";
     }
-    $mitarbeiterliste = implode(", ", array_keys($Mitarbeiter));
+    $mitarbeiterliste = implode(", ", array_keys($List_of_employees));
 
-    $abfrage = "SELECT * FROM `absence` "
+    $sql_query = "SELECT * FROM `absence` "
             . "WHERE `start` <= '$sql_date' "
             . "AND `end` >= '$sql_date' "
             . "AND `employee_id` IN (" . $mitarbeiterliste . ")"; //Employees, whose absence has started but not ended yet.
     //TODO: The above query does not discriminate between approved an non-approved vacations.
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Absentees[$row->employee_id] = $row->reason;
     }
     return $Absentees;
