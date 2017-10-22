@@ -218,7 +218,7 @@ class sessions {
         $_SESSION = $_Session_temp;
     }
 
-    public function build_escalation_div() {
+    public static function build_escalation_div() {
         if (TRUE === $_SESSION['escalated']) {
             return "<div id=escalation_div></div>";
         }

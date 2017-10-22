@@ -15,12 +15,10 @@ if (isset($employee_id)) {
     create_cookie('employee_id', $employee_id, 30);
 }
 
-
 function insert_user_data_into_database() {
     $User["employee_id"] = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $User["privilege"] = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
-    print_debug_variable($_POST, $User);
     mysqli_query_verbose("START TRANSACTION");
     $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = " . $User["employee_id"];
     mysqli_query_verbose($sql_query);
@@ -88,24 +86,23 @@ function build_checkbox_permission($privilege, $checked) {
     $text .= ">";
     return $text;
 }
-
 ?>
 <form method='POST' id='user_management'>
     TODO: Get a good german wording!<br>
 
     <input type='text' name='employee_id' id="employee_id" value="<?= $User["employee_id"] ?>" hidden='true'>
     <p>
-        <?php
-        $sql_query = "SELECT DISTINCT `privilege` FROM `users_privileges`";
-        $result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_object($result)) {
-            $Privilege_types[] = $row->privilege;
-        }
-        foreach (sessions::$Pdr_list_of_privileges as $privilege) {
-            echo build_checkbox_permission($privilege, in_array($privilege, $User["privilege"]));
-            echo "<br>";
-        }
-        ?>
+<?php
+$sql_query = "SELECT DISTINCT `privilege` FROM `users_privileges`";
+$result = mysqli_query_verbose($sql_query);
+while ($row = mysqli_fetch_object($result)) {
+    $Privilege_types[] = $row->privilege;
+}
+foreach (sessions::$Pdr_list_of_privileges as $privilege) {
+    echo build_checkbox_permission($privilege, in_array($privilege, $User["privilege"]));
+    echo "<br>";
+}
+?>
     </p><p>
 
         <input type=submit id=save_new class='no-print' name=submit_user_data value='Eintragen' form='user_management'>
