@@ -9,7 +9,7 @@ documentation/
 layout-test.html
 style-test.css
 tests/
-
+nbproject/
 
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
@@ -71,3 +71,4 @@ tmp/
 .Trashes
 ehthumbs.db
 Thumbs.db
+/nbproject/private/
