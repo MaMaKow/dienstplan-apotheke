@@ -28,3 +28,6 @@
 </ul>
 
 </p>
+<form action="install_page_database.php" method="post">
+    <input type="submit" value="<?= gettext("Next") ?>">
+</form>

@@ -1,18 +1,45 @@
-Database configuration
+<?php
+if (filter_has_var(INPUT_POST, "user_name")) {
+    require_once "../classes/class.install.php";
+    $install = new install;
+    $install->handle_user_input_database();
+}
+require_once 'install_head.php'
+?>
+<H1>Database configuration</H1>
 
-Database type:
+<form method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <p>
+        <LABEL for="database_management_system">Database type (DBMS):</LABEL><br>
+        <select name="database_management_system" id="database_management_system">
+            <option value="mysql">MySQL</option>
+        </select>
+    </p><p>
 
-Database server hostname or DSN:
-DSN stands for Data Source Name and is relevant only for ODBC installs. On PostgreSQL, use localhost to connect to the local server via UNIX domain socket and 127.0.0.1 to connect via TCP. For SQLite, enter the full path to your database file.
+        <LABEL for="database_host">Database server hostname or DSN:</LABEL><br>
+        <input type="text" id="database_host" name="database_host" value="localhost" />
+        <BR><DEL>DSN stands for Data Source Name and is relevant only for ODBC installs. On PostgreSQL, use localhost to connect to the local server via UNIX domain socket and 127.0.0.1 to connect via TCP. For SQLite, enter the full path to your database file.</DEL>
+    </p><p>
 
-Database server port:
-Leave this blank unless you know the server operates on a non-standard port.
+        <LABEL for="database_port">Database server port:</LABEL><br>
+        <input type="text" id="database_port" name="database_port" value="" /><!--standard value 3306-->
+        <br>Leave this blank unless you know the server operates on a non-standard port.
+    </p><p>
 
-Database username:
+        <LABEL for="database_username">Database username:</LABEL><br>
+        <input type="text" id="database_username" name="database_username" value="" />
+    </p><p>
 
-Database password:
+        <LABEL for="database_password">Database password:</LABEL><br>
+        <input type="password" id="database_password" name="database_password" value="" />
+    </p><p>
 
-Database name:
+        <LABEL for="database_name">Database name:</LABEL><br>
+        <input type="text" id="database_name" name="database_name" value="" />
+    </p><p>
 
-Prefix for tables in database:
-The prefix must start with a letter and must only contain letters, numbers and underscores.
+        <del>Prefix for tables in database:
+            The prefix must start with a letter and must only contain letters, numbers and underscores.</del>
+    </p><p>
+        <input type="submit" />
+    </p>
