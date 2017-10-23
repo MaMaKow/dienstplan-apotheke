@@ -1,7 +1,8 @@
 <?php
 if (filter_has_var(INPUT_POST, "user_name")) {
     require_once "../classes/class.install.php";
-    install::handle_user_input_administration();
+    $install = new install;
+    $install->handle_user_input_administration();
 }
 require_once 'install_head.php'
 ?>
