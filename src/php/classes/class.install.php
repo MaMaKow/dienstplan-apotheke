@@ -24,11 +24,14 @@ class install {
 
     private $pdo;
     public $Error_message;
+    public $Config;
+    public $pdr_file_system_application_path;
 
     public function __construct() {
-        echo __FILE__;
-        ini_set("error_log", "error.log");
+        $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
+        ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         session_regenerate_id();
+        $this->read_config_from_session();
     }
 
     /*
@@ -37,34 +40,71 @@ class install {
 
     private function connect_to_database($database_management_system, $database_host, $database_port, $database_name, $database_username, $database_password) {
         try {
-            $this->pdo = new PDO("$database_management_system:host=$database_host;port=$database_port;charset=utf8;dbname=" . $database_name, $database_username, $database_password, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+            $database_connect_string = "$database_management_system:";
+            $database_connect_string .= "host=$database_host;";
+            $database_connect_string .= $database_port ? "port=$database_port;" : "";
+            $database_connect_string .= "charset=utf8;";
+            //$database_connect_string .= "dbname=$database_name";
+            $database_connect_options = array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
+            $this->pdo = new PDO($database_connect_string, $database_username, $database_password, $database_connect_options);
+            //$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            //TODO: remove the drop!
+            //$this->pdo->exec("DROP DATABASE $database_name");
+            /*
+              foreach ($this->pdo->query("SHOW DATABASES") as $row) {
+              print_r($row);
+              echo "<br>";
+              }
+             */
+
+            $this->pdo->exec("USE $database_name");
+            if ($this->pdo->errorInfo()[1] === 1049) {
+                /*
+                 * Unknown database
+                 * maybe we are able to just create that database
+                 */
+                $this->setup_mysql_database($database_host, $database_name, $database_username, $database_password);
+            }
         } catch (PDOException $e) {
             error_log("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
-            die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+            echo ("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
+            $this->Error_message = "<p>There was an error while connecting to the database. Please see the error log for more details!</p>";
         }
     }
 
-    private function setup_mysql_database($database_host, $database_name, $user_name, $password) {
+    private function setup_mysql_database($database_host, $database_name, $database_username, $database_password) {
+        //TODO: Check for every step if it was successfull. Create an alternative or throw an error if there is no option left.
+
+        $database_password_self = bin2hex(openssl_random_pseudo_bytes(16));
+        $database_username_self = "pdr_" . bin2hex(openssl_random_pseudo_bytes(5)); //The user name must not be longer than 16 chars in mysql.
+        //echo "<br>will register with user $database_username_self and password $database_password_self<br>";
         /*
          * Create the database:
          */
-        $statement = $this->pdo->prepare("CREATE DATABASE `:database_name`");
-        $statement->exec(array(database_name => $database_name));
+        $this->pdo->exec("CREATE DATABASE $database_name");
 
         /*
          * Create the user:
          */
-        $statement = $this->pdo->prepare("CREATE USER ':user_name'@':database_host' IDENTIFIED BY ':password'");
-        $statement->exec(array(user_name => $user_name, database_host => $database_host, password => $password));
+        $statement = $this->pdo->prepare("CREATE USER :database_username@:database_host IDENTIFIED BY :database_password");
+        $statement->execute(array(
+            'database_username' => $database_username_self,
+            'database_host' => $database_host,
+            'database_password' => $database_password_self
+        ));
         /*
          * Grant the user access to the database:
+         * TODO: '@':database_host' is probably wrong.
+         * Everything is well as long as it is localhost.
+         * But this will blow up, once a remote connection is used!
          */
-        $statement = $this->pdo->prepare("GRANT ALL PRIVILEGES ON `:database_name` . * TO ':user_name'@':database_host'");
-        $statement->exec(array(user_name => $user_name, database_host => $database_host, database_name => $database_name, password => $password));
+        $privileges = "SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, TRIGGER";
+        $this->pdo->exec("GRANT $privileges ON `$database_name`.* TO $database_username_self@$database_host");
         /*
          * Reload the privileges:
          */
         $this->pdo->exec("FLUSH PRIVILEGES");
+        return TRUE;
     }
 
     public function handle_user_input_administration() {
@@ -109,21 +149,25 @@ class install {
         $database_port = filter_input(INPUT_POST, "database_port", FILTER_SANITIZE_NUMBER_INT, $options = null);
         $database_username = filter_input(INPUT_POST, "database_username", FILTER_SANITIZE_STRING, $options = null);
         $database_password = filter_input(INPUT_POST, "database_password", FILTER_SANITIZE_STRING, $options = null);
-        $Config["database_management_system"] = $database_management_system;
-        $Config["database_host"] = $database_host;
-        $Config["database_name"] = $database_name;
-        $Config["database_port"] = $database_port;
-        $Config["database_username"] = $database_username;
-        $Config["database_password"] = $database_password;
-        $this->write_config_to_session($Config);
+        $this->Config["database_management_system"] = $database_management_system;
+        $this->Config["database_host"] = $database_host;
+        $this->Config["database_name"] = $database_name;
+        $this->Config["database_port"] = $database_port;
+        $this->Config["database_username"] = $database_username;
+        $this->Config["database_password"] = $database_password;
+        $this->write_config_to_session();
         if (!in_array($database_management_system, PDO::getAvailableDrivers())) {
             $this->Error_messages[] = "$database_management_system is not available on this server. Please check the configuration!";
         }
         $this->connect_to_database($database_management_system, $database_host, $database_port, $database_name, $database_username, $database_password);
     }
 
-    private function write_config_to_session($Config) {
-        $_SESSION["Config"] = $Config;
+    private function write_config_to_session() {
+        $_SESSION["Config"] = $this->Config;
+    }
+
+    private function read_config_from_session() {
+        $this->Config = $_SESSION["Config"];
     }
 
     private function write_config_to_file($Config) {
