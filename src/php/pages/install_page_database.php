@@ -1,7 +1,8 @@
 <?php
-if (filter_has_var(INPUT_POST, "user_name")) {
-    require_once "../classes/class.install.php";
-    $install = new install;
+echo "runs<br>\n";
+require_once "../classes/class.install.php";
+$install = new install;
+if (filter_has_var(INPUT_POST, "database_username")) {
     $install->handle_user_input_database();
 }
 require_once 'install_head.php'
@@ -17,17 +18,22 @@ require_once 'install_head.php'
     </p><p>
 
         <LABEL for="database_host">Database server hostname or DSN:</LABEL><br>
-        <input type="text" id="database_host" name="database_host" value="localhost" />
-        <BR><DEL>DSN stands for Data Source Name and is relevant only for ODBC installs. On PostgreSQL, use localhost to connect to the local server via UNIX domain socket and 127.0.0.1 to connect via TCP. For SQLite, enter the full path to your database file.</DEL>
+        <input type="text" id="database_host" name="database_host" value="<?= $install->Config["database_host"] ? $install->Config["database_host"] : "localhost" ?>" />
+        <BR>
+        <DEL>
+            DSN stands for Data Source Name and is relevant only for ODBC installs.
+            On PostgreSQL, use localhost to connect to the local server via UNIX domain socket and 127.0.0.1 to connect via TCP.
+            For SQLite, enter the full path to your database file.
+        </DEL>
     </p><p>
 
         <LABEL for="database_port">Database server port:</LABEL><br>
-        <input type="text" id="database_port" name="database_port" value="" /><!--standard value 3306-->
+        <input type="text" id="database_port" name="database_port" value="<?= $install->Config["database_port"] ? $install->Config["database_port"] : "" ?>" /><!--standard value 3306-->
         <br>Leave this blank unless you know the server operates on a non-standard port.
     </p><p>
 
         <LABEL for="database_username">Database username:</LABEL><br>
-        <input type="text" id="database_username" name="database_username" value="" />
+        <input type="text" id="database_username" name="database_username" value="<?= $install->Config["database_username"] ? $install->Config["database_username"] : "" ?>" />
     </p><p>
 
         <LABEL for="database_password">Database password:</LABEL><br>
@@ -35,11 +41,15 @@ require_once 'install_head.php'
     </p><p>
 
         <LABEL for="database_name">Database name:</LABEL><br>
-        <input type="text" id="database_name" name="database_name" value="" />
+        <input type="text" id="database_name" name="database_name" value="<?= $install->Config["database_name"] ? $install->Config["database_name"] : "pharmacy_duty_roster" ?>" />
     </p><p>
 
         <del>Prefix for tables in database:
             The prefix must start with a letter and must only contain letters, numbers and underscores.</del>
+    </p><p>
+        <?php
+        echo $install->Error_message;
+        ?>
     </p><p>
         <input type="submit" />
     </p>
