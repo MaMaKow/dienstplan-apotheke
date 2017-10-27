@@ -27,11 +27,15 @@ class install {
     public $Config;
     public $pdr_file_system_application_path;
 
-    public function __construct() {
+    function __construct() {
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         session_regenerate_id();
         $this->read_config_from_session();
+    }
+
+    function __destruct() {
+        $this->write_config_to_session();
     }
 
     /*
@@ -39,36 +43,29 @@ class install {
      */
 
     private function connect_to_database($database_management_system, $database_host, $database_port, $database_name, $database_username, $database_password) {
+        $database_connect_string = "$database_management_system:";
+        $database_connect_string .= "host=$database_host;";
+        $database_connect_string .= $database_port ? "port=$database_port;" : "";
+        $database_connect_string .= "charset=utf8;";
+        //$database_connect_string .= "dbname=$database_name";
+        $database_connect_options = array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
         try {
-            $database_connect_string = "$database_management_system:";
-            $database_connect_string .= "host=$database_host;";
-            $database_connect_string .= $database_port ? "port=$database_port;" : "";
-            $database_connect_string .= "charset=utf8;";
-            //$database_connect_string .= "dbname=$database_name";
-            $database_connect_options = array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
             $this->pdo = new PDO($database_connect_string, $database_username, $database_password, $database_connect_options);
-            //$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            //TODO: remove the drop!
-            //$this->pdo->exec("DROP DATABASE $database_name");
-            /*
-              foreach ($this->pdo->query("SHOW DATABASES") as $row) {
-              print_r($row);
-              echo "<br>";
-              }
-             */
-
-            $this->pdo->exec("USE $database_name");
-            if ($this->pdo->errorInfo()[1] === 1049) {
-                /*
-                 * Unknown database
-                 * maybe we are able to just create that database
-                 */
-                $this->setup_mysql_database($database_host, $database_name, $database_username, $database_password);
-            }
         } catch (PDOException $e) {
             error_log("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
             echo ("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
             $this->Error_message = "<p>There was an error while connecting to the database. Please see the error log for more details!</p>";
+        }
+        //TODO: remove the drop!
+        //$this->pdo->exec("DROP DATABASE $database_name");
+
+        $this->pdo->exec("USE $database_name");
+        if ($this->pdo->errorInfo()[1] === 1049) {
+            /*
+             * Unknown database
+             * maybe we are able to just create that database
+             */
+            $this->setup_mysql_database($database_host, $database_name, $database_username, $database_password);
         }
     }
 
@@ -76,12 +73,14 @@ class install {
         //TODO: Check for every step if it was successfull. Create an alternative or throw an error if there is no option left.
 
         $database_password_self = bin2hex(openssl_random_pseudo_bytes(16));
-        $database_username_self = "pdr_" . bin2hex(openssl_random_pseudo_bytes(5)); //The user name must not be longer than 16 chars in mysql.
+        $random_suffix = bin2hex(openssl_random_pseudo_bytes(5));
+        $database_username_self = "pdr_" . $random_suffix; //The user name must not be longer than 16 chars in mysql.
+        $database_name_self = $database_name . "_" . $random_suffix;
         //echo "<br>will register with user $database_username_self and password $database_password_self<br>";
         /*
          * Create the database:
          */
-        $this->pdo->exec("CREATE DATABASE $database_name");
+        $this->pdo->exec("CREATE DATABASE $database_name_self");
 
         /*
          * Create the user:
@@ -99,7 +98,7 @@ class install {
          * But this will blow up, once a remote connection is used!
          */
         $privileges = "SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, TRIGGER";
-        $this->pdo->exec("GRANT $privileges ON `$database_name`.* TO $database_username_self@$database_host");
+        $this->pdo->exec("GRANT $privileges ON `$database_name_self`.* TO $database_username_self@$database_host");
         /*
          * Reload the privileges:
          */
@@ -160,6 +159,15 @@ class install {
             $this->Error_messages[] = "$database_management_system is not available on this server. Please check the configuration!";
         }
         $this->connect_to_database($database_management_system, $database_host, $database_port, $database_name, $database_username, $database_password);
+        if (empty($this->Error_message)) {
+            /*
+             * Success, we move to the next page.
+             */
+            header("Location: install_page_admin.php");
+            die();
+        } else {
+            return FALSE;
+        }
     }
 
     private function write_config_to_session() {
