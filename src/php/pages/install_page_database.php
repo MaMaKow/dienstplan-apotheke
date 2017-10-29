@@ -16,9 +16,8 @@ require_once 'install_head.php'
             <option value="mysql">MySQL</option>
         </select>
     </p><p>
-
         <LABEL for="database_host">Database server hostname or DSN:</LABEL><br>
-        <input type="text" id="database_host" name="database_host" value="<?= $install->Config["database_host"] ? $install->Config["database_host"] : "localhost" ?>" />
+        <input type="text" id="database_host" name="database_host" value="<?= $_SESSION["Config"]["database_host"] ? $_SESSION["Config"]["database_host"] : "localhost" ?>" />
         <BR>
         <DEL>
             DSN stands for Data Source Name and is relevant only for ODBC installs.
@@ -28,12 +27,12 @@ require_once 'install_head.php'
     </p><p>
 
         <LABEL for="database_port">Database server port:</LABEL><br>
-        <input type="text" id="database_port" name="database_port" value="<?= $install->Config["database_port"] ? $install->Config["database_port"] : "" ?>" /><!--standard value 3306-->
+        <input type="text" id="database_port" name="database_port" value="<?= $_SESSION["Config"]["database_port"] ? $_SESSION["Config"]["database_port"] : "" ?>" /><!--standard value 3306-->
         <br>Leave this blank unless you know the server operates on a non-standard port.
     </p><p>
 
         <LABEL for="database_username">Database username:</LABEL><br>
-        <input type="text" id="database_username" name="database_username" value="<?= $install->Config["database_username"] ? $install->Config["database_username"] : "" ?>" />
+        <input type="text" id="database_username" name="database_username" value="<?= $_SESSION["Config"]["database_username"] ? $_SESSION["Config"]["database_username"] : "" ?>" />
     </p><p>
 
         <LABEL for="database_password">Database password:</LABEL><br>
@@ -41,7 +40,7 @@ require_once 'install_head.php'
     </p><p>
 
         <LABEL for="database_name">Database name:</LABEL><br>
-        <input type="text" id="database_name" name="database_name" value="<?= $install->Config["database_name"] ? $install->Config["database_name"] : "pharmacy_duty_roster" ?>" />
+        <input type="text" id="database_name" name="database_name" value="<?= $_SESSION["Config"]["database_name"] ? $_SESSION["Config"]["database_name"] : "pharmacy_duty_roster" ?>" />
     </p><p>
 
         <del>Prefix for tables in database:
