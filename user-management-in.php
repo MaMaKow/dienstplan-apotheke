@@ -26,7 +26,6 @@ function insert_user_data_into_database() {
     foreach ($User["privilege"] as $privilege) {
         $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES('" . $User["employee_id"] . "', '" . $privilege . "')";
         mysqli_query_verbose($sql_query);
-        print_debug_variable($sql_query);
     }
     mysqli_query_verbose("COMMIT");
 }
@@ -92,17 +91,17 @@ function build_checkbox_permission($privilege, $checked) {
 
     <input type='text' name='employee_id' id="employee_id" value="<?= $User["employee_id"] ?>" hidden='true'>
     <p>
-<?php
-$sql_query = "SELECT DISTINCT `privilege` FROM `users_privileges`";
-$result = mysqli_query_verbose($sql_query);
-while ($row = mysqli_fetch_object($result)) {
-    $Privilege_types[] = $row->privilege;
-}
-foreach (sessions::$Pdr_list_of_privileges as $privilege) {
-    echo build_checkbox_permission($privilege, in_array($privilege, $User["privilege"]));
-    echo "<br>";
-}
-?>
+        <?php
+        $sql_query = "SELECT DISTINCT `privilege` FROM `users_privileges`";
+        $result = mysqli_query_verbose($sql_query);
+        while ($row = mysqli_fetch_object($result)) {
+            $Privilege_types[] = $row->privilege;
+        }
+        foreach (sessions::$Pdr_list_of_privileges as $privilege) {
+            echo build_checkbox_permission($privilege, in_array($privilege, $User["privilege"]));
+            echo "<br>";
+        }
+        ?>
     </p><p>
 
         <input type=submit id=save_new class='no-print' name=submit_user_data value='Eintragen' form='user_management'>
