@@ -321,4 +321,13 @@ class install {
         file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');
     }
 
+    public function build_error_message_div() {
+        $text_html = "<div id='error_message_div'>";
+        foreach ($this->Error_message as $error_message) {
+            $text_html .= "<p>" . $error_message . "</p>";
+        }
+        $text_html .= "</div>";
+        return $text_html;
+    }
+
 }
