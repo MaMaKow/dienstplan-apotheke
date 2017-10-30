@@ -28,18 +28,11 @@ class install {
     public $pdr_file_system_application_path;
 
     function __construct() {
-//echo "In class " . __CLASS__ . " in method " . __METHOD__ . " on line " . __LINE__ . "<br>";
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         session_start();
         session_regenerate_id();
         $this->read_config_from_session();
-        /*
-          echo "Session:<br>";
-          print_r($_SESSION);
-          echo "Config:<br>";
-          print_r($this->Config);
-         */
     }
 
     function __destruct() {
@@ -60,7 +53,6 @@ class install {
             $this->pdo = new PDO($database_connect_string, $this->Config["database_username"], $this->Config["database_password"], $database_connect_options);
         } catch (PDOException $e) {
             error_log("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
-            echo ("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
             $this->Error_message = "<p>There was an error while connecting to the database. Please see the error log for more details!</p>";
         }
 
@@ -69,7 +61,6 @@ class install {
     }
 
     private function setup_mysql_database() {
-//TODO: Check for every step if it was successfull. Create an alternative or throw an error if there is no option left.
         if (FALSE === $this->setup_mysql_database_create_database()) {
             /*
              * We could not create the database.
@@ -91,6 +82,7 @@ class install {
             if (FALSE === $this->setup_mysql_database_grant_privileges()) {
                 /*
                  * That is too bad. We have to go back to the given user.
+                 * TODO: We should DROP USER the created user. If we do not use it, we should delete it.
                  */
                 unset($this->Config["database_username_self"]);
                 unset($this->Config["database_password_self"]);
@@ -217,31 +209,56 @@ class install {
         $this->Config["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_STRING, $options = null);
         if ($this->Config["password"] !== $this->Config["password2"]) {
-            $this->Error_message[] = gettext("The passwords aren't the same!");
+            $this->Error_message[] = gettext("The passwords aren't the same.");
             return FALSE;
-        } else {
-            $password_hash = password_hash($this->Config["password"], PASSWORD_DEFAULT);
+        }
+        $password_hash = password_hash($this->Config["password"], PASSWORD_DEFAULT);
 
 //TODO: make sure that the database and user table exist
 
-            $statement = $this->pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
-            $result = $statement->execute(array('user_name' => $this->Config["user_name"], 'employee_id' => $this->Config["employee_id"], 'password' => $password_hash, 'email' => $this->Config["email"]));
+        $statement = $this->pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
+        $result = $statement->execute(array('user_name' => $this->Config["user_name"], 'employee_id' => $this->Config["employee_id"], 'password' => $password_hash, 'email' => $this->Config["email"]));
+        if (!$result) {
+            /*
+             * We were not able to create the administrative user.
+             */
+
+            $this->Error_message[] = gettext("Error while trying to create administrative user.");
+            return FALSE;
         }
+        /*
+         * Grant all privileges to the administrative user:
+         */
+        $statement = $this->pdo->prepare("INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES(:employee_id, ':privilege')");
+        require_once $this->pdr_file_system_application_path . 'src/php/classes/class.sessions.php';
+        foreach (sessions::$Pdr_list_of_privileges as $privilege) {
+            $result = $statement->execute(array("employee_id" => $this->Config["employee_id"], "privilege" => $privilege));
+            if (!$result) {
+                /*
+                 * We were not able to create the administrative user.
+                 */
+
+                $this->Error_message[] = gettext("Error while trying to create administrative user.");
+                return FALSE;
+            }
+        }
+
         $this->write_config_to_session();
         $this->write_config_to_file();
+        header("Location: ../../user-management-in.php");
+        die();
+        return TRUE;
     }
 
     public function pdr_directories_are_writable() {
-//TODO WHERE ARE WE? WHERE IS THE ROOT?
-        print_r(__FILE__);
         $List_of_directories = array(
             "upload",
             "tmp",
             "config",
         );
         foreach ($List_of_directories as $directory_name) {
-            if (is_writable($directory_name)) {
-//    $List_of_writable_directories[] = $directory_name;
+            if (is_writable($this->pdr_file_system_application_path . $directory_name)) {
+                //$List_of_writable_directories[] = $directory_name;
             } else {
                 $List_of_non_writable_directories[] = $directory_name;
             }

@@ -1,5 +1,4 @@
 <?php
-echo "runs<br>";
 require_once "../classes/class.install.php";
 $install = new install;
 print_r($_SESSION);
