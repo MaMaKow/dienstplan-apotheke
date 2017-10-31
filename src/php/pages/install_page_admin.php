@@ -15,10 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 require_once "../classes/class.install.php";
 $install = new install;
-$install->setup_mysql_database_tables();
 if (filter_has_var(INPUT_POST, "user_name")) {
     $install->handle_user_input_administration();
 }
@@ -52,7 +50,7 @@ require_once 'install_head.php'
     <input type="submit" />
 </form>
 <?php
-$install->build_error_message_div();
+echo $install->build_error_message_div();
 ?>
 </body>
 </html>

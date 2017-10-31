@@ -32,6 +32,12 @@ class install {
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         session_start();
         session_regenerate_id();
+        if ($this->config_exists_in_file()) {
+            $this->Error_message[] = gettext("There already is a configuration file."); //Nobody will ever read this.
+            echo $this->build_error_message_div();
+            header("Location: ../../configure-in.php");
+            die();
+        }
         $this->read_config_from_session();
     }
 
@@ -54,6 +60,7 @@ class install {
         } catch (PDOException $e) {
             error_log("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
             $this->Error_message = "<p>There was an error while connecting to the database. Please see the error log for more details!</p>";
+            echo $this->build_error_message_div();
         }
 
         $this->pdo->exec("USE " . $this->Config["database_name"]);
@@ -210,44 +217,77 @@ class install {
         $this->Config["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_STRING, $options = null);
         if ($this->Config["password"] !== $this->Config["password2"]) {
             $this->Error_message[] = gettext("The passwords aren't the same.");
+            unset($this->Config["password"], $this->Config["password2"]); //We only need the hash from here on.
             return FALSE;
+        } else {
+            $password_hash = password_hash($this->Config["password"], PASSWORD_DEFAULT);
+            unset($this->Config["password"], $this->Config["password2"]); //We only need the hash from here on.
         }
-        $password_hash = password_hash($this->Config["password"], PASSWORD_DEFAULT);
 
-//TODO: make sure that the database and user table exist
 
-        $statement = $this->pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
-        $result = $statement->execute(array('user_name' => $this->Config["user_name"], 'employee_id' => $this->Config["employee_id"], 'password' => $password_hash, 'email' => $this->Config["email"]));
-        if (!$result) {
+        if (empty($this->Config["database_name"])) {
+            header("Location: install_page_database.php");
+            die("The database connection needs to be setup first.");
+        }
+        $this->connect_to_database();
+
+        $statement = $this->pdo->prepare("SELECT user_name FROM `users` WHERE user_name = :user_name");
+        $result = $statement->execute(array('user_name' => $this->Config["user_name"]));
+        $result = $statement->fetchAll();
+        if (empty($result[0]["user_name"])) {
+            $statement = $this->pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
+            $result = $statement->execute(array(
+                'user_name' => $this->Config["user_name"],
+                'employee_id' => $this->Config["employee_id"],
+                'password' => $password_hash,
+                'email' => $this->Config["email"],
+                'status' => 'active',
+            ));
+            if (!$result) {
+                /*
+                 * We were not able to create the administrative user.
+                 */
+                $this->Error_message[] = gettext("Error while trying to create administrative user.");
+                return FALSE;
+            }
+        } else {
             /*
-             * We were not able to create the administrative user.
+             * The administrative user already exists.
+             * We will not delete it.
              */
-
-            $this->Error_message[] = gettext("Error while trying to create administrative user.");
-            return FALSE;
+            $this->Error_message[] = gettext("Administrative user already exists.");
         }
+
         /*
          * Grant all privileges to the administrative user:
          */
-        $statement = $this->pdo->prepare("INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES(:employee_id, ':privilege')");
+        $statement = $this->pdo->prepare("INSERT IGNORE INTO `users_privileges` (`employee_id`, `privilege`) VALUES (:employee_id, :privilege)");
         require_once $this->pdr_file_system_application_path . 'src/php/classes/class.sessions.php';
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
-            $result = $statement->execute(array("employee_id" => $this->Config["employee_id"], "privilege" => $privilege));
+            $result = $statement->execute(array(
+                "employee_id" => $this->Config["employee_id"],
+                "privilege" => $privilege
+            ));
             if (!$result) {
                 /*
                  * We were not able to create the administrative user.
                  */
 
-                $this->Error_message[] = gettext("Error while trying to create administrative user.");
+                $this->Error_message[] = gettext("Error while trying to create administrative user privileges.");
+                print_r($statement->ErrorInfo());
+                echo "<br>\n";
                 return FALSE;
             }
         }
 
         $this->write_config_to_session();
-        $this->write_config_to_file();
-        header("Location: ../../user-management-in.php");
-        die();
-        return TRUE;
+        if (FALSE === $this->write_config_to_file()) {
+            echo $this->build_error_message_div();
+        } else {
+            header("Location: ../../../user-management-in.php");
+            die("Please move on to the <a href=../../user-management-in.php>user management</a>");
+            return TRUE;
+        }
     }
 
     public function pdr_directories_are_writable() {
@@ -294,6 +334,14 @@ class install {
                 /*
                  * There was a serious error while trying to create the database.
                  */
+                $this->Error_message[] = gettext("Error while trying to create the database.");
+                return FALSE;
+            }
+            if (FALSE === $this->setup_mysql_database_tables()) {
+                /*
+                 * There was a serious error while trying to create the database tables.
+                 */
+                $this->Error_message[] = gettext("Error while trying to create the database tables.");
                 return FALSE;
             }
         }
@@ -318,7 +366,41 @@ class install {
     }
 
     private function write_config_to_file() {
-        file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');
+        $dirname = $this->pdr_file_system_application_path . 'config';
+        echo $this->make_readable_fileperms(fileperms($dirname));
+        echo "<br>\n";
+        print_r(is_writable($dirname));
+        echo "<br>\n";
+        $stat = stat($dirname);
+        print_r($stat);
+        echo "<br>\n";
+        print_r(posix_getpwuid($stat["uid"]));
+        echo "<br>\n";
+        $result = file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');
+        if (FALSE === $result) {
+            $this->Error_message[] = gettext("Error while writing the configuration to the filesystem.");
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    private function config_exists_in_file() {
+        $config_filename = $this->pdr_file_system_application_path . 'config/config.php';
+        if (file_exists($config_filename)) {
+            include $config_filename;
+            if (empty($config)) {
+                /*
+                 * No config file was written yet.
+                 * Or the config array is empty.
+                 */
+                return FALSE;
+            } else {
+                return TRUE;
+            }
+        } else {
+
+            return FALSE;
+        }
     }
 
     public function build_error_message_div() {
@@ -328,6 +410,57 @@ class install {
         }
         $text_html .= "</div>";
         return $text_html;
+    }
+
+    private function make_readable_fileperms($perms) {
+        switch ($perms & 0xF000) {
+            case 0xC000: // Socket
+                $info = 's';
+                break;
+            case 0xA000: // Symbolischer Link
+                $info = 'l';
+                break;
+            case 0x8000: // Regulär
+                $info = 'r';
+                break;
+            case 0x6000: // Block special
+                $info = 'b';
+                break;
+            case 0x4000: // Verzeichnis
+                $info = 'd';
+                break;
+            case 0x2000: // Character special
+                $info = 'c';
+                break;
+            case 0x1000: // FIFO pipe
+                $info = 'p';
+                break;
+            default: // unbekannt
+                $info = 'u';
+        }
+
+// Besitzer
+        $info .= (($perms & 0x0100) ? 'r' : '-');
+        $info .= (($perms & 0x0080) ? 'w' : '-');
+        $info .= (($perms & 0x0040) ?
+                (($perms & 0x0800) ? 's' : 'x' ) :
+                (($perms & 0x0800) ? 'S' : '-'));
+
+// Gruppe
+        $info .= (($perms & 0x0020) ? 'r' : '-');
+        $info .= (($perms & 0x0010) ? 'w' : '-');
+        $info .= (($perms & 0x0008) ?
+                (($perms & 0x0400) ? 's' : 'x' ) :
+                (($perms & 0x0400) ? 'S' : '-'));
+
+// Andere
+        $info .= (($perms & 0x0004) ? 'r' : '-');
+        $info .= (($perms & 0x0002) ? 'w' : '-');
+        $info .= (($perms & 0x0001) ?
+                (($perms & 0x0200) ? 't' : 'x' ) :
+                (($perms & 0x0200) ? 'T' : '-'));
+
+        return $info;
     }
 
 }
