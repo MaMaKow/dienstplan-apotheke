@@ -1,5 +1,4 @@
 <?php
-echo "runs<br>\n";
 require_once "../classes/class.install.php";
 $install = new install;
 if (filter_has_var(INPUT_POST, "database_username")) {
