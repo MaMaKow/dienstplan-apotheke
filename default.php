@@ -15,6 +15,7 @@ define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
 
 
 if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
+    header("Location: src/php/pages/install_page_intro.php");
     die("The application does not seem to be installed. Please see the <a href=src/php/pages/install_page_intro.php>installation page</a>!");
 }
 

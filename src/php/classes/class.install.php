@@ -24,10 +24,12 @@ class install {
 
     private $pdo;
     private $Config;
+    private $pdr_supported_database_management_systems;
     public $Error_message;
     public $pdr_file_system_application_path;
 
     function __construct() {
+        $this->pdr_supported_database_management_systems = array("mysql");
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         session_start();
@@ -290,6 +292,16 @@ class install {
         }
     }
 
+    public function database_driver_is_installed() {
+        if (empty(array_intersect(PDO::getAvailableDrivers(), $this->pdr_supported_database_management_systems))) {
+            $this->Error_message[] = "No compatible database driver found. Please install one of the following database management systems and the corresponding PHP driver!";
+            $this->Error_message[] = explode(", ", $this->pdr_supported_database_management_systems);
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    }
+
     public function pdr_directories_are_writable() {
         $List_of_directories = array(
             "upload",
@@ -302,11 +314,24 @@ class install {
             } else {
                 $List_of_non_writable_directories[] = $directory_name;
             }
-
-//TODO generate some output to the user
         }
         foreach ($List_of_non_writable_directories as $non_writable_directory_name) {
-            $this->Error_message[] = "<em>" . $non_writable_directory_name . "is not writable!</em>";
+
+        }
+        if (!empty($List_of_non_writable_directories)) {
+            if (1 === count($List_of_non_writable_directories)) {
+                //TODO: get a good ngettext for the following lines!
+                $this->Error_message[] = "The directory " . $List_of_non_writable_directories[0] . " is not writable.";
+            } else {
+                $this->Error_message[] = "The directories " . $this->fancy_implode($List_of_non_writable_directories, ", ") . " are not writable.";
+            }
+            $this->Error_message[] = gettext("Make sure that the directories are writable by pdr!");
+            $current_www_user = posix_getpwuid(posix_geteuid())["name"];
+            $this->Error_message[] = "<pre class='install_cli'>chown -R " . $current_www_user . ":" . $current_www_user . " " . $this->pdr_file_system_application_path . "</pre>\n";
+            //$this->Error_message[] = gettext("Adapt the above code to the user and folder of your webserver!");
+            return FALSE;
+        } else {
+            return TRUE;
         }
     }
 
@@ -375,6 +400,7 @@ class install {
         print_r($stat);
         echo "<br>\n";
         print_r(posix_getpwuid($stat["uid"]));
+
         echo "<br>\n";
         $result = file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');
         if (FALSE === $result) {
@@ -404,14 +430,21 @@ class install {
     }
 
     public function build_error_message_div() {
-        $text_html = "<div id='error_message_div'>";
+        $text_html = "<div id='error_message_div'>\n";
         foreach ($this->Error_message as $error_message) {
-            $text_html .= "<p>" . $error_message . "</p>";
+            $text_html .= "<p>" . $error_message . "</p>\n";
         }
-        $text_html .= "</div>";
+        $text_html .= "</div>\n";
+        unset($this->Error_message); //Unsetting makes it possible to refill the array and post the new contents in another place.
         return $text_html;
     }
 
+    private function fancy_implode($input_array, $delimiter = ", ") {
+        $last = array_pop($input_array);
+        return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
+    }
+
+//TODO Remove this, when debugging is finished!
     private function make_readable_fileperms($perms) {
         switch ($perms & 0xF000) {
             case 0xC000: // Socket

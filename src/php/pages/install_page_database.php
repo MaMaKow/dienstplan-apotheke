@@ -46,7 +46,7 @@ require_once 'install_head.php'
             The prefix must start with a letter and must only contain letters, numbers and underscores.</del>
     </p><p>
         <?php
-        $install->build_error_message_div();
+        echo $install->build_error_message_div();
         ?>
     </p><p>
         <input type="submit" />

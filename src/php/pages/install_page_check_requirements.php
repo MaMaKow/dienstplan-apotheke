@@ -18,13 +18,42 @@
  */
 require_once "../classes/class.install.php";
 $install = new install;
-/*
- * Check if there is write access to all write-necessary directories:
- */
-pdr_directories_are_writable();
-$install->build_error_message_div();
+require_once 'install_head.php'
 ?>
+<p>This page is meant to check if:</p>
+<ul>
+    <li> php supports connections to a supported database
+        <?php
+        /*
+         * Check if there is write access to all write-necessary directories:
+         */
+        if ($install->database_driver_is_installed()) {
+            echo "<em class='install_info_postive'>done</em>";
+        } else {
+            echo "<em class='install_info_negative'>failed</em>";
+            echo $install->build_error_message_div();
+        }
+        ?>
+    </li>
+    <li> directories (i.e. upload) are writable by the program
+        <?php
+        /*
+         * Check if there is write access to all write-necessary directories:
+         */
+        if ($install->pdr_directories_are_writable()) {
+            echo "<em class='install_info_postive'>done</em>";
+        } else {
+            echo "<em class='install_info_negative'>failed</em>";
+            echo $install->build_error_message_div();
+        }
+        ?>
+    </li>
+</ul>
+<?php
+if ($install->database_driver_is_installed() and $install->pdr_directories_are_writable()) { //Should the result be cached in a variable in the above code? Would this be a significant difference?
+    ?>
+    <form action="install_page_database.php" method="post">
+        <input type="submit" value="<?= gettext("Next") ?>">
+    </form>
+<?php } ?>
 
-This page is meant to check if:
-- database is installed on the server
-- directories (i.e. upload) are writable by the program
