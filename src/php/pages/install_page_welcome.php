@@ -28,6 +28,16 @@
 </ul>
 
 </p>
-<form action="install_page_database.php" method="post">
+<p>
+    After you enter your root or administrator login for your database, the installer creates a special database user with privileges limited to the pdr database.
+    Then pdr needs only the special pdr database user, and drops the root database login.
+    This user is named pdr and then given a random password.
+    The pdr database user and password are written into config.php
+    <br>
+    If the database does not exist yet, the installer tries to create it.
+    If the pdr user can not be created, then the installer will fallback to using the given administrator user and password.
+    This user might have more than the necessary privileges.
+</p>
+<form action="install_page_check_requirements.php" method="post">
     <input type="submit" value="<?= gettext("Next") ?>">
 </form>
