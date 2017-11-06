@@ -58,7 +58,7 @@ class install {
         $database_connect_string .= "charset=utf8;";
         $database_connect_options = array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
         try {
-            $this->pdo = new PDO($database_connect_string, $this->Config["database_username"], $this->Config["database_password"], $database_connect_options);
+            $this->pdo = new PDO($database_connect_string, $this->Config["database_user"], $this->Config["database_password"], $database_connect_options);
         } catch (PDOException $e) {
             error_log("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
             $this->Error_message = "<p>There was an error while connecting to the database. Please see the error log for more details!</p>";
@@ -93,15 +93,15 @@ class install {
                  * That is too bad. We have to go back to the given user.
                  * TODO: We should DROP USER the created user. If we do not use it, we should delete it.
                  */
-                unset($this->Config["database_username_self"]);
+                unset($this->Config["database_user_self"]);
                 unset($this->Config["database_password_self"]);
             } else {
                 /*
                  * Change the configuration to the new database user:
                  */
-                $this->Config["database_username"] = $this->Config["database_username_self"];
+                $this->Config["database_user"] = $this->Config["database_user_self"];
                 $this->Config["database_password"] = $this->Config["database_password_self"];
-                unset($this->Config["database_username_self"]);
+                unset($this->Config["database_user_self"]);
                 unset($this->Config["database_password_self"]);
                 return TRUE;
             }
@@ -130,11 +130,11 @@ class install {
         /*
          * Create the user:
          */
-        $this->Config["database_username_self"] = "pdr"; //The user name must not be longer than 16 chars in mysql.
+        $this->Config["database_user_self"] = "pdr"; //The user name must not be longer than 16 chars in mysql.
         $this->Config["database_password_self"] = bin2hex(openssl_random_pseudo_bytes(16));
-        $statement = $this->pdo->prepare("CREATE USER :database_username@:database_host IDENTIFIED BY :database_password");
+        $statement = $this->pdo->prepare("CREATE USER :database_user@:database_host IDENTIFIED BY :database_password");
         $result = $statement->execute(array(
-            'database_username' => $this->Config["database_username_self"],
+            'database_user' => $this->Config["database_user_self"],
             'database_host' => "localhost",
             'database_password' => $this->Config["database_password_self"],
         ));
@@ -148,7 +148,7 @@ class install {
                  * TODO: Should we place a warning to the administrator?
                  */
                 $result = $statement->execute(array(
-                    'database_username' => $this->Config["database_username_self"],
+                    'database_user' => $this->Config["database_user_self"],
                     'database_host' => "%",
                     'database_password' => $this->Config["database_password_self"],
                 ));
@@ -179,13 +179,13 @@ class install {
             "ALTER",
             "TRIGGER",
         );
-        $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_username_self"] . "@localhost");
+        $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@localhost");
         if ("localhost" !== $this->Config["database_host"]) {
             /*
              * Allow access from any remote.
              * TODO: Should we place a warning to the administrator?
              */
-            $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_username_self"] . "@%");
+            $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@%");
         }
     }
 
@@ -212,18 +212,18 @@ class install {
 
     public function handle_user_input_administration() {
 
-        $this->Config["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_STRING, $options = null);
-        $this->Config["employee_id"] = filter_input(INPUT_POST, "employee_id", FILTER_SANITIZE_NUMBER_INT, $options = null);
-        $this->Config["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, $options = null);
-        $this->Config["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_STRING, $options = null);
-        $this->Config["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_STRING, $options = null);
-        if ($this->Config["password"] !== $this->Config["password2"]) {
+        $this->Config["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_STRING, $options = null);
+        $this->Config["admin"]["employee_id"] = filter_input(INPUT_POST, "employee_id", FILTER_SANITIZE_NUMBER_INT, $options = null);
+        $this->Config["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, $options = null);
+        $this->Config["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_STRING, $options = null);
+        $this->Config["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_STRING, $options = null);
+        if ($this->Config["admin"]["password"] !== $this->Config["admin"]["password2"]) {
             $this->Error_message[] = gettext("The passwords aren't the same.");
-            unset($this->Config["password"], $this->Config["password2"]); //We only need the hash from here on.
+            unset($this->Config["admin"]["password"], $this->Config["admin"]["password2"]); //We only need the hash from here on.
             return FALSE;
         } else {
-            $password_hash = password_hash($this->Config["password"], PASSWORD_DEFAULT);
-            unset($this->Config["password"], $this->Config["password2"]); //We only need the hash from here on.
+            $password_hash = password_hash($this->Config["admin"]["password"], PASSWORD_DEFAULT);
+            unset($this->Config["admin"]["password"], $this->Config["admin"]["password2"]); //We only need the hash from here on.
         }
 
 
@@ -234,15 +234,15 @@ class install {
         $this->connect_to_database();
 
         $statement = $this->pdo->prepare("SELECT user_name FROM `users` WHERE user_name = :user_name");
-        $result = $statement->execute(array('user_name' => $this->Config["user_name"]));
+        $result = $statement->execute(array('user_name' => $this->Config["admin"]["user_name"]));
         $result = $statement->fetchAll();
         if (empty($result[0]["user_name"])) {
             $statement = $this->pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
             $result = $statement->execute(array(
-                'user_name' => $this->Config["user_name"],
-                'employee_id' => $this->Config["employee_id"],
+                'user_name' => $this->Config["admin"]["user_name"],
+                'employee_id' => $this->Config["admin"]["employee_id"],
                 'password' => $password_hash,
-                'email' => $this->Config["email"],
+                'email' => $this->Config["admin"]["email"],
                 'status' => 'active',
             ));
             if (!$result) {
@@ -267,7 +267,7 @@ class install {
         require_once $this->pdr_file_system_application_path . 'src/php/classes/class.sessions.php';
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
             $result = $statement->execute(array(
-                "employee_id" => $this->Config["employee_id"],
+                "employee_id" => $this->Config["admin"]["employee_id"],
                 "privilege" => $privilege
             ));
             if (!$result) {
@@ -340,7 +340,7 @@ class install {
         $this->Config["database_host"] = filter_input(INPUT_POST, "database_host", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["database_name"] = filter_input(INPUT_POST, "database_name", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["database_port"] = filter_input(INPUT_POST, "database_port", FILTER_SANITIZE_NUMBER_INT, $options = null);
-        $this->Config["database_username"] = filter_input(INPUT_POST, "database_username", FILTER_SANITIZE_STRING, $options = null);
+        $this->Config["database_user"] = filter_input(INPUT_POST, "database_user", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["database_password"] = filter_input(INPUT_POST, "database_password", FILTER_SANITIZE_STRING, $options = null);
         $this->write_config_to_session();
         if (!in_array($this->Config["database_management_system"], PDO::getAvailableDrivers())) {
@@ -391,17 +391,9 @@ class install {
     }
 
     private function write_config_to_file() {
+        $this->Config["contact_email"] = $this->Config["admin"]["email"];
+        unset($this->Config["admin"]);
         $dirname = $this->pdr_file_system_application_path . 'config';
-        echo $this->make_readable_fileperms(fileperms($dirname));
-        echo "<br>\n";
-        print_r(is_writable($dirname));
-        echo "<br>\n";
-        $stat = stat($dirname);
-        print_r($stat);
-        echo "<br>\n";
-        print_r(posix_getpwuid($stat["uid"]));
-
-        echo "<br>\n";
         $result = file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');
         if (FALSE === $result) {
             $this->Error_message[] = gettext("Error while writing the configuration to the filesystem.");
