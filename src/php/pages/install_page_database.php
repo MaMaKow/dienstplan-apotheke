@@ -1,7 +1,7 @@
 <?php
 require_once "../classes/class.install.php";
 $install = new install;
-if (filter_has_var(INPUT_POST, "database_username")) {
+if (filter_has_var(INPUT_POST, "database_user")) {
     $install->handle_user_input_database();
 }
 require_once 'install_head.php'
@@ -30,8 +30,8 @@ require_once 'install_head.php'
         <br>Leave this blank unless you know the server operates on a non-standard port.
     </p><p>
 
-        <LABEL for="database_username">Database username:</LABEL><br>
-        <input type="text" id="database_username" name="database_username" value="<?= $_SESSION["Config"]["database_username"] ? $_SESSION["Config"]["database_username"] : "" ?>" />
+        <LABEL for="database_user">Database username:</LABEL><br>
+        <input type="text" id="database_user" name="database_user" value="<?= $_SESSION["Config"]["database_user"] ? $_SESSION["Config"]["database_user"] : "" ?>" />
     </p><p>
 
         <LABEL for="database_password">Database password:</LABEL><br>
