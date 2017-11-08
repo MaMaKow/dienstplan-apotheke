@@ -237,7 +237,9 @@ class install {
         $result = $statement->execute(array('user_name' => $this->Config["admin"]["user_name"]));
         $result = $statement->fetchAll();
         if (empty($result[0]["user_name"])) {
-            $statement = $this->pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
+            $statement = $this->pdo->prepare("INSERT INTO"
+                    . " users (user_name, employee_id, password, email, status)"
+                    . " VALUES (:user_name, :employee_id, :password, :email, 'active')");
             $result = $statement->execute(array(
                 'user_name' => $this->Config["admin"]["user_name"],
                 'employee_id' => $this->Config["admin"]["employee_id"],
@@ -427,65 +429,13 @@ class install {
             $text_html .= "<p>" . $error_message . "</p>\n";
         }
         $text_html .= "</div>\n";
-        unset($this->Error_message); //Unsetting makes it possible to refill the array and post the new contents in another place.
+        unset($this->Error_message); //Unsetting makes it possible to refill the array and build the new contents in another place.
         return $text_html;
     }
 
     private function fancy_implode($input_array, $delimiter = ", ") {
         $last = array_pop($input_array);
         return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
-    }
-
-//TODO Remove this, when debugging is finished!
-    private function make_readable_fileperms($perms) {
-        switch ($perms & 0xF000) {
-            case 0xC000: // Socket
-                $info = 's';
-                break;
-            case 0xA000: // Symbolischer Link
-                $info = 'l';
-                break;
-            case 0x8000: // Regulär
-                $info = 'r';
-                break;
-            case 0x6000: // Block special
-                $info = 'b';
-                break;
-            case 0x4000: // Verzeichnis
-                $info = 'd';
-                break;
-            case 0x2000: // Character special
-                $info = 'c';
-                break;
-            case 0x1000: // FIFO pipe
-                $info = 'p';
-                break;
-            default: // unbekannt
-                $info = 'u';
-        }
-
-// Besitzer
-        $info .= (($perms & 0x0100) ? 'r' : '-');
-        $info .= (($perms & 0x0080) ? 'w' : '-');
-        $info .= (($perms & 0x0040) ?
-                (($perms & 0x0800) ? 's' : 'x' ) :
-                (($perms & 0x0800) ? 'S' : '-'));
-
-// Gruppe
-        $info .= (($perms & 0x0020) ? 'r' : '-');
-        $info .= (($perms & 0x0010) ? 'w' : '-');
-        $info .= (($perms & 0x0008) ?
-                (($perms & 0x0400) ? 's' : 'x' ) :
-                (($perms & 0x0400) ? 'S' : '-'));
-
-// Andere
-        $info .= (($perms & 0x0004) ? 'r' : '-');
-        $info .= (($perms & 0x0002) ? 'w' : '-');
-        $info .= (($perms & 0x0001) ?
-                (($perms & 0x0200) ? 't' : 'x' ) :
-                (($perms & 0x0200) ? 'T' : '-'));
-
-        return $info;
     }
 
 }

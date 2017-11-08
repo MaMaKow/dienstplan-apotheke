@@ -62,7 +62,9 @@ class sessions {
          */
         if ("localhost" != $http_host AND ( empty($https) OR $https != "on")) {
             header("Location: https://" . $http_host . $request_uri);
-            die("<p>Dieses Programm erfordert die Nutzung von <a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>. Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
+            die("<p>Dieses Programm erfordert die Nutzung von "
+                    . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
+                    . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
         }
 
         /*
@@ -137,7 +139,9 @@ class sessions {
             $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
             $escalation_authentication = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/session-escalation-login.php?referrer=" . $request_uri;
             //$missing_permission_text = gettext("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt.");
-            echo build_warning_messages("", [gettext("The permission to create a roster is missing."), "Bitte wenden Sie sich an einen Administrator. <a href=$escalation_authentication>&rarr;Rechte erweitern</a>"]);
+            echo build_warning_messages("", [gettext("The permission to create a roster is missing."),
+                "Bitte wenden Sie sich an einen Administrator."
+                . " <a href=$escalation_authentication>&rarr;Rechte erweitern</a>"]);
             exit();
         }
     }
@@ -180,7 +184,10 @@ class sessions {
             $_SESSION['user_name'] = $user['user_name'];
             $_SESSION['user_employee_id'] = $user['employee_id'];
             //Reset failed_login_attempts
-            $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = 0 WHERE `user_name` = :user_name");
+            $statement = $pdo->prepare("UPDATE users"
+                    . " SET failed_login_attempt_time = NOW(),"
+                    . " failed_login_attempts = 0"
+                    . " WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
 
             if (TRUE === $redirect) {
@@ -195,7 +202,10 @@ class sessions {
             }
         } else {
             //Register failed_login_attempts
-            $statement = $pdo->prepare("UPDATE users SET failed_login_attempt_time = NOW(), failed_login_attempts = IFNULL(failed_login_attempts, 0)+1 WHERE `user_name` = :user_name");
+            $statement = $pdo->prepare("UPDATE users"
+                    . " SET failed_login_attempt_time = NOW(),"
+                    . " failed_login_attempts = IFNULL(failed_login_attempts, 0)+1"
+                    . " WHERE `user_name` = :user_name");
             $result = $statement->execute(array('user_name' => $user['user_name']));
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             return $errorMessage;
