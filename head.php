@@ -23,15 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     ?>>
         <META charset=UTF-8>
         <TITLE><?php echo $config['application_name']; ?></TITLE>
-        <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>javascript.js" ></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>datepicker.css" />
-        <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>datepicker.js"></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>style.css" media="all">
-        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>print.css" media="print">
+        <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH ?>javascript.js" ></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH ?>datepicker.css" />
+        <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH ?>datepicker.js"></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH ?>style.css" media="all">
+        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH ?>print.css" media="print">
         <!--The following two files are relevant only to collaborative-vacation-in.php-->
         <!--TODO: Maybe we should load them only where necessary.-->
-        <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>js/collaborative-vacation.js" ></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>css/collaborative-vacation.css" media="all">
+        <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH?>js/collaborative-vacation.js" ></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH?>css/collaborative-vacation.css" media="all">
     </HEAD>
     <BODY>
         <?php
