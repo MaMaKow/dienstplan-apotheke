@@ -38,7 +38,7 @@ putenv("LANGUAGE=$locale");
 putenv("LANG=$locale");
 //setlocale(LC_ALL, $locale);
 setlocale(LC_MESSAGES, $locale);
-$results = setlocale(LC_COLLATE, $locale);
+$results = setlocale(LC_COLLATE, $locale, $locale . ".UTF-8");
 if (!$results) {
     exit('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
 }

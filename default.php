@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @var PDR_FILE_SYSTEM_APPLICATION_PATH The full path of the application root as determined by the position of the default.php
  */
@@ -6,7 +7,10 @@ define('PDR_FILE_SYSTEM_APPLICATION_PATH', __DIR__);
 /*
  * @var PDR_HTTP_SERVER_APPLICATION_PATH The relative path of the application root on the web server.
  */
-define('PDR_HTTP_SERVER_APPLICATION_PATH', '/' . substr(PDR_FILE_SYSTEM_APPLICATION_PATH, (strlen($_SERVER['DOCUMENT_ROOT'])+1)));
+$folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
+$root_folder = substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars) . "/";
+define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
+//TODO: This does not work, if the location is a symbolic link.
 /*
  * @var PDR_ONE_DAY_IN_SECONDS The amount of seconds in one day.
  */
@@ -14,7 +18,8 @@ define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
 
 
 if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
-    die("The application does not seem to be installed. Please see the <a href=install.php>installation page</a>!");
+    header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php");
+    die("The application does not seem to be installed. Please see the <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php'>installation page</a>!");
 }
 
 require "config/config.php";
