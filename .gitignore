@@ -9,7 +9,7 @@ documentation/
 layout-test.html
 style-test.css
 tests/
-
+nbproject/
 
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
