@@ -59,10 +59,9 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
 $vk = $employee_id;
 $sql_query = "SELECT * FROM `Stunden`
 				WHERE `VK` = " . $vk . "
-				ORDER BY `Aktualisierung` ASC
+				ORDER BY `Aktualisierung` DESC
 				";
 $result = mysqli_query_verbose($sql_query);
-$number_of_rows = mysqli_num_rows($result);
 $tablebody = "\t\t\t<tbody>\n";
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
@@ -78,13 +77,13 @@ while ($row = mysqli_fetch_object($result)) {
     $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
     $tablebody.= htmlentities($row->Stunden);
     $tablebody.= "\n\t\t\t\t</td>\n";
-    if ($i == $number_of_rows) { //Get the last row. //TODO: Perhaps the server should calculate on it's own again afterwards.
+    if ($i === 1) { //Get the last row. //TODO: Perhaps the server should calculate on it's own again afterwards.
         $tablebody.= "\t\t\t\t<td id=saldoAlt>\n\t\t\t\t\t";
+        $saldo = $row->Saldo;
     } else {
         $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
     }
     $tablebody.= htmlentities($row->Saldo);
-    $saldo = $row->Saldo; //Wir tragen den Saldo mit uns fort.
     $tablebody.= "\n\t\t\t\t</td>\n";
     $tablebody.= "\n\t\t\t</tr>\n";
     $i++;
@@ -130,11 +129,8 @@ echo "\t\t\t<tr>\n"
  . "\t\t\t</tr>\n"
  . "\t\t\t</thead>\n";
 
-//Ausgabe
-echo "$tablebody";
-
 //Eingabe. Der Saldo wird natürlich berechnet.
-echo "\t\t\t<tfoot><tr>\n";
+echo "\t\t\t<tr>\n";
 echo "\t\t\t\t<td>\n";
 echo "\t\t\t\t\t<input type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime>\n";
 echo "\t\t\t\t</td>\n";
@@ -147,13 +143,15 @@ echo "\t\t\t\t</td>\n";
 echo "\t\t\t\t<td>\n";
 echo "\t\t\t\t\t<input readonly type=text name=saldo id=saldoNeu value=" . htmlentities($saldo) . " form=insert_new_overtime>\n";
 echo "\t\t\t\t</td>\n";
-echo "\t\t\t</tr></tfoot>\n";
+echo "\t\t\t<td><input class=no-print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime></td>\n";
+echo "\t\t\t</tr>\n";
+//Ausgabe
+echo "$tablebody";
 echo "\t\t</table>\n";
-echo "\t\t<form method=POST id=insert_new_overtime>\n"
- . "\t\t\t<input class=no-print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime>\n"
+echo "\t</div>\n";
+echo "<form method=POST id=insert_new_overtime>\n"
  . "\t\t\t<input hidden name=employee_id value=" . htmlentities($employee_id) . " form=insert_new_overtime>\n"
  . "\t\t</form>\n";
-echo "\t</div>\n";
 require 'contact-form.php';
 ?>
 </body>
