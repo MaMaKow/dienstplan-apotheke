@@ -14,7 +14,7 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.0 r15299"
+   inkscape:version="0.48.5 r10040"
    sodipodi:docname="delete.svg">
   <defs
      id="defs2" />
@@ -25,16 +25,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.022097087"
-     inkscape:cx="-7368.1892"
-     inkscape:cy="-3892.5629"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="2160.0002"
+     inkscape:cy="543.51972"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="657"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1014"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,14 +54,14 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:6.61458302px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="78.619049"
-       y="87.601181"
-       id="text3682"><tspan
+       style="font-size:370.27337646px;font-style:normal;font-weight:normal;line-height:6.61458302px;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:sans-serif"
+       x="-11.028652"
+       y="269.93066"
+       id="text3682"
+       transform="scale(0.90885772,1.1002822)"><tspan
          sodipodi:role="line"
          id="tspan3680"
-         x="78.619049"
-         y="87.601181"
-         style="stroke-width:0.26458332">X</tspan></text>
+         x="-11.028652"
+         y="269.93066">X</tspan></text>
   </g>
 </svg>
