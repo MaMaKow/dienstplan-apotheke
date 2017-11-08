@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <META charset=UTF-8>
         <TITLE><?php echo $config['application_name']; ?></TITLE>
         <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>javascript.js" ></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>datepicker.css" /> 
+        <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>datepicker.css" />
         <SCRIPT type="text/javascript" src="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>datepicker.js"></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>style.css" media="all">
         <LINK rel="stylesheet" type="text/css" href="<?php echo PDR_HTTP_SERVER_APPLICATION_PATH . '/' ?>print.css" media="print">
@@ -35,5 +35,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </HEAD>
     <BODY>
         <?php
-        echo $session->build_escalation_div();
-        
+        echo sessions::build_escalation_div();
+
