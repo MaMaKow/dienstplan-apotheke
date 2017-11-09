@@ -148,8 +148,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         echo $zeile;
 
         //Mittagspause
-        $zeile = '';
-        echo "<br>\n\t\t\t\t";
+        $zeile = "<br>\n\t\t\t\t";
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Mittagsbeginn'][$j] > 0) {
             $zeile .= " " . gettext("break") . ": ";
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Mittagsbeginn'][$j]));
@@ -163,6 +162,9 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         }
         if (isset($Dienstplan[$i]["VK"][$j]) and isset($Dienstplan[$i]["Mandant"][$j])) {
             $zeile .= "<br>" . $Kurz_mandant[$Dienstplan[$i]["Mandant"][$j]];
+        }
+        if (isset($Dienstplan[$i]["VK"][$j]) and ! empty($Dienstplan[$i]["Kommentar"][$j])) {
+            $zeile .= "<br>" . $Dienstplan[$i]["Kommentar"][$j];
         }
         $zeile .= "";
 
