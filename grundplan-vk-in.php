@@ -189,7 +189,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         $zeile = '';
         echo "<br>\n\t\t\t\t";
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0 and $Grundplan[$wochentag]['Mittagsende'][$j] > 0) {
-            $zeile .= ' " . gettext("break") . ": ';
+            $zeile .= " " . gettext("break") . ": ";
             $zeile .= '<input type=time name=Grundplan[' . $wochentag . "][Mittagsbeginn][$j] value=";
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
             $zeile .= " form='change_principle_roster_employee'>";
