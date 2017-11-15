@@ -41,27 +41,27 @@ function get_Erwartung($datum, $mandant) {
     }
 
     global $verbindungi;
-    global $Pep_mandant;
+    global $Branch_pep_id;
 
     $unix_datum = strtotime($datum);
     $sql_weekday = date('N', $unix_datum) - 1;
     $month_day = date('j', $unix_datum);
     $month = date('n', $unix_datum);
 
-    $pep_mandant = $Pep_mandant[$mandant];
+    $branch_pep_id = $Branch_pep_id[$mandant];
 
-    $sql_query = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $pep_mandant and Wochentag = $sql_weekday";
+    $sql_query = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $branch_pep_id and Wochentag = $sql_weekday";
     $result = mysqli_query_verbose($sql_query);
     while ($row = mysqli_fetch_object($result)) {
         $Packungen[$row->Uhrzeit] = $row->Mittelwert;
     }
 
-    $sql_query = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $pep_mandant and `day` = $month_day";
+    $sql_query = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $branch_pep_id and `day` = $month_day";
     $result = mysqli_query_verbose($sql_query);
     $row = mysqli_fetch_object($result);
     $factor_tag_im_monat = $row->factor;
 
-    $sql_query = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $pep_mandant and `month` = $month";
+    $sql_query = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $branch_pep_id and `month` = $month";
     $result = mysqli_query_verbose($sql_query);
     $row = mysqli_fetch_object($result);
     $factor_monat_im_jahr = $row->factor;

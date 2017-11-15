@@ -8,7 +8,7 @@
  */
 function schreiben_ics ($Dienstplan)
 {
-global $List_of_employees, $Mandant;
+global $List_of_employees, $Branch_name;
 $textICS="";
 $textICS.="BEGIN:VCALENDAR\n";
 $textICS.="VERSION:2.0\n";
@@ -32,8 +32,8 @@ foreach(array_keys($Dienstplan) as $tag )
 			$dienstende=$Dienstplan[$tag]["Dienstende"][$key];
 			$mittags_beginn=$Dienstplan[$tag]["Mittagsbeginn"][$key];
 			$mittags_ende=$Dienstplan[$tag]["Mittagsende"][$key];
-                        $mandant=$Mandant[$Dienstplan[$tag]["Mandant"][$key]];
-                        $mandant_adresse=$Mandant_adresse[$Dienstplan[$tag]["Mandant"][$key]];
+                        $mandant=$Branch_name[$Dienstplan[$tag]["Mandant"][$key]];
+                        $branch_address=$Branch_address[$Dienstplan[$tag]["Mandant"][$key]];
                         $mandant_number=$Dienstplan[$tag]["Mandant"][$key];
 			//Output the data as ICS
 			$textICS.="BEGIN:VEVENT\n";
@@ -51,7 +51,7 @@ foreach(array_keys($Dienstplan) as $tag )
                             $textICS.="Mittag von $mittags_beginn bis $mittags_ende ";
                         }
                         $textICS.="beinhaltet den Dienstplan für die $mandant.\n";
-			$textICS.="LOCATION:$mandant_adresse\n";
+			$textICS.="LOCATION:$branch_address\n";
 			$textICS.="END:VEVENT\n";
 		}
 	}

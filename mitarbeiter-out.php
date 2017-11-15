@@ -48,7 +48,7 @@ if (!isset($List_of_employees[$employee_id])) {
     $employee_id = min(array_keys($List_of_employees));
     //die ("<H1>Mitarbeiter Nummer $employee_id ist nicht bekannt.</H1>");
 }
-//Lesen der in der Datenbank gespeicherten Daten.
+
 require 'db-lesen-woche-mitarbeiter.php';
 
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
@@ -88,7 +88,7 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     //Datum
     echo "<a href='tag-out.php?datum=" . $Dienstplan[$tag]['Datum'][0] . "'";
     if (FALSE !== $having_emergency_service) {
-        echo " title='" . $List_of_employees[$having_emergency_service["employee_id"]] . gettext(" is having emergency service at ") . $Mandant[$having_emergency_service["branch_id"]] . "'";
+        echo " title='" . $List_of_employees[$having_emergency_service["employee_id"]] . gettext(" is having emergency service at ") . $Branch_name[$having_emergency_service["branch_id"]] . "'";
     }
     echo ">";
     $zeile .= "<input type=hidden name=Dienstplan[" . $tag . "][Datum][0] value=" . $Dienstplan[$tag]["Datum"][0] . " form='select_employee'>";
@@ -161,7 +161,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= "<br><a href='stunden-out.php?employee_id=" . $Dienstplan[$i]["VK"][$j] . "'>" . $Dienstplan[$i]["Stunden"][$j] . " Stunden</a>";
         }
         if (isset($Dienstplan[$i]["VK"][$j]) and isset($Dienstplan[$i]["Mandant"][$j])) {
-            $zeile .= "<br>" . $Kurz_mandant[$Dienstplan[$i]["Mandant"][$j]];
+            $zeile .= "<br>" . $Branch_short_name[$Dienstplan[$i]["Mandant"][$j]];
         }
         if (isset($Dienstplan[$i]["VK"][$j]) and ! empty($Dienstplan[$i]["Kommentar"][$j])) {
             $zeile .= "<br>" . $Dienstplan[$i]["Kommentar"][$j];
