@@ -36,8 +36,8 @@ if (isset($mandant)) {
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
-require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
-$Dienstplan = db_lesen_tage($datum, $tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php'; 
+$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 //Build a div containing assignment of tasks:
@@ -137,7 +137,7 @@ foreach ($Branch_name as $filiale => $Name) {
     if ($mandant == $filiale) {
         continue 1;
     }
-    $Filialplan[$filiale] = db_lesen_tage($datum, $tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
+    $Filialplan[$filiale] = read_roster_array_from_db($datum, $tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
     if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
         $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Branch_short_name[$mandant] . " in " . $Branch_short_name[$filiale] . "</td></tr>";
         $table_body_html = schreiben_tabelle($Filialplan[$filiale], $filiale);

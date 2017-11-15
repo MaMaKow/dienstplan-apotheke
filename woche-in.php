@@ -36,8 +36,8 @@ if (isset($mandant)) {
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
-require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
-$Dienstplan = db_lesen_tage($datum, $tage, $mandant);
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php'; 
+$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
 require 'db-lesen-feiertag.php';
 
 //end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.

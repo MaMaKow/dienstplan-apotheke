@@ -58,8 +58,8 @@ if (isset($approval)) {
 //Get a list of all employees:
 require 'db-lesen-mitarbeiter.php';
 //Read the roster data from the database:
-require 'db-lesen-tage.php';
-$Dienstplan = db_lesen_tage($datum, $tage, $mandant);
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
+$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
 foreach ($Dienstplan as $day => $roster) {
     $max_vk_count_in_rooster_days = max($max_vk_count_in_rooster_days, count($roster["VK"]));
 }
@@ -162,7 +162,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
             if ($mandant == $branch_id) {
                 continue 1;
             }
-            $Filialplan[$branch_id] = db_lesen_tage($datum, $number_of_days, $branch_id, '[' . $mandant . ']'); //This function gets the roster of the branches.
+            $Filialplan[$branch_id] = read_roster_array_from_db($datum, $number_of_days, $branch_id, '[' . $mandant . ']'); //This function gets the roster of the branches.
             if (!empty(array_column($Filialplan[$branch_id], 'VK'))) { //array_column searches all days for some employee (VK)
                 $table_html .= "<tr><td><br></td></tr>";
                 $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($number_of_days) . ">" . $Branch_short_name[$mandant] . " in " . $Branch_short_name[$branch_id] . "</td></tr>";
