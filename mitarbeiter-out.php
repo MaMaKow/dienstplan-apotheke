@@ -48,7 +48,7 @@ if (!isset($List_of_employees[$employee_id])) {
     $employee_id = min(array_keys($List_of_employees));
     //die ("<H1>Mitarbeiter Nummer $employee_id ist nicht bekannt.</H1>");
 }
-//Lesen der in der Datenbank gespeicherten Daten.
+
 require 'db-lesen-woche-mitarbeiter.php';
 
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
