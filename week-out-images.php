@@ -30,7 +30,7 @@ require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
-$Dienstplan = db_lesen_tage($tage, $mandant);
+$Dienstplan = db_lesen_tage($datum, $tage, $mandant);
 
 
 //Produziere die Ausgabe

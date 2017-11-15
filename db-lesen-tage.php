@@ -12,7 +12,7 @@
  * @return array $Dienstplan for the branch $mandant including $tage days beginning with $datum
  */
 
-function db_lesen_tage($tage, $mandant, $branch_of_target_employees = '[0-9]*') {
+function db_lesen_tage($datum, $tage, $mandant, $branch_of_target_employees = '[0-9]*') {
     //TODO: Make $datum a parameter of the function!
     global $datum;
     //Abruf der gespeicherten Daten aus der Datenbank

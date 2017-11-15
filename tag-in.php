@@ -34,7 +34,7 @@ require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
 require 'db-lesen-tage.php'; //Lesen der in der Datenbank gespeicherten Daten.
-$Dienstplan = db_lesen_tage($tage, $mandant);
+$Dienstplan = db_lesen_tage($datum, $tage, $mandant);
 
 require_once 'db-lesen-abwesenheit.php';
 $Abwesende = db_lesen_abwesenheit($datum);
