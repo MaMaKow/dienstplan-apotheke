@@ -14,7 +14,6 @@ $mandant = 1; //First branch is allways the default.
 $tage = 1;
 //Get a list of all branches:
 require 'db-lesen-mandant.php';
-
 require_once 'db-lesen-abwesenheit.php';
 require_once 'image_dienstplan.php';
 require_once 'image_histogramm.php';
