@@ -62,7 +62,7 @@ $branch_form_html = "";
 $branch_form_html .= "\t\t<form id=branch_form method=post class='no-print'>\n";
 $branch_form_html .= "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
 $branch_form_html .= "\t\t\t<select class='large' name=mandant onchange=this.form.submit()>\n";
-foreach ($Mandant as $key => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
+foreach ($Branch_name as $key => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
     if ($key != $mandant) {
         $branch_form_html .= "\t\t\t\t<option value=" . $key . ">" . $value . "</option>\n";
     } else {
@@ -133,13 +133,13 @@ if (isset($Overlay_message)) {
 }
 $table_html .= $table_body_html;
 $datum = $konstantes_datum;
-foreach ($Mandant as $filiale => $Name) {
+foreach ($Branch_name as $filiale => $Name) {
     if ($mandant == $filiale) {
         continue 1;
     }
     $Filialplan[$filiale] = db_lesen_tage($tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
     if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
-        $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Kurz_mandant[$mandant] . " in " . $Kurz_mandant[$filiale] . "</td></tr>";
+        $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Branch_short_name[$mandant] . " in " . $Branch_short_name[$filiale] . "</td></tr>";
         $table_body_html = schreiben_tabelle($Filialplan[$filiale], $filiale);
         $table_html .= $table_body_html;
     }
@@ -206,7 +206,7 @@ for ($tag = 0; $tag < 5; $tag++) {
     }
 }
 for ($tag = 0; $tag < 5; $tag++) {
-    foreach ($Mandant as $mandant_key => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
+    foreach ($Branch_name as $mandant_key => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
         if ($mandant_key != $mandant) {
             if (!isset($Filialplan[$mandant_key][$tag]['Stunden'])) {
                 continue 1;
