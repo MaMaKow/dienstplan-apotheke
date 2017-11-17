@@ -26,7 +26,7 @@ if (filter_has_var(INPUT_GET, 'employee_id')) {
     $employee_id = $_SESSION['user_employee_id'];
 }
 ?>
-<form id="input_box_form" method="POST" onmousedown="stop_click_propagation();">
+<form id="input_box_form" method="POST" onmousedown="stop_click_propagation(event);">
     <select name="employee_id" id="employee_id_select">
         <?php
         if ($session->user_has_privilege('create_absence')) {
