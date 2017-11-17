@@ -160,8 +160,8 @@ function insert_form_div(edit_create) {
     }
     div.id = 'input_box_div';
     div.className = 'input_box_div';
-    div.onmousedown = stop_click_propagation();
-    div.onmouseup = stop_click_propagation();
+    div.onmousedown = stop_click_propagation(event);
+    div.onmouseup = stop_click_propagation(event);
     fill_input_box_from_prototype(div);
 }
 function prefill_input_box_form() {
