@@ -18,7 +18,7 @@
 
 "use strict";
 function remove_form_div_on_escape(evt) {
-    //console.log("remove_form_div_on_escape");
+    console.log("remove_form_div_on_escape");
     evt = evt || window.event;
     window.highlight_event = evt;
     if (evt.keyCode == 27) {
@@ -26,7 +26,7 @@ function remove_form_div_on_escape(evt) {
     }
 }
 function remove_form_div() {
-    //console.log("remove_form_div");
+    console.log("remove_form_div");
     var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
         //Reset the global variables:
@@ -88,7 +88,7 @@ function highlight_absence_create_intermediate(evt) {
     }
 }
 function draw_style_highlight_absence_create() {
-    //console.log("draw_style_highlight_absence_create");
+    console.log("draw_style_highlight_absence_create");
     var list_of_day_paragraphs = document.getElementsByClassName("day_paragraph");
     for (var i = 0; i < list_of_day_paragraphs.length; i++) {
         var date_unix_current = list_of_day_paragraphs[i].attributes.date_unix.nodeValue;
@@ -104,6 +104,8 @@ function draw_style_highlight_absence_create() {
 
 }
 function highlight_absence_create_end(evt) {
+    console.log("highlight_absence_create_end with event:");
+    console.log(evt);
     evt = evt || window.event;
     window.highlight_event = evt;
     var x = evt.clientX;
@@ -129,7 +131,7 @@ function highlight_absence_create_end(evt) {
 }
 
 function insert_form_div(edit_create) {
-    //console.log("insert_form_div");
+    console.log("insert_form_div with:" + edit_create);
     var evt = evt || window.event || window.highlight_event;
     var x = evt.clientX;
     var y = evt.clientY;
@@ -140,11 +142,16 @@ function insert_form_div(edit_create) {
     }
     var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
+            return false; //Do not remove and rebuild when clicking inside the form.
+        /*
         if ("HTML" !== element_mouse_is_over.tagName && !is_descendant(existing_div, element_mouse_is_over)) {
-            existing_div.parentNode.removeChild(existing_div);
+            remove_form_div();
+            //existing_div.parentNode.removeChild(existing_div);
         } else {
             return false; //Do not remove and rebuild when clicking inside the form.
         }
+    }
+        */
     }
     var div = document.createElement('div');
     element_mouse_is_over.appendChild(div);
@@ -160,12 +167,12 @@ function insert_form_div(edit_create) {
     }
     div.id = 'input_box_div';
     div.className = 'input_box_div';
-    div.onmousedown = stop_click_propagation(event);
-    div.onmouseup = stop_click_propagation(event);
+    //div.onmousedown = stop_click_propagation();
+    //div.onmouseup = stop_click_propagation();
     fill_input_box_from_prototype(div);
 }
 function prefill_input_box_form() {
-    //console.log("prefill_input_box_form");
+    console.log("prefill_input_box_form");
     var input_box_div = document.getElementById('input_box_div');
     var absence_details_json = input_box_div.parentNode.attributes.absence_details;
     if (absence_details_json) {
@@ -224,7 +231,7 @@ function prefill_input_box_form() {
     }
 }
 function is_descendant(parent, child) {
-    //console.log("is_descendant");
+    console.log("is_descendant");
     var node = child.parentNode;
     while (node !== null) {
         if (node === parent) {
@@ -244,7 +251,7 @@ function detect_left_button_press(evt) {
 }
 
 function fill_input_box_from_prototype(div) {
-    //console.log("fill_input_box_from_prototype");
+    console.log("fill_input_box_from_prototype");
     var secondary_element = document.getElementById(div.id);
 
     /*
@@ -277,7 +284,7 @@ function fill_input_box_from_prototype(div) {
 }
 
 function get_php_script_folder() {
-    //console.log("get_php_script_folder");
+    console.log("get_php_script_folder");
     var url = window.location.pathname;
     var php_script_folder;
     if (url.indexOf('\\src\\php') !== -1 || url.indexOf('/src/php') !== -1) {
@@ -293,7 +300,7 @@ function get_php_script_folder() {
  * We do not want this behaviour.
  */
 function stop_click_propagation(evt) {
-    //console.log("stop_click_propagation");
+    console.log("stop_click_propagation");
     var evt = evt || window.event;
     if (evt.stopPropagation) {
         evt.stopPropagation();
