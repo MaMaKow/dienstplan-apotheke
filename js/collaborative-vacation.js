@@ -53,14 +53,12 @@ function highlight_absence_create_start(evt) {
          */
         return false;
     }
-    var date_unix_from_attribute = element_mouse_is_over.attributes.date_unix || element_mouse_is_over.parentNode.attributes.date_unix;
-    if (!date_unix_from_attribute) {
+    var date_unix_from = element_mouse_is_over.dataset.date_unix || element_mouse_is_over.parentNode.dataset.date_unix;
+    if (!date_unix_from) {
         return false;
     }
-    //console.log("highlight_absence_create_start");
-    var date_unix_from = date_unix_from_attribute.nodeValue;
-    var date_sql_from_attribute = element_mouse_is_over.attributes.date_sql || element_mouse_is_over.parentNode.attributes.date_sql;
-    var date_sql_from = date_sql_from_attribute.nodeValue;
+    console.log("highlight_absence_create_start");
+    var date_sql_from = element_mouse_is_over.dataset.date_sql || element_mouse_is_over.parentNode.dataset.date_sql;
     window.highlight_absence_create_from_date_unix = date_unix_from;
     window.highlight_absence_create_from_date_sql = date_sql_from;
     element_mouse_is_over.classList.add("highlight");
@@ -79,9 +77,9 @@ function highlight_absence_create_intermediate(evt) {
         var y = evt.clientY;
         var element_mouse_is_over = document.elementFromPoint(x, y);
         if (element_mouse_is_over.attributes.date_unix) {
-            var date_unix_intermediate = element_mouse_is_over.attributes.date_unix.nodeValue;
-        } else if (element_mouse_is_over.parentNode.attributes.date_unix) {
-            var date_unix_intermediate = element_mouse_is_over.parentNode.attributes.date_unix.nodeValue;
+            var date_unix_intermediate = element_mouse_is_over.dataset.date_unix;
+        } else if (element_mouse_is_over.parentNode.dataset.date_unix) {
+            var date_unix_intermediate = element_mouse_is_over.parentNode.dataset.date_unix;
         }
         window.highlight_absence_create_intermediate_date_unix = date_unix_intermediate;
         draw_style_highlight_absence_create();
@@ -91,7 +89,7 @@ function draw_style_highlight_absence_create() {
     //console.log("draw_style_highlight_absence_create");
     var list_of_day_paragraphs = document.getElementsByClassName("day_paragraph");
     for (var i = 0; i < list_of_day_paragraphs.length; i++) {
-        var date_unix_current = list_of_day_paragraphs[i].attributes.date_unix.nodeValue;
+        var date_unix_current = list_of_day_paragraphs[i].dataset.date_unix;
         var date_range_min = Math.min(window.highlight_absence_create_intermediate_date_unix, window.highlight_absence_create_from_date_unix);
         var date_range_max = Math.max(window.highlight_absence_create_intermediate_date_unix, window.highlight_absence_create_from_date_unix);
         if (date_unix_current <= date_range_max && date_unix_current >= date_range_min) {
@@ -118,10 +116,10 @@ function highlight_absence_create_end(evt) {
     }
     //console.log("highlight_absence_create_end");
     //var date_sql_from = window.highlight_absence_create_from_date_sql;
-    if (element_mouse_is_over.attributes.date_sql) {
-        var date_sql_to = element_mouse_is_over.attributes.date_sql.nodeValue;
-    } else if (element_mouse_is_over.parentNode.attributes.date_unix) {
-        var date_sql_to = element_mouse_is_over.parentNode.attributes.date_sql.nodeValue;
+    if (element_mouse_is_over.dataset.date_sql) {
+        var date_sql_to = element_mouse_is_over.dataset.date_sql;
+    } else if (element_mouse_is_over.parentNode.dataset.date_unix) {
+        var date_sql_to = element_mouse_is_over.parentNode.dataset.date_sql;
     }
 
     window.highlight_absence_create_to_date_sql = date_sql_to;
@@ -140,14 +138,12 @@ function insert_form_div(edit_create) {
     }
     var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
-        if ("HTML" !== element_mouse_is_over.tagName && !is_descendant(existing_div, element_mouse_is_over)) {
-            existing_div.parentNode.removeChild(existing_div);
-        } else {
-            return false; //Do not remove and rebuild when clicking inside the form.
-        }
+        return false; //Do not remove and rebuild when clicking inside the form.
     }
     var div = document.createElement('div');
-    element_mouse_is_over.appendChild(div);
+    console.log(document.body);
+    //element_mouse_is_over.appendChild(div);
+    document.body.appendChild(div);
     //var rect = element_mouse_is_over.getBoundingClientRect();
     //div.style.left = rect.left;
     //div.style.top = rect.top;
@@ -156,25 +152,35 @@ function insert_form_div(edit_create) {
         //div.style.backgroundColor will be taken from the CSS file.
     } else {
         //div.style.backgroundColor will reflect the profession of the absent employee:
-        div.style.backgroundColor = 'inherit';
+        //TODO: This does not work anymore, as the div is not a child of the span anymore.
+        //div.style.backgroundColor = 'inherit';
     }
     div.id = 'input_box_div';
     div.className = 'input_box_div';
-    div.onmousedown = stop_click_propagation();
-    div.onmouseup = stop_click_propagation();
-    fill_input_box_from_prototype(div);
+    //div.onmousedown = stop_click_propagation();
+    //div.onmouseup = stop_click_propagation();
+    fill_input_box_from_prototype(element_mouse_is_over);
+
+    //Add a handler to BODY to catch [Esc] for closing the div.
+    if (document.body.addEventListener) { // For all major browsers, except IE 8 and earlier
+        document.body.addEventListener("keyup", remove_form_div_on_escape);
+    } else if (x.attachEvent) { // For IE 8 and earlier versions
+        document.body.attachEvent("keyup", remove_form_div_on_escape);
+    }
+
 }
 function prefill_input_box_form() {
     //console.log("prefill_input_box_form");
     var input_box_div = document.getElementById('input_box_div');
     var absence_details_json = input_box_div.parentNode.attributes.absence_details;
+    //console.log(absence_details_json);
     if (absence_details_json) {
         //Obviously only exists in edit mode:
-        var absence_details = JSON.parse(absence_details_json.nodeValue);
+        var absence_details = JSON.parse(absence_details_json.value);
         var employee_id_select = document.getElementById('employee_id_select');
         var employee_id_options = employee_id_select.options;
         for (var i = 0; i < employee_id_options.length; i++) {
-            if (absence_details.employee_id == employee_id_options[i].value) {
+            if (absence_details.employee_id === employee_id_options[i].value) {
                 employee_id_options[i].selected = true;
             }
         }
@@ -216,12 +222,6 @@ function prefill_input_box_form() {
         document.getElementById('employee_id_old').value = "null";
 
     }
-    //Add a handler to BODY to catch [Esc] for closing the div.
-    if (document.body.addEventListener) { // For all major browsers, except IE 8 and earlier
-        document.body.addEventListener("keyup", remove_form_div_on_escape);
-    } else if (x.attachEvent) { // For IE 8 and earlier versions
-        document.body.attachEvent("keyup", remove_form_div_on_escape);
-    }
 }
 function is_descendant(parent, child) {
     //console.log("is_descendant");
@@ -243,22 +243,23 @@ function detect_left_button_press(evt) {
     return button == 1;
 }
 
-function fill_input_box_from_prototype(div) {
-    //console.log("fill_input_box_from_prototype");
-    var secondary_element = document.getElementById(div.id);
-
+function fill_input_box_from_prototype(element_mouse_is_over) {
+    console.log("fill_input_box_from_prototype with:");
+    console.log(element_mouse_is_over);
     /*
      * This following part is relevant only to the edit mode. ->
      * The employee_id is transfered to the php script collaborative-vacation-input-box.php via GET
      * It is necessary for the handling of session permissions.
      */
     var input_box_div = document.getElementById('input_box_div');
-    var absence_details_json = input_box_div.parentNode.attributes.absence_details;
+    //throw new Error("fill_input_box_from_prototype stops here");
+    var absence_details_json = element_mouse_is_over.dataset.absence_details;
+    console.log(absence_details_json);
     if (absence_details_json) {
         //Obviously only exists in edit mode:
-        var absence_details = JSON.parse(absence_details_json.nodeValue);
-        employee_id = absence_details.employee_id;
-        var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php?employee_id=' + employee_id;
+        var absence_details = JSON.parse(absence_details_json);
+        var employee_id = absence_details.employee_id;
+        var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php?employee_id=' + employee_id + '&absence_details_json=' + absence_details_json;
     } else {
         var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php';
     }
@@ -268,8 +269,8 @@ function fill_input_box_from_prototype(div) {
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            secondary_element.innerHTML = xmlhttp.responseText;
+        if (this.readyState === 4 && this.status === 200) {
+            input_box_div.innerHTML = xmlhttp.responseText;
         }
     };
     xmlhttp.open("GET", filename, true);
