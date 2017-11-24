@@ -20,6 +20,16 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
 
 if (filter_has_var(INPUT_GET, 'employee_id')) {
     $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+    $absence_details_json_unsafe = filter_input(INPUT_GET, 'absence_details_json', FILTER_UNSAFE_RAW);
+    $Absence_details_unsafe = json_decode($absence_details_json_unsafe, TRUE);
+    $filters = array(
+        'employee_id' => FILTER_SANITIZE_NUMBER_INT,
+        'reason' => FILTER_SANITIZE_STRING,
+        'start' => FILTER_SANITIZE_STRING,
+        'end' => FILTER_SANITIZE_STRING,
+    );
+    $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
+    var_export($Absence_details);
 } elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
     $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
@@ -31,8 +41,10 @@ if (filter_has_var(INPUT_GET, 'employee_id')) {
         <?php
         if ($session->user_has_privilege('create_absence')) {
             foreach ($List_of_employees as $employee_id_option => $last_name) {
-                if ($employee_id_option === $employee_id) {
+                if ($employee_id_option == $employee_id) {
                     $option_selected = "selected";
+                } else {
+                    $option_selected = "";
                 }
                 echo "\t\t<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
                 echo "$employee_id_option $last_name";
@@ -49,13 +61,15 @@ if (filter_has_var(INPUT_GET, 'employee_id')) {
         }
         ?>
     </select>
+    <!--
     <img src="" style="width: 0" alt=""
          onerror="prefill_input_box_form(); this.parentNode.removeChild(this);"
-         comment="This element is necessary to allow interaction of javascript with this element. After the execution, it is removed."
+         data-comment="This element is necessary to allow interaction of javascript with this element. After the execution, it is removed."
          />
-    <input type="date" id="input_box_form_start_date" name="start_date">
-    <input type="date" id="input_box_form_end_date" name="end_date">
-    <input type="text" id="input_box_form_reason" name="reason" list='reasons'>
+    -->
+    <input type="date" id="input_box_form_start_date" name="start_date" value="<?= $Absence_details['start'] ?>">
+    <input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>">
+    <input type="text" id="input_box_form_reason" name="reason" list='reasons' value="<?= $Absence_details['reason'] ?>">
     <?php
     if (
             $session->user_has_privilege('create_absence')
@@ -69,8 +83,8 @@ if (filter_has_var(INPUT_GET, 'employee_id')) {
         <button type="submit" value="delete" name="command" id="input_box_form_button_delete" class="button_tight">Löschen</button>
     <?php } ?>
 
-    <input type="hidden" id="employee_id_old" name="employee_id_old">
-    <input type="hidden" id="input_box_form_start_date_old" name="start_date_old">
+    <input type="hidden" id="employee_id_old" name="employee_id_old" value="<?= $Absence_details['employee_id'] ?>">
+    <input type="hidden" id="input_box_form_start_date_old" name="start_date_old" value="<?= $Absence_details['start'] ?>">
 </form>
 <a title="<?= gettext("Close"); ?>" href="#" onclick="remove_form_div()">
     <span id="remove_form_div_span">
