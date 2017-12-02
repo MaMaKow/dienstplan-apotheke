@@ -24,7 +24,7 @@ function remove_form_div_on_escape(evt) {
     //console.log("remove_form_div_on_escape");
     evt = evt || window.event;
     //window.highlight_event = evt;
-    input_box_data_div.dataset.highlight_event = evt;
+    input_box_data_div.highlight_event = evt;
     if (evt.keyCode === 27) {
         remove_form_div();
     }
@@ -52,7 +52,7 @@ function highlight_absence_create_start(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
     var evt = evt || window.event;
     //window.highlight_event = evt;
-    input_box_data_div.dataset.highlight_event = evt;
+    input_box_data_div.highlight_event = evt;
     var x = evt.clientX;
     var y = evt.clientY;
     //console.log(evt);
@@ -75,7 +75,6 @@ function highlight_absence_create_start(evt) {
          */
         return false;
     }
-    console.log("highlight_absence_create_start");
     var date_sql_from = element_mouse_is_over.dataset.date_sql || element_mouse_is_over.parentNode.dataset.date_sql;
     //window.highlight_absence_create_from_date_unix = date_unix_from;
     input_box_data_div.dataset.highlight_absence_create_from_date_unix = date_unix_from;
@@ -108,7 +107,7 @@ function highlight_absence_create_intermediate(evt) {
 
     evt = evt || window.event;
     //window.highlight_event = evt;
-    input_box_data_div.dataset.highlight_event = evt;
+    input_box_data_div.highlight_event = evt;
     if (detect_left_button_press(evt)) { //Only if the left mouse button is pressed down
         //console.log("highlight_absence_create_intermediate");
         var x = evt.clientX;
@@ -126,12 +125,11 @@ function highlight_absence_create_intermediate(evt) {
 function draw_style_highlight_absence_create() {
     var input_box_data_div = document.getElementById('input_box_data_div');
 
-    console.log("draw_style_highlight_absence_create");
+    //console.log("draw_style_highlight_absence_create");
     var list_of_day_paragraphs = document.getElementsByClassName("day_paragraph");
     for (var i = 0; i < list_of_day_paragraphs.length; i++) {
         var date_unix_current = list_of_day_paragraphs[i].dataset.date_unix;
         input_box_data_div.dataset.date_range_min = Math.min(input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix, input_box_data_div.dataset.highlight_absence_create_from_date_unix);
-        console.log(input_box_data_div.dataset.date_range_min + " " + input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix + " " + input_box_data_div.dataset.highlight_absence_create_from_date_unix);
         input_box_data_div.dataset.date_range_max = Math.max(input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix, input_box_data_div.dataset.highlight_absence_create_from_date_unix);
         if (date_unix_current <= input_box_data_div.dataset.date_range_max && date_unix_current >= input_box_data_div.dataset.date_range_min) {
             list_of_day_paragraphs[i].classList.add("highlight");
@@ -147,7 +145,7 @@ function highlight_absence_create_end(evt) {
 
     evt = evt || window.event;
     //window.highlight_event = evt;
-    input_box_data_div.dataset.highlight_event = evt;
+    input_box_data_div.highlight_event = evt;
     var x = evt.clientX;
     var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
@@ -175,13 +173,9 @@ function insert_form_div(edit_create) {
     var input_box_data_div = document.getElementById('input_box_data_div');
 
     console.log("insert_form_div");
-    var evt = evt || window.event || input_box_data_div.dataset.highlight_event;
+    var evt = evt || window.event || input_box_data_div.highlight_event;
     var x = evt.clientX;
     var y = evt.clientY;
-    console.log(evt);
-    console.log(evt.clientX);
-    console.log(evt.clientY);
-    console.log(input_box_data_div.dataset);
     var element_mouse_is_over = document.elementFromPoint(x, y);
     if ("create" === edit_create && "SPAN" === element_mouse_is_over.tagName) {
         //Create mode firing together with edit mode -> abort!
@@ -307,8 +301,8 @@ function fill_input_box_from_prototype(element_mouse_is_over) {
     var input_box_data_div = document.getElementById('input_box_data_div');
 
 
-    console.log("fill_input_box_from_prototype with:");
-    console.log(element_mouse_is_over);
+    //console.log("fill_input_box_from_prototype with:");
+    //console.log(element_mouse_is_over);
     /*
      * This following part is relevant only to the edit mode. ->
      * The employee_id is transfered to the php script collaborative-vacation-input-box.php via GET
