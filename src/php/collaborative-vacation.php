@@ -424,7 +424,7 @@ function build_absence_month($year, $month_number) {
          * Or store all the data in one array for javascript somewhere at the beginning of the page.
          * Perhaps even use that one data to reduce the amount of SQL calls in PHP
          */
-        $p_html_content = "<strong style='font-size: xx-large;'>" . $date_text . "</strong><br> ";
+        $p_html_content = "<strong>" . $date_text . "</strong><br> ";
         if ($current_week_day_number < 6 and ! $is_holiday) {
             $p_html_content .= $absent_employees_containers;
         }
