@@ -31,28 +31,33 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'end' => FILTER_SANITIZE_STRING,
     );
     $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
+    $Absence_details['mode'] = "edit";
     $employee_id = $Absence_details['employee_id'];
 } elseif (filter_has_var(INPUT_GET, 'highlight_details_json')) {
     //A new entry will be created
     $highlight_details_json_unsafe = filter_input(INPUT_GET, 'highlight_details_json', FILTER_UNSAFE_RAW);
     $Highlight_details_unsafe = json_decode($highlight_details_json_unsafe, TRUE);
     $filters = array(
-        'highlight_absence_create_from_date_sql' => FILTER_SANITIZE_STRING,
-        'highlight_absence_create_to_date_sql' => FILTER_SANITIZE_STRING,
+        //'highlight_absence_create_from_date_sql' => FILTER_SANITIZE_STRING,
+        //'highlight_absence_create_to_date_sql' => FILTER_SANITIZE_STRING,
+        'date_range_min' => FILTER_SANITIZE_STRING,
+        'date_range_max' => FILTER_SANITIZE_STRING,
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
     $employee_id = $Highlight_details['employee_id'];
     print_debug_variable($Highlight_details);
     $Absence_details['reason'] = gettext("Vacation");
-    $Absence_details['start'] = $Highlight_details['highlight_absence_create_from_date_sql'];
-    $Absence_details['end'] = $Highlight_details['highlight_absence_create_to_date_sql'] ? $Highlight_details['highlight_absence_create_to_date_sql'] : $Highlight_details['highlight_absence_create_from_date_sql'];
+    $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
+    $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
+    $Absence_details['mode'] = "create";
 } elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
     $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
     $employee_id = $_SESSION['user_employee_id'];
 }
 ?>
-<form id="input_box_form" method="POST" onmousedown="stop_click_propagation();">
+<!--<form id="input_box_form" method="POST" onmousedown="stop_click_propagation();">-->
+<form id="input_box_form" method="POST">
     <p><?= gettext("Employee") ?><br><select name="employee_id" id="employee_id_select"></p>
     <?php
     if ($session->user_has_privilege('create_absence')) {
@@ -97,7 +102,9 @@ if (
     ?>
     <p>
         <button type="submit" value="save" name="command" class="button_tight"><?= gettext("Save") ?></button>
-        <button type="submit" value="delete" name="command" id="input_box_form_button_delete" class="button_tight"><?= gettext("Delete") ?></button>
+        <?php if ("edit" === $Absence_details['mode']) { ?>
+            <button type="submit" value="delete" name="command" id="input_box_form_button_delete" class="button_tight"><?= gettext("Delete") ?></button>
+        <?php } ?>
     </p>
 <?php } ?>
 
