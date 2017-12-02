@@ -29,7 +29,7 @@ div.year_container{
 }
 div.month_container{
     font-family: monospace;
-    width: 12em;
+    min-width: 12em;
     float: left;
     /*
     display: inline-block;

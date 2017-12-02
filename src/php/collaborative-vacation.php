@@ -412,8 +412,10 @@ function build_absence_month($year, $month_number) {
         $p_html_javascript = " onmousedown='highlight_absence_create_start(event)'";
         $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate(event)'";
         $p_html_javascript .= " onmouseup='highlight_absence_create_end(event)'";
-        $p_html_attributes = " date_sql='$date_sql'";
-        $p_html_attributes .= " date_unix='$date_unix'>";
+        $p_html_attributes = " data-date_sql='$date_sql'";
+        $p_html_attributes .= " date_unix='$date_unix'";
+        $p_html_attributes .= " data-date_unix='$date_unix'";
+        $p_html_attributes .= ">";
         /*
          * TODO: Use data-* attributes to store the data in a valid way:
          * https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes
