@@ -1,5 +1,6 @@
 <?php
 require 'default.php';
+require_once 'src/php/calculate-holidays.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //Get a list of branches:
@@ -39,16 +40,17 @@ if ((filter_has_var(INPUT_POST, 'submitStunden') or ( filter_has_var(INPUT_POST,
         return FALSE;
     }
     $tage = 0;
-    for ($tag = strtotime($beginn); $tag <= strtotime($ende); $tag = strtotime('+1 day', strtotime($datum))) {
-        $datum = date('Y-m-d', $tag);
-        if (date('w', strtotime($datum)) < 6 and date('w', strtotime($datum)) > 0) {
+    for ($date_unix = strtotime($beginn); $date_unix <= strtotime($ende); $date_unix = strtotime('+1 day', $date_unix)) {
+        $date_string = strftime('%x', $date_unix);
+        if (date('w', $date_unix) < 6 and date('w', $date_unix) > 0) {
             $tage++;
         }
 
         //Now the holidays which are not on a weekend are substracted.
-        require 'db-lesen-feiertag.php';
-        if (isset($feiertag) and date('w', strtotime($datum)) < 6 and date('w', strtotime($datum)) > 0) {
-            $Feiertagsmeldung[] = htmlentities("$feiertag ($datum)<br>\n");
+        $holiday = is_holiday($date_unix);
+
+        if (FALSE !== $holiday and date('w', $date_unix) < 6 and date('w', $date_unix) > 0) {
+            $Feiertagsmeldung[] = htmlentities("$holiday ($date_string)\n");
             $tage--;
         }
     }
@@ -225,4 +227,12 @@ require 'contact-form.php';
 ?>
 </body>
 </html>
+
+
+
+
+
+
+
+
 
