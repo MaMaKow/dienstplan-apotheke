@@ -154,8 +154,8 @@ echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 if (isset($Feiertagsmeldung)) {
     echo "\t\t<div class=error_container>\n";
     echo "\t\t\t<div class=warningmsg>\n<H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
-    foreach ($Feiertagsmeldung as $feiertag) {
-        echo "\t\t\t\t<p>" . $feiertag . "</p>\n";
+    foreach ($Feiertagsmeldung as $holiday) {
+        echo "\t\t\t\t<p>" . $holiday . "</p>\n";
     }
     echo "\t\t\t</div>\n";
     echo "\t\t</div>\n";
@@ -227,6 +227,7 @@ require 'contact-form.php';
 ?>
 </body>
 </html>
+
 
 
 
