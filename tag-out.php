@@ -1,6 +1,7 @@
 <?php
-require 'default.php';
-require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
+require_once 'default.php';
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/calculate-holidays.php';
 
 /*
  * @var $mandant int the id of the active branch.
@@ -89,6 +90,7 @@ echo "\t\t\t\t<div id=roster_table_div>\n";
 echo "\t\t\t\t<table id=roster_table>\n";
 echo "\t\t\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this is just one day.//Datum
+    $date_unix = strtotime($Dienstplan[$i]["Datum"][0]);
     $zeile = "";
     echo "\t\t\t\t\t\t<td>\n";
     $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">\n";
@@ -99,9 +101,9 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     $zeile = "";
     $zeile .= strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
-    require 'db-lesen-feiertag.php';
-    if (isset($feiertag)) {
-        echo " " . $feiertag . " ";
+    $holiday = is_holiday($date_unix);
+    if (FALSE !== $holiday) {
+        echo "<p>" . $holiday . "</p>\n";
     }
     $Abwesende = db_lesen_abwesenheit($datum);
     require 'db-lesen-notdienst.php';
@@ -118,8 +120,6 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
 }
 if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     for ($j = 0; $j < $max_vk_count_in_rooster_days; $j++) {
-        //TODO The following line will prevent planning on hollidays. The problem is, that we might work emergency service on hollidays. And if the service starts on the day before, then the programm does not know here. But we have to be here until 8:00 AM.
-        //if(isset($feiertag) && !isset($notdienst)){break 1;}
         echo "\t\t\t\t\t</tr><tr>\n";
         for ($i = 0; $i < count($Dienstplan); $i++) {//Employees
             if (isset($Dienstplan[$i]["VK"][$j]) && isset($List_of_employees[$Dienstplan[$i]["VK"][$j]])) {

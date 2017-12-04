@@ -1,8 +1,9 @@
 <?php
-require 'default.php';
-require 'schreiben-tabelle.php';
-require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
-require 'db-lesen-abwesenheit.php';
+require_once "default.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "schreiben-tabelle.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/classes/build_html_roster_views.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/calculate-holidays.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-abwesenheit.php";
 
 $mandant = 1; //First branch is allways the default.
 $tage = 7; //One week
@@ -36,7 +37,7 @@ if (isset($mandant)) {
 require 'db-lesen-mitarbeiter.php';
 //Hole eine Liste aller Mandanten (Filialen)
 require 'db-lesen-mandant.php';
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php'; 
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($datum, $tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
@@ -90,6 +91,8 @@ $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
+    $datum = ($Dienstplan[$i]['Datum'][0]);
+    $date_unix = strtotime($datum);
     $head_table_html .= "\t\t\t\t\t\t<td>";
     $head_table_html .= "<a href='tag-out.php?datum=" . $Dienstplan[$i]["Datum"][0] . "'>";
     $head_table_html .= strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
@@ -97,12 +100,11 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $head_table_html .= "<input type=hidden size=2 name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
     $head_table_html .= "<input type=hidden name=mandant value=" . htmlentities($mandant) . ">";
     $head_table_html .= strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
-    $datum = ($Dienstplan[$i]['Datum'][0]);
-    require 'db-lesen-feiertag.php';
-    if (isset($feiertag)) {
-        $head_table_html .= " <br>" . $feiertag . " ";
+    $holiday = is_holiday($date_unix);
+    if (FALSE !== $holiday) {
+        $head_table_html .= " <br>" . $holiday . " ";
     }
-    if (isset($feiertag) AND date('N', strtotime($datum)) < 6) {
+    if (FALSE !== $holiday AND date('N', $date_unix) < 6) {
         foreach ($Mandanten_mitarbeiter as $employee_id => $nachname) {
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
                 $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
@@ -154,13 +156,11 @@ $table_foot_html = "\t\t\t\t\t<tfoot>"
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 for ($i = 0; $i < count($Dienstplan); $i++) {
     $datum = ($Dienstplan[$i]['Datum'][0]);
+    $date_unix = strtotime($datum);
     $Abwesende = db_lesen_abwesenheit($datum);
-    require 'db-lesen-feiertag.php';
-// TODO: I am not sure where to put the following line. There is an echo inside.
-//	if (!isset($Dienstplan[$i]['VK'])) {echo "\t\t\t\t\t\t<td>"; continue;} //Tage an denen kein Dienstplan existiert werden nicht geprüft.
     if (isset($Abwesende)) {
         foreach ($Abwesende as $employee_id => $reason) {
-            if (!isset($feiertag) AND date('N', strtotime($datum)) < 6) {
+            if (FALSE !== is_holiday($date_unix) AND date('N', $date_unix) < 6) {
                 //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
                 if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
                     $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
@@ -280,3 +280,10 @@ require 'contact-form.php';
 ?>
 </BODY>
 </HTML>
+
+
+
+
+
+
+
