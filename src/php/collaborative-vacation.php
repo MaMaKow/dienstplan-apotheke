@@ -206,7 +206,8 @@ function build_absence_year($year) {
     $year_input_select .= "</select></form>";
 
     $year_container_html .= $year_input_select;
-    $month_container_html = "<div class=month_container>";
+    $month_container_html = "<div class='year_quarter_container'>";
+    $month_container_html .= "<div class=month_container>";
     $month_container_html .= $current_month_name . "<br>\n";
     for ($date_unix = $start_date; $date_unix < strtotime("+ 1 year", $start_date); $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date('Y-m-d', $date_unix);
@@ -219,6 +220,11 @@ function build_absence_year($year) {
             $current_month = date("n", $date_unix);
             $current_month_name = get_utf8_month_name($date_unix);
             $month_container_html .= "</div>";
+            //if (in_array($current_month, array(4, 7, 10))) {
+            if (in_array($current_month, array(7))) {
+                $month_container_html .= "</div><!-- class='year_quarter_container'-->";
+                $month_container_html .= "<div class='year_quarter_container'>";
+            }
             $month_container_html .= "<div class='month_container'>";
             $month_container_html .= $current_month_name . "<br>\n";
         }
@@ -275,6 +281,7 @@ function build_absence_year($year) {
         $month_container_html .= $p_html;
     }
     $month_container_html .= "\t</div>\n";
+    $month_container_html .= "\t</div><!-- class='year_quarter_container'-->\n";
     $year_container_html .= $month_container_html;
     $year_container_html .= "</div>\n";
     return $year_container_html;
