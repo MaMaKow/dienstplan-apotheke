@@ -27,6 +27,9 @@ div.year_container{
     user-select: none; /* Non-prefixed version, currently
                           not supported by any browser */
 }
+div.year_quarter_container{
+    page-break-after: always;
+}
 div.month_container{
     font-family: monospace;
     min-width: 12em;
