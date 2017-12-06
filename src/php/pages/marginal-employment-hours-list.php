@@ -5,8 +5,7 @@
  * This list will be filled with the known data from the database.
  * There will also be the option to print a blank list.
  */
-
-require 'default.php';
+require '../../../default.php';
 
 if (filter_has_var(INPUT_POST, "month")) {
     $month = filter_input(INPUT_POST, 'month', FILTER_SANITIZE_NUMBER_INT);
@@ -28,7 +27,7 @@ if (filter_has_var(INPUT_POST, "employee_id")) {
 }
 
 //The employee list needs a $date_unix, because nobody is working with us forever.
-require 'db-lesen-mitarbeiter.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mitarbeiter.php';
 
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {
@@ -60,9 +59,9 @@ $table_body_html .= "</tbody>";
 /*
  */
 
-require 'head.php';
-require 'navigation.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'navigation.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
 <FORM method=post class="no-print">
     <SELECT name=month onchange=this.form.submit()>
@@ -124,6 +123,6 @@ CSS:
 }
 
 -->
-<?php require 'contact-form.php'; ?>
+<?php require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php'; ?>
 </BODY>
 </HTML>
