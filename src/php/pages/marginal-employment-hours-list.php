@@ -40,13 +40,24 @@ $result = mysqli_query_verbose($sql_query);
 while ($row = mysqli_fetch_object($result)) {
     $Years[] = $row->year;
 }
-$sql_query = "SELECT `Datum`, MIN(`Dienstbeginn`), MAX(`Dienstende`), SUM(`Stunden`) "
+$sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
+        . "FROM `Dienstplan` "
         . "WHERE  `VK` = $employee_id AND MONTH(`Datum`) = $month AND YEAR(`Datum`) = $year "
         . "GROUP BY `Datum`";
-$pdo->exec($sql_query);
-$result = $pdo->fetchAll();
+$statement = $pdo->prepare($sql_query);
+$statement->execute();
+$result = $statement->fetchAll();
+$table_body_html = "<tbody>";
+foreach ($result as $row_number => $row) {
+    $table_body_html .= "<tr>";
+    $table_body_html .= "<td>" . strftime('%a %x', strtotime($row['date'])) . "</td>";
+    $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";
+    $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['end'])) . "</td>";
+    $table_body_html .= "<td>" . $row['hours'] . "</td>";
+    $table_body_html .= "</tr>";
+}
+$table_body_html .= "</tbody>";
 /*
-  print_debug_variable($result);
  */
 
 require 'head.php';
@@ -88,15 +99,31 @@ require 'src/php/pages/menu.php';
         ?>
     </SELECT>
 </FORM>
-<TABLE class="table_with_border">
-    <TR>
-        <TD><?= gettext("Date") ?></TD>
-        <TD><?= gettext("Beginn") ?></TD>
-        <TD><?= gettext("End") ?></TD>
-        <TD><?= gettext("Hours") ?></TD>
-    </TR>
-
+<H1>Stundenzettel</H1>
+<H2><?= $List_of_employee_full_names[$employee_id] ?></H2>
+<TABLE class="table_with_border" id="marginal_employment_hours_list_table">
+    <THEAD>
+        <TR><!--This following part is specific to German law. No other translation semms necessary.-->
+            <TH>Datum</TH>
+            <TH>Beginn</TH>
+            <TH>Ende</TH>
+            <TH>Arbeitszeit <SMALL>(abzüglich Pausen)</SMALL></TH>
+        </TR>
+    </THEAD>
+    <?= $table_body_html ?>
 </TABLE>
+<!--
+A signature line for the employee or the employer or both does not seem to be necessary.
+If that ever changes:
+HTML:
+<input type="text" class="print_signature" />
+CSS:
+.print_signature {
+    border: 0;
+    border-bottom: 1px solid #000;
+}
+
+-->
 <?php require 'contact-form.php'; ?>
 </BODY>
 </HTML>
