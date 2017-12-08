@@ -24,6 +24,10 @@
  * @return string The svg element
  */
 function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424) {
+    if (empty(current($Dienstplan[0]["VK"]))) {
+        return FALSE;
+    }
+
     global $List_of_employees, $List_of_employee_professions;
 
     if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
