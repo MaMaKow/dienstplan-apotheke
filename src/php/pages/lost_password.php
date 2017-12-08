@@ -19,7 +19,7 @@ require '../../../default.php';
 
 if (filter_has_var(INPUT_GET, 'request_new_password')) {
     $token = sha1(uniqid());
-    print_debug_variable('$token is build: ', $token);
+    //print_debug_variable('$token is build: ', $token);
     $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_STRING);
     if (!empty($identifier)) {
         $statement = $pdo->prepare("SELECT * FROM `users` WHERE `employee_id` = :identifier OR `email` = :identifier OR `user_name` = :identifier");

@@ -20,7 +20,6 @@
 
 function remove_form_div_on_escape(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-
     //console.log("remove_form_div_on_escape");
     evt = evt || window.event;
     //window.highlight_event = evt;
@@ -31,7 +30,6 @@ function remove_form_div_on_escape(evt) {
 }
 function remove_form_div() {
     var input_box_data_div = document.getElementById('input_box_data_div');
-
     //console.log("remove_form_div");
     var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
@@ -124,7 +122,6 @@ function highlight_absence_create_intermediate(evt) {
 }
 function draw_style_highlight_absence_create() {
     var input_box_data_div = document.getElementById('input_box_data_div');
-
     //console.log("draw_style_highlight_absence_create");
     var list_of_day_paragraphs = document.getElementsByClassName("day_paragraph");
     for (var i = 0; i < list_of_day_paragraphs.length; i++) {
@@ -142,7 +139,6 @@ function draw_style_highlight_absence_create() {
 }
 function highlight_absence_create_end(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-
     evt = evt || window.event;
     //window.highlight_event = evt;
     input_box_data_div.highlight_event = evt;
@@ -171,7 +167,6 @@ function highlight_absence_create_end(evt) {
 
 function insert_form_div(edit_create) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-
     console.log("insert_form_div");
     var evt = evt || window.event || input_box_data_div.highlight_event;
     var x = evt.clientX;
@@ -184,6 +179,8 @@ function insert_form_div(edit_create) {
     var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
         return false; //Do not remove and rebuild when clicking inside the form.
+    }
+        */
     }
     var div = document.createElement('div');
     //console.log(document.body);
@@ -214,71 +211,9 @@ function insert_form_div(edit_create) {
     }
 
 }
-/*function prefill_input_box_form() {
- var input_box_data_div = document.getElementById('input_box_data_div');
-
- //console.log("prefill_input_box_form");
- var input_box_div = document.getElementById('input_box_div');
- var absence_details_json = input_box_div.parentNode.attributes.absence_details;
- //console.log(absence_details_json);
- if (absence_details_json) {
- //Obviously only exists in edit mode:
- var absence_details = JSON.parse(absence_details_json.value);
- var employee_id_select = document.getElementById('employee_id_select');
- var employee_id_options = employee_id_select.options;
- for (var i = 0; i < employee_id_options.length; i++) {
- if (absence_details.employee_id === employee_id_options[i].value) {
- employee_id_options[i].selected = true;
- }
- }
- document.getElementById('input_box_form_start_date').value = absence_details.start;
- document.getElementById('input_box_form_end_date').value = absence_details.end;
- document.getElementById('input_box_form_reason').value = absence_details.reason;
- //In order to remove the old entry we need the former values
- document.getElementById('input_box_form_start_date_old').value = absence_details.start;
- document.getElementById('employee_id_old').value = absence_details.employee_id;
- } else if (window.highlight_absence_create_from_date_sql && window.highlight_absence_create_to_date_sql) {
- //Create mode:
- //} else if (input_box_data_div.dataset.highlight_absence_create_from_date_sql && input_box_data_div.dataset.highlight_absence_create_to_date_sql) {
- if (document.getElementById("input_box_form_button_delete")) {
- console.log("hide input_box_form_button_delete");
- document.getElementById("input_box_form_button_delete").style.display = "none";
- }
- var employee_id_select = document.getElementById('employee_id_select');
- var employee_id_options = employee_id_select.options;
- for (var i = 0; i < employee_id_options.length; i++) {
- if (employee_id == employee_id_options[i].value) {
- employee_id_options[i].selected = true;
- }
- }
- var to_date_sql = window.highlight_absence_create_to_date_sql;
- input_box_data_div.dataset.to_date_sql = input_box_data_div.dataset.highlight_absence_create_to_date_sql;
- var from_date_sql = window.highlight_absence_create_from_date_sql;
- input_box_data_div.dataset.from_date_sql = input_box_data_div.dataset.highlight_absence_create_from_date_sql;
- var to_date_unix = Date.parse(to_date_sql);
- var from_date_unix = Date.parse(from_date_sql);
- if (from_date_unix > to_date_unix) {
- document.getElementById('input_box_form_start_date').value = to_date_sql;
- document.getElementById('input_box_form_end_date').value = from_date_sql;
- } else {
- document.getElementById('input_box_form_start_date').value = from_date_sql;
- document.getElementById('input_box_form_end_date').value = to_date_sql;
- }
- //gettext("Vacation", document.getElementById('input_box_form_reason'), set_value);
- gettext("Vacation", document.getElementById('input_box_form_reason'));
- //In order to remove the old entry we need the former values
- //TODO: Check if this works for
- //$query = "DELETE FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
-
- document.getElementById('input_box_form_start_date_old').value = "null";
- document.getElementById('employee_id_old').value = "null";
-
- }
- }
- */
 
 function is_descendant(parent, child) {
-    //console.log("is_descendant");
+    console.log("is_descendant");
     var node = child.parentNode;
     while (node !== null) {
         if (node === parent) {
@@ -333,7 +268,7 @@ function fill_input_box_from_prototype(element_mouse_is_over) {
 }
 
 function get_php_script_folder() {
-    //console.log("get_php_script_folder");
+    console.log("get_php_script_folder");
     var url = window.location.pathname;
     var php_script_folder;
     if (url.indexOf('\\src\\php') !== -1 || url.indexOf('/src/php') !== -1) {
