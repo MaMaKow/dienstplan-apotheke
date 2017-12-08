@@ -215,11 +215,11 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Mandant'][$j])) {
             $zeile .= "<br>\n";
             $zeile .= "<select name=Grundplan[$wochentag][Mandant][$j] form='change_principle_roster_employee'>\n";
-            foreach ($Kurz_mandant as $filiale => $name) {
-                if ($filiale != $Grundplan[$wochentag]['Mandant'][$j]) {
-                    $zeile .= "\t\t\t\t\t<option value=" . $filiale . '>' . $name . "</option>\n";
+            foreach ($Branch_short_name as $branch_id => $branch_short_name) {
+                if ($branch_id != $Grundplan[$wochentag]['Mandant'][$j]) {
+                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . '>' . $branch_short_name . "</option>\n";
                 } else {
-                    $zeile .= "\t\t\t\t\t<option value=" . $filiale . ' selected>' . $name . "</option>\n";
+                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . ' selected>' . $branch_short_name . "</option>\n";
                 }
             }
         }
