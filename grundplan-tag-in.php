@@ -147,9 +147,10 @@ if (!isset($Grundplan[$wochentag])) {
     $Grundplan[$wochentag]['Kommentar'][] = '-';
 }
 
-//
-//Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
-//Dazu übersetzen wir unsere Variablen in die korrekten Namen für das übliche Histrogramm
+/*
+ * Wir zeichnen eine Kurve der Anzahl der Mitarbeiter.
+ * Dazu übersetzen wir unsere Variablen in die korrekten Namen für das übliche Histrogramm
+ */
 $Dienstplan[0] = $Grundplan[$wochentag]; //We will use $Dienstplan[0] for functions that are written for the use with single days as a workaround.
 $tag = $wochentag;
 //Wir brauchen das pseudo_datum vom aktuellen Wochentag
@@ -157,14 +158,8 @@ $pseudo_date = strtotime('-' . (date('w') - 1) . ' day', time());
 $pseudo_date = strtotime('+' . ($wochentag - 1) . ' day', $pseudo_date);
 $date_sql = date('Y-m-d', $pseudo_date);
 
-//$Grundplan=db_lesen_tage(1, $mandant);
-/* Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene. Die Daten werden bisher noch nicht verwendet. Das wird aber notwendig sein, denn wir wollen einen Mitarbeiter ja nicht aus versehen an zwei Orten gleichzeitig einsetzen. */
-//foreach ($Mandant as $filiale => $name) {
-//$Filialplan[$filiale]=db_lesen_tage(1, $filiale, "[^".$filiale."]");
-//}
 
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax = max(array_keys($List_of_employees));
 
 //Produziere die Ausgabe
@@ -184,7 +179,7 @@ echo build_select_branch($mandant, $date_sql);
 
 //Auswahl des Wochentages
 echo "\t\t\t<form id=wochentagformular method=post>\n";
-echo "\t\t\t\t<input type=hidden name=mandant value=" . htmlentities($Grundplan[$wochentag]["Mandant"][0]) . ">\n";
+echo "\t\t\t\t<input type=hidden name=mandant value=" . $mandant . ">\n";
 echo "\t\t\t\t<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
 foreach ($Wochentage as $temp_weekday => $value) {

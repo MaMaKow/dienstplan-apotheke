@@ -56,7 +56,6 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $employee_id = $_SESSION['user_employee_id'];
 }
 ?>
-<!--<form id="input_box_form" method="POST" onmousedown="stop_click_propagation();">-->
 <form id="input_box_form" method="POST">
     <p><?= gettext("Employee") ?><br><select name="employee_id" id="employee_id_select"></p>
     <?php
