@@ -3,7 +3,7 @@
 /*
  * @var PDR_FILE_SYSTEM_APPLICATION_PATH The full path of the application root as determined by the position of the default.php
  */
-define('PDR_FILE_SYSTEM_APPLICATION_PATH', __DIR__);
+define('PDR_FILE_SYSTEM_APPLICATION_PATH', __DIR__ . "/");
 /*
  * @var PDR_HTTP_SERVER_APPLICATION_PATH The relative path of the application root on the web server.
  */
