@@ -60,7 +60,7 @@ if (isset($_GET['register'])) {
             echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
             $showFormular = false;
         } else {
-            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . $statement->errorInfo());
+            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . var_export($statement->errorInfo(),TRUE));
             $Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
         }
     }
