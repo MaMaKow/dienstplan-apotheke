@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Mandelkow
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,11 +27,32 @@ div.year_container{
     user-select: none; /* Non-prefixed version, currently
                           not supported by any browser */
 }
+div.year_quarter_container{
+    page-break-after: always;
+}
 div.month_container{
     font-family: monospace;
-    width: 12em;
+    min-width: 12em;
     float: left;
-    /*display: inline-block;*/
+    /*
+    display: inline-block;
+    */
+}
+table.month_container{
+    font-family: monospace;
+    margin: auto;
+    width: 90%;
+    /*
+    height: 90%;
+    */
+}
+tr.week_container{
+    font-family: monospace;
+    /*
+    width: 90%;
+    float: left;
+    display: inline-block;
+    */
 }
 p.day_paragraph{
     border: solid black thin;
@@ -40,49 +61,108 @@ p.day_paragraph{
     margin-top: 0em;
     /*-webkit-margin-before: 0em;*/
 }
-p.weekday{
+td.day_paragraph{
+    border: solid black thin;
+    cursor: pointer;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    min-height: 5em;
+    font-family: monospace;
+    /*
+    -webkit-margin-before: 0em;
+    width: 10%;
+    */
+}
+td.day_paragraph strong{
+    font-size: large;
+}
+td.day_paragraph.weekday{
+    width: 20%;
+}
+td.day_paragraph.adjacent_month{
+    background-color: #F0F0F0;
+}
+p.weekday, td.weekday{
     background-color: #FEFEFF;
 }
-p.weekend{
-    background-color: lightgray;
+p.weekend, td.weekend{
+    background-color: rgba(180, 180, 180, 0.9);
 }
-p.highlight{
-    background: linear-gradient(180deg, #00ABE7 0, #0081AF 100%), #B4B4B4;
+p.highlight, td.highlight{
+    background: linear-gradient(180deg, #00ABE7 0, #0081AF 100%), rgba(180, 180, 180, 0.9);
 }
 
 span.holiday{
     font-size: xx-small;
 }
-span.absent_employee_container{
+p span.absent_employee_container{
     cursor: zoom-in;
     float: right;
     width: 2em;
-    background-color: #B4B4B4;
+    background-color: rgba(180, 180, 180, 0.9);
+}
+td span.absent_employee_container{
+    cursor: zoom-in;
+    width: 2em;
+    background-color: rgba(180, 180, 180, 0.9);
 }
 span.absent_employee_container.not_yet_approved{
     background-color: #FEFEFF;
 }
 span.absent_employee_container.Apotheker{
-    background-color: #73AC22;
+    background-color: rgba(115,172,34, 0.9);
 }
 span.absent_employee_container.not_yet_approved.Apotheker{
     background-color: #FEFEFF;
-    color: #73AC22;
+    color: rgba(115,172,34, 0.9);
 }
 span.absent_employee_container.PI{
-    background-color: #73AC22;
+    background-color: rgba(115,172,34, 0.9);
 }
 span.absent_employee_container.PTA{
-    background-color: #BDE682;
+    background-color: rgba(189, 230, 130, 0.9);
 }
 span.absent_employee_container.PKA{
-    background-color: #B4B4B4;
+    background-color: rgba(180, 180, 180, 0.9);
 }
 div.input_box_div{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 171, 231, 0.9);
+    white-space: normal;
+    padding: 1em;
+    /*
     position: absolute;
     background-color: inherit;
     padding: 1em;
-    /*margin: 2em;*/
+    margin: 2em;
+    */
+}
+div.input_box_div #input_box_form{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+div.input_box_div #input_box_form input{
+    margin: auto;
+}
+div.input_box_div #remove_form_div_span{
+    font-size: xx-large;
+    color: black;
+    background-color: white;
+    padding: 1em;
+    margin-right: 1em;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+div.input_box_div #remove_form_div_span:hover{
+    color: white;
+    background-color: red;
 }
 button.button_tight{
     background-color: buttonface;

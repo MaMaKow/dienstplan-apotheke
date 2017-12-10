@@ -26,11 +26,10 @@ while ($row = mysqli_fetch_object($result)) {
 }
 
 foreach ($Table_names as $key => $table_name) {
-    $dirname = __DIR__;
     //This script lies within /src/php/ so therefore we have to move up by two levels:
-    $dirname = str_replace('\\', '/', $dirname);
-    $dir_above1 = substr($dirname, 0, strrpos($dirname, '/'));
-    $dir_above2 = substr($dirname, 0, strrpos($dir_above1, '/'));
+    $dirname = str_replace('\\', '/', __DIR__);
+    //$dir_above1 = substr($dirname, 0, strrpos($dirname, '/'));
+    $dir_above2 = dirname(dirname($dirname));
 
     $backup_file = $dir_above2 . "/tmp/$table_name.sql";
     $backup_file = iconv("UTF-8", "ISO-8859-1", $backup_file); //This is necessary for Microsoft Windows to recognise special chars.

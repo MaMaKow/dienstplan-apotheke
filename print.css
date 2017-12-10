@@ -67,3 +67,17 @@ table#duty-rooster-table
     width: 99%;
     height: 48%;
 }
+strong{
+    font-style: italic;
+}
+/*
+ * The following styles are for:
+ * marginal-employment-hours-list.php
+ */
+table#marginal_employment_hours_list_table tr td{
+    min-width: 8em;
+}
+/*
+ * The preceding styles are for:
+ * marginal-employment-hours-list.php
+ */

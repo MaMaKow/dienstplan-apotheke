@@ -1,9 +1,10 @@
 <?php
-function read_employee_data_from_database($auswahl_mitarbeiter) {
-    $abfrage = "SELECT * FROM `employees` WHERE `id` = '$auswahl_mitarbeiter'";
-    //echo "$abfrage<br>\n";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+
+function read_employee_data_from_database($employee_id) {
+    $sql_query = "SELECT * FROM `employees` WHERE `id` = '$employee_id'";
+    //echo "$sql_query<br>\n";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Worker["worker_id"] = $row->id;
         $Worker["first_name"] = $row->first_name;
         $Worker["last_name"] = $row->last_name;
@@ -17,7 +18,6 @@ function read_employee_data_from_database($auswahl_mitarbeiter) {
         $Worker["branch"] = $row->branch;
         $Worker["start_of_employment"] = $row->start_of_employment;
         $Worker["end_of_employment"] = $row->end_of_employment;
-        //print_debug_variable($Worker);
     }
     return $Worker;
 }
@@ -38,7 +38,7 @@ function write_employee_data_to_database() {
         $Worker["start_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING)));
         $Worker["end_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING)));
 
-        $abfrage = "REPLACE INTO `employees` (  
+        $sql_query = "REPLACE INTO `employees` (
         `id`, `first_name`, `last_name`,
         `profession`,
         `working_hours`, `working_week_hours`, `holidays`, `lunch_break_minutes`,
@@ -61,18 +61,18 @@ function write_employee_data_to_database() {
                 . $Worker['start_of_employment'] . ", "
                 . $Worker['end_of_employment']
                 . ")";
-//        echo "$abfrage<br>\n";
-        $ergebnis = mysqli_query_verbose($abfrage);
-        return $ergebnis;
-    }  else {
+//        echo "$sql_query<br>\n";
+        $result = mysqli_query_verbose($sql_query);
+        return $result;
+    } else {
         return FALSE;
     }
 }
 
 function make_radio_profession_list($checked) {
-    $abfrage = "SHOW COLUMNS FROM `employees` LIKE 'profession'";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_array($ergebnis)) {
+    $sql_query = "SHOW COLUMNS FROM `employees` LIKE 'profession'";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_array($result)) {
         $set_column = $row["Type"];
         $clean_set_column = str_replace(["set(", ")", "'"], "", $set_column);
         $Professions = explode(",", $clean_set_column);
@@ -90,7 +90,7 @@ function make_radio_profession_list($checked) {
         $text .= "&nbsp;<a title='Einen weiteren Beruf hinzufügen' id=button_new_profession>[Neu]</a>";
         //$text .= "</fieldset>\n";
     }
-    if (!empty($text)){
+    if (!empty($text)) {
         return $text;
     } else {
         error_log("Error while trying to build a list of professions.");
@@ -101,8 +101,11 @@ function make_radio_profession_list($checked) {
 function make_radio_branch_list($checked) {
     //$text = "<fieldset>\n";
     $text = "<label for='branch'>Mandant: </label>\n";
-
-    foreach ($GLOBALS['Kurz_mandant'] as $branch => $branch_name) {
+    $List_of_branches = $GLOBALS['Branch_short_name'];
+    if (!isset($List_of_branches[0])) {
+        $List_of_branches[0] = gettext("None");
+    }
+    foreach ($List_of_branches as $branch => $branch_name) {
         $text .= "<input type='radio' name='branch' ";
         $text .= "value='$branch'";
         if ($checked == $branch) {

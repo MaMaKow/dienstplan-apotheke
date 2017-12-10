@@ -1,7 +1,6 @@
 <?php
-function examine_duty_roster ()
-{
-    global $verbindungi;
+
+function examine_duty_roster() {
     global $Dienstplan, $mandant, $datum;
     global $Approbierte_mitarbeiter, $Wareneingang_Mitarbeiter, $Anwesende;
     //Variabkes that will be set here have to be global too, to make them visible outside.
@@ -13,57 +12,57 @@ function examine_duty_roster ()
         //Wir überprüfen ob zu jeder Zeit Approbierte anwesend sind.
         foreach ($Approbierten_anwesende as $zeit => $anwesende_approbierte) {
             if ($anwesende_approbierte === 0 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
-              if (!isset($attendant_error)) {
-                $Fehlermeldung[] = 'Um '.date('H:i', $zeit).' Uhr ist kein Approbierter anwesend.';
-                //We avoid to flood everything with errors for every 5 minutes in which noone is there.
-                $attendant_error=true;
-                //break 1;
-              }
-            }
-            else {
-                unset ($attendant_error);
+                if (!isset($attendant_error)) {
+                    $Fehlermeldung[] = sprintf(gettext('At %1s there is no authorized person present.'), date('H:i', $zeit));
+                    //We avoid to flood everything with errors for every 5 minutes in which noone is there.
+                    $attendant_error = true;
+                    //break 1;
+                }
+            } else {
+                unset($attendant_error);
             }
         }
     } else {
-        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.";
     }
     if (isset($Wareneingang_Anwesende) and isset($tages_ende) and isset($tages_beginn)) {
-            //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
-            // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($tages_ende)
+        //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
+        // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($tages_ende)
         foreach ($Wareneingang_Anwesende as $zeit => $anwesende_wareneingang) {
             if ($anwesende_wareneingang === 0 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
-              if (!isset($attendant_error)) {
-                $Warnmeldung[] = 'Um '.date('H:i', $zeit).' Uhr ist niemand für den Wareneingang anwesend.';
-                //break 1; //We avoid to flood everything with errors for every 5 minutes in which noone is there.
-                $attendant_error=true;
-              }
-            }
-            else {
-                unset ($attendant_error);
+                if (!isset($attendant_error)) {
+                    $Warnmeldung[] = 'Um ' . date('H:i', $zeit) . ' Uhr ist niemand für den Wareneingang anwesend.';
+                    //break 1; //We avoid to flood everything with errors for every 5 minutes in which noone is there.
+                    $attendant_error = true;
+                }
+            } else {
+                unset($attendant_error);
             }
         }
     } else {
-        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Ware-Menschen.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Ware-Menschen.<br>\n";
     }
+
+
+    //print_debug_variable('$tages_ende', '$Anwesende', $tages_ende, $Anwesende);
     if (isset($Anwesende) and isset($tages_ende)) {
         foreach ($Anwesende as $zeit => $anwesende) {
-            if ($anwesende < 2 and $zeit < $tages_ende and $zeit > $tages_beginn) {
+            if ($anwesende < 2 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
                 if (!isset($attendant_error)) {
-                  $Fehlermeldung[] = 'Um '.date('H:i', $zeit).' Uhr sind weniger als zwei Mitarbeiter anwesend.';
-                  $attendant_error=true;
+                    $Fehlermeldung[] = 'Um ' . date('H:i', $zeit) . ' Uhr sind weniger als zwei Mitarbeiter anwesend.';
+                    $attendant_error = true;
                 }
                 //break 1; //We avoid to flood everything with errors for every 5 minutes in which noone is there.
-            }
-            else {
-                unset ($attendant_error);
+            } else {
+                unset($attendant_error);
             }
         }
     } else {
-        echo "Notwendige Variablen sind nicht gesetzt. Keine Zählung der Anwesenden.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der Anwesenden.";
     }
-  }
+}
 
-$abfrage  = "SELECT `first`.`VK`,"
+$sql_query = "SELECT `first`.`VK`,"
         . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
         . " `first`.`Mandant` as first_branch,"
         . " `second`.`Dienstbeginn` as second_start, `second`.`Dienstende` as second_end,"
@@ -76,22 +75,19 @@ $abfrage  = "SELECT `first`.`VK`,"
         . " 	AND ((`first`.`Dienstbeginn` != `second`.`Dienstbeginn` )" //eliminate pure self-duplicates;
         . " 	OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates primary key is VK+start+mandant
         . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
-//echo "$abfrage<br>\n";
-$ergebnis = mysqli_query_verbose($abfrage);	
-while($row = mysqli_fetch_array($ergebnis))
-{
-    $Fehlermeldung[] = "Konflikt bei Mitarbeiter " 
-    . $Mitarbeiter[$row['VK']] 
-    ."<br>"
-            .$row['first_start']
-            ." bis ".$row['first_end']
-            ." (".$Kurz_mandant[$row['first_branch']]
-            .") mit <br>".$row['second_start']
-            ." bis "
-            .$row['second_end']
-            ." (" 
-            .$Kurz_mandant[$row['second_branch']]
-            .")!";
-   // echo "<pre>"; var_dump($row); echo "</pre><br>\n<br>\n";
-    }
-examine_duty_roster();
+
+$result = mysqli_query_verbose($sql_query);
+while ($row = mysqli_fetch_array($result)) {
+    $Fehlermeldung[] = "Konflikt bei Mitarbeiter "
+            . $List_of_employees[$row['VK']]
+            . "<br>"
+            . $row['first_start']
+            . " bis " . $row['first_end']
+            . " (" . $Branch_short_name[$row['first_branch']]
+            . ") mit <br>" . $row['second_start']
+            . " bis "
+            . $row['second_end']
+            . " ("
+            . $Branch_short_name[$row['second_branch']]
+            . ")!";
+}

@@ -13,7 +13,7 @@ function create_cookie($cookie_name, $cookie_value, $days = 7) {
 }
 
 /**
- * 
+ *
  * @param string $time_string
  * @return float time in hours
  */
@@ -43,7 +43,7 @@ function calculate_percentile($arr, $percentile) {
 }
 
 /**
- * 
+ *
  * @global array $Mandanten_mitarbeiter
  * @param array $Dienstplan
  * @return int
@@ -63,7 +63,7 @@ function calculate_VKcount($Dienstplan) {
 }
 
 /**
- * 
+ *
  * @param mixed $data
  * @return mixed
  */
@@ -73,7 +73,7 @@ function sanitize_user_input($data) {
 }
 
 /**
- * 
+ *
  * @param array $Dienstplan
  * @return array A list of tie points where the number of employees might change.
  */
@@ -108,11 +108,12 @@ function hex2rgb($hexstring) {
 }
 
 function escape_sql_value($value) {
-    if ('NULL' == $value or 'null' == $value) {
+    if ('NULL' === $value or 'null' === $value) {
         //echo "$value is null<br>\n";
         return $value;
+    } elseif (NULL === $value) {
+        return 'NULL';
     } else {
-        //echo "$value is not null<br>\n";
         return "'" . $value . "'";
     }
 }
@@ -126,19 +127,17 @@ function null_from_post_to_mysql($value) {
 }
 
 function print_debug_variable($variable) {
-    echo "<pre>\n";
-    var_export($variable);
-    echo "</pre>\n";
+    $argument_list = func_get_args();
+    error_log(var_export($argument_list, TRUE));
     return true;
 }
 
 /**
  * Test if PHP is running on a Windows machine.
- * 
+ *
  * @return boolean True if Operating system is Windows.
  */
 function runing_on_windows() {
-    php_uname();
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         return true;
     }
@@ -147,10 +146,10 @@ function runing_on_windows() {
 
 /**
  * Returns the localized name of the month correctly on Windows and *nix
- * 
+ *
  * On windows systems the function strftime() will not use utf8 encoding.
  * It ignores setlocale().
- * 
+ *
  * @param int $date_unix unix time.
  * @return string $month_name month name.
  */
@@ -164,12 +163,13 @@ function get_utf8_month_name($date_unix) {
 
 /*
  * This function will guess the root folder
- * 
+ *
  * Currently there are only two options for the position of php files.
  * They can be directly in the root folder, or they are in the folder ./src/php/ .
- * 
+ *
  * @return string path of the root folder of the application
  */
+
 function get_root_folder() {
     if (strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')) {
         $root_folder = "../../";
@@ -177,4 +177,23 @@ function get_root_folder() {
         $root_folder = "./";
     }
     return $root_folder;
+}
+
+/*
+ * This function will check if a given string represents a valid date.
+ *
+ * @param $date_string string any string that is supposed to represent a date.
+ * @return bool validity of the date.
+ */
+
+function is_valid_date($date_string) {
+    return (bool) strtotime($date_string);
+}
+
+function tomorow_date_string($date_sql) {
+    return date('Y-m-d', strtotime($date_sql, '+1 day'));
+}
+
+function yesterday_date_string($date_sql) {
+    return date('Y-m-d', strtotime($date_sql, '-1 day'));
 }

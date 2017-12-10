@@ -1,34 +1,25 @@
 <?php
+/*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 require '../../default.php';
 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
 
 if (filter_has_var(INPUT_GET, 'login')) {
-    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
-    $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-    //$referrer = $_GET['referrer'];
-
-    $statement = $pdo->prepare("SELECT * FROM users WHERE `user_name` = :user_name AND `status` = 'active'");
-    $result = $statement->execute(array('user_name' => $user_name));
-    $user = $statement->fetch();
-
-
-    //Überprüfung des Passworts
-    if ($user !== false && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['user_name'];
-        if (!empty($referrer)) {
-            header("Location:" . $referrer);
-        } else {
-            header("Location:" . get_root_folder());
-        }
-    } else {
-        /*
-         * TODO: If there are frequent failed attempts we should slow down and eventually block the login.
-         * $_SESSION['failed_login_attempts']++;
-         * We should use a mysql table for that pupose, as sessio data can be manipulated or deleted easily.
-         */
-        $errorMessage = "Benutzername oder Passwort war ungültig<br>";
-    }
+    $errorMessage = $session->login();
 }
 require "../../head.php";
 
@@ -38,14 +29,16 @@ echo "<H1>" . $config['application_name'] . "</H1>\n";
 
 <form action="?login=1&referrer=<?php echo $referrer; ?>" method="post">
     <input type="text" size="25" maxlength="250" name="user_name" placeholder="Benutzername"><br>
-    <input type="password" size="25" name="password" placeholder="Passwort"><br>
+    <input type="password" size="25" name="user_password" placeholder="Passwort"><br>
     <input type="submit"><br>
     <?php
-    if (isset($errorMessage)) {
+    if (!empty($errorMessage)) {
         echo $errorMessage;
     }
     ?>
-</form> 
+</form>
+<p class="unobtrusive"><a href="register.php"><?= gettext("Create new user account") ?></a></p>
+<p class="unobtrusive"><a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>/src/php/pages/lost_password.php"><?= gettext("Forgot password?") ?></a></p>
 </div>
 </body>
 </html>

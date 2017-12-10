@@ -37,16 +37,16 @@
 
 	//Daten aus der Datenbank aubrufen
 	if(!isset($tag)){$tag=0;}
-	$abfrage="SELECT * FROM `Grundplan`
+	$sql_query="SELECT * FROM `Grundplan`
 		WHERE `Wochentag` = '".date('N', strtotime($datum))."'
 		AND `Mandant` = '$mandant'";
-	$ergebnis = mysqli_query_verbose($abfrage);
-	while($row = mysqli_fetch_object($ergebnis))
+	$result = mysqli_query_verbose($sql_query);
+	while($row = mysqli_fetch_object($result))
 	{
 		//Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
 		if( isset($Abwesende[$row->VK]))
 		{
-			$Fehlermeldung[]=$Mitarbeiter[$row->VK]." ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n"; continue 1;
+			$Fehlermeldung[]=$List_of_employees[$row->VK]." ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n"; continue 1;
 		}
 		else
 		{
@@ -69,13 +69,13 @@
 
 			if(empty($Grundplan[$tag]['Stunden'][$position]))
 			{
-				$soll_minuten=round($Stunden_mitarbeiter[$row->VK] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
-				$soll_minuten+=$Mittag_mitarbeiter[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+				$soll_minuten=round($List_of_employee_working_week_hours[$row->VK] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
+				$soll_minuten+=$List_of_employee_lunch_break_minutes[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
 			}
 			else
 			{
 				$soll_minuten=$row->Stunden*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
-				$soll_minuten+=$Mittag_mitarbeiter[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+				$soll_minuten+=$List_of_employee_lunch_break_minutes[$row->VK]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
 			}
 
 			if(empty($Dienstplan[$tag]['Dienstbeginn'][$position]) && !empty($Dienstplan[$tag]['Dienstende'][$position])) //Wenn nur Dienstende feststeht, legen wir jetzt den Dienstbeginn fest.
@@ -94,7 +94,7 @@
 	{
 		//TODO: Vermutlich ist es cleverer, die $Mitarbeiter_optionen gleich auf die Mitarbeiter zu begrenzen, die auch wirklich können. Dann sparen wir und zahlreiche Versuche.
 		global $datum, $tag, $Dienstplan, $Grundplan, $Abwesende;
-		global $Mitarbeiter, $Mandanten_mitarbeiter, $Ausbildung_mitarbeiter, $Stunden_mitarbeiter, $Mittag_mitarbeiter;
+		global $List_of_employees, $Mandanten_mitarbeiter, $List_of_employee_professions, $List_of_employee_working_week_hours, $List_of_employee_lunch_break_minutes;
 		//Eine Liste der zur Verfügung stehenden Mitarbeiter holen:
 		foreach($Mandanten_mitarbeiter as $vk => $nachname)
 		{
@@ -190,7 +190,7 @@
 	{
 		global $uhrzeit, $versuche;
 		global $datum, $tag, $Dienstplan, $Grundplan, $Abwesende;
-		global $Mitarbeiter, $Mandanten_mitarbeiter, $Ausbildung_mitarbeiter, $Stunden_mitarbeiter, $Mittag_mitarbeiter;
+		global $List_of_employees, $Mandanten_mitarbeiter, $List_of_employee_professions, $List_of_employee_working_week_hours, $List_of_employee_lunch_break_minutes;
 		$Dienstplan[$tag]['VK'][]=$vorschlag;
 		$position=max(array_keys($Dienstplan[$tag]['VK']));
 		$Dienstplan[$tag]['Datum'][$position]=$datum;
@@ -205,8 +205,8 @@
 		}
 		if(array_search($vorschlag, $Grundplan[$tag]['VK']) === false  OR  empty($Grundplan[$tag]['Stunden'][array_search($vorschlag, $Grundplan[$tag]['VK'])]))
 		{
-			$soll_minuten=round($Stunden_mitarbeiter[$vorschlag] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
-			$soll_minuten+=$Mittag_mitarbeiter[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+			$soll_minuten=round($List_of_employee_working_week_hours[$vorschlag] /5)*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
+			$soll_minuten+=$List_of_employee_lunch_break_minutes[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
 		}
 		else
 		{
@@ -218,8 +218,8 @@
 			//		echo "<pre> "; var_export($wunsch_stunden); echo "</pre>";
 			$soll_minuten=$wunsch_stunden[0]*60; //Wie viele Arbeitsstunden in Minuten gerechnet soll pro Tag gearbeitet werden?
 
-			$soll_minuten+=$Mittag_mitarbeiter[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
-			//			echo "Wir sind bei ".$Mitarbeiter[$vorschlag]." und es werden $soll_minuten zur weiteren Verwendung berechnet.<br>\n";
+			$soll_minuten+=$List_of_employee_lunch_break_minutes[$vorschlag]; //Die Mittagspause muss natürlich mit herausgearbeitet werden.
+			//			echo "Wir sind bei ".$List_of_employees[$vorschlag]." und es werden $soll_minuten zur weiteren Verwendung berechnet.<br>\n";
 		}
 
 		if(empty($Dienstplan[$tag]['Dienstbeginn'][$position]) && !empty($Dienstplan[$tag]['Dienstende'][$position])) //Wenn nur Dienstende feststeht, legen wir jetzt den Dienstbeginn fest.
@@ -295,11 +295,11 @@
 				//Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
 				$dienstbeginn=$Dienstplan[$tag]["Dienstbeginn"][$position];
 				$dienstende=$Dienstplan[$tag]["Dienstende"][$position];
-				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$Mittag_mitarbeiter[$vk]*60;
+				$sekunden=strtotime($dienstende)-strtotime($dienstbeginn)-$List_of_employee_lunch_break_minutes[$vk]*60;
 				if( $sekunden >= 6*3600 )
 				{
 					//Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-					$pausen_ende=$pausen_start+$Mittag_mitarbeiter[$vk]*60;
+					$pausen_ende=$pausen_start+$List_of_employee_lunch_break_minutes[$vk]*60;
 					if(array_search($pausen_start, $Besetzte_mittags_beginne)!==false OR array_search($pausen_ende, $Besetzte_mittags_enden)!==false)
 					{
 						//Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
@@ -313,11 +313,11 @@
 			}
 			elseif ( !empty($vk) AND !empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND empty($Dienstplan[$tag]['Mittagsende'][$position]) )
 			{
-					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', strtotime('- '.$Mittag_mitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsbeginn'][$position]));
+					$Dienstplan[$tag]['Mittagsende'][$position]=date('H:i', strtotime('- '.$List_of_employee_lunch_break_minutes[$vk].' minutes', $Dienstplan[$tag]['Mittagsbeginn'][$position]));
 			}
 			elseif ( !empty($vk) AND empty($Dienstplan[$tag]['Mittagsbeginn'][$position]) AND !empty($Dienstplan[$tag]['Mittagsende'][$position]) )
 			{
-					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', strtotime('+ '.$Mittag_mitarbeiter[$vk].' minutes', $Dienstplan[$tag]['Mittagsende'][$position]));
+					$Dienstplan[$tag]['Mittagsbeginn'][$position]=date('H:i', strtotime('+ '.$List_of_employee_lunch_break_minutes[$vk].' minutes', $Dienstplan[$tag]['Mittagsende'][$position]));
 			}
 		}
 

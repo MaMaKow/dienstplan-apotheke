@@ -2,13 +2,13 @@
 //Wir erstellen eine Icalendar Datei (ICS). Diese kann dann in einen Kalender importiert werden.
 /**
  * 
- * @global array $Mitarbeiter 
+ * @global array $List_of_employees 
  * @param array $Dienstplan
  * @return string $textICS the ICS text file
  */
 function schreiben_ics ($Dienstplan)
 {
-global $Mitarbeiter, $Mandant;
+global $List_of_employees, $Branch_name;
 $textICS="";
 $textICS.="BEGIN:VCALENDAR\n";
 $textICS.="VERSION:2.0\n";
@@ -32,8 +32,8 @@ foreach(array_keys($Dienstplan) as $tag )
 			$dienstende=$Dienstplan[$tag]["Dienstende"][$key];
 			$mittags_beginn=$Dienstplan[$tag]["Mittagsbeginn"][$key];
 			$mittags_ende=$Dienstplan[$tag]["Mittagsende"][$key];
-                        $mandant=$Mandant[$Dienstplan[$tag]["Mandant"][$key]];
-                        $mandant_adresse=$Mandant_adresse[$Dienstplan[$tag]["Mandant"][$key]];
+                        $mandant=$Branch_name[$Dienstplan[$tag]["Mandant"][$key]];
+                        $branch_address=$Branch_address[$Dienstplan[$tag]["Mandant"][$key]];
                         $mandant_number=$Dienstplan[$tag]["Mandant"][$key];
 			//Output the data as ICS
 			$textICS.="BEGIN:VEVENT\n";
@@ -45,25 +45,18 @@ foreach(array_keys($Dienstplan) as $tag )
 			$textICS.="DTSTART;TZID=Europe/Berlin:".date('Ymd', strtotime($datum))."T".date('His', strtotime($dienstbeginn))."\n";
 			$textICS.="DTEND;TZID=Europe/Berlin:".date('Ymd', strtotime($datum))."T".date('His', strtotime($dienstende))."\n";
 			$textICS.="SUMMARY:$mandant\n";
-			$textICS.="DESCRIPTION:Kalenderdatei für VK ".$vk." (".$Mitarbeiter[$vk].") ";
+			$textICS.="DESCRIPTION:Kalenderdatei für VK ".$vk." (".$List_of_employees[$vk].") ";
                         if (!empty($mittags_beginn) and !empty($mittags_ende)) 
                         {
                             $textICS.="Mittag von $mittags_beginn bis $mittags_ende ";
                         }
                         $textICS.="beinhaltet den Dienstplan für die $mandant.\n";
-			$textICS.="LOCATION:$mandant_adresse\n";
+			$textICS.="LOCATION:$branch_address\n";
 			$textICS.="END:VEVENT\n";
 		}
 	}
 }
 $textICS.="END:VCALENDAR\n";
 
-
-/*
-$filename = "ics/wochenkalender_".strftime('%V', strtotime($datum))."_".$vk.".ics"; //Die Datei bekommt den Namen der Kalenderwoche und des Mitarbeiters.
-$myfile = fopen($filename, "w") or die(" Unable to open file $filename!");
-fwrite($myfile, $textICS);
-fclose($myfile);
-*/
     return $textICS;
 }
