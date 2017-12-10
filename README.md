@@ -1,4 +1,4 @@
-#Pharmacy Duty Roster
+# Pharmacy Duty Roster
 ## Introduction
 Pharmacy Duty Roster (PDR) is a web application that allows to operate a duty roster for pharmacies.
 PDR started in 2015 as an alternative to a really simple excel sheet without formulas.
@@ -19,6 +19,6 @@ You might want to change the owner of the directory to the webservers user with 
 chown -R www-data:www-data /var/www/html/pdr/`
 ```
 
-#License
+## License
 PDR is open source software under the GPL license.
 Please see the [license file](LICENSE) for details!

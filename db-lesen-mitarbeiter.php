@@ -28,6 +28,7 @@ $result = mysqli_query_verbose($sql_query);
 while ($row = mysqli_fetch_object($result)) {
     if ($row->last_name != '') {
         $List_of_employees[$row->id] = $row->last_name;
+        $List_of_employee_full_names[$row->id] = $row->last_name . ", " . $row->first_name;
         $List_of_employee_working_week_hours[$row->id] = $row->working_week_hours;
         $List_of_employee_lunch_break_minutes[$row->id] = $row->lunch_break_minutes;
         $List_of_employee_professions[$row->id] = $row->profession;

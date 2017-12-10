@@ -65,10 +65,10 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
         </ul>
     </li>
     <li>
-        <a><?php echo $_SESSION['user_name']; ?>&nbsp;</a>
+        <a><?= $_SESSION['user_name']; ?>&nbsp;</a>
         <ul>
             <li>
-                <?php echo $session->build_logout_button(); ?>
+                <?= $session->build_logout_button(); ?>
             </li>
         </ul>
 
