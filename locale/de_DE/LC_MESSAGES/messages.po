@@ -1,0 +1,389 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: pharmacy duty roster\n"
+"POT-Creation-Date: 2017-12-08 21:40+0100\n"
+"PO-Revision-Date: 2017-12-08 21:41+0100\n"
+"Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
+"de>\n"
+"Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
+"Language: de_DE@formal\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
+"X-Poedit-Basepath: ../../..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: abwesenheit-in.php:165 stunden-in.php:111 tag-in.php:109 woche-in.php:72
+msgid "Read"
+msgstr "Lesen"
+
+#: abwesenheit-out.php:59 stunden-out.php:59 tag-out.php:83 woche-out.php:85
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: abwesenheit-out.php:64
+msgid "Start"
+msgstr "Beginn"
+
+#: abwesenheit-out.php:67
+msgid "End"
+msgstr "Ende"
+
+#: abwesenheit-out.php:70
+msgid "Reason"
+msgstr "Grund"
+
+#: abwesenheit-out.php:73
+msgid "Days"
+msgstr "Tage"
+
+#: anwesenheitsliste-out.php:109 anwesenheitsliste-out.php:110
+msgid "emergency service"
+msgstr "Notdienst"
+
+#: contact-form.php:13
+msgid "Wishes, criticism, suggestions"
+msgstr "Wünsche, Kritik, Anregungen"
+
+#: contact-form.php:16
+msgid "From"
+msgstr "Absender"
+
+#: contact-form.php:17
+msgid "Message"
+msgstr "Nachricht"
+
+#: contact-form.php:18
+msgid "Email"
+msgstr "Email"
+
+#: contact-form.php:72
+msgid "Report a bug"
+msgstr "Einen Programmfehler melden"
+
+#: grundplan-tag-in.php:262 grundplan-vk-in.php:192 grundplan-vk-in.php:202
+#: grundplan-vk-in.php:211 schreiben-tabelle.php:106 tag-in.php:184
+#: tag-out.php:141 woche-in.php:147
+msgid "break"
+msgstr "Pause"
+
+#: grundplan-vk-in.php:207
+msgid "No break"
+msgstr "Keine Pause"
+
+#: human-resource-management-in.php:53
+msgid "vacation days"
+msgstr "Urlaubstage"
+
+#: human-resource-management.php:106
+msgid "None"
+msgstr "Kein"
+
+#: mitarbeiter-out.php:67 tag-in.php:92 tag-out.php:73 woche-in.php:53
+#: woche-out.php:58
+msgid "calendar week"
+msgstr "Kalenderwoche"
+
+#: mitarbeiter-out.php:91
+msgid " is having emergency service at "
+msgstr " hat Notdienst in "
+
+#: navigation.php:8 navigation.php:11
+msgid "1 day backward"
+msgstr "1 Tag rückwärts"
+
+#: navigation.php:16 navigation.php:19 navigation.php:49
+msgid "1 day forward"
+msgstr "1 Tag vorwärts"
+
+#: navigation.php:24 navigation.php:27
+msgid "1 week backward"
+msgstr "1 Woche rückwärts"
+
+#: navigation.php:32 navigation.php:35
+msgid "1 week forward"
+msgstr "1 Woche vorwärts"
+
+#: navigation.php:40 navigation.php:43
+msgid "Save"
+msgstr "Speichern"
+
+#: navigation.php:52
+msgid "Approve"
+msgstr "Genehmigen"
+
+#: navigation.php:57 navigation.php:60
+msgid "Disapprove"
+msgstr "Ablehnen"
+
+#: pruefe-dienstplan.php:16
+#, php-format
+msgid "At %1s there is no authorized person present."
+msgstr "Um %1s Uhr ist kein Approbierter anwesend."
+
+#: schreiben-tabelle.php:47 tag-out.php:46
+msgid "The roster has not been approved by the administration!"
+msgstr "Dieser Dienstplan wurde noch nicht von der Leitung bestätigt."
+
+#: schreiben-tabelle.php:49 tag-out.php:48
+msgid "The roster is still beeing revised!"
+msgstr "Der Dienstplan wird noch überarbeitet."
+
+#: schreiben-tabelle.php:54 tag-out.php:52
+msgid "Missing data in table `approval`"
+msgstr "Fehlende Daten in der Tabelle `approval`"
+
+#: src/php/classes/build_html_roster_views.php:31
+msgid "Absentees"
+msgstr "Abwesende"
+
+#: src/php/classes/class.install.php:38
+msgid "There already is a configuration file."
+msgstr "Es existiert bereits eine Konfigurationsdatei."
+
+#: src/php/classes/class.install.php:221
+msgid "The passwords aren't the same."
+msgstr "Die Passwörter sind nicht identisch."
+
+#: src/php/classes/class.install.php:254
+msgid "Error while trying to create administrative user."
+msgstr "Fehler beim Erstellen des administrativen Benutzers."
+
+#: src/php/classes/class.install.php:262
+msgid "Administrative user already exists."
+msgstr "Der administrative Benutzer existiert bereits."
+
+#: src/php/classes/class.install.php:280
+msgid "Error while trying to create administrative user privileges."
+msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
+
+#: src/php/classes/class.install.php:330
+msgid "Make sure that the directories are writable by pdr!"
+msgstr "Stellen Sie sicher, dass die Verzeichnisse durch pdr schreibbar sind!"
+
+#: src/php/classes/class.install.php:364
+msgid "Error while trying to create the database."
+msgstr "Fehler beim Erstellen der Datenbank."
+
+#: src/php/classes/class.install.php:371
+msgid "Error while trying to create the database tables."
+msgstr "Fehler beim Erstellen der Datenbank-Tabellen."
+
+#: src/php/classes/class.install.php:401
+msgid "Error while writing the configuration to the filesystem."
+msgstr "Fehler beim Schreiben der Konfigurationsdatei."
+
+# Listing elements one two AND three
+#: src/php/classes/class.install.php:438
+msgid "and"
+msgstr "und"
+
+#: src/php/classes/class.sessions.php:142
+msgid "The permission to create a roster is missing."
+msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
+
+#: src/php/classes/class.sessions.php:143
+msgid "Please contact the administrator."
+msgstr "Bitte wenden Sie sich an Ihren Administrator."
+
+#: src/php/classes/class.sessions.php:144
+msgid "Escalate privileges"
+msgstr "Rechte erweitern"
+
+#: src/php/classes/class.sessions.php:258
+msgid "Logout"
+msgstr "Logout"
+
+#: src/php/classes/class.sessions.php:264
+msgid "Lost password"
+msgstr "Passwort vergessen"
+
+#: src/php/classes/class.sessions.php:266
+msgid ""
+"Dear User,\n"
+"\n"
+" in order to set a new password for"
+msgstr ""
+"Sehr geehrter Nutzer,\n"
+"\n"
+"um ein neues Passwort für"
+
+#: src/php/classes/class.sessions.php:270
+msgid "user name"
+msgstr "Benutzer"
+
+#: src/php/classes/class.sessions.php:271
+msgid "please visit"
+msgstr "besuchen Sie bitte"
+
+#: src/php/classes/class.sessions.php:274
+msgid "this address"
+msgstr "diese Adresse"
+
+#: src/php/classes/class.sessions.php:276
+msgid "Your token is valid for 24 hours."
+msgstr "Ihr Token ist 24 Stunden lang gültig."
+
+#: src/php/login.php:40
+msgid "Create new user account"
+msgstr "Neuen Benutzer anlegen"
+
+#: src/php/login.php:41
+msgid "Forgot password?"
+msgstr "Passwort vergessen?"
+
+#: src/php/pages/collaborative-vacation-input-box.php:75
+msgid "Close"
+msgstr "Schießen"
+
+#: src/php/pages/install_page_admin.php:31
+msgid "Every user in the roster will be identified by a unique id."
+msgstr ""
+"Jeder Nutzer im Dienstplan wird durch eine eindeutige ID identifiziert."
+
+#: src/php/pages/install_page_admin.php:43
+msgid "Please enter a password with a minimum length of 8 characters."
+msgstr "Bitte wählen Sie ein Passwort mit mindestens 8 Zeichen."
+
+#: src/php/pages/install_page_check_requirements.php:56
+#: src/php/pages/install_page_intro.php:37
+#: src/php/pages/install_page_welcome.php:42
+msgid "Next"
+msgstr "Weiter"
+
+#: src/php/pages/lost_password.php:39
+msgid "Please enter your email address, user name or user id!"
+msgstr ""
+"Bitte geben Sie Ihren Benutzer-Namen, Ihre Benutzer-Kennung oder Ihre Email-"
+"Adresse an!"
+
+#: src/php/pages/lost_password.php:40
+msgid "identifier"
+msgstr "Bezeichner"
+
+#: src/php/pages/menu.php:7
+msgid "Weekly view"
+msgstr "Wochenansicht"
+
+#: src/php/pages/menu.php:10
+msgid "Weekly view input"
+msgstr "Wochenansicht Eingabe"
+
+#: src/php/pages/menu.php:11
+msgid "Weekly view output"
+msgstr "Wochenansicht Ausgabe"
+
+#: src/php/pages/menu.php:16
+msgid "Daily view"
+msgstr "Tagesansicht"
+
+#: src/php/pages/menu.php:19
+msgid "Daily input"
+msgstr "Tagesansicht Eingabe"
+
+#: src/php/pages/menu.php:20
+msgid "Daily output"
+msgstr "Tagesansicht Ausgabe"
+
+#: src/php/pages/menu.php:21 src/php/pages/menu.php:60
+msgid "Principle roster daily"
+msgstr "Grundplan Tagesansicht"
+
+#: src/php/pages/menu.php:25
+msgid "Employee"
+msgstr "Mitarbeiter"
+
+#: src/php/pages/menu.php:28
+msgid "Roster employee"
+msgstr "Mitarbeiteransicht"
+
+#: src/php/pages/menu.php:29 src/php/pages/menu.php:61
+msgid "Principle roster employee"
+msgstr "Grundplan Mitarbeiter"
+
+#: src/php/pages/menu.php:30 src/php/pages/menu.php:64
+msgid "Human resource management"
+msgstr "Mitarbeiterverwaltung"
+
+#: src/php/pages/menu.php:35
+msgid "Overtime"
+msgstr "Überstunden"
+
+#: src/php/pages/menu.php:38
+msgid "Overtime input"
+msgstr "Überstunden Eingabe"
+
+#: src/php/pages/menu.php:39
+msgid "Overtime output"
+msgstr "Überstunden Ausgabe"
+
+#: src/php/pages/menu.php:44
+msgid "Absence"
+msgstr "Abwesenheit"
+
+#: src/php/pages/menu.php:47
+msgid "Absence input"
+msgstr "Abwesenheit Eingabe"
+
+#: src/php/pages/menu.php:48
+msgid "Absence output"
+msgstr "Abwesenheit Ausgabe"
+
+#: src/php/pages/menu.php:49
+msgid "Absence annual plan"
+msgstr "Abwesenheit Jahresplan"
+
+#: src/php/pages/menu.php:50
+msgid "Absence monthly plan"
+msgstr "Abwesenheit Monatsplan"
+
+#: src/php/pages/menu.php:55
+msgid "Administration"
+msgstr "Administration"
+
+#: src/php/pages/menu.php:59
+msgid "Attendance list"
+msgstr "Anwesenheitsliste"
+
+#: src/php/pages/menu.php:63
+msgid "Upload deployment planning"
+msgstr "PEP-Upload"
+
+#: src/php/pages/reset_lost_password.php:33
+msgid "Invalid token"
+msgstr "Ungültiger Token"
+
+#: src/php/pages/reset_lost_password.php:102
+msgid "Your password has successfully been changed."
+msgstr "Ihr Passwort wurde erfolgreich geändert."
+
+#: src/php/pages/reset_lost_password.php:102
+msgid "Login"
+msgstr "Einloggen"
+
+#: src/php/pages/reset_lost_password.php:106
+msgid "There was an error while saving the data."
+msgstr "Beim Speichern der Daten trat ein Fehler auf."
+
+#: src/php/pages/reset_lost_password.php:111
+msgid "Missing input token"
+msgstr "Es wurde kein Token übergeben."
+
+#: src/php/register.php:85
+msgid ""
+"The user account will be verified after the registration. This may take a "
+"while. You will be informed by email after the verification is complete."
+msgstr ""
+"Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
+"Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
+
+#~ msgid "Vacation"
+#~ msgstr "Urlaub"
+
+#~ msgid "Day"
+#~ msgid_plural "Days"
+#~ msgstr[0] "Tag"
+#~ msgstr[1] "Tage"

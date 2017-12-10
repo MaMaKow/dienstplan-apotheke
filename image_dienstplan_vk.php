@@ -20,12 +20,12 @@
 
 /**
  * 
- * @global array $Mitarbeiter
+ * @global array $List_of_employees
  * @param array $Dienstplan
  * @return string The svg element
  */
 function draw_image_dienstplan_vk($Dienstplan) {
-    global $Mitarbeiter, $Ausbildung_mitarbeiter;
+    global $List_of_employees, $List_of_employee_professions;
 
     $line = 0; //TODO: This will be hardcoded here. It could be calculated in a later use case.
 
@@ -79,7 +79,6 @@ function draw_image_dienstplan_vk($Dienstplan) {
     //draw the bars from start to end for every employee
     $svg_box_text = "\t<!--Boxes-->\n";
     $svg_break_box_text = '';
- //   print_debug_variable($Dienstplan);
 
     foreach ($Dienstplan as $day => $Column) {
 //        echo "<pre>"; var_dump(time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line])); echo "</pre>"; 
@@ -95,13 +94,13 @@ function draw_image_dienstplan_vk($Dienstplan) {
         $break_width_in_hours = $break_end - $break_start;
 
         //The next lines will be used for coloring the image dependent on the education of the workers:
-        if ($Ausbildung_mitarbeiter[$vk] == "Apotheker") {
+        if ($List_of_employee_professions[$vk] == "Apotheker") {
             $worker_style = 1;
-        } elseif ($Ausbildung_mitarbeiter[$vk] == "PI") {
+        } elseif ($List_of_employee_professions[$vk] == "PI") {
             $worker_style = 1;
-        } elseif ($Ausbildung_mitarbeiter[$vk] == "PTA") {
+        } elseif ($List_of_employee_professions[$vk] == "PTA") {
             $worker_style = 2;
-        } elseif ($Ausbildung_mitarbeiter[$vk] == "PKA") {
+        } elseif ($List_of_employee_professions[$vk] == "PKA") {
             $worker_style = 3;
         } else {
             //anybody else
@@ -130,7 +129,7 @@ function draw_image_dienstplan_vk($Dienstplan) {
 
         $svg_box_text .= "<g id=work_box_$day transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' >";
         $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];cursor: $cursor_style_box;' />\n";
-        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $Mitarbeiter[$vk] . "</text>\n";
+        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $List_of_employees[$vk] . "</text>\n";
         $svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
         $svg_box_text .= "</g>";
 

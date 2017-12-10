@@ -17,38 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /**
- * 
- * @global array $Mitarbeiter
+ *
+ * @global array $List_of_employees
  * @param array $Dienstplan
  * @return string The svg element
  */
 function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424) {
-    global $Mitarbeiter, $Ausbildung_mitarbeiter;
+    if (empty(current($Dienstplan[0]["VK"]))) {
+        return FALSE;
+    }
 
-        if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php'){
-            $cursor_style_box = 'move';
-            $cursor_style_break_box = 'cell';
-        } else {
-            $cursor_style_box = 'default';
-            $cursor_style_break_box = 'default';
-        }
+    global $List_of_employees, $List_of_employee_professions;
+
+    if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
+        $cursor_style_box = 'move';
+        $cursor_style_break_box = 'cell';
+    } else {
+        $cursor_style_box = 'default';
+        $cursor_style_break_box = 'default';
+    }
 
 
     $bar_height = 20;
-    $bar_width_factor = 40; $javascript_variables = "var bar_width_factor = $bar_width_factor;";
-    $font_size = $bar_height*0.6;
+    $bar_width_factor = 40;
+    $javascript_variables = "var bar_width_factor = $bar_width_factor;";
+    $font_size = $bar_height * 0.6;
 
     $inner_margin_x = $bar_height * 0.2;
     $inner_margin_y = $inner_margin_x;
     $outer_margin_x = 20;
     $outer_margin_y = 20;
 
-    $Worker_style[1]="#73AC22";
-    $Worker_style[2]="#BDE682";
-    $Worker_style[3]="#B4B4B4";
-     
+    $Worker_style[1] = "#73AC22";
+    $Worker_style[2] = "#BDE682";
+    $Worker_style[3] = "#B4B4B4";
+
     $lines = count($Dienstplan[0]['VK']);
     $svg_inner_height = $inner_margin_x * ($lines + 1) + $bar_height * $lines;
     $svg_outer_height = $svg_inner_height + ($outer_margin_y * 2);
@@ -60,7 +64,7 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
     /* $svg_text  = "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
       /*$svg_text .= "<?xml version='1.0' encoding='utf-8'?>\n"; */
     //$svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
-    $svg_text .= "<svg id='svgimg' width='$svg_width' class='noselect' cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
+    $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
 
     $svg_grid_text = "\t<!--Grid-->\n";
     for ($time = floor($first_start); $time <= ceil($last_end); $time = $time + 2) {
@@ -88,13 +92,13 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
         $break_width_in_hours = $break_end - $break_start;
 
         //The next lines will be used for coloring the image dependent on the education of the workers:
-        if ($Ausbildung_mitarbeiter[$vk] == "Apotheker") {
+        if ($List_of_employee_professions[$vk] == "Apotheker") {
             $worker_style = 1;
-        } elseif ($Ausbildung_mitarbeiter[$vk] == "PI") {
+        } elseif ($List_of_employee_professions[$vk] == "PI") {
             $worker_style = 1;
-        } elseif ($Ausbildung_mitarbeiter[$vk] == "PTA") {
+        } elseif ($List_of_employee_professions[$vk] == "PTA") {
             $worker_style = 2;
-        } elseif ($Ausbildung_mitarbeiter[$vk] == "PKA") {
+        } elseif ($List_of_employee_professions[$vk] == "PKA") {
             $worker_style = 3;
         } else {
             //anybody else
@@ -116,7 +120,7 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
 
         $svg_box_text .= "<g id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' style='cursor: $cursor_style_box;'>";
         $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];' />\n";
-        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $Mitarbeiter[$vk] . "</text>\n";
+        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>" . $List_of_employees[$vk] . "</text>\n";
         $svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
         $svg_box_text .= "</g>";
 

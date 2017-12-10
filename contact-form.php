@@ -10,12 +10,12 @@
 			document.getElementById("contactForm").style.display = "inline";
 		}
 	</script>
-	<p><a href=#bottom onclick=unhideContactForm()>Wünsche, Kritik, Anregungen&nbsp;+</a></p>
+	<p><a href=#bottom onclick=unhideContactForm()><?=gettext("Wishes, criticism, suggestions")?>&nbsp;+</a></p>
 	<form id=contactForm style=display:none method=POST>
 		<table>
-			<tr><td>Absender</td><td><input style=width:320px type="text" name=VK value=""></td></tr>
-			<tr><td>Nachricht</td><td><textarea style=width:320px name=nachricht rows=5></textarea></td></tr>
-			<tr><td>Kontaktadresse</td><td><input style=width:320px type="email" name=email value=""></td></tr>
+                    <tr><td><?=gettext("From")?></td><td><input style=width:320px type="text" name=VK value=""></td></tr>
+			<tr><td><?=gettext("Message")?></td><td><textarea style=width:320px name=nachricht rows=5></textarea></td></tr>
+			<tr><td><?=gettext("Email")?></td><td><input style=width:320px type="email" name=email value=""></td></tr>
 		</table>
 		<input type="hidden" name=dienstplan value="<?php var_export($Dienstplan)?>">
 		<input type="submit" name=submitContactForm value="Absenden">
@@ -69,6 +69,6 @@
 		}
 	}
 ?>
-<a target="_blank" href="https://github.com/MaMaKow/dienstplan-apotheke/issues/new">Einen Programmfehler melden</a>
+<a target="_blank" href="https://github.com/MaMaKow/dienstplan-apotheke/issues/new"><?=gettext("Report a bug")?></a>
 </div>
 <div id='bottom'></div>

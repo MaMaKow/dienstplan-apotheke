@@ -7,5 +7,6 @@ CREATE TABLE `wunschplan` (
   `Mittagsende` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
   `Kommentar` text CHARACTER SET latin1,
   `Stunden` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
-  `Mandant` varchar(64) CHARACTER SET latin1 NOT NULL DEFAULT '1'
+  `Mandant` varchar(64) CHARACTER SET latin1 NOT NULL DEFAULT '1',
+  PRIMARY KEY (`VK`,`Wochentag`,`Mandant`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci
