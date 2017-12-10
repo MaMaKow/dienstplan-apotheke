@@ -1,5 +1,5 @@
 /*
-Our mail colors were picked by and from http://www.colorsontheweb.com/colorwizard.asp
+Our main colors were picked by and from http://www.colorsontheweb.com/colorwizard.asp
 #BDE682, foreground, light green
 #73AC22, contrast, strong green
 #FEFEFF, background, white
@@ -201,7 +201,7 @@ div.warningmsg
     z-index: 10;
 }
 
-nav#nav{
+nav#nav {
     display: inline-block;
     width: 100%;
     background-color: #BDE682;
@@ -441,6 +441,42 @@ div.centered_form_div {
 }
 div.centered_form_div form input {
     margin-bottom: 1em;
+}
+nav#nav_tiles{
+    background-color: #BDE682;
+    /*
+    width: 100%;
+    */
+    display: table;
+    margin: auto;
+}
+nav#nav_tiles ul#navigation_tiles {
+    list-style-type: none;
+    display: block;
+    margin: 0;
+    padding: 0;
+
+}
+nav ul#navigation_tiles li {
+    float: left;
+    border: 1px solid black;
+    margin: 16px;
+}
+nav ul#navigation_tiles li:hover {
+    background-color: #73AC22;
+    color: #FFFFFF;
+}
+nav ul#navigation_tiles li:hover a img.image_tiles{
+    -webkit-filter: brightness(0) invert(100%);
+    -moz-filter: brightness(0) invert(100%);
+    -ms-filter: brightness(0) invert(100%);
+    -o-filter: brightness(0) invert(100%);
+    filter: brightness(0) invert(100%);
+
+}
+nav ul li a img.image_tiles{
+    height: 128px;
+    width: 128px;
 }
 #escalation_div {
     z-index: -90;
