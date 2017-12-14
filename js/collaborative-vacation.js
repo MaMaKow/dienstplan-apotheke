@@ -180,8 +180,6 @@ function insert_form_div(edit_create) {
     if (existing_div) {
         return false; //Do not remove and rebuild when clicking inside the form.
     }
-        */
-    }
     var div = document.createElement('div');
     //console.log(document.body);
     //element_mouse_is_over.appendChild(div);
