@@ -22,6 +22,7 @@ if (!$session->user_has_privilege('request_own_absence') and ! $session->user_ha
 }
 
 handle_user_data_input();
+echo "<div id='input_box_data_div'></div>";
 echo build_datalist();
 echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";
 echo build_absence_year($year);

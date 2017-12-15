@@ -48,8 +48,8 @@ if (isset($Grundplan)) {
                 /*
                  * First, the old values are deleted.
                  */
-                $abfrage = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND VK='$VK'";
-                $ergebnis = mysqli_query_verbose($abfrage);
+                $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND VK='$VK'";
+                $result = mysqli_query_verbose($sql_query);
                 /*
                  * Second, new values are inserted.
                  */
@@ -68,13 +68,13 @@ if (isset($Grundplan)) {
 //Abruf der gespeicherten Daten aus der Datenbank
 unset($Grundplan);
 for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
-    $abfrage = 'SELECT *
+    $sql_query = 'SELECT *
 		FROM `Grundplan`
 		WHERE `Wochentag` = "' . $wochentag . '"
 			AND `VK`="' . $employee_id . '"
 		;';
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
         $Grundplan[$wochentag]['VK'][] = $row->VK;
         $Grundplan[$wochentag]['Dienstbeginn'][] = $row->Dienstbeginn;
@@ -90,8 +90,8 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
         } else {
             $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
             //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-            if ($sekunden - $Mittag_mitarbeiter[$employee_id] * 60 >= 6 * 3600) {
-                $mittagspause = $Mittag_mitarbeiter[$employee_id] * 60;
+            if ($sekunden - $List_of_employee_lunch_break_minutes[$employee_id] * 60 >= 6 * 3600) {
+                $mittagspause = $List_of_employee_lunch_break_minutes[$employee_id] * 60;
                 $sekunden = $sekunden - $mittagspause;
             } else {
                 $mittagspause = false;
@@ -122,8 +122,8 @@ for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
     $Wochentag[$wochentag] = strftime('%A', $pseudo_datum);
 }
 
-$VKcount = count($Mitarbeiter); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-$VKmax = max(array_keys($Mitarbeiter));
+$VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+$VKmax = max(array_keys($List_of_employees));
 foreach ($Grundplan as $key => $Grundplantag) {
     $Plan_anzahl[] = (count($Grundplantag['VK']));
 }
@@ -142,7 +142,7 @@ if (!$session->user_has_privilege('create_roster')) {
     die();
 }
 echo "<div id=main-area>\n";
-echo build_select_employee($employee_id, $Mitarbeiter);
+echo build_select_employee($employee_id, $List_of_employees);
 
 echo "<form method='POST' id='change_principle_roster_employee'>";
 echo $submit_button_img; //name ist für die $_POST-Variable relevant. Die id wird für den onChange-Event im select benötigt.
@@ -189,7 +189,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         $zeile = '';
         echo "<br>\n\t\t\t\t";
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0 and $Grundplan[$wochentag]['Mittagsende'][$j] > 0) {
-            $zeile .= ' " . gettext("break") . ": ';
+            $zeile .= " " . gettext("break") . ": ";
             $zeile .= '<input type=time name=Grundplan[' . $wochentag . "][Mittagsbeginn][$j] value=";
             $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
             $zeile .= " form='change_principle_roster_employee'>";
@@ -215,11 +215,11 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Mandant'][$j])) {
             $zeile .= "<br>\n";
             $zeile .= "<select name=Grundplan[$wochentag][Mandant][$j] form='change_principle_roster_employee'>\n";
-            foreach ($Kurz_mandant as $filiale => $name) {
-                if ($filiale != $Grundplan[$wochentag]['Mandant'][$j]) {
-                    $zeile .= "\t\t\t\t\t<option value=" . $filiale . '>' . $name . "</option>\n";
+            foreach ($Branch_short_name as $branch_id => $branch_short_name) {
+                if ($branch_id != $Grundplan[$wochentag]['Mandant'][$j]) {
+                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . '>' . $branch_short_name . "</option>\n";
                 } else {
-                    $zeile .= "\t\t\t\t\t<option value=" . $filiale . ' selected>' . $name . "</option>\n";
+                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . ' selected>' . $branch_short_name . "</option>\n";
                 }
             }
         }
@@ -264,9 +264,9 @@ $j = 1; //Zahler für den Stunden-Array (wir wollen nach je x Elementen einen Um
 foreach ($Stunden as $mitarbeiter => $stunden) {
     echo array_sum($stunden);
     echo ' / ';
-    echo $Stunden_mitarbeiter[$mitarbeiter];
-    if ($Stunden_mitarbeiter[$mitarbeiter] != array_sum($stunden)) {
-        $differenz = array_sum($stunden) - $Stunden_mitarbeiter[$mitarbeiter];
+    echo $List_of_employee_working_week_hours[$mitarbeiter];
+    if ($List_of_employee_working_week_hours[$mitarbeiter] != array_sum($stunden)) {
+        $differenz = array_sum($stunden) - $List_of_employee_working_week_hours[$mitarbeiter];
         echo " <b>( " . $differenz . " )</b>";
     }
 }

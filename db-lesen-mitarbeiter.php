@@ -1,28 +1,37 @@
 <?php
-//Hole eine Liste aller Mitarbeiter
-if (isset($datum)) {
+
+//Get a list of employees:
+/*
+ * TODO:
+ * This whole if-construct will become obsolete, once this is a function with a defined $date_sql.
+ */
+if (isset($date_sql)) {
+    //$date_sql is already set.
+} elseif (isset($date_unix)) {
+    $date_sql = date('Y-m-d', $date_unix);
+} elseif (isset($datum)) {
     if (is_numeric($datum) && (int) $datum == $datum) {
-        $sql_datum = date('Y-m-d', $datum);
+        $date_sql = date('Y-m-d', $datum);
     } else {
-        $sql_datum = date('Y-m-d', strtotime($datum));
+        $date_sql = date('Y-m-d', strtotime($datum));
     }
 } else {
-    $sql_datum = '';
+    $date_sql = '';
 }
 unset($Mandanten_mitarbeiter);
-$abfrage = 'SELECT *
+$sql_query = 'SELECT *
 	FROM `employees`
-	WHERE  `end_of_employment` > "'.$sql_datum.'" OR `end_of_employment` IS NULL
+	WHERE  `end_of_employment` > "' . $date_sql . '" OR `end_of_employment` IS NULL
 	ORDER BY `id` ASC, ISNULL(`end_of_employment`) ASC, `end_of_employment` ASC
 	;';
-//echo "$abfrage<br>\n";
-$ergebnis = mysqli_query_verbose($abfrage);
-while ($row = mysqli_fetch_object($ergebnis)) {
+$result = mysqli_query_verbose($sql_query);
+while ($row = mysqli_fetch_object($result)) {
     if ($row->last_name != '') {
-        $Mitarbeiter[$row->id] = $row->last_name;
-        $Stunden_mitarbeiter[$row->id] = $row->working_week_hours;
-        $Mittag_mitarbeiter[$row->id] = $row->lunch_break_minutes;
-        $Ausbildung_mitarbeiter[$row->id] = $row->profession;
+        $List_of_employees[$row->id] = $row->last_name;
+        $List_of_employee_full_names[$row->id] = $row->last_name . ", " . $row->first_name;
+        $List_of_employee_working_week_hours[$row->id] = $row->working_week_hours;
+        $List_of_employee_lunch_break_minutes[$row->id] = $row->lunch_break_minutes;
+        $List_of_employee_professions[$row->id] = $row->profession;
         if (isset($mandant) && $row->branch == $mandant && $row->working_hours > 10) {
             //Welche Mitarbeiter sind immer da?
             //TODO: Where do we need this? Is it a better choice to use the Grundplan there?

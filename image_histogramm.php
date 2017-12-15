@@ -19,16 +19,16 @@
 
 function check_timeliness_of_pep_data() {
     //Check if the PEP information is still up-to-date:
-    $abfrage = "SELECT max(Datum) as Datum FROM `pep`";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    $row = mysqli_fetch_object($ergebnis);
+    $sql_query = "SELECT max(Datum) as Datum FROM `pep`";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
     $newest_pep_date = strtotime($row->Datum);
     $today = time();
     $seconds_since_last_update = $today - $newest_pep_date;
     if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) { //3 months
         $timeliness_warning_html = "<br><div class=warningmsg>Die PEP Information ist veraltet. <br>"
-        . "Letzter Eintrag " . date('d.m.Y', strtotime($row->Datum)) . ". <br>"
-        . "Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
+                . "Letzter Eintrag " . date('d.m.Y', strtotime($row->Datum)) . ". <br>"
+                . "Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
         return $timeliness_warning_html;
     }
 }
@@ -37,33 +37,34 @@ function get_Erwartung($datum, $mandant) {
     global $Dienstplan, $Anwesende;
     require_once 'headcount-duty-roster.php';
     if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
-        echo check_timeliness_of_pep_data($param);
+        echo check_timeliness_of_pep_data();
     }
-
-    global $verbindungi;
-    global $Pep_mandant;
 
     $unix_datum = strtotime($datum);
     $sql_weekday = date('N', $unix_datum) - 1;
     $month_day = date('j', $unix_datum);
     $month = date('n', $unix_datum);
 
-    $pep_mandant = $Pep_mandant[$mandant];
+    global $Branch_pep_id;
+    $branch_pep_id = $Branch_pep_id[$mandant];
+    if (empty($branch_pep_id)) {
+        return FALSE;
+    }
 
-    $abfrage = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $pep_mandant and Wochentag = $sql_weekday";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $branch_pep_id and Wochentag = $sql_weekday";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Packungen[$row->Uhrzeit] = $row->Mittelwert;
     }
 
-    $abfrage = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $pep_mandant and `day` = $month_day";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    $row = mysqli_fetch_object($ergebnis);
+    $sql_query = "SELECT factor FROM `pep_month_day`  WHERE `branch` = $branch_pep_id and `day` = $month_day";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
     $factor_tag_im_monat = $row->factor;
 
-    $abfrage = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $pep_mandant and `month` = $month";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    $row = mysqli_fetch_object($ergebnis);
+    $sql_query = "SELECT factor FROM `pep_year_month`  WHERE `branch` = $branch_pep_id and `month` = $month";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
     $factor_monat_im_jahr = $row->factor;
 
     foreach ($Packungen as $time => $average) {
@@ -74,9 +75,8 @@ function get_Erwartung($datum, $mandant) {
     return $Erwartung;
 }
 
-
 /**
- * 
+ *
  * @param array $Dienstplan
  * @global int $mandant
  * @global string $datum
@@ -88,7 +88,9 @@ function draw_image_histogramm($Dienstplan) {
     global $mandant, $Anwesende, $datum;
     global $factor_employee;
     $factor_employee = 6;
-
+    if (empty($Anwesende)) {
+        return FALSE;
+    }
 //TODO: Erwartung should be moved into the databasecompletely!
 // We need the reader for Erwartung here or inside a seperate function file!
     $Erwartung = get_Erwartung($datum, $mandant);
