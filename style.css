@@ -348,10 +348,13 @@ button:hover{
     filter: brightness(0);
 }
 .btn-primary {
-    width: 138px;
+    width: 10em;
     padding: 0.5em;
+    margin-bottom: 0.5em;
 }
 .btn-secondary {
+    width: 10em;
+    margin-bottom: 0.5em;
     background-color: #B4B4B4;
 }
 .noselect {
@@ -497,3 +500,8 @@ nav ul li a img.image_tiles{
 #escalation_div ~ div button {
     background-color: #E6828B;
 }
+
+
+
+
+
