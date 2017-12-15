@@ -50,7 +50,7 @@ function handle_user_data_input() {
     //Work on user data:
     global $year;
     global $month_number;
-    print_debug_variable($_POST);
+    //print_debug_variable($_POST);
     if (filter_has_var(INPUT_POST, "year")) {
         $year = filter_input(INPUT_POST, "year", FILTER_SANITIZE_NUMBER_INT);
     } elseif (filter_has_var(INPUT_COOKIE, "year")) {
@@ -172,11 +172,11 @@ function write_user_input_to_database() {
  *
  *
  * @param int $year
- * @global array[string] $Ausbildung_mitarbeiter Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
+ * @global array[string] $List_of_employee_professions Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_year($year) {
-    global $Ausbildung_mitarbeiter;
+    global $List_of_employee_professions;
     $start_date = mktime(0, 0, 0, 1, 1, $year);
     $current_month = date("n", $start_date);
     //$system_encoding = mb_detect_encoding(strftime("äöüÄÖÜß %B", 1490388361), "auto");
@@ -188,9 +188,9 @@ function build_absence_year($year) {
 
     //The following lines for the year select are common code with anwesenheitsliste-out.php
     $Years = array();
-    $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Years[] = $row->year;
     }
     $Years[] = max($Years) + 1;
@@ -206,19 +206,25 @@ function build_absence_year($year) {
     $year_input_select .= "</select></form>";
 
     $year_container_html .= $year_input_select;
-    $month_container_html = "<div class=month_container>";
+    $month_container_html = "<div class='year_quarter_container'>";
+    $month_container_html .= "<div class=month_container>";
     $month_container_html .= $current_month_name . "<br>\n";
     for ($date_unix = $start_date; $date_unix < strtotime("+ 1 year", $start_date); $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date('Y-m-d', $date_unix);
         $is_holiday = is_holiday($date_unix);
         $Abwesende = db_lesen_abwesenheit($date_unix);
-        print_debug_variable($Abwesende, $date_sql);
+        //print_debug_variable($Abwesende, $date_sql);
 
         if ($current_month < date("n", $date_unix)) {
             /** begin a new month div */
             $current_month = date("n", $date_unix);
             $current_month_name = get_utf8_month_name($date_unix);
             $month_container_html .= "</div>";
+            //if (in_array($current_month, array(4, 7, 10))) {
+            if (in_array($current_month, array(7))) {
+                $month_container_html .= "</div><!-- class='year_quarter_container'-->";
+                $month_container_html .= "<div class='year_quarter_container'>";
+            }
             $month_container_html .= "<div class='month_container'>";
             $month_container_html .= $current_month_name . "<br>\n";
         }
@@ -232,7 +238,7 @@ function build_absence_year($year) {
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
 
-                $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
+                $absent_employees_containers .= "<span class='absent_employee_container $List_of_employee_professions[$employee_id]' onclick='insert_form_div(\"edit\")' data-absence_details='" . json_encode($Absence) . "'>";
                 $absent_employees_containers .= $employee_id;
                 $absent_employees_containers .= "</span>\n";
             }
@@ -251,12 +257,13 @@ function build_absence_year($year) {
         $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate(event)'";
         $p_html_javascript .= " onmouseup='highlight_absence_create_end(event)'";
         $p_html_attributes = " date_sql='$date_sql'";
-        $p_html_attributes .= " date_unix='$date_unix'>";
+        $p_html_attributes .= " data-date_sql='$date_sql'";
+        $p_html_attributes .= " date_unix='$date_unix'";
+        $p_html_attributes .= " data-date_unix='$date_unix'";
+        $p_html_attributes .= ">";
         /*
          * TODO: Use data-* attributes to store the data in a valid way:
          * https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes
-          $p_html_attributes = " data-date_sql='$date_sql'";
-          $p_html_attributes .= " data-date_unix='$date_unix'>";
          * Or store all the data in one array for javascript somewhere at the beginning of the page.
          * Perhaps even use that one data to reduce the amount of SQL calls in PHP
          */
@@ -274,6 +281,7 @@ function build_absence_year($year) {
         $month_container_html .= $p_html;
     }
     $month_container_html .= "\t</div>\n";
+    $month_container_html .= "\t</div><!-- class='year_quarter_container'-->\n";
     $year_container_html .= $month_container_html;
     $year_container_html .= "</div>\n";
     return $year_container_html;
@@ -292,11 +300,11 @@ function build_absence_year($year) {
  *
  * @param int $year
  * @param int $month_number
- * @global array[string] $Ausbildung_mitarbeiter Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
+ * @global array[string] $List_of_employee_professions Discriminate between professions e.g. "Pharmacist", "Pharmacy technician (PTA)"
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_month($year, $month_number) {
-    global $Mitarbeiter, $Ausbildung_mitarbeiter;
+    global $List_of_employees, $List_of_employee_professions;
 
     $input_date = mktime(8, 0, 0, $month_number, 1, $year);
     $monday_difference = date('w', $input_date) - 1; //Get start of the week
@@ -316,9 +324,9 @@ function build_absence_month($year, $month_number) {
 
     //The following lines for the year select are common code with anwesenheitsliste-out.php
     $Years = array();
-    $abfrage = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $ergebnis = mysqli_query_verbose($abfrage);
-    while ($row = mysqli_fetch_object($ergebnis)) {
+    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+    $result = mysqli_query_verbose($sql_query);
+    while ($row = mysqli_fetch_object($result)) {
         $Years[] = $row->year;
     }
     $Years[] = max($Years) + 1;
@@ -387,8 +395,8 @@ function build_absence_month($year, $month_number) {
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
 
-                $absent_employees_containers .= "<span class='absent_employee_container $Ausbildung_mitarbeiter[$employee_id]' onclick='insert_form_div(\"edit\")' absence_details='" . json_encode($Absence) . "'>";
-                $absent_employees_containers .= $employee_id . " " . mb_substr($Mitarbeiter[$employee_id], 0, 16);
+                $absent_employees_containers .= "<span class='absent_employee_container $List_of_employee_professions[$employee_id]' onclick='insert_form_div(\"edit\")' data-absence_details='" . json_encode($Absence) . "'>";
+                $absent_employees_containers .= $employee_id . " " . mb_substr($List_of_employees[$employee_id], 0, 16);
                 $absent_employees_containers .= "</span><br>\n";
             }
         } else {
@@ -411,8 +419,10 @@ function build_absence_month($year, $month_number) {
         $p_html_javascript = " onmousedown='highlight_absence_create_start(event)'";
         $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate(event)'";
         $p_html_javascript .= " onmouseup='highlight_absence_create_end(event)'";
-        $p_html_attributes = " date_sql='$date_sql'";
-        $p_html_attributes .= " date_unix='$date_unix'>";
+        $p_html_attributes = " data-date_sql='$date_sql'";
+        $p_html_attributes .= " date_unix='$date_unix'";
+        $p_html_attributes .= " data-date_unix='$date_unix'";
+        $p_html_attributes .= ">";
         /*
          * TODO: Use data-* attributes to store the data in a valid way:
          * https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes
@@ -421,7 +431,7 @@ function build_absence_month($year, $month_number) {
          * Or store all the data in one array for javascript somewhere at the beginning of the page.
          * Perhaps even use that one data to reduce the amount of SQL calls in PHP
          */
-        $p_html_content = "<strong style='font-size: xx-large;'>" . $date_text . "</strong><br> ";
+        $p_html_content = "<strong>" . $date_text . "</strong><br> ";
         if ($current_week_day_number < 6 and ! $is_holiday) {
             $p_html_content .= $absent_employees_containers;
         }

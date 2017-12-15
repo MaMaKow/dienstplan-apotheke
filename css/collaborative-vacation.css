@@ -27,9 +27,12 @@ div.year_container{
     user-select: none; /* Non-prefixed version, currently
                           not supported by any browser */
 }
+div.year_quarter_container{
+    page-break-after: always;
+}
 div.month_container{
     font-family: monospace;
-    width: 12em;
+    min-width: 12em;
     float: left;
     /*
     display: inline-block;
@@ -65,17 +68,19 @@ td.day_paragraph{
     margin-top: 0em;
     min-height: 5em;
     font-family: monospace;
-
     /*
     -webkit-margin-before: 0em;
     width: 10%;
     */
 }
+td.day_paragraph strong{
+    font-size: large;
+}
 td.day_paragraph.weekday{
     width: 20%;
 }
 td.day_paragraph.adjacent_month{
-    background-color: lightgray;
+    background-color: #F0F0F0;
 }
 p.weekday, td.weekday{
     background-color: #FEFEFF;

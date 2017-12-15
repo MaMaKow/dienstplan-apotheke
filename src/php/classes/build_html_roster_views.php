@@ -27,10 +27,10 @@
  */
 
 function build_absentees_column($Absentees) {
-    global $Mitarbeiter;
+    global $List_of_employees;
     $text = "\t\t<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
     foreach ($Absentees as $employee_id => $reason) {
-        $text.= $Mitarbeiter[$employee_id] . " (" . $reason . ")<br>";
+        $text.= $List_of_employees[$employee_id] . " (" . $reason . ")<br>";
     }
     $text .= "</td>\n";
     return $text;

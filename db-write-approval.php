@@ -17,6 +17,6 @@ foreach (array_keys($Dienstplan) as $tag => $value) {
         die("An Error has occurred during approval!");
     }
     //The variable $user is set within the default.php
-    $abfrage = "INSERT INTO `approval` (date, branch, state, user) values ('$date', '$mandant', '$state', '$user') ON DUPLICATE KEY UPDATE date='$date', branch='$mandant', state='$state', user='$user'";
-    $ergebnis = mysqli_query_verbose($abfrage);
+    $sql_query = "INSERT INTO `approval` (date, branch, state, user) values ('$date', '$mandant', '$state', '$user') ON DUPLICATE KEY UPDATE date='$date', branch='$mandant', state='$state', user='$user'";
+    $result = mysqli_query_verbose($sql_query);
 }

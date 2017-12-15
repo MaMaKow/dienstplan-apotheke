@@ -15,12 +15,10 @@ if (isset($employee_id)) {
     create_cookie('employee_id', $employee_id, 30);
 }
 
-
 function insert_user_data_into_database() {
     $User["employee_id"] = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $User["privilege"] = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
-    print_debug_variable($_POST, $User);
     mysqli_query_verbose("START TRANSACTION");
     $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = " . $User["employee_id"];
     mysqli_query_verbose($sql_query);
@@ -28,7 +26,6 @@ function insert_user_data_into_database() {
     foreach ($User["privilege"] as $privilege) {
         $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES('" . $User["employee_id"] . "', '" . $privilege . "')";
         mysqli_query_verbose($sql_query);
-        print_debug_variable($sql_query);
     }
     mysqli_query_verbose("COMMIT");
 }
@@ -38,7 +35,7 @@ if (filter_has_var(INPUT_POST, 'submit_user_data')) {
 }
 
 function read_user_data_from_database($employee_id) {
-    global $Mitarbeiter;
+    global $List_of_employees;
     $sql_query = "SELECT * FROM `users` WHERE `employee_id` = '$employee_id'";
     $result = mysqli_query_verbose($sql_query);
     while ($row = mysqli_fetch_object($result)) {
@@ -46,7 +43,7 @@ function read_user_data_from_database($employee_id) {
         $User["user_name"] = $row->user_name;
         $User["email"] = $row->email;
         $User["status"] = $row->status;
-        $User["last_name"] = $Mitarbeiter[$row->employee_id];
+        $User["last_name"] = $List_of_employees[$row->employee_id];
     }
     $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = '$employee_id'";
     $result = mysqli_query_verbose($sql_query);
@@ -88,7 +85,6 @@ function build_checkbox_permission($privilege, $checked) {
     $text .= ">";
     return $text;
 }
-
 ?>
 <form method='POST' id='user_management'>
     TODO: Get a good german wording!<br>

@@ -1,7 +1,7 @@
 <?php
 
 function schreiben_tabelle($Dienstplan, $branch) {
-    global $Mitarbeiter;
+    global $List_of_employees;
     global $config;
     global $Warnmeldung, $Fehlermeldung, $Overlay_message;
     $table_html = "";
@@ -22,18 +22,22 @@ function schreiben_tabelle($Dienstplan, $branch) {
     $Principle_roster = get_principle_roster($date_sql, $branch, $roster_first_day_key, $roster_number_of_days);
 
     for ($j = 0; $j < $plan_anzahl; $j++) {
-        if (isset($feiertag) && !isset($notdienst)) {
-            break 1;
-        }
+        /*
+         * if (isset($feiertag) && !isset($notdienst)) {
+         * break 1;
+         * }
+         */
         $table_html .= "\t\t\t\t<tr>\n";
         for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
-            //The following lines check for the state of approval.
-            //Duty rosters have to be approved by the leader, before the staff can view them.
+            /*
+             * The following lines check for the state of approval.
+             * Duty rosters have to be approved by the leader, before the staff can view them.
+             */
             $date_sql = $Dienstplan[$i]["Datum"][0];
             unset($approval);
-            $abfrage = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch'";
-            $ergebnis = mysqli_query_verbose($abfrage);
-            while ($row = mysqli_fetch_object($ergebnis)) {
+            $sql_query = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch'";
+            $result = mysqli_query_verbose($sql_query);
+            while ($row = mysqli_fetch_object($result)) {
                 $approval = $row->state;
             }
             if (isset($approval)) {
@@ -48,14 +52,19 @@ function schreiben_tabelle($Dienstplan, $branch) {
                 $approval = "not_yet_approved";
                 if (TRUE === $config['hide_disapproved']) {
                     $Overlay_message[] = gettext("Missing data in table `approval`");
-                    // TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
-                    //That might espacially occur during the development stage of this feature.
+                    /*
+                     * TODO: This is an Exception.
+                     * It will occur when there is no approval, disapproval or other connected information
+                     * in the approval table of the database.
+                     * That might espacially occur during the development stage of this feature.
+                     *
+                     */
                 }
             }
             $table_html .= "\t\t\t\t\t<td>";
             if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 $zeile = "";
-                if (isset($Dienstplan[$i]["VK"][$j]) && isset($Mitarbeiter[$Dienstplan[$i]["VK"][$j]])) {
+                if (isset($Dienstplan[$i]["VK"][$j]) && isset($List_of_employees[$Dienstplan[$i]["VK"][$j]])) {
                     $key_in_principle_roster = array_search($Dienstplan[$i]["VK"][$j], $Principle_roster[$i]["VK"]);
                     if (
                             FALSE !== $key_in_principle_roster
@@ -70,38 +79,38 @@ function schreiben_tabelle($Dienstplan, $branch) {
                         $emphasis_start = "<strong>"; //Significant emphasis
                         $emphasis_end = "</strong>"; //Significant emphasis
                     }
-                    $zeile.="$emphasis_start<b><a href='mitarbeiter-out.php?"
+                    $zeile .= "$emphasis_start<b><a href='mitarbeiter-out.php?"
                             . "datum=" . htmlentities($Dienstplan[$i]["Datum"][0])
                             . "&employee_id=" . htmlentities($Dienstplan[$i]["VK"][$j]) . "'>";
-                    $zeile.=$Mitarbeiter[$Dienstplan[$i]["VK"][$j]];
-                    $zeile.="</a></b> / ";
-                    $zeile.=$Dienstplan[$i]["Stunden"][$j];
-                    $zeile.=" ";
+                    $zeile .= $List_of_employees[$Dienstplan[$i]["VK"][$j]];
+                    $zeile .= "</a></b> / ";
+                    $zeile .= $Dienstplan[$i]["Stunden"][$j];
+                    $zeile .= " ";
                 }
                 //Dienstbeginn
-                $zeile.=" <br> ";
+                $zeile .= " <br> ";
                 if (isset($Dienstplan[$i]["VK"][$j])) {
-                    $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
+                    $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
                 }
                 //Dienstende
                 if (isset($Dienstplan[$i]["VK"][$j])) {
-                    $zeile.=" - ";
-                    $zeile.=strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstende"][$j]));
+                    $zeile .= " - ";
+                    $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstende"][$j]));
                 }
-                $zeile.="";
+                $zeile .= "";
                 $table_html .= $zeile;
                 //	Mittagspause
                 $zeile = "";
                 $table_html .= "\t\t\t\t<br>\n";
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-                    $zeile.=" " . gettext("break") . ": ";
-                    $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
+                    $zeile .= " " . gettext("break") . ": ";
+                    $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
                 }
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-                    $zeile.=" - ";
-                    $zeile.= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
+                    $zeile .= " - ";
+                    $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
                 }
-                $zeile.="$emphasis_end";
+                $zeile .= "$emphasis_end";
                 $table_html .= $zeile;
             }
             $table_html .= "</td>\n";

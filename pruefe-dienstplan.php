@@ -23,7 +23,7 @@ function examine_duty_roster() {
             }
         }
     } else {
-        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.<br>\n";
+        $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.";
     }
     if (isset($Wareneingang_Anwesende) and isset($tages_ende) and isset($tages_beginn)) {
         //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
@@ -44,7 +44,7 @@ function examine_duty_roster() {
     }
 
 
-    print_debug_variable('$tages_ende', '$Anwesende', $tages_ende, $Anwesende);
+    //print_debug_variable('$tages_ende', '$Anwesende', $tages_ende, $Anwesende);
     if (isset($Anwesende) and isset($tages_ende)) {
         foreach ($Anwesende as $zeit => $anwesende) {
             if ($anwesende < 2 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
@@ -62,7 +62,7 @@ function examine_duty_roster() {
     }
 }
 
-$abfrage = "SELECT `first`.`VK`,"
+$sql_query = "SELECT `first`.`VK`,"
         . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
         . " `first`.`Mandant` as first_branch,"
         . " `second`.`Dienstbeginn` as second_start, `second`.`Dienstende` as second_end,"
@@ -76,19 +76,18 @@ $abfrage = "SELECT `first`.`VK`,"
         . " 	OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates primary key is VK+start+mandant
         . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
 
-$ergebnis = mysqli_query_verbose($abfrage);
-while ($row = mysqli_fetch_array($ergebnis)) {
+$result = mysqli_query_verbose($sql_query);
+while ($row = mysqli_fetch_array($result)) {
     $Fehlermeldung[] = "Konflikt bei Mitarbeiter "
-            . $Mitarbeiter[$row['VK']]
+            . $List_of_employees[$row['VK']]
             . "<br>"
             . $row['first_start']
             . " bis " . $row['first_end']
-            . " (" . $Kurz_mandant[$row['first_branch']]
+            . " (" . $Branch_short_name[$row['first_branch']]
             . ") mit <br>" . $row['second_start']
             . " bis "
             . $row['second_end']
             . " ("
-            . $Kurz_mandant[$row['second_branch']]
+            . $Branch_short_name[$row['second_branch']]
             . ")!";
 }
-examine_duty_roster();
