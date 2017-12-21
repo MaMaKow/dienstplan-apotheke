@@ -18,7 +18,7 @@ if (filter_has_var(INPUT_POST, 'submit_select_employee')) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $Plan = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
     $datum = $Plan[0]['Datum'][0];
-    //echo $datum;
+//echo $datum;
 } elseif (!isset($employee_id)) {
     $employee_id = 1;
 }
@@ -37,16 +37,18 @@ if (isset($datum)) {
     $date_sql = date('Y-m-d', $date_unix);
     $datum = date('Y-m-d', $datum);
     $date_sql_start = $date_sql;
+    create_cookie('datum', $datum, 1);
 }
+
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 if (!isset($List_of_employees[$employee_id])) {
-    //This happens if a coworker is not working with us anymore.
-    //He can still be chosen within abwesenheit and stunden.
-    //Therefore we will read his/her number in the cookie.
-    //Now we just change it to someone, who is actually there:
+//This happens if a coworker is not working with us anymore.
+//He can still be chosen within abwesenheit and stunden.
+//Therefore we will read his/her number in the cookie.
+//Now we just change it to someone, who is actually there:
     $employee_id = min(array_keys($List_of_employees));
-    //die ("<H1>Mitarbeiter Nummer $employee_id ist nicht bekannt.</H1>");
+//die ("<H1>Mitarbeiter Nummer $employee_id ist nicht bekannt.</H1>");
 }
 
 require 'db-lesen-woche-mitarbeiter.php';
@@ -85,7 +87,7 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     $Abwesende = db_lesen_abwesenheit($date_sql);
     $zeile = '';
     echo "\t\t\t\t\t<td>";
-    //Datum
+//Datum
     echo "<a href='tag-out.php?datum=" . $Dienstplan[$tag]['Datum'][0] . "'";
     if (FALSE !== $having_emergency_service) {
         echo " title='" . $List_of_employees[$having_emergency_service["employee_id"]] . gettext(" is having emergency service at ") . $Branch_name[$having_emergency_service["branch_id"]] . "'";
@@ -103,7 +105,11 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
         }
     }
     if (FALSE !== $having_emergency_service) {
-        echo " <br><strong>NOTDIENST</strong> ";
+        echo " <br><strong>NOTDIENST</strong>"
+        . "<br>"
+        . $List_of_employees[$having_emergency_service["employee_id"]]
+        . "<br>"
+        . $Branch_name[$having_emergency_service["branch_id"]];
     }
 //	echo "</td>\n";
 //}
@@ -120,7 +126,7 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     if (isset($Abwesende[$employee_id])) {
         echo '<br>' . $Abwesende[$employee_id];
         if (FALSE !== $holiday and date('N', strtotime($date_sql)) < 6) {
-            //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
+//An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
             if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
                 $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
             } else {
@@ -135,11 +141,11 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     for ($i = 0; $i < count($Dienstplan); ++$i) {
         $zeile = '';
         echo "\t\t\t\t\t<td>";
-        //Dienstbeginn
+//Dienstbeginn
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Dienstbeginn'][$j]));
         }
-        //Dienstende
+//Dienstende
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Dienstende'][$j] > 0) {
             $zeile .= ' bis ';
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Dienstende'][$j]));
@@ -147,7 +153,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         $zeile .= '';
         echo $zeile;
 
-        //Mittagspause
+//Mittagspause
         $zeile = "<br>\n\t\t\t\t";
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Mittagsbeginn'][$j] > 0) {
             $zeile .= " " . gettext("break") . ": ";
@@ -178,7 +184,7 @@ echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)
 for ($tag = 0; $tag < 5; ++$tag) {
-    // Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
+// Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
     foreach ($Dienstplan[$tag]['Stunden'] as $key => $stunden) {
         $Stunden[$Dienstplan[$tag]['VK'][$key]][] = $stunden;
     }
@@ -216,11 +222,11 @@ echo "\t\t\t</table>\n";
 foreach (array_keys($Dienstplan) as $tag) {
     $date_sql = $Dienstplan[$tag]['Datum'][0];
     foreach ($Dienstplan[$tag]['VK'] as $key => $vk) {
-        //Die einzelnen Zeilen im Dienstplan
+//Die einzelnen Zeilen im Dienstplan
 
         if (!empty($vk) and $Dienstplan[$tag]['Dienstbeginn'][$key] != '-') {
-            //Wir ignorieren die nicht ausgefüllten Felder
-            //	list($vk)=explode(' ', $vk); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
+//Wir ignorieren die nicht ausgefüllten Felder
+//	list($vk)=explode(' ', $vk); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
             $vk = $employee_id;
             $dienstbeginn = $Dienstplan[$tag]['Dienstbeginn'][$key];
             $dienstende = $Dienstplan[$tag]['Dienstende'][$key];
@@ -236,14 +242,14 @@ foreach (array_keys($Dienstplan) as $tag) {
                 $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
                 $stunden = $sekunden / 3600;
             }
-            //Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
+//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
             if (empty($mittagsbeginn)) {
                 $mittagsbeginn = '0:00';
             }
             if (empty($mittagsende)) {
                 $mittagsende = '0:00';
             }
-            //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
+//In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
             $dienstplanCSV .= '" ' . strftime('%A', strtotime($date_sql)) . '"' . ", $vk, " . strftime('%w', strtotime($date_sql));
             $dienstplanCSV .= ', ' . $dienstbeginn;
             $dienstplanCSV .= ', ' . $dienstende;
@@ -263,7 +269,7 @@ exec($command, $kommando_ergebnis);
 if (file_exists('images/mitarbeiter_' . $Dienstplan[0]['Datum'][0] . '_' . $vk . '.png')) {
     echo '<img class=worker-img src=images/mitarbeiter_' . $Dienstplan[0]['Datum'][0] . '_' . $vk . '.png?' . filemtime('images/mitarbeiter_' . $Dienstplan[0]['Datum'][0] . '_' . $vk . '.png') . ';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
 }
-echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class=no-print " //TODO: Put this into style.css
+echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class='btn-primary no-print' " //TODO: Put this into style.css
  . "onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql_start\"' "
  . "title='Download ics Kalender Datei'>"
  . "<img src=img/download.png style='width:32px' alt='Download ics Kalender Datei'>"
@@ -275,3 +281,11 @@ require 'contact-form.php';
 ?>
 </BODY>
 </HTML>
+
+
+
+
+
+
+
+
