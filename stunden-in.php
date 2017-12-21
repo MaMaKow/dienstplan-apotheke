@@ -19,6 +19,11 @@ if (isset($employee_id)) {
 
 //Deleting rows of data:
 if (filter_has_var(INPUT_POST, 'loeschen')) {
+    if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('administration')) {
+        echo build_warning_messages("", ["Die notwendige Berechtigung zum Entfernen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+        die();
+    }
+
     $Remove = filter_input(INPUT_POST, 'loeschen', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
     foreach ($Remove as $employee_id => $Data) {
         $employee_id = intval($employee_id);
@@ -33,6 +38,11 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
 
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
 if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
+    if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
+        echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
+        die();
+    }
+
     $sql_query = "INSERT INTO `Stunden`
         (VK, Datum, Stunden, Saldo, Grund)
         VALUES (" . filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT)
@@ -65,30 +75,30 @@ $result = mysqli_query_verbose($sql_query);
 $tablebody = "\t\t\t<tbody>\n";
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
-    $tablebody.= "\t\t\t<tr>\n";
-    $tablebody.= "\t\t\t\t<td>\n";
-    $tablebody.= "\t\t\t\t\t<form onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
-    $tablebody.= "\t\t\t\t\t" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlentities($vk) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
-    $tablebody.= "\t\t\t\t\t</form>\n";
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= htmlentities($row->Grund);
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= htmlentities($row->Stunden);
-    $tablebody.= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t<tr>\n";
+    $tablebody .= "\t\t\t\t<td>\n";
+    $tablebody .= "\t\t\t\t\t<form onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
+    $tablebody .= "\t\t\t\t\t" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlentities($vk) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
+    $tablebody .= "\t\t\t\t\t</form>\n";
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= htmlentities($row->Grund);
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= htmlentities($row->Stunden);
+    $tablebody .= "\n\t\t\t\t</td>\n";
     if ($i === 1) { //Get the last row. //TODO: Perhaps the server should calculate on it's own again afterwards.
-        $tablebody.= "\t\t\t\t<td id=saldoAlt>\n\t\t\t\t\t";
+        $tablebody .= "\t\t\t\t<td id=saldoAlt>\n\t\t\t\t\t";
         $saldo = $row->Saldo;
     } else {
-        $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
+        $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
     }
-    $tablebody.= htmlentities($row->Saldo);
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\n\t\t\t</tr>\n";
+    $tablebody .= htmlentities($row->Saldo);
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\n\t\t\t</tr>\n";
     $i++;
 }
-$tablebody.= "\t\t\t</tbody>\n";
+$tablebody .= "\t\t\t</tbody>\n";
 
 if (empty($saldo)) {
     $saldo = 0;
@@ -99,7 +109,7 @@ if (empty($saldo)) {
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('create_roster')) {
+if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
     echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();
 }
