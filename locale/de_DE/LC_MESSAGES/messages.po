@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-12-08 21:40+0100\n"
-"PO-Revision-Date: 2017-12-08 21:41+0100\n"
+"POT-Creation-Date: 2017-12-21 21:45+0100\n"
+"PO-Revision-Date: 2017-12-21 21:46+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: abwesenheit-in.php:165 stunden-in.php:111 tag-in.php:109 woche-in.php:72
+#: abwesenheit-in.php:165 stunden-in.php:121 tag-in.php:109 woche-in.php:72
 msgid "Read"
 msgstr "Lesen"
 
@@ -25,14 +25,17 @@ msgid "Edit"
 msgstr "Bearbeiten"
 
 #: abwesenheit-out.php:64
+#: src/php/pages/collaborative-vacation-input-box.php:90
 msgid "Start"
 msgstr "Beginn"
 
 #: abwesenheit-out.php:67
+#: src/php/pages/collaborative-vacation-input-box.php:91
 msgid "End"
 msgstr "Ende"
 
 #: abwesenheit-out.php:70
+#: src/php/pages/collaborative-vacation-input-box.php:92
 msgid "Reason"
 msgstr "Grund"
 
@@ -60,7 +63,7 @@ msgstr "Nachricht"
 msgid "Email"
 msgstr "Email"
 
-#: contact-form.php:72
+#: contact-form.php:66
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
 
@@ -82,12 +85,12 @@ msgstr "Urlaubstage"
 msgid "None"
 msgstr "Kein"
 
-#: mitarbeiter-out.php:67 tag-in.php:92 tag-out.php:73 woche-in.php:53
+#: mitarbeiter-out.php:69 tag-in.php:92 tag-out.php:73 woche-in.php:53
 #: woche-out.php:58
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
-#: mitarbeiter-out.php:91
+#: mitarbeiter-out.php:93
 msgid " is having emergency service at "
 msgstr " hat Notdienst in "
 
@@ -108,6 +111,7 @@ msgid "1 week forward"
 msgstr "1 Woche vorwärts"
 
 #: navigation.php:40 navigation.php:43
+#: src/php/pages/collaborative-vacation-input-box.php:103
 msgid "Save"
 msgstr "Speichern"
 
@@ -181,27 +185,27 @@ msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 msgid "and"
 msgstr "und"
 
-#: src/php/classes/class.sessions.php:142
+#: src/php/classes/class.sessions.php:143
 msgid "The permission to create a roster is missing."
 msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 
-#: src/php/classes/class.sessions.php:143
+#: src/php/classes/class.sessions.php:144
 msgid "Please contact the administrator."
 msgstr "Bitte wenden Sie sich an Ihren Administrator."
 
-#: src/php/classes/class.sessions.php:144
+#: src/php/classes/class.sessions.php:145
 msgid "Escalate privileges"
 msgstr "Rechte erweitern"
 
-#: src/php/classes/class.sessions.php:258
+#: src/php/classes/class.sessions.php:259
 msgid "Logout"
 msgstr "Logout"
 
-#: src/php/classes/class.sessions.php:264
+#: src/php/classes/class.sessions.php:265
 msgid "Lost password"
 msgstr "Passwort vergessen"
 
-#: src/php/classes/class.sessions.php:266
+#: src/php/classes/class.sessions.php:267
 msgid ""
 "Dear User,\n"
 "\n"
@@ -211,19 +215,19 @@ msgstr ""
 "\n"
 "um ein neues Passwort für"
 
-#: src/php/classes/class.sessions.php:270
+#: src/php/classes/class.sessions.php:271
 msgid "user name"
 msgstr "Benutzer"
 
-#: src/php/classes/class.sessions.php:271
+#: src/php/classes/class.sessions.php:272
 msgid "please visit"
 msgstr "besuchen Sie bitte"
 
-#: src/php/classes/class.sessions.php:274
+#: src/php/classes/class.sessions.php:275
 msgid "this address"
 msgstr "diese Adresse"
 
-#: src/php/classes/class.sessions.php:276
+#: src/php/classes/class.sessions.php:277
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
@@ -235,7 +239,20 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/collaborative-vacation-input-box.php:75
+#: src/php/pages/collaborative-vacation-input-box.php:49
+msgid "Vacation"
+msgstr "Urlaub"
+
+#: src/php/pages/collaborative-vacation-input-box.php:60
+#: src/php/pages/menu.php:35
+msgid "Employee"
+msgstr "Mitarbeiter"
+
+#: src/php/pages/collaborative-vacation-input-box.php:105
+msgid "Delete"
+msgstr "Löschen"
+
+#: src/php/pages/collaborative-vacation-input-box.php:113
 msgid "Close"
 msgstr "Schießen"
 
@@ -268,89 +285,93 @@ msgstr "Bezeichner"
 msgid "Weekly view"
 msgstr "Wochenansicht"
 
-#: src/php/pages/menu.php:10
+#: src/php/pages/menu.php:12
 msgid "Weekly view input"
 msgstr "Wochenansicht Eingabe"
 
-#: src/php/pages/menu.php:11
+#: src/php/pages/menu.php:15
 msgid "Weekly view output"
 msgstr "Wochenansicht Ausgabe"
 
-#: src/php/pages/menu.php:16
+#: src/php/pages/menu.php:20
 msgid "Daily view"
 msgstr "Tagesansicht"
 
-#: src/php/pages/menu.php:19
+#: src/php/pages/menu.php:25
 msgid "Daily input"
 msgstr "Tagesansicht Eingabe"
 
-#: src/php/pages/menu.php:20
+#: src/php/pages/menu.php:28
 msgid "Daily output"
 msgstr "Tagesansicht Ausgabe"
 
-#: src/php/pages/menu.php:21 src/php/pages/menu.php:60
+#: src/php/pages/menu.php:29 src/php/pages/menu.php:92
 msgid "Principle roster daily"
 msgstr "Grundplan Tagesansicht"
 
-#: src/php/pages/menu.php:25
-msgid "Employee"
-msgstr "Mitarbeiter"
-
-#: src/php/pages/menu.php:28
+#: src/php/pages/menu.php:40
 msgid "Roster employee"
 msgstr "Mitarbeiteransicht"
 
-#: src/php/pages/menu.php:29 src/php/pages/menu.php:61
+#: src/php/pages/menu.php:41 src/php/pages/menu.php:93
 msgid "Principle roster employee"
 msgstr "Grundplan Mitarbeiter"
 
-#: src/php/pages/menu.php:30 src/php/pages/menu.php:64
+#: src/php/pages/menu.php:44 src/php/pages/menu.php:96
 msgid "Human resource management"
 msgstr "Mitarbeiterverwaltung"
 
-#: src/php/pages/menu.php:35
+#: src/php/pages/menu.php:51
 msgid "Overtime"
 msgstr "Überstunden"
 
-#: src/php/pages/menu.php:38
+#: src/php/pages/menu.php:56
 msgid "Overtime input"
 msgstr "Überstunden Eingabe"
 
-#: src/php/pages/menu.php:39
+#: src/php/pages/menu.php:59
 msgid "Overtime output"
 msgstr "Überstunden Ausgabe"
 
-#: src/php/pages/menu.php:44
+#: src/php/pages/menu.php:64
 msgid "Absence"
 msgstr "Abwesenheit"
 
-#: src/php/pages/menu.php:47
+#: src/php/pages/menu.php:69
 msgid "Absence input"
 msgstr "Abwesenheit Eingabe"
 
-#: src/php/pages/menu.php:48
+#: src/php/pages/menu.php:72
 msgid "Absence output"
 msgstr "Abwesenheit Ausgabe"
 
-#: src/php/pages/menu.php:49
+#: src/php/pages/menu.php:73
 msgid "Absence annual plan"
 msgstr "Abwesenheit Jahresplan"
 
-#: src/php/pages/menu.php:50
+#: src/php/pages/menu.php:76
 msgid "Absence monthly plan"
 msgstr "Abwesenheit Monatsplan"
 
-#: src/php/pages/menu.php:55
+#: src/php/pages/menu.php:84
 msgid "Administration"
 msgstr "Administration"
 
-#: src/php/pages/menu.php:59
+#: src/php/pages/menu.php:88
 msgid "Attendance list"
 msgstr "Anwesenheitsliste"
 
-#: src/php/pages/menu.php:63
+#: src/php/pages/menu.php:89
+msgid "Marginal employment hours list"
+msgstr "Stundenzettel geringfügig Beschäftigte"
+
+#: src/php/pages/menu.php:95
 msgid "Upload deployment planning"
 msgstr "PEP-Upload"
+
+#: src/php/pages/menu.php:97
+msgid "User management"
+msgstr "Benutzerverwaltung"
 
 #: src/php/pages/reset_lost_password.php:33
 msgid "Invalid token"
@@ -379,9 +400,6 @@ msgid ""
 msgstr ""
 "Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
 "Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
-
-#~ msgid "Vacation"
-#~ msgstr "Urlaub"
 
 #~ msgid "Day"
 #~ msgid_plural "Days"

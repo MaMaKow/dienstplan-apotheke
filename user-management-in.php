@@ -20,6 +20,7 @@ function insert_user_data_into_database() {
     $User["privilege"] = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
     mysqli_query_verbose("START TRANSACTION");
+    print_debug_variable($User);
     $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = " . $User["employee_id"];
     mysqli_query_verbose($sql_query);
 
