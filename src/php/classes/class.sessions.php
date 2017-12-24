@@ -29,6 +29,7 @@ class sessions {
         'create_employee',
         'create_roster',
         'approve_roster',
+        'create_overtime',
         'create_absence',
         'request_own_absence',
     );
