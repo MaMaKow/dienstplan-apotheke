@@ -26,9 +26,6 @@
 function draw_image_dienstplan_vk($Dienstplan) {
     global $List_of_employees, $List_of_employee_professions;
 
-    //$line = 0; //TODO: This will be hardcoded here. It could be calculated in a later use case.
-
-
     $bar_height = 20;
     $bar_width_factor = 40;
     $javascript_variables = "var bar_width_factor = $bar_width_factor;";
@@ -92,8 +89,6 @@ function draw_image_dienstplan_vk($Dienstplan) {
 
     foreach ($Dienstplan as $day => $Column) {
         foreach ($Dienstplan[$day]['Dienstbeginn'] as $row => $row_value) {
-            print_debug_variable($row_value);
-//        echo "<pre>"; var_dump(time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line])); echo "</pre>";
             if (NULL === $Dienstplan[$day]['Dienstbeginn'][$row]) {
                 continue;
             }
