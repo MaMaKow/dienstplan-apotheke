@@ -165,23 +165,23 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         echo "\t\t\t\t\t<td>&nbsp;";
         //Dienstbeginn
         if (isset($Grundplan[$wochentag]["VK"][$j])) {
-            $zeile .= "<input type=time name=Grundplan[" . $wochentag . "][Dienstbeginn][$j] value=";
+            $zeile .= "<input type=time name='Grundplan[" . $wochentag . "][Dienstbeginn][$j]' value='";
             if (empty($Grundplan[$wochentag]["Dienstbeginn"][$j])) {
                 $zeile .= "";
             } else {
                 $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Dienstbeginn"][$j]));
             }
-            $zeile .= " form='change_principle_roster_employee'>";
+            $zeile .= "' form='change_principle_roster_employee'>";
         }
         //Dienstende
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
-            $zeile .= " bis <input type=time name=Grundplan[" . $wochentag . "][Dienstende][$j] value=";
+            $zeile .= " bis <input type=time name='Grundplan[" . $wochentag . "][Dienstende][$j]' value='";
             if (empty($Grundplan[$wochentag]["Dienstende"][$j])) {
                 $zeile .= "";
             } else {
                 $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Dienstende"][$j]));
             }
-            $zeile .= " form='change_principle_roster_employee'>";
+            $zeile .= "' form=change_principle_roster_employee'>";
         }
         echo $zeile;
 

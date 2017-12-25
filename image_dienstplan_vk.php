@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /**
- * 
+ *
  * @global array $List_of_employees
  * @param array $Dienstplan
  * @return string The svg element
@@ -31,32 +30,39 @@ function draw_image_dienstplan_vk($Dienstplan) {
 
 
     $bar_height = 20;
-    $bar_width_factor = 40; $javascript_variables = "var bar_width_factor = $bar_width_factor;";
-    $font_size = $bar_height*0.6;
+    $bar_width_factor = 40;
+    $javascript_variables = "var bar_width_factor = $bar_width_factor;";
+    $font_size = $bar_height * 0.6;
 
     $inner_margin_x = $bar_height * 0.2;
     $inner_margin_y = $inner_margin_x;
     $outer_margin_x = 20;
     $outer_margin_y = 20;
 
-    $Worker_style[1]="#73AC22";
-    $Worker_style[2]="#BDE682";
-    $Worker_style[3]="#B4B4B4";
-     
+    $Worker_style[1] = "#73AC22";
+    $Worker_style[2] = "#BDE682";
+    $Worker_style[3] = "#B4B4B4";
+
     $days = count($Dienstplan);
     $svg_inner_height = $inner_margin_x * ($days + 1) + $bar_height * $days;
     $svg_outer_height = $svg_inner_height + ($outer_margin_y * 2);
 
     foreach ($Dienstplan as $day => $Column) {
-        $day_starts[] = $Dienstplan[$day]['Dienstbeginn'][$line];
-        $day_ends[] = $Dienstplan[$day]['Dienstende'][$line];
+        if (NULL !== $Dienstplan[$day]['Dienstende'][$line]) {
+            $day_ends[] = $Dienstplan[$day]['Dienstende'][$line];
+        }
+        if (NULL !== $Dienstplan[$day]['Dienstbeginn'][$line]) {
+            $day_starts[] = $Dienstplan[$day]['Dienstbeginn'][$line];
+        }
     }
-    
     $first_start = min($day_starts);
     $last_end = max($day_ends);
+    if (empty($first_start) and empty($last_end)) {
+        return FALSE;
+    }
     $svg_inner_width = $inner_margin_x * 2 + ((ceil($last_end) - floor($first_start)) * $bar_width_factor);
     $svg_outer_width = $svg_inner_width + ($outer_margin_x * 2);
-    //echo "<pre>";var_dump($Times); echo "</pre>"; 
+    //echo "<pre>";var_dump($Times); echo "</pre>";
     /* $svg_text  = "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
       /*$svg_text .= "<?xml version='1.0' encoding='utf-8'?>\n"; */
     $svg_text .= "<svg id='svgimg' width='650' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
@@ -81,8 +87,10 @@ function draw_image_dienstplan_vk($Dienstplan) {
     $svg_break_box_text = '';
 
     foreach ($Dienstplan as $day => $Column) {
-//        echo "<pre>"; var_dump(time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line])); echo "</pre>"; 
-
+//        echo "<pre>"; var_dump(time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line])); echo "</pre>";
+        if (NULL === $Dienstplan[$day]['Dienstbeginn'][$line]) {
+            continue;
+        }
         $vk = $Dienstplan[$day]['VK'][$line];
 
         $dienst_beginn = time_from_text_to_int($Dienstplan[$day]['Dienstbeginn'][$line]);
@@ -119,7 +127,7 @@ function draw_image_dienstplan_vk($Dienstplan) {
         $width = $width_in_hours * $bar_width_factor;
         $break_width = $break_width_in_hours * $bar_width_factor;
         $x_pos_text_secondary = $x_pos_text + $width;
-        if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php'){
+        if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
             $cursor_style_box = 'move';
             $cursor_style_break_box = 'cell';
         } else {
@@ -129,13 +137,12 @@ function draw_image_dienstplan_vk($Dienstplan) {
 
         $svg_box_text .= "<g id=work_box_$day transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' >";
         $svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];cursor: $cursor_style_box;' />\n";
-        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>". $List_of_employees[$vk] . "</text>\n";
+        $svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>" . $List_of_employees[$vk] . "</text>\n";
         $svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
         $svg_box_text .= "</g>";
 
         $svg_box_text .= "\t<rect id=break_box_$day transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $cursor_style_break_box;' />\n";
-
-        }
+    }
     $svg_text .= $svg_box_text;
     $svg_text .= $svg_grid_text;
 //    $svg_text .= $svg_break_box_text;
