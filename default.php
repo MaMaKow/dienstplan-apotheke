@@ -31,7 +31,7 @@ if (isset($config['error_reporting'])) {
     error_reporting('E_ALL'); //debugging
 }
 ini_set("display_errors", 1); //debugging
-ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "/error.log");
+ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "error.log");
 
 //We want some functions to be accessable in all scripts.
 require_once "funktionen.php";
