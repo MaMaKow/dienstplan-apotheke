@@ -501,7 +501,16 @@ nav ul li a img.image_tiles{
     background-color: #E6828B;
 }
 
-
-
+/*
+ * The following lines are added for stunden-in.php
+ * -->
+ */
+table tr td input#stunden{
+    width: 4em;
+}
+/*
+ * <--
+ * The above lines are added for stunden-in.php
+ */
 
 
