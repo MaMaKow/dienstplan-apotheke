@@ -162,7 +162,7 @@ function updatesaldo()
         var stundenInputValue = Number(stundenInputId.value);
     }
     var ergebnis = stundenInputValue + stundenSaldoValue;
-    stundenSaldoNeuId.value = ergebnis;
+    stundenSaldoNeuId.innerHTML = ergebnis;
 }
 
 //The following function is used by install.php
@@ -319,3 +319,7 @@ function set_value(object, value)
 {
     object.value = value;
 }
+
+
+
+

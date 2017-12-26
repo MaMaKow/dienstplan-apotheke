@@ -17,6 +17,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/classes/class.emergency_service.php";
+
 /**
  * Build a datalist for easy input of absence entries.
  *
@@ -375,6 +377,8 @@ function build_absence_month($year, $month_number) {
 
         $date_sql = date('Y-m-d', $date_unix);
         $is_holiday = is_holiday($date_unix);
+        $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
+
         $Abwesende = db_lesen_abwesenheit($date_unix);
 
         if ($current_week < date("W", $date_unix)) {
@@ -437,6 +441,16 @@ function build_absence_month($year, $month_number) {
         }
         if ($is_holiday) {
             $p_html_content .= "<span class='holiday'>" . $is_holiday . "</span>\n";
+        }
+        if (FALSE !== $having_emergency_service) {
+            require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-mandant.php";
+            $p_html_content .= "<p class='emergency_service'>"
+                    . gettext("emergency service")
+                    . ":<br>"
+                    . $Branch_short_name[$having_emergency_service["branch_id"]]
+                    . ",<br>"
+                    . $List_of_employees[$having_emergency_service["employee_id"]]
+                    . "</p>\n";
         }
         $p_html .= $p_html_javascript;
         $p_html .= $p_html_attributes;
