@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-12-21 21:45+0100\n"
-"PO-Revision-Date: 2017-12-21 21:46+0100\n"
+"POT-Creation-Date: 2017-12-24 12:18+0100\n"
+"PO-Revision-Date: 2017-12-24 12:19+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -52,18 +52,14 @@ msgid "Wishes, criticism, suggestions"
 msgstr "Wünsche, Kritik, Anregungen"
 
 #: contact-form.php:16
-msgid "From"
-msgstr "Absender"
-
-#: contact-form.php:17
 msgid "Message"
 msgstr "Nachricht"
 
-#: contact-form.php:18
-msgid "Email"
-msgstr "Email"
+#: contact-form.php:24
+msgid "has a comment"
+msgstr "hat einen Kommentar"
 
-#: contact-form.php:66
+#: contact-form.php:67
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
 
@@ -197,15 +193,15 @@ msgstr "Bitte wenden Sie sich an Ihren Administrator."
 msgid "Escalate privileges"
 msgstr "Rechte erweitern"
 
-#: src/php/classes/class.sessions.php:259
+#: src/php/classes/class.sessions.php:260
 msgid "Logout"
 msgstr "Logout"
 
-#: src/php/classes/class.sessions.php:265
+#: src/php/classes/class.sessions.php:266
 msgid "Lost password"
 msgstr "Passwort vergessen"
 
-#: src/php/classes/class.sessions.php:267
+#: src/php/classes/class.sessions.php:268
 msgid ""
 "Dear User,\n"
 "\n"
@@ -215,19 +211,19 @@ msgstr ""
 "\n"
 "um ein neues Passwort für"
 
-#: src/php/classes/class.sessions.php:271
+#: src/php/classes/class.sessions.php:272
 msgid "user name"
 msgstr "Benutzer"
 
-#: src/php/classes/class.sessions.php:272
+#: src/php/classes/class.sessions.php:273
 msgid "please visit"
 msgstr "besuchen Sie bitte"
 
-#: src/php/classes/class.sessions.php:275
+#: src/php/classes/class.sessions.php:276
 msgid "this address"
 msgstr "diese Adresse"
 
-#: src/php/classes/class.sessions.php:277
+#: src/php/classes/class.sessions.php:278
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
@@ -400,6 +396,12 @@ msgid ""
 msgstr ""
 "Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
 "Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
+
+#~ msgid "From"
+#~ msgstr "Absender"
+
+#~ msgid "Email"
+#~ msgstr "Email"
 
 #~ msgid "Day"
 #~ msgid_plural "Days"

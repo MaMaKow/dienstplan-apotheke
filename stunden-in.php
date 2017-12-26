@@ -37,21 +37,33 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
 }
 
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
-if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'saldo') and filter_has_var(INPUT_POST, 'grund')) {
+if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'grund')) {
     if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
         echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
         die();
     }
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+    $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    $sql_query = "SELECT * FROM `Stunden`
+				WHERE `VK` = " . $employee_id . "
+				ORDER BY `Aktualisierung` DESC
+                                LIMIT 1
+				";
+    $result = mysqli_query_verbose($sql_query);
+    $row = mysqli_fetch_object($result);
+    $balance_old = $row->Saldo;
+    $balance_new = $balance_old + $overtime_hours_new;
 
     $sql_query = "INSERT INTO `Stunden`
         (VK, Datum, Stunden, Saldo, Grund)
-        VALUES (" . filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT)
+        VALUES ("
+            . $employee_id
             . ", '"
             . filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING)
             . "', "
-            . filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)
+            . $overtime_hours_new
             . ", "
-            . filter_input(INPUT_POST, 'saldo', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)
+            . $balance_new
             . ", '"
             . filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
             . "')";
@@ -82,9 +94,6 @@ while ($row = mysqli_fetch_object($result)) {
     $tablebody .= "\t\t\t\t\t</form>\n";
     $tablebody .= "\n\t\t\t\t</td>\n";
     $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody .= htmlentities($row->Grund);
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
     $tablebody .= htmlentities($row->Stunden);
     $tablebody .= "\n\t\t\t\t</td>\n";
     if ($i === 1) { //Get the last row. //TODO: Perhaps the server should calculate on it's own again afterwards.
@@ -94,6 +103,9 @@ while ($row = mysqli_fetch_object($result)) {
         $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
     }
     $tablebody .= htmlentities($row->Saldo);
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= htmlentities($row->Grund);
     $tablebody .= "\n\t\t\t\t</td>\n";
     $tablebody .= "\n\t\t\t</tr>\n";
     $i++;
@@ -128,13 +140,13 @@ echo "\t\t\t<tr>\n"
  . "\t\t\t\t\tDatum\n"
  . "\t\t\t\t</th>\n"
  . "\t\t\t\t<th>\n"
- . "\t\t\t\t\tGrund\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
  . "\t\t\t\t\tStunden\n"
  . "\t\t\t\t</th>\n"
  . "\t\t\t\t<th>\n"
  . "\t\t\t\t\tSaldo\n"
+ . "\t\t\t\t</th>\n"
+ . "\t\t\t\t<th>\n"
+ . "\t\t\t\t\tGrund\n"
  . "\t\t\t\t</th>\n"
  . "\t\t\t</tr>\n"
  . "\t\t\t</thead>\n";
@@ -145,15 +157,16 @@ echo "\t\t\t\t<td>\n";
 echo "\t\t\t\t\t<input type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime>\n";
 echo "\t\t\t\t</td>\n";
 echo "\t\t\t\t<td>\n";
-echo "\t\t\t\t\t<input type=text id=grund name=grund form=insert_new_overtime>\n";
-echo "\t\t\t\t</td>\n";
-echo "\t\t\t\t<td>\n";
 echo "\t\t\t\t\t<input type=text onchange=updatesaldo() id=stunden name=stunden form=insert_new_overtime>\n";
 echo "\t\t\t\t</td>\n";
 echo "\t\t\t\t<td>\n";
-echo "\t\t\t\t\t<input readonly type=text name=saldo id=saldoNeu value=" . htmlentities($saldo) . " form=insert_new_overtime>\n";
+echo "\t\t\t\t\t<p id=saldoNeu>" . htmlentities($saldo) . " </p>\n";
 echo "\t\t\t\t</td>\n";
-echo "\t\t\t<td><input class=no-print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime></td>\n";
+echo "\t\t\t\t<td>\n";
+echo "\t\t\t\t\t<input type=text id=grund name=grund form=insert_new_overtime>\n";
+echo "\t\t\t\t</td>\n";
+echo "\t\t\t<td>";
+echo "<input class=no-print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime></td>\n";
 echo "\t\t\t</tr>\n";
 //Ausgabe
 echo "$tablebody";
