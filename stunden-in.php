@@ -19,7 +19,7 @@ if (isset($employee_id)) {
 
 //Deleting rows of data:
 if (filter_has_var(INPUT_POST, 'loeschen')) {
-    if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('administration')) {
+    if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
         echo build_warning_messages("", ["Die notwendige Berechtigung zum Entfernen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
         die();
     }
@@ -42,6 +42,7 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
         echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
         die();
     }
+    print_debug_variable($_POST);
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $sql_query = "SELECT * FROM `Stunden`
