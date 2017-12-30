@@ -30,10 +30,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>print.css" media="print">
         <!--The following two files are relevant only to collaborative-vacation-in.php-->
         <!--TODO: Maybe we should load them only where necessary.-->
-        <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH?>js/collaborative-vacation.js" ></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH?>css/collaborative-vacation.css" media="all">
+        <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>js/collaborative-vacation.js" ></SCRIPT>
+        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>css/collaborative-vacation.css" media="all">
     </HEAD>
     <BODY>
         <?php
+        require_once 'src/php/classes/class.sessions.php';
         echo sessions::build_escalation_div();
 
