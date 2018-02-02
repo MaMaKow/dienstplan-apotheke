@@ -38,7 +38,7 @@ function write_employee_data_to_database() {
         $Worker["start_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING)));
         $Worker["end_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING)));
 
-        $sql_query = "REPLACE INTO `employees` (
+        $sql_query = "INSERT INTO `employees` (
         `id`, `first_name`, `last_name`,
         `profession`,
         `working_hours`, `working_week_hours`, `holidays`, `lunch_break_minutes`,
@@ -60,8 +60,36 @@ function write_employee_data_to_database() {
                 . $Worker['branch'] . ", "
                 . $Worker['start_of_employment'] . ", "
                 . $Worker['end_of_employment']
-                . ")";
-//        echo "$sql_query<br>\n";
+                . ")"
+                . " ON DUPLICATE KEY UPDATE  `id` = "
+                . $Worker['worker_id'] . ", "
+                . "`first_name` = "
+                . $Worker['first_name'] . ", "
+                . " `last_name` = "
+                . $Worker['last_name'] . ", "
+                 . "`profession` = "
+                . $Worker['profession'] . ", "
+                 . "`working_hours` = "
+                . $Worker['working_hours'] . ", "
+                . " `working_week_hours` = "
+                . $Worker['working_week_hours'] . ", "
+                . " `holidays` = "
+                . $Worker['holidays'] . ", "
+                . " `lunch_break_minutes` = "
+                . $Worker['lunch_break_minutes'] . ", "
+                . " `goods_receipt` = "
+                . $Worker['goods_receipt'] . ", "
+                . " `compounding` = "
+                . $Worker['compounding'] . ", "
+                . " `branch` = "
+                . $Worker['branch'] . ", "
+                . " `start_of_employment` = "
+                . $Worker['start_of_employment'] . ", "
+                . " `end_of_employment` = "
+                . $Worker['end_of_employment']
+                . "";
+
+
         $result = mysqli_query_verbose($sql_query);
         return $result;
     } else {
