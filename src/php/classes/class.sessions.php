@@ -73,14 +73,7 @@ class sessions {
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
         if (!isset($_SESSION['user_employee_id']) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
-            /*
-             * Test if the current file is on the top level or deeper in the second level:
-             */
-            if (strpos(pathinfo($script_name, PATHINFO_DIRNAME), 'src/php')) {
-                $location = "login.php";
-            } else {
-                $location = "src/php/login.php";
-            }
+            $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location . "?referrer=" . $request_uri);
             die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>');
         }

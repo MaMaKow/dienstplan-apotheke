@@ -8,6 +8,10 @@ if (mysqli_connect_errno()) {
 }
 try {
     $pdo = new PDO($config['database_management_system'] . ':host=localhost;charset=utf8;dbname=' . $config['database_name'], $config['database_user'], $config['database_password'], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+    /*
+     * TODO: It is advised to throw exceptions with PDO. But that also means, that they have to be caught everywhere.
+     * $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+     */
 } catch (PDOException $exception) {
     error_log("Error!: " . $exception->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
     die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
