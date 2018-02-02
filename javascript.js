@@ -323,3 +323,57 @@ function set_value(object, value)
 
 
 
+/*
+ * Clear all data from a html FORM element
+ * This function is used by branch-management.php
+ */
+function clear_form(form_id) {
+    console.log(form_id);
+    var elements = form_id.elements;
+
+    form_id.reset();
+
+    for (i = 0; i < elements.length; i++) {
+
+        var field_type = elements[i].type.toLowerCase();
+        switch (field_type) {
+
+            case "text":
+            case "password":
+            case "textarea":
+            case "hidden":
+
+                elements[i].defaultValue = "";
+                break;
+
+            case "radio":
+            case "checkbox":
+                if (elements[i].checked) {
+                    elements[i].checked = false;
+                }
+                break;
+
+            case "select-one":
+            case "select-multi":
+                elements[i].selectedIndex = -1;
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
