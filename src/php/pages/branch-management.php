@@ -22,12 +22,10 @@ if (filter_has_var(INPUT_POST, "mandant")) {
     //TODO: change mandant to branch everywhere, where this form is used!
     $current_branch_id = filter_input(INPUT_POST, "mandant", FILTER_SANITIZE_NUMBER_INT);
 } else {
-    print_debug_variable("no mandant");
     require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
     $current_branch_id = min(array_keys($Branch_name));
-    print_debug_variable('$current_branch_id', $current_branch_id);
 }
-if (filter_has_var(INPUT_POST, 'branch_id')) {
+if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
     $new_branch_name = filter_input(INPUT_POST, "branch_name", FILTER_SANITIZE_STRING);
     $new_branch_short_name = filter_input(INPUT_POST, "branch_short_name", FILTER_SANITIZE_STRING);
@@ -40,8 +38,6 @@ if (filter_has_var(INPUT_POST, 'branch_id')) {
         $sql_query = "DELETE FROM `branch` WHERE `branch_id` = :branch_id";
         $statement = $pdo->prepare($sql_query);
         $statement->execute(array('branch_id' => $old_branch_id));
-        print_debug_variable("remove_branch");
-        print_debug_variable($statement->ErrorInfo());
         require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
         $current_branch_id = min(array_keys($Branch_name));
         //TODO: Test if the deletion-query to sql was successfull.
@@ -68,7 +64,6 @@ if (filter_has_var(INPUT_POST, 'branch_id')) {
             'PEP' => $new_branch_pep_id
         );
         $statement->execute($new_branch_data);
-        print_debug_variable("INSERT INTO");
         require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
         $current_branch_id = $new_branch_id;
     } else {
@@ -93,7 +88,6 @@ if (filter_has_var(INPUT_POST, 'branch_id')) {
             'PEP' => $new_branch_pep_id
         );
         $statement->execute($new_branch_data);
-        print_debug_variable("UPDATE SET");
         require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
         $current_branch_id = $new_branch_id;
     }
@@ -115,9 +109,13 @@ if (!empty($deletion_done_div_html)) {
      * https://stackoverflow.com/questions/48491976/how-can-one-prevent-php-reading-mysql-before-deletion-success
      */
 }
+if (!$session->user_has_privilege('administration')) {
+    echo build_warning_messages("", ["The necessary authorization to create branches is missing. Please contact an administrator."]);
+    die();
+}
+
 echo "<div class='centered_form_div'>";
 
-print_debug_variable('$current_branch_id before build_select_branch', $current_branch_id);
 echo build_select_branch($current_branch_id, NULL);
 ?>
 <form method='POST' id='branch_management_form'>

@@ -95,6 +95,7 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
             <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>upload-in.php><?= gettext("Upload deployment planning") ?></a></li>
             <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>human-resource-management-in.php><?= gettext("Human resource management") ?></a></li>
             <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>user-management-in.php><?= gettext("User management") ?></a></li>
+            <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>branch-management.php><?= gettext("Branch management") ?></a></li>
         </ul>
     </li>
     <li>
