@@ -307,7 +307,6 @@ function build_absence_year($year) {
  */
 function build_absence_month($year, $month_number) {
     global $List_of_employees, $List_of_employee_professions;
-
     $input_date = mktime(8, 0, 0, $month_number, 1, $year);
     $monday_difference = date('w', $input_date) - 1; //Get start of the week
     if (-1 === $monday_difference) {
@@ -442,6 +441,7 @@ function build_absence_month($year, $month_number) {
         if ($is_holiday) {
             $p_html_content .= "<span class='holiday'>" . $is_holiday . "</span>\n";
         }
+
         if (FALSE !== $having_emergency_service) {
             require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-mandant.php";
             $p_html_content .= "<p class='emergency_service'>"
@@ -460,5 +460,6 @@ function build_absence_month($year, $month_number) {
     }
     $week_container_html .= "\t</tr></table></div>\n";
     $month_container_html .= $week_container_html;
+
     return $month_container_html;
 }

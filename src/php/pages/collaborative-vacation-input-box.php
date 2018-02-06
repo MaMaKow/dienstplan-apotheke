@@ -18,7 +18,6 @@
 require_once "../../../default.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
 
-print_debug_variable($_GET);
 
 if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     //An existing entry will be edited
@@ -45,7 +44,6 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
     $employee_id = $Highlight_details['employee_id'];
-    print_debug_variable($Highlight_details);
     $Absence_details['reason'] = gettext("Vacation");
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);

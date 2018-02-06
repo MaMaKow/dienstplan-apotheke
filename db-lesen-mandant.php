@@ -4,9 +4,9 @@
 $sql_query = 'SELECT *
 	FROM `branch`
 	;';
+global $pdo;
 $statement = $pdo->prepare($sql_query);
 $statement->execute();
-print_debug_variable($statement->ErrorInfo());
 
 while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
     if ($row->short_name != "") {
@@ -17,3 +17,4 @@ while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
         $Branch_pep_id[$row->branch_id] = $row->PEP;
     }
 }
+
