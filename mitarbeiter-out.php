@@ -183,10 +183,9 @@ echo "\t\t\t\t<tfoot>\n";
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)
-for ($tag = 0; $tag < 5; ++$tag) {
-// Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
-    foreach ($Dienstplan[$tag]['Stunden'] as $key => $stunden) {
-        $Stunden[$Dienstplan[$tag]['VK'][$key]][] = $stunden;
+foreach (array_keys($Dienstplan) as $day_number) {
+    foreach ($Dienstplan[$day_number]['Stunden'] as $key => $stunden) {
+        $Stunden[$Dienstplan[$day_number]['VK'][$key]][] = $stunden;
     }
 }
 echo 'Wochenstunden ';
@@ -281,6 +280,14 @@ require 'contact-form.php';
 ?>
 </BODY>
 </HTML>
+
+
+
+
+
+
+
+
 
 
 
