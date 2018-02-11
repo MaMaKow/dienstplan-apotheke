@@ -87,7 +87,7 @@ $number_of_rows = mysqli_num_rows($result);
 $tablebody = '';
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
-    $tablebody .= "\t\t\t<tr style='height: 1em;'>"
+    $tablebody .= "\t\t\t<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
             . "<form method=POST id='change_absence_entry_" . $row->start . "'>"
             . "\n\t\t\t\t";
     $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=beginn_out_" . $row->start . ">";
@@ -109,6 +109,9 @@ while ($row = mysqli_fetch_object($result)) {
     $tablebody .= "\n\t\t\t\t</td>\n";
     $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
     $tablebody .= "$row->days";
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= "$row->approval";
     $tablebody .= "\n\t\t\t\t</td>\n";
     $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n"
             . "\t\t\t\t\t<input hidden name='employee_id' value='$employee_id' form='change_absence_entry_" . $row->start . "'>\n"
@@ -227,6 +230,8 @@ require 'contact-form.php';
 ?>
 </body>
 </html>
+
+
 
 
 

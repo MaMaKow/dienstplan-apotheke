@@ -564,13 +564,16 @@ div.overlay_top
  * The above lines are added for src/php/pages/branch-management.php
  */
 
+/*
+ * The following lines are added for abwesenheit-in.php
+ * -->
+ */
 
-
-
-
-
-
-
-
-
+tr.absence_row[data-approval='approved'] {
+    color: green;
+}
+/*
+ * <--
+ * The above lines are added for abwesenheit-in.php
+ */
 
