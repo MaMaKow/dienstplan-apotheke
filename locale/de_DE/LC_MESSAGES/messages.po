@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2017-12-24 12:18+0100\n"
-"PO-Revision-Date: 2017-12-24 12:19+0100\n"
+"POT-Creation-Date: 2018-02-11 22:08+0100\n"
+"PO-Revision-Date: 2018-02-11 22:10+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: abwesenheit-in.php:165 stunden-in.php:121 tag-in.php:109 woche-in.php:72
+#: abwesenheit-in.php:168 stunden-in.php:133 tag-in.php:109 woche-in.php:72
 msgid "Read"
 msgstr "Lesen"
 
@@ -25,17 +25,17 @@ msgid "Edit"
 msgstr "Bearbeiten"
 
 #: abwesenheit-out.php:64
-#: src/php/pages/collaborative-vacation-input-box.php:90
+#: src/php/pages/collaborative-vacation-input-box.php:88
 msgid "Start"
 msgstr "Beginn"
 
 #: abwesenheit-out.php:67
-#: src/php/pages/collaborative-vacation-input-box.php:91
+#: src/php/pages/collaborative-vacation-input-box.php:89
 msgid "End"
 msgstr "Ende"
 
 #: abwesenheit-out.php:70
-#: src/php/pages/collaborative-vacation-input-box.php:92
+#: src/php/pages/collaborative-vacation-input-box.php:90
 msgid "Reason"
 msgstr "Grund"
 
@@ -44,6 +44,7 @@ msgid "Days"
 msgstr "Tage"
 
 #: anwesenheitsliste-out.php:109 anwesenheitsliste-out.php:110
+#: src/php/collaborative-vacation.php:468
 msgid "emergency service"
 msgstr "Notdienst"
 
@@ -77,7 +78,7 @@ msgstr "Keine Pause"
 msgid "vacation days"
 msgstr "Urlaubstage"
 
-#: human-resource-management.php:106
+#: human-resource-management.php:134
 msgid "None"
 msgstr "Kein"
 
@@ -106,8 +107,8 @@ msgstr "1 Woche rückwärts"
 msgid "1 week forward"
 msgstr "1 Woche vorwärts"
 
-#: navigation.php:40 navigation.php:43
-#: src/php/pages/collaborative-vacation-input-box.php:103
+#: navigation.php:40 navigation.php:43 src/php/pages/branch-management.php:154
+#: src/php/pages/collaborative-vacation-input-box.php:101
 msgid "Save"
 msgstr "Speichern"
 
@@ -181,27 +182,27 @@ msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 msgid "and"
 msgstr "und"
 
-#: src/php/classes/class.sessions.php:143
+#: src/php/classes/class.sessions.php:136
 msgid "The permission to create a roster is missing."
 msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 
-#: src/php/classes/class.sessions.php:144
+#: src/php/classes/class.sessions.php:137
 msgid "Please contact the administrator."
 msgstr "Bitte wenden Sie sich an Ihren Administrator."
 
-#: src/php/classes/class.sessions.php:145
+#: src/php/classes/class.sessions.php:138
 msgid "Escalate privileges"
 msgstr "Rechte erweitern"
 
-#: src/php/classes/class.sessions.php:260
+#: src/php/classes/class.sessions.php:253
 msgid "Logout"
 msgstr "Logout"
 
-#: src/php/classes/class.sessions.php:266
+#: src/php/classes/class.sessions.php:259
 msgid "Lost password"
 msgstr "Passwort vergessen"
 
-#: src/php/classes/class.sessions.php:268
+#: src/php/classes/class.sessions.php:261
 msgid ""
 "Dear User,\n"
 "\n"
@@ -211,21 +212,31 @@ msgstr ""
 "\n"
 "um ein neues Passwort für"
 
-#: src/php/classes/class.sessions.php:272
+#: src/php/classes/class.sessions.php:265
 msgid "user name"
 msgstr "Benutzer"
 
-#: src/php/classes/class.sessions.php:273
+#: src/php/classes/class.sessions.php:266
 msgid "please visit"
 msgstr "besuchen Sie bitte"
 
-#: src/php/classes/class.sessions.php:276
+#: src/php/classes/class.sessions.php:269
 msgid "this address"
 msgstr "diese Adresse"
 
-#: src/php/classes/class.sessions.php:278
+#: src/php/classes/class.sessions.php:271
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
+
+#: src/php/collaborative-vacation.php:245
+#: src/php/collaborative-vacation.php:413
+msgid "from"
+msgstr "vin"
+
+#: src/php/collaborative-vacation.php:246
+#: src/php/collaborative-vacation.php:414
+msgid "to"
+msgstr "bis"
 
 #: src/php/login.php:40
 msgid "Create new user account"
@@ -235,20 +246,34 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/collaborative-vacation-input-box.php:49
+#: src/php/pages/branch-management.php:158
+msgid "Clear form data"
+msgstr "Formular zurücksetzen"
+
+#: src/php/pages/branch-management.php:162
+msgid "Remove branch"
+msgstr "Mandant löschen"
+
+#: src/php/pages/branch-management.php:164
+msgid "Use \"Clear form data\" to enter data for a new branch"
+msgstr ""
+"Nutzen Sie \"Formular zurücksetzen\" um Daten für einen neuen Mandanten "
+"einzugeben"
+
+#: src/php/pages/collaborative-vacation-input-box.php:47
 msgid "Vacation"
 msgstr "Urlaub"
 
-#: src/php/pages/collaborative-vacation-input-box.php:60
+#: src/php/pages/collaborative-vacation-input-box.php:58
 #: src/php/pages/menu.php:35
 msgid "Employee"
 msgstr "Mitarbeiter"
 
-#: src/php/pages/collaborative-vacation-input-box.php:105
+#: src/php/pages/collaborative-vacation-input-box.php:103
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/php/pages/collaborative-vacation-input-box.php:113
+#: src/php/pages/collaborative-vacation-input-box.php:111
 msgid "Close"
 msgstr "Schießen"
 
@@ -368,6 +393,10 @@ msgstr "PEP-Upload"
 #: src/php/pages/menu.php:97
 msgid "User management"
 msgstr "Benutzerverwaltung"
+
+#: src/php/pages/menu.php:98
+msgid "Branch management"
+msgstr "Mandantenverwaltung"
 
 #: src/php/pages/reset_lost_password.php:33
 msgid "Invalid token"

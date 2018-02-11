@@ -178,7 +178,7 @@ function write_user_input_to_database() {
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_year($year) {
-    global $List_of_employee_professions;
+    global $List_of_employee_professions, $List_of_employees;
     $start_date = mktime(0, 0, 0, 1, 1, $year);
     $current_month = date("n", $start_date);
     //$system_encoding = mb_detect_encoding(strftime("äöüÄÖÜß %B", 1490388361), "auto");
@@ -239,8 +239,18 @@ function build_absence_year($year) {
             unset($absent_employees_containers);
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
+                $absence_title_text = ""
+                        . $List_of_employees[$Absence['employee_id']] . "\n"
+                        . $Absence['reason'] . "\n"
+                        . gettext("from") . " " . strftime('%x', strtotime($Absence['start'])) . "\n"
+                        . gettext("to") . " " . strftime('%x', strtotime($Absence['end'])) . "\n"
+                        . gettext($Absence['approval']) . "";
 
-                $absent_employees_containers .= "<span class='absent_employee_container $List_of_employee_professions[$employee_id]' onclick='insert_form_div(\"edit\")' data-absence_details='" . json_encode($Absence) . "'>";
+                $absent_employees_containers .= "<span "
+                        . "class='absent_employee_container $List_of_employee_professions[$employee_id] " . $Absence['approval'] . "' "
+                        . "onclick='insert_form_div(\"edit\")' "
+                        . "title='$absence_title_text'"
+                        . "data-absence_details='" . json_encode($Absence) . "'>";
                 $absent_employees_containers .= $employee_id;
                 $absent_employees_containers .= "</span>\n";
             }
@@ -397,8 +407,18 @@ function build_absence_month($year, $month_number) {
             unset($absent_employees_containers);
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = get_absence_data_specific($date_sql, $employee_id);
+                $absence_title_text = ""
+                        . $List_of_employees[$Absence['employee_id']] . "\n"
+                        . $Absence['reason'] . "\n"
+                        . gettext("from") . " " . strftime('%x', strtotime($Absence['start'])) . "\n"
+                        . gettext("to") . " " . strftime('%x', strtotime($Absence['end'])) . "\n"
+                        . gettext($Absence['approval']) . "";
 
-                $absent_employees_containers .= "<span class='absent_employee_container $List_of_employee_professions[$employee_id]' onclick='insert_form_div(\"edit\")' data-absence_details='" . json_encode($Absence) . "'>";
+                $absent_employees_containers .= "<span "
+                        . "class='absent_employee_container $List_of_employee_professions[$employee_id] " . $Absence['approval'] . "' "
+                        . "onclick='insert_form_div(\"edit\")' "
+                        . "title='$absence_title_text'"
+                        . "data-absence_details='" . json_encode($Absence) . "'>";
                 $absent_employees_containers .= $employee_id . " " . mb_substr($List_of_employees[$employee_id], 0, 16);
                 $absent_employees_containers .= "</span><br>\n";
             }

@@ -46,6 +46,7 @@ function get_absence_data_specific($date_sql, $employee_id) {
         $Absence['reason'] = $row->reason;
         $Absence['start'] = $row->start;
         $Absence['end'] = $row->end;
+        $Absence['approval'] = $row->approval;
     }
     return $Absence;
 }

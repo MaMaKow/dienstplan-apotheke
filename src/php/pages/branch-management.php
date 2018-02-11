@@ -161,7 +161,7 @@ echo build_select_branch($current_branch_id, NULL);
     <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
     <p> <?= gettext("Remove branch") ?>  </p>
 </button>
-<p class="hint">Use "Clear form data" to enter data for a new branch</p>
+<p class="hint"><?= gettext('Use "Clear form data" to enter data for a new branch') ?></p>
 </div><!--id = 'branch_management_main' -->
 
 </body>
