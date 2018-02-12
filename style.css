@@ -307,6 +307,7 @@ button {
     border: none;
     color: black;
     padding: 1em 2em;
+    margin-right: 1em;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -576,4 +577,5 @@ tr.absence_row[data-approval='approved'] {
  * <--
  * The above lines are added for abwesenheit-in.php
  */
+
 

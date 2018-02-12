@@ -52,7 +52,6 @@ function handle_user_data_input() {
     //Work on user data:
     global $year;
     global $month_number;
-    //print_debug_variable($_POST);
     if (filter_has_var(INPUT_POST, "year")) {
         $year = filter_input(INPUT_POST, "year", FILTER_SANITIZE_NUMBER_INT);
     } elseif (filter_has_var(INPUT_COOKIE, "year")) {
@@ -69,6 +68,9 @@ function handle_user_data_input() {
     }
     create_cookie('month_number', $month_number, 1);
     create_cookie('year', $year, 1);
+    if (filter_has_var(INPUT_POST, 'approve_absence')) {
+        approve_absence_to_database();
+    }
     if (filter_has_var(INPUT_POST, 'command')) {
         write_user_input_to_database();
     }
@@ -98,8 +100,9 @@ function write_user_input_to_database() {
     if ($session->user_has_privilege('create_absence')) {
         /*
          * User is allowed to write any input to the database.
+         * But still we will turn any input into a not_yet_approved state
          */
-        $approval = "approved";
+        $approval = "not_yet_approved";
     } elseif ($session->user_has_privilege('request_own_absence')) {
         /*
          * User is only allowed to ask for specific changes to the database.
@@ -108,25 +111,39 @@ function write_user_input_to_database() {
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays for employee " . $employee_id);
             return FALSE;
         }
-        if ("" === $employee_id_old and $_SESSION['user_employee_id'] !== $employee_id_old) {
+        if ("" !== $employee_id_old and $_SESSION['user_employee_id'] !== $employee_id_old) {
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays from employee " . $employee_id_old);
             return FALSE;
         }
         $approval = "not_yet_approved";
+    } else {
+        /*
+         * This point should never be reached.
+         */
+        return FALSE;
     }
 
     //Decide on $approval state
-    $query = "SELECT `approval` FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
-    $result = mysqli_query_verbose($query);
-    $row = mysqli_fetch_object($result);
-    if (empty($approval) and empty($row->approval)) {
-        $approval = "not_yet_approved";
-    } else {
-        $approval = $row->approval;
-    }
+    /*
+     * Every change is put back to "not_yet_approved".
+     * Therefore we currently do not need the following block of code:
+      $query = "SELECT `approval` FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
+      $result = mysqli_query_verbose($query);
+      $row = mysqli_fetch_object($result);
+      if (empty($approval) and empty($row->approval)) {
+      $approval = "not_yet_approved";
+      } elseif (empty($approval)) {
+      $approval = $row->approval;
+      }
+
+     */
 
     /**
      * Delete old entries
+     *
+     * TODO: This probably should be solved with TRANSACTIONS
+     * What happens, if the DELETE  is successfull but the INSERT fails?
+     *
      * $employee_id_old and $start_date_old_string are NULL for new entries. Therefore there will be no deletions.
      */
     $query = "DELETE FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
@@ -160,6 +177,35 @@ function write_user_input_to_database() {
                 . ")";
         $result = mysqli_query_verbose($query);
     }
+}
+
+/**
+ * Approve entries in the database or set them to pending or disapproved.
+ *
+ * @global object $session session data from logged in user
+ * @return void
+ */
+function approve_absence_to_database() {
+    global $session;
+    if (!$session->user_has_privilege('create_absence')) {
+        /*
+         * User is allowed to write any input to the database.
+         */
+        return FALSE;
+    }
+
+    $approval = filter_input(INPUT_POST, 'approve_absence', FILTER_SANITIZE_STRING);
+    $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
+    $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
+
+    /*
+     * The function calculate_absence_days() currenty is defined within "db-lesen-abwesenheit.php".
+     * TODO: Maybe there should be a common library/class for all the (common) absence functions.
+     */
+    $query = "UPDATE `absence` "
+            . " SET `approval` = \"$approval\" "
+            . " WHERE `employee_id` = \"$employee_id_old\" AND `start` = \"$start_date_old_string\"";
+    $result = mysqli_query_verbose($query);
 }
 
 /**
@@ -215,7 +261,6 @@ function build_absence_year($year) {
         $date_sql = date('Y-m-d', $date_unix);
         $is_holiday = is_holiday($date_unix);
         $Abwesende = db_lesen_abwesenheit($date_unix);
-        //print_debug_variable($Abwesende, $date_sql);
 
         if ($current_month < date("n", $date_unix)) {
             /** begin a new month div */

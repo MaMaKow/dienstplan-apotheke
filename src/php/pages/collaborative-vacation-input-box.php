@@ -28,6 +28,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'reason' => FILTER_SANITIZE_STRING,
         'start' => FILTER_SANITIZE_STRING,
         'end' => FILTER_SANITIZE_STRING,
+        'approval' => FILTER_SANITIZE_STRING,
     );
     $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
     $Absence_details['mode'] = "edit";
@@ -89,6 +90,14 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
 <p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>"></p>
 <p><?= gettext("Reason") ?><br><input type="text" id="input_box_form_reason" name="reason" list='reasons' value="<?= $Absence_details['reason'] ?>"></p>
 <?php
+if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {
+    //TODO: Remove all occurences of "disapprove" and change them to "deny".
+    if ("approved" !== $Absence_details['approval']) {
+        echo "<button type='submit' value='approved'         name='approve_absence' />Approve</button>";
+        echo "<button type='submit' value='not_yet_approved' name='approve_absence' />Pending</button>";
+        echo "<button type='submit' value='disapproved'      name='approve_absence' />Deny</button>";
+    }
+}
 if (
         $session->user_has_privilege('create_absence')
         or ( $session->user_has_privilege('request_own_absence')
