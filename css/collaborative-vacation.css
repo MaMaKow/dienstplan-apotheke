@@ -134,6 +134,9 @@ span.absent_employee_container.not_yet_approved{
     background-color: red;
     background-image: linear-gradient(to bottom right, rgba(180, 180, 180, 0.9) 50%, red);
 }
+span.absent_employee_container.disapproved{
+    background-color: red;
+}
 div.input_box_div{
     position: fixed;
     left: 0;
