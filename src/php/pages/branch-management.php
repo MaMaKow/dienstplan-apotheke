@@ -149,18 +149,20 @@ echo build_select_branch($current_branch_id, NULL);
     </p>
 
 </div>
-<button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no-print">
-    <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/save.png">
-    <p> <?= gettext("Save") ?>  </p>
-</button>
-<button type='reset' form='branch_management_form' class="form_button no-print" onclick='clear_form(getElementById("branch_management_form")); getElementById("branch_form_select").selectedIndex = -1'>
-    <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/edit-icon.svg">
-    <p> <?= gettext("Clear form data") ?>  </p>
-</button>
-<button type='submit' name="remove_branch" form='branch_management_form' class="form_button no-print" onclick='return confirmDelete()'>
-    <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
-    <p> <?= gettext("Remove branch") ?>  </p>
-</button>
+<div id="form_buttons_container">
+    <button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no-print">
+        <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/save.png">
+        <p> <?= gettext("Save") ?>  </p>
+    </button>
+    <button type='reset' form='branch_management_form' class="form_button no-print" onclick='clear_form(getElementById("branch_management_form")); getElementById("branch_form_select").selectedIndex = -1'>
+        <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/edit-icon.svg">
+        <p> <?= gettext("Clear form data") ?>  </p>
+    </button>
+    <button type='submit' name="remove_branch" form='branch_management_form' class="form_button no-print" onclick='return confirmDelete()'>
+        <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
+        <p> <?= gettext("Remove branch") ?>  </p>
+    </button>
+</div>
 <p class="hint"><?= gettext('Use "Clear form data" to enter data for a new branch') ?></p>
 </div><!--id = 'branch_management_main' -->
 
