@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-02-11 22:08+0100\n"
-"PO-Revision-Date: 2018-02-11 22:10+0100\n"
+"POT-Creation-Date: 2018-02-13 20:43+0100\n"
+"PO-Revision-Date: 2018-02-13 20:46+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -25,17 +25,17 @@ msgid "Edit"
 msgstr "Bearbeiten"
 
 #: abwesenheit-out.php:64
-#: src/php/pages/collaborative-vacation-input-box.php:88
+#: src/php/pages/collaborative-vacation-input-box.php:89
 msgid "Start"
 msgstr "Beginn"
 
 #: abwesenheit-out.php:67
-#: src/php/pages/collaborative-vacation-input-box.php:89
+#: src/php/pages/collaborative-vacation-input-box.php:90
 msgid "End"
 msgstr "Ende"
 
 #: abwesenheit-out.php:70
-#: src/php/pages/collaborative-vacation-input-box.php:90
+#: src/php/pages/collaborative-vacation-input-box.php:91
 msgid "Reason"
 msgstr "Grund"
 
@@ -44,7 +44,7 @@ msgid "Days"
 msgstr "Tage"
 
 #: anwesenheitsliste-out.php:109 anwesenheitsliste-out.php:110
-#: src/php/collaborative-vacation.php:468
+#: src/php/collaborative-vacation.php:513
 msgid "emergency service"
 msgstr "Notdienst"
 
@@ -108,11 +108,11 @@ msgid "1 week forward"
 msgstr "1 Woche vorwärts"
 
 #: navigation.php:40 navigation.php:43 src/php/pages/branch-management.php:154
-#: src/php/pages/collaborative-vacation-input-box.php:101
+#: src/php/pages/collaborative-vacation-input-box.php:110
 msgid "Save"
 msgstr "Speichern"
 
-#: navigation.php:52
+#: navigation.php:52 src/php/pages/collaborative-vacation-input-box.php:96
 msgid "Approve"
 msgstr "Genehmigen"
 
@@ -228,13 +228,13 @@ msgstr "diese Adresse"
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/collaborative-vacation.php:245
-#: src/php/collaborative-vacation.php:413
+#: src/php/collaborative-vacation.php:290
+#: src/php/collaborative-vacation.php:458
 msgid "from"
 msgstr "vin"
 
-#: src/php/collaborative-vacation.php:246
-#: src/php/collaborative-vacation.php:414
+#: src/php/collaborative-vacation.php:291
+#: src/php/collaborative-vacation.php:459
 msgid "to"
 msgstr "bis"
 
@@ -260,20 +260,28 @@ msgstr ""
 "Nutzen Sie \"Formular zurücksetzen\" um Daten für einen neuen Mandanten "
 "einzugeben"
 
-#: src/php/pages/collaborative-vacation-input-box.php:47
+#: src/php/pages/collaborative-vacation-input-box.php:48
 msgid "Vacation"
 msgstr "Urlaub"
 
-#: src/php/pages/collaborative-vacation-input-box.php:58
+#: src/php/pages/collaborative-vacation-input-box.php:59
 #: src/php/pages/menu.php:35
 msgid "Employee"
 msgstr "Mitarbeiter"
 
-#: src/php/pages/collaborative-vacation-input-box.php:103
+#: src/php/pages/collaborative-vacation-input-box.php:97
+msgid "Pending"
+msgstr "Offen"
+
+#: src/php/pages/collaborative-vacation-input-box.php:98
+msgid "Deny"
+msgstr "Ablehnen"
+
+#: src/php/pages/collaborative-vacation-input-box.php:112
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/php/pages/collaborative-vacation-input-box.php:111
+#: src/php/pages/collaborative-vacation-input-box.php:120
 msgid "Close"
 msgstr "Schießen"
 

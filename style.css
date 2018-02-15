@@ -9,9 +9,9 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
 @media screen {
     div
     {
-        /*
         margin: 3px;
         border: 1px solid #FF0000;
+        /*
         */
     }
 }
@@ -519,10 +519,14 @@ table tr td input#stunden{
  * The following lines are added for src/php/pages/branch-management.php
  * -->
  */
+div#form_buttons_container{
+    overflow:  auto;
+}
 button.form_button{
     width: 10em;
     padding-left: 0em;
     padding-right: 0em;
+    margin-bottom: 1em;
 }
 button.form_button img{
     max-width: 2em;
@@ -577,5 +581,12 @@ tr.absence_row[data-approval='approved'] {
  * <--
  * The above lines are added for abwesenheit-in.php
  */
+
+
+
+
+
+
+
 
 
