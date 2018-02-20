@@ -82,8 +82,6 @@ if (isset($mandant)) {
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 
 $sql_query = 'SELECT *
 FROM `Grundplan`

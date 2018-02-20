@@ -35,8 +35,6 @@ if (isset($mandant)) {
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($datum, $tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
@@ -59,19 +57,7 @@ $date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>" . gettex
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
-$branch_form_html = "";
-$branch_form_html .= "\t\t<form id=branch_form method=post class='no-print'>\n";
-$branch_form_html .= "\t\t\t<input type=hidden name=datum value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">\n";
-$branch_form_html .= "\t\t\t<select class='large' name=mandant onchange=this.form.submit()>\n";
-foreach ($Branch_name as $key => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
-    if ($key != $mandant) {
-        $branch_form_html .= "\t\t\t\t<option value=" . $key . ">" . $value . "</option>\n";
-    } else {
-        $branch_form_html .= "\t\t\t\t<option value=" . $key . " selected>" . $value . "</option>\n";
-    }
-}
-$branch_form_html .= "\t\t\t</select>\n\t\t</form>\n";
-$main_div_html .= $branch_form_html;
+$main_div_html .= build_select_branch($mandant, $datum);
 
 $duty_roster_form_html = "\t\t<form id=duty_roster_form method=post>\n";
 $buttons_div_html = "";
@@ -135,13 +121,13 @@ if (isset($Overlay_message)) {
 }
 $table_html .= $table_body_html;
 $datum = $konstantes_datum;
-foreach ($Branch_name as $filiale => $Name) {
+foreach (array_keys($List_of_branch_objects) as $filiale) {
     if ($mandant == $filiale) {
         continue 1;
     }
     $Filialplan[$filiale] = read_roster_array_from_db($datum, $tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
     if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
-        $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $Branch_short_name[$mandant] . " in " . $Branch_short_name[$filiale] . "</td></tr>";
+        $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $List_of_branch_objects[$mandant]->short_name . " in " . $List_of_branch_objects[$filiale]->short_name . "</td></tr>";
         $table_body_html = schreiben_tabelle($Filialplan[$filiale], $filiale);
         $table_html .= $table_body_html;
     }
@@ -194,25 +180,25 @@ $table_div_html .= $table_html;
 
 $duty_roster_form_html .= $table_div_html;
 
-//Wir zeichnen jetzt die Wochenstunden der Mitarbeiter. In dieser Ansicht werden ausschließlich die Tage Montag bis Freitag betrachtet. Dies ist ein Unterschied zur Mitarbeiteransicht. Dort werden alle Wochentage berücksichtigt.
-// TODO: $tag<5; should be a configurable variable. It might be 6 or seven in other pharmacies.
-for ($tag = 0; $tag < 5; $tag++) {
+/*
+ * Calculation of the working hours of the employees:
+ */
+foreach (array_keys($Dienstplan) as $tag) {
     if (!isset($Dienstplan[$tag]['Stunden'])) {
         continue;
     } //Tage an denen kein Dienstplan existiert werden nicht geprüft.
     foreach ($Dienstplan[$tag]['Stunden'] as $key => $stunden) {
         $Stunden[$Dienstplan[$tag]['VK'][$key]][] = $stunden;
-//		echo "$tag $mandant $key $stunden<br>\n";
     }
 }
-for ($tag = 0; $tag < 5; $tag++) {
-    foreach ($Branch_name as $mandant_key => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
-        if ($mandant_key != $mandant) {
-            if (!isset($Filialplan[$mandant_key][$tag]['Stunden'])) {
+foreach (array_keys($Filialplan) as $branch_id => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
+    foreach (array_keys($Filialplan[$branch_id]) as $tag) {
+        if ($branch_id != $mandant) {
+            if (!isset($Filialplan[$branch_id][$tag]['Stunden'])) {
                 continue 1;
             } //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-            foreach ($Filialplan[$mandant_key][$tag]['Stunden'] as $key => $stunden) {
-                $Stunden[$Filialplan[$mandant_key][$tag]['VK'][$key]][] = $stunden;
+            foreach ($Filialplan[$branch_id][$tag]['Stunden'] as $key => $stunden) {
+                $Stunden[$Filialplan[$branch_id][$tag]['VK'][$key]][] = $stunden;
             }
         }
     }
@@ -280,6 +266,24 @@ require 'contact-form.php';
 ?>
 </BODY>
 </HTML>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

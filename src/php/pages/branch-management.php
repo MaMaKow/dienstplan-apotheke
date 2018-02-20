@@ -22,8 +22,8 @@ if (filter_has_var(INPUT_POST, "mandant")) {
     //TODO: change mandant to branch everywhere, where this form is used!
     $current_branch_id = filter_input(INPUT_POST, "mandant", FILTER_SANITIZE_NUMBER_INT);
 } else {
-    require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
-    $current_branch_id = min(array_keys($Branch_name));
+    $List_of_branch_objects = branch::read_branches_from_database();
+    $current_branch_id = min(array_keys($List_of_branch_objects));
 }
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
@@ -38,8 +38,8 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
         $sql_query = "DELETE FROM `branch` WHERE `branch_id` = :branch_id";
         $statement = $pdo->prepare($sql_query);
         $statement->execute(array('branch_id' => $old_branch_id));
-        require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
-        $current_branch_id = min(array_keys($Branch_name));
+        $List_of_branch_objects = branch::read_branches_from_database();
+        $current_branch_id = min(array_keys($List_of_branch_objects));
         //TODO: Test if the deletion-query to sql was successfull.
         $deletion_done_div_html = "<div class=overlay_top>"
                 . "<p>The branch was successfully deleted.</p>"
@@ -48,7 +48,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
                 . "<p>Continue</p>"
                 . "</button>"
                 . "</div>";
-    } elseif (!isset($Branch_name[$new_branch_id])) {
+    } elseif (!isset($List_of_branch_objects[$new_branch_id])) {
         /*
          * This is a new branch.
          * We will simply insert it into the database table.
@@ -64,7 +64,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         $statement->execute($new_branch_data);
-        require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
+        $List_of_branch_objects = branch::read_branches_from_database();
         $current_branch_id = $new_branch_id;
     } else {
         /*
@@ -88,17 +88,15 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         $statement->execute($new_branch_data);
-        require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
+        $List_of_branch_objects = branch::read_branches_from_database();
         $current_branch_id = $new_branch_id;
     }
 }
 
 /*
  * Reload branch data:
- * TODO: Make this a function, rather than a require.
- * This will fail, if require_once has been used before on the same file.
  */
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mandant.php';
+$List_of_branch_objects = branch::read_branches_from_database();
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'navigation.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -115,8 +113,15 @@ if (!$session->user_has_privilege('administration')) {
 }
 
 echo "<div class='centered_form_div'>";
+if (empty($List_of_branch_objects)) {
+    echo "<p>"
+    . gettext("No pharmacy and no branches have been configured. Please setup at least one pharmacy!")
+    . "</p>";
+    $current_branch_id = 1;
+} else {
 
-echo build_select_branch($current_branch_id, NULL);
+    echo build_select_branch($current_branch_id, NULL);
+}
 ?>
 <form method='POST' id='branch_management_form'>
 </form>
@@ -129,23 +134,26 @@ echo build_select_branch($current_branch_id, NULL);
     </p><p>
         <label for="branch_name">Branch name: </label>
         <br>
-        <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $Branch_name[$current_branch_id] ?>">
+        <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $List_of_branch_objects[$current_branch_id]->name ?>">
     </p><p>
         <label for="branch_short_name">Branch short name: </label>
+        <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
+             class="inline-image"
+             title="<?= gettext("This is a short unofficial nickname for your pharmacy. It is used in pages with limited space. Please choose no more than 12 letters.") ?>">
         <br>
-        <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $Branch_short_name[$current_branch_id] ?>">
+        <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $List_of_branch_objects[$current_branch_id]->short_name ?>">
     </p><p>
         <label for="branch_address">Branch address: </label>
         <br>
-        <input form="branch_management_form" type='text' name='branch_address' id="branch_address" value="<?= $Branch_address[$current_branch_id] ?>">
+        <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" value="<?= $List_of_branch_objects[$current_branch_id]->address ?>"></textarea>
     </p><p>
         <label for="branch_manager">Branch manager: </label>
         <br>
-        <input form="branch_management_form" type='text' name='branch_manager' id="branch_manager" value="<?= $Branch_manager[$current_branch_id] ?>">
+        <input form="branch_management_form" type='text' name='branch_manager' id="branch_manager" value="<?= $List_of_branch_objects[$current_branch_id]->manager ?>">
     </p><p>
         <label for="branch_pep_id">Branch pep id: </label>
     </p><p>
-        <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $Branch_pep_id[$current_branch_id] ?>">
+        <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $List_of_branch_objects[$current_branch_id]->PEP ?>">
     </p>
 
 </div>

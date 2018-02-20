@@ -3,8 +3,6 @@ require 'default.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 $VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, 'employee_id')) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } elseif (filter_has_var(INPUT_GET, 'employee_id')) {
@@ -27,25 +25,25 @@ $number_of_rows = mysqli_num_rows($result);
 $tablebody = "";
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
-    $tablebody.= "\t\t\t<tr>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= date('d.m.Y', strtotime($row->start));
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= date('d.m.Y', strtotime($row->end));
-    $tablebody.= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t<tr>\n";
+    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= date('d.m.Y', strtotime($row->start));
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= date('d.m.Y', strtotime($row->end));
+    $tablebody .= "\n\t\t\t\t</td>\n";
     if ($i == $number_of_rows) {
         //TODO: This whole part might be unnecessary. We might remove it with some testing.
-        $tablebody.= "\t\t\t\t<td id=letzterGrund>\n\t\t\t\t\t";
+        $tablebody .= "\t\t\t\t<td id=letzterGrund>\n\t\t\t\t\t";
     } else {
-        $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
+        $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
     }
-    $tablebody.= "$row->reason";
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= "$row->days";
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\n\t\t\t</tr>\n";
+    $tablebody .= "$row->reason";
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= "$row->days";
+    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\n\t\t\t</tr>\n";
     $i++;
 }
 require 'head.php';

@@ -5,7 +5,6 @@ require_once 'default.php';
 if (!isset($_SESSION['user_employee_id'])) {
     require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/basic_access_authentication.php';
 }
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/db-lesen-mandant.php';
 $tage = 30;
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/db-lesen-mitarbeiter.php';
 if (filter_has_var(INPUT_GET, 'datum')) {

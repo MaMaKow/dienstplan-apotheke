@@ -7,8 +7,6 @@ echo "<div id=main-area>\n";
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 $VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, 'employee_id')) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } elseif (filter_has_var(INPUT_GET, 'employee_id')) {
@@ -31,28 +29,28 @@ $number_of_rows = mysqli_num_rows($result);
 $tablebody = "\t\t\t<tbody>\n";
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
-    $tablebody.= "\t\t\t<tr>\n";
-    $tablebody.= "\t\t\t\t<td>";
-    $tablebody.= "<a href='tag-out.php?datum=" . date("Y-m-d", strtotime($row->Datum)) . "'>" . date("d.m.Y", strtotime($row->Datum)) . "</a>";
-    $tablebody.= "</td>\n";
-    $tablebody.= "\t\t\t\t<td>";
-    $tablebody.= "$row->Grund";
-    $tablebody.= "</td>\n";
-    $tablebody.= "\t\t\t\t<td>";
-    $tablebody.= "$row->Stunden";
-    $tablebody.= "</td>\n";
+    $tablebody .= "\t\t\t<tr>\n";
+    $tablebody .= "\t\t\t\t<td>";
+    $tablebody .= "<a href='tag-out.php?datum=" . date("Y-m-d", strtotime($row->Datum)) . "'>" . date("d.m.Y", strtotime($row->Datum)) . "</a>";
+    $tablebody .= "</td>\n";
+    $tablebody .= "\t\t\t\t<td>";
+    $tablebody .= "$row->Grund";
+    $tablebody .= "</td>\n";
+    $tablebody .= "\t\t\t\t<td>";
+    $tablebody .= "$row->Stunden";
+    $tablebody .= "</td>\n";
     if ($i == $number_of_rows) {
-        $tablebody.= "\t\t\t\t<td id=saldoAlt>";
+        $tablebody .= "\t\t\t\t<td id=saldoAlt>";
     } else {
-        $tablebody.= "\t\t\t\t<td>";
+        $tablebody .= "\t\t\t\t<td>";
     }
-    $tablebody.= "$row->Saldo";
+    $tablebody .= "$row->Saldo";
     $saldo = $row->Saldo; //Wir tragen den Saldo mit uns fort.
-    $tablebody.= "\t\t\t\t</td>\n";
-    $tablebody.= "\t\t\t</tr>\n";
+    $tablebody .= "\t\t\t\t</td>\n";
+    $tablebody .= "\t\t\t</tr>\n";
     $i++;
 }
-$tablebody.= "\t\t\t</tbody>\n";
+$tablebody .= "\t\t\t</tbody>\n";
 
 //Hier beginnt die Ausgabe
 echo build_select_employee($employee_id, $List_of_employees);

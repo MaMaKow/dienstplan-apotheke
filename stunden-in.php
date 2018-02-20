@@ -2,8 +2,6 @@
 require 'default.php';
 //Get a list of employees:
 require 'db-lesen-mitarbeiter.php';
-//Get a list of branches:
-require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, 'employee_id')) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } elseif (filter_has_var(INPUT_GET, 'employee_id')) {

@@ -1,7 +1,6 @@
 <?php
 require 'default.php';
 require 'db-lesen-mitarbeiter.php';
-require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);
 } elseif (filter_has_var(INPUT_GET, "employee_id")) {

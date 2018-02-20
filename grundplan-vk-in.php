@@ -2,8 +2,6 @@
 require 'default.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-//Hole Informationen über die Mandanten
-require 'db-lesen-mandant.php';
 //$datenübertragung="";
 $grundplanCSV = '';
 $tage = 7;
@@ -215,11 +213,11 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Mandant'][$j])) {
             $zeile .= "<br>\n";
             $zeile .= "<select name=Grundplan[$wochentag][Mandant][$j] form='change_principle_roster_employee'>\n";
-            foreach ($Branch_short_name as $branch_id => $branch_short_name) {
+            foreach ($List_of_branch_objects as $branch_id => $branch_object) {
                 if ($branch_id != $Grundplan[$wochentag]['Mandant'][$j]) {
-                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . '>' . $branch_short_name . "</option>\n";
+                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . '>' . $branch_object->short_name . "</option>\n";
                 } else {
-                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . ' selected>' . $branch_short_name . "</option>\n";
+                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . ' selected>' . $branch_object->short_name . "</option>\n";
                 }
             }
         }

@@ -98,17 +98,18 @@ function build_select_employee($employee_id, $Employee_id_list) {
  */
 
 function build_select_branch($current_branch_id, $date_sql) {
-    global $Branch_name;
+    $current_branch_id = (int) $current_branch_id;
+    global $List_of_branch_objects;
     $text = "<!--branch select form-->\n";
     $text .= "\t\t\t<div id=mandantenformular_div>\n";
     $text .= "\t\t\t<form id=mandantenformular method=post>\n";
     $text .= "\t\t\t\t<input type=hidden name=datum value=" . $date_sql . ">\n";
     $text .= "\t\t\t\t<select id=branch_form_select class='no-print large' name=mandant onchange=this.form.submit()>\n";
-    foreach ($Branch_name as $branch => $branch_name) {
-        if ($branch != $current_branch_id) {
-            $text .= "\t\t\t\t\t<option value=" . $branch . ">" . $branch_name . "</option>\n";
+    foreach ($List_of_branch_objects as $branch_id => $branch_object) {
+        if ($branch_id != $current_branch_id) {
+            $text .= "\t\t\t\t\t<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
         } else {
-            $text .= "\t\t\t\t\t<option value=" . $branch . " selected>" . $branch_name . "</option>\n";
+            $text .= "\t\t\t\t\t<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
         }
     }
     $text .= "\t\t\t\t</select>\n"

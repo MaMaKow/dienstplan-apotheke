@@ -31,8 +31,6 @@ $date_sql = $datum;
 $date_unix = strtotime($date_sql);
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
 
@@ -90,7 +88,7 @@ echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo "\t\t" . strftime(gettext("calendar week") . ' %V', strtotime($datum)) . "<br>";
-echo "<div class=only-print><b>" . $Branch_name[$mandant] . "</b></div><br>\n";
+echo "<div class=only-print><b>" . $List_of_branch_objects[$mandant]->name . "</b></div><br>\n";
 echo build_select_branch($mandant, $date_sql);
 
 
@@ -132,9 +130,9 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     require 'db-lesen-notdienst.php';
     if (isset($notdienst['mandant'])) {
         if (isset($List_of_employees[$notdienst['vk']])) {
-            echo "<br>NOTDIENST<br>" . $List_of_employees[$notdienst['vk']] . " / " . $Branch_name[$notdienst['mandant']];
+            echo "<br>NOTDIENST<br>" . $List_of_employees[$notdienst['vk']] . " / " . $List_of_branch_objects[$notdienst['mandant']]->name;
         } else {
-            echo "<br>NOTDIENST<br>??? / " . $Branch_name[$notdienst['mandant']];
+            echo "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$notdienst['mandant']]->name;
         }
     }
     echo "</td>\n";

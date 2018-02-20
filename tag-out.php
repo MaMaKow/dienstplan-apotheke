@@ -13,8 +13,6 @@ $mandant = 1; //First branch is allways the default.
  * This page will show the roster of one single day.
  */
 $tage = 1;
-//Get a list of all branches:
-require 'db-lesen-mandant.php';
 require_once 'db-lesen-abwesenheit.php';
 require_once 'image_dienstplan.php';
 require_once 'image_histogramm.php';
@@ -114,7 +112,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
         } else {
             echo "???";
         }
-        echo " / " . $Branch_name[$notdienst['mandant']];
+        echo " / " . $List_of_branch_objects[$notdienst['mandant']]->name;
     }
     echo "</td>\n";
 }
@@ -154,17 +152,17 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     require_once 'schreiben-tabelle.php';
 
     function build_branch_table_rows($mandant, $number_of_days) {
-        global $Branch_name;
+        global $List_of_branch_objects;
         $table_html = "";
 
-        foreach (array_keys($Branch_name) as $branch_id) {
+        foreach (array_keys($List_of_branch_objects) as $branch_id) {
             if ($mandant == $branch_id) {
                 continue 1;
             }
             $Filialplan[$branch_id] = read_roster_array_from_db($datum, $number_of_days, $branch_id, '[' . $mandant . ']'); //This function gets the roster of the branches.
             if (!empty(array_column($Filialplan[$branch_id], 'VK'))) { //array_column searches all days for some employee (VK)
                 $table_html .= "<tr><td><br></td></tr>";
-                $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($number_of_days) . ">" . $Branch_short_name[$mandant] . " in " . $Branch_short_name[$branch_id] . "</td></tr>";
+                $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($number_of_days) . ">" . $List_of_branch_objects[$mandant]->short_name . " in " . $List_of_branch_objects[$branch_id]->short_name . "</td></tr>";
                 $table_html .= schreiben_tabelle($Filialplan[$branch_id], $branch_id);
             }
         }
