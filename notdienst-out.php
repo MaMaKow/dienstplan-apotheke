@@ -19,8 +19,6 @@ if (isset($year)) {
     create_cookie('year', $year, 0.5);
 }
 
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 
 $sql_query = "SELECT * FROM Notdienst WHERE YEAR(Datum) = $year AND Mandant = $mandant";
 $result = mysqli_query_verbose($sql_query);
@@ -29,19 +27,20 @@ while ($row = mysqli_fetch_object($result)) {
     $Notdienste['Datum'][] = $row->Datum;
     $Notdienste['Mandant'][] = $row->Mandant;
 }
-require 'head.php';?>
-			<table>
-				<tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
-				<?php
-                    foreach ($Notdienste['Datum'] as $key => $datum) {
-                        echo "\n\t\t\t\t<tr><td>".date('d.m.Y', strtotime($Notdienste['Datum'][$key])).'</td>';
-												echo '<td>';
-												echo (isset($List_of_employees[$Notdienste['VK'][$key]])) ? $List_of_employees[$Notdienste['VK'][$key]] : "";
-												echo '</td>';
-												echo "<td style=width:40%></td></tr>";
-                    }
-            ?>
+require 'head.php';
+?>
+<table>
+    <tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
+    <?php
+    foreach ($Notdienste['Datum'] as $key => $datum) {
+        echo "\n\t\t\t\t<tr><td>" . date('d.m.Y', strtotime($Notdienste['Datum'][$key])) . '</td>';
+        echo '<td>';
+        echo (isset($List_of_employees[$Notdienste['VK'][$key]])) ? $List_of_employees[$Notdienste['VK'][$key]] : "";
+        echo '</td>';
+        echo "<td style=width:40%></td></tr>";
+    }
+    ?>
 
-		</table>
-	</body>
+</table>
+</body>
 </html>

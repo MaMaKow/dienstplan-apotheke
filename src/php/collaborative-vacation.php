@@ -508,11 +508,11 @@ function build_absence_month($year, $month_number) {
         }
 
         if (FALSE !== $having_emergency_service) {
-            require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-mandant.php";
+            $List_of_branch_objects = branch::read_branches_from_database();
             $p_html_content .= "<p class='emergency_service'>"
                     . gettext("emergency service")
                     . ":<br>"
-                    . $Branch_short_name[$having_emergency_service["branch_id"]]
+                    . $List_of_branch_objects[$having_emergency_service["branch_id"]]->short_name
                     . ",<br>"
                     . $List_of_employees[$having_emergency_service["employee_id"]]
                     . "</p>\n";

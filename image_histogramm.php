@@ -34,7 +34,7 @@ function check_timeliness_of_pep_data() {
 }
 
 function get_Erwartung($datum, $mandant) {
-    global $Dienstplan, $Anwesende;
+    global $List_of_branch_objects;
     require_once 'headcount-duty-roster.php';
     if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
         echo check_timeliness_of_pep_data();
@@ -45,8 +45,7 @@ function get_Erwartung($datum, $mandant) {
     $month_day = date('j', $unix_datum);
     $month = date('n', $unix_datum);
 
-    global $Branch_pep_id;
-    $branch_pep_id = $Branch_pep_id[$mandant];
+    $branch_pep_id = $List_of_branch_objects[$mandant]->PEP;
     if (empty($branch_pep_id)) {
         return FALSE;
     }

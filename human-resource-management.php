@@ -67,9 +67,9 @@ function write_employee_data_to_database() {
                 . $Worker['first_name'] . ", "
                 . " `last_name` = "
                 . $Worker['last_name'] . ", "
-                 . "`profession` = "
+                . "`profession` = "
                 . $Worker['profession'] . ", "
-                 . "`working_hours` = "
+                . "`working_hours` = "
                 . $Worker['working_hours'] . ", "
                 . " `working_week_hours` = "
                 . $Worker['working_week_hours'] . ", "
@@ -126,20 +126,21 @@ function make_radio_profession_list($checked) {
     }
 }
 
-function make_radio_branch_list($checked) {
+function make_radio_branch_list($checked_branch_id) {
     //$text = "<fieldset>\n";
     $text = "<label for='branch'>Mandant: </label>\n";
-    $List_of_branches = $GLOBALS['Branch_short_name'];
-    if (!isset($List_of_branches[0])) {
-        $List_of_branches[0] = gettext("None");
+    $List_of_branch_objects = branch::read_branches_from_database();
+    if (!isset($List_of_branch_objects[0])) {
+        $List_of_branch_objects[0] = new branch();
+        $List_of_branch_objects[0]->name = gettext("None");
     }
-    foreach ($List_of_branches as $branch => $branch_name) {
+    foreach ($List_of_branch_objects as $branch_id => $branch_object) {
         $text .= "<input type='radio' name='branch' ";
-        $text .= "value='$branch'";
-        if ($checked == $branch) {
+        $text .= "value='$branch_id'";
+        if ($checked_branch_id == $branch_id) {
             $text .= " checked=checked";
         }
-        $text .= ">&nbsp;$branch_name\n";
+        $text .= ">&nbsp;$branch_object->name\n";
     }
     //$text .= "</fieldset>\n";
 

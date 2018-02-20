@@ -83,11 +83,11 @@ while ($row = mysqli_fetch_array($result)) {
             . "<br>"
             . $row['first_start']
             . " bis " . $row['first_end']
-            . " (" . $Branch_short_name[$row['first_branch']]
+            . " (" . $List_of_branch_objects[$row['first_branch']]->short_name
             . ") mit <br>" . $row['second_start']
             . " bis "
             . $row['second_end']
             . " ("
-            . $Branch_short_name[$row['second_branch']]
+            . $List_of_branch_objects[$row['second_branch']]->short_name
             . ")!";
 }

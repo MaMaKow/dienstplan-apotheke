@@ -22,7 +22,7 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
     die("The application does not seem to be installed. Please see the <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php'>installation page</a>!");
 }
 
-require "config/config.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "config/config.php";
 //	file_put_contents('config/config.php', '<?php  $config =' . var_export($config, true) . ';');
 //Setup if errors should be reorted to the user:
 if (isset($config['error_reporting'])) {
@@ -34,9 +34,9 @@ ini_set("display_errors", 1); //debugging
 ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "error.log");
 
 //We want some functions to be accessable in all scripts.
-require_once "funktionen.php";
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "funktionen.php";
 //For development and debugging:
-require_once 'src/php/classes/class.dBug.php';
+//require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.dBug.php';
 //Setup the presentation of time values:
 if (isset($config['LC_TIME'])) {
     setlocale(LC_TIME, $config['LC_TIME']);
@@ -50,7 +50,7 @@ if (isset($config['mb_internal_encoding'])) {
 } else {
     mb_internal_encoding('UTF-8'); //Dies ist notwendig für die Verarbeitung von UTF-8 Zeichen mit einigen funktionen wie mb_substr
 }
-require_once 'src/php/localization.php';
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
 //Setup the default for hiding the duty roster before approval:
 //We set it up to false in order not to disconcert new users.
 if (!isset($config['hide_disapproved'])) {
@@ -58,14 +58,15 @@ if (!isset($config['hide_disapproved'])) {
 }
 
 //Create a connection to the database:
-require_once 'db-verbindung.php';
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-verbindung.php';
 
 //session management
-require_once 'src/php/classes/class.sessions.php';
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.sessions.php';
 $session = new sessions;
 
-require_once 'src/php/build-warning-messages.php';
-
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/build-warning-messages.php';
+require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.branch.php';
+$List_of_branch_objects = branch::read_branches_from_database();
 
 $navigator_languages = preg_split('/[,;]/', filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_STRING));
 $navigator_language = $navigator_languages[0]; //ignore the other options

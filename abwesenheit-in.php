@@ -3,8 +3,6 @@ require 'default.php';
 require_once 'src/php/calculate-holidays.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-//Get a list of branches:
-require 'db-lesen-mandant.php';
 if (filter_has_var(INPUT_POST, 'employee_id')) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
 } elseif (filter_has_var(INPUT_GET, 'employee_id')) {
@@ -230,6 +228,7 @@ require 'contact-form.php';
 ?>
 </body>
 </html>
+
 
 
 
