@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Pharmacies and connected branches
  *
@@ -29,7 +28,7 @@ class branch {
          * Get a list of branches:
          * CAVE! This function is thought to be called from the outside of this class only.
          */
-        if (!is_null($this)) {
+        if (!empty($this)) {
             print_debug_variable("CAVE read_branches_from_database() is thought to be called from the outside of this class only.");
             return FALSE;
         }
@@ -52,7 +51,7 @@ class branch {
         }
 
         if (empty(array_keys($Branches))) {
-            $this->redirect_to_input_form_on_missing_setup();
+            branch::redirect_to_input_form_on_missing_setup();
         } else {
             return $Branches;
         }
