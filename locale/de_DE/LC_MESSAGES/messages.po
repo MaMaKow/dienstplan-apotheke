@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-02-13 20:43+0100\n"
-"PO-Revision-Date: 2018-02-13 20:46+0100\n"
+"POT-Creation-Date: 2018-02-20 20:54+0100\n"
+"PO-Revision-Date: 2018-02-20 21:10+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -16,30 +16,58 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: abwesenheit-in.php:168 stunden-in.php:133 tag-in.php:109 woche-in.php:72
+#: abwesenheit-in.php:166 stunden-in.php:131 tag-in.php:107 woche-in.php:70
 msgid "Read"
 msgstr "Lesen"
 
-#: abwesenheit-out.php:59 stunden-out.php:59 tag-out.php:83 woche-out.php:85
+#: $Pdr_list_of_privileges
+msgid "administration"
+msgstr "Administration"
+
+#: $Pdr_list_of_privileges
+msgid "create employee"
+msgstr "Mitarbeiter anlegen"
+
+#: $Pdr_list_of_privileges
+msgid "create roster"
+msgstr "Dienstplan anlegen"
+
+#: $Pdr_list_of_privileges
+msgid "approve roster"
+msgstr "Dienstplan genehmigen"
+
+#: $Pdr_list_of_privileges
+msgid "create overtime"
+msgstr "Überstunden anlegen"
+
+#: $Pdr_list_of_privileges
+msgid "create absence"
+msgstr "Abwesenheiten anlegen"
+
+#: $Pdr_list_of_privileges
+msgid "request_own_absence"
+msgstr "Urlaub beantragen"
+
+#: abwesenheit-out.php:57 stunden-out.php:57 tag-out.php:81 woche-out.php:71
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: abwesenheit-out.php:64
+#: abwesenheit-out.php:62
 #: src/php/pages/collaborative-vacation-input-box.php:89
 msgid "Start"
 msgstr "Beginn"
 
-#: abwesenheit-out.php:67
+#: abwesenheit-out.php:65
 #: src/php/pages/collaborative-vacation-input-box.php:90
 msgid "End"
 msgstr "Ende"
 
-#: abwesenheit-out.php:70
+#: abwesenheit-out.php:68
 #: src/php/pages/collaborative-vacation-input-box.php:91
 msgid "Reason"
 msgstr "Grund"
 
-#: abwesenheit-out.php:73
+#: abwesenheit-out.php:71
 msgid "Days"
 msgstr "Tage"
 
@@ -64,30 +92,30 @@ msgstr "hat einen Kommentar"
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
 
-#: grundplan-tag-in.php:262 grundplan-vk-in.php:192 grundplan-vk-in.php:202
-#: grundplan-vk-in.php:211 schreiben-tabelle.php:106 tag-in.php:184
-#: tag-out.php:141 woche-in.php:147
+#: grundplan-tag-in.php:260 grundplan-vk-in.php:190 grundplan-vk-in.php:200
+#: grundplan-vk-in.php:209 schreiben-tabelle.php:106 tag-in.php:182
+#: tag-out.php:139 woche-in.php:145
 msgid "break"
 msgstr "Pause"
 
-#: grundplan-vk-in.php:207
+#: grundplan-vk-in.php:205
 msgid "No break"
 msgstr "Keine Pause"
 
-#: human-resource-management-in.php:53
+#: human-resource-management-in.php:52
 msgid "vacation days"
 msgstr "Urlaubstage"
 
-#: human-resource-management.php:134
+#: human-resource-management.php:135
 msgid "None"
 msgstr "Kein"
 
-#: mitarbeiter-out.php:69 tag-in.php:92 tag-out.php:73 woche-in.php:53
-#: woche-out.php:58
+#: mitarbeiter-out.php:68 tag-in.php:90 tag-out.php:71 woche-in.php:51
+#: woche-out.php:56
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
-#: mitarbeiter-out.php:93
+#: mitarbeiter-out.php:92
 msgid " is having emergency service at "
 msgstr " hat Notdienst in "
 
@@ -107,7 +135,7 @@ msgstr "1 Woche rückwärts"
 msgid "1 week forward"
 msgstr "1 Woche vorwärts"
 
-#: navigation.php:40 navigation.php:43 src/php/pages/branch-management.php:154
+#: navigation.php:40 navigation.php:43 src/php/pages/branch-management.php:165
 #: src/php/pages/collaborative-vacation-input-box.php:110
 msgid "Save"
 msgstr "Speichern"
@@ -125,15 +153,27 @@ msgstr "Ablehnen"
 msgid "At %1s there is no authorized person present."
 msgstr "Um %1s Uhr ist kein Approbierter anwesend."
 
-#: schreiben-tabelle.php:47 tag-out.php:46
+#: schreiben-ics.php:53
+msgid "Calendar file for employee "
+msgstr "Kalenderdatei für Mitarbeiter"
+
+#: schreiben-ics.php:54
+msgid "contains the roster for"
+msgstr "enthält den Dienstplan für"
+
+#: schreiben-ics.php:55
+msgid "Weekday"
+msgstr "Wochentag"
+
+#: schreiben-tabelle.php:47 tag-out.php:44
 msgid "The roster has not been approved by the administration!"
 msgstr "Dieser Dienstplan wurde noch nicht von der Leitung bestätigt."
 
-#: schreiben-tabelle.php:49 tag-out.php:48
+#: schreiben-tabelle.php:49 tag-out.php:46
 msgid "The roster is still beeing revised!"
 msgstr "Der Dienstplan wird noch überarbeitet."
 
-#: schreiben-tabelle.php:54 tag-out.php:52
+#: schreiben-tabelle.php:54 tag-out.php:50
 msgid "Missing data in table `approval`"
 msgstr "Fehlende Daten in der Tabelle `approval`"
 
@@ -246,15 +286,31 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/branch-management.php:158
+#: src/php/pages/branch-management.php:120
+msgid ""
+"No pharmacy and no branches have been configured. Please setup at least one "
+"pharmacy!"
+msgstr ""
+"Es wurde keine Apotheke und keine Filiale angelegt. Bitte konfigurieren Sie "
+"mindestens eine Apotheke!"
+
+#: src/php/pages/branch-management.php:144
+msgid ""
+"This is a short unofficial nickname for your pharmacy. It is used in pages "
+"with limited space. Please choose no more than 12 letters."
+msgstr ""
+"Dies ist ein kurzer Spitzname für Ihre Apotheke. Er wird auf Seiten mit eng "
+"begrenztem Platz verwendet. Bitte verwenden Sie nicht mehr als 12 Buchstaben."
+
+#: src/php/pages/branch-management.php:169
 msgid "Clear form data"
 msgstr "Formular zurücksetzen"
 
-#: src/php/pages/branch-management.php:162
+#: src/php/pages/branch-management.php:173
 msgid "Remove branch"
 msgstr "Mandant löschen"
 
-#: src/php/pages/branch-management.php:164
+#: src/php/pages/branch-management.php:176
 msgid "Use \"Clear form data\" to enter data for a new branch"
 msgstr ""
 "Nutzen Sie \"Formular zurücksetzen\" um Daten für einen neuen Mandanten "

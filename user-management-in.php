@@ -1,5 +1,6 @@
 <?php
 require 'default.php';
+print_debug_variable('$_POST', $_POST);
 require 'db-lesen-mitarbeiter.php';
 if (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);
@@ -76,7 +77,8 @@ if (!$session->user_has_privilege('administration')) {
 echo build_select_employee($employee_id, $User_list);
 
 function build_checkbox_permission($privilege, $checked) {
-    $text = "<label for='$privilege'>" . gettext($privilege) . ": </label>";
+    $privilege_name = gettext(str_replace('_', ' ', $privilege));
+    $text = "<label for='$privilege'>" . $privilege_name . ": </label>";
     $text .= "<input type='checkbox' name='privilege[]' value='$privilege' id='$privilege' ";
     if ($checked) {
         $text .= " checked='checked'";
@@ -86,16 +88,9 @@ function build_checkbox_permission($privilege, $checked) {
 }
 ?>
 <form method='POST' id='user_management'>
-    TODO: Get a good german wording!<br>
-
     <input type='text' name='employee_id' id="employee_id" value="<?= $User["employee_id"] ?>" hidden='true'>
     <p>
         <?php
-        $sql_query = "SELECT DISTINCT `privilege` FROM `users_privileges`";
-        $result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_object($result)) {
-            $Privilege_types[] = $row->privilege;
-        }
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
             echo build_checkbox_permission($privilege, in_array($privilege, $User["privilege"]));
             echo "<br>";
