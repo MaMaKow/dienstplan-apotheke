@@ -42,11 +42,13 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
         $current_branch_id = min(array_keys($List_of_branch_objects));
         //TODO: Test if the deletion-query to sql was successfull.
         $deletion_done_div_html = "<div class=overlay_top>"
+                . "<form id='branch_deletion_done_confirmation_form'>"
                 . "<p>The branch was successfully deleted.</p>"
-                . "<button type='submit' form='branch_management_form' class='form_button' name='deletion_done_confirmation_button' id='deletion_done_confirmation_button'>"
+                . "<button type='submit' form='branch_deletion_done_confirmation_form' class='form_button' name='deletion_done_confirmation_button' id='deletion_done_confirmation_button'>"
                 . "<img src=" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png>"
                 . "<p>Continue</p>"
                 . "</button>"
+                . "</form>"
                 . "</div>";
     } elseif (!isset($List_of_branch_objects[$new_branch_id])) {
         /*
@@ -145,7 +147,7 @@ if (empty($List_of_branch_objects)) {
     </p><p>
         <label for="branch_address">Branch address: </label>
         <br>
-        <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" value="<?= $List_of_branch_objects[$current_branch_id]->address ?>"></textarea>
+        <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" ><?= $List_of_branch_objects[$current_branch_id]->address ?></textarea>
     </p><p>
         <label for="branch_manager">Branch manager: </label>
         <br>
