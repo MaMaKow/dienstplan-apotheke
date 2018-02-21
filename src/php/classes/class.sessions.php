@@ -34,6 +34,22 @@ class sessions {
         'request_own_absence',
     );
 
+    private function gettext_fake() {
+        return TRUE;
+        /*
+         * poEdit and gettext are not willing to include words, that are not in the source files.
+         * Therefore we randomly include some words here, which are necessary.
+         * Used in function build_checkbox_permission() in user-management-in.php
+         */
+        gettext('administration');
+        gettext('create employee');
+        gettext('create roster');
+        gettext('approve roster');
+        gettext('create overtime');
+        gettext('create absence');
+        gettext('request own absence');
+    }
+
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
         session_start();
