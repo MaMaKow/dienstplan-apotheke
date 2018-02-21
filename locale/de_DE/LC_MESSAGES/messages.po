@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-02-20 20:54+0100\n"
-"PO-Revision-Date: 2018-02-20 21:10+0100\n"
+"POT-Creation-Date: 2018-02-21 12:53+0100\n"
+"PO-Revision-Date: 2018-02-21 12:53+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -19,34 +19,6 @@ msgstr ""
 #: abwesenheit-in.php:166 stunden-in.php:131 tag-in.php:107 woche-in.php:70
 msgid "Read"
 msgstr "Lesen"
-
-#: $Pdr_list_of_privileges
-msgid "administration"
-msgstr "Administration"
-
-#: $Pdr_list_of_privileges
-msgid "create employee"
-msgstr "Mitarbeiter anlegen"
-
-#: $Pdr_list_of_privileges
-msgid "create roster"
-msgstr "Dienstplan anlegen"
-
-#: $Pdr_list_of_privileges
-msgid "approve roster"
-msgstr "Dienstplan genehmigen"
-
-#: $Pdr_list_of_privileges
-msgid "create overtime"
-msgstr "Überstunden anlegen"
-
-#: $Pdr_list_of_privileges
-msgid "create absence"
-msgstr "Abwesenheiten anlegen"
-
-#: $Pdr_list_of_privileges
-msgid "request_own_absence"
-msgstr "Urlaub beantragen"
 
 #: abwesenheit-out.php:57 stunden-out.php:57 tag-out.php:81 woche-out.php:71
 msgid "Edit"
@@ -222,27 +194,55 @@ msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 msgid "and"
 msgstr "und"
 
-#: src/php/classes/class.sessions.php:136
+#: src/php/classes/class.sessions.php:44
+msgid "administration"
+msgstr "Administration"
+
+#: src/php/classes/class.sessions.php:45
+msgid "create employee"
+msgstr "Mitarbeiter anlegen"
+
+#: src/php/classes/class.sessions.php:46
+msgid "create roster"
+msgstr "Dienstplan anlegen"
+
+#: src/php/classes/class.sessions.php:47
+msgid "approve roster"
+msgstr "Dienstplan genehmigen"
+
+#: src/php/classes/class.sessions.php:48
+msgid "create overtime"
+msgstr "Überstunden anlegen"
+
+#: src/php/classes/class.sessions.php:49
+msgid "create absence"
+msgstr "Abwesenheiten anlegen"
+
+#: src/php/classes/class.sessions.php:50
+msgid "request own absence"
+msgstr "Urlaub beantragen"
+
+#: src/php/classes/class.sessions.php:152
 msgid "The permission to create a roster is missing."
 msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 
-#: src/php/classes/class.sessions.php:137
+#: src/php/classes/class.sessions.php:153
 msgid "Please contact the administrator."
 msgstr "Bitte wenden Sie sich an Ihren Administrator."
 
-#: src/php/classes/class.sessions.php:138
+#: src/php/classes/class.sessions.php:154
 msgid "Escalate privileges"
 msgstr "Rechte erweitern"
 
-#: src/php/classes/class.sessions.php:253
+#: src/php/classes/class.sessions.php:269
 msgid "Logout"
 msgstr "Logout"
 
-#: src/php/classes/class.sessions.php:259
+#: src/php/classes/class.sessions.php:275
 msgid "Lost password"
 msgstr "Passwort vergessen"
 
-#: src/php/classes/class.sessions.php:261
+#: src/php/classes/class.sessions.php:277
 msgid ""
 "Dear User,\n"
 "\n"
@@ -252,26 +252,26 @@ msgstr ""
 "\n"
 "um ein neues Passwort für"
 
-#: src/php/classes/class.sessions.php:265
+#: src/php/classes/class.sessions.php:281
 msgid "user name"
 msgstr "Benutzer"
 
-#: src/php/classes/class.sessions.php:266
+#: src/php/classes/class.sessions.php:282
 msgid "please visit"
 msgstr "besuchen Sie bitte"
 
-#: src/php/classes/class.sessions.php:269
+#: src/php/classes/class.sessions.php:285
 msgid "this address"
 msgstr "diese Adresse"
 
-#: src/php/classes/class.sessions.php:271
+#: src/php/classes/class.sessions.php:287
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
 #: src/php/collaborative-vacation.php:290
 #: src/php/collaborative-vacation.php:458
 msgid "from"
-msgstr "vin"
+msgstr "von"
 
 #: src/php/collaborative-vacation.php:291
 #: src/php/collaborative-vacation.php:459
