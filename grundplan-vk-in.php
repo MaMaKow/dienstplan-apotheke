@@ -3,7 +3,6 @@ require 'default.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 //$datenübertragung="";
-$grundplanCSV = '';
 $tage = 7;
 
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE übergebenen Daten.
@@ -58,7 +57,6 @@ if (isset($Grundplan)) {
         }
     }
     foreach ($Sql_query_list as $sql_query) {
-        //print_debug_variable($sql_query);
         $result = mysqli_query_verbose($sql_query);
     }
 }
@@ -179,7 +177,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             } else {
                 $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Dienstende"][$j]));
             }
-            $zeile .= "' form=change_principle_roster_employee'>";
+            $zeile .= "' form='change_principle_roster_employee'>";
         }
         echo $zeile;
 
