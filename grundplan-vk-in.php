@@ -154,7 +154,8 @@ foreach ($Grundplan as $wochentag => $Plan) {
     echo "</td>\n";
 }
 for ($j = 0; $j < $plan_anzahl; ++$j) {
-    echo "\t\t\t\t</tr></thead><tr>\n";
+    echo "\t\t\t\t</tr></thead>";
+    echo "<tbody><tr>\n";
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
         $zeile = "";
@@ -238,17 +239,31 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
     }
 }
 echo "\t\t\t\t</tr>\n";
+/*
+ * TODO: Write JavaScript Code to allow adding more rows to the form
+  echo "<tr>";
+  foreach (array_keys($Grundplan) as $wochentag) {
+  //TODO: Write Javascript for adding an entry:
+  echo "<td id='add_entry_$wochentag'><p><a href='#' onclick='alert(\"Sorry, this feature is not yet implemented.\");add_entry_to_change_principle_roster_employee_form()'>" . gettext("Add row") . "</a></p></td>";
+  }
+  echo "</tr>";
+ *
+ */
+echo "\t\t\t\t</tbody>\n";
 echo "\t\t\t\t<tfoot>\n";
 echo "\t\t\t\t<tr>\n";
 echo "\t\t\t\t\t<td colspan=$tage>\n";
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.
-foreach ($Grundplan as $wochentag => $value) {
-    // Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
-    if ($wochentag >= 6) {
-        continue 1;
-    }
+foreach (array_keys($Grundplan) as $wochentag) {
+    /*
+      // Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
+      if ($wochentag >= 6) {
+      continue 1;
+      }
+     *
+     */
     foreach ($Grundplan[$wochentag]["Stunden"] as $key => $stunden) {
         $Stunden[$employee_id][] = $stunden;
     }
