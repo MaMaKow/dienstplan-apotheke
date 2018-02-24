@@ -29,10 +29,7 @@ abstract class roster {
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
 
-    public function read_roster_from_database($date_sql_start, $date_sql_end, $branch_id) {
-        //Abruf der gespeicherten Daten aus der Datenbank
-        //$number_of_days ist die Anzahl der Tage. 5 Tage = Woche; 1 Tag = 1 Tag.
-        //Branch #0 can be used for the boss, the cleaning lady, and other special people, who do not regularly appear in the roster.
+    public function read_roster_from_database($date_sql_start, $date_sql_end, $branch_id)
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
@@ -43,8 +40,10 @@ abstract class roster {
                     . 'ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
             $result = mysqli_query_verbose($sql_query);
 
+            $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
-                $Roster[$date_unix][] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $roster_row_iterator++;
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
             }
             /*
              * We mark empty roster days as empty:
@@ -56,8 +55,8 @@ abstract class roster {
         return $Roster;
     }
 
-    public function get_employee_id_from_roster($day_iterator, $array_column) {
-
+    public function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        //return $Roster[][]->
     }
 
 }
