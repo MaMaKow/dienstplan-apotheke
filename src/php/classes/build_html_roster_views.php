@@ -30,7 +30,7 @@ function build_absentees_column($Absentees) {
     global $List_of_employees;
     $text = "\t\t<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
     foreach ($Absentees as $employee_id => $reason) {
-        $text.= $List_of_employees[$employee_id] . " (" . $reason . ")<br>";
+        $text .= $List_of_employees[$employee_id] . " (" . $reason . ")<br>";
     }
     $text .= "</td>\n";
     return $text;
@@ -40,7 +40,7 @@ function build_absentees_column($Absentees) {
  * Build one table row for a daily view
  *
  * used by: tag-in.php
- * @param $Absentees array expects an array of absent employees in the format array(employee_id => reason_for_absence)
+ * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (string)reason_for_absence)
  *
  * @return string HTML table row
  */

@@ -24,6 +24,11 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
 
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "config/config.php";
 //	file_put_contents('config/config.php', '<?php  $config =' . var_export($config, true) . ';');
+//Setup the default for hiding the duty roster before approval:
+//We set it up to false in order not to disconcert new administrators.
+if (!isset($config['hide_disapproved'])) {
+    $config['hide_disapproved'] = false;
+}
 //Setup if errors should be reorted to the user:
 if (isset($config['error_reporting'])) {
     error_reporting($config['error_reporting']);
@@ -33,6 +38,9 @@ if (isset($config['error_reporting'])) {
 ini_set("display_errors", 1); //debugging
 ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "error.log");
 
+spl_autoload_register(function ($class_name) {
+    include_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.' . $class_name . '.php';
+});
 //We want some functions to be accessable in all scripts.
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "funktionen.php";
 //For development and debugging:
@@ -51,21 +59,16 @@ if (isset($config['mb_internal_encoding'])) {
     mb_internal_encoding('UTF-8'); //Dies ist notwendig für die Verarbeitung von UTF-8 Zeichen mit einigen funktionen wie mb_substr
 }
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
-//Setup the default for hiding the duty roster before approval:
-//We set it up to false in order not to disconcert new users.
-if (!isset($config['hide_disapproved'])) {
-    $config['hide_disapproved'] = false;
-}
 
 //Create a connection to the database:
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-verbindung.php';
 
 //session management
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.sessions.php';
+//require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.sessions.php';
 $session = new sessions;
 
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/build-warning-messages.php';
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.branch.php';
+//require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.branch.php';
 $List_of_branch_objects = branch::read_branches_from_database();
 
 $navigator_languages = preg_split('/[,;]/', filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_STRING));

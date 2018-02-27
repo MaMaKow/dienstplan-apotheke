@@ -77,7 +77,7 @@ class sessions {
          * We make an exception for localhost. If data is not sent through the net, there is no absolute need for HTTPS.
          * People are still free to use it on their own. Administrators are able to force it in Apache (or any other web server).
          */
-        if ("localhost" != $http_host AND ( empty($https) OR $https != "on")) {
+        if ("localhost" != $http_host AND "" != $http_host AND ( empty($https) OR $https != "on")) {
             header("Location: https://" . $http_host . $request_uri);
             die("<p>Dieses Programm erfordert die Nutzung von "
                     . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
