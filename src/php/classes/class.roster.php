@@ -29,9 +29,13 @@ abstract class roster {
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
 
-    public function read_roster_from_database($date_sql_start, $date_sql_end, $branch_id)
+    public static function read_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
+        if (NULL === $date_sql_end) {
+            $date_sql_end = $date_sql_start;
+        }
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
+        $Roster = array();
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
             $sql_query = 'SELECT DISTINCT Dienstplan.* '
@@ -43,7 +47,11 @@ abstract class roster {
             $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
                 $roster_row_iterator++;
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                try {
+                    $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                } catch (PDRRosterLogicException $exception) {
+                    throw new PDRRosterLogicException($exception->getMessage());
+                }
             }
             /*
              * We mark empty roster days as empty:
@@ -55,8 +63,8 @@ abstract class roster {
         return $Roster;
     }
 
-    public function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
-        //return $Roster[][]->
+    public static function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        return $Roster[$day_iterator][$roster_row_iterator]->employee_id;
     }
 
 }

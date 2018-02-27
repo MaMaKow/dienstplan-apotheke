@@ -6,12 +6,9 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_v
 
 require "src/php/calculate-holidays.php";
 
-$mandant = 1; //First branch is allways the default.
+$mandant = min(array_keys($List_of_branch_objects)); //First branch is allways the default.
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
-$datenübertragung = "";
-$dienstplanCSV = "";
-
 
 $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 
@@ -21,6 +18,7 @@ require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 $date_unix = strtotime($datum);
+$branch_id = $mandant;
 if (isset($mandant)) {
     create_cookie("mandant", $mandant, 30);
 }
@@ -33,7 +31,11 @@ $date_unix = strtotime($date_sql);
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
-
+try {
+    $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+} catch (PDRRosterLogicException $pdr_roster_logic_exception) {
+    $Fehlermeldung[] = $pdr_roster_logic_exception->getMessage();
+}
 require_once 'db-lesen-abwesenheit.php';
 $Abwesende = db_lesen_abwesenheit($datum);
 $holiday = is_holiday($date_unix);
