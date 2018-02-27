@@ -163,7 +163,7 @@ for ($j = 0; $j < $VKcount; $j++) {
         $zeile .= "\t\t\t\t\t\t<input type=hidden name=Dienstplan[" . $i . "][Datum][" . $j . "] value=" . htmlentities($Dienstplan[0]["Datum"][$roster_first_key]) . ">\n";
         $zeile .= "\t\t\t\t\t\t<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] id=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 2 ) . " value='";
         if (isset($Dienstplan[$i]["VK"][$j])) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
+            $zeile .= roster::get_duty_start_from_roster($Roster, $date_unix, $j);
         }
         $zeile .= "'> bis <input type=time size=5 class=Dienstplan_Dienstende name=Dienstplan[" . $i . "][Dienstende][" . $j . "] id=Dienstplan[" . $i . "][Dienstende][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 3 ) . " value='";
         //Dienstende
