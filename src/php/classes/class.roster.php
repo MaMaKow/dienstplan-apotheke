@@ -46,12 +46,12 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
-                $roster_row_iterator++;
                 try {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 } catch (PDRRosterLogicException $exception) {
                     throw new PDRRosterLogicException($exception->getMessage());
                 }
+                $roster_row_iterator++;
             }
             /*
              * We mark empty roster days as empty:
@@ -65,6 +65,10 @@ abstract class roster {
 
     public static function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
         return $Roster[$day_iterator][$roster_row_iterator]->employee_id;
+    }
+
+    public static function get_duty_start_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        return roster_item::format_time_integer_to_string($Roster[$day_iterator][$roster_row_iterator]->duty_start_int);
     }
 
 }
