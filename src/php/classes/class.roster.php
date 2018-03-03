@@ -71,4 +71,20 @@ abstract class roster {
         return roster_item::format_time_integer_to_string($Roster[$day_iterator][$roster_row_iterator]->duty_start_int);
     }
 
+    public static function get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        return roster_item::format_time_integer_to_string($Roster[$day_iterator][$roster_row_iterator]->duty_end_int);
+    }
+
+    public static function get_break_start_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        return roster_item::format_time_integer_to_string($Roster[$day_iterator][$roster_row_iterator]->break_start_int);
+    }
+
+    public static function get_break_end_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        return roster_item::format_time_integer_to_string($Roster[$day_iterator][$roster_row_iterator]->break_end_int);
+    }
+
+    public static function get_comment_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        return $Roster[$day_iterator][$roster_row_iterator]->comment;
+    }
+
 }

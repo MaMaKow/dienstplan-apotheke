@@ -139,67 +139,14 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     }
     echo "</td>\n";
 }
+echo "\t\t\t\t</tr>\n";
 for ($j = 0; $j < $VKcount; $j++) {
-    echo "\t\t\t\t</tr><tr>\n";
-    for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
-        $zeile = "";
-        echo "\t\t\t\t\t<td>";
-        $zeile .= "<select name=Dienstplan[" . $i . "][VK][" . $j . "] tabindex=" . (($i * $VKcount * 5) + ($j * 5) + 1) . ">";
-        $zeile .= "<option value=''>&nbsp;</option>";
-
-        for ($k = 1; $k < $VKmax + 1; $k++) { //k=1 means that we will ignore any worker with a number smaller than one. Specific people like the cleaning lady will not be visible in the plan. But their holiday can still be organized with the holiday module.
-            if (isset($Dienstplan[$i]["VK"][$j])) {
-                if (isset($List_of_employees[$k]) and $Dienstplan[$i]["VK"][$j] != $k) { //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
-                    $zeile .= "<option value=$k>" . $k . " " . $List_of_employees[$k] . "</option>";
-                } elseif (isset($List_of_employees[$k])) {
-                    $zeile .= "<option value=$k selected>" . $k . " " . $List_of_employees[$k] . "</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
-                }
-            } elseif (isset($List_of_employees[$k])) {
-                $zeile .= "<option value=$k>" . $k . " " . $List_of_employees[$k] . "</option>";
-            }
-        }
-        $zeile .= "</select>\n";
-        //Dienstbeginn
-        $zeile .= "\t\t\t\t\t\t<input type=hidden name=Dienstplan[" . $i . "][Datum][" . $j . "] value=" . htmlentities($Dienstplan[0]["Datum"][$roster_first_key]) . ">\n";
-        $zeile .= "\t\t\t\t\t\t<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] id=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 2 ) . " value='";
-        if (isset($Dienstplan[$i]["VK"][$j])) {
-            $zeile .= roster::get_duty_start_from_roster($Roster, $date_unix, $j);
-        }
-        $zeile .= "'> bis <input type=time size=5 class=Dienstplan_Dienstende name=Dienstplan[" . $i . "][Dienstende][" . $j . "] id=Dienstplan[" . $i . "][Dienstende][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 3 ) . " value='";
-        //Dienstende
-        if (isset($Dienstplan[$i]["VK"][$j])) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstende"][$j]));
-        }
-        $zeile .= "'>";
-        echo $zeile;
-
-        echo "</td>\n";
+    echo "\t\t\t\t<tr>\n";
+    foreach (array_keys($Roster) as $day_iterator) {
+        echo build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $j, $VKcount, $date_unix);
     }
-    echo "\t\t\t\t</tr><tr>\n";
-    for ($i = 0; $i < count($Dienstplan); $i++) {//Mittagspause
-        $zeile = "";
-        echo "\t\t\t\t\t<td>";
-        $zeile .= "<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
-        $zeile .= "<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-        $zeile .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] id=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
-        if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
-        }
-        $zeile .= "'> bis <input type=time size=5 class=Dienstplan_Mittagsende name=Dienstplan[" . $i . "][Mittagsende][" . $j . "] id=Dienstplan[" . $i . "][Mittagsende][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 5 ) . " value='";
-        if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
-        }
-        $zeile .= "'>";
-        $zeile .= "<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[" . $i . "][Kommentar][" . $j . "] value=\"";
-        if (isset($Dienstplan[$i]["Kommentar"][$j])) {
-            $zeile .= $Dienstplan[$i]["Kommentar"][$j];
-        }
-        $zeile .= "\"></div>";
-        echo $zeile;
-        echo "</td>\n";
-    }
+    echo "\t\t\t\t</tr>\n";
 }
-echo "\t\t\t\t</tr>";
 
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
