@@ -24,7 +24,7 @@
  */
 class roster_item {
 
-    public $date;
+    public $date_sql;
     public $employee_id;
     public $duty_start_sql;
     public $duty_end_sql;
@@ -37,9 +37,9 @@ class roster_item {
     public $working_hours;
     public $comment;
 
-    function __construct($date, $employee_id, $duty_start, $duty_end, $break_start, $break_end, $comment) {
-        $this->date = $date;
-        $this->date_unix = strtotime($date);
+    function __construct($date_sql, $employee_id, $duty_start, $duty_end, $break_start, $break_end, $comment) {
+        $this->date_sql = $date_sql;
+        $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;
         $this->duty_start_sql = $duty_start;
         $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
@@ -74,17 +74,31 @@ class roster_item {
      */
 
     public static function format_date_unix_to_string($date_unix, $format = 'Y-m-d') {
-        return date($format, $date_unix);
+        if (NULL === $date_unix) {
+            return NULL;
+        }
+        return gmdate($format, $date_unix);
     }
 
     public static function format_time_integer_to_string($time_seconds, $format = 'H:i') {
         if ($time_seconds > PDR_ONE_DAY_IN_SECONDS) {
             throw new Exception('The time in seconds must be below 1 day (' . PDR_ONE_DAY_IN_SECONDS . ')');
         }
-        return date($format, $time_seconds);
+        if (NULL === $time_seconds) {
+            return NULL;
+        }
+        /*
+         * TODO: find out why we have to use gmdate here.
+         * Is it possible to configure the date environment?
+         * Also have a look at format_date_unix_to_string
+         */
+        return gmdate($format, $time_seconds);
     }
 
     public static function convert_time_to_seconds($time_string) {
+        if (NULL === $time_string) {
+            return NULL;
+        }
         list($hours, $mins, $secs) = explode(':', $time_string);
         return ($hours * 3600 ) + ($mins * 60 ) + $secs;
     }
