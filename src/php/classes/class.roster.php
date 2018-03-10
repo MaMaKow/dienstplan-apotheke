@@ -46,11 +46,7 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
-                try {
-                    $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
-                } catch (PDRRosterLogicException $exception) {
-                    throw new PDRRosterLogicException($exception->getMessage());
-                }
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $roster_row_iterator++;
             }
             /*
@@ -61,6 +57,107 @@ abstract class roster {
             }
         }
         return $Roster;
+    }
+
+    public static function read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
+        global $List_of_employees;
+        if (NULL === $date_sql_end) {
+            $date_sql_end = $date_sql_start;
+        }
+        $date_unix_start = strtotime($date_sql_start);
+        $date_unix_end = strtotime($date_sql_end);
+        $Roster = array();
+        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
+            $date_sql = date('Y-m-d', $date_unix);
+            $Absentees = db_lesen_abwesenheit($date_sql);
+            /*
+             * TODO: Make sure, that these two repair calls are not necessary anymore:
+             */
+            mysqli_query_verbose("UPDATE `Apotheke`.`Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
+            mysqli_query_verbose("UPDATE `Apotheke`.`Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
+            $sql_query = "SELECT * FROM `Grundplan`"
+                    . "WHERE `Wochentag` = '" . date("N", $date_unix) . "'"
+                    . "AND `Mandant` = '$branch_id'"
+                    . "ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`";
+
+            $result = mysqli_query_verbose($sql_query);
+            $roster_row_iterator = 0;
+            while ($row = mysqli_fetch_object($result)) {
+                //Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
+                //TODO: This should be put somewhere else as a seperate function!
+                if (isset($Absentees[$row->VK])) {
+                    continue 1;
+                }
+                if (isset($List_of_employees) AND array_search($row->VK, array_keys($List_of_employees)) === false) {
+                    //$Fehlermeldung[]=$List_of_employees[$row->VK]." ist nicht angestellt.<br>\n";
+                    continue 1;
+                }
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
+                $roster_row_iterator++;
+                //TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
+            }
+        }
+        //TODO: call determine_lunch_breaks here perhaps
+        return $Roster;
+    }
+
+    /*
+     * This function determines the optimal lunch breaks.
+     *
+     * It considers the principle lunch breaks.
+     * @return array $Roster
+     */
+
+    public static function determine_lunch_breaks($Roster) {
+        global $List_of_employee_lunch_break_minutes;
+        $lunch_break_length_standard = 30 * 60;
+        foreach (array_keys($Roster) as $date_unix) {
+            if (empty($Roster[$date_unix])) {
+                return FALSE;
+            }
+            foreach ($Roster[$date_unix] as $roster_item_object) {
+                $break_start_taken_int[] = $roster_item_object->break_start_int;
+                $break_end_taken_int[] = $roster_item_object->break_end_int;
+            }
+            $lunch_break_start = roster_item::convert_time_to_seconds('11:30:00');
+            foreach ($Roster[$date_unix] as $roster_item_object) {
+                $employee_id = $roster_item_object->employee_id;
+                if (!empty($List_of_employee_lunch_break_minutes[$employee_id]) AND ! ($roster_item_object->break_start_int > 0) AND ! ($roster_item_object->break_end_int > 0)) {
+                    //Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
+                    $duty_seconds_with_a_break = $roster_item_object->duty_end_int - $roster_item_object->duty_start_int - $List_of_employee_lunch_break_minutes[$employee_id] * 60;
+                    if ($duty_seconds_with_a_break >= 6 * 3600) {
+                        //echo "Mehr als 6 Stunden, also gibt es Mittag!";
+                        //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
+                        $lunch_break_end = $lunch_break_start + $List_of_employee_lunch_break_minutes[$employee_id] * 60;
+                        for ($number_of_trys = 0; $number_of_trys < 3; $number_of_trys++) {
+                            if (FALSE !== array_search($lunch_break_start, $break_start_taken_int) OR FALSE !== array_search($lunch_break_end, $break_end_taken_int)) {
+                                //Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
+                                $lunch_break_start += $lunch_break_length_standard;
+                                $lunch_break_end += $lunch_break_length_standard;
+                                continue;
+                            } else {
+                                break;
+                            }
+                        }
+                        $roster_item_object->break_start_int = $lunch_break_start;
+                        $roster_item_object->break_start_sql = roster_item::format_time_integer_to_string($lunch_break_start);
+                        $roster_item_object->break_end_int = $lunch_break_end;
+                        $roster_item_object->break_end_sql = roster_item::format_time_integer_to_string($lunch_break_end);
+                        /*
+                         * Preparartion for the next iteration:
+                         */
+                        $lunch_break_start = $lunch_break_end;
+                    }
+                } elseif (!empty($employee_id) AND ! empty($roster_item_object->break_start_int) AND empty($roster_item_object->break_end_int)) {
+                    $roster_item_object->break_end_int = $roster_item_object->break_start_int + $List_of_employee_lunch_break_minutes[$employee_id];
+                    $roster_item_object->break_end_sql = roster_item::format_time_integer_to_string($roster_item_object->break_end_int);
+                } elseif (!empty($employee_id) AND empty($roster_item_object->break_start_int) AND ! empty($roster_item_object->break_end_int)) {
+                    $roster_item_object->break_start_int = $roster_item_object->break_end_int - $List_of_employee_lunch_break_minutes[$employee_id];
+                    $roster_item_object->break_start_sql = roster_item::format_time_integer_to_string($roster_item_object->break_start_int);
+                }
+            }
+        }
+        return NULL;
     }
 
     public static function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {

@@ -6,47 +6,46 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_v
 
 require "src/php/calculate-holidays.php";
 
-$mandant = min(array_keys($List_of_branch_objects)); //First branch is allways the default.
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
 
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 
-
-
-require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$date_unix = strtotime($datum);
+//$employee_id = user_input::get_variable_from_any_input("employee_id", FILTER_SANITIZE_NUMBER_INT);
+$mandant = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $branch_id = $mandant;
+
+$datum = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
+$date_sql = $datum;
+$date_unix = strtotime($date_sql);
+//$year = user_input::get_variable_from_any_input("year", FILTER_SANITIZE_NUMBER_INT);
+
+
+require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 if (isset($mandant)) {
     create_cookie("mandant", $mandant, 30);
 }
 if (isset($datum)) {
     create_cookie("datum", $datum, 0.5);
 }
-$date_sql = $datum;
-$date_unix = strtotime($date_sql);
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
-$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
-try {
-    $Roster = roster::read_roster_from_database($branch_id, $date_sql);
-} catch (PDRRosterLogicException $pdr_roster_logic_exception) {
-    $Fehlermeldung[] = $pdr_roster_logic_exception->getMessage();
-}
 require_once 'db-lesen-abwesenheit.php';
 $Abwesende = db_lesen_abwesenheit($datum);
 $holiday = is_holiday($date_unix);
+$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
+$Roster = roster::read_roster_from_database($branch_id, $date_sql);
 require_once 'plane-tag-grundplan.php';
-$Principle_roster = get_principle_roster($datum, $mandant, $tag, $tage);
-if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND FALSE === $holiday) { //No plans on Saturday, SUnday and holidays.
+$Principle_roster_old = get_principle_roster($datum, $mandant, $tag, $tage);
+$Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql);
+if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster_old AND FALSE === $holiday) { //No plans on Saturday, Sunday and holidays.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
-    //sort_roster_array($Principle_roster);
-    $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
+    //sort_roster_array($Principle_roster_old);
+    $Dienstplan = determine_lunch_breaks($Principle_roster_old, $tag);
+    roster::determine_lunch_breaks($Principle_roster);
+    $Roster = $Principle_roster;
 }
 if ((array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0]))
         and "7" !== date('N', strtotime($datum))

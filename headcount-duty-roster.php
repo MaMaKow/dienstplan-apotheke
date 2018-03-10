@@ -36,17 +36,14 @@ if (!empty($Dienstplan[$tag]["Dienstbeginn"])) {
         $tages_ende = strtotime('23:00');
         return 1;
     }
-    //print_debug_variable('$Dienstplan, $Dienstplan[$tag], $Dienstplan[$tag]["Dienstbeginn"]', $Dienstplan, $Dienstplan[$tag], $Dienstplan[$tag]["Dienstbeginn"]);
     //Für den Fall, dass auch außerhalb der üblichen Zeiten jemand anwesend ist (Notdienst, Late-Night,...) könnte man mit den folgenden zwei Zeilen die Prüfung erweitern.
     //$tages_beginn=min($tages_beginn, strtotime(min(array_filter(array_values($Dienstplan[$tag]["Dienstbeginn"])))));
     //$tages_ende=max($tages_ende, strtotime(max(array_values($Dienstplan[$tag]["Dienstende"]))));
     //Wenn die Funktion bereits aufgerufen wurde, ist dieser Wert bereits gesetzt.
     if (empty($Changing_times[0])) {
         global $Changing_times;
-        //print_debug_variable("calculate_changing_times");
         $Changing_times = calculate_changing_times($Dienstplan);
     }
-    //print_debug_variable('$Changing_times', $Changing_times);
     if (isset($Approbierten_dienstplan)) {
         $Approbierten_dienst_enden = array_map('strtotime', $Approbierten_dienstplan[$tag]["Dienstende"]);
         $Approbierten_dienst_beginne = array_map('strtotime', $Approbierten_dienstplan[$tag]["Dienstbeginn"]);
@@ -140,7 +137,6 @@ if (!empty($Dienstplan[$tag]["Dienstbeginn"])) {
         $anwesende = $anwesende - $mittagende;
         $Anwesende[$unix_time] = $anwesende;
     }
-    //print_debug_variable('$Anwesende', $Anwesende);
 } else {
     global $Warnmeldung;
     $Warnmeldung[] = "Kein Dienstplan gefunden beim Zeichnen des Histogramms.";

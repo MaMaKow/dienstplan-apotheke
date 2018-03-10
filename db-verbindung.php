@@ -44,7 +44,7 @@ function pdo_query($sql_query, $bind_array = null, $inside_transaction = FALSE) 
         }
         return $result;
     } catch (Exception $exc) {
-        print_debug_variable($exc->getTraceAsString());
+        error_log($exc->getTraceAsString());
         die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
     }
 }
