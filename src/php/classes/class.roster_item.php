@@ -37,7 +37,7 @@ class roster_item {
     public $working_hours;
     public $comment;
 
-    function __construct($date_sql, $employee_id, $duty_start, $duty_end, $break_start, $break_end, $comment) {
+    function __construct($date_sql, $employee_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
         $this->date_sql = $date_sql;
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;
@@ -64,7 +64,8 @@ class roster_item {
          * TODO: This does not take into account, that emergency service is not calculated as full hours.
          * Emergeny service calculation might differ between states, federal states, or even employees with different contracts.
          */
-        $this->working_hours = ($duty_duration - $break_duration) / 3600;
+        $this->working_seconds = ($duty_duration - $break_duration);
+        $this->working_hours = $this->working_seconds / 3600;
     }
 
     /*
@@ -120,7 +121,7 @@ class roster_item {
                 throw new Exception('The duty starts, after it ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
             }
         } catch (Exception $exception) {
-            print_debug_variable('Message: ' . $exception->getMessage());
+            error_log('Message: ' . $exception->getMessage());
             throw new PDRRosterLogicException($exception->getMessage());
         }
     }

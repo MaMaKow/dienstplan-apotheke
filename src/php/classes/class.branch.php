@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Pharmacies and connected branches
  *
@@ -29,7 +30,7 @@ class branch {
          * CAVE! This function is thought to be called from the outside of this class only.
          */
         if (!empty($this)) {
-            print_debug_variable("CAVE read_branches_from_database() is thought to be called from the outside of this class only.");
+            error_log("CAVE read_branches_from_database() is thought to be called from the outside of this class only.");
             return FALSE;
         }
         $sql_query = 'SELECT *

@@ -17,50 +17,8 @@ $Wochentage = get_weekday_names();
 require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-
-    foreach ($Grundplan as $wochentag => $value) {
-        //First, the old values are deleted.
-        $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
-        $result = mysqli_query_verbose($sql_query);
-        //New values are composed from the Grundplan from $_POST.
-        foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
-            //Die einzelnen Zeilen im Grundplan
-            if (!empty($VK)) {
-                //Wir ignorieren die nicht ausgefüllten Felder
-                list($VK) = explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
-                $dienstbeginn = $Grundplan[$wochentag]['Dienstbeginn'][$key];
-                $dienstende = $Grundplan[$wochentag]['Dienstende'][$key];
-                $mittagsbeginn = $Grundplan[$wochentag]['Mittagsbeginn'][$key];
-                $mittagsende = $Grundplan[$wochentag]['Mittagsende'][$key];
-                $kommentar = $Grundplan[$wochentag]['Kommentar'][$key];
-                if (!empty($mittagsbeginn) && !empty($mittagsende)) {
-                    $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
-                    $mittagspause = strtotime($mittagsende) - strtotime($mittagsbeginn);
-                    $sekunden = $sekunden - $mittagspause;
-                    $stunden = round($sekunden / 3600, 1);
-                } else {
-                    $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
-                    //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                    if (!isset($List_of_employees)) {
-                        require 'db-lesen-mitarbeiter.php';
-                    }
-
-                    if ($sekunden - $List_of_employee_lunch_break_minutes[$VK] * 60 >= 6 * 3600) {
-                        $mittagspause = $List_of_employee_lunch_break_minutes[$VK] * 60;
-                        $sekunden = $sekunden - $mittagspause;
-                    } else {
-                        //Keine Mittagspause
-                    }
-                    $stunden = round($sekunden / 3600, 1);
-                }
-                //The new values are stored inside the database.
-                $sql_query = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
-			             VALUES ('$VK', '$wochentag', '$dienstbeginn', '$dienstende', '$mittagsbeginn', '$mittagsende', '$stunden', '$kommentar', '$mandant')";
-                $result = mysqli_query_verbose($sql_query);
-            }
-        }
-    }
+    TODO: Test if this works:
+    user_input::principle_roster_write_user_input_to_database();
 }
 
 if (filter_has_var(INPUT_POST, 'mandant')) {

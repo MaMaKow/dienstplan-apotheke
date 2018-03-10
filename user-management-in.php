@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-print_debug_variable('$_POST', $_POST);
 require 'db-lesen-mitarbeiter.php';
 if (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);

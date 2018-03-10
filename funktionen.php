@@ -107,17 +107,6 @@ function hex2rgb($hexstring) {
     //return $rgb; // returns an array with the rgb values
 }
 
-function escape_sql_value($value) {
-    if ('NULL' === $value or 'null' === $value) {
-        //echo "$value is null<br>\n";
-        return $value;
-    } elseif (NULL === $value) {
-        return 'NULL';
-    } else {
-        return "'" . $value . "'";
-    }
-}
-
 function null_from_post_to_mysql($value) {
     if ('' === $value) {
         return 'NULL';

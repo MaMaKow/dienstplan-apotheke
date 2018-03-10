@@ -24,19 +24,19 @@ function read_employee_data_from_database($employee_id) {
 
 function write_employee_data_to_database() {
     if (filter_input(INPUT_POST, "submitStunden", FILTER_SANITIZE_STRING)) {
-        $Worker["worker_id"] = escape_sql_value(filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT));
-        $Worker["first_name"] = escape_sql_value(filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING));
-        $Worker["last_name"] = escape_sql_value(filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING));
-        $Worker["profession"] = escape_sql_value(filter_input(INPUT_POST, "profession", FILTER_SANITIZE_STRING));
-        $Worker["working_hours"] = escape_sql_value(filter_input(INPUT_POST, "working_hours", FILTER_VALIDATE_FLOAT));
-        $Worker["working_week_hours"] = escape_sql_value(filter_input(INPUT_POST, "working_week_hours", FILTER_VALIDATE_FLOAT));
-        $Worker["holidays"] = escape_sql_value(filter_input(INPUT_POST, "holidays", FILTER_VALIDATE_INT));
-        $Worker["lunch_break_minutes"] = escape_sql_value(filter_input(INPUT_POST, "lunch_break_minutes", FILTER_VALIDATE_INT));
-        $Worker["goods_receipt"] = escape_sql_value(filter_input(INPUT_POST, "goods_receipt", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0); //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
-        $Worker["compounding"] = escape_sql_value(filter_input(INPUT_POST, "compounding", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0); //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
-        $Worker["branch"] = escape_sql_value(filter_input(INPUT_POST, "branch", FILTER_VALIDATE_INT));
-        $Worker["start_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING)));
-        $Worker["end_of_employment"] = escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING)));
+        $Worker["worker_id"] = user_input::escape_sql_value(filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT));
+        $Worker["first_name"] = user_input::escape_sql_value(filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING));
+        $Worker["last_name"] = user_input::escape_sql_value(filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING));
+        $Worker["profession"] = user_input::escape_sql_value(filter_input(INPUT_POST, "profession", FILTER_SANITIZE_STRING));
+        $Worker["working_hours"] = user_input::escape_sql_value(filter_input(INPUT_POST, "working_hours", FILTER_VALIDATE_FLOAT));
+        $Worker["working_week_hours"] = user_input::escape_sql_value(filter_input(INPUT_POST, "working_week_hours", FILTER_VALIDATE_FLOAT));
+        $Worker["holidays"] = user_input::escape_sql_value(filter_input(INPUT_POST, "holidays", FILTER_VALIDATE_INT));
+        $Worker["lunch_break_minutes"] = user_input::escape_sql_value(filter_input(INPUT_POST, "lunch_break_minutes", FILTER_VALIDATE_INT));
+        $Worker["goods_receipt"] = user_input::escape_sql_value(filter_input(INPUT_POST, "goods_receipt", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0); //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
+        $Worker["compounding"] = user_input::escape_sql_value(filter_input(INPUT_POST, "compounding", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0); //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
+        $Worker["branch"] = user_input::escape_sql_value(filter_input(INPUT_POST, "branch", FILTER_VALIDATE_INT));
+        $Worker["start_of_employment"] = user_input::escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING)));
+        $Worker["end_of_employment"] = user_input::escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING)));
 
         $sql_query = "INSERT INTO `employees` (
         `id`, `first_name`, `last_name`,

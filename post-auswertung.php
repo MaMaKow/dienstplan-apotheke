@@ -75,15 +75,15 @@ function insert_changed_entries_into_database($date_sql, $day_number, $branch_id
         $working_hours = $working_seconds / 3600;
         $sql_query = "REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user)
             VALUES ($employee_id"
-                . ", " . escape_sql_value($date_sql)
-                . ", " . escape_sql_value($Dienstplan[$day_number]["Dienstbeginn"][$key])
-                . ", " . escape_sql_value($Dienstplan[$day_number]["Dienstende"][$key])
-                . ", " . escape_sql_value($Dienstplan[$day_number]["Mittagsbeginn"][$key])
-                . ", " . escape_sql_value($Dienstplan[$day_number]["Mittagsende"][$key])
+                . ", " . user_input::escape_sql_value($date_sql)
+                . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Dienstbeginn"][$key])
+                . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Dienstende"][$key])
+                . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Mittagsbeginn"][$key])
+                . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Mittagsende"][$key])
                 . ", " . $working_hours
                 . ", " . $branch_id
-                . ", " . escape_sql_value($Dienstplan[$day_number]["Kommentar"][$key])
-                . ", " . escape_sql_value($_SESSION['user_name'])
+                . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Kommentar"][$key])
+                . ", " . user_input::escape_sql_value($_SESSION['user_name'])
                 . ")";
         mysqli_query_verbose($sql_query, TRUE);
     }
@@ -116,7 +116,7 @@ function remove_empty_rows($Roster, $day_number, $Columns) {
 function insert_new_approval_into_database($date_sql, $branch_id) {
     //TODO: We should manage situations, where an entry already exists better.
     $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
-			VALUES ('$date_sql', 'not_yet_approved', '$branch_id', " . escape_sql_value($_SESSION['user_name']) . ")";
+			VALUES ('$date_sql', 'not_yet_approved', '$branch_id', " . user_input::escape_sql_value($_SESSION['user_name']) . ")";
     $result = mysqli_query_verbose($sql_query);
 }
 

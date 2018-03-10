@@ -44,7 +44,6 @@ function examine_duty_roster() {
     }
 
 
-    //print_debug_variable('$tages_ende', '$Anwesende', $tages_ende, $Anwesende);
     if (isset($Anwesende) and isset($tages_ende)) {
         foreach ($Anwesende as $zeit => $anwesende) {
             if ($anwesende < 2 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
