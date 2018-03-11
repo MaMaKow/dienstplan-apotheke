@@ -2,7 +2,6 @@
 require 'default.php';
 require 'db-lesen-abwesenheit.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
-require "src/php/calculate-holidays.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/class.emergency_service.php";
 
 $dienstplanCSV = '';
@@ -81,7 +80,7 @@ echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
 for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strtotime('+ 1 day', $date_unix))) {
     $date_unix = strtotime($date_sql);
-    $holiday = is_holiday($date_unix);
+    $holiday = holidays::is_holiday($date_unix);
     $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
     $Abwesende = db_lesen_abwesenheit($date_sql);
     $zeile = '';
@@ -279,23 +278,3 @@ require 'contact-form.php';
 ?>
 </BODY>
 </HTML>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,17 +1,13 @@
 <?php
 require_once "default.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "schreiben-tabelle.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/classes/build_html_roster_views.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/calculate-holidays.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-abwesenheit.php";
 
 $mandant = 1; //First branch is allways the default.
 $tage = 7; //One week
 
-
 $error_message_html = "";
 $overlay_message_html = "";
-
 
 $datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
 require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
@@ -44,9 +40,6 @@ require 'task-rotation.php';
 //TODO: Works only for "Rezeptur" right now!
 $task = "Rezeptur";
 $weekly_rotation_div_html = task_rotation_main($Week_dates_unix, $task);
-
-
-
 
 //Produziere die Ausgabe
 require 'head.php';
@@ -86,7 +79,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $head_table_html .= "<input type=hidden size=2 name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
     $head_table_html .= "<input type=hidden name=mandant value=" . htmlentities($mandant) . ">";
     $head_table_html .= strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
-    $holiday = is_holiday($date_unix);
+    $holiday = holidays::is_holiday($date_unix);
     if (FALSE !== $holiday) {
         $head_table_html .= " <br>" . $holiday . " ";
     }
@@ -146,7 +139,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {
     $Abwesende = db_lesen_abwesenheit($datum);
     if (isset($Abwesende)) {
         foreach ($Abwesende as $employee_id => $reason) {
-            if (FALSE !== is_holiday($date_unix) AND date('N', $date_unix) < 6) {
+            if (FALSE !== holidays::is_holiday($date_unix) AND date('N', $date_unix) < 6) {
                 //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
                 if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
                     $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
@@ -160,7 +153,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
 
     if (isset($Abwesende)) {
-        $table_foot_html .= build_absentees_column($Abwesende);
+        $table_foot_html .= build_html_roster_views::build_absentees_column($Abwesende);
     } else {
         $table_foot_html .= "</td><td>";
     }
@@ -176,7 +169,6 @@ $table_html .= "\t\t\t\t</table>\n\t\t\t"
 $table_div_html = "<div id=table_overlay_area>";
 $table_div_html .= $overlay_message_html;
 $table_div_html .= $table_html;
-
 
 $duty_roster_form_html .= $table_div_html;
 
@@ -254,8 +246,6 @@ $main_div_html .= $duty_roster_form_html;
 
 $main_div_html .= "</div>\n";
 
-
-
 $warning_message_html = build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo $warning_message_html;
@@ -266,28 +256,3 @@ require 'contact-form.php';
 ?>
 </BODY>
 </HTML>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,10 +2,10 @@
 
 #Diese Seite wird den kompletten Dienstplan einer Woche  anzeigen.
 require "default.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/classes/build_html_roster_views.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/calculate-holidays.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-abwesenheit.php";
-
+/*
+ * TODO: Seems not to work on 26.03.2018, with emergency service on the first day with an empty roster for the whole week.
+ */
 $mandant = 1; //First branch is allways the default.
 $tage = 7; //Dies ist eine Wochenansicht mit Wochenende
 
@@ -82,7 +82,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $zeile .= "<input type=hidden size=2 name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
     $zeile .= strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
-    $holiday = is_holiday($date_unix);
+    $holiday = holidays::is_holiday($date_unix);
     if (FALSE !== $holiday) {
         echo " " . $holiday . " ";
     }
@@ -172,7 +172,7 @@ echo "\t\t\t\t\t<tfoot>"
 echo "\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {
     $Abwesende = db_lesen_abwesenheit($datum);
-    echo build_absentees_column($Abwesende);
+    echo build_html_roster_views::build_absentees_column($Abwesende);
 }
 echo "\t\t</tr>\n";
 
