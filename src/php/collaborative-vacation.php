@@ -259,7 +259,7 @@ function build_absence_year($year) {
     $month_container_html .= $current_month_name . "<br>\n";
     for ($date_unix = $start_date; $date_unix < strtotime("+ 1 year", $start_date); $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date('Y-m-d', $date_unix);
-        $is_holiday = is_holiday($date_unix);
+        $is_holiday = holidays::is_holiday($date_unix);
         $Abwesende = db_lesen_abwesenheit($date_unix);
 
         if ($current_month < date("n", $date_unix)) {
@@ -430,7 +430,7 @@ function build_absence_month($year, $month_number) {
     for ($date_unix = $start_date; $date_unix < $end_date; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
 
         $date_sql = date('Y-m-d', $date_unix);
-        $is_holiday = is_holiday($date_unix);
+        $is_holiday = holidays::is_holiday($date_unix);
         $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 
         $Abwesende = db_lesen_abwesenheit($date_unix);

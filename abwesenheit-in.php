@@ -1,6 +1,5 @@
 <?php
 require 'default.php';
-require_once 'src/php/calculate-holidays.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 if (filter_has_var(INPUT_POST, 'employee_id')) {
@@ -21,8 +20,7 @@ if (isset($employee_id)) {
 if ($command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING) and 'delete' === $command) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
     $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
-    $sql_query = "DELETE FROM `absence`
-                	WHERE `employee_id` = '$employee_id' AND `start` = '$beginn'";
+    $sql_query = "DELETE FROM `absence` WHERE `employee_id` = '$employee_id' AND `start` = '$beginn'";
     $result = mysqli_query_verbose($sql_query);
     $employee_id = $employee_id;
 }
@@ -45,7 +43,7 @@ if ((filter_has_var(INPUT_POST, 'submitStunden') or ( filter_has_var(INPUT_POST,
         }
 
         //Now the holidays which are not on a weekend are substracted.
-        $holiday = is_holiday($date_unix);
+        $holiday = holidays::is_holiday($date_unix);
 
         if (FALSE !== $holiday and date('w', $date_unix) < 6 and date('w', $date_unix) > 0) {
             $Feiertagsmeldung[] = htmlentities("$holiday ($date_string)\n");
@@ -228,16 +226,3 @@ require 'contact-form.php';
 ?>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

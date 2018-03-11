@@ -1,7 +1,5 @@
 <?php
 require_once 'default.php';
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/calculate-holidays.php';
 
 /*
  * @var $mandant int the id of the active branch.
@@ -99,7 +97,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     $zeile = "";
     $zeile .= strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
-    $holiday = is_holiday($date_unix);
+    $holiday = holidays::is_holiday($date_unix);
     if (FALSE !== $holiday) {
         echo "<p>" . $holiday . "</p>\n";
     }
@@ -172,7 +170,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     echo build_branch_table_rows($mandant, $tage);
     echo "<tr><td><br></td></tr>";
     if (isset($Abwesende)) {
-        echo build_absentees_row($Abwesende);
+        echo build_html_roster_views::build_absentees_row($Abwesende);
     }
 }
 echo "\t\t\t\t\t</table>\n";

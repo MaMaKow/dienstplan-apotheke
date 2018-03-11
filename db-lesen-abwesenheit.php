@@ -68,12 +68,9 @@ function get_absence_data_specific($date_sql, $employee_id) {
  */
 
 function calculate_absence_days($start_date_string, $end_date_string) {
-    if (!function_exists('is_holiday')) {
-        require_once 'src/php/calculate-holidays.php';
-    }
     $days = 0;
     for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix = strtotime('+1 day', $date_unix)) {
-        if (6 !== intval(date('w', $date_unix)) and 0 !== intval(date('w', $date_unix)) and FALSE === is_holiday($date_unix)) {
+        if (6 !== intval(date('w', $date_unix)) and 0 !== intval(date('w', $date_unix)) and FALSE === holidays::is_holiday($date_unix)) {
             $days++;
         }
     }

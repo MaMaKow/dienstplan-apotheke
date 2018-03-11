@@ -17,42 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Build one table column for a weekly view
- *
- * used by: woche-out.php
- * @param $Absentees array expects an array of absent employees in the format array(employee_id => reason_for_absence)
- *
- * @return string HTML table column
- */
-
-function build_absentees_column($Absentees) {
-    global $List_of_employees;
-    $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
-    foreach ($Absentees as $employee_id => $reason) {
-        $text .= $List_of_employees[$employee_id] . " (" . $reason . ")<br>";
-    }
-    $text .= "</td>\n";
-    return $text;
-}
-
-/*
- * Build one table row for a daily view
- *
- * used by: tag-in.php
- * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (string)reason_for_absence)
- *
- * @return string HTML table row
- */
-
-function build_absentees_row($Absentees) {
-    $text = "<tr>";
-    $text .= build_absentees_column($Absentees);
-    $text .= "</tr>\n";
-    return $text;
-}
-
 class build_html_roster_views {
+    /*
+     * Build one table row for a daily view
+     *
+     * used by: tag-in.php
+     * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (string)reason_for_absence)
+     *
+     * @return string HTML table row
+     */
+
+    function build_absentees_row($Absentees) {
+        $text = "<tr>";
+        $text .= build_html_roster_views::build_absentees_column($Absentees);
+        $text .= "</tr>\n";
+        return $text;
+    }
+
+    /*
+     * Build one table column for a weekly view
+     *
+     * used by: woche-out.php
+     * @param $Absentees array expects an array of absent employees in the format array(employee_id => reason_for_absence)
+     *
+     * @return string HTML table column
+     */
+
+    public static function build_absentees_column($Absentees) {
+        global $List_of_employees;
+        $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
+        foreach ($Absentees as $employee_id => $reason) {
+            $text .= $List_of_employees[$employee_id] . " (" . $reason . ")<br>";
+        }
+        $text .= "</td>\n";
+        return $text;
+    }
 
     public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $date_unix) {
         $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;

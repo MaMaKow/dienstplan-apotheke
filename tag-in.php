@@ -2,10 +2,6 @@
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
-require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
-
-require "src/php/calculate-holidays.php";
-
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
 
@@ -32,7 +28,7 @@ require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 require_once 'db-lesen-abwesenheit.php';
 $Abwesende = db_lesen_abwesenheit($datum);
-$holiday = is_holiday($date_unix);
+$holiday = holidays::is_holiday($date_unix);
 $Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 require_once 'plane-tag-grundplan.php';
@@ -49,7 +45,7 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
 }
 if ((array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0]))
         and "7" !== date('N', strtotime($datum))
-        and ! is_holiday(strtotime($datum))) {
+        and ! holidays::is_holiday(strtotime($datum))) {
     require 'pruefe-dienstplan.php';
     examine_duty_roster();
 }
@@ -150,7 +146,7 @@ for ($j = 0; $j < $VKcount; $j++) {
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 if (isset($Abwesende)) {
-    echo build_absentees_row($Abwesende);
+    echo build_html_roster_views::build_absentees_row($Abwesende);
 }
 echo "\t\t\t</table>\n";
 echo "\t\t</form>\n";

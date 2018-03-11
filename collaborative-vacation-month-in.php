@@ -10,7 +10,6 @@ if (filter_has_var(INPUT_POST, 'employee_id')) {
 if (isset($employee_id)) {
     create_cookie("employee_id", $employee_id, 30);
 }
-require "src/php/calculate-holidays.php";
 require_once "src/php/collaborative-vacation.php";
 handle_user_data_input();
 require "head.php";
