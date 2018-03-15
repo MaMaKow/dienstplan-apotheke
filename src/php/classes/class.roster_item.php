@@ -29,8 +29,8 @@ class roster_item {
     public $duty_start_sql;
     public $duty_end_sql;
     public $break_start_sql;
-    public $break_end_sql;
     public $duty_start_int;
+    public $break_end_sql;
     public $duty_end_int;
     public $break_start_int;
     public $break_end_int;

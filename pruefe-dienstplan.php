@@ -1,17 +1,18 @@
 <?php
 
-function examine_duty_roster() {
+function examine_duty_roster($Roster, $date_unix, $branch_id) {
     global $Dienstplan, $mandant, $datum;
     global $Approbierte_mitarbeiter, $Wareneingang_Mitarbeiter, $Anwesende;
     //Variabkes that will be set here have to be global too, to make them visible outside.
     global $Fehlermeldung, $Warnmeldung;
     //Diese Datei zählt Anwesende, Approbierte, Ware-Menschen,...
     require_once 'headcount-duty-roster.php';
+    $Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
 
-    if (isset($Approbierten_anwesende) and isset($tages_ende) and isset($tages_beginn)) {
+    if (isset($Approbierten_anwesende) and isset($Opening_times['day_opening_end']) and isset($Opening_times['day_opening_start'])) {
         //Wir überprüfen ob zu jeder Zeit Approbierte anwesend sind.
         foreach ($Approbierten_anwesende as $zeit => $anwesende_approbierte) {
-            if ($anwesende_approbierte === 0 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
+            if ($anwesende_approbierte === 0 and $zeit < $Opening_times['day_opening_end'] and $zeit >= $Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $Fehlermeldung[] = sprintf(gettext('At %1s there is no authorized person present.'), date('H:i', $zeit));
                     //We avoid to flood everything with errors for every 5 minutes in which noone is there.
@@ -25,11 +26,11 @@ function examine_duty_roster() {
     } else {
         $Warnmeldung[] = "Notwendige Variablen sind nicht gesetzt. Keine Zählung der anwesenden Approbierten.";
     }
-    if (isset($Wareneingang_Anwesende) and isset($tages_ende) and isset($tages_beginn)) {
+    if (isset($Wareneingang_Anwesende) and isset($Opening_times['day_opening_end']) and isset($Opening_times['day_opening_start'])) {
         //Wir überprüfen ob zu jeder Zeit jemand anwesend ist, der den Wareneingang machen kann.
-        // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($tages_ende)
+        // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($Opening_times['day_opening_end'])
         foreach ($Wareneingang_Anwesende as $zeit => $anwesende_wareneingang) {
-            if ($anwesende_wareneingang === 0 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
+            if ($anwesende_wareneingang === 0 and $zeit < $Opening_times['day_opening_end'] and $zeit >= $Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $Warnmeldung[] = 'Um ' . date('H:i', $zeit) . ' Uhr ist niemand für den Wareneingang anwesend.';
                     //break 1; //We avoid to flood everything with errors for every 5 minutes in which noone is there.
@@ -44,9 +45,9 @@ function examine_duty_roster() {
     }
 
 
-    if (isset($Anwesende) and isset($tages_ende)) {
+    if (isset($Anwesende) and isset($Opening_times['day_opening_end'])) {
         foreach ($Anwesende as $zeit => $anwesende) {
-            if ($anwesende < 2 and $zeit < $tages_ende and $zeit >= $tages_beginn) {
+            if ($anwesende < 2 and $zeit < $Opening_times['day_opening_end'] and $zeit >= $Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $Fehlermeldung[] = 'Um ' . date('H:i', $zeit) . ' Uhr sind weniger als zwei Mitarbeiter anwesend.';
                     $attendant_error = true;

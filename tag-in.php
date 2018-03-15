@@ -7,32 +7,26 @@ $tag = 0;
 
 
 //$employee_id = user_input::get_variable_from_any_input("employee_id", FILTER_SANITIZE_NUMBER_INT);
-$mandant = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
-$branch_id = $mandant;
-
-$datum = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
-$date_sql = $datum;
-$date_unix = strtotime($date_sql);
 //$year = user_input::get_variable_from_any_input("year", FILTER_SANITIZE_NUMBER_INT);
+$branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+
+$date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
+$date_unix = strtotime($date_sql);
 
 
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (isset($mandant)) {
-    create_cookie("mandant", $mandant, 30);
-}
-if (isset($datum)) {
-    create_cookie("datum", $datum, 0.5);
-}
+create_cookie("mandant", $branch_id, 30);
+create_cookie("datum", $date_sql, 0.5);
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 require_once 'db-lesen-abwesenheit.php';
-$Abwesende = db_lesen_abwesenheit($datum);
+$Abwesende = db_lesen_abwesenheit($date_sql);
 $holiday = holidays::is_holiday($date_unix);
-$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
+$Dienstplan = read_roster_array_from_db($date_sql, $tage, $branch_id);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 require_once 'plane-tag-grundplan.php';
-$Principle_roster_old = get_principle_roster($datum, $mandant, $tag, $tage);
+$Principle_roster_old = get_principle_roster($date_sql, $branch_id, $tag, $tage);
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql);
 if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster_old AND FALSE === $holiday) { //No plans on Saturday, Sunday and holidays.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
@@ -44,10 +38,10 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
     $Roster = $Principle_roster;
 }
 if ((array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0]))
-        and "7" !== date('N', strtotime($datum))
-        and ! holidays::is_holiday(strtotime($datum))) {
+        and "7" !== date('N', $date_unix)
+        and ! holidays::is_holiday($date_unix)) {
     require 'pruefe-dienstplan.php';
-    examine_duty_roster();
+    examine_duty_roster($Roster, $date_unix, $branch_id);
 }
 $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
 
@@ -84,9 +78,9 @@ echo "<div id=main-area>\n";
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t" . strftime(gettext("calendar week") . ' %V', strtotime($datum)) . "<br>";
-echo "<div class=only-print><b>" . $List_of_branch_objects[$mandant]->name . "</b></div><br>\n";
-echo build_select_branch($mandant, $date_sql);
+echo "\t\t" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
+echo "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
+echo build_select_branch($branch_id, $date_sql);
 
 
 echo "\t\t<form id=myform method=post>\n";
@@ -101,10 +95,10 @@ if ($session->user_has_privilege('approve_roster')) {
     echo "<br>\n";
 }
 
-echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[" . gettext("Read") . "]</a>\n";
+echo "\t\t\t\t<a href='tag-out.php?datum=" . $date_sql . "'>[" . gettext("Read") . "]</a>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<div id=wochenAuswahl>\n";
-echo "\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
+echo "\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', $date_unix) . ">\n";
 echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 echo "\t\t\t</div>\n";
 echo "\t\t\t<table>\n";
@@ -114,7 +108,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $zeile = "";
     echo "\t\t\t\t\t<td>";
     $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][$roster_first_key] . ">";
-    $zeile .= "<input type=hidden name=mandant value=" . htmlentities($mandant) . ">";
+    $zeile .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
     $zeile .= strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][$roster_first_key]));
     echo $zeile;
 //Wochentag
@@ -159,7 +153,7 @@ if (!empty($Dienstplan[0]["Dienstbeginn"])) {
     echo $svg_image_dienstplan;
     echo "<br>\n";
     require_once 'image_histogramm.php';
-    $svg_image_histogramm = draw_image_histogramm($Dienstplan);
+    $svg_image_histogramm = roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $Anwesende, $date_sql);
     echo $svg_image_histogramm;
     echo "\t\t\t</div>\n";
 }

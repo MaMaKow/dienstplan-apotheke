@@ -160,6 +160,22 @@ abstract class roster {
         return NULL;
     }
 
+    public static function calculate_changing_times($Roster) {
+        foreach ($Roster as $roster_day) {
+            foreach ($roster_day as $roster_item_object) {
+                $Changing_times[] = $roster_item_object->duty_start_int;
+                $Changing_times[] = $roster_item_object->duty_end_int;
+                $Changing_times[] = $roster_item_object->break_start_int;
+                $Changing_times[] = $roster_item_object->break_end_int;
+            }
+        }
+        sort($Changing_times);
+        $Unique_changing_times = array_unique($Changing_times);
+        //Remove empty and null values from the array:
+        $Clean_changing_times = array_filter($Unique_changing_times, 'strlen');
+        return $Clean_changing_times;
+    }
+
     public static function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
         return $Roster[$day_iterator][$roster_row_iterator]->employee_id;
     }
