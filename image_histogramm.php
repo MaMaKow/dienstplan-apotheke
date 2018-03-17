@@ -28,6 +28,7 @@ class roster_image_histogramm {
         $x_start = $outer_margin_x / $width_factor;
         $y_start = $outer_margin_y / $height_factor * -1;
 
+        $canvas_text .= "ctx.save();\n"; // = dot color
         $canvas_text .= "ctx.translate(0,$canvas_height);\n";
         $canvas_text .= "ctx.scale($width_factor, $height_factor);\n";
 
@@ -43,11 +44,14 @@ class roster_image_histogramm {
 //    $canvas_text .= "ctx.stroke();\n";
         $canvas_text .= "ctx.fillStyle = 'rgba($red, 0.5)';\n";
         $canvas_text .= "ctx.fill();\n";
+        $canvas_text .= "ctx.restore();\n";
         return $canvas_text;
     }
 
     private static function draw_image_dienstplan_add_axis_labeling($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $canvas_height, $start_time, $end_time) {
         $font_size = 16;
+        $canvas_text .= "ctx.save();\n"; // = dot color
+        $canvas_text .= "ctx.translate(0,$canvas_height);\n";
         $canvas_text .= "ctx.strokeStyle = 'black';\n"; // = dot color
         $canvas_text .= "ctx.lineWidth=2;\n";
         $canvas_text .= "ctx.fillStyle = 'black';\n"; // = font color
@@ -73,13 +77,15 @@ class roster_image_histogramm {
                     . "ctx.stroke();\n"
                     . "ctx.closePath();\n";
         }
+        $canvas_text .= "ctx.restore();\n";
         return $canvas_text;
     }
 
-    private static function draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee) {
+    private static function draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee, $canvas_height) {
         $x_pos_line_end = 0;
         $y_pos_line_end = 0;
-        $canvas_text .= "ctx.scale(" . 1 / $width_factor . ", " . 1 / $height_factor . ");\n";
+        $canvas_text .= "ctx.save();\n"; // = dot color
+        $canvas_text .= "ctx.translate(0,$canvas_height);\n";
         $canvas_text .= "ctx.beginPath();\n";
         $canvas_text .= "ctx.setLineDash([]);\n";
         $canvas_text .= "ctx.lineWidth=5;\n";
@@ -102,7 +108,7 @@ class roster_image_histogramm {
         $canvas_text .= "ctx.strokeStyle = 'rgba($green, 0.5)';";
         $canvas_text .= "ctx.stroke();\n";
         $canvas_text .= "ctx.closePath();\n";
-
+        $canvas_text .= "ctx.restore();\n";
         return $canvas_text;
     }
 
@@ -151,7 +157,7 @@ class roster_image_histogramm {
         $canvas_text .= "var ctx = c.getContext('2d');\n";
 
         $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_Erwartung($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Erwartung);
-        $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee);
+        $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee, $canvas_height);
         $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_axis_labeling($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $canvas_height, $start_time, $end_time);
 
         $canvas_text .= "</script>\n";
