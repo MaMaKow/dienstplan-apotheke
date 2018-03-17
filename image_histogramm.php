@@ -82,8 +82,7 @@ class roster_image_histogramm {
     }
 
     private static function draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee, $canvas_height) {
-        $x_pos_line_end = 0;
-        $y_pos_line_end = 0;
+        $y_pos_line_end = NULL;
         $canvas_text .= "ctx.save();\n"; // = dot color
         $canvas_text .= "ctx.translate(0,$canvas_height);\n";
         $canvas_text .= "ctx.beginPath();\n";
@@ -91,18 +90,15 @@ class roster_image_histogramm {
         $canvas_text .= "ctx.lineWidth=5;\n";
         foreach ($Anwesende as $time_in_seconds => $anwesende) {
             $time_float = $time_in_seconds / 3600;
-            $x_pos_line_start = $x_pos_line_end;
+            if (NULL === $y_pos_line_end) {//the first round.
+                $y_pos_line_end = $anwesende * $height_factor * -1 * $factor_employee;
+            }
             $y_pos_line_start = $y_pos_line_end;
             $x_pos_line_end = ($time_float - $start_time) * $width_factor + $outer_margin_x;
             $y_pos_line_end = $anwesende * $height_factor * -1 * $factor_employee;
-            if (empty($x_pos_line_start)) {
-                $y_pos_line_start = 0;
-                //continue;
-            } //Skipping the first round.
 
-            $canvas_text .= ""
-                    . "ctx.lineTo($x_pos_line_end, $y_pos_line_start);\n"
-                    . "ctx.lineTo($x_pos_line_end, $y_pos_line_end);\n";
+            $canvas_text .= "ctx.lineTo($x_pos_line_end, $y_pos_line_start);\n";
+            $canvas_text .= "ctx.lineTo($x_pos_line_end, $y_pos_line_end);\n";
         }
         $green = hex2rgb('#73AC22');
         $canvas_text .= "ctx.strokeStyle = 'rgba($green, 0.5)';";
