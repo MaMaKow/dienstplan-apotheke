@@ -446,6 +446,11 @@ div.centered_form_div {
 div.centered_form_div form input {
     margin-bottom: 1em;
 }
+div.centered_form_div form fieldset {
+    text-align: left;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
 nav#nav_tiles{
     background-color: #BDE682;
     /*
@@ -601,3 +606,17 @@ tr.absence_row[data-approval='approved'] {
  * The above lines are added for image_histogram
  */
 
+/*
+ * The below lines are added for human-resource-management
+ * -->
+ */
+span.form_input_unit{
+    margin-left: 1em;
+}
+.nowrap{
+    white-space: nowrap;
+}
+/*
+ * <--
+ * The above lines are added for human-resource-management
+ */

@@ -5,7 +5,7 @@ function read_employee_data_from_database($employee_id) {
     //echo "$sql_query<br>\n";
     $result = mysqli_query_verbose($sql_query);
     while ($row = mysqli_fetch_object($result)) {
-        $Worker["worker_id"] = $row->id;
+        $Worker["employee_id"] = $row->id;
         $Worker["first_name"] = $row->first_name;
         $Worker["last_name"] = $row->last_name;
         $Worker["profession"] = $row->profession;
@@ -24,7 +24,7 @@ function read_employee_data_from_database($employee_id) {
 
 function write_employee_data_to_database() {
     if (filter_input(INPUT_POST, "submitStunden", FILTER_SANITIZE_STRING)) {
-        $Worker["worker_id"] = user_input::escape_sql_value(filter_input(INPUT_POST, "worker_id", FILTER_VALIDATE_INT));
+        $Worker["employee_id"] = user_input::escape_sql_value(filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT));
         $Worker["first_name"] = user_input::escape_sql_value(filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING));
         $Worker["last_name"] = user_input::escape_sql_value(filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING));
         $Worker["profession"] = user_input::escape_sql_value(filter_input(INPUT_POST, "profession", FILTER_SANITIZE_STRING));
@@ -47,7 +47,7 @@ function write_employee_data_to_database() {
         `start_of_employment`, `end_of_employment`
         )
         VALUES ("
-                . $Worker['worker_id'] . ", "
+                . $Worker['employee_id'] . ", "
                 . $Worker['first_name'] . ", "
                 . $Worker['last_name'] . ", "
                 . $Worker['profession'] . ", "
@@ -62,7 +62,7 @@ function write_employee_data_to_database() {
                 . $Worker['end_of_employment']
                 . ")"
                 . " ON DUPLICATE KEY UPDATE  `id` = "
-                . $Worker['worker_id'] . ", "
+                . $Worker['employee_id'] . ", "
                 . "`first_name` = "
                 . $Worker['first_name'] . ", "
                 . " `last_name` = "
@@ -104,8 +104,9 @@ function make_radio_profession_list($checked) {
         $set_column = $row["Type"];
         $clean_set_column = str_replace(["set(", ")", "'"], "", $set_column);
         $Professions = explode(",", $clean_set_column);
-        //$text = "<fieldset>\n";
-        $text = "<label for='profession'>Ausbildung: </label>\n";
+        $text .= "<fieldset>\n";
+        $text .= "<legend>" . gettext("Profession") . ":</legend>";
+        //$text .= "<label for='profession'>Ausbildung: </label>\n";
 
         foreach ($Professions as $profession) {
             $text .= "<input type='radio' name='profession' ";
@@ -114,9 +115,10 @@ function make_radio_profession_list($checked) {
                 $text .= " checked=checked";
             }
             $text .= ">&nbsp;$profession\n";
+            $text .= "<br>";
         }
-        $text .= "&nbsp;<a title='Einen weiteren Beruf hinzufügen' id=button_new_profession>[Neu]</a>";
-        //$text .= "</fieldset>\n";
+        //$text .= "&nbsp;<a title='Einen weiteren Beruf hinzufügen' id=button_new_profession>[Neu]</a>";
+        $text .= "</fieldset>\n";
     }
     if (!empty($text)) {
         return $text;
@@ -127,8 +129,9 @@ function make_radio_profession_list($checked) {
 }
 
 function make_radio_branch_list($checked_branch_id) {
-    //$text = "<fieldset>\n";
-    $text = "<label for='branch'>Mandant: </label>\n";
+    $text .= "<fieldset>\n";
+
+    $text .= "<legend>" . gettext("Branch") . ": </legend>\n";
     $List_of_branch_objects = branch::read_branches_from_database();
     if (!isset($List_of_branch_objects[0])) {
         $List_of_branch_objects[0] = new branch();
@@ -140,9 +143,9 @@ function make_radio_branch_list($checked_branch_id) {
         if ($checked_branch_id == $branch_id) {
             $text .= " checked=checked";
         }
-        $text .= ">&nbsp;$branch_object->name\n";
+        $text .= ">&nbsp;$branch_object->name<br>\n";
     }
-    //$text .= "</fieldset>\n";
+    $text .= "</fieldset>\n";
 
     return $text;
 }
