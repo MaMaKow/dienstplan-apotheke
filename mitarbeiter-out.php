@@ -239,34 +239,10 @@ foreach (array_keys($Dienstplan) as $tag) {
                 $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
                 $stunden = $sekunden / 3600;
             }
-//Und jetzt schreiben wir die Daten noch in eine Datei, damit wir sie mit gnuplot darstellen können.
-            if (empty($mittagsbeginn)) {
-                $mittagsbeginn = '0:00';
-            }
-            if (empty($mittagsende)) {
-                $mittagsende = '0:00';
-            }
-//In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
-            $dienstplanCSV .= '" ' . strftime('%A', strtotime($date_sql)) . '"' . ", $vk, " . strftime('%w', strtotime($date_sql));
-            $dienstplanCSV .= ', ' . $dienstbeginn;
-            $dienstplanCSV .= ', ' . $dienstende;
-            $dienstplanCSV .= ', ' . $mittagsbeginn;
-            $dienstplanCSV .= ', ' . $mittagsende;
-            $dienstplanCSV .= '," ' . $stunden . " \"\n";
         }
     }
 }
-$filename = 'tmp/Mitarbeiter.csv';
-$myfile = fopen($filename, 'w') or die("Unable to open file $filename!");
-fwrite($myfile, $dienstplanCSV);
-fclose($myfile);
-unset($dienstplanCSV);
-$command = ('./Mitarbeiter_image.sh 2>&1 ' . escapeshellcmd($Dienstplan[0]['Datum'][0]) . '_' . escapeshellcmd($vk));
-exec($command, $kommando_ergebnis);
-if (file_exists('images/mitarbeiter_' . $Dienstplan[0]['Datum'][0] . '_' . $vk . '.png')) {
-    echo '<img class=worker-img src=images/mitarbeiter_' . $Dienstplan[0]['Datum'][0] . '_' . $vk . '.png?' . filemtime('images/mitarbeiter_' . $Dienstplan[0]['Datum'][0] . '_' . $vk . '.png') . ';><br>'; //Um das Bild immer neu zu laden, wenn es verändert wurde müssen wir das Cachen verhindern.
-}
-echo "<button type=button style='float:left; height:74px; margin: 0 10px 0 10px' class='btn-primary no-print' " //TODO: Put this into style.css
+echo "<button type=button class='btn-primary no-print' "
  . "onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql_start\"' "
  . "title='Download ics Kalender Datei'>"
  . "<img src=img/download.png style='width:32px' alt='Download ics Kalender Datei'>"

@@ -23,7 +23,7 @@ class roster_image_histogramm {
 
     }
 
-    private static function draw_image_dienstplan_add_Erwartung($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Erwartung) {
+    private static function draw_image_dienstplan_add_Expectation($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Expectation) {
         $red = hex2rgb('#FF0000');
         $x_start = $outer_margin_x / $width_factor;
         $y_start = $outer_margin_y / $height_factor * -1;
@@ -33,7 +33,7 @@ class roster_image_histogramm {
         $canvas_text .= "ctx.scale($width_factor, $height_factor);\n";
 
         $canvas_text .= "ctx.moveTo($x_start, $y_start);\n";
-        foreach ($Erwartung as $time => $packages) {
+        foreach ($Expectation as $time => $packages) {
             $x_pos = (time_from_text_to_int($time) - $start_time) + $outer_margin_x / $width_factor;
             $y_pos = ($packages * -1) - ($outer_margin_y / $height_factor);
             $canvas_text .= "ctx.lineTo($x_pos, $y_pos);\n";
@@ -139,9 +139,9 @@ class roster_image_histogramm {
         $end_time = max($End_times) / 3600;
         $duration = $end_time - $start_time;
         $width_factor = ($canvas_width - ($outer_margin_x * 2)) / $duration;
-        $Erwartung = roster_image_histogramm::get_Erwartung($datum, $branch_id);
+        $Expectation = roster_image_histogramm::get_Expectation($datum, $branch_id);
 
-        $max_work_load = max($Erwartung);
+        $max_work_load = max($Expectation);
         $max_workforce = max($Anwesende) * $factor_employee;
         $max_height = max($max_work_load, $max_workforce);
         $height_factor = ($canvas_height - ($outer_margin_y * 2)) / $max_height;
@@ -152,7 +152,7 @@ class roster_image_histogramm {
         $canvas_text .= "var c = document.getElementById('canvas_histogram');\n";
         $canvas_text .= "var ctx = c.getContext('2d');\n";
 
-        $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_Erwartung($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Erwartung);
+        $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_Expectation($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Expectation);
         $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee, $canvas_height);
         $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_axis_labeling($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $canvas_height, $start_time, $end_time);
 
@@ -161,7 +161,7 @@ class roster_image_histogramm {
         return $canvas_text;
     }
 
-    private static function get_Erwartung($datum, $branch_id) {
+    private static function get_Expectation($datum, $branch_id) {
         global $List_of_branch_objects;
         /*
           if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
@@ -191,9 +191,9 @@ class roster_image_histogramm {
         $factor_monat_im_jahr = $row->factor;
 
         foreach ($Packungen as $time => $average) {
-            $Erwartung[$time] = $average * $factor_monat_im_jahr * $factor_tag_im_monat;
+            $Expectation[$time] = $average * $factor_monat_im_jahr * $factor_tag_im_monat;
         }
-        return $Erwartung;
+        return $Expectation;
     }
 
     /*
