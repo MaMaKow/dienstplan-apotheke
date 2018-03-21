@@ -2,41 +2,17 @@
 require 'default.php';
 require 'db-lesen-abwesenheit.php';
 require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/class.emergency_service.php";
 
-$dienstplanCSV = '';
 $tage = 7;
-
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
+$date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
+$datum = general_calculations::get_first_day_of_week($date_sql_user_input);
+create_cookie('datum', $datum, 1);
 
 require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (filter_has_var(INPUT_POST, 'submit_select_employee')) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-    $Plan = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-    $datum = $Plan[0]['Datum'][0];
-//echo $datum;
-} elseif (!isset($employee_id)) {
-    $employee_id = 1;
-}
-if (isset($employee_id)) {
-    create_cookie('employee_id', $employee_id, 30);
-}
-if (isset($datum)) {
-    /*
-     * This is a weekly overview. We will always begin with monday.
-     * TODO: Perhaps include a configuration option to select Sunday as the first day of the week.
-     */
-    $monday_difference = date('w', strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-    $monday_differenceString = '-' . $monday_difference . ' day';
-    $datum = strtotime($monday_differenceString, strtotime($datum));
-    $date_unix = $datum;
-    $date_sql = date('Y-m-d', $date_unix);
-    $datum = date('Y-m-d', $datum);
-    $date_sql_start = $date_sql;
-    create_cookie('datum', $datum, 1);
-}
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie('employee_id', $employee_id, 1);
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
@@ -69,12 +45,8 @@ echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'> " . ge
 echo build_select_employee($employee_id, $List_of_employees);
 
 //Navigation between the weeks:
-echo "<form method='POST' id=navigate_time>";
-echo "\t\t\t<input type=hidden name=date value=" . $date_sql . " form='navigate_time'>\n";
-echo "\t\t\t<input type=hidden name=selected_employee value=" . $employee_id . " form='navigate_time'>\n";
-echo "$backward_button_week_img";
-echo "$forward_button_week_img";
-echo '</form>';
+echo build_html_navigation_elements::build_button_week_backward($date_sql);
+echo build_html_navigation_elements::build_button_week_forward($date_sql);
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<thead>\n";
 echo "\t\t\t\t<tr>\n";
@@ -243,7 +215,7 @@ foreach (array_keys($Dienstplan) as $tag) {
     }
 }
 echo "<button type=button class='btn-primary no-print' "
- . "onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql_start\"' "
+ . "onclick='location=\"webdav.php?employee_id=$employee_id&datum=$datum\"' "
  . "title='Download ics Kalender Datei'>"
  . "<img src=img/download.png style='width:32px' alt='Download ics Kalender Datei'>"
  . "<br>ICS Datei"

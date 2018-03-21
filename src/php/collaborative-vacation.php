@@ -17,8 +17,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/classes/class.emergency_service.php";
-
 /**
  * Build a datalist for easy input of absence entries.
  *

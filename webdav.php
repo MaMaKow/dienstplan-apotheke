@@ -17,7 +17,6 @@ if (filter_has_var(INPUT_GET, 'employee_id')) {
 } else {
     $employee_id = $_SESSION['user_employee_id'];
 }
-
 require 'db-lesen-woche-mitarbeiter.php';
 
 require 'schreiben-ics.php';

@@ -5,18 +5,8 @@ require 'db-lesen-mitarbeiter.php';
 //$datenübertragung="";
 $tage = 7;
 
-require 'cookie-auswertung.php'; //Auswerten der per COOKIE übergebenen Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-//require "post-auswertung.php"; //Auswerten der per POST übergebenen Daten.
-if (filter_has_var(INPUT_POST, 'employee_id')) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (!isset($employee_id)) {
-    $employee_id = 1;
-}
-
-if (isset($employee_id)) {
-    create_cookie('employee_id', $employee_id, 30);
-}
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie('employee_id', $employee_id, 30);
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 }

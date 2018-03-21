@@ -620,3 +620,18 @@ span.form_input_unit{
  * <--
  * The above lines are added for human-resource-management
  */
+/*
+ * The below lines are added for all sites containing build_html_navigation_elements
+ * -->
+ */
+
+#button_week_forward_form, button_week_backward_form{
+    /*
+    TODO: The list of forms to apply this to is to be continued...
+    */
+    display: inline;
+}
+/*
+ * <--
+ * The above lines are added added for all sites containing build_html_navigation_elements
+ */

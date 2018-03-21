@@ -6,7 +6,6 @@
 
 require 'default.php';
 require 'db-lesen-abwesenheit.php';
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/class.emergency_service.php";
 
 if (filter_has_var(INPUT_POST, "month")) {
     $month = filter_input(INPUT_POST, 'month', FILTER_SANITIZE_STRING);

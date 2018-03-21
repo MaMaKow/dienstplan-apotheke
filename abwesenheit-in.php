@@ -2,27 +2,20 @@
 require 'default.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-if (filter_has_var(INPUT_POST, 'employee_id')) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
-} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
-    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_VALIDATE_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_VALIDATE_INT);
-} else {
-    $employee_id = 1;
-}
-
-if (isset($employee_id)) {
-    create_cookie('employee_id', $employee_id, 30);
-}
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie('employee_id', $employee_id, 30);
 
 //Wir löschen Datensätze, wenn dies befohlen wird.
 if ($command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING) and 'delete' === $command) {
+    delete_absence_data();
+}
+
+function delete_absence_data() {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
     $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
     $sql_query = "DELETE FROM `absence` WHERE `employee_id` = '$employee_id' AND `start` = '$beginn'";
     $result = mysqli_query_verbose($sql_query);
-    $employee_id = $employee_id;
+    return $result;
 }
 
 //We create new entries or edit old entries. (Empty values are not accepted.)
@@ -31,6 +24,10 @@ if ((filter_has_var(INPUT_POST, 'submitStunden') or ( filter_has_var(INPUT_POST,
         and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
         and $grund = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
 ) {
+    write_absence_data_to_database($beginn, $ende, $grund);
+}
+
+function write_absence_data_to_database($beginn, $ende, $grund) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
     if ($employee_id === FALSE) {
         return FALSE;
@@ -46,6 +43,7 @@ if ((filter_has_var(INPUT_POST, 'submitStunden') or ( filter_has_var(INPUT_POST,
         $holiday = holidays::is_holiday($date_unix);
 
         if (FALSE !== $holiday and date('w', $date_unix) < 6 and date('w', $date_unix) > 0) {
+            global $Feiertagsmeldung; //TODO: This might better be handled via exceptions.
             $Feiertagsmeldung[] = htmlentities("$holiday ($date_string)\n");
             $tage--;
         }
@@ -60,11 +58,13 @@ if ((filter_has_var(INPUT_POST, 'submitStunden') or ( filter_has_var(INPUT_POST,
     $approval = "approved"; //TODO: There will be a time to handle cases of non-approved holidays!
     $sql_query = "INSERT INTO `absence` "
             . "(employee_id, start, end, days, reason, user, approval) "
-            . "VALUES ('$employee_id', '$beginn', '$ende', '$tage', '$grund', '$user', '$approval')";
+            . "VALUES ('$employee_id', '$beginn', '$ende', '$tage', '$grund', '" . $_SESSION['user_name'] . "', '$approval')";
     //echo "$sql_query<br>\n";
+    global $verbindungi; //TODO: There must be a much better way to solve this!
     if (!($result = mysqli_query($verbindungi, $sql_query))) {
         $error_string = mysqli_error($verbindungi);
         if (strpos($error_string, 'Duplicate') !== false) {
+            global $Fehlermeldung;
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
             //Are there other errors, that we should handle?
@@ -73,7 +73,7 @@ if ((filter_has_var(INPUT_POST, 'submitStunden') or ( filter_has_var(INPUT_POST,
         }
     }
 }
-$employee_id = $employee_id;
+
 $sql_query = 'SELECT * FROM `absence`
 				WHERE `employee_id` = ' . $employee_id . '
 				ORDER BY `start` ASC
