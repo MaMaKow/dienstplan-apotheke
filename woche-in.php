@@ -6,25 +6,17 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-abwesenheit.php";
 /*
  * TODO: Seems not to work on 26.03.2018, with emergency service on the first day with an empty roster for the whole week.
  */
-$mandant = 1; //First branch is allways the default.
 $tage = 7; //Dies ist eine Wochenansicht mit Wochenende
 
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$monday_difference = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-$monday_differenceString = "-" . $monday_difference . " day";
-$datum = strtotime($monday_differenceString, strtotime($datum));
-$datum = date('Y-m-d', $datum);
+$date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
+$datum = general_calculations::get_first_day_of_week($date_sql_user_input);
+create_cookie('datum', $datum, 1);
 $date_sql = $datum;
-if (isset($datum)) {
-    create_cookie("datum", $datum, 0.5); //Diese Funktion muss vor dem ersten echo durchgeführt werden.
-}
-if (isset($mandant)) {
-    create_cookie("mandant", $mandant, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
-}
 
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+create_cookie('mandant', $mandant, 30);
+
+require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';

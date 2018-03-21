@@ -1,24 +1,15 @@
 <?php
 require 'default.php';
-$mandant = 1;    //Wir zeigen den Dienstplan standardmäßig für die "Hauptapotheke" Mandant 1
 
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-$year = date('Y');
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-if (isset($mandant)) {
-    create_cookie('mandant', $mandant, 30);
-}
-if (isset($datum)) {
-    create_cookie('datum', $datum, 0.5);
-}
-if (isset($year)) {
-    create_cookie('year', $year, 0.5);
-}
-
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+$datum = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
+$year = date('Y', strtotime($datum));
+create_cookie('mandant', $mandant, 30);
+create_cookie('datum', $datum, 0.5);
+create_cookie('year', $year, 0.5);
 
 $sql_query = "SELECT * FROM Notdienst WHERE YEAR(Datum) = $year AND Mandant = $mandant";
 $result = mysqli_query_verbose($sql_query);
@@ -29,7 +20,7 @@ while ($row = mysqli_fetch_object($result)) {
 }
 require 'head.php';
 ?>
-<table>
+<table class="table_with_border">
     <tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
     <?php
     foreach ($Notdienste['Datum'] as $key => $datum) {

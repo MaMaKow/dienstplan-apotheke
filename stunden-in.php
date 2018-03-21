@@ -2,18 +2,8 @@
 require 'default.php';
 //Get a list of employees:
 require 'db-lesen-mitarbeiter.php';
-if (filter_has_var(INPUT_POST, 'employee_id')) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
-    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} else {
-    $employee_id = min(array_keys($List_of_employees));
-}
-if (isset($employee_id)) {
-    create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
-}
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie('employee_id', $employee_id, 1);
 
 //Deleting rows of data:
 if (filter_has_var(INPUT_POST, 'loeschen')) {
@@ -31,7 +21,6 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
             $result = mysqli_query_verbose($sql_query);
         }
     }
-    $employee_id = $employee_id;
 }
 
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)

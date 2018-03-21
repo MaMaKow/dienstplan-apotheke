@@ -1,25 +1,12 @@
 <?php
 require 'default.php';
-require 'head.php';
-require 'navigation.php';
-require 'src/php/pages/menu.php';
-echo "<div id=main-area>\n";
+$VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie('employee_id', $employee_id, 1);
+$vk = $employee_id;
+
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-$VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
-if (filter_has_var(INPUT_POST, 'employee_id')) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
-    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} else {
-    $employee_id = min(array_keys($List_of_employees));
-}
-if (isset($employee_id)) {
-    create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
-}
-$vk = $employee_id;
 $sql_query = "SELECT * FROM `Stunden`
 				WHERE `VK` = " . $vk . "
 				ORDER BY `Aktualisierung` ASC
@@ -53,6 +40,11 @@ while ($row = mysqli_fetch_object($result)) {
 $tablebody .= "\t\t\t</tbody>\n";
 
 //Hier beginnt die Ausgabe
+require 'head.php';
+require 'navigation.php';
+require 'src/php/pages/menu.php';
+echo "<div id=main-area>\n";
+
 echo build_select_employee($employee_id, $List_of_employees);
 echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[" . gettext("Edit") . "]</a><br><br></div>\n";
 echo "\t\t<table>\n";

@@ -2,29 +2,18 @@
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
-$mandant = 1; //First branch is allways the default.
 $tage = 7; //Dies ist eine Tagesansicht für einen einzelnen Tag.
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+create_cookie('mandant', $mandant, 30);
 
 
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
 
-
-
-require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-if (isset($mandant)) {
-    create_cookie("mandant", $mandant, 30);
-}
-$monday_difference = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-$monday_differenceString = "-" . $monday_difference . " day";
-$datum = strtotime($monday_differenceString, strtotime($datum));
-$datum = date('Y-m-d', $datum);
+$date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
+$datum = general_calculations::get_first_day_of_week($date_sql_user_input);
 $date_sql = $datum;
-if (isset($datum)) {
-    create_cookie("datum", $datum, 0.5);
-}
+create_cookie("datum", $datum, 0.5);
 
+require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
