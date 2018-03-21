@@ -8,9 +8,6 @@ $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_S
 $datum = general_calculations::get_first_day_of_week($date_sql_user_input);
 create_cookie('datum', $datum, 1);
 
-require 'cookie-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 

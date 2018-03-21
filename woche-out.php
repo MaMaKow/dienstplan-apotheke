@@ -3,30 +3,22 @@ require_once "default.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "schreiben-tabelle.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-abwesenheit.php";
 
-$mandant = 1; //First branch is allways the default.
 $tage = 7; //One week
+
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+create_cookie('mandant', $mandant, 30);
 
 $error_message_html = "";
 $overlay_message_html = "";
 
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST oder $datum per GET übergeben werden."
-require 'cookie-auswertung.php'; //Auswerten der als COOKIE übergebenen Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
+$date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
+$datum = general_calculations::get_first_day_of_week($date_sql_user_input);
+create_cookie('datum', $datum, 1);
+
 require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$monday_difference = date("w", strtotime($datum)) - 1; //Wir wollen den Anfang der Woche
-$monday_differenceString = "-" . $monday_difference . " day";
-$datum = strtotime($monday_differenceString, strtotime($datum));
-$datum = date('Y-m-d', $datum);
-$konstantes_datum = $datum;
 for ($i = 0; $i < $tage; $i++) {
     $Week_dates_unix[] = strtotime(' +' . $i . ' days', strtotime($datum));
     //echo date("d.m.Y", end($Week_dates_unix)) . "<br>\n";
-}
-if (isset($datum)) {
-    create_cookie("datum", $datum, 0.5); //Diese Funktion muss vor dem ersten echo durchgeführt werden.
-}
-if (isset($mandant)) {
-    create_cookie("mandant", $mandant, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
 }
 
 //Hole eine Liste aller Mitarbeiter
@@ -70,8 +62,7 @@ $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
-    $datum = ($Dienstplan[$i]['Datum'][0]);
-    $date_unix = strtotime($datum);
+    $date_unix = strtotime(($Dienstplan[$i]['Datum'][0]));
     $head_table_html .= "\t\t\t\t\t\t<td>";
     $head_table_html .= "<a href='tag-out.php?datum=" . $Dienstplan[$i]["Datum"][0] . "'>";
     $head_table_html .= strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
@@ -113,7 +104,6 @@ if (isset($Overlay_message)) {
     $overlay_message_html .= "\t\t</div>\n";
 }
 $table_html .= $table_body_html;
-$datum = $konstantes_datum;
 foreach (array_keys($List_of_branch_objects) as $filiale) {
     if ($mandant == $filiale) {
         continue 1;

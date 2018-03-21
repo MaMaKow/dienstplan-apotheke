@@ -5,7 +5,8 @@ require_once 'default.php';
  * @var $mandant int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
  */
-$mandant = 1; //First branch is allways the default.
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+create_cookie('mandant', $mandant, 30);
 /*
  * @var $tage int Number of days to show.
  * This page will show the roster of one single day.
@@ -15,17 +16,9 @@ require_once 'db-lesen-abwesenheit.php';
 require_once 'image_dienstplan.php';
 require_once 'image_histogramm.php';
 
-$datum = date('Y-m-d'); //This value will be overridden, if COOKIE, GET or POST contain another value."
-require 'cookie-auswertung.php';
-require 'get-auswertung.php';
-require 'post-auswertung.php';
+$datum = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_sql = $datum;
-if (isset($mandant)) {
-    create_cookie("mandant", $mandant, 30);
-}
-if (isset($datum)) {
-    create_cookie("datum", $datum, 0.5);
-}
+create_cookie("datum", $datum, 0.5);
 
 //The following lines check for the state of approval.
 //Duty rosters have to be approved by the leader, before the staff can view them.
