@@ -2,14 +2,8 @@
 require_once "default.php";
 require_once "db-lesen-mitarbeiter.php";
 require_once "db-lesen-abwesenheit.php";
-if (filter_has_var(INPUT_POST, 'employee_id')) {
-    $employee_id = filter_input(INPUT_POST, employee_id, FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, employee_id, FILTER_SANITIZE_NUMBER_INT);
-}
-if (isset($employee_id)) {
-    create_cookie("employee_id", $employee_id, 30);
-}
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie("employee_id", $employee_id, 30);
 require_once "src/php/collaborative-vacation.php";
 handle_user_data_input();
 require "head.php";

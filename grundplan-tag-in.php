@@ -1,7 +1,6 @@
 <?php
 
 require 'default.php';
-$mandant = 1;    //First branch is allways the default.
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
 
 function get_weekday_names() {
@@ -14,16 +13,16 @@ function get_weekday_names() {
 }
 
 $Wochentage = get_weekday_names();
-require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
+
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+create_cookie('mandant', $mandant, 30);
+
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    TODO: Test if this works:
+    //TODO: Test if this works:
     user_input::principle_roster_write_user_input_to_database();
 }
 
-if (filter_has_var(INPUT_POST, 'mandant')) {
-    $mandant = filter_input(INPUT_POST, 'mandant', FILTER_SANITIZE_NUMBER_INT);
-}
 if (filter_has_var(INPUT_POST, 'wochentag')) {
     $wochentag = filter_input(INPUT_POST, 'wochentag', FILTER_SANITIZE_NUMBER_INT);
 } elseif (!empty($Grundplan)) {
@@ -34,9 +33,6 @@ if (filter_has_var(INPUT_POST, 'wochentag')) {
     $wochentag = 1;
 }
 
-if (isset($mandant)) {
-    create_cookie('mandant', $mandant, 30);
-}
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';

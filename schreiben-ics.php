@@ -8,7 +8,7 @@
  * @return string $textICS the ICS text file
  */
 function schreiben_ics($Dienstplan) {
-    global $List_of_employees, $List_of_branch_objects;
+    global $List_of_employees, $List_of_branch_objects, $config;
     $administrator_email = $config['contact_email']; /* This is the email of the roster administrator. It is not specific to the branch. */
     $textICS = "";
     $textICS .= "BEGIN:VCALENDAR\n";

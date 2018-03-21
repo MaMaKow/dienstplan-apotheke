@@ -3,18 +3,8 @@ require 'default.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 $VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
-if (filter_has_var(INPUT_POST, 'employee_id')) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
-    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} else {
-    $employee_id = 1;
-}
-if (isset($employee_id)) {
-    create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
-}
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie("employee_id", $employee_id, 1);
 $vk = $employee_id;
 $sql_query = "SELECT * FROM `absence`
 		WHERE `employee_id` = " . $vk . "
