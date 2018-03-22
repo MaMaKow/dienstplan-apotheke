@@ -13,8 +13,16 @@ $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_
 $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
 $date_unix = strtotime($date_sql);
 
+if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
+    user_input::old_write_approval_to_database($mandant);
+}
+if (filter_has_var(INPUT_POST, 'Dienstplan')) {
+    $Dienstplan = user_input::old_get_Roster_from_POST_secure();
+    if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
+        user_input::old_roster_write_user_input_to_database();
+    }
+}
 
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 create_cookie("mandant", $branch_id, 30);
 create_cookie("datum", $date_sql, 0.5);
 //Hole eine Liste aller Mitarbeiter

@@ -15,7 +15,6 @@ $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_S
 $datum = general_calculations::get_first_day_of_week($date_sql_user_input);
 create_cookie('datum', $datum, 1);
 
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 for ($i = 0; $i < $tage; $i++) {
     $Week_dates_unix[] = strtotime(' +' . $i . ' days', strtotime($datum));
     //echo date("d.m.Y", end($Week_dates_unix)) . "<br>\n";

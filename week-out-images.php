@@ -13,7 +13,6 @@ $datum = general_calculations::get_first_day_of_week($date_sql_user_input);
 $date_sql = $datum;
 create_cookie("datum", $datum, 0.5);
 
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
