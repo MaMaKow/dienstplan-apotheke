@@ -16,7 +16,15 @@ $date_sql = $datum;
 $mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
 create_cookie('mandant', $mandant, 30);
 
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
+if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
+    user_input::old_write_approval_to_database($mandant);
+}
+if (filter_has_var(INPUT_POST, 'Dienstplan')) {
+    $Dienstplan = user_input::old_get_Roster_from_POST_secure();
+    if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
+        user_input::old_roster_write_user_input_to_database();
+    }
+}
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
@@ -52,7 +60,6 @@ echo "<br><br>\n";
 echo "<div id=wochenAuswahl><input name=woche type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">";
 echo "<input type=submit name=wochenAuswahl value=Anzeigen></div>";
 echo "<br><br>";
-//$submit_button="\t<input type=submit value=Absenden name='submit_roster'>\n";echo $submit_button;
 if ($session->user_has_privilege('approve_roster')) {
 // TODO: The button should be inactive when the approval already was done.
     echo "$submit_approval_button_img";
