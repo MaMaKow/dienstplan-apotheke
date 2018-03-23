@@ -22,7 +22,7 @@ if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST,
 if (filter_has_var(INPUT_POST, 'Dienstplan')) {
     $Dienstplan = user_input::old_get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
-        user_input::old_roster_write_user_input_to_database();
+        user_input::old_roster_write_user_input_to_database($Dienstplan, $Columns, $mandant);
     }
 }
 //Hole eine Liste aller Mitarbeiter
