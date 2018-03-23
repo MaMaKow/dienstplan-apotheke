@@ -55,10 +55,11 @@ class user_input {
         }
     }
 
-    public static function principle_roster_write_user_input_to_database() {
+    public static function principle_roster_write_user_input_to_database($mandant) {
+        global $List_of_employee_lunch_break_minutes;
         $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
-        foreach ($Grundplan as $wochentag => $value) {
+        foreach (array_keys($Grundplan) as $wochentag) {
             //First, the old values are deleted.
             $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
             $result = mysqli_query_verbose($sql_query);
@@ -74,9 +75,7 @@ class user_input {
                     $mittagsende = user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Mittagsende'][$key]);
                     $kommentar = user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Kommentar'][$key]);
                     if (!empty($mittagsbeginn) && !empty($mittagsende)) {
-                        $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
-                        $mittagspause = strtotime($mittagsende) - strtotime($mittagsbeginn);
-                        $sekunden = $sekunden - $mittagspause;
+                        $sekunden = (strtotime($dienstende) - strtotime($dienstbeginn)) - (strtotime($mittagsende) - strtotime($mittagsbeginn));
                         $stunden = round($sekunden / 3600, 1);
                     } else {
                         $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
@@ -109,6 +108,8 @@ class user_input {
         $time_columns = array("Dienstbeginn", "Dienstende", "Mittagsbeginn", "Mittagsende");
 
         $Roster_from_post = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $Roster = array();
+
         foreach ($Roster_from_post as $day_number => $inhalt_tag) {
             $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
             foreach ($inhalt_tag as $column_name => $Lines) {
@@ -139,6 +140,7 @@ class user_input {
                             AND `Mandant` = '$branch_id'
 			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
         $result = mysqli_query_verbose($query);
+        $Roster_old_day = array();
         while ($row = mysqli_fetch_object($result)) {
             $Roster_old_day["Datum"][] = $row->Datum;
             $Roster_old_day["VK"][] = $row->VK;
@@ -207,13 +209,13 @@ class user_input {
         $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
 			VALUES ('$date_sql', 'not_yet_approved', '$branch_id', " . user_input::escape_sql_value($_SESSION['user_name']) . ")";
         $result = mysqli_query_verbose($sql_query);
+        return $result;
     }
 
     public static function old_write_approval_to_database($mandant) {
 
         $Dienstplan = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-        $tage = count($Dienstplan);
-        foreach (array_keys($Dienstplan) as $tag => $value) {
+        foreach (array_keys($Dienstplan) as $tag) {
             if (empty($Dienstplan[$tag]['Datum'][0])) {
                 continue;
             }
@@ -234,7 +236,7 @@ class user_input {
         }
     }
 
-    public static function old_roster_write_user_input_to_database() {
+    public static function old_roster_write_user_input_to_database($Dienstplan, $Columns, $mandant) {
         foreach (array_keys($Dienstplan) as $day_number) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
             $Dienstplan = user_input::old_remove_empty_rows($Dienstplan, $day_number, $Columns);
             $roster_first_key = min(array_keys($Dienstplan[$day_number]['Datum']));
@@ -280,9 +282,6 @@ class user_input {
             user_input::old_insert_changed_entries_into_database($date_sql, $day_number, $mandant, $Dienstplan, $Changed_roster_employee_id_list);
             user_input::old_insert_changed_entries_into_database($date_sql, $day_number, $mandant, $Dienstplan, $Inserted_employee_id_list);
             mysqli_query_verbose("COMMIT");
-        }
-        if (!empty($date_sql)) {
-            $datum = $date_sql;
         }
     }
 
