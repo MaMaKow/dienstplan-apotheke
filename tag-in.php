@@ -16,8 +16,8 @@ $date_unix = strtotime($date_sql);
 if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
     user_input::old_write_approval_to_database($mandant);
 }
-if (filter_has_var(INPUT_POST, 'Dienstplan')) {
-    $Dienstplan = user_input::old_get_Roster_from_POST_secure();
+if (filter_has_var(INPUT_POST, 'Roster')) {
+    $Roster = user_input::get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
         user_input::old_roster_write_user_input_to_database($Dienstplan, $Columns, $mandant);
     }
@@ -91,7 +91,7 @@ echo "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "
 echo build_select_branch($branch_id, $date_sql);
 
 
-echo "\t\t<form id=myform method=post>\n";
+echo "\t\t<form id=myform method=post>FORM\n";
 echo "\t\t\t<div id=navigation_elements>";
 echo "$backward_button_img";
 echo "$forward_button_img";
@@ -115,7 +115,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     //TODO: This loop probably is not necessary. Is there any case where $i ist not 0?
     $zeile = "";
     echo "\t\t\t\t\t<td>";
-    $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][$roster_first_key] . ">";
+    $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][$roster_first_key] . ">HERE";
     $zeile .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
     $zeile .= strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][$roster_first_key]));
     echo $zeile;

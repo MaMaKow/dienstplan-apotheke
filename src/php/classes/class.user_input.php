@@ -101,91 +101,58 @@ class user_input {
         }
     }
 
-    public static function old_get_Roster_from_POST_secure() {
-        global $Columns; //Will be needed to slice out empty rows later.
-        //The following statement requires PHP >= 7.0.0
-        //define("TIME_COLUMNS", array("Dienstbeginn", "Dienstende"));
-        $time_columns = array("Dienstbeginn", "Dienstende", "Mittagsbeginn", "Mittagsende");
-
-        $Roster_from_post = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+    public static function get_Roster_from_POST_secure() {
+        $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
         $Roster = array();
-
-        foreach ($Roster_from_post as $day_number => $inhalt_tag) {
-            $day_number = filter_var($day_number, FILTER_SANITIZE_NUMBER_INT);
-            foreach ($inhalt_tag as $column_name => $Lines) {
-                $column_name = filter_var($column_name, FILTER_SANITIZE_STRING);
-                $Columns[$column_name] = $column_name; //Will be needed to slice out empty rows later.
-                foreach ($Lines as $line_number => $line) {
-                    $line = filter_var($line, FILTER_SANITIZE_STRING);
-                    if (!empty($line) and in_array($column_name, $time_columns)) {
-                        $line = strftime('%H:%M:%S', strtotime($line));
-                    }
-                    $line_number = filter_var($line_number, FILTER_SANITIZE_NUMBER_INT);
-                    if ('' === $line) {
-                        //Empty fields should be inserted as null values inside the database.
-                        //TODO: Should we make an exeption for Comments?
-                        //$line = 'null';
-                        $line = NULL;
-                    }
-                    $Roster[$day_number][$column_name][$line_number] = $line;
+        foreach ($Roster_from_post as $date_unix => $Roster_day_array) {
+            foreach ($Roster_day_array as $roster_row_iterator => $Roster_row_array) {
+                $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
+                $employee_id = filter_var($Roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT);
+                $duty_start_sql = filter_var($Roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING);
+                $duty_end_sql = filter_var($Roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING);
+                $break_start_sql = filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING);
+                $break_end_sql = filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING);
+                $comment = filter_var($Roster_row_array['comment'], FILTER_SANITIZE_STRING);
+                if ('' !== $employee_id) {
+                    /*
+                     * TODO: This test might be a bit more complex.
+                     * This might even be a good place to insert some sanity checks.
+                     * e.g. Is the end after the beginning? Is the break within the duty time? Are there no overlapping duties for the same employee?
+                     * roster_item::check_roster_item_sequence();
+                     */
+                    $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 }
             }
         }
         return $Roster;
     }
 
-    public static function old_get_old_Roster_from_database($date_sql, $branch_id) {
-        $query = "SELECT * FROM `Dienstplan`
-			WHERE `Datum` = '$date_sql'
-                            AND `Mandant` = '$branch_id'
-			;"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
-        $result = mysqli_query_verbose($query);
-        $Roster_old_day = array();
-        while ($row = mysqli_fetch_object($result)) {
-            $Roster_old_day["Datum"][] = $row->Datum;
-            $Roster_old_day["VK"][] = $row->VK;
-            $Roster_old_day["Dienstbeginn"][] = $row->Dienstbeginn;
-            $Roster_old_day["Dienstende"][] = $row->Dienstende;
-            $Roster_old_day["Mittagsbeginn"][] = $row->Mittagsbeginn;
-            $Roster_old_day["Mittagsende"][] = $row->Mittagsende;
-            $Roster_old_day["Mandant"][] = $row->Mandant;
-            $Roster_old_day["Kommentar"][] = $row->Kommentar;
-        }
-        return $Roster_old_day;
-    }
-
-    public static function old_remove_changed_entries_from_database($date_sql, $branch_id, $Employee_id_list) {
+    private static function remove_changed_entries_from_database($date_sql, $branch_id, $Employee_id_list) {
         if (!empty($Employee_id_list)) {
             $sql_query = "DELETE FROM `Dienstplan`"
                     . " WHERE `Datum` = '$date_sql'"
                     . " AND `VK` IN (" . implode(', ', $Employee_id_list) . ")"
-                    . " AND `Mandant` = '$branch_id';"; //Der Mandant wird entweder als default gesetzt oder per POST übergeben und dann im vorherigen if-clause übeschrieben.
+                    . " AND `Mandant` = '$branch_id';";
             mysqli_query_verbose($sql_query, TRUE);
         }
     }
 
-    public static function old_insert_changed_entries_into_database($date_sql, $day_number, $branch_id, $Dienstplan, $Changed_roster_employee_id_list) {
-        foreach ($Dienstplan[$day_number]['VK'] as $key => $employee_id) { //Die einzelnen Zeilen im Dienstplan
-            if (!in_array($employee_id, $Changed_roster_employee_id_list)) {
+    private static function old_insert_changed_entries_into_database($date_unix, $branch_id, $Roster, $Changed_roster_employee_id_list) {
+        foreach ($Roster[$date_unix] as $roster_row_object) { //Die einzelnen Zeilen im Dienstplan
+            if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list)) {
                 continue;
             }
-            if (isset($Dienstplan[$day_number]["Mittagsbeginn"][$key]) && isset($Dienstplan[$day_number]["Mittagsende"][$key])) {
-                $lunch_break = strtotime($Dienstplan[$day_number]["Mittagsende"][$key]) - strtotime($Dienstplan[$day_number]["Mittagsbeginn"][$key]);
-            } else {
-                $lunch_break = 0;
-            }
-            $working_seconds = strtotime($Dienstplan[$day_number]["Dienstende"][$key]) - strtotime($Dienstplan[$day_number]["Dienstbeginn"][$key]) - $lunch_break;
-            $working_hours = $working_seconds / 3600;
+
             $sql_query = "REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user)
-            VALUES ($employee_id"
-                    . ", " . user_input::escape_sql_value($date_sql)
-                    . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Dienstbeginn"][$key])
-                    . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Dienstende"][$key])
-                    . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Mittagsbeginn"][$key])
-                    . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Mittagsende"][$key])
-                    . ", " . $working_hours
+            VALUES ($roster_row_object->employee_id"
+                    . ", " . user_input::escape_sql_value($roster_row_object->date_sql)
+                    . ", " . user_input::escape_sql_value($roster_row_object->duty_start_sql)
+                    . ", " . user_input::escape_sql_value($roster_row_object->duty_end_sql)
+                    . ", " . user_input::escape_sql_value($roster_row_object->break_start_sql)
+                    . ", " . user_input::escape_sql_value($roster_row_object->break_end_sql)
+                    . ", " . $roster_row_object->working_hours
                     . ", " . $branch_id
-                    . ", " . user_input::escape_sql_value($Dienstplan[$day_number]["Kommentar"][$key])
+                    . ", " . user_input::escape_sql_value($roster_row_object->comment)
                     . ", " . user_input::escape_sql_value($_SESSION['user_name'])
                     . ")";
             mysqli_query_verbose($sql_query, TRUE);
@@ -236,51 +203,75 @@ class user_input {
         }
     }
 
-    public static function old_roster_write_user_input_to_database($Dienstplan, $Columns, $mandant) {
-        foreach (array_keys($Dienstplan) as $day_number) { //Hier sollte eigentlich nur ein einziger Tag ankommen.
-            $Dienstplan = user_input::old_remove_empty_rows($Dienstplan, $day_number, $Columns);
-            $roster_first_key = min(array_keys($Dienstplan[$day_number]['Datum']));
-            if (!empty($Dienstplan[$day_number]['Datum'][$roster_first_key])) {
-                $date_sql = $Dienstplan[$day_number]['Datum'][$roster_first_key];
-            } else {
-                $date_sql = filter_input(INPUT_POST, 'date_sql', FILTER_SANITIZE_STRING);
+    private static function get_changed_roster_employee_id_list($Roster, $Roster_old, $date_unix) {
+        foreach ($Roster[$date_unix] as $roster_row_object) {
+            foreach ($Roster_old[$date_unix] as $roster_row_object_old) {
+                if ($roster_row_object->employee_id === $roster_row_object->employee_id and $roster_row_object === $roster_row_object_old) {
+                    /*
+                     * There is an old entry for this employee, which does not exactly math the newly sent entry.
+                     * CAVE: This will also put any employee on the list, who is on the roster more than once.
+                     */
+                    $Changed_roster_employee_id_list[] = $roster_row_object->employee_id;
+                }
             }
+        }
+        return array_unique($Changed_roster_employee_id_list);
+    }
+
+    private static function get_deleted_roster_employee_id_list($Roster, $Roster_old, $date_unix) {
+        if (empty($Roster[$date_unix])) {
+            foreach ($Roster_old[$date_unix] as $roster_row_object) {
+                $Deleted_roster_employee_id_list[] = $roster_row_object->employee_id;
+            }
+        } else {
+            foreach ($Roster_old[$date_unix] as $roster_row_object) {
+                $List_of_employees_in_Roster_old[] = $roster_row_object->employee_id;
+            }
+            foreach ($Roster[$date_unix] as $roster_row_object) {
+                $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
+            }
+            $Deleted_roster_employee_id_list = array_diff($List_of_employees_in_Roster_old, $List_of_employees_in_Roster);
+        }
+        return $Deleted_roster_employee_id_list;
+    }
+
+    private static function get_inserted_roster_employee_id_list($Roster, $Roster_old, $date_unix) {
+        if (empty($Roster_old[$date_unix])) {
+            foreach ($Roster[$date_unix] as $roster_row_object) {
+                $Inserted_roster_employee_id_list[] = $roster_row_object->employee_id;
+            }
+        } else {
+            foreach ($Roster_old[$date_unix] as $roster_row_object) {
+                $List_of_employees_in_Roster_old[] = $roster_row_object->employee_id;
+            }
+            foreach ($Roster[$date_unix] as $roster_row_object) {
+                $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
+            }
+            $Inserted_roster_employee_id_list = array_diff($List_of_employees_in_Roster, $List_of_employees_in_Roster_old);
+        }
+        return $Inserted_roster_employee_id_list;
+    }
+
+    public static function old_roster_write_user_input_to_database($Roster, $branch_id) {
+        foreach (array_keys($Roster) as $date_unix) {
+            $date_sql = date('Y-m-d', $date_unix);
             //The following line will add an entry for every day in the table approval.
-            user_input::old_insert_new_approval_into_database($date_sql, $mandant);
-            $Roster_old[$day_number] = user_input::old_get_old_Roster_from_database($date_sql, $mandant);
+            user_input::old_insert_new_approval_into_database($date_sql, $branch_id);
+            $Roster_old = roster::read_roster_from_database($branch_id, $date_sql);
 
             /*
              * Remove deleted data rows:
              * TODO: Find the changed or the deleted rows:
              */
-            foreach ($Dienstplan[$day_number]["VK"] as $key => $employee_id) {
-                $Comparison_keys = array_keys($Roster_old[$day_number]["VK"], $employee_id);
-                foreach ($Comparison_keys as $comparison_key) {
-                    foreach ($Dienstplan[$day_number] as $column_name => $Column) {
-                        if ($Roster_old[$day_number][$column_name][$comparison_key] !== $Dienstplan[$day_number][$column_name][$key]) {
-                            $Changed_roster_employee_id_list[] = $employee_id;
-                        }
-                    }
-                }
-            }
-            $Changed_roster_employee_id_list = array_unique($Changed_roster_employee_id_list);
-            if (empty($Dienstplan[$day_number]["VK"])) {
-                $Deleted_roster_employee_id_list = $Roster_old[$day_number]["VK"];
-            } else {
-                $Deleted_roster_employee_id_list = array_diff($Roster_old[$day_number]["VK"], $Dienstplan[$day_number]["VK"]);
-            }
-            if (empty($Roster_old[$day_number]["VK"])) {
-                $Inserted_employee_id_list = $Dienstplan[$day_number]["VK"];
-            } else {
-                $Inserted_employee_id_list = array_diff($Dienstplan[$day_number]["VK"], $Roster_old[$day_number]["VK"]);
-            }
+            $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Roster_old, $date_unix);
+            $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Roster, $Roster_old, $date_unix);
+            $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Roster, $Roster_old, $date_unix);
 
-            //TODO: There should be a transaction here:
             mysqli_query_verbose("START TRANSACTION");
-            user_input::old_remove_changed_entries_from_database($date_sql, $mandant, $Deleted_roster_employee_id_list);
-            user_input::old_remove_changed_entries_from_database($date_sql, $mandant, $Changed_roster_employee_id_list);
-            user_input::old_insert_changed_entries_into_database($date_sql, $day_number, $mandant, $Dienstplan, $Changed_roster_employee_id_list);
-            user_input::old_insert_changed_entries_into_database($date_sql, $day_number, $mandant, $Dienstplan, $Inserted_employee_id_list);
+            user_input::remove_changed_entries_from_database($date_sql, $branch_id, $Deleted_roster_employee_id_list);
+            user_input::remove_changed_entries_from_database($date_sql, $branch_id, $Changed_roster_employee_id_list);
+            user_input::old_insert_changed_entries_into_database($date_unix, $branch_id, $Roster, $Changed_roster_employee_id_list);
+            user_input::old_insert_changed_entries_into_database($date_unix, $branch_id, $Roster, $Inserted_roster_employee_id_list);
             mysqli_query_verbose("COMMIT");
         }
     }

@@ -51,8 +51,8 @@ class roster_item {
         $this->break_end_int = $this->convert_time_to_seconds($break_end);
         $this->comment = $comment;
 
-        $duty_duration = $this->duty_end_int - $this->duty_start_int;
-        $break_duration = $this->break_end_int - $this->break_start_int;
+        $this->duty_duration = $this->duty_end_int - $this->duty_start_int;
+        $this->break_duration = $this->break_end_int - $this->break_start_int;
         /*
          * TODO: This might be a good place to issue an error, if the break times are not within the working times.
          * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?

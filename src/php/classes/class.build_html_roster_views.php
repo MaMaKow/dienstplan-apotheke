@@ -57,30 +57,30 @@ class build_html_roster_views {
         $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
         //employee input:
         $roster_input_row = "<td>\n";
-        $roster_input_row .= "<input type=hidden name=Dienstplan[" . $day_iterator . "][Datum][" . $roster_row_iterator . "] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
-        $roster_input_row .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
+        $roster_input_row .= "<input type=hidden name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
+        $roster_input_row .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows);
         //start of duty:
-        $roster_input_row .= "<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 ) . " value='";
+        $roster_input_row .= "<input type=time size=5 class=Dienstplan_Dienstbeginn name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][duty_start_sql] id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 ) . " value='";
         $roster_input_row .= roster::get_duty_start_from_roster($Roster, $date_unix, $roster_row_iterator);
         $roster_input_row .= "'>\n ";
 
         $roster_input_row .= gettext("to");
 
         //end of duty:
-        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Dienstende name=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 ) . " value='";
+        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Dienstende name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][duty_end_sql] id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 ) . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $date_unix, $roster_row_iterator);
         $roster_input_row .= "'>\n";
 
         $roster_input_row .= "<br>\n";
 
         //start of break:
-        $roster_input_row .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 ) . " value='";
+        $roster_input_row .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][break_start_sql] id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 ) . " value='";
         $roster_input_row .= roster::get_break_start_from_roster($Roster, $date_unix, $roster_row_iterator);
 
         $roster_input_row .= "'> ";
         $roster_input_row .= gettext("to");
         //end of break:
-        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Mittagsende name=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 ) . " value='";
+        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Mittagsende name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][break_end_sql] id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 ) . " value='";
         $roster_input_row .= roster::get_break_end_from_roster($Roster, $date_unix, $roster_row_iterator);
         $roster_input_row .= "'>";
         $roster_input_row .= build_html_roster_views::build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator);
@@ -88,9 +88,9 @@ class build_html_roster_views {
         return $roster_input_row;
     }
 
-    private static function build_roster_input_row_employee_select($roster_employee_id, $day_iterator, $roster_row_iterator, $maximum_number_of_rows) {
+    private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
         global $List_of_employees;
-        $roster_input_row_employee_select = "<select name=Dienstplan[" . $day_iterator . "][VK][" . $roster_row_iterator . "] tabindex=" . (($day_iterator * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
+        $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
 
         foreach ($List_of_employees as $employee_id => $last_name) {
@@ -125,7 +125,7 @@ class build_html_roster_views {
                 . "K-</a></div>\n";
         $roster_input_row_comment_html .= "<br>"
                 . "<div style=display:$roster_uncomment_visibility_style_display id=$roster_input_row_comment_input_id>"
-                . gettext("Comment") . ":&nbsp<input type=text name=Dienstplan[$day_iterator][Kommentar][$roster_row_iterator] value='$comment'></div>\n";
+                . gettext("Comment") . ":&nbsp<input type=text name=Roster[$day_iterator][$roster_row_iterator][comment] value='$comment'></div>\n";
         return $roster_input_row_comment_html;
     }
 
