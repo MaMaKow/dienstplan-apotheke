@@ -15,7 +15,7 @@ if (!empty($Roster)) {
     $Warnmeldung[] = "Kein Dienstplan gefunden beim Zeichnen des Histogramms.";
 }
 
-class roster_headcount {
+abstract class roster_headcount {
 
     function __construct() {
 

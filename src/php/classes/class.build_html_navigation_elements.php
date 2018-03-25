@@ -22,7 +22,7 @@
  *
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
-class build_html_navigation_elements {
+abstract class build_html_navigation_elements {
 
     public static function build_button_day_backward($date_sql) {
         $backward_button_img = "

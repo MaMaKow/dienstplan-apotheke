@@ -17,11 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class roster_image_histogramm {
-
-    function __construct() {
-
-    }
+abstract class roster_image_histogramm {
 
     private static function draw_image_dienstplan_add_Expectation($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Expectation) {
         $red = hex2rgb('#FF0000');

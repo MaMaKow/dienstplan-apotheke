@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class build_html_roster_views {
+abstract class build_html_roster_views {
     /*
      * Build one table row for a daily view
      *
@@ -58,6 +58,7 @@ class build_html_roster_views {
         //employee input:
         $roster_input_row = "<td>\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
+        $roster_input_row .= "<input type=hidden name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][branch_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->branch_id . ">\n";
         $roster_input_row .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows);
         //start of duty:
         $roster_input_row .= "<input type=time size=5 class=Dienstplan_Dienstbeginn name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][duty_start_sql] id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 ) . " value='";

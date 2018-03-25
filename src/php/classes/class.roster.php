@@ -46,7 +46,7 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $roster_row_iterator++;
             }
             /*
@@ -73,8 +73,8 @@ abstract class roster {
             /*
              * TODO: Make sure, that these two repair calls are not necessary anymore:
              */
-            mysqli_query_verbose("UPDATE `Apotheke`.`Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
-            mysqli_query_verbose("UPDATE `Apotheke`.`Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
+            mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
+            mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
             $sql_query = "SELECT * FROM `Grundplan`"
                     . "WHERE `Wochentag` = '" . date("N", $date_unix) . "'"
                     . "AND `Mandant` = '$branch_id'"
@@ -92,7 +92,7 @@ abstract class roster {
                     //$Fehlermeldung[]=$List_of_employees[$row->VK]." ist nicht angestellt.<br>\n";
                     continue 1;
                 }
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
                 $roster_row_iterator++;
                 //TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
             }

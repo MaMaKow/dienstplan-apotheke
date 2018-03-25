@@ -26,21 +26,24 @@ class roster_item {
 
     public $date_sql;
     public $employee_id;
-    public $duty_start_sql;
-    public $duty_end_sql;
-    public $break_start_sql;
+    public $branch_id;
     public $duty_start_int;
-    public $break_end_sql;
+    public $duty_start_sql;
     public $duty_end_int;
+    public $duty_end_sql;
     public $break_start_int;
+    public $break_start_sql;
     public $break_end_int;
+    public $break_end_sql;
     public $working_hours;
+    public $break_duration;
     public $comment;
 
-    function __construct($date_sql, $employee_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
+    function __construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
         $this->date_sql = $date_sql;
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;
+        $this->branch_id = $branch_id;
         $this->duty_start_sql = $duty_start;
         $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
         $this->duty_end_sql = $duty_end;
@@ -64,7 +67,7 @@ class roster_item {
          * TODO: This does not take into account, that emergency service is not calculated as full hours.
          * Emergeny service calculation might differ between states, federal states, or even employees with different contracts.
          */
-        $this->working_seconds = ($duty_duration - $break_duration);
+        $this->working_seconds = ($this->duty_duration - $this->break_duration);
         $this->working_hours = $this->working_seconds / 3600;
     }
 
