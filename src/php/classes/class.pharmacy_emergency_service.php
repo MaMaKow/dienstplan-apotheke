@@ -22,7 +22,7 @@
  *
  * @author Mandelkow
  */
-class pharmacy_emergency_service {
+abstract class pharmacy_emergency_service {
     /*
      * Do we have emergency service at the given date?
      *

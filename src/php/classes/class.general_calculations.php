@@ -22,7 +22,7 @@
  *
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
-class general_calculations {
+abstract class general_calculations {
     /*
      * Get the first day of the week.
      *
