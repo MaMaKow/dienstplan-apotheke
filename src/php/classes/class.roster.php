@@ -38,9 +38,9 @@ abstract class roster {
         $Roster = array();
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
-            $sql_query = 'SELECT DISTINCT Dienstplan.* '
+            $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
-                    . 'WHERE Dienstplan.Mandant = "' . $branch_id . '" AND `Datum` = "' . $date_sql . '" '
+                    . 'WHERE Mandant = "' . $branch_id . '" AND `Datum` = "' . $date_sql . '" '
                     . 'ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
             $result = mysqli_query_verbose($sql_query);
 
