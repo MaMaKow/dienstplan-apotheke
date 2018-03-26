@@ -232,7 +232,10 @@ abstract class user_input {
                 foreach ($Roster[$date_unix] as $roster_row_object) {
                     $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
                 }
-                $Deleted_roster_employee_id_list[$date_unix] = array_diff($List_of_employees_in_Roster_old, $List_of_employees_in_Roster);
+                $Deleted_roster_employee_ids = array_diff($List_of_employees_in_Roster_old, $List_of_employees_in_Roster);
+                if (array(0 => NULL) !== $Deleted_roster_employee_ids) {
+                    $Deleted_roster_employee_id_list[$date_unix] = $Deleted_roster_employee_ids;
+                }
             }
         }
         return $Deleted_roster_employee_id_list;
@@ -268,8 +271,8 @@ abstract class user_input {
              * Remove deleted data rows:
              * TODO: Find the changed or the deleted rows:
              */
-            $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Roster_old, $date_unix);
-            $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Roster, $Roster_old, $date_unix);
+            $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Roster_old);
+            $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Roster, $Roster_old);
             $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Roster, $Roster_old, $date_unix);
 
             mysqli_query_verbose("START TRANSACTION");
