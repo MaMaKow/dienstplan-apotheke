@@ -9,22 +9,22 @@ $tag = 0;
 //$employee_id = user_input::get_variable_from_any_input("employee_id", FILTER_SANITIZE_NUMBER_INT);
 //$year = user_input::get_variable_from_any_input("year", FILTER_SANITIZE_NUMBER_INT);
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+create_cookie("mandant", $branch_id, 30);
 
 $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
+create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 
 if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
-    user_input::old_write_approval_to_database($mandant);
+    user_input::old_write_approval_to_database($branch_id);
 }
 if (filter_has_var(INPUT_POST, 'Roster')) {
     $Roster = user_input::get_Roster_from_POST_secure();
-    if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster') && count($Dienstplan) > 0) {
-        user_input::old_roster_write_user_input_to_database($Dienstplan, $Columns, $mandant);
+    if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
+        user_input::old_roster_write_user_input_to_database($Roster, $branch_id);
     }
 }
 
-create_cookie("mandant", $branch_id, 30);
-create_cookie("datum", $date_sql, 0.5);
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
@@ -140,7 +140,7 @@ echo "\t\t\t\t</tr>\n";
 for ($j = 0; $j < $VKcount; $j++) {
     echo "\t\t\t\t<tr>\n";
     foreach (array_keys($Roster) as $day_iterator) {
-        echo build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $j, $VKcount, $date_unix);
+        echo build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $j, $VKcount, $date_unix, $branch_id);
     }
     echo "\t\t\t\t</tr>\n";
 }
