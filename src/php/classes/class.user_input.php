@@ -51,17 +51,21 @@ abstract class user_input {
         if ('' === $value) {
             return 'NULL';
         } else {
-            return "'" . $value . "'";
+            return $value;
         }
     }
 
-    public static function principle_roster_write_user_input_to_database($mandant) {
+    public static function principle_roster_write_user_input_to_database($branch_id) {
         global $List_of_employee_lunch_break_minutes, $List_of_employees;
+        if (!isset($List_of_employees)) {
+            require 'db-lesen-mitarbeiter.php';
+        }
+
         $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
         foreach (array_keys($Grundplan) as $wochentag) {
             //First, the old values are deleted.
-            $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$mandant'";
+            $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$branch_id'";
             $result = mysqli_query_verbose($sql_query);
             //New values are composed from the Grundplan from $_POST.
             foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
@@ -69,20 +73,17 @@ abstract class user_input {
                 if (!empty($VK)) {
                     //Wir ignorieren die nicht ausgefüllten Felder
                     list($VK) = explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
-                    $dienstbeginn = user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Dienstbeginn'][$key]);
-                    $dienstende = user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Dienstende'][$key]);
-                    $mittagsbeginn = user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Mittagsbeginn'][$key]);
-                    $mittagsende = user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Mittagsende'][$key]);
-                    $kommentar = user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Kommentar'][$key]);
+                    $dienstbeginn = user_input::escape_sql_value(user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Dienstbeginn'][$key]));
+                    $dienstende = user_input::escape_sql_value(user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Dienstende'][$key]));
+                    $mittagsbeginn = user_input::escape_sql_value(user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Mittagsbeginn'][$key]));
+                    $mittagsende = user_input::escape_sql_value(user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Mittagsende'][$key]));
+                    $kommentar = user_input::escape_sql_value(user_input::convert_post_null_to_mysql_null($Grundplan[$wochentag]['Kommentar'][$key]));
                     if (!empty($mittagsbeginn) && !empty($mittagsende)) {
                         $sekunden = (strtotime($dienstende) - strtotime($dienstbeginn)) - (strtotime($mittagsende) - strtotime($mittagsbeginn));
                         $stunden = round($sekunden / 3600, 1);
                     } else {
                         $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
                         //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                        if (!isset($List_of_employees)) {
-                            require 'db-lesen-mitarbeiter.php';
-                        }
 
                         if ($sekunden - $List_of_employee_lunch_break_minutes[$VK] * 60 >= 6 * 3600) {
                             $mittagspause = $List_of_employee_lunch_break_minutes[$VK] * 60;
@@ -94,7 +95,7 @@ abstract class user_input {
                     }
                     //The new values are stored inside the database.
                     $sql_query = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
-			             VALUES ('$VK', '$wochentag', $dienstbeginn, $dienstende, $mittagsbeginn, $mittagsende, '$stunden', $kommentar, '$mandant')";
+			             VALUES ('$VK', '$wochentag', $dienstbeginn, $dienstende, $mittagsbeginn, $mittagsende, '$stunden', $kommentar, '$branch_id')";
                     $result = mysqli_query_verbose($sql_query);
                 }
             }
@@ -109,11 +110,11 @@ abstract class user_input {
                 $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
                 $employee_id = filter_var($Roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT);
                 $branch_id = filter_var($Roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
-                $duty_start_sql = filter_var($Roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING);
-                $duty_end_sql = filter_var($Roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING);
-                $break_start_sql = filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING);
-                $break_end_sql = filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING);
-                $comment = filter_var($Roster_row_array['comment'], FILTER_SANITIZE_STRING);
+                $duty_start_sql = user_input::convert_post_null_to_mysql_null(filter_var($Roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING));
+                $duty_end_sql = user_input::convert_post_null_to_mysql_null(filter_var($Roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING));
+                $break_start_sql = user_input::convert_post_null_to_mysql_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
+                $break_end_sql = user_input::convert_post_null_to_mysql_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
+                $comment = user_input::convert_post_null_to_mysql_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_STRING));
                 if ('' !== $employee_id) {
                     /*
                      * TODO: This test might be a bit more complex.
@@ -176,14 +177,9 @@ abstract class user_input {
         return $result;
     }
 
-    public static function old_write_approval_to_database($mandant) {
-
-        $Dienstplan = filter_input(INPUT_POST, 'Dienstplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-        foreach (array_keys($Dienstplan) as $tag) {
-            if (empty($Dienstplan[$tag]['Datum'][0])) {
-                continue;
-            }
-            $date = $Dienstplan[$tag]['Datum'][0];
+    public static function old_write_approval_to_database($branch_id, $Roster) {
+        foreach (array_keys($Roster) as $date_unix) {
+            $date_sql = date('Y-m-d', $date_unix);
             if (filter_has_var(INPUT_POST, 'submit_approval')) {
                 $state = "approved";
             } elseif (filter_has_var(INPUT_POST, 'submit_disapproval')) {
@@ -193,8 +189,7 @@ abstract class user_input {
                 // TODO: This is an Exception. Should we fail fast and loud?
                 die("An Error has occurred during approval!");
             }
-            //The variable $user is set within the default.php
-            $sql_query = "INSERT INTO `approval` (date, branch, state, user) values ('$date', '$mandant', '$state', '" . $_SESSION['user_employee_id'] . "') ON DUPLICATE KEY UPDATE date='$date', branch='$mandant', state='$state', user='" . $_SESSION['user_employee_id'] . "'";
+            $sql_query = "INSERT INTO `approval` (date, branch, state, user) values ('$date_sql', '$branch_id', '$state', '" . $_SESSION['user_employee_id'] . "') ON DUPLICATE KEY UPDATE date='$date_sql', branch='$branch_id', state='$state', user='" . $_SESSION['user_employee_id'] . "'";
             $result = mysqli_query_verbose($sql_query);
             return $result;
         }
@@ -205,12 +200,17 @@ abstract class user_input {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             foreach ($Roster_day_array as $roster_row_object) {
                 foreach ($Roster_old[$date_unix] as $roster_row_object_old) {
-                    if ($roster_row_object->employee_id === $roster_row_object->employee_id and $roster_row_object === $roster_row_object_old) {
+                    if ($roster_row_object->employee_id !== $roster_row_object->employee_id) {
+                        continue;
+                    }
+                    if ($roster_row_object !== $roster_row_object_old) {
                         /*
                          * There is an old entry for this employee, which does not exactly match the newly sent entry.
                          * CAVE: This will also put any employee on the list, who is on the roster more than once.
                          */
                         $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
+                    } else {
+
                     }
                 }
             }

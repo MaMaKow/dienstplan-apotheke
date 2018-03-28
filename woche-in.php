@@ -51,7 +51,7 @@ if (!$session->user_has_privilege('create_roster')) {
 echo gettext("calendar week") . strftime(' %V', strtotime($datum)) . "<br>\n";
 //Support for various branch clients.
 echo build_select_branch($mandant, $date_sql);
-echo "<form id=myform method=post>\n";
+echo "<form id='roster_form' method=post>\n";
 echo "<div class=no-print>";
 echo $backward_button_week_img;
 echo $forward_button_week_img;

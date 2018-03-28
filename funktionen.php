@@ -178,11 +178,3 @@ function get_root_folder() {
 function is_valid_date($date_string) {
     return (bool) strtotime($date_string);
 }
-
-function tomorow_date_string($date_sql) {
-    return date('Y-m-d', strtotime($date_sql, '+1 day'));
-}
-
-function yesterday_date_string($date_sql) {
-    return date('Y-m-d', strtotime($date_sql, '-1 day'));
-}

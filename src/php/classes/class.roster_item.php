@@ -60,7 +60,7 @@ class roster_item {
          * TODO: This might be a good place to issue an error, if the break times are not within the working times.
          * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?
          */
-        $this->check_roster_item_sequence();
+        //$this->check_roster_item_sequence();
 
 
         /*
@@ -90,6 +90,9 @@ class roster_item {
         }
         if (NULL === $time_seconds) {
             return NULL;
+        }
+        if ('' === $time_seconds) {
+            return '';
         }
         /*
          * TODO: find out why we have to use gmdate here.

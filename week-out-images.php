@@ -27,7 +27,7 @@ require 'src/php/pages/menu.php';
 //Hier beginnt die Normale Ausgabe.
 echo "<div class='main-area no-print'>\n";
 echo build_select_branch($mandant, $date_sql);
-echo "\t\t<form id=myform method=post>\n";
+echo "\t\t<form id=navigation_form method=post>\n";
 echo "\t\t\t<div id=navigation_elements>";
 echo "$backward_button_week_img";
 echo "$forward_button_week_img";
