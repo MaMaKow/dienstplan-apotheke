@@ -130,7 +130,7 @@ echo "\t\t<div id=main-area>\n";
 echo build_select_branch($mandant, $date_sql);
 
 //Auswahl des Wochentages
-echo "\t\t\t<form id=wochentagformular method=post>\n";
+echo "\t\t\t<form id='week_day_form' method=post>\n";
 echo "\t\t\t\t<input type=hidden name=mandant value=" . $mandant . ">\n";
 echo "\t\t\t\t<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
 //echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
@@ -143,13 +143,10 @@ foreach ($Wochentage as $temp_weekday => $value) {
 }
 echo "\t\t\t\t</select>\n\t\t\t</form>\n";
 
-echo "\t\t<form id=myform method=post>\n";
-//echo "\t\t<form id=myform method=post action=test-post.php>\n";
 echo "\t\t\t<div id=navigation_elements>";
-//$submit_button = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";
-echo "$submit_button_img";
-echo "<br>";
+echo build_html_navigation_elements::build_button_submit('principle_roster_form');
 echo "\t\t\t</div>\n";
+echo "\t\t<form id=principle_roster_form method=post>\n";
 echo "\t\t\t<table>\n";
 echo "\t\t\t\t<tr>\n";
 //Datum

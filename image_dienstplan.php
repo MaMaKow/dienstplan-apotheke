@@ -81,7 +81,6 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
     }
     //draw the bars from start to end for every employee
     $svg_box_text = "\t<!--Boxes-->\n";
-    $svg_break_box_text = '';
     foreach ($Dienstplan[0]['VK'] as $line => $vk) {
         $dienst_beginn = time_from_text_to_int($Dienstplan[0]['Dienstbeginn'][$line]);
         $dienst_ende = time_from_text_to_int($Dienstplan[0]['Dienstende'][$line]);
@@ -131,7 +130,8 @@ function draw_image_dienstplan($Dienstplan, $svg_width = 650, $svg_height = 424)
 //    $svg_text .= $svg_break_box_text;
     $svg_text .= "</svg>\n";
     $svg_text .= "<script>$javascript_variables</script>";
-    $svg_text .= "<script src='drag-and-drop.js' ></script>";
+    $svg_text .= "<script src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "drag-and-drop.js' ></script>";
+
     //header("Content-type: image/svg+xml");
     return $svg_text;
 }

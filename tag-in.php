@@ -15,9 +15,6 @@ $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STR
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 
-if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
-    user_input::old_write_approval_to_database($branch_id);
-}
 if (filter_has_var(INPUT_POST, 'Roster')) {
     $Roster = user_input::get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
@@ -33,6 +30,9 @@ $Abwesende = db_lesen_abwesenheit($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 $Dienstplan = read_roster_array_from_db($date_sql, $tage, $branch_id);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Dienstplan) > 0 && $session->user_has_privilege('approve_roster')) {
+    user_input::old_write_approval_to_database($branch_id, $Roster);
+}
 require_once 'plane-tag-grundplan.php';
 $Principle_roster_old = get_principle_roster($date_sql, $branch_id, $tag, $tage);
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql);
@@ -86,36 +86,31 @@ echo "<div id=main-area>\n";
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
+echo "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
 echo "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
 echo build_select_branch($branch_id, $date_sql);
 
 
-echo "\t\t<form id=myform method=post>FORM\n";
-echo "\t\t\t<div id=navigation_elements>";
-echo "$backward_button_img";
-echo "$forward_button_img";
-echo "$submit_button_img";
-echo "<br>\n";
+echo "<div id=navigation_elements>";
+echo build_html_navigation_elements::build_button_day_backward($date_unix);
+echo build_html_navigation_elements::build_button_day_forward($date_unix);
+echo build_html_navigation_elements::build_button_submit('roster_form');
 if ($session->user_has_privilege('approve_roster')) {
-    echo "$submit_approval_button_img";
-    echo "$submit_disapproval_button_img";
-    echo "<br>\n";
+    echo build_html_navigation_elements::build_button_approval();
+    echo build_html_navigation_elements::build_button_disapproval();
 }
 
-echo "\t\t\t\t<a href='tag-out.php?datum=" . $date_sql . "'>[" . gettext("Read") . "]</a>\n";
-echo "\t\t\t</div>\n";
-echo "\t\t\t<div id=wochenAuswahl>\n";
-echo "\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', $date_unix) . ">\n";
-echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
-echo "\t\t\t</div>\n";
-echo "\t\t\t<table>\n";
-echo "\t\t\t\t<tr>\n";
+echo "<a href='tag-out.php?datum=" . $date_sql . "'>[" . gettext("Read") . "]</a>\n";
+echo "</div>\n";
+echo build_html_navigation_elements::build_input_date($date_sql);
+echo "<form id='roster_form' method=post>\n";
+echo "<table>\n";
+echo "<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     //TODO: This loop probably is not necessary. Is there any case where $i ist not 0?
     $zeile = "";
-    echo "\t\t\t\t\t<td>";
-    $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][$roster_first_key] . ">HERE";
+    echo "<td>";
+    $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][$roster_first_key] . ">";
     $zeile .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
     $zeile .= strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][$roster_first_key]));
     echo $zeile;
@@ -136,13 +131,13 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     }
     echo "</td>\n";
 }
-echo "\t\t\t\t</tr>\n";
+echo "</tr>\n";
 for ($j = 0; $j < $VKcount; $j++) {
-    echo "\t\t\t\t<tr>\n";
+    echo "<tr>\n";
     foreach (array_keys($Roster) as $day_iterator) {
         echo build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $j, $VKcount, $date_unix, $branch_id);
     }
-    echo "\t\t\t\t</tr>\n";
+    echo "</tr>\n";
 }
 
 
@@ -150,12 +145,12 @@ for ($j = 0; $j < $VKcount; $j++) {
 if (isset($Abwesende)) {
     echo build_html_roster_views::build_absentees_row($Abwesende);
 }
-echo "\t\t\t</table>\n";
-echo "\t\t</form>\n";
+echo "</table>\n";
+echo "</form>\n";
 
 
 if (!empty($Dienstplan[0]["Dienstbeginn"])) {
-    echo "\t\t\t<div class=image>\n";
+    echo "<div class=image>\n";
     require_once 'image_dienstplan.php';
     $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
     echo $svg_image_dienstplan;
@@ -163,12 +158,12 @@ if (!empty($Dienstplan[0]["Dienstbeginn"])) {
     require_once 'image_histogramm.php';
     $svg_image_histogramm = roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $Anwesende, $date_sql);
     echo $svg_image_histogramm;
-    echo "\t\t\t</div>\n";
+    echo "</div>\n";
 }
 echo "</div>";
 
 require 'contact-form.php';
 
-echo "\t</body>\n";
+echo "</body>\n";
 echo "</html>";
 ?>

@@ -380,6 +380,8 @@ button:hover{
 }
 #mandantenformular
 {
+    margin-right: 1em;
+    float: left;
     clear: left;
 }
 div#bottom
@@ -387,10 +389,14 @@ div#bottom
     position: absolute;
     bottom: 0;
 }
-#myform
+#roster_form, #navigation_form, #principle_roster_form
 {
     float: left;
     clear: left;
+}
+#week_day_form{
+    margin-right: 1em;
+    float: left;
 }
 #navigation_form_div
 {
@@ -624,11 +630,11 @@ span.form_input_unit{
  * The below lines are added for all sites containing build_html_navigation_elements
  * -->
  */
-
-#button_week_forward_form, button_week_backward_form{
-    /*
-    TODO: The list of forms to apply this to is to be continued...
-    */
+div#navigation_elements{
+    float: left;
+    clear: left;
+}
+.inline_button_form{
     display: inline;
 }
 /*

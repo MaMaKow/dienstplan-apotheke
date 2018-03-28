@@ -50,4 +50,20 @@ abstract class general_calculations {
         return $first_day_of_week_sql;
     }
 
+    public static function tomorow_date_string($date_unix) {
+        /*
+         * TODO: CAVE! May work unexpected on daylight saving days.
+         * e.g. returns 2018-03-26 as yesterday of
+         */
+        return date('Y-m-d', $date_unix + PDR_ONE_DAY_IN_SECONDS);
+    }
+
+    public static function yesterday_date_string($date_unix) {
+        /*
+         * TODO: CAVE! May work unexpected on daylight saving days.
+         * e.g. returns 2018-03-24 as yesterday of 2018-03-26
+         */
+        return date('Y-m-d', $date_unix - PDR_ONE_DAY_IN_SECONDS);
+    }
+
 }
