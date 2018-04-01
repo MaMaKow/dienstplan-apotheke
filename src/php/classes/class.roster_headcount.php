@@ -1,32 +1,13 @@
 <?php
 
-if (!empty($Roster)) {
-
-    $Roster_of_all_employees = $Roster;
-    $Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster);
-    $Roster_of_goods_receipt_employees = roster_headcount::get_roster_of_goods_receipt_employees($Roster);
-
-    $Changing_times = roster::calculate_changing_times($Roster);
-    $Anwesende = roster_headcount::headcount_roster($Roster_of_all_employees, $Changing_times);
-    $Wareneingang_Anwesende = roster_headcount::headcount_roster($Roster_of_goods_receipt_employees, $Changing_times);
-    $Approbierten_anwesende = roster_headcount::headcount_roster($Roster_of_qualified_pharmacist_employees, $Changing_times);
-} else {
-    global $Warnmeldung;
-    $Warnmeldung[] = "Kein Dienstplan gefunden beim Zeichnen des Histogramms.";
-}
-
 abstract class roster_headcount {
-
-    function __construct() {
-
-    }
 
     public function get_roster_of_qualified_pharmacist_employees($Roster) {
         global $Approbierte_mitarbeiter;
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
-                if (in_array($roster_item_object->employee_id, $Approbierte_mitarbeiter)) {
-                    $Roster_of_qualified_pharmacist_employees[] = $roster_item_object;
+                if (in_array($roster_item_object->employee_id, array_keys($Approbierte_mitarbeiter))) {
+                    $Roster_of_qualified_pharmacist_employees[$roster_item_object->date_unix][] = $roster_item_object;
                 }
             }
         }
@@ -37,8 +18,8 @@ abstract class roster_headcount {
         global $Wareneingang_Mitarbeiter;
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
-                if (in_array($roster_item_object->employee_id, $Wareneingang_Mitarbeiter)) {
-                    $Roster_of_goods_receipt_employees[] = $roster_item_object;
+                if (in_array($roster_item_object->employee_id, array_keys($Wareneingang_Mitarbeiter))) {
+                    $Roster_of_goods_receipt_employees[$roster_item_object->date_unix][] = $roster_item_object;
                 }
             }
         }
@@ -48,7 +29,6 @@ abstract class roster_headcount {
     public static function headcount_roster($Roster, $Changing_times) {
         /* @var $Anwesende array */
         $Anwesende = array();
-
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
                 $Duty_start_times[] = $roster_item_object->duty_start_int;
@@ -59,6 +39,7 @@ abstract class roster_headcount {
         }
 
         foreach ($Changing_times as $time) {
+            $Anwesende[$time] = 0;
             foreach ($Duty_start_times as $dienstbeginn) {
                 if ($dienstbeginn <= $time) {
                     //$Gekommene[$time] ++;
@@ -84,6 +65,7 @@ abstract class roster_headcount {
                 }
             }
         }
+
         return $Anwesende;
     }
 
@@ -92,15 +74,15 @@ abstract class roster_headcount {
         $result = mysqli_query_verbose($sql_query);
         $row = mysqli_fetch_object($result);
         if (!empty($row->Beginn) and ! empty($row->Ende)) {
-            $Opening_times['day_opening_start'] = strtotime($row->Beginn);
-            $Opening_times['day_opening_end'] = strtotime($row->Ende);
+            $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->Beginn);
+            $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->Ende);
         } else {
             /*
              * TODO: Make an exception handler for error- and warning-messages!
              * throw new Exception_warning_message("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.");
              */
-            $Opening_times['day_opening_start'] = strtotime('1:00');
-            $Opening_times['day_opening_end'] = strtotime('23:00');
+            $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds('1:00');
+            $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds('23:00');
         }
         return $Opening_times;
     }

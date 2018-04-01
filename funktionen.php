@@ -121,6 +121,13 @@ function print_debug_variable($variable) {
     return true;
 }
 
+function print_debug_backtrace() {
+    $trace = debug_backtrace();
+    $message = $trace;
+    error_log(var_export($message, TRUE));
+    return true;
+}
+
 /**
  * Test if PHP is running on a Windows machine.
  *

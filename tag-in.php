@@ -5,7 +5,6 @@ require 'default.php';
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
 
-
 //$employee_id = user_input::get_variable_from_any_input("employee_id", FILTER_SANITIZE_NUMBER_INT);
 //$year = user_input::get_variable_from_any_input("year", FILTER_SANITIZE_NUMBER_INT);
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
@@ -45,11 +44,21 @@ if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND 
     roster::determine_lunch_breaks($Principle_roster);
     $Roster = $Principle_roster;
 }
-if ((array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0]))
-        and "7" !== date('N', $date_unix)
-        and ! holidays::is_holiday($date_unix)) {
-    require 'pruefe-dienstplan.php';
-    examine_duty_roster($Roster, $date_unix, $branch_id);
+if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
+    $Roster_of_all_employees = $Roster;
+    $Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster);
+    $Roster_of_goods_receipt_employees = roster_headcount::get_roster_of_goods_receipt_employees($Roster);
+
+    $Changing_times = roster::calculate_changing_times($Roster);
+    $Anwesende = roster_headcount::headcount_roster($Roster_of_all_employees, $Changing_times);
+    $Wareneingang_Anwesende = roster_headcount::headcount_roster($Roster_of_goods_receipt_employees, $Changing_times);
+    $Approbierten_anwesende = roster_headcount::headcount_roster($Roster_of_qualified_pharmacist_employees, $Changing_times);
+    $Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
+
+    examine_roster::check_for_overlap($date_sql, $Fehlermeldung);
+    examine_roster::check_for_sufficient_employee_count($Anwesende, $Opening_times, $Fehlermeldung, 2);
+    examine_roster::check_for_sufficient_goods_receipt_count($Wareneingang_Anwesende, $Opening_times, $Warnmeldung);
+    examine_roster::check_for_sufficient_qualified_pharmacist_count($Approbierten_anwesende, $Opening_times, $Fehlermeldung);
 }
 $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
 
