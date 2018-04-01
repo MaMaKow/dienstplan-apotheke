@@ -4,9 +4,23 @@
  * TODO: insert license header in this file and every other file!
  */
 
-abstract class examine_roster {
+class examine_roster {
 
-    public static function check_for_overlap($date_sql, &$Error_message) {
+    public $Anwesende; //this will also be used by: roster_image_histogramm::draw_image_histogramm
+
+    public function __construct($Roster, $date_unix, $branch_id) {
+        $this->Roster_of_all_employees = $Roster;
+        $this->Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster);
+        $this->Roster_of_goods_receipt_employees = roster_headcount::get_roster_of_goods_receipt_employees($Roster);
+
+        $this->Changing_times = roster::calculate_changing_times($Roster);
+        $this->Anwesende = roster_headcount::headcount_roster($this->Roster_of_all_employees, $this->Changing_times);
+        $this->Wareneingang_Anwesende = roster_headcount::headcount_roster($this->Roster_of_goods_receipt_employees, $this->Changing_times);
+        $this->Approbierten_anwesende = roster_headcount::headcount_roster($this->Roster_of_qualified_pharmacist_employees, $this->Changing_times);
+        $this->Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
+    }
+
+    public function check_for_overlap($date_sql, &$Error_message) {
         global $List_of_branch_objects, $List_of_employees;
         $sql_query = "SELECT `first`.`VK`,"
                 . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
@@ -28,7 +42,7 @@ abstract class examine_roster {
         }
     }
 
-    public static function check_for_sufficient_employee_count($Anwesende, $Opening_times, &$Fehlermeldung, $minimum_number_of_employees = 2) {
+    public function check_for_sufficient_employee_count(&$Fehlermeldung, $minimum_number_of_employees = 2) {
         /*
          * TODO: Write a more general version of this, maybe?
          * This might obsolete the function examine_roster::check_for_sufficient_goods_receipt_count
@@ -36,8 +50,8 @@ abstract class examine_roster {
          * THere are different grades of severity.
          *
          */
-        foreach ($Anwesende as $zeit => $anwesende) {
-            if ($anwesende < $minimum_number_of_employees and $zeit < $Opening_times['day_opening_end'] and $zeit >= $Opening_times['day_opening_start']) {
+        foreach ($this->Anwesende as $zeit => $anwesende) {
+            if ($anwesende < $minimum_number_of_employees and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $Fehlermeldung[] = 'Um ' . date('H:i', $zeit) . " Uhr sind weniger als $minimum_number_of_employees Mitarbeiter anwesend.";
                     $attendant_error = true;
@@ -48,10 +62,10 @@ abstract class examine_roster {
         }
     }
 
-    public static function check_for_sufficient_goods_receipt_count($Wareneingang_Anwesende, $Opening_times, &$Warning_message) {
-        foreach ($Wareneingang_Anwesende as $zeit => $anwesende_wareneingang) {
+    public function check_for_sufficient_goods_receipt_count(&$Warning_message) {
+        foreach ($this->Wareneingang_Anwesende as $zeit => $anwesende_wareneingang) {
             // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($Opening_times['day_opening_end'])
-            if ($anwesende_wareneingang === 0 and $zeit < $Opening_times['day_opening_end'] and $zeit >= $Opening_times['day_opening_start']) {
+            if ($anwesende_wareneingang === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $Warning_message[] = 'Um ' . date('H:i', $zeit) . ' Uhr ist niemand für den Wareneingang anwesend.';
                     $attendant_error = true;
@@ -62,9 +76,9 @@ abstract class examine_roster {
         }
     }
 
-    public static function check_for_sufficient_qualified_pharmacist_count($Approbierten_anwesende, $Opening_times, &$Error_message) {
-        foreach ($Approbierten_anwesende as $zeit => $anwesende_approbierte) {
-            if ($anwesende_approbierte === 0 and $zeit < $Opening_times['day_opening_end'] and $zeit >= $Opening_times['day_opening_start']) {
+    public function check_for_sufficient_qualified_pharmacist_count(&$Error_message) {
+        foreach ($this->Approbierten_anwesende as $zeit => $anwesende_approbierte) {
+            if ($anwesende_approbierte === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $Error_message[] = sprintf(gettext('At %1s there is no authorized person present.'), date('H:i', $zeit));
                     $attendant_error = true;
