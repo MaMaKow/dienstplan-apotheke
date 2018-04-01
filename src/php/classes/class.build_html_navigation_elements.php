@@ -186,6 +186,7 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_input_date($date_sql) {
+        $text = "";
         $text .= "<div id=date_chooser_div>\n";
         $text .= "<form id=date_chooser_form method=post>\n";
         $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onblur='this.form.submit()'>\n";

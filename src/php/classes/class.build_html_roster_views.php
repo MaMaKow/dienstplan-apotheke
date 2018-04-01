@@ -27,7 +27,7 @@ abstract class build_html_roster_views {
      * @return string HTML table row
      */
 
-    function build_absentees_row($Absentees) {
+    public static function build_absentees_row($Absentees) {
         $text = "<tr>";
         $text .= build_html_roster_views::build_absentees_column($Absentees);
         $text .= "</tr>\n";
@@ -110,6 +110,7 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator) {
+        $roster_input_row_comment_html = "";
         $comment = roster::get_comment_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row_comment_input_id = "roster_input_row_comment_input_" . $day_iterator . "_" . $roster_row_iterator;
         $roster_input_row_comment_input_link_div_show_id = $roster_input_row_comment_input_id . "_link_div_show";

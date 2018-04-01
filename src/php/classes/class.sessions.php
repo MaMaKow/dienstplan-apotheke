@@ -272,11 +272,17 @@ class sessions {
 
     function send_mail_about_lost_password($employee_id, $user_name, $recipient, $token) {
         global $config;
+        if (isset($config['application_name'])) {
+            $application_name = $config['application_name'];
+        } else {
+            $application_name = 'PDR';
+        }
+
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
                 . gettext("Dear User,\n\n in order to set a new password for")
                 . " '"
-                . $config["application_name"]
+                . $application_name
                 . "' "
                 . gettext("user name") . ": " . $user_name . ", "
                 . gettext("please visit")

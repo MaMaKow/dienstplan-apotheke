@@ -113,7 +113,11 @@ class roster_item {
         if (NULL === $time_string) {
             return NULL;
         }
-        list($hours, $mins, $secs) = explode(':', $time_string);
+        /*
+         * array_pad is used to ensure that input in the format HH:MM i.e. 9:30 is treated as HH:MM:SS i.e. 9:30:00
+         * array_pad just puts a 0 to the missing seconds and or minutes.
+         */
+        list($hours, $mins, $secs) = array_pad(explode(':', $time_string), 3, 0);
         return ($hours * 3600 ) + ($mins * 60 ) + $secs;
     }
 

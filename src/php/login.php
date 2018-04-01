@@ -24,7 +24,12 @@ if (filter_has_var(INPUT_GET, 'login')) {
 require "../../head.php";
 
 echo "<div class=centered_form_div>";
-echo "<H1>" . $config['application_name'] . "</H1>\n";
+if (isset($config['application_name'])) {
+    $application_name = $config['application_name'];
+} else {
+    $application_name = 'PDR';
+}
+echo "<H1>" . $application_name . "</H1>\n";
 ?>
 
 <form action="?login=1&referrer=<?php echo $referrer; ?>" method="post">

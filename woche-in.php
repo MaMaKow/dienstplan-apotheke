@@ -85,8 +85,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     if (FALSE !== $holiday) {
         echo " " . $holiday . " ";
     }
-    require 'db-lesen-notdienst.php';
-    if (isset($notdienst)) {
+    if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
         echo "<br> NOTDIENST ";
     }
 

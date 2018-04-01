@@ -60,15 +60,22 @@ if (isset($_GET['register'])) {
             echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
             $showFormular = false;
         } else {
-            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . var_export($statement->errorInfo(),TRUE));
+            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . var_export($statement->errorInfo(), TRUE));
             $Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
         }
     }
 }
 
 if ($showFormular) {
+    if (isset($config['application_name'])) {
+        $application_name = $config['application_name'];
+    } else {
+        $application_name = 'PDR';
+    }
+
+
     echo "<div class=centered_form_div>";
-    echo "<H1>" . $config['application_name'] . "</H1>\n";
+    echo "<H1>" . $application_name . "</H1>\n";
     ?>
     <form action="?register=1" method="post">
         <input type="text" size="40" maxlength="250" name="user_name" required placeholder="Benutzername" value="<?= $user_name ?>"><br>

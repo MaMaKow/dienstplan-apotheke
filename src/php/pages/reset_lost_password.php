@@ -38,10 +38,17 @@ function lost_password_token_is_valid($employee_id, $token) {
 function build_lost_password_form($employee_id, $user_name, $token) {
     global $config;
     global $Error_message;
+    if (isset($config['application_name'])) {
+        $application_name = $config['application_name'];
+    } else {
+        $application_name = 'PDR';
+    }
+
+
     if (lost_password_token_is_valid($employee_id, $token)) {
         ?>
         <div class=centered_form_div>
-            <H1><?= $config['application_name'] ?> </H1>
+            <H1><?= $application_name ?> </H1>
             <form action="reset_lost_password.php" method="post">
                 <H2><?= $user_name ?></H2>
                 <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
