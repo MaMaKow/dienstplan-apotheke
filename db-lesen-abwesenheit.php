@@ -9,6 +9,7 @@
  * @return array $Absentees array(employee_id => reason)
  */
 function db_lesen_abwesenheit($date) {
+    $Absentees = array();
     global $List_of_employees;
     //Im folgenden prüfen wir, ob $datum bereis als UNIX timestamp vorliegt. Wenn es ein Timestamp ist, können wir direkt in 'Y-m-d' umrechnen. Wenn nicht, dann wandeln wir vorher um.
     if (is_numeric($date) && (int) $date == $date) {

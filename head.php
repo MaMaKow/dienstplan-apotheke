@@ -20,9 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     if (!empty($navigator_language)) {
         echo " lang=$navigator_language";
     }
+    if (isset($config['application_name'])) {
+        $application_name = $config['application_name'];
+    } else {
+        $application_name = 'PDR';
+    }
     ?>>
         <META charset=UTF-8>
-        <TITLE><?php echo $config['application_name']; ?></TITLE>
+        <TITLE><?= $application_name ?></TITLE>
         <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>javascript.js" ></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>datepicker.css" />
         <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>datepicker.js"></SCRIPT>

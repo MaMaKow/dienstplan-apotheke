@@ -20,8 +20,8 @@ require_once "../../default.php";
 require_once "../../head.php";
 require '../../navigation.php';
 require '../../src/php/pages/menu.php';
-if(!$session->user_has_privilege('administration')){
-    echo build_warning_messages("",["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
+if (!$session->user_has_privilege('administration')) {
+    echo build_warning_messages("", ["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();
 }
 
@@ -46,7 +46,7 @@ if ($statement->rowCount() > 0) {
     echo "<H1>Inaktive Benutzer</H1>";
     echo "<form method='POST' id='register_approve'>";
     while ($User = $statement->fetch()) {
-        echo "<p>" . $User["user_name"] . ", VK " . $User["employee_id"]  . ", " . $User["email"] . ", erstellt: " . $User["created_at"]
+        echo "<p>" . $User["user_name"] . ", VK " . $User["employee_id"] . ", " . $User["email"] . ", erstellt: " . $User["created_at"]
         . " <button type='submit' form='register_approve' name=approve value='" . $User["employee_id"] . "' title='Benutzer bestätigen'>Bestätigen</button>"
         . " <button type='submit' form='register_approve' name=disapprove value=" . $User["employee_id"] . " title='Benutzer löschen'>Löschen</button>"
         . "</p>";
@@ -58,14 +58,21 @@ if ($statement->rowCount() > 0) {
 
 function send_mail_about_registration_approval($user_name, $recipient) {
     global $config;
+    if (isset($config['application_name'])) {
+        $application_name = $config['application_name'];
+    } else {
+        $application_name = 'PDR';
+    }
+
+
     $message_subject = quoted_printable_encode('Benutzer wurde aktiviert');
     $message_text = quoted_printable_encode("<HTML><BODY>"
             . "Hallo!\n Der Benutzer " . $user_name . ", ist im Dienstplanprogramm '"
-            . $config["application_name"]
+            . $application_name
             . "' angemeldet. Die Anmeldung wurde durch einen Administrator bestätigt. Sie können sich jetzt <a href='"
             . "https://www." . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/login.php' target='_blank'>anmelden.</a>"
-            . "</BODY></HTML>"); 
-    $headers  = 'From: ' . $config['contact_email'] . "\r\n";
+            . "</BODY></HTML>");
+    $headers = 'From: ' . $config['contact_email'] . "\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
@@ -78,4 +85,3 @@ function send_mail_about_registration_approval($user_name, $recipient) {
         echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.<br>\n";
     }
 }
-

@@ -32,7 +32,7 @@ while ($row = mysqli_fetch_object($result)) {
         $List_of_employee_working_week_hours[$row->id] = $row->working_week_hours;
         $List_of_employee_lunch_break_minutes[$row->id] = $row->lunch_break_minutes;
         $List_of_employee_professions[$row->id] = $row->profession;
-        if (isset($mandant) && $row->branch == $mandant && $row->working_hours > 10) {
+        if (isset($branch_id) && $row->branch == $branch_id && $row->working_hours > 10) {
             //Welche Mitarbeiter sind immer da?
             //TODO: Where do we need this? Is it a better choice to use the Grundplan there?
             $Mandanten_mitarbeiter[$row->id] = $row->last_name;
@@ -47,7 +47,7 @@ while ($row = mysqli_fetch_object($result)) {
 
             $Wareneingang_Mitarbeiter[$row->id] = $row->last_name;
         }
-        if (isset($mandant) && $row->branch == $mandant && $row->compounding == true) {
+        if (isset($branch_id) && $row->branch == $branch_id && $row->compounding == true) {
             //Who is working in the formulation area?
 
             $Rezeptur_Mitarbeiter[$row->id] = $row->last_name;

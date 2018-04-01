@@ -2,7 +2,7 @@
 
 abstract class roster_headcount {
 
-    public function get_roster_of_qualified_pharmacist_employees($Roster) {
+    public static function get_roster_of_qualified_pharmacist_employees($Roster) {
         global $Approbierte_mitarbeiter;
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
@@ -14,7 +14,7 @@ abstract class roster_headcount {
         return $Roster_of_qualified_pharmacist_employees;
     }
 
-    public function get_roster_of_goods_receipt_employees($Roster) {
+    public static function get_roster_of_goods_receipt_employees($Roster) {
         global $Wareneingang_Mitarbeiter;
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {

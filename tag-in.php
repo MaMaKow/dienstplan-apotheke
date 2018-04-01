@@ -53,13 +53,9 @@ if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
 }
 $roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
 
-print_debug_variable('error_reporting()', error_reporting());
-
-require 'db-lesen-notdienst.php';
-if (isset($notdienst['mandant'])) {
+if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
     $Warnmeldung[] = "An den Notdienst denken!";
 }
-
 
 
 
@@ -71,8 +67,8 @@ $VKcount = calculate_VKcount($Dienstplan);
 $VKmax = max(array_keys($List_of_employees));
 
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
-require 'pruefe-abwesenheit.php';
-
+examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, $Warnmeldung);
+examine_attendance::check_for_attendant_absentees($Roster, $date_sql, $Abwesende, $Fehlermeldung);
 
 
 
@@ -123,12 +119,12 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     if (FALSE !== $holiday) {
         echo " " . $holiday . " ";
     }
-    require 'db-lesen-notdienst.php';
-    if (isset($notdienst['mandant'])) {
-        if (isset($List_of_employees[$notdienst['vk']])) {
-            echo "<br>NOTDIENST<br>" . $List_of_employees[$notdienst['vk']] . " / " . $List_of_branch_objects[$notdienst['mandant']]->name;
+    $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
+    if (isset($having_emergency_service['branch_id'])) {
+        if (isset($List_of_employees[$notdienst['employee_id']])) {
+            echo "<br>NOTDIENST<br>" . $List_of_employees[$notdienst['employee_id']] . " / " . $List_of_branch_objects[$notdienst['branch_id']]->name;
         } else {
-            echo "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$notdienst['mandant']]->name;
+            echo "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$notdienst['branch_id']]->name;
         }
     }
     echo "</td>\n";

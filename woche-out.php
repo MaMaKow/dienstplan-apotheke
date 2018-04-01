@@ -61,7 +61,8 @@ $head_table_html = "";
 $head_table_html .= "\t\t\t\t\t<thead>\n";
 $head_table_html .= "\t\t\t\t\t<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
-    $date_unix = strtotime(($Dienstplan[$i]['Datum'][0]));
+    $date_sql = $Dienstplan[$i]['Datum'][0];
+    $date_unix = strtotime($date_sql);
     $head_table_html .= "\t\t\t\t\t\t<td>";
     $head_table_html .= "<a href='tag-out.php?datum=" . $Dienstplan[$i]["Datum"][0] . "'>";
     $head_table_html .= strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
@@ -83,8 +84,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
         }
     }
 
-    require 'db-lesen-notdienst.php';
-    if (isset($notdienst)) {
+    if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
         $head_table_html .= "<br> <em>NOTDIENST</em> ";
     }
     $head_table_html .= "</a></td>\n";
