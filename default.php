@@ -30,13 +30,13 @@ if (!isset($config['hide_disapproved'])) {
     $config['hide_disapproved'] = false;
 }
 //Setup if errors should be reorted to the user:
+ini_set("display_errors", 1); //debugging
+ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "error.log");
 if (isset($config['error_reporting'])) {
     error_reporting($config['error_reporting']);
 } else {
-    error_reporting('E_ALL'); //debugging
+    error_reporting(E_ALL); //debugging
 }
-ini_set("display_errors", 1); //debugging
-ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "error.log");
 
 spl_autoload_register(function ($class_name) {
     include_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.' . $class_name . '.php';
