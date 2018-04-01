@@ -40,20 +40,19 @@ class roster_item {
     public $comment;
 
     function __construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
-        $this->date_sql = $date_sql;
+        $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_unix = strtotime($date_sql);
-        $this->employee_id = $employee_id;
-        $this->branch_id = $branch_id;
-        $this->duty_start_sql = $duty_start;
+        $this->employee_id = (int) $employee_id;
+        $this->branch_id = (int) $branch_id;
+        $this->duty_start_sql = $this->format_time_string_correct($duty_start);
         $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
-        $this->duty_end_sql = $duty_end;
+        $this->duty_end_sql = $this->format_time_string_correct($duty_end);
         $this->duty_end_int = $this->convert_time_to_seconds($duty_end);
-        $this->break_start_sql = $break_start;
+        $this->break_start_sql = $this->format_time_string_correct($break_start);
         $this->break_start_int = $this->convert_time_to_seconds($break_start);
-        $this->break_end_sql = $break_end;
+        $this->break_end_sql = $this->format_time_string_correct($break_end);
         $this->break_end_int = $this->convert_time_to_seconds($break_end);
         $this->comment = $comment;
-
         $this->duty_duration = $this->duty_end_int - $this->duty_start_int;
         $this->break_duration = $this->break_end_int - $this->break_start_int;
         /*
@@ -69,6 +68,14 @@ class roster_item {
          */
         $this->working_seconds = ($this->duty_duration - $this->break_duration);
         $this->working_hours = $this->working_seconds / 3600;
+    }
+
+    private static function format_time_string_correct($time_string, $format = '%H:%M') {
+        $time_int = strtotime($time_string);
+        if (FALSE === $time_int) {
+            return $time_string;
+        }
+        return strftime($format, $time_int);
     }
 
     /*
