@@ -135,7 +135,7 @@ abstract class roster_image_histogramm {
         $end_time = max($End_times) / 3600;
         $duration = $end_time - $start_time;
         $width_factor = ($canvas_width - ($outer_margin_x * 2)) / $duration;
-        $Expectation = roster_image_histogramm::get_Expectation($datum, $branch_id);
+        $Expectation = roster_image_histogramm::get_expectation($datum, $branch_id);
 
         $max_work_load = max($Expectation);
         $max_workforce = max($Anwesende) * $factor_employee;
@@ -157,7 +157,7 @@ abstract class roster_image_histogramm {
         return $canvas_text;
     }
 
-    private static function get_Expectation($datum, $branch_id) {
+    private static function get_expectation($datum, $branch_id) {
         global $List_of_branch_objects;
         /*
           if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {

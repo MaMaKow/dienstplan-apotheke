@@ -28,6 +28,9 @@ abstract class build_html_roster_views {
      */
 
     public static function build_absentees_row($Absentees) {
+        if (NULL === $Absentees) {
+            return FALSE;
+        }
         $text = "<tr>";
         $text .= build_html_roster_views::build_absentees_column($Absentees);
         $text .= "</tr>\n";
@@ -54,12 +57,16 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $date_unix, $branch_id) {
+        if (TRUE === $Roster[$day_iterator]['empty'] or ! is_object($Roster[$day_iterator][$roster_row_iterator])) {
+            /*
+             * Insert a prefilled pseudo roster_item.
+             * It contains a valid date and branch.
+             */
+            $Roster[$day_iterator][$roster_row_iterator] = new roster_item(date('Y-m-d', $date_unix), NULL, $branch_id, NULL, NULL, NULL, NULL);
+        }
         $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
         //employee input:
         $roster_input_row = "<td>\n";
-        if (NULL === $Roster[$day_iterator][$roster_row_iterator]) {
-            $Roster[$day_iterator][$roster_row_iterator] = new roster_item(date('Y-m-d', $date_unix), NULL, $branch_id, NULL, NULL, NULL, NULL);
-        }
         $roster_input_row .= "<input type=hidden name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][branch_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->branch_id . ">\n";
         $roster_input_row .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows);
