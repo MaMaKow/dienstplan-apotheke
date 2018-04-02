@@ -97,7 +97,7 @@ abstract class roster {
                 //TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
             }
         }
-        //TODO: call determine_lunch_breaks here perhaps
+        roster::determine_lunch_breaks($Roster);
         return $Roster;
     }
 
@@ -198,6 +198,22 @@ abstract class roster {
 
     public static function get_comment_from_roster($Roster, $day_iterator, $roster_row_iterator) {
         return $Roster[$day_iterator][$roster_row_iterator]->comment;
+    }
+
+    /**
+     *
+     * @global array $Mandanten_mitarbeiter
+     * @param array $Dienstplan
+     * @return int
+     */
+    public static function calculate_max_employee_count($Roster) {
+        global $Mandanten_mitarbeiter;
+        foreach ($Roster as $date_unix => $Roster_day_array) {
+            $Employee_count[] = (count($Roster_day_array));
+        }
+        $roster_employee_count = max($Employee_count); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
+        $max_employee_count = max($roster_employee_count + 1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+        return $max_employee_count;
     }
 
 }

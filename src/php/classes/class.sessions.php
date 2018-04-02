@@ -117,7 +117,7 @@ class sessions {
         $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `employee_id` = :employee_id");
         $statement->execute(array('employee_id' => $_SESSION['user_employee_id']));
         while ($privilege_data = $statement->fetch()) {
-            $Privileges[$privilege_data[privilege]] = TRUE;
+            $Privileges[$privilege_data['privilege']] = TRUE;
         }
         $_SESSION['Privileges'] = $Privileges;
         return;

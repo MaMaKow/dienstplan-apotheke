@@ -68,7 +68,6 @@ abstract class examine_attendance {
             foreach ($Mitarbeiter_differenz as $arbeiter) {
                 foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
                     if ($arbeiter === $principle_roster_object->employee_id) {
-                        print_debug_variable('yes');
                         $duty_start = $principle_roster_object->duty_start_sql;
                         $duty_end = $principle_roster_object->duty_end_sql;
                         $fehler .= $separator . $List_of_employees[$arbeiter];
@@ -80,7 +79,6 @@ abstract class examine_attendance {
             }
             $Warnmeldung[] = $fehler;
         }
-        //print_debug_backtrace();
     }
 
 }
