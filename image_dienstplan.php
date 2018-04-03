@@ -119,11 +119,10 @@ function draw_image_dienstplan($Roster, $svg_width = 650, $svg_height = 424) {
             $y_pos_text = $y_pos_box + $bar_height;
             $width = $width_in_hours * $bar_width_factor;
             $break_width = $break_width_in_hours * $bar_width_factor;
-            $x_pos_text_secondary = $x_pos_text + $width;
-
+            //$x_pos_text_secondary = $x_pos_text + $width;
             //$svg_box_text .= "<g id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' style='cursor: $cursor_style_box; border: 1px solid black;'>";
             //$svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];' />\n";
-            $svg_box_text .= "<foreignObject x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='border: 1px solid red;'>"
+            $svg_box_text .= "<foreignObject id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='cursor: $cursor_style_box;'>"
                     . "<p xmlns='http://www.w3.org/1999/xhtml' style='background-color: $Worker_style[$worker_style]; margin-top: 0px;'>"
                     . $List_of_employees[$employee_id]
                     . "<span style='float: right'>$working_hours</span>"
