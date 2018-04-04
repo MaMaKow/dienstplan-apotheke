@@ -57,7 +57,7 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $date_unix, $branch_id) {
-        if (TRUE === $Roster[$day_iterator]['empty'] or ! is_object($Roster[$day_iterator][$roster_row_iterator])) {
+        if (!isset($Roster[$date_unix]) or ! isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
              * It contains a valid date and branch.

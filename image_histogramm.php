@@ -24,6 +24,7 @@ abstract class roster_image_histogramm {
         $x_start = $outer_margin_x / $width_factor;
         $y_start = $outer_margin_y / $height_factor * -1;
 
+        $canvas_text = "";
         $canvas_text .= "ctx.save();\n"; // = dot color
         $canvas_text .= "ctx.translate(0,$canvas_height);\n";
         $canvas_text .= "ctx.scale($width_factor, $height_factor);\n";
@@ -46,6 +47,7 @@ abstract class roster_image_histogramm {
 
     private static function draw_image_dienstplan_add_axis_labeling($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $canvas_height, $start_time, $end_time) {
         $font_size = 16;
+        $canvas_text = "";
         $canvas_text .= "ctx.save();\n"; // = dot color
         $canvas_text .= "ctx.translate(0,$canvas_height);\n";
         $canvas_text .= "ctx.strokeStyle = 'black';\n"; // = dot color
@@ -79,6 +81,7 @@ abstract class roster_image_histogramm {
 
     private static function draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee, $canvas_height) {
         $y_pos_line_end = NULL;
+        $canvas_text = "";
         $canvas_text .= "ctx.save();\n"; // = dot color
         $canvas_text .= "ctx.translate(0,$canvas_height);\n";
         $canvas_text .= "ctx.beginPath();\n";

@@ -57,8 +57,8 @@ abstract class examine_attendance {
                 $Roster_workers[] = $roster_object->employee_id;
             }
         }
-        $Available_roster_workers = array_unique(array_merge(array_keys($Mandanten_mitarbeiter), $Principle_roster_workers)); //We combine the employees in the branch and the employees in the principle roster.
-        $Mitarbeiter_differenz = array_diff($Available_roster_workers, $Roster_workers);
+        //$Available_roster_workers = array_unique(array_merge(array_keys($Mandanten_mitarbeiter), $Principle_roster_workers)); //We combine the employees in the branch and the employees in the principle roster.
+        $Mitarbeiter_differenz = array_diff($Principle_roster_workers, $Roster_workers);
         if (isset($Abwesende)) {
             $Mitarbeiter_differenz = array_diff($Mitarbeiter_differenz, array_keys($Abwesende));
         }
@@ -67,7 +67,8 @@ abstract class examine_attendance {
             $fehler = "Es sind folgende Mitarbeiter nicht eingesetzt: <br>\n";
             foreach ($Mitarbeiter_differenz as $arbeiter) {
                 foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
-                    if ($arbeiter === $principle_roster_object->employee_id) {
+                    print_debug_variable('$principle_roster_object->employee_id', $principle_roster_object->employee_id);
+                    if ($arbeiter == $principle_roster_object->employee_id) {
                         $duty_start = $principle_roster_object->duty_start_sql;
                         $duty_end = $principle_roster_object->duty_end_sql;
                         $fehler .= $separator . $List_of_employees[$arbeiter];
