@@ -32,7 +32,7 @@ if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST,
     user_input::old_write_approval_to_database($branch_id, $Roster);
 }
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql);
-if (TRUE === $Roster[$date_unix]['empty'] AND NULL !== $Principle_roster AND FALSE === $holiday) { //No plans on Saturday, Sunday and holidays.
+if (!isset($Roster[$date_unix]) AND NULL !== $Principle_roster AND FALSE === $holiday) { //No plans on Saturday, Sunday and holidays.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";

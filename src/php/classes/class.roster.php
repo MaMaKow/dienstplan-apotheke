@@ -51,10 +51,12 @@ abstract class roster {
             }
             /*
              * We mark empty roster days as empty:
+              if (!isset($Roster[$date_unix])) {
+              $Roster[$date_unix]['empty'] = TRUE;
+              } else {
+              $Roster[$date_unix]['empty'] = FALSE;
+              }
              */
-            if (!isset($Roster[$date_unix])) {
-                $Roster[$date_unix]["empty"] = TRUE;
-            }
         }
         return $Roster;
     }

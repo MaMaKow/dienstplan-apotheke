@@ -27,7 +27,7 @@ $backward_button_week_img = "
 			" . gettext("1 week backward") . "
 		</button>";
 $forward_button_week_img = "
-		<button type='submit' class='btn-primary no-print' value='" . general_calculations::get_first_day_of_week(date('Y-m-d', strtotime('next week', $date_sql))) . "' name='submit_week_forward'>
+		<button type='submit' class='btn-primary no-print' value='' name='submit_week_forward'>
 			<i class='icon-black'>
 				<img src='img/foreward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
 			</i>

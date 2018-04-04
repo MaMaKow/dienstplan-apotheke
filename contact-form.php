@@ -43,7 +43,7 @@
         $message .= "\n\n";
     }
     $message .= "<<<Trace<<<\n";
-    $message .= htmlentities($trace);
+    $message .= htmlentities(var_export($trace, TRUE));
     $message .= "\n";
     $message .= ">>>   >>>";
     $message .= "\n\n";
