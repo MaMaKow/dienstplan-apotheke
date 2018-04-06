@@ -350,11 +350,13 @@ button:hover{
 }
 .btn-primary {
     width: 10em;
+    height: 6em;
     padding: 0.5em;
     margin-bottom: 0.5em;
 }
 .btn-secondary {
     width: 10em;
+    height: 6em;
     margin-bottom: 0.5em;
     background-color: #B4B4B4;
 }
@@ -439,7 +441,9 @@ div#roster_table_div span.roster_table_lunch_break_span {
     }
     #roster_image_div svg, #roster_image_div canvas{
         width: 99%;
+        /*
         border: 1px solid #000000;
+        */
     }
 }
 div.centered_form_div {
@@ -641,3 +645,13 @@ div#navigation_elements{
  * <--
  * The above lines are added added for all sites containing build_html_navigation_elements
  */
+
+svg#svgimg foreignObject p.selected{
+    color: white;
+}
+
+
+body table tbody tr.branch_roster_title_tr th{
+    padding-top: 1em;
+    font-size: x-large;
+}

@@ -1,7 +1,7 @@
 <?php
 
 function get_principle_roster($date_sql, $branch = 1, $day_index = 0, $number_of_days = 1) {
-
+    $Dienstplan = array();
     global $Abwesende;
     for ($index = 0; $index < $number_of_days; $index++) {
         $current_date_sql = date('Y-m-d', strtotime($date_sql) + $index * PDR_ONE_DAY_IN_SECONDS);
@@ -72,8 +72,8 @@ function determine_lunch_breaks($Dienstplan, $tag) {
                     $pausen_ende = $pausen_start + $List_of_employee_lunch_break_minutes[$vk] * 60;
                     if (array_search($pausen_start, $Besetzte_mittags_beginne) !== false OR array_search($pausen_ende, $Besetzte_mittags_enden) !== false) {
                         //Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
-                        $pausen_start+=1800;
-                        $pausen_ende+=1800;
+                        $pausen_start += 1800;
+                        $pausen_ende += 1800;
                     }
                     $Dienstplan[$tag]['Mittagsbeginn'][$position] = date('H:i', $pausen_start);
                     $Dienstplan[$tag]['Mittagsende'][$position] = date('H:i', $pausen_ende);
