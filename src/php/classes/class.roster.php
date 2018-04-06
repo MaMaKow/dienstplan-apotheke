@@ -49,14 +49,30 @@ abstract class roster {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $roster_row_iterator++;
             }
-            /*
-             * We mark empty roster days as empty:
-              if (!isset($Roster[$date_unix])) {
-              $Roster[$date_unix]['empty'] = TRUE;
-              } else {
-              $Roster[$date_unix]['empty'] = FALSE;
-              }
-             */
+        }
+        return $Roster;
+    }
+
+    public static function read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql_start, $date_sql_end = NULL) {
+        if (NULL === $date_sql_end) {
+            $date_sql_end = $date_sql_start;
+        }
+        $date_unix_start = strtotime($date_sql_start);
+        $date_unix_end = strtotime($date_sql_end);
+        $Roster = array();
+        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
+            $date_sql = date('Y-m-d', $date_unix);
+            $sql_query = 'SELECT DISTINCT Dienstplan.* '
+                    . ' FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id '
+                    . ' WHERE Dienstplan.Mandant = ' . user_input::escape_sql_value($other_branch_id) . ' AND `Datum` = ' . user_input::escape_sql_value($date_sql) . ' AND employees.branch =' . user_input::escape_sql_value($branch_id)
+                    . ' ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
+            $result = mysqli_query_verbose($sql_query);
+
+            $roster_row_iterator = 0;
+            while ($row = mysqli_fetch_object($result)) {
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $roster_row_iterator++;
+            }
         }
         return $Roster;
     }
@@ -163,6 +179,10 @@ abstract class roster {
     }
 
     public static function calculate_changing_times($Roster) {
+        if (array() === $Roster) {
+            /* No roster, no changing times */
+            return FALSE;
+        }
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
                 $Changing_times[] = $roster_item_object->duty_start_int;
@@ -209,12 +229,14 @@ abstract class roster {
      * @return int
      */
     public static function calculate_max_employee_count($Roster) {
-        global $Mandanten_mitarbeiter;
-        foreach ($Roster as $date_unix => $Roster_day_array) {
+        $Employee_count[] = 0;
+        //global $Mandanten_mitarbeiter;
+        foreach ($Roster as $Roster_day_array) {
             $Employee_count[] = (count($Roster_day_array));
         }
         $roster_employee_count = max($Employee_count); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
-        $max_employee_count = max($roster_employee_count + 1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+        //$max_employee_count = max($roster_employee_count + 1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+        $max_employee_count = $roster_employee_count + 1; //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
         return $max_employee_count;
     }
 

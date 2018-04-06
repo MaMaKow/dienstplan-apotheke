@@ -50,6 +50,9 @@ function selectElement(evt, moveType) {
     }
     //selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
     selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
+    console.log(selectedElement.firstChild);
+    selectedElement.firstChild.classList.add("selected");
+    console.log(selectedElement.firstChild.style);
     selectedElement.parentNode.setAttributeNS(null, "onmousemove", "moveElement(evt)");
 }
 
@@ -87,6 +90,7 @@ function deselectElement(evt) {
         selectedElement.parentNode.removeAttributeNS(null, "onmousemove");
         selectedElement.removeAttributeNS(null, "onmouseout");
         selectedElement.removeAttributeNS(null, "onmouseup");
+        selectedElement.firstChild.classList.remove("selected");
         selectedElement = 0;
     }
 }

@@ -24,6 +24,34 @@
  */
 abstract class build_html_navigation_elements {
 
+    public static function build_button_open_readonly_version($url, $date_sql) {
+        $button_img = "
+            <a href='$url?datum=" . $date_sql . "'>
+		<button type='button' class='btn-primary no-print'>
+			<i class='icon-black'>
+				<img src='img/read-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
+			</i>
+			<br>
+			" . gettext("Read") . "
+		</button>
+            </a>";
+        return $button_img;
+    }
+
+    public static function build_button_open_edit_version($url, $date_sql) {
+        $button_img = "
+            <a href='$url?datum=" . $date_sql . "'>
+		<button type='button' class='btn-primary no-print'>
+			<i class='icon-black'>
+				<img src='img/edit-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
+			</i>
+			<br>
+			" . gettext("Edit") . "
+		</button>
+            </a>";
+        return $button_img;
+    }
+
     public static function build_button_day_backward($date_unix) {
         $yesterday_date_string = general_calculations::yesterday_date_string($date_unix);
         $backward_button_img = "

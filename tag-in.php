@@ -32,7 +32,7 @@ if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST,
     user_input::old_write_approval_to_database($branch_id, $Roster);
 }
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql);
-if (!isset($Roster[$date_unix]) AND NULL !== $Principle_roster AND FALSE === $holiday) { //No plans on Saturday, Sunday and holidays.
+if (!isset($Roster[$date_unix]) AND ! empty($Principle_roster) AND FALSE === $holiday) { //No plans on Saturday, Sunday and holidays.
     //Wir wollen eine automatische Dienstplanfindung beginnen.
     //Mal sehen, wie viel die Maschine selbst gestalten kann.
     $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
@@ -87,8 +87,7 @@ if ($session->user_has_privilege('approve_roster')) {
     echo build_html_navigation_elements::build_button_approval();
     echo build_html_navigation_elements::build_button_disapproval();
 }
-
-echo "<a href='tag-out.php?datum=" . $date_sql . "'>[" . gettext("Read") . "]</a>\n";
+echo build_html_navigation_elements::build_button_open_readonly_version('tag-out.php', $date_sql);
 echo "</div>\n";
 echo build_html_navigation_elements::build_input_date($date_sql);
 echo "<form id='roster_form' method=post>\n";
@@ -136,10 +135,8 @@ echo "</form>\n";
 
 if (!empty($Roster)) {
     echo "<div class=image>\n";
-    require_once 'image_dienstplan.php';
-    echo draw_image_dienstplan($Roster);
+    echo roster_image_bar_plot::draw_image_dienstplan($Roster);
     echo "<br>\n";
-    require_once 'image_histogramm.php';
     echo roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_sql);
     echo "</div>\n";
 }

@@ -7,6 +7,8 @@
 class examine_roster {
 
     public $Anwesende; //this will also be used by: roster_image_histogramm::draw_image_histogramm
+    private $Approbierten_anwesende;
+    private $Wareneingang_Anwesende;
 
     public function __construct($Roster, $date_unix, $branch_id) {
         $this->Roster_of_all_employees = $Roster;
@@ -50,6 +52,9 @@ class examine_roster {
          * THere are different grades of severity.
          *
          */
+        if (FALSE === $this->Anwesende) {
+            return FALSE;
+        }
         foreach ($this->Anwesende as $zeit => $anwesende) {
             if ($anwesende < $minimum_number_of_employees and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
@@ -63,6 +68,9 @@ class examine_roster {
     }
 
     public function check_for_sufficient_goods_receipt_count(&$Warning_message) {
+        if (FALSE === $this->Wareneingang_Anwesende) {
+            return FALSE;
+        }
         foreach ($this->Wareneingang_Anwesende as $zeit => $anwesende_wareneingang) {
             // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($Opening_times['day_opening_end'])
             if ($anwesende_wareneingang === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
@@ -77,6 +85,9 @@ class examine_roster {
     }
 
     public function check_for_sufficient_qualified_pharmacist_count(&$Error_message) {
+        if (FALSE === $this->Approbierten_anwesende) {
+            return FALSE;
+        }
         foreach ($this->Approbierten_anwesende as $zeit => $anwesende_approbierte) {
             if ($anwesende_approbierte === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {

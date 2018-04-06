@@ -15,7 +15,7 @@
         <table>
             <tr><td><?= gettext("Message") ?></td><td><textarea style=width:320px name=message rows=5></textarea></td></tr>
         </table>
-        <input type="hidden" name=dienstplan value="<?php var_export($Dienstplan) ?>">
+        <input type="hidden" name=Roster value="<?php var_export($Roster) ?>">
         <input type="submit" name=submitContactForm value="Absenden">
         <p><!--Nur damit der Submit-Button nicht ganz am unteren Seitenrand klebt.-->
     </form>

@@ -144,6 +144,10 @@ abstract class user_input {
 
     private static function insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
+            if (!isset($Changed_roster_employee_id_list[$date_unix])) {
+                /* There are no changes. */
+                return FALSE;
+            }
             foreach ($Roster_day_array as $roster_row_object) {
                 if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
                     continue;
@@ -195,9 +199,15 @@ abstract class user_input {
         }
     }
 
-    private static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
+    public static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
+            if (!isset($Roster_old[$date_unix])) {
+                foreach ($Roster_day_array as $roster_row_object) {
+                    $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
+                }
+                return $Changed_roster_employee_id_list;
+            }
             foreach ($Roster_day_array as $roster_row_object) {
                 foreach ($Roster_old[$date_unix] as $roster_row_object_old) {
                     if ($roster_row_object->employee_id !== $roster_row_object_old->employee_id) {
@@ -227,8 +237,13 @@ abstract class user_input {
                     $Deleted_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
                 }
             } else {
-                foreach ($Roster_old[$date_unix] as $roster_row_object) {
-                    $List_of_employees_in_Roster_old[] = $roster_row_object->employee_id;
+                if (!isset($Roster_old[$date_unix])) {
+                    /* There is no old roster */
+                    $List_of_employees_in_Roster_old = array();
+                } else {
+                    foreach ($Roster_old[$date_unix] as $roster_row_object) {
+                        $List_of_employees_in_Roster_old[] = $roster_row_object->employee_id;
+                    }
                 }
                 foreach ($Roster[$date_unix] as $roster_row_object) {
                     $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
@@ -243,6 +258,7 @@ abstract class user_input {
     }
 
     private static function get_inserted_roster_employee_id_list($Roster, $Roster_old) {
+        $Inserted_roster_employee_id_list = array();
         foreach ($Roster_old as $date_unix => $Roster_old_day_array) {
             if (empty($Roster_old_day_array)) {
                 foreach ($Roster[$date_unix] as $roster_row_object) {

@@ -46,6 +46,8 @@ abstract class examine_attendance {
     }
 
     public static function check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, &$Warnmeldung) {
+        $Roster_workers = array();
+        $Principle_roster_workers = array();
         global $List_of_employees, $Mandanten_mitarbeiter;
         foreach ($Principle_roster as $Principle_roster_day) {
             foreach ($Principle_roster_day as $principle_roster_object) {
@@ -67,7 +69,6 @@ abstract class examine_attendance {
             $fehler = "Es sind folgende Mitarbeiter nicht eingesetzt: <br>\n";
             foreach ($Mitarbeiter_differenz as $arbeiter) {
                 foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
-                    print_debug_variable('$principle_roster_object->employee_id', $principle_roster_object->employee_id);
                     if ($arbeiter == $principle_roster_object->employee_id) {
                         $duty_start = $principle_roster_object->duty_start_sql;
                         $duty_end = $principle_roster_object->duty_end_sql;

@@ -141,4 +141,116 @@ abstract class build_html_roster_views {
         return $roster_input_row_comment_html;
     }
 
+    public static function build_roster_readonly_branch_table_rows($branch_id, $date_sql_start, $date_sql_end) {
+        global $List_of_branch_objects;
+        $date_unix_start = strtotime($date_sql_start);
+        $date_unix_end = strtotime($date_sql_end);
+        $number_of_days = ($date_unix_end - $date_unix_start) / PDR_ONE_DAY_IN_SECONDS;
+
+        $table_html = "";
+
+        foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
+            if ($branch_id == $other_branch_id) {
+                continue;
+            }
+            $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
+            if (array() === $Branch_roster[$other_branch_id]) {
+                continue;
+            }
+            $table_html .= "</tbody><tbody><tr class='branch_roster_title_tr'><th colspan=" . htmlentities($number_of_days) . ">" . $List_of_branch_objects[$branch_id]->short_name . " in " . $List_of_branch_objects[$other_branch_id]->short_name . "</th></tr>";
+            $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id);
+        }
+        return $table_html;
+    }
+
+    public static function build_roster_readonly_table($Roster, $branch_id) {
+        if (array() === $Roster) {
+            return FALSE;
+        }
+        global $List_of_employees;
+        global $config;
+        $table_html = "";
+        $max_employee_count = roster::calculate_max_employee_count($Roster);
+        $List_of_date_unix_in_roster = array_keys($Roster);
+        $date_sql_start = date('Y-m-d', min($List_of_date_unix_in_roster));
+        $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
+        $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
+        $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
+
+        for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
+            /*
+             * if (isset($feiertag) && !isset($notdienst)) {
+             * break 1;
+             * }
+             */
+            $table_html .= "<tr>\n";
+            foreach (array_keys($Roster) as $date_unix) {
+                $date_sql = date('Y-m-d', $date_unix);
+                if (!isset($Roster[$date_unix][$table_row_iterator])) {
+                    $table_html .= "<td></td>\n";
+                    continue;
+                }
+                $roster_object = $Roster[$date_unix][$table_row_iterator];
+                if (!isset($List_of_employees[$roster_object->employee_id])) {
+                    $List_of_employees[$roster_object->employee_id] = '?';
+                }
+                /*
+                 * The following lines check for the state of approval.
+                 * Duty rosters have to be approved by the leader, before the staff can view them.
+                 */
+                $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+                if ("approved" !== $approval and false !== $config['hide_disapproved']) {
+                    $table_html .= "<td></td>";
+                    continue;
+                }
+                $table_html .= "<td>";
+                $zeile = "";
+
+                if (isset($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                    $emphasis_start = ""; //No emphasis
+                    $emphasis_end = ""; //No emphasis
+                } else {
+                    $emphasis_start = "<strong>"; //Significant emphasis
+                    $emphasis_end = "</strong>"; //Significant emphasis
+                }
+                $zeile .= "$emphasis_start<b><a href='mitarbeiter-out.php?"
+                        . "datum=" . htmlentities($roster_object->date_sql)
+                        . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
+                $zeile .= $List_of_employees[$roster_object->employee_id];
+                $zeile .= "</a></b> / ";
+                $zeile .= htmlentities($roster_object->working_hours);
+                $zeile .= " ";
+                //Dienstbeginn
+                $zeile .= " <br> ";
+                $zeile .= htmlentities($roster_object->duty_start_sql);
+                //Dienstende
+                $zeile .= " - ";
+                $zeile .= htmlentities($roster_object->duty_end_sql);
+                //	Mittagspause
+                $zeile .= "<br>\n";
+                if ($roster_object->break_start_int > 0) {
+                    $zeile .= " " . gettext("break") . ": ";
+                    $zeile .= htmlentities($roster_object->break_start_sql);
+                    $zeile .= " - ";
+                    $zeile .= htmlentities($roster_object->break_end_sql);
+                }
+                $zeile .= "$emphasis_end";
+                $table_html .= $zeile;
+            }
+            $table_html .= "</td>\n";
+        }
+        $table_html .= "</tr>\n";
+        return $table_html;
+    }
+
+    private static function get_approval_from_database($date_sql, $branch_id) {
+        $sql_query = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch_id'";
+        $result = mysqli_query_verbose($sql_query);
+        while ($row = mysqli_fetch_object($result)) {
+            $approval = $row->state;
+            return $approval;
+        }
+        return FALSE;
+    }
+
 }
