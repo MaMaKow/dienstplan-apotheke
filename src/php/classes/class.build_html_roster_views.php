@@ -141,7 +141,7 @@ abstract class build_html_roster_views {
         return $roster_input_row_comment_html;
     }
 
-    public static function build_roster_readonly_branch_table_rows($branch_id, $date_sql_start, $date_sql_end) {
+    public static function build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end) {
         global $List_of_branch_objects;
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
@@ -150,11 +150,9 @@ abstract class build_html_roster_views {
         $table_html = "";
 
         foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
-            //print_debug_variable(__METHOD__, '$other_branch_id', $other_branch_id);
             if ($branch_id == $other_branch_id) {
                 continue;
             }
-            $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
             if (array() === $Branch_roster[$other_branch_id]) {
                 continue;
             }
@@ -176,7 +174,6 @@ abstract class build_html_roster_views {
         $date_sql_start = date('Y-m-d', min($List_of_date_unix_in_roster));
         $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
         $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
-        print_debug_variable(__METHOD__, '$Roster', $Roster);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
@@ -194,7 +191,6 @@ abstract class build_html_roster_views {
                 }
                 $roster_object = $Roster[$date_unix][$table_row_iterator];
                 if (!isset($List_of_employees[$roster_object->employee_id])) {
-                    print_debug_variable($roster_object);
                     //$List_of_employees[$roster_object->employee_id] = '?';
                 }
                 /*

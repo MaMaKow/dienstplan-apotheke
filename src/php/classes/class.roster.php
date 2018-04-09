@@ -51,7 +51,6 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
-                //print_debug_variable(__METHOD__, '$date_sql', $date_sql);
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
@@ -270,6 +269,32 @@ abstract class roster {
         //$max_employee_count = max($roster_employee_count + 1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
         $max_employee_count = $roster_employee_count + 1; //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
         return $max_employee_count;
+    }
+
+    /*
+     * Calculation of the working hours of the employees:
+     */
+
+    public static function calculate_working_hours_weekly_from_branch_roster($Branch_roster) {
+        /*
+         * CAVE! This function expects an array of the format: $Branch_roster[$branch_id][$date_unix][$roster_item]
+         * The standard $Roster array ($Roster[$date_unix][$roster_item]) will not return any usefull information.
+         */
+        foreach ($Branch_roster as $Branch_roster_branch_array) {
+            foreach ($Branch_roster_branch_array as $Roster_day_array) {
+                foreach ($Roster_day_array as $roster_item) {
+                    if (!isset($roster_item->working_hours)) {
+                        continue 1;
+                    }
+                    if (!isset($Working_hours_week[$roster_item->employee_id])) {
+                        $Working_hours_week[$roster_item->employee_id] = $roster_item->working_hours;
+                    } else {
+                        $Working_hours_week[$roster_item->employee_id] += $roster_item->working_hours;
+                    }
+                }
+            }
+        }
+        return ksort($Working_hours_week);
     }
 
 }
