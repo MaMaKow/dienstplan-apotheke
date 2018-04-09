@@ -30,8 +30,12 @@ require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($date_sql, $tage, $branch_id); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $Roster = roster::read_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
-//print_debug_variable(__METHOD__, '$Roster', $Roster);
-
+foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
+    /*
+     * The $Branch_roster contanins all the rosters from all branches, including the current branch.
+     */
+    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
+}
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 //Build a div containing assignment of tasks:
@@ -111,7 +115,7 @@ if (isset($Overlay_message)) {
     $overlay_message_html .= "\t\t</div>\n";
 }
 $table_html .= $table_body_html;
-$table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($branch_id, $date_sql_start, $date_sql_end);
+$table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end);
 
 $table_html .= "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";
@@ -159,41 +163,18 @@ $table_div_html .= $table_html;
 
 $duty_roster_form_html .= $table_div_html;
 
-/*
- * Calculation of the working hours of the employees:
- */
-foreach (array_keys($Dienstplan) as $tag) {
-    if (!isset($Dienstplan[$tag]['Stunden'])) {
-        continue;
-    } //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-    foreach ($Dienstplan[$tag]['Stunden'] as $key => $stunden) {
-        $Stunden[$Dienstplan[$tag]['VK'][$key]][] = $stunden;
-    }
-}
-foreach (array_keys($Filialplan) as $other_branch_id) {
-    foreach (array_keys($Filialplan[$other_branch_id]) as $tag) {
-        if ($other_branch_id != $branch_id) {
-            if (!isset($Filialplan[$other_branch_id][$tag]['Stunden'])) {
-                continue 1;
-            } //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-            foreach ($Filialplan[$other_branch_id][$tag]['Stunden'] as $key => $stunden) {
-                $Stunden[$Filialplan[$other_branch_id][$tag]['VK'][$key]][] = $stunden;
-            }
-        }
-    }
-}
+$Working_hours_week = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
 //An leeren Wochen soll nicht gerechnet werden.
-if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) { //array_column durchsucht alle Tage nach einem 'VK'.
+if (array() !== $Roster and isset($Working_hours_week)) {
     $week_hours_table_html = "\t\t\t\t<table>\n";
     $week_hours_table_html .= "\t\t\t\t\t<tr>\n";
-    $week_hours_table_html .= "\t\t\t\t\t\t<td colspan=5>";
+    $week_hours_table_html .= "\t\t\t\t\t\t<td colspan=$tage>";
     $week_hours_table_html .= "<b>Wochenstunden</b>\n";
     $week_hours_table_html .= "\t\t\t\t\t\t</td>\n"
             . "\t\t\t\t\t<tr>\n";
-    ksort($Stunden);
     $i = 0;
     $j = 1; //Zähler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
-    foreach ($Stunden as $mitarbeiter => $stunden) {
+    foreach ($Working_hours_week as $mitarbeiter => $stunden) {
         if (array_key_exists($mitarbeiter, $Mandanten_mitarbeiter) === false) {
             continue; /* Wir zeigen nur die Stunden von Mitarbeitern, die auch in den Mandanten gehören. */
         }
@@ -202,7 +183,7 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) { //array_colum
             $week_hours_table_html .= "\t\t\t\t\t</tr><tr>\n";
             $i = 0; //$j++;
         }
-        $week_hours_table_html .= "\t\t\t\t\t\t<td>" . $List_of_employees[$mitarbeiter] . " " . array_sum($stunden);
+        $week_hours_table_html .= "\t\t\t\t\t\t<td>" . $List_of_employees[$mitarbeiter] . " " . $stunden;
         $week_hours_table_html .= " / ";
         if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
             $week_hours_table_html .= round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) . "\n";
@@ -210,13 +191,13 @@ if (!empty(array_column($Dienstplan, 'VK')) AND isset($Stunden)) { //array_colum
             $week_hours_table_html .= round($List_of_employee_working_week_hours[$mitarbeiter], 1) . "\n";
         }
         if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-            if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
-                $differenz = round(array_sum($stunden), 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
+            if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round($stunden, 1)) {
+                $differenz = round($stunden, 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
         } else {
-            if (round($List_of_employee_working_week_hours[$mitarbeiter], 1) != round(array_sum($stunden), 1)) {
-                $differenz = round(array_sum($stunden), 1) - round($List_of_employee_working_week_hours[$mitarbeiter], 1);
+            if (round($List_of_employee_working_week_hours[$mitarbeiter], 1) != round($stunden, 1)) {
+                $differenz = round($stunden, 1) - round($List_of_employee_working_week_hours[$mitarbeiter], 1);
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
         }
