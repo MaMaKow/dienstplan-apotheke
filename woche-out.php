@@ -166,50 +166,37 @@ $duty_roster_form_html .= $table_div_html;
 $Working_hours_week = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
 //An leeren Wochen soll nicht gerechnet werden.
 if (array() !== $Roster and isset($Working_hours_week)) {
-    $week_hours_table_html = "\t\t\t\t<table>\n";
-    $week_hours_table_html .= "\t\t\t\t\t<tr>\n";
-    $week_hours_table_html .= "\t\t\t\t\t\t<td colspan=$tage>";
-    $week_hours_table_html .= "<b>Wochenstunden</b>\n";
-    $week_hours_table_html .= "\t\t\t\t\t\t</td>\n"
-            . "\t\t\t\t\t<tr>\n";
-    $i = 0;
-    $j = 1; //Zähler für den Stunden-Array (wir wollen nach je 5 Mitarbeitern einen Umbruch)
+    $week_hours_table_html = "<div id=week_hours_table_div>\n";
+    $week_hours_table_html .= "<H2>Wochenstunden</H2>\n";
+    $week_hours_table_html .= "<p>\n";
+    print_debug_variable($Working_hours_week);
     foreach ($Working_hours_week as $mitarbeiter => $stunden) {
-        if (array_key_exists($mitarbeiter, $Mandanten_mitarbeiter) === false) {
-            continue; /* Wir zeigen nur die Stunden von Mitarbeitern, die auch in den Mandanten gehören. */
+        if (FALSE === array_key_exists($mitarbeiter, $Mandanten_mitarbeiter)) {
+            continue; /* Only employees who belong to the branch are shown. */
         }
-        $i++; //Der Faktor gibt an, bei welcher VK-Nummer der Umbruch erfolgt.
-        if ($i >= $tage) {
-            $week_hours_table_html .= "\t\t\t\t\t</tr><tr>\n";
-            $i = 0; //$j++;
-        }
-        $week_hours_table_html .= "\t\t\t\t\t\t<td>" . $List_of_employees[$mitarbeiter] . " " . $stunden;
+        $week_hours_table_html .= "<span>" . $List_of_employees[$mitarbeiter] . " " . round($stunden, 2);
         $week_hours_table_html .= " / ";
         if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
             $week_hours_table_html .= round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) . "\n";
-        } else {
-            $week_hours_table_html .= round($List_of_employee_working_week_hours[$mitarbeiter], 1) . "\n";
-        }
-        if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
             if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round($stunden, 1)) {
-                $differenz = round($stunden, 1) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1);
+                $differenz = round($stunden, 2) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 2);
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
         } else {
+            $week_hours_table_html .= round($List_of_employee_working_week_hours[$mitarbeiter], 1) . "\n";
             if (round($List_of_employee_working_week_hours[$mitarbeiter], 1) != round($stunden, 1)) {
-                $differenz = round($stunden, 1) - round($List_of_employee_working_week_hours[$mitarbeiter], 1);
+                $differenz = round($stunden, 2) - round($List_of_employee_working_week_hours[$mitarbeiter], 2);
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
         }
 
-        $week_hours_table_html .= "\t\t\t\t\t\t</td>\n";
+        $week_hours_table_html .= "</span>\n";
     }
-    $week_hours_table_html .= "\t\t\t\t\t</tr>\n";
-    $week_hours_table_html .= "\t\t\t\t</table>\n";
+    $week_hours_table_html .= "</p>\n";
     $duty_roster_form_html .= $week_hours_table_html;
 }
 // echo $submit_button;
-$duty_roster_form_html .= "\t\t\t</form>\n";
+$duty_roster_form_html .= "</form>\n";
 $main_div_html .= $duty_roster_form_html;
 
 $main_div_html .= "</div>\n";

@@ -655,3 +655,7 @@ body table tbody tr.branch_roster_title_tr th{
     padding-top: 1em;
     font-size: x-large;
 }
+body div#week_hours_table_div p span {
+    margin-right: 1em;
+    white-space: nowrap;
+}
