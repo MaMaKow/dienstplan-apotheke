@@ -150,6 +150,7 @@ abstract class build_html_roster_views {
         $table_html = "";
 
         foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
+            //print_debug_variable(__METHOD__, '$other_branch_id', $other_branch_id);
             if ($branch_id == $other_branch_id) {
                 continue;
             }
@@ -175,6 +176,7 @@ abstract class build_html_roster_views {
         $date_sql_start = date('Y-m-d', min($List_of_date_unix_in_roster));
         $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
         $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
+        print_debug_variable(__METHOD__, '$Roster', $Roster);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
@@ -186,13 +188,14 @@ abstract class build_html_roster_views {
             $table_html .= "<tr>\n";
             foreach (array_keys($Roster) as $date_unix) {
                 $date_sql = date('Y-m-d', $date_unix);
-                if (!isset($Roster[$date_unix][$table_row_iterator])) {
+                if (!isset($Roster[$date_unix][$table_row_iterator]) or NULL === $Roster[$date_unix][$table_row_iterator]->employee_id) {
                     $table_html .= "<td></td>\n";
                     continue;
                 }
                 $roster_object = $Roster[$date_unix][$table_row_iterator];
                 if (!isset($List_of_employees[$roster_object->employee_id])) {
-                    $List_of_employees[$roster_object->employee_id] = '?';
+                    print_debug_variable($roster_object);
+                    //$List_of_employees[$roster_object->employee_id] = '?';
                 }
                 /*
                  * The following lines check for the state of approval.

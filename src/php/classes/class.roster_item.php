@@ -70,7 +70,7 @@ class roster_item {
         $this->working_hours = $this->working_seconds / 3600;
     }
 
-    private static function format_time_string_correct($time_string, $format = '%H:%M') {
+    protected static function format_time_string_correct($time_string, $format = '%H:%M') {
         $time_int = strtotime($time_string);
         if (FALSE === $time_int) {
             return $time_string;

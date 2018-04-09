@@ -1,29 +1,37 @@
 <?php
 require_once "default.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "schreiben-tabelle.php";
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-abwesenheit.php";
 
 $tage = 7; //One week
 
-$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
-create_cookie('mandant', $mandant, 30);
+$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+$mandant = $branch_id;
+create_cookie('mandant', $branch_id, 30);
 
 $error_message_html = "";
 $overlay_message_html = "";
+$Fehlermeldung = array();
+$Warnmeldung = array();
 
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
-$datum = general_calculations::get_first_day_of_week($date_sql_user_input);
-create_cookie('datum', $datum, 1);
+$date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
+$date_unix = strtotime($date_sql);
+$datum = $date_sql;
+$date_sql_start = $date_sql;
+$date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
+create_cookie('datum', $date_sql, 1);
 
 for ($i = 0; $i < $tage; $i++) {
-    $Week_dates_unix[] = strtotime(' +' . $i . ' days', strtotime($datum));
-    //echo date("d.m.Y", end($Week_dates_unix)) . "<br>\n";
+    $Week_dates_unix[] = strtotime(' +' . $i . ' days', $date_unix);
 }
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
-$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
+$Dienstplan = read_roster_array_from_db($date_sql, $tage, $branch_id); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
+$Roster = roster::read_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
+//print_debug_variable(__METHOD__, '$Roster', $Roster);
+
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 //Build a div containing assignment of tasks:
@@ -37,11 +45,11 @@ require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 $main_div_html = "\t\t<div id='main-area'>\n";
-$date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', strtotime($datum)) . "</div>\n";
+$date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
-$main_div_html .= build_select_branch($mandant, $datum);
+$main_div_html .= build_select_branch($branch_id, $date_sql);
 
 $duty_roster_form_html = "\t\t<form id=duty_roster_form method=post>\n";
 $buttons_div_html = "";
@@ -49,10 +57,10 @@ $buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= $backward_button_week_img;
 $buttons_div_html .= $forward_button_week_img;
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
+$buttons_div_html .= "\t\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', $date_unix) . ">\n";
 $buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=" . $datum . "' class=no-print>[" . gettext("Edit") . "]</a>\n";
+$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=" . $date_sql . "' class=no-print>[" . gettext("Edit") . "]</a>\n";
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 
@@ -68,7 +76,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $head_table_html .= strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
     $head_table_html .= " \n";
     $head_table_html .= "<input type=hidden size=2 name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
-    $head_table_html .= "<input type=hidden name=mandant value=" . htmlentities($mandant) . ">";
+    $head_table_html .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
     $head_table_html .= strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
     $holiday = holidays::is_holiday($date_unix);
     if (FALSE !== $holiday) {
@@ -93,7 +101,7 @@ $head_table_html .= "\t\t\t\t\t</tr></thead>";
 $table_html .= $head_table_html;
 
 $table_body_html = "<tbody>";
-$table_body_html .= schreiben_tabelle($Dienstplan, $mandant);
+$table_body_html .= build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
 if (isset($Overlay_message)) {
     $overlay_message_html .= "\t\t<div class='overlay no-print'>\n";
     $Overlay_message = array_unique($Overlay_message);
@@ -103,17 +111,7 @@ if (isset($Overlay_message)) {
     $overlay_message_html .= "\t\t</div>\n";
 }
 $table_html .= $table_body_html;
-foreach (array_keys($List_of_branch_objects) as $filiale) {
-    if ($mandant == $filiale) {
-        continue 1;
-    }
-    $Filialplan[$filiale] = read_roster_array_from_db($datum, $tage, $filiale, '[' . $mandant . ']'); // Die Funktion schaut jetzt nach dem Arbeitsplan in der Helene.
-    if (!empty(array_column($Filialplan[$filiale], 'VK'))) { //array_column durchsucht alle Tage nach einem 'VK'.
-        $table_html .= "</tbody><tbody><tr><td colspan=" . htmlentities($tage) . ">" . $List_of_branch_objects[$mandant]->short_name . " in " . $List_of_branch_objects[$filiale]->short_name . "</td></tr>";
-        $table_body_html = schreiben_tabelle($Filialplan[$filiale], $filiale);
-        $table_html .= $table_body_html;
-    }
-}
+$table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($branch_id, $date_sql_start, $date_sql_end);
 
 $table_html .= "\t\t\t\t\t</tbody>\n";
 //echo "\t\t\t\t</div>\n";
@@ -172,14 +170,14 @@ foreach (array_keys($Dienstplan) as $tag) {
         $Stunden[$Dienstplan[$tag]['VK'][$key]][] = $stunden;
     }
 }
-foreach (array_keys($Filialplan) as $branch_id => $value) { //wir verwenden nicht die Variablen $filiale oder Mandant, weil wir diese jetzt nicht verändern wollen!
-    foreach (array_keys($Filialplan[$branch_id]) as $tag) {
-        if ($branch_id != $mandant) {
-            if (!isset($Filialplan[$branch_id][$tag]['Stunden'])) {
+foreach (array_keys($Filialplan) as $other_branch_id) {
+    foreach (array_keys($Filialplan[$other_branch_id]) as $tag) {
+        if ($other_branch_id != $branch_id) {
+            if (!isset($Filialplan[$other_branch_id][$tag]['Stunden'])) {
                 continue 1;
             } //Tage an denen kein Dienstplan existiert werden nicht geprüft.
-            foreach ($Filialplan[$branch_id][$tag]['Stunden'] as $key => $stunden) {
-                $Stunden[$Filialplan[$branch_id][$tag]['VK'][$key]][] = $stunden;
+            foreach ($Filialplan[$other_branch_id][$tag]['Stunden'] as $key => $stunden) {
+                $Stunden[$Filialplan[$other_branch_id][$tag]['VK'][$key]][] = $stunden;
             }
         }
     }

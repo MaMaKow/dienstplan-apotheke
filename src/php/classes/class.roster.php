@@ -30,12 +30,17 @@ abstract class roster {
      */
 
     public static function read_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
+        /*
+         * TODO: unify this with read_branch_roster_from_database
+         * Make them both one function perhaps.
+         */
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
         $Roster = array();
+        $the_whole_roster_is_empty = TRUE;
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
             $sql_query = 'SELECT * '
@@ -46,9 +51,23 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
+                //print_debug_variable(__METHOD__, '$date_sql', $date_sql);
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
+            if (0 === $result->num_rows) {
+                /*
+                 * If there is no roster on a given day, we insert one empty roster_item.
+                 * This is important for weekly views. Non existent rosters would misalign the tables.
+                 */
+                //$Roster[$date_unix][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $date_unix), NULL, $branch_id, NULL, NULL, NULL, NULL);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+            }
+        }
+        if (TRUE === $the_whole_roster_is_empty) {
+            /* reset the roster to be completely empty */
+            $Roster = array();
         }
         return $Roster;
     }
@@ -60,6 +79,7 @@ abstract class roster {
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
         $Roster = array();
+        $the_whole_roster_is_empty = TRUE;
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
             $sql_query = 'SELECT DISTINCT Dienstplan.* '
@@ -71,8 +91,20 @@ abstract class roster {
             $roster_row_iterator = 0;
             while ($row = mysqli_fetch_object($result)) {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
+            if (0 === $result->num_rows) {
+                /*
+                 * If there is no roster on a given day, we insert one empty roster_item.
+                 * This is important for weekly views. Non existent rosters would misalign the tables.
+                 */
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+            }
+        }
+        if (TRUE === $the_whole_roster_is_empty) {
+            /* reset the roster to be completely empty */
+            $Roster = array();
         }
         return $Roster;
     }
