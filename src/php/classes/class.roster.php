@@ -294,7 +294,8 @@ abstract class roster {
                 }
             }
         }
-        return ksort($Working_hours_week);
+        ksort($Working_hours_week);
+        return $Working_hours_week;
     }
 
 }
