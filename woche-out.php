@@ -86,15 +86,6 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     if (FALSE !== $holiday) {
         $head_table_html .= " <br>" . $holiday . " ";
     }
-    if (FALSE !== $holiday AND date('N', $date_unix) < 6) {
-        foreach ($Mandanten_mitarbeiter as $employee_id => $nachname) {
-            if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
-                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
-            } else {
-                $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
-            }
-        }
-    }
 
     if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
         $head_table_html .= "<br> <em>NOTDIENST</em> ";
@@ -124,25 +115,11 @@ $table_foot_html = "\t\t\t\t\t<tfoot>"
         . "\n\t\t\t\t\t\t<tr>\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-for ($i = 0; $i < count($Dienstplan); $i++) {
-    $datum = ($Dienstplan[$i]['Datum'][0]);
-    $date_unix = strtotime($datum);
-    $Abwesende = db_lesen_abwesenheit($datum);
-    if (isset($Abwesende)) {
-        foreach ($Abwesende as $employee_id => $reason) {
-            if (FALSE !== holidays::is_holiday($date_unix) AND date('N', $date_unix) < 6) {
-                //An Feiertagen whaben wir die Stunden bereits abgezogen. Keine weiteren Abwesenheitsgründe notwendig.
-                if (!isset($bereinigte_Wochenstunden_Mitarbeiter[$employee_id])) {
-                    $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $List_of_employee_working_week_hours[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
-                } else {
-                    $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] = $bereinigte_Wochenstunden_Mitarbeiter[$employee_id] - $List_of_employee_working_week_hours[$employee_id] / 5;
-                }
-            }
-        }
-    }
+foreach (array_keys($Roster) as $date_unix) {
+    $date_sql = date('Y-m-d', $date_unix);
+    $Abwesende = db_lesen_abwesenheit($date_sql);
 
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
-
     if (isset($Abwesende)) {
         $table_foot_html .= build_html_roster_views::build_absentees_column($Abwesende);
     } else {
@@ -163,37 +140,11 @@ $table_div_html .= $table_html;
 
 $duty_roster_form_html .= $table_div_html;
 
-$Working_hours_week = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
+$Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
 //An leeren Wochen soll nicht gerechnet werden.
-if (array() !== $Roster and isset($Working_hours_week)) {
-    $week_hours_table_html = "<div id=week_hours_table_div>\n";
-    $week_hours_table_html .= "<H2>Wochenstunden</H2>\n";
-    $week_hours_table_html .= "<p>\n";
-    print_debug_variable($Working_hours_week);
-    foreach ($Working_hours_week as $mitarbeiter => $stunden) {
-        if (FALSE === array_key_exists($mitarbeiter, $Mandanten_mitarbeiter)) {
-            continue; /* Only employees who belong to the branch are shown. */
-        }
-        $week_hours_table_html .= "<span>" . $List_of_employees[$mitarbeiter] . " " . round($stunden, 2);
-        $week_hours_table_html .= " / ";
-        if (isset($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter])) {
-            $week_hours_table_html .= round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) . "\n";
-            if (round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 1) != round($stunden, 1)) {
-                $differenz = round($stunden, 2) - round($bereinigte_Wochenstunden_Mitarbeiter[$mitarbeiter], 2);
-                $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
-            }
-        } else {
-            $week_hours_table_html .= round($List_of_employee_working_week_hours[$mitarbeiter], 1) . "\n";
-            if (round($List_of_employee_working_week_hours[$mitarbeiter], 1) != round($stunden, 1)) {
-                $differenz = round($stunden, 2) - round($List_of_employee_working_week_hours[$mitarbeiter], 2);
-                $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
-            }
-        }
-
-        $week_hours_table_html .= "</span>\n";
-    }
-    $week_hours_table_html .= "</p>\n";
-    $duty_roster_form_html .= $week_hours_table_html;
+if (array() !== $Roster and isset($Working_hours_week_have)) {
+    $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster);
+    $duty_roster_form_html .= build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should);
 }
 // echo $submit_button;
 $duty_roster_form_html .= "</form>\n";

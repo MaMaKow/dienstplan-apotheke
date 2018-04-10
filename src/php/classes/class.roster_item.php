@@ -67,7 +67,7 @@ class roster_item {
          * Emergeny service calculation might differ between states, federal states, or even employees with different contracts.
          */
         $this->working_seconds = ($this->duty_duration - $this->break_duration);
-        $this->working_hours = $this->working_seconds / 3600;
+        $this->working_hours = round($this->working_seconds / 3600, 2);
     }
 
     protected static function format_time_string_correct($time_string, $format = '%H:%M') {
