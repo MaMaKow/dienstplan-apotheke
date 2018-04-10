@@ -70,19 +70,19 @@ $submit_disapproval_button_img = "
 
 function build_select_employee($employee_id, $Employee_id_list) {
     $text = "<!--employee select form-->\n";
-    $text .= "\t\t<form method='POST' id='select_employee'>\n";
-    $text .= "\t\t\t<select name=employee_id class='no-print large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
+    $text .= "<form method='POST' id='select_employee'>\n";
+    $text .= "<select name=employee_id class='no-print large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
     foreach ($Employee_id_list as $vk => $employee_last_name) {
         if ($vk == $employee_id) {
-            $text .= "\t\t\t\t<option value=$vk selected>" . $vk . " " . $employee_last_name . "</option>\n";
+            $text .= "<option value=$vk selected>" . $vk . " " . $employee_last_name . "</option>\n";
         } else {
-            $text .= "\t\t\t\t<option value=$vk>" . $vk . " " . $employee_last_name . "</option>\n";
+            $text .= "<option value=$vk>" . $vk . " " . $employee_last_name . "</option>\n";
         }
     }
-    $text .= "\t\t\t</select>\n";
-    $text .= "\t\t\t<input hidden type=submit value=select_employee name='submit_select_employee' id='submit_select_employee' class=no-print>\n";
-    $text .= "\t\t</form>\n";
-    $text .= "\t\t\t<H1 class='only-print'>" . $Employee_id_list[$employee_id] . "</H1>\n";
+    $text .= "</select>\n";
+    $text .= "<input hidden type=submit value=select_employee name='submit_select_employee' id='submit_select_employee' class=no-print>\n";
+    $text .= "</form>\n";
+    $text .= "<H1 class='only-print'>" . $Employee_id_list[$employee_id] . "</H1>\n";
     $text .= "<!--/employee select form-->\n";
 
     return $text;
@@ -101,20 +101,20 @@ function build_select_branch($current_branch_id, $date_sql) {
     $current_branch_id = (int) $current_branch_id;
     global $List_of_branch_objects;
     $text = "<!--branch select form-->\n";
-    $text .= "\t\t\t<div id=mandantenformular_div>\n";
-    $text .= "\t\t\t<form id=mandantenformular method=post>\n";
-    $text .= "\t\t\t\t<input type=hidden name=datum value=" . $date_sql . ">\n";
-    $text .= "\t\t\t\t<select id=branch_form_select class='no-print large' name=mandant onchange=this.form.submit()>\n";
+    $text .= "<div id=mandantenformular_div>\n";
+    $text .= "<form id=mandantenformular method=post>\n";
+    $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
+    $text .= "<select id=branch_form_select class='no-print large' name=mandant onchange=this.form.submit()>\n";
     foreach ($List_of_branch_objects as $branch_id => $branch_object) {
         if ($branch_id != $current_branch_id) {
-            $text .= "\t\t\t\t\t<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
+            $text .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
         } else {
-            $text .= "\t\t\t\t\t<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
+            $text .= "<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
         }
     }
-    $text .= "\t\t\t\t</select>\n"
-            . "\t\t\t</form>\n";
-    $text .= "\t\t\t</div>\n";
+    $text .= "</select>\n"
+            . "</form>\n";
+    $text .= "</div>\n";
     $text .= "<!--/branch select form-->\n";
     return $text;
 }

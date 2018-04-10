@@ -48,34 +48,34 @@ $weekly_rotation_div_html = task_rotation_main($Week_dates_unix, $task);
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
-$main_div_html = "\t\t<div id='main-area'>\n";
-$date_info_line_html = "\t\t\t<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
+$main_div_html = "<div id='main-area'>\n";
+$date_info_line_html = "<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
 $main_div_html .= build_select_branch($branch_id, $date_sql);
 
-$duty_roster_form_html = "\t\t<form id=duty_roster_form method=post>\n";
+$duty_roster_form_html = "<form id=duty_roster_form method=post>\n";
 $buttons_div_html = "";
 $buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= $backward_button_week_img;
 $buttons_div_html .= $forward_button_week_img;
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', $date_unix) . ">\n";
-$buttons_div_html .= "\t\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+$buttons_div_html .= "<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', $date_unix) . ">\n";
+$buttons_div_html .= "<input type=submit name=tagesAuswahl value=Anzeigen>\n";
 $buttons_div_html .= "<br><br>";
-$buttons_div_html .= "\t\t\t\t<a href='woche-in.php?datum=" . $date_sql . "' class=no-print>[" . gettext("Edit") . "]</a>\n";
+$buttons_div_html .= "<a href='woche-in.php?datum=" . $date_sql . "' class=no-print>[" . gettext("Edit") . "]</a>\n";
 $buttons_div_html .= "<br><br></div>";
 $duty_roster_form_html .= $buttons_div_html;
 
-$table_html = "\t\t\t\t<table id=duty-rooster-table>\n";
+$table_html = "<table id=duty-rooster-table>\n";
 $head_table_html = "";
-$head_table_html .= "\t\t\t\t\t<thead>\n";
-$head_table_html .= "\t\t\t\t\t<tr>\n";
+$head_table_html .= "<thead>\n";
+$head_table_html .= "<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $date_sql = $Dienstplan[$i]['Datum'][0];
     $date_unix = strtotime($date_sql);
-    $head_table_html .= "\t\t\t\t\t\t<td>";
+    $head_table_html .= "<td>";
     $head_table_html .= "<a href='tag-out.php?datum=" . $Dienstplan[$i]["Datum"][0] . "'>";
     $head_table_html .= strftime('%A', strtotime($Dienstplan[$i]["Datum"][0]));
     $head_table_html .= " \n";
@@ -92,27 +92,27 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     }
     $head_table_html .= "</a></td>\n";
 }
-$head_table_html .= "\t\t\t\t\t</tr></thead>";
+$head_table_html .= "</tr></thead>";
 $table_html .= $head_table_html;
 
 $table_body_html = "<tbody>";
 $table_body_html .= build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
 if (isset($Overlay_message)) {
-    $overlay_message_html .= "\t\t<div class='overlay no-print'>\n";
+    $overlay_message_html .= "<div class='overlay no-print'>\n";
     $Overlay_message = array_unique($Overlay_message);
     foreach ($Overlay_message as $message) {
-        $overlay_message_html .= "\t\t\t<H1>" . $message . "</H1>\n";
+        $overlay_message_html .= "<H1>" . $message . "</H1>\n";
     }
-    $overlay_message_html .= "\t\t</div>\n";
+    $overlay_message_html .= "</div>\n";
 }
 $table_html .= $table_body_html;
 $table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end);
 
-$table_html .= "\t\t\t\t\t</tbody>\n";
-//echo "\t\t\t\t</div>\n";
-$table_foot_html = "\t\t\t\t\t<tfoot>"
+$table_html .= "</tbody>\n";
+//echo "</div>\n";
+$table_foot_html = "<tfoot>"
         //. "<tr class=page-break></tr>"
-        . "\n\t\t\t\t\t\t<tr>\n";
+        . "\n<tr>\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 foreach (array_keys($Roster) as $date_unix) {
@@ -126,11 +126,11 @@ foreach (array_keys($Roster) as $date_unix) {
         $table_foot_html .= "</td><td>";
     }
 }
-$table_foot_html .= "\t\t\t\t\t</tr>\n";
-$table_foot_html .= "\t\t\t\t\t</tfoot>\n";
+$table_foot_html .= "</tr>\n";
+$table_foot_html .= "</tfoot>\n";
 
 $table_html .= $table_foot_html;
-$table_html .= "\t\t\t\t</table>\n\t\t\t"
+$table_html .= "</table>\n"
         . "$weekly_rotation_div_html"
         . "</div>";
 

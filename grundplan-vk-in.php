@@ -134,22 +134,22 @@ echo "<form method='POST' id='change_principle_roster_employee'>";
 echo $submit_button_img;
 echo "</form>";
 
-echo "\t\t\t<table>\n";
-echo "\t\t\t\t<thead>\n";
-echo "\t\t\t\t<tr>\n";
+echo "<table>\n";
+echo "<thead>\n";
+echo "<tr>\n";
 foreach ($Grundplan as $wochentag => $Plan) {
     //Wochentag
-    echo "\t\t\t\t\t<td width=14%>";
+    echo "<td width=14%>";
     echo $Wochentag[$wochentag];
     echo "</td>\n";
 }
 for ($j = 0; $j < $plan_anzahl; ++$j) {
-    echo "\t\t\t\t</tr></thead>";
+    echo "</tr></thead>";
     echo "<tbody><tr>\n";
     //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
     foreach ($Grundplan as $wochentag => $Plan) {
         $zeile = "";
-        echo "\t\t\t\t\t<td>&nbsp;";
+        echo "<td>&nbsp;";
         //Dienstbeginn
         if (isset($Grundplan[$wochentag]["VK"][$j])) {
             $zeile .= "<input type=time name='Grundplan[" . $wochentag . "][Dienstbeginn][$j]' value='";
@@ -174,7 +174,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
 
         //Mittagspause
         $zeile = '';
-        echo "<br>\n\t\t\t\t";
+        echo "<br>\n";
         if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0 and $Grundplan[$wochentag]['Mittagsende'][$j] > 0) {
             $zeile .= " " . gettext("break") . ": ";
             $zeile .= '<input type=time name=Grundplan[' . $wochentag . "][Mittagsbeginn][$j] value=";
@@ -204,9 +204,9 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
             $zeile .= "<select name=Grundplan[$wochentag][Mandant][$j] form='change_principle_roster_employee'>\n";
             foreach ($List_of_branch_objects as $branch_id => $branch_object) {
                 if ($branch_id != $Grundplan[$wochentag]['Mandant'][$j]) {
-                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . '>' . $branch_object->short_name . "</option>\n";
+                    $zeile .= "<option value=" . $branch_id . '>' . $branch_object->short_name . "</option>\n";
                 } else {
-                    $zeile .= "\t\t\t\t\t<option value=" . $branch_id . ' selected>' . $branch_object->short_name . "</option>\n";
+                    $zeile .= "<option value=" . $branch_id . ' selected>' . $branch_object->short_name . "</option>\n";
                 }
             }
         }
@@ -228,7 +228,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         echo "</td>\n";
     }
 }
-echo "\t\t\t\t</tr>\n";
+echo "</tr>\n";
 /*
  * TODO: Write JavaScript Code to allow adding more rows to the form
   echo "<tr>";
@@ -239,10 +239,10 @@ echo "\t\t\t\t</tr>\n";
   echo "</tr>";
  *
  */
-echo "\t\t\t\t</tbody>\n";
-echo "\t\t\t\t<tfoot>\n";
-echo "\t\t\t\t<tr>\n";
-echo "\t\t\t\t\t<td colspan=$tage>\n";
+echo "</tbody>\n";
+echo "<tfoot>\n";
+echo "<tr>\n";
+echo "<td colspan=$tage>\n";
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.
@@ -271,13 +271,13 @@ foreach ($Stunden as $mitarbeiter => $stunden) {
         echo " <b>( " . $differenz . " )</b>";
     }
 }
-echo "\t\t\t\t\t</td>\n";
-echo "\t\t\t\t</tr>\n";
-echo "\t\t\t\t</tfoot>\n";
-echo "\t\t\t</table>\n";
+echo "</td>\n";
+echo "</tr>\n";
+echo "</tfoot>\n";
+echo "</table>\n";
 
-//$submit_button = "\t\t\t\t<input type=submit value=Absenden name=submitGrundplan>\n";echo "$submit_button";
-//echo "\t\t</form>\n";
+//$submit_button = "<input type=submit value=Absenden name=submitGrundplan>\n";echo "$submit_button";
+//echo "</form>\n";
 echo "</div>\n";
 
 require_once 'image_dienstplan_vk.php';

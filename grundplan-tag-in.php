@@ -125,30 +125,30 @@ if (!$session->user_has_privilege('create_roster')) {
 }
 
 //Hier beginnt die Normale Ausgabe.
-echo "\t\t<H1>Grundplan Tagesansicht</H1>\n";
-echo "\t\t<div id=main-area>\n";
+echo "<H1>Grundplan Tagesansicht</H1>\n";
+echo "<div id=main-area>\n";
 echo build_select_branch($mandant, $date_sql);
 
 //Auswahl des Wochentages
-echo "\t\t\t<form id='week_day_form' method=post>\n";
-echo "\t\t\t\t<input type=hidden name=mandant value=" . $mandant . ">\n";
-echo "\t\t\t\t<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
-//echo "\t\t\t\t\t<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
+echo "<form id='week_day_form' method=post>\n";
+echo "<input type=hidden name=mandant value=" . $mandant . ">\n";
+echo "<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
+//echo "<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
 foreach ($Wochentage as $temp_weekday => $value) {
     if ($temp_weekday != $wochentag) {
-        echo "\t\t\t\t\t<option value=" . $temp_weekday . '>' . $value . "</option>\n";
+        echo "<option value=" . $temp_weekday . '>' . $value . "</option>\n";
     } else {
-        echo "\t\t\t\t\t<option value=" . $temp_weekday . ' selected>' . $value . "</option>\n";
+        echo "<option value=" . $temp_weekday . ' selected>' . $value . "</option>\n";
     }
 }
-echo "\t\t\t\t</select>\n\t\t\t</form>\n";
+echo "</select>\n</form>\n";
 
-echo "\t\t\t<div id=navigation_elements>";
+echo "<div id=navigation_elements>";
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
-echo "\t\t\t</div>\n";
-echo "\t\t<form id=principle_roster_form method=post>\n";
-echo "\t\t\t<table>\n";
-echo "\t\t\t\t<tr>\n";
+echo "</div>\n";
+echo "<form id=principle_roster_form method=post>\n";
+echo "<table>\n";
+echo "<tr>\n";
 //Datum
 $zeile = '';
 $zeile .= '<input type=hidden name=Grundplan[' . $wochentag . '][Wochentag][0] value=' . htmlentities($Grundplan[$wochentag]['Wochentag'][0]) . '>';
@@ -157,10 +157,10 @@ echo $zeile;
 //Wochentag
 
 for ($j = 0; $j < $VKcount; ++$j) {
-    echo "\t\t\t\t</tr><tr>\n";
+    echo "</tr><tr>\n";
 //Mitarbeiter
     $zeile = '';
-    echo "\t\t\t\t\t<td>";
+    echo "<td>";
     $zeile .= "<select name=Grundplan[" . $wochentag . "][VK][" . $j . "] tabindex=" . (($wochentag * $VKcount * 5) + ($j * 5) + 1) . "><option value=''>&nbsp;</option>";
     foreach ($List_of_employees as $k => $name) {
         if (isset($Grundplan[$wochentag]['VK'][$j])) {
@@ -177,7 +177,7 @@ for ($j = 0; $j < $VKcount; ++$j) {
     }
     $zeile .= "</select>\n";
     //Dienstbeginn
-    $zeile .= "\t\t\t\t\t\t<input type=hidden name=Grundplan[" . $wochentag . '][Wochentag][' . $j . '] value=';
+    $zeile .= "<input type=hidden name=Grundplan[" . $wochentag . '][Wochentag][' . $j . '] value=';
     if (isset($Grundplan[$wochentag]['Wochentag'][$j])) {
         $zeile .= htmlentities($Grundplan[$wochentag]['Wochentag'][$j]);
     } else {
@@ -185,12 +185,12 @@ for ($j = 0; $j < $VKcount; ++$j) {
     }
 
     $zeile .= ">\n";
-    $zeile .= "\t\t\t\t\t\t<input type=hidden name=Grundplan[" . $wochentag . '][Kommentar][' . $j . '] value="';
+    $zeile .= "<input type=hidden name=Grundplan[" . $wochentag . '][Kommentar][' . $j . '] value="';
     if (isset($Grundplan[$wochentag]['Kommentar'][$j])) {
         $zeile .= htmlentities($Grundplan[$wochentag]['Kommentar'][$j]);
     }
     $zeile .= "\">\n";
-    $zeile .= "\t\t\t\t\t\t<input type=time name=Grundplan[" . $wochentag . '][Dienstbeginn][' . $j . '] tabindex=' . ($wochentag * $VKcount * 5 + $j * 5 + 2) . ' value=';
+    $zeile .= "<input type=time name=Grundplan[" . $wochentag . '][Dienstbeginn][' . $j . '] tabindex=' . ($wochentag * $VKcount * 5 + $j * 5 + 2) . ' value=';
     if (isset($Grundplan[$wochentag]['Dienstbeginn'][$j]) and $Grundplan[$wochentag]['Dienstbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Dienstbeginn'][$j]));
     }
@@ -204,10 +204,10 @@ for ($j = 0; $j < $VKcount; ++$j) {
 
     echo "</td>\n";
 
-    echo "\t\t\t\t</tr><tr>\n";
+    echo "</tr><tr>\n";
 //Mittagspause
     $zeile = '';
-    echo "\t\t\t\t\t<td>";
+    echo "<td>";
     $zeile .= gettext("break") . ": <input type=time name=Grundplan[" . $wochentag . "][Mittagsbeginn][" . $j . "] tabindex='" . ($wochentag * $VKcount * 5 + $j * 5 + 4) . "' value='";
     if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0) {
         $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
@@ -221,15 +221,15 @@ for ($j = 0; $j < $VKcount; ++$j) {
     echo $zeile;
     echo "</td>\n";
 }
-echo "\t\t\t\t</tr>";
+echo "</tr>";
 
-echo "\t\t\t</table>\n";
+echo "</table>\n";
 echo "$submit_button";
-echo "\t\t</form>\n";
+echo "</form>\n";
 if (!empty($Grundplan[$wochentag]["Dienstbeginn"])) {
     //TODO: This does not work yet. PLease check Dienstplan equals Grundplan?
-    echo "\t\t<div class=above-image>\n";
-    echo "\t\t\t<div class=image>\n";
+    echo "<div class=above-image>\n";
+    echo "<div class=image>\n";
     require_once 'image_dienstplan.php';
     $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
     echo $svg_image_dienstplan;
@@ -237,12 +237,12 @@ if (!empty($Grundplan[$wochentag]["Dienstbeginn"])) {
     $svg_image_histogramm = draw_image_histogramm($Dienstplan);
     echo "<br>\n";
     echo $svg_image_histogramm;
-    echo "\t\t\t</div>\n";
-    echo "\t\t</div>\n";
+    echo "</div>\n";
+    echo "</div>\n";
 }
 echo '</div>';
 
 require 'contact-form.php';
 
-echo "\t</body>\n";
+echo "</body>\n";
 echo '</html>';

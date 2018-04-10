@@ -33,7 +33,7 @@ function build_datalist() {
     $result = mysqli_query_verbose($query);
     $datalist = "<datalist id='reasons'>\n";
     while ($row = mysqli_fetch_object($result)) {
-        $datalist .= "\t<option value='$row->reason'>\n";
+        $datalist .= "<option value='$row->reason'>\n";
     }
     $datalist .= "</datalist>\n";
     return $datalist;
@@ -335,8 +335,8 @@ function build_absence_year($year) {
         $p_html .= "</p>\n";
         $month_container_html .= $p_html;
     }
-    $month_container_html .= "\t</div>\n";
-    $month_container_html .= "\t</div><!-- class='year_quarter_container'-->\n";
+    $month_container_html .= "</div>\n";
+    $month_container_html .= "</div><!-- class='year_quarter_container'-->\n";
     $year_container_html .= $month_container_html;
     $year_container_html .= "</div>\n";
     return $year_container_html;
@@ -521,7 +521,7 @@ function build_absence_month($year, $month_number) {
         $p_html .= "</td>\n";
         $week_container_html .= $p_html;
     }
-    $week_container_html .= "\t</tr></table></div>\n";
+    $week_container_html .= "</tr></table></div>\n";
     $month_container_html .= $week_container_html;
 
     return $month_container_html;

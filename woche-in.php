@@ -66,18 +66,18 @@ if ($session->user_has_privilege('approve_roster')) {
     echo "$submit_disapproval_button_img";
     echo "<br><br>\n";
 }
-echo "\t\t\t\t<a href='woche-out.php?datum=" . $datum . "' class=no-print>[" . gettext("Read") . "]</a>\n";
+echo "<a href='woche-out.php?datum=" . $datum . "' class=no-print>[" . gettext("Read") . "]</a>\n";
 echo "<br><br>\n";
 echo "</div>";
 
-echo "\t<table>\n";
-echo "\t\t\t\t\t<thead>\n";
-echo "\t\t\t<tr>\n";
+echo "<table>\n";
+echo "<thead>\n";
+echo "<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     $datum = ($Dienstplan[$i]['Datum'][0]);
     $date_unix = strtotime($datum);
     $zeile = "";
-    echo "\t\t\t\t<td><a href='tag-in.php?datum=" . $Dienstplan[$i]["Datum"][0] . "'>";
+    echo "<td><a href='tag-in.php?datum=" . $Dienstplan[$i]["Datum"][0] . "'>";
     $zeile .= "<input type=hidden size=2 name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">";
     $zeile .= strftime('%d.%m.', strtotime($Dienstplan[$i]["Datum"][0]));
     echo $zeile;
@@ -95,16 +95,16 @@ for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
     echo $zeile;
     echo "</a></td>\n";
 }
-echo "\t\t\t\t\t</tr></thead><tbody><tr>";
+echo "</tr></thead><tbody><tr>";
 
 for ($j = 0; $j < $VKcount; $j++) {
     if (FALSE !== $holiday && !isset($notdienst)) {
         break 1;
     }
-    echo "\t\t\t</tr><tr>\n";
+    echo "</tr><tr>\n";
     for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
         $zeile = "";
-        echo "\t\t\t\t<td>";
+        echo "<td>";
         $zeile .= "<select name=Dienstplan[" . $i . "][VK][" . $j . "] tabindex=" . (($i * $VKcount * 5) + ($j * 5) + 1) . "><option>";
         $zeile .= "</option>";
         foreach ($List_of_employees as $k => $mitarbeiter) {
@@ -132,12 +132,12 @@ for ($j = 0; $j < $VKcount; $j++) {
         $zeile .= "'>";
         echo $zeile;
 
-        echo "\t\t\t\t</td>\n";
+        echo "</td>\n";
     }
-    echo "\t\t\t</tr><tr>\n";
+    echo "</tr><tr>\n";
     for ($i = 0; $i < count($Dienstplan); $i++) {//Mittagspause
         $zeile = "";
-        echo "\t\t\t\t<td>";
+        echo "<td>";
         $zeile .= "<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
         $zeile .= "<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
         $zeile .= " " . gettext("break") . ": <input type=time size=1 name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
@@ -159,22 +159,22 @@ for ($j = 0; $j < $VKcount; $j++) {
         echo "</td>";
     }
 }
-echo "\t\t\t</tr>\n";
-echo "\t\t\t\t\t</tbody>\n";
-//echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t\t<tfoot>"
+echo "</tr>\n";
+echo "</tbody>\n";
+//echo "</div>\n";
+echo "<tfoot>"
 //. "<tr class=page-break></tr>"
  . "\n";
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-echo "\t\t\t<tr>\n";
+echo "<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) {
     $Abwesende = db_lesen_abwesenheit($datum);
     echo build_html_roster_views::build_absentees_column($Abwesende);
 }
-echo "\t\t</tr>\n";
+echo "</tr>\n";
 
-echo "\t</table>\n";
+echo "</table>\n";
 echo "</form>\n";
 
 //Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.

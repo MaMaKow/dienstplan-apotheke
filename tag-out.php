@@ -62,7 +62,7 @@ require 'navigation.php';
 require 'src/php/pages/menu.php';
 
 
-echo "\t\t<div id=main-area>\n";
+echo "<div id=main-area>\n";
 
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
@@ -73,18 +73,18 @@ echo build_html_navigation_elements::build_button_day_forward($date_unix);
 echo build_html_navigation_elements::build_button_open_edit_version('tag-in.php', $date_sql);
 echo "<br><br>\n";
 echo build_html_navigation_elements::build_input_date($date_sql);
-echo "\t\t\t\t</div>\n";
-echo "\t\t\t\t<div id=roster_table_div>\n";
-echo "\t\t\t\t<table id=roster_table>\n";
-echo "\t\t\t\t\t<tr>\n";
+echo "</div>\n";
+echo "<div id=roster_table_div>\n";
+echo "<table id=roster_table>\n";
+echo "<tr>\n";
 for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this is just one day.//Datum
     $date_unix = strtotime($Dienstplan[$i]["Datum"][0]);
     $zeile = "";
-    echo "\t\t\t\t\t\t<td>\n";
+    echo "<td>\n";
     $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">\n";
     $zeile .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">\n";
     $zeile .= strftime('%A, %d.%m. ', $date_unix);
-    $zeile .= "\t\t\t<a href='woche-out.php?datum=" . $date_sql . "'>" . gettext("calendar week") . strftime(' %V', strtotime($date_sql)) . "</a>\n";
+    $zeile .= "<a href='woche-out.php?datum=" . $date_sql . "'>" . gettext("calendar week") . strftime(' %V', strtotime($date_sql)) . "</a>\n";
     echo $zeile;
     $holiday = holidays::is_holiday($date_unix);
     if (FALSE !== $holiday) {
@@ -106,7 +106,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
 if ($approval == "approved" OR $config['hide_disapproved'] == false) {
 
     echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
-    echo "\t\t\t\t\t<tr><td></td></tr>\n";
+    echo "<tr><td></td></tr>\n";
     //require_once 'schreiben-tabelle.php';
 
     echo build_html_roster_views::build_roster_readonly_branch_table_rows($branch_id, $date_sql, $date_sql);
@@ -115,20 +115,20 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
         echo build_html_roster_views::build_absentees_row($Abwesende);
     }
 }
-echo "\t\t\t\t\t</table>\n";
-echo "\t\t\t\t</div>\n";
+echo "</table>\n";
+echo "</div>\n";
 
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empty($Dienstplan[0]["Dienstbeginn"])) {
-    echo "\t\t\t<div id=roster_image_div class=image>\n";
+    echo "<div id=roster_image_div class=image>\n";
     echo roster_image_bar_plot::draw_image_dienstplan($Roster);
     echo "<br>\n";
     echo "<br>\n";
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
     echo roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_sql);
-    echo "\t\t\t</div>\n";
+    echo "</div>\n";
 }
 
-echo "\t\t</div>\n";
+echo "</div>\n";
 
 require 'contact-form.php';
 ?>

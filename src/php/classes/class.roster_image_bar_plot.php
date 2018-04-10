@@ -79,13 +79,13 @@ abstract class roster_image_bar_plot {
                 $y_pos_text = $font_size;
                 $y_pos_grid_start = $outer_margin_y;
                 $y_pos_grid_end = $outer_margin_y + $svg_inner_height;
-                $svg_grid_text .= "\t<line x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end' stroke-dasharray='1, 8' style='stroke:black;stroke-width:2' />\n";
-                $svg_grid_text .= "\t<line x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' stroke-dasharray='1, 16' style='stroke:black;stroke-width:2' />\n";
-                $svg_grid_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
-                $svg_grid_text .= "\t\t<text x='$x_pos_text' y='$svg_outer_height' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
+                $svg_grid_text .= "<line x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end' stroke-dasharray='1, 8' style='stroke:black;stroke-width:2' />\n";
+                $svg_grid_text .= "<line x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' stroke-dasharray='1, 16' style='stroke:black;stroke-width:2' />\n";
+                $svg_grid_text .= "<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
+                $svg_grid_text .= "<text x='$x_pos_text' y='$svg_outer_height' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
             }
             //draw the bars from start to end for every employee
-            $svg_box_text = "\t<!--Boxes-->\n";
+            $svg_box_text = "<!--Boxes-->\n";
             foreach ($Roster_day_array as $line => $roster_item) {
                 $employee_id = $roster_item->employee_id;
                 $dienst_beginn = $roster_item->duty_start_int / 3600;
@@ -123,7 +123,7 @@ abstract class roster_image_bar_plot {
                 $break_width = $break_width_in_hours * $bar_width_factor;
                 //$x_pos_text_secondary = $x_pos_text + $width;
                 //$svg_box_text .= "<g id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' style='cursor: $cursor_style_box; border: 1px solid black;'>";
-                //$svg_box_text .= "\t<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];' />\n";
+                //$svg_box_text .= "<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];' />\n";
                 $svg_box_text .= "<foreignObject id=work_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='cursor: $cursor_style_box;'>"
                         . "<p xmlns='http://www.w3.org/1999/xhtml' style='background-color: $Worker_style[$worker_style]; margin-top: 0px;'>"
                         . $List_of_employees[$employee_id]
@@ -131,15 +131,15 @@ abstract class roster_image_bar_plot {
                         . "</p>"
                         . "</foreignObject>";
                 /*
-                  $svg_box_text .= "\t<foreignObject x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];' >"
+                  $svg_box_text .= "<foreignObject x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];' >"
                   . "<p xmlns='http://www.w3.org/1999/xhtml'>Test</p>"
                   . "</foreignObject>\n";
 
                  */
-                //$svg_box_text .= "\t\t<text x='$x_pos_text' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>" . $List_of_employees[$employee_id] . "</text>\n";
-                //$svg_box_text .= "\t\t<text x='$x_pos_text_secondary' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
+                //$svg_box_text .= "<text x='$x_pos_text' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>" . $List_of_employees[$employee_id] . "</text>\n";
+                //$svg_box_text .= "<text x='$x_pos_text_secondary' y='$y_pos_text' class='noselect' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
 
-                $svg_box_text .= "\t<rect id=break_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $cursor_style_break_box;' />\n";
+                $svg_box_text .= "<rect id=break_box_$line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $cursor_style_break_box;' />\n";
             }
             $svg_text .= $svg_box_text;
             $svg_text .= $svg_grid_text;

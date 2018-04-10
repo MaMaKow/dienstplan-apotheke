@@ -30,22 +30,22 @@
  */
 function build_warning_messages($Fehlermeldung, $Warnmeldung) {
     if (isset($Fehlermeldung) or isset($Warnmeldung)) {
-        $text_html = "\t\t\t<div class='error_container no-print'>\n";
+        $text_html = "<div class='error_container no-print'>\n";
         if (isset($Fehlermeldung)) {
-            $text_html .= "\t\t\t\t<div class=errormsg>\n";
+            $text_html .= "<div class=errormsg>\n";
             foreach ($Fehlermeldung as $fehler) {
-                $text_html .= "\t\t\t\t\t<H1>" . $fehler . "</H1>\n";
+                $text_html .= "<H1>" . $fehler . "</H1>\n";
             }
-            $text_html .= "\t\t\t\t</div>\n";
+            $text_html .= "</div>\n";
         }
         if (isset($Warnmeldung)) {
-            $text_html .= "\t\t\t\t<div class=warningmsg>\n";
+            $text_html .= "<div class=warningmsg>\n";
             foreach ($Warnmeldung as $warnung) {
-                $text_html .= "\t\t\t\t\t<H2>" . $warnung . "</H2>\n";
+                $text_html .= "<H2>" . $warnung . "</H2>\n";
             }
-            $text_html .= "\t\t\t\t</div>\n";
+            $text_html .= "</div>\n";
         }
-        $text_html .= "\t\t\t</div>\n";
+        $text_html .= "</div>\n";
         if (!empty($text_html)) {
             return $text_html;
         } else {

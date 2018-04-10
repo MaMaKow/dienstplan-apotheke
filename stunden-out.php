@@ -13,31 +13,31 @@ $sql_query = "SELECT * FROM `Stunden`
 				";
 $result = mysqli_query_verbose($sql_query);
 $number_of_rows = mysqli_num_rows($result);
-$tablebody = "\t\t\t<tbody>\n";
+$tablebody = "<tbody>\n";
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
-    $tablebody .= "\t\t\t<tr>\n";
-    $tablebody .= "\t\t\t\t<td>";
+    $tablebody .= "<tr>\n";
+    $tablebody .= "<td>";
     $tablebody .= "<a href='tag-out.php?datum=" . date("Y-m-d", strtotime($row->Datum)) . "'>" . date("d.m.Y", strtotime($row->Datum)) . "</a>";
     $tablebody .= "</td>\n";
-    $tablebody .= "\t\t\t\t<td>";
+    $tablebody .= "<td>";
     $tablebody .= "$row->Grund";
     $tablebody .= "</td>\n";
-    $tablebody .= "\t\t\t\t<td>";
+    $tablebody .= "<td>";
     $tablebody .= "$row->Stunden";
     $tablebody .= "</td>\n";
     if ($i == $number_of_rows) {
-        $tablebody .= "\t\t\t\t<td id=saldoAlt>";
+        $tablebody .= "<td id=saldoAlt>";
     } else {
-        $tablebody .= "\t\t\t\t<td>";
+        $tablebody .= "<td>";
     }
     $tablebody .= "$row->Saldo";
     $saldo = $row->Saldo; //Wir tragen den Saldo mit uns fort.
-    $tablebody .= "\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t</tr>\n";
+    $tablebody .= "</td>\n";
+    $tablebody .= "</tr>\n";
     $i++;
 }
-$tablebody .= "\t\t\t</tbody>\n";
+$tablebody .= "</tbody>\n";
 
 //Hier beginnt die Ausgabe
 require 'head.php';
@@ -46,19 +46,19 @@ require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 
 echo build_select_employee($employee_id, $List_of_employees);
-echo "\t\t\t<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[" . gettext("Edit") . "]</a><br><br></div>\n";
-echo "\t\t<table>\n";
+echo "<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[" . gettext("Edit") . "]</a><br><br></div>\n";
+echo "<table>\n";
 //Überschrift
-echo "\t\t\t<thead><tr>\n" .
- "\t\t\t\t<th>Datum</th>\n" .
- "\t\t\t\t<th>Grund</th>\n" .
- "\t\t\t\t<th>Stunden</th>\n" .
- "\t\t\t\t<th>Saldo</th>\n" .
- "\t\t\t</tr></thead>\n";
+echo "<thead><tr>\n" .
+ "<th>Datum</th>\n" .
+ "<th>Grund</th>\n" .
+ "<th>Stunden</th>\n" .
+ "<th>Saldo</th>\n" .
+ "</tr></thead>\n";
 //Ausgabe
 echo "$tablebody";
-echo "\t\t</table>\n";
-echo "\t</form>\n";
+echo "</table>\n";
+echo "</form>\n";
 echo "</div>\n";
 require 'contact-form.php';
 ?>

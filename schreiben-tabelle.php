@@ -27,7 +27,7 @@ function schreiben_tabelle($Dienstplan, $branch) {
          * break 1;
          * }
          */
-        $table_html .= "\t\t\t\t<tr>\n";
+        $table_html .= "<tr>\n";
         for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
             /*
              * The following lines check for the state of approval.
@@ -61,7 +61,7 @@ function schreiben_tabelle($Dienstplan, $branch) {
                      */
                 }
             }
-            $table_html .= "\t\t\t\t\t<td>";
+            $table_html .= "<td>";
             if ($approval == "approved" OR $config['hide_disapproved'] == false) {
                 $zeile = "";
                 if (isset($Dienstplan[$i]["VK"][$j]) && isset($List_of_employees[$Dienstplan[$i]["VK"][$j]])) {
@@ -101,7 +101,7 @@ function schreiben_tabelle($Dienstplan, $branch) {
                 $table_html .= $zeile;
                 //	Mittagspause
                 $zeile = "";
-                $table_html .= "\t\t\t\t<br>\n";
+                $table_html .= "<br>\n";
                 if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
                     $zeile .= " " . gettext("break") . ": ";
                     $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
@@ -116,6 +116,6 @@ function schreiben_tabelle($Dienstplan, $branch) {
             $table_html .= "</td>\n";
         }
     }
-    $table_html .= "\t\t\t\t</tr>\n";
+    $table_html .= "</tr>\n";
     return $table_html;
 }

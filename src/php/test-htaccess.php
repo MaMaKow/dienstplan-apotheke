@@ -73,7 +73,7 @@ function test_folders($Folders) {
 }
 
 function build_error_message($error_message_text) {
-    $error_message_html = "\t<div class=warningmsg>" . $error_message_text . "</div>\n";
+    $error_message_html = "<div class=warningmsg>" . $error_message_text . "</div>\n";
     return $error_message_html;
 }
 

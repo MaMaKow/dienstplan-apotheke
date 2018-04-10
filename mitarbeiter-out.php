@@ -37,23 +37,23 @@ require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "\t\t<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
+echo "<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
 
 echo build_select_employee($employee_id, $List_of_employees);
 
 //Navigation between the weeks:
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
-echo "\t\t\t<table>\n";
-echo "\t\t\t\t<thead>\n";
-echo "\t\t\t\t<tr>\n";
+echo "<table>\n";
+echo "<thead>\n";
+echo "<tr>\n";
 for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strtotime('+ 1 day', $date_unix))) {
     $date_unix = strtotime($date_sql);
     $holiday = holidays::is_holiday($date_unix);
     $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
     $Abwesende = db_lesen_abwesenheit($date_sql);
     $zeile = '';
-    echo "\t\t\t\t\t<td>";
+    echo "<td>";
 //Datum
     echo "<a href='tag-out.php?datum=" . $Dienstplan[$tag]['Datum'][0] . "'";
     if (FALSE !== $having_emergency_service) {
@@ -80,13 +80,13 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     }
 //	echo "</td>\n";
 //}
-//echo "\t\t\t\t</tr><tr>\n";
-    echo "\t\t\t\t<br>\n";
+//echo "</tr><tr>\n";
+    echo "<br>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)
 //{//Wochentag
     $zeile = '';
-//	echo "\t\t\t\t\t<td style=width:20%>";
-//	echo "\t\t\t\t\t<td>";
+//	echo "<td style=width:20%>";
+//	echo "<td>";
     $zeile .= strftime('%A', strtotime($Dienstplan[$tag]['Datum'][0]));
     echo $zeile;
     echo '</a>';
@@ -104,10 +104,10 @@ for ($tag = 0; $tag < count($Dienstplan); $tag++, $date_sql = date('Y-m-d', strt
     echo '</td>';
 }
 for ($j = 0; $j < $plan_anzahl; ++$j) {
-    echo "\t\t\t\t</tr></thead><tr>\n";
+    echo "</tr></thead><tr>\n";
     for ($i = 0; $i < count($Dienstplan); ++$i) {
         $zeile = '';
-        echo "\t\t\t\t\t<td>";
+        echo "<td>";
 //Dienstbeginn
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Dienstbeginn'][$j] > 0) {
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Dienstbeginn'][$j]));
@@ -121,7 +121,7 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         echo $zeile;
 
 //Mittagspause
-        $zeile = "<br>\n\t\t\t\t";
+        $zeile = "<br>\n";
         if (isset($Dienstplan[$i]['VK'][$j]) and $Dienstplan[$i]['Mittagsbeginn'][$j] > 0) {
             $zeile .= " " . gettext("break") . ": ";
             $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]['Mittagsbeginn'][$j]));
@@ -145,10 +145,10 @@ for ($j = 0; $j < $plan_anzahl; ++$j) {
         echo "</td>\n";
     }
 }
-echo "\t\t\t\t</tr>\n";
-echo "\t\t\t\t<tfoot>\n";
-echo "\t\t\t\t<tr>\n";
-echo "\t\t\t\t\t<td colspan=$tage>\n";
+echo "</tr>\n";
+echo "<tfoot>\n";
+echo "<tr>\n";
+echo "<td colspan=$tage>\n";
 //for ($tag=0; $tag<count($Dienstplan); $tag++)
 foreach (array_keys($Dienstplan) as $day_number) {
     foreach ($Dienstplan[$day_number]['Stunden'] as $key => $stunden) {
@@ -179,10 +179,10 @@ foreach ($Stunden as $mitarbeiter => $stunden) {
         }
     }
 }
-echo "\t\t\t\t\t</td>\n";
-echo "\t\t\t\t</tr>\n";
-echo "\t\t\t\t</tfoot>\n";
-echo "\t\t\t</table>\n";
+echo "</td>\n";
+echo "</tr>\n";
+echo "</tfoot>\n";
+echo "</table>\n";
 
 //Jetzt wird ein Bild gezeichnet, dass den Stundenplan des Mitarbeiters wiedergibt.
 foreach (array_keys($Dienstplan) as $tag) {

@@ -24,7 +24,7 @@ require 'head.php';
     <tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
     <?php
     foreach ($Notdienste['Datum'] as $key => $datum) {
-        echo "\n\t\t\t\t<tr><td>" . date('d.m.Y', strtotime($Notdienste['Datum'][$key])) . '</td>';
+        echo "\n<tr><td>" . date('d.m.Y', strtotime($Notdienste['Datum'][$key])) . '</td>';
         echo '<td>';
         echo (isset($List_of_employees[$Notdienste['VK'][$key]])) ? $List_of_employees[$Notdienste['VK'][$key]] : "";
         echo '</td>';

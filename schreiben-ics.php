@@ -39,8 +39,8 @@ function schreiben_ics($Dienstplan) {
                 $textICS .= "BEGIN:VEVENT\n";
                 $textICS .= "METHOD:REQUEST\n";
                 $textICS .= "UID:$datum-$vk-$branch_id-$same_employee_count[$vk]@martin-mandelkow.de\n";
-                $textICS .= "DTSTAMP:" . gmdate('Ymd\THis\Z') . "\n";
-                $textICS .= "LAST-MODIFIED:" . gmdate('Ymd\THis\Z') . "\n";
+                $textICS .= "DTSTAMP:" . gmdate('YmdHis\Z') . "\n";
+                $textICS .= "LAST-MODIFIED:" . gmdate('YmdHis\Z') . "\n";
                 $textICS .= "ORGANIZER;CN=$branch_manager:MAILTO:$administrator_email\n";
                 $textICS .= "DTSTART;TZID=Europe/Berlin:" . date('Ymd', strtotime($datum)) . "T" . date('His', strtotime($dienstbeginn)) . "\n";
                 $textICS .= "DTEND;TZID=Europe/Berlin:" . date('Ymd', strtotime($datum)) . "T" . date('His', strtotime($dienstende)) . "\n";
