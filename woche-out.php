@@ -59,7 +59,6 @@ $buttons_div_html = "";
 $buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= build_html_navigation_elements::build_button_week_backward($date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_button_week_forward($date_sql);
-$buttons_div_html .= build_html_navigation_elements::build_button_open_edit_version('woche-in.php', $date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_input_date($date_sql);
 $buttons_div_html .= "</div>";
 $duty_roster_form_html .= $buttons_div_html;

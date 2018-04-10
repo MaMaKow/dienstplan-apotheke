@@ -7,14 +7,6 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>woche-out.php><?= gettext("Weekly view") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/week_2.svg class="inline-image" alt="week-button" title="Show week">
             </a>
-            <ul>
-                <li>
-                    <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>woche-in.php><?= gettext("Weekly view input") ?>
-                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
-                    </a>
-                    <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>woche-out.php><?= gettext("Weekly view output") ?></a>
-                </li>
-            </ul>
         </li>
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>tag-out.php><?= gettext("Daily view") ?>
