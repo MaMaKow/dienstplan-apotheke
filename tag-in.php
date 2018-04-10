@@ -53,7 +53,6 @@ if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
 
 
 
-//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
 $VKmax = max(array_keys($List_of_employees));
 
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
@@ -67,80 +66,77 @@ require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
+$html_text = "";
 
 //Hier beginnt die Normale Ausgabe.
-echo "<div id=main-area>\n";
+$html_text .= "<div id=main-area>\n";
 
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
-echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+$html_text .= build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
-echo "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
-echo build_select_branch($branch_id, $date_sql);
+$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
+$html_text .= "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
+$html_text .= build_select_branch($branch_id, $date_sql);
 
 
-echo "<div id=navigation_elements>";
-echo build_html_navigation_elements::build_button_day_backward($date_unix);
-echo build_html_navigation_elements::build_button_day_forward($date_unix);
-echo build_html_navigation_elements::build_button_submit('roster_form');
+$html_text .= "<div id=navigation_elements>";
+$html_text .= build_html_navigation_elements::build_button_day_backward($date_unix);
+$html_text .= build_html_navigation_elements::build_button_day_forward($date_unix);
+$html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 if ($session->user_has_privilege('approve_roster')) {
-    echo build_html_navigation_elements::build_button_approval();
-    echo build_html_navigation_elements::build_button_disapproval();
+    $html_text .= build_html_navigation_elements::build_button_approval();
+    $html_text .= build_html_navigation_elements::build_button_disapproval();
 }
-echo build_html_navigation_elements::build_button_open_readonly_version('tag-out.php', $date_sql);
-echo "</div>\n";
-echo build_html_navigation_elements::build_input_date($date_sql);
-echo "<form id='roster_form' method=post>\n";
-echo "<table>\n";
-echo "<tr>\n";
-//TODO: This loop probably is not necessary. Is there any case where $i ist not 0?
-$zeile = "";
-echo "<td>";
-$zeile .= "<input type=hidden name=datum value=" . $date_sql . ">";
-$zeile .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
-$zeile .= strftime('%d.%m. ', $date_unix);
-echo $zeile;
+$html_text .= build_html_navigation_elements::build_button_open_readonly_version('tag-out.php', $date_sql);
+$html_text .= "</div>\n";
+$html_text .= build_html_navigation_elements::build_input_date($date_sql);
+$html_text .= "<form id='roster_form' method=post>\n";
+$html_text .= "<table>\n";
+$html_text .= "<tr>\n";
+$html_text .= "<td>";
+$html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
+$html_text .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
+$html_text .= strftime('%d.%m. ', $date_unix);
 //Wochentag
-$zeile = "";
-$zeile .= strftime('%A ', $date_unix);
-echo $zeile;
+$html_text .= strftime('%A ', $date_unix);
 if (FALSE !== $holiday) {
-    echo " " . $holiday . " ";
+    $html_text .= " " . $holiday . " ";
 }
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
-    if (isset($List_of_employees[$notdienst['employee_id']])) {
-        echo "<br>NOTDIENST<br>" . $List_of_employees[$notdienst['employee_id']] . " / " . $List_of_branch_objects[$notdienst['branch_id']]->name;
+    if (isset($List_of_employees[$having_emergency_service['employee_id']])) {
+        $html_text .= "<br>NOTDIENST<br>" . $List_of_employees[$having_emergency_service['employee_id']] . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     } else {
-        echo "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$notdienst['branch_id']]->name;
+        $html_text .= "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     }
 }
-echo "</td>\n";
-echo "</tr>\n";
+$html_text .= "</td>\n";
+$html_text .= "</tr>\n";
 $max_employee_count = roster::calculate_max_employee_count($Roster);
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
-    echo "<tr>\n";
+    $html_text .= "<tr>\n";
     foreach (array_keys($Roster) as $day_iterator) {
-        echo build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $date_unix, $branch_id);
+        $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $date_unix, $branch_id);
     }
-    echo "</tr>\n";
+    $html_text .= "</tr>\n";
 }
 
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-echo build_html_roster_views::build_absentees_row($Abwesende);
-echo "</table>\n";
-echo "</form>\n";
+$html_text .= build_html_roster_views::build_absentees_row($Abwesende);
+$html_text .= "</table>\n";
+$html_text .= "</form>\n";
 
 
 if (!empty($Roster)) {
-    echo "<div class=image>\n";
-    echo roster_image_bar_plot::draw_image_dienstplan($Roster);
-    echo "<br>\n";
-    echo roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_sql);
-    echo "</div>\n";
+    $html_text .= "<div class=image>\n";
+    $html_text .= roster_image_bar_plot::draw_image_dienstplan($Roster);
+    $html_text .= "<br>\n";
+    $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_sql);
+    $html_text .= "</div>\n";
 }
-echo "</div>";
+$html_text .= "</div>";
+echo "$html_text";
 
 require 'contact-form.php';
 
