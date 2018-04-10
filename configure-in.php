@@ -131,14 +131,14 @@ if ($error_all <= $config['error_reporting']) {
 $datalist_encodings = "<datalist id='encodings'>\n";
 $supported_encodings = mb_list_encodings();
 foreach ($supported_encodings as $key => $supported_encoding) {
-  $datalist_encodings .= "\t<option value='$supported_encoding'>\n";
+  $datalist_encodings .= "<option value='$supported_encoding'>\n";
 }
 $datalist_encodings .= "</datalist>\n";
 //Get a list of supported locales:
 $datalist_locales = "<datalist id='locales'>\n";
 exec("locale -a", $exec_result);
 foreach ($exec_result as $key => $installed_locale) {
-  $datalist_locales .= "\t<option value='$installed_locale'>\n";
+  $datalist_locales .= "<option value='$installed_locale'>\n";
 }
 $datalist_locales .= "</datalist>\n";
 

@@ -27,19 +27,19 @@ require 'src/php/pages/menu.php';
 //Hier beginnt die Normale Ausgabe.
 echo "<div class='main-area no-print'>\n";
 echo build_select_branch($mandant, $date_sql);
-echo "\t\t<form id=navigation_form method=post>\n";
-echo "\t\t\t<div id=navigation_elements>";
+echo "<form id=navigation_form method=post>\n";
+echo "<div id=navigation_elements>";
 echo "$backward_button_week_img";
 echo "$forward_button_week_img";
 echo "<input type=hidden size=2 name=Dienstplan[0][Datum][0] value=" . htmlentities($Dienstplan[0]["Datum"][0]) . ">";
 echo "<br><br>\n";
 
-echo "\t\t\t</div>\n";
-echo "\t\t\t<div class=no-print id=wochenAuswahl>\n";
-echo "\t\t\t\t<input name=date_sql type=date value=" . date('Y-m-d', strtotime($datum)) . ">\n";
-echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
-echo "\t\t\t</div>\n";
-echo "\t\t</form>\n";
+echo "</div>\n";
+echo "<div class=no-print id=wochenAuswahl>\n";
+echo "<input name=date_sql type=date value=" . date('Y-m-d', strtotime($datum)) . ">\n";
+echo "<input type=submit name=tagesAuswahl value=Anzeigen>\n";
+echo "</div>\n";
+echo "</form>\n";
 echo "</div>";
 
 //echo "<br><br><pre>"; var_export(array_column($Dienstplan, 'VK')); echo "</pre>";
@@ -51,8 +51,8 @@ if (!empty(array_column($Dienstplan, 'VK'))) {
     $svg_height = $svg_width / sqrt(2);
     $roster_plot_div_height = "calc($svg_height px + 2em)";
     foreach ($Dienstplan as $day => $Column) {
-        echo "\t\t<div class=above-image style='$image_div_style'>\n";
-        echo "\t\t\t<div class=roster_plot_div style='height:$roster_plot_div_height'>\n";
+        echo "<div class=above-image style='$image_div_style'>\n";
+        echo "<div class=roster_plot_div style='height:$roster_plot_div_height'>\n";
         echo "<a href='tag-out.php?datum=" . $Dienstplan[$day]["Datum"][0] . "'>";
         echo strftime('%A, %d.%m.%Y', strtotime($Dienstplan[$day]['Datum'][0])) . " </a><br>\n";
         if (empty(array_sum($Dienstplan[$day]['VK']))) {
@@ -61,8 +61,8 @@ if (!empty(array_column($Dienstplan, 'VK'))) {
             $Plan[0] = $Dienstplan[$day];
             echo draw_image_dienstplan($Plan, $svg_width, $svg_height);
         }
-        echo "\t\t\t</div>\n";
-        echo "\t\t</div>\n";
+        echo "</div>\n";
+        echo "</div>\n";
         $image_div_style = 'clear: none';
     }
 }
@@ -70,5 +70,5 @@ if (!empty(array_column($Dienstplan, 'VK'))) {
 
 require 'contact-form.php';
 
-echo "\t</body>\n";
+echo "</body>\n";
 echo "</html>";

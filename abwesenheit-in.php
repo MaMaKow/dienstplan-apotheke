@@ -83,57 +83,57 @@ $number_of_rows = mysqli_num_rows($result);
 $tablebody = '';
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
-    $tablebody .= "\t\t\t<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
+    $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
             . "<form method=POST id='change_absence_entry_" . $row->start . "'>"
-            . "\n\t\t\t\t";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=beginn_out_" . $row->start . ">";
+            . "\n";
+    $tablebody .= "<td>\n<div id=beginn_out_" . $row->start . ">";
     $tablebody .= date('d.m.Y', strtotime($row->start)) . "</div>";
     $tablebody .= "<input id=beginn_in_" . $row->start . " style='display: none;' type=date name='beginn' value=" . date('Y-m-d', strtotime($row->start)) . " form='change_absence_entry_" . $row->start . "'> ";
     $tablebody .= "<input id=beginn_in_old_" . $row->start . " style='display: none;' type=date name='beginn_old' value=" . date('Y-m-d', strtotime($row->start)) . " form='change_absence_entry_" . $row->start . "'> ";
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=ende_out_" . $row->start . " form='change_absence_entry_" . $row->start . "'>";
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "<td>\n<div id=ende_out_" . $row->start . " form='change_absence_entry_" . $row->start . "'>";
     $tablebody .= date('d.m.Y', strtotime($row->end)) . "</div>";
     $tablebody .= "<input id=ende_in_" . $row->start . " style='display: none;' type=date name='ende' value=" . date('Y-m-d', strtotime($row->end)) . " form='change_absence_entry_" . $row->start . "'> ";
-    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\n</td>\n";
     if ($i == $number_of_rows) {
-        $tablebody .= "\t\t\t\t<td id=letzterGrund><div id=grund_out_" . $row->start . ">\n\t\t\t\t\t";
+        $tablebody .= "<td id=letzterGrund><div id=grund_out_" . $row->start . ">\n";
     } else {
-        $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t<div id=grund_out_" . $row->start . ">";
+        $tablebody .= "<td>\n<div id=grund_out_" . $row->start . ">";
     }
     $tablebody .= "$row->reason" . "</div>";
     $tablebody .= "<input id=grund_in_" . $row->start . " style='display: none;' list='reasons' type=text name='grund' value='" . $row->reason . "' form='change_absence_entry_" . $row->start . "'> ";
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "<td>\n";
     $tablebody .= "$row->days";
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "<td>\n";
     $tablebody .= "$row->approval";
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t\t<td style='font-size: 1em; height: 1em'>\n"
-            . "\t\t\t\t\t<input hidden name='employee_id' value='$employee_id' form='change_absence_entry_" . $row->start . "'>\n"
-            . "\t\t\t\t\t<button type=submit id=delete_" . $row->start . " class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
-            . "\t\t\t\t\t\t<img src='img/delete.png' alt='Diese Zeile löschen'>\n"
-            . "\t\t\t\t\t</button>\n"
-            . "\t\t\t\t\t<button type=button id=cancel_" . $row->start . " class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"" . $row->start . "\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
-            . "\t\t\t\t\t\t<img src='img/delete.png' alt='Bearbeitung abbrechen'>\n"
-            . "\t\t\t\t\t</button>\n"
-            . "\t\t\t\t\t<button type=button id=edit_" . $row->start . " class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"" . $row->start . "\")'>\n"
-            . "\t\t\t\t\t\t<img src='img/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
-            . "\t\t\t\t\t</button>\n"
-            . "\t\t\t\t\t<button type='submit' id='save_" . $row->start . "' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
-            . "\t\t\t\t\t\t<img src='img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
-            . "\t\t\t\t\t</button>\n"
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "<td style='font-size: 1em; height: 1em'>\n"
+            . "<input hidden name='employee_id' value='$employee_id' form='change_absence_entry_" . $row->start . "'>\n"
+            . "<button type=submit id=delete_" . $row->start . " class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
+            . "<img src='img/delete.png' alt='Diese Zeile löschen'>\n"
+            . "</button>\n"
+            . "<button type=button id=cancel_" . $row->start . " class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"" . $row->start . "\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
+            . "<img src='img/delete.png' alt='Bearbeitung abbrechen'>\n"
+            . "</button>\n"
+            . "<button type=button id=edit_" . $row->start . " class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"" . $row->start . "\")'>\n"
+            . "<img src='img/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
+            . "</button>\n"
+            . "<button type='submit' id='save_" . $row->start . "' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+            . "<img src='img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
+            . "</button>\n"
             . "";
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t</form>\n"
-            . "\t\t\t</tr>\n";
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "</form>\n"
+            . "</tr>\n";
     ++$i;
 }
 $sql_query = "SELECT `reason` FROM `absence`  GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
 $result = mysqli_query_verbose($sql_query);
 $datalist = "<datalist id='reasons'>\n";
 while ($row = mysqli_fetch_object($result)) {
-    $datalist .= "\t<option value='$row->reason'>\n";
+    $datalist .= "<option value='$row->reason'>\n";
 }
 $datalist .= "</datalist>\n";
 
@@ -151,75 +151,75 @@ echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 if (isset($Feiertagsmeldung)) {
-    echo "\t\t<div class=error_container>\n";
-    echo "\t\t\t<div class=warningmsg>\n<H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
+    echo "<div class=error_container>\n";
+    echo "<div class=warningmsg>\n<H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
     foreach ($Feiertagsmeldung as $holiday) {
-        echo "\t\t\t\t<p>" . $holiday . "</p>\n";
+        echo "<p>" . $holiday . "</p>\n";
     }
-    echo "\t\t\t</div>\n";
-    echo "\t\t</div>\n";
+    echo "</div>\n";
+    echo "</div>\n";
 }
 echo build_select_employee($employee_id, $List_of_employees);
 
 echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[" . gettext("Read") . "]</a>";
-echo "\t\t\n";
-echo "\t\t<table id=absence_table>\n";
+echo "\n";
+echo "<table id=absence_table>\n";
 //Überschrift
-echo "\t\t\t<thead>\n"
- . "\t\t\t<tr>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\tBeginn\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\tEnde\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\tGrund\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\tTage\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
+echo "<thead>\n"
+ . "<tr>\n"
+ . "<th>\n"
+ . "Beginn\n"
+ . "</th>\n"
+ . "<th>\n"
+ . "Ende\n"
+ . "</th>\n"
+ . "<th>\n"
+ . "Grund\n"
+ . "</th>\n"
+ . "<th>\n"
+ . "Tage\n"
+ . "</th>\n"
+ . "<th>\n"
  . ""
- . "\t\t\t\t</th>\n"
- . "\t\t\t</tr>\n"
- . "\t\t\t</thead>\n";
+ . "</th>\n"
+ . "</tr>\n"
+ . "</thead>\n";
 //Ausgabe
-echo "\t\t\t<tbody>\n"
+echo "<tbody>\n"
  . "$tablebody"
- . "\t\t\t</tbody>\n";
-//echo "\t\t</form>\n";
+ . "</tbody>\n";
+//echo "</form>\n";
 //Eingabe. Der Saldo wird natürlich berechnet.
-echo "\t\t\t<tfoot>"
- . "\t\t\n";
+echo "<tfoot>"
+ . "\n";
 echo "";
-echo "\t\t\t<tr class=no-print id=input_line_new>\n"
- . "\t\t\t<form method=POST id='new_absence_entry'>\n";
-echo "\t\t\t\t<td>\n\t\t\t\t\t"
- . "\t\t\t\t\t<input type=hidden name=employee_id value=$employee_id form='new_absence_entry'>\n";
-echo "\t\t\t\t\t<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=" . date("Y-m-d") . " form='new_absence_entry'>";
-echo "\n\t\t\t\t</td>\n";
-echo "\t\t\t\t<td>\n\t\t\t\t\t";
+echo "<tr class=no-print id=input_line_new>\n"
+ . "<form method=POST id='new_absence_entry'>\n";
+echo "<td>\n"
+ . "<input type=hidden name=employee_id value=$employee_id form='new_absence_entry'>\n";
+echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=" . date("Y-m-d") . " form='new_absence_entry'>";
+echo "\n</td>\n";
+echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
-echo "\n\t\t\t\t</td>\n";
-echo "\t\t\t\t<td>\n\t\t\t\t\t";
+echo "\n</td>\n";
+echo "<td>\n";
 echo "<input list='reasons' name=grund form='new_absence_entry'>";
 echo "$datalist";
-echo "\n\t\t\t\t</td>\n";
-echo "\t\t\t\t<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>\n\t\t\t\t\t";
+echo "\n</td>\n";
+echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>\n";
 echo "1";
-echo "\n\t\t\t\t</td>\n";
-echo "\t\t\t\t<td>\n";
+echo "\n</td>\n";
+echo "<td>\n";
 echo "";
-echo "\n\t\t\t\t</td>\n";
-echo "\n\t\t\t</tr>\n";
-echo "\n\t\t\t<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";
-echo "\t\t\t\t<td id=warning_message_td colspan='5'>\n\t\t\t\t\t";
-echo "\n\t\t\t\t</td>\n";
-echo "\t\t\t</form>\n"
- . "\t\t\t</tr>\n"
- . "\t\t\t</tfoot>";
-echo "\t\t</table>\n";
+echo "\n</td>\n";
+echo "\n</tr>\n";
+echo "\n<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";
+echo "<td id=warning_message_td colspan='5'>\n";
+echo "\n</td>\n";
+echo "</form>\n"
+ . "</tr>\n"
+ . "</tfoot>";
+echo "</table>\n";
 echo "<input type=submit id=save_new class=no-print name=submitStunden value='Eintragen' form='new_absence_entry'>";
 echo "</div>\n";
 require 'contact-form.php';

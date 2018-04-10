@@ -65,16 +65,16 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
             } else {
                 $option_selected = "";
             }
-            echo "\t\t<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
+            echo "<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
             echo "$employee_id_option $last_name";
             echo "</option>\n";
         }
     } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_id) {
-        echo "\t\t<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
+        echo "<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
         echo $_SESSION['user_employee_id'] . " " . $List_of_employees[$_SESSION['user_employee_id']];
         echo "</option>\n";
     } else {
-        echo "\t\t<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
+        echo "<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
         echo $employee_id . " " . $List_of_employees[$employee_id];
         echo "</option>\n";
     }

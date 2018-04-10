@@ -15,57 +15,57 @@ $number_of_rows = mysqli_num_rows($result);
 $tablebody = "";
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
-    $tablebody .= "\t\t\t<tr>\n";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= "<tr>\n";
+    $tablebody .= "<td>\n";
     $tablebody .= date('d.m.Y', strtotime($row->start));
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "<td>\n";
     $tablebody .= date('d.m.Y', strtotime($row->end));
-    $tablebody .= "\n\t\t\t\t</td>\n";
+    $tablebody .= "\n</td>\n";
     if ($i == $number_of_rows) {
         //TODO: This whole part might be unnecessary. We might remove it with some testing.
-        $tablebody .= "\t\t\t\t<td id=letzterGrund>\n\t\t\t\t\t";
+        $tablebody .= "<td id=letzterGrund>\n";
     } else {
-        $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+        $tablebody .= "<td>\n";
     }
     $tablebody .= "$row->reason";
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\t\t\t\t<td>\n\t\t\t\t\t";
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "<td>\n";
     $tablebody .= "$row->days";
-    $tablebody .= "\n\t\t\t\t</td>\n";
-    $tablebody .= "\n\t\t\t</tr>\n";
+    $tablebody .= "\n</td>\n";
+    $tablebody .= "\n</tr>\n";
     $i++;
 }
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
-echo "\t\t<div id=main-area>\n";
+echo "<div id=main-area>\n";
 
 echo build_select_employee($employee_id, $List_of_employees);
 
 echo "<a class=no-print href='abwesenheit-in.php?employee_id=$employee_id'><br>[" . gettext("Edit") . "]</a>";
-echo "\t\t<table>\n";
+echo "<table>\n";
 //Überschrift
-echo "\t\t\t<tr>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("Start") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("End") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("Reason") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("Days") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t</tr>\n";
+echo "<tr>\n"
+ . "<th>\n"
+ . "" . gettext("Start") . "\n"
+ . "</th>\n"
+ . "<th>\n"
+ . "" . gettext("End") . "\n"
+ . "</th>\n"
+ . "<th>\n"
+ . "" . gettext("Reason") . "\n"
+ . "</th>\n"
+ . "<th>\n"
+ . "" . gettext("Days") . "\n"
+ . "</th>\n"
+ . "</tr>\n";
 //Ausgabe
 echo "$tablebody";
-echo "\t\t</table>\n";
-echo "\t</form>";
-echo "\t\t</div>\n";
+echo "</table>\n";
+echo "</form>";
+echo "</div>\n";
 require 'contact-form.php';
 ?>
 

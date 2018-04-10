@@ -52,9 +52,9 @@ if (filter_has_var(INPUT_POST, "submit")) {
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t\t<p id=xmlhttpresult></p>\n";
-echo "\t\t\t<p id=javascriptmessage></p>\n";
-echo "\t\t</div>";
+echo "<p id=xmlhttpresult></p>\n";
+echo "<p id=javascriptmessage></p>\n";
+echo "</div>";
 require 'contact-form.php';
 ?>
 <script type="text/javascript">
