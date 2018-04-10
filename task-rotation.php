@@ -47,6 +47,7 @@ function task_rotation_get_worker($date_unix, $task) {
             . "ENGINE = InnoDB;";
     $result = mysqli_query_verbose($sql_query);
 
+    mysqli_query_verbose("DELETE FROM `task_rotation` WHERE `date` > NOW()");
     //Was this day already planned?
     $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = '$task' and `date` = '$date_sql'";
     $result = mysqli_query_verbose($sql_query);
@@ -128,8 +129,14 @@ function task_rotation_set_worker($date_unix, $task) {
                         $rotation_vk = key($Rezeptur_Mitarbeiter); //overwrites previously defined value
                     }
                 }
-                $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$temp_date_sql', '$rotation_vk')";
-                $result = mysqli_query_verbose($sql_query);
+                if (time() > $temp_date) {
+                    /*
+                     * This value is only stored in the database, if it is in the past.
+                     * This is to make sure, that fresh absences can be regarded.
+                     */
+                    $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$temp_date_sql', '$rotation_vk')";
+                    $result = mysqli_query_verbose($sql_query);
+                }
             }
         }
         return $rotation_vk;
