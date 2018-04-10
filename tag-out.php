@@ -51,6 +51,12 @@ require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($date_sql, $number_of_days, $branch_id);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
+    /*
+     * The $Branch_roster contanins all the rosters from all branches, including the current branch.
+     */
+    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql, $date_sql);
+}
 
 $max_vk_count_in_rooster_days = 0;
 foreach ($Roster as $Roster_day_array) {
@@ -109,7 +115,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     echo "<tr><td></td></tr>\n";
     //require_once 'schreiben-tabelle.php';
 
-    echo build_html_roster_views::build_roster_readonly_branch_table_rows($branch_id, $date_sql, $date_sql);
+    echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
     echo "<tr><td><br></td></tr>";
     if (isset($Abwesende)) {
         echo build_html_roster_views::build_absentees_row($Abwesende);
