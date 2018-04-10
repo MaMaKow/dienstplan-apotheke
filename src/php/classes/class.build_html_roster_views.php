@@ -65,32 +65,32 @@ abstract class build_html_roster_views {
             $Roster[$day_iterator][$roster_row_iterator] = new roster_item(date('Y-m-d', $date_unix), NULL, $branch_id, NULL, NULL, NULL, NULL);
         }
         $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
-        //employee input:
+//employee input:
         $roster_input_row = "<td>\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][branch_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->branch_id . ">\n";
         $roster_input_row .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows);
-        //start of duty:
+//start of duty:
         $roster_input_row .= "<input type=time size=5 class=Dienstplan_Dienstbeginn name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][duty_start_sql] id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 ) . " value='";
         $roster_input_row .= roster::get_duty_start_from_roster($Roster, $date_unix, $roster_row_iterator);
         $roster_input_row .= "'>\n ";
 
         $roster_input_row .= gettext("to");
 
-        //end of duty:
+//end of duty:
         $roster_input_row .= " <input type=time size=5 class=Dienstplan_Dienstende name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][duty_end_sql] id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 ) . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $date_unix, $roster_row_iterator);
         $roster_input_row .= "'>\n";
 
         $roster_input_row .= "<br>\n";
 
-        //start of break:
+//start of break:
         $roster_input_row .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][break_start_sql] id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 ) . " value='";
         $roster_input_row .= roster::get_break_start_from_roster($Roster, $date_unix, $roster_row_iterator);
 
         $roster_input_row .= "'> ";
         $roster_input_row .= gettext("to");
-        //end of break:
+//end of break:
         $roster_input_row .= " <input type=time size=5 class=Dienstplan_Mittagsende name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][break_end_sql] id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 ) . " value='";
         $roster_input_row .= roster::get_break_end_from_roster($Roster, $date_unix, $roster_row_iterator);
         $roster_input_row .= "'>";
@@ -191,7 +191,7 @@ abstract class build_html_roster_views {
                 }
                 $roster_object = $Roster[$date_unix][$table_row_iterator];
                 if (!isset($List_of_employees[$roster_object->employee_id])) {
-                    //$List_of_employees[$roster_object->employee_id] = '?';
+//$List_of_employees[$roster_object->employee_id] = '?';
                 }
                 /*
                  * The following lines check for the state of approval.
@@ -219,13 +219,13 @@ abstract class build_html_roster_views {
                 $zeile .= "</a></b> / ";
                 $zeile .= htmlentities($roster_object->working_hours);
                 $zeile .= " ";
-                //Dienstbeginn
+//Dienstbeginn
                 $zeile .= " <br> ";
                 $zeile .= htmlentities($roster_object->duty_start_sql);
-                //Dienstende
+//Dienstende
                 $zeile .= " - ";
                 $zeile .= htmlentities($roster_object->duty_end_sql);
-                //	Mittagspause
+//	Mittagspause
                 $zeile .= "<br>\n";
                 if ($roster_object->break_start_int > 0) {
                     $zeile .= " " . gettext("break") . ": ";
@@ -243,6 +243,9 @@ abstract class build_html_roster_views {
     }
 
     private static function get_approval_from_database($date_sql, $branch_id) {
+        /*
+         * TODO: This might be better placed in some other class.
+         */
         $sql_query = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch_id'";
         $result = mysqli_query_verbose($sql_query);
         while ($row = mysqli_fetch_object($result)) {
@@ -250,6 +253,69 @@ abstract class build_html_roster_views {
             return $approval;
         }
         return FALSE;
+    }
+
+    public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should) {
+        global $List_of_employees, $List_of_employee_working_week_hours, $Mandanten_mitarbeiter;
+        $week_hours_table_html = "<div id=week_hours_table_div>\n";
+        $week_hours_table_html .= "<H2>Wochenstunden</H2>\n";
+        $week_hours_table_html .= "<p>\n";
+        foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
+            if (FALSE === array_key_exists($employee_id, $Mandanten_mitarbeiter)) {
+                continue; /* Only employees who belong to the branch are shown. */
+            }
+            $week_hours_table_html .= "<span>" . $List_of_employees[$employee_id] . " " . round($working_hours_have, 2);
+            $week_hours_table_html .= " / ";
+            if (isset($Working_hours_week_should[$employee_id])) {
+                $week_hours_table_html .= round($Working_hours_week_should[$employee_id], 1) . "\n";
+                $differenz = $working_hours_have - $Working_hours_week_should[$employee_id];
+            } else {
+                $week_hours_table_html .= $List_of_employee_working_week_hours[$employee_id] . "\n";
+                $differenz = $working_hours_have - $List_of_employee_working_week_hours[$employee_id];
+            }
+            if (abs($differenz) >= 0.25) {
+                $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
+            }
+
+            $week_hours_table_html .= "</span>\n";
+        }
+        $week_hours_table_html .= "</p>\n";
+        return $week_hours_table_html;
+    }
+
+    public static function calculate_working_hours_week_should($Roster) {
+        global $Mandanten_mitarbeiter, $List_of_employee_working_week_hours;
+        $Working_hours_week_should = $List_of_employee_working_week_hours;
+        foreach (array_keys($Roster) as $date_unix) {
+            $date_sql = date('Y-m-d', $date_unix);
+            $holiday = holidays::is_holiday($date_unix);
+            $Absentees = db_lesen_abwesenheit($date_sql);
+            /*
+             * TODO: This list has to be carfully chosen:
+             * Also there should be a SET in the database.
+             */
+            $List_of_respected_absence_reasons = array('Krank', 'Krank mit Kind', 'Vacation', 'Freistellung', 'Elternzeit', 'Urlaub', 'Fortbildung', 'Resturlaub', 'Sonderurlaub', 'Kur');
+            $List_of_non_respected_absence_reasons = array('Freistellung_unbezahlt', 'Fortbildung_unbezahlt', 'Überstunden Abbau');
+
+            /* Substract days, which are holidays: */
+            /*
+             * TODO: date('N', $date_unix) < 6 should be substituted for a call to the principle roster.
+             * It might be a good idea to save that roster in an employee_item object.
+             * That would make querying it much easier.
+             */
+            if (FALSE !== $holiday and date('N', $date_unix) < 6) {
+                foreach (array_keys($Mandanten_mitarbeiter) as $employee_id) {
+                    $Working_hours_week_should[$employee_id] -= $List_of_employee_working_week_hours[$employee_id] / 5;
+                }
+            }
+            /* Substract days, which are respected absence_days: */
+            foreach ($Absentees as $employee_id => $reason) {
+                if (in_array($reason, $List_of_respected_absence_reasons) and FALSE === $holiday and date('N', $date_unix) < 6) {
+                    $Working_hours_week_should[$employee_id] -= $List_of_employee_working_week_hours[$employee_id] / 5;
+                }
+            }
+        }
+        return $Working_hours_week_should;
     }
 
 }
