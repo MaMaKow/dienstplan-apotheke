@@ -101,7 +101,7 @@ abstract class build_html_navigation_elements {
         $date_next_week_sql = general_calculations::get_first_day_of_week(date('Y-m-d', strtotime('next week', strtotime($date_sql))));
         $forward_button_week_img = "
             <form class='inline_button_form'>
-		<button type='submit' class='btn-primary no-print' value='$date_next_week_sql' name='datum' form='button_week_forward_form'>
+		<button type='submit' class='btn-primary no-print' value='$date_next_week_sql' name='datum'>
 			<i class='icon-black'>
 				<img src='img/foreward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
 			</i>

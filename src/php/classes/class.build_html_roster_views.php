@@ -162,6 +162,31 @@ abstract class build_html_roster_views {
         return $table_html;
     }
 
+    public static function build_roster_read_only_table_head($Roster) {
+        $head_table_html = "";
+        $head_table_html .= "<thead>\n";
+        $head_table_html .= "<tr>\n";
+        foreach (array_keys($Roster) as $date_unix) {//Datum
+            $date_sql = date('Y-m-d', $date_unix);
+            $head_table_html .= "<td>";
+            $head_table_html .= "<a href='tag-out.php?datum=$date_sql'>";
+            $head_table_html .= strftime('%A', $date_unix);
+            $head_table_html .= " \n";
+            $head_table_html .= strftime('%d.%m.', $date_unix);
+            $holiday = holidays::is_holiday($date_unix);
+            if (FALSE !== $holiday) {
+                $head_table_html .= "<br>$holiday";
+            }
+
+            if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
+                $head_table_html .= "<br> <em>NOTDIENST</em> ";
+            }
+            $head_table_html .= "</a></td>\n";
+        }
+        $head_table_html .= "</tr></thead>";
+        return $head_table_html;
+    }
+
     public static function build_roster_readonly_table($Roster, $branch_id) {
         if (array() === $Roster) {
             return FALSE;
@@ -169,6 +194,8 @@ abstract class build_html_roster_views {
         global $List_of_employees;
         global $config;
         $table_html = "";
+        $table_html .= "<tbody>";
+
         $max_employee_count = roster::calculate_max_employee_count($Roster);
         $List_of_date_unix_in_roster = array_keys($Roster);
         $date_sql_start = date('Y-m-d', min($List_of_date_unix_in_roster));
