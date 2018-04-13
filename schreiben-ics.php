@@ -26,6 +26,9 @@ function schreiben_ics($Dienstplan) {
             //Ignore fields without data.
             if (!empty($vk) and $Dienstplan[$tag]["Dienstbeginn"][$key] != '-') {
                 //Processing the data
+                if (!isset($same_employee_count[$vk])) {
+                    $same_employee_count[$vk] = 0;
+                }
                 $same_employee_count[$vk] ++;
                 $dienstbeginn = $Dienstplan[$tag]["Dienstbeginn"][$key];
                 $dienstende = $Dienstplan[$tag]["Dienstende"][$key];
