@@ -646,6 +646,9 @@ div#navigation_elements{
  * The above lines are added added for all sites containing build_html_navigation_elements
  */
 
+svg#svgimg {
+    cursor: default;
+}
 svg#svgimg foreignObject p.selected{
     color: white;
 }

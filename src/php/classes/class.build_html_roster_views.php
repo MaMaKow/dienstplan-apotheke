@@ -137,7 +137,7 @@ abstract class build_html_roster_views {
                 . "K-</a></div>\n";
         $roster_input_row_comment_html .= "<br>"
                 . "<div style=display:$roster_uncomment_visibility_style_display id=$roster_input_row_comment_input_id>"
-                . gettext("Comment") . ":&nbsp<input type=text name=Roster[$day_iterator][$roster_row_iterator][comment] value='$comment'></div>\n";
+                . gettext("Comment") . ":&nbsp;<input type=text name=Roster[$day_iterator][$roster_row_iterator][comment] value='$comment'></div>\n";
         return $roster_input_row_comment_html;
     }
 
@@ -265,8 +265,8 @@ abstract class build_html_roster_views {
                 }
                 $zeile .= "$emphasis_end";
                 $table_html .= $zeile;
+                $table_html .= "</td>\n";
             }
-            $table_html .= "</td>\n";
         }
         $table_html .= "</tr>\n";
         return $table_html;

@@ -69,7 +69,7 @@ abstract class roster_image_bar_plot {
             $svg_outer_width = $svg_inner_width + ($outer_margin_x * 2);
 
             $svg_text = "";
-            $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' cursor: default;' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
+            $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' viewBox='0 0 $svg_outer_width $svg_outer_height'>\n";
 
             $svg_grid_text = "<!--Grid-->\n";
             for ($time = floor($first_start); $time <= ceil($last_end); $time = $time + 2) {
