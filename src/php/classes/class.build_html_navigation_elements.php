@@ -25,30 +25,29 @@
 abstract class build_html_navigation_elements {
 
     public static function build_button_open_readonly_version($url, $date_sql) {
-        $button_img = "
-            <a href='$url?datum=" . $date_sql . "'>
-		<button type='button' class='btn-primary no-print'>
+        $button_img = "<form class='inline_button_form' action='$url?datum=$date_sql' method='get'>
+		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
 				<img src='img/read-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
 			</i>
 			<br>
 			" . gettext("Read") . "
 		</button>
-            </a>";
+            </form>";
         return $button_img;
     }
 
     public static function build_button_open_edit_version($url, $date_sql) {
         $button_img = "
-            <a href='$url?datum=" . $date_sql . "'>
-		<button type='button' class='btn-primary no-print'>
+            <form class='inline_button_form' action='$url?datum=$date_sql' method='get'>
+		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
 				<img src='img/edit-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
 			</i>
 			<br>
 			" . gettext("Edit") . "
 		</button>
-            </a>";
+            </form>";
         return $button_img;
     }
 
@@ -115,8 +114,8 @@ abstract class build_html_navigation_elements {
     public static function build_button_link_download_ics_file($date_sql, $employee_id) {
         $button_html = "<form class='inline_button_form' action='webdav.php?employee_id=$employee_id&datum=$date_sql' method='get'>"
                 . " <button type='submit' class='btn-primary no-print' "
-                . " onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql\"' "
-                . " title = 'Download ics Kalender Datei'>"
+                //. " onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql\"' "
+                . " title='Download ics Kalender Datei'>"
                 . " <img src='img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
                 . " <br>"
                 . gettext("ICS File")
@@ -127,10 +126,10 @@ abstract class build_html_navigation_elements {
     public static function build_button_submit(
     $form_id) {
         $submit_button_img = "
-        <button type = 'submit' id = 'submit_button_img' class = 'btn-primary btn-save no-print' value = Absenden name = 'submit_roster' form = '$form_id'>
-                <i class = 'icon-white'>
-                <img src = 'img/save.png' class = 'button-image' alt = '" . gettext("Save") . "' >
-                < /i>
+        <button type='submit' id='submit_button_img' class='btn-primary btn-save no-print' value=Absenden name='submit_roster' form='$form_id'>
+                <i class='icon-white'>
+                <img src='img/save.png' class='button-image' alt='" . gettext("Save") . "' >
+                </i>
                 <br>
                 " . gettext("Save") . "
                 </button>";
@@ -142,11 +141,11 @@ abstract class build_html_navigation_elements {
 
 
         $submit_approval_button_img = "
-        <form method = post class = 'inline_button_form'>
-                <button type = 'submit' class = 'btn-secondary no-print' value = 'approve' name = 'submit_approval'>
-                <i class = 'icon-grey'>
-                <img src = 'img/approve.png' class = 'button-image' alt = '" . gettext("1 day forward") . "' >
-                < /i>
+        <form method=post class='inline_button_form'>
+                <button type='submit' class='btn-secondary no-print' value='approve' name='submit_approval'>
+                <i class='icon-grey'>
+                <img src='img/approve.png' class='button-image' alt='" . gettext("1 day forward") . "' >
+                </i>
                 <br>
                 " . gettext("Approve") . "
                 </button>
@@ -159,11 +158,11 @@ abstract class build_html_navigation_elements {
 
 
         $submit_disapproval_button_img = "
-        <form method = post class = 'inline_button_form'>
-                <button type = 'submit' class = 'btn-secondary no-print' value = 'disapprove' name = 'submit_disapproval'>
-                <i class = 'icon-grey'>
-                <img src = 'img/disapprove.png' class = 'button-image' alt = '" . gettext("Disapprove") . "' >
-                < /i>
+        <form method=post class='inline_button_form'>
+                <button type='submit' class='btn-secondary no-print' value='disapprove' name='submit_disapproval'>
+                <i class='icon-grey'>
+                <img src='img/disapprove.png' class='button-image' alt='" . gettext("Disapprove") . "' >
+                </i>
                 <br>
                 " . gettext("Disapprove") . "
                 </button>
@@ -183,19 +182,19 @@ abstract class build_html_navigation_elements {
 
     public static function build_select_employee($employee_id, $Employee_id_list) {
         $text = "<!-- employee select form-->\n";
-        $text .= "<form method = 'POST' id = 'select_employee'>\n";
-        $text .= "<select name = employee_id class = 'no-print large' onChange = 'document.getElementById(\"submit_select_employee\").click()'>\n";
+        $text .= "<form method='POST' id='select_employee'>\n";
+        $text .= "<select name=employee_id class='no-print large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_id_list as $vk => $employee_last_name) {
             if ($vk == $employee_id) {
-                $text .= "<option value = $vk selected>" . $vk . " " . $employee_last_name . "</option>\n";
+                $text .= "<option value=$vk selected>" . $vk . " " . $employee_last_name . "</option>\n";
             } else {
-                $text .= "<option value = $vk>" . $vk . " " . $employee_last_name . "</option>\n";
+                $text .= "<option value=$vk>" . $vk . " " . $employee_last_name . "</option>\n";
             }
         }
         $text .= "</select>\n";
-        $text .= "<input hidden type = submit value = select_employee name = 'submit_select_employee' id = 'submit_select_employee' class = no-print>\n";
+        $text .= "<input hidden type=submit value=select_employee name='submit_select_employee' id='submit_select_employee' class=no-print>\n";
         $text .= "</form>\n";
-        $text .= "<H1 class = 'only-print'>" . $Employee_id_list[$employee_id] . "</H1>\n";
+        $text .= "<H1 class='only-print'>" . $Employee_id_list[$employee_id] . "</H1>\n";
         $text .= "<!--/employee select form-->\n";
 
         return $text;
@@ -216,19 +215,19 @@ abstract class build_html_navigation_elements {
         $current_branch_id = (int) $current_branch_id;
         global $List_of_branch_objects;
         $text = "<!-- branch select form-->\n";
-        $text .= "<div id = mandantenformular_div>\n";
-        $text .= "<form id = mandantenformular method = post>\n";
-        $text .= "<input type = hidden name = datum value = " . $date_sql . ">\n";
-        $text .= "<select id = branch_form_select class = 'no-print large' name = mandant onchange = this.form.submit()>\n";
+        $text .= "<div id=mandantenformular_div>\n";
+        $text .= "<form id=mandantenformular method=post>\n";
+        $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
+        $text .= "<select id=branch_form_select class='no-print large' name=mandant onchange=this.form.submit()>\n";
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
             if ($branch_id != $current_branch_id) {
-                $text .= "<option value = " . $branch_id . ">" . $branch_object->name . "</option>\n";
+                $text .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
             } else {
-                $text .= "<option value = " . $branch_id . " selected>" . $branch_object->name . "</option>\n";
+                $text .= "<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
             }
         }
         $text .= "</select>\n"
-                . " < /form>\n";
+                . " </form>\n";
         $text .= "</div>\n";
         $text .= "<!--/branch select form-->\n";
         return $text;
@@ -237,10 +236,10 @@ abstract class build_html_navigation_elements {
     public static function build_input_date(
     $date_sql) {
         $text = "";
-        $text .= "<div id = date_chooser_div>\n";
-        $text .= "<form id = date_chooser_form method = post>\n";
-        $text .= "<input name = datum type = date id = date_chooser_input class = 'datepicker' value = '$date_sql' onblur = 'this.form.submit()'>\n";
-        $text .= "<input type = submit name = tagesAuswahl value = Anzeigen>\n";
+        $text .= "<div id=date_chooser_div>\n";
+        $text .= "<form id=date_chooser_form method=post>\n";
+        $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onblur='this.form.submit()'>\n";
+        $text .= "<input type=submit name=tagesAuswahl value=Anzeigen>\n";
         $text .= "</form>\n";
         $text .= "</div>\n";
         return $text;
