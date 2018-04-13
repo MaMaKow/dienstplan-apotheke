@@ -15,7 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<HTML>
+<HTML lang='<?= strstr($config["language"], '_', TRUE) ?>'>
     <HEAD<?php
     if (!empty($navigator_language)) {
         echo " lang=$navigator_language";
@@ -40,6 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </HEAD>
     <BODY>
         <?php
-        require_once 'src/php/classes/class.sessions.php';
+        /*
+         * TODO: Get rid of the whole idea of escalation!
+         */
         echo sessions::build_escalation_div();
 

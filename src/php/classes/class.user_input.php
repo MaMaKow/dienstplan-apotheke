@@ -34,7 +34,7 @@ abstract class user_input {
                 return filter_input($input_source, $variable_name, $filter);
             }
         }
-        return $default_value;
+        return filter_var($default_value, $filter);
     }
 
     public static function escape_sql_value($value) {
