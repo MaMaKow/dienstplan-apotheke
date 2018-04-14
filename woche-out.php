@@ -87,7 +87,7 @@ $table_foot_html = "<tfoot>"
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 foreach (array_keys($Roster) as $date_unix) {
     $date_sql = date('Y-m-d', $date_unix);
-    $Abwesende = db_lesen_abwesenheit($date_sql);
+    $Abwesende = absence::read_absentees_from_database($date_sql);
 
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
     if (isset($Abwesende)) {

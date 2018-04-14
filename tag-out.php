@@ -96,7 +96,7 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     if (FALSE !== $holiday) {
         echo "<p>" . $holiday . "</p>\n";
     }
-    $Abwesende = db_lesen_abwesenheit($date_sql);
+    $Abwesende = absence::read_absentees_from_database($date_sql);
     $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
     if (FALSE !== $having_emergency_service) {
         echo "<br>NOTDIENST<br>";

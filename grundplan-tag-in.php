@@ -15,8 +15,9 @@ function get_weekday_names() {
 $Wochentage = get_weekday_names();
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
-$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
-create_cookie('mandant', $mandant, 30);
+$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+$mandant = $branch_id;
+create_cookie('mandant', $branch_id, 30);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     //TODO: Test if this works:
@@ -40,7 +41,7 @@ require 'db-lesen-mitarbeiter.php';
 $sql_query = 'SELECT *
 FROM `Grundplan`
 WHERE `Wochentag` = "' . $wochentag . '"
-	AND `Mandant`="' . $mandant . '"
+	AND `Mandant`="' . $branch_id . '"
 	ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`
 ;';
 $result = mysqli_query_verbose($sql_query);
@@ -109,6 +110,7 @@ $tag = $wochentag;
 $pseudo_date = strtotime('-' . (date('w') - 1) . ' day', time());
 $pseudo_date = strtotime('+' . ($wochentag - 1) . ' day', $pseudo_date);
 $date_sql = date('Y-m-d', $pseudo_date);
+$Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql);
 
 
 $VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
@@ -127,11 +129,11 @@ if (!$session->user_has_privilege('create_roster')) {
 //Hier beginnt die Normale Ausgabe.
 echo "<H1>Grundplan Tagesansicht</H1>\n";
 echo "<div id=main-area>\n";
-echo build_select_branch($mandant, $date_sql);
+echo build_select_branch($branch_id, $date_sql);
 
 //Auswahl des Wochentages
 echo "<form id='week_day_form' method=post>\n";
-echo "<input type=hidden name=mandant value=" . $mandant . ">\n";
+echo "<input type=hidden name=mandant value=" . $branch_id . ">\n";
 echo "<select class='no-print large' name=wochentag onchange=this.form.submit()>\n";
 //echo "<option value=".$wochentag.">".$Wochentage[$wochentag]."</option>\n";
 foreach ($Wochentage as $temp_weekday => $value) {
@@ -152,7 +154,7 @@ echo "<tr>\n";
 //Datum
 $zeile = '';
 $zeile .= '<input type=hidden name=Grundplan[' . $wochentag . '][Wochentag][0] value=' . htmlentities($Grundplan[$wochentag]['Wochentag'][0]) . '>';
-$zeile .= '<input type=hidden name=mandant value=' . $mandant . '>';
+$zeile .= '<input type=hidden name=mandant value=' . $branch_id . '>';
 echo $zeile;
 //Wochentag
 
@@ -234,7 +236,8 @@ if (!empty($Grundplan[$wochentag]["Dienstbeginn"])) {
     $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
     echo $svg_image_dienstplan;
     require_once 'image_histogramm.php';
-    $svg_image_histogramm = draw_image_histogramm($Dienstplan);
+    //$svg_image_histogramm = draw_image_histogramm($Dienstplan);
+    $svg_image_histogramm = roster_image_histogramm::draw_image_histogramm($Principle_roster, $branch_id, $Anwesende, $datum);
     echo "<br>\n";
     echo $svg_image_histogramm;
     echo "</div>\n";

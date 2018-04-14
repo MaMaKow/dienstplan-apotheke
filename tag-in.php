@@ -25,7 +25,7 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 require_once 'db-lesen-abwesenheit.php';
-$Abwesende = db_lesen_abwesenheit($date_sql);
+$Abwesende = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
