@@ -115,9 +115,24 @@ function null_from_post_to_mysql($value) {
     }
 }
 
-function print_debug_variable($variable) {
+function print_debug_variable_old($variable) {
     $argument_list = func_get_args();
     error_log(var_export($argument_list, TRUE));
+    return true;
+}
+
+function print_debug_variable($variable) {
+    $argument_list = func_get_args();
+    $backtrace = debug_backtrace()[0];
+    $fh = fopen($backtrace['file'], 'r');
+    $line = 0;
+    while (++$line <= $backtrace['line']) {
+        $code = fgets($fh);
+    }
+    fclose($fh);
+    preg_match('/' . __FUNCTION__ . '\s*\((.*)\)\s*;/u', $code, $name);
+    $variable_name = trim($name[1]);
+    error_log('in file: ' . $backtrace['file'] . "\n on line: " . $backtrace['line'] . "\n variable: " . $variable_name . "\n value:\n " . var_export($argument_list, TRUE));
     return true;
 }
 
