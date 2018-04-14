@@ -166,7 +166,7 @@ abstract class roster {
         $Roster = array();
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
-            $Absentees = db_lesen_abwesenheit($date_sql);
+            $Absentees = absence::read_absentees_from_database($date_sql);
             /*
              * TODO: Make sure, that these two repair calls are not necessary anymore:
              */

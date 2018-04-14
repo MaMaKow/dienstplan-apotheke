@@ -155,7 +155,7 @@ function write_user_input_to_database() {
          * The function calculate_absence_days() currenty is defined within "db-lesen-abwesenheit.php".
          * TODO: Maybe there should be a common library/class for all the (common) absence functions.
          */
-        $days = calculate_absence_days($start_date_string, $end_date_string);
+        $days = absence::calculate_absence_days($start_date_string, $end_date_string);
         $query = "INSERT INTO absence ("
                 . " `employee_id`,"
                 . " `start`,"
@@ -196,10 +196,6 @@ function approve_absence_to_database() {
     $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
     $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
 
-    /*
-     * The function calculate_absence_days() currenty is defined within "db-lesen-abwesenheit.php".
-     * TODO: Maybe there should be a common library/class for all the (common) absence functions.
-     */
     $query = "UPDATE `absence` "
             . " SET `approval` = \"$approval\" "
             . " WHERE `employee_id` = \"$employee_id_old\" AND `start` = \"$start_date_old_string\"";
@@ -258,7 +254,7 @@ function build_absence_year($year) {
     for ($date_unix = $start_date; $date_unix < strtotime("+ 1 year", $start_date); $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date('Y-m-d', $date_unix);
         $is_holiday = holidays::is_holiday($date_unix);
-        $Abwesende = db_lesen_abwesenheit($date_unix);
+        $Abwesende = absence::read_absentees_from_database($date_sql);
 
         if ($current_month < date("n", $date_unix)) {
             /** begin a new month div */
@@ -281,7 +277,7 @@ function build_absence_year($year) {
         if (isset($Abwesende)) {
             unset($absent_employees_containers);
             foreach ($Abwesende as $employee_id => $reason) {
-                $Absence = get_absence_data_specific($date_sql, $employee_id);
+                $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
                         . $List_of_employees[$Absence['employee_id']] . "\n"
                         . $Absence['reason'] . "\n"
@@ -431,7 +427,7 @@ function build_absence_month($year, $month_number) {
         $is_holiday = holidays::is_holiday($date_unix);
         $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 
-        $Abwesende = db_lesen_abwesenheit($date_unix);
+        $Abwesende = absence::read_absentees_from_database($date_sql);
 
         if ($current_week < date("W", $date_unix)) {
             /** begin a new month div */
@@ -449,7 +445,7 @@ function build_absence_month($year, $month_number) {
         if (isset($Abwesende)) {
             unset($absent_employees_containers);
             foreach ($Abwesende as $employee_id => $reason) {
-                $Absence = get_absence_data_specific($date_sql, $employee_id);
+                $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
                         . $List_of_employees[$Absence['employee_id']] . "\n"
                         . $Absence['reason'] . "\n"

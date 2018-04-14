@@ -403,7 +403,7 @@ abstract class build_html_roster_views {
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
             $holiday = holidays::is_holiday($date_unix);
-            $Absentees = db_lesen_abwesenheit($date_sql);
+            $Absentees = absence::read_absentees_from_database($date_sql);
             /*
              * TODO: This list has to be carfully chosen:
              * Also there should be a SET in the database.
