@@ -112,11 +112,11 @@ abstract class roster_image_histogramm {
      * @param array $Roster
      * @param int $branch_id
      * @param array $Anwesende
-     * @param string $datum
+     * @param string $date_unix
      * @var float $factor_employee The number of drug packages that can be sold per employee within a certain time.
      * @return string The canvas element
      */
-    public static function draw_image_histogramm($Roster, $branch_id, $Anwesende, $datum) {
+    public static function draw_image_histogramm($Roster, $branch_id, $Anwesende, $date_unix) {
         $factor_employee = 6;
         if (empty($Anwesende)) {
             return FALSE;
@@ -138,7 +138,7 @@ abstract class roster_image_histogramm {
         $end_time = max($End_times) / 3600;
         $duration = $end_time - $start_time;
         $width_factor = ($canvas_width - ($outer_margin_x * 2)) / $duration;
-        $Expectation = roster_image_histogramm::get_expectation($datum, $branch_id);
+        $Expectation = roster_image_histogramm::get_expectation($date_unix, $branch_id);
 
         $max_work_load = max($Expectation);
         $max_workforce = max($Anwesende) * $factor_employee;
@@ -151,6 +151,11 @@ abstract class roster_image_histogramm {
         $canvas_text .= "var c = document.getElementById('canvas_histogram');\n";
         $canvas_text .= "var ctx = c.getContext('2d');\n";
 
+        /*
+         * TODO: Maybe add a line that represents the division of packages by ((pharmaceutical) employee-1)?
+         * That would give a feeling of to much or to less people in the roster.
+         * It could be inside a corridor of wished factor.
+         */
         $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_Expectation($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Expectation);
         $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_headcount($outer_margin_x, $width_factor, $height_factor, $start_time, $Anwesende, $factor_employee, $canvas_height);
         $canvas_text .= roster_image_histogramm::draw_image_dienstplan_add_axis_labeling($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $canvas_height, $start_time, $end_time);
@@ -160,17 +165,16 @@ abstract class roster_image_histogramm {
         return $canvas_text;
     }
 
-    private static function get_expectation($datum, $branch_id) {
+    private static function get_expectation($date_unix, $branch_id) {
         global $List_of_branch_objects;
         /*
           if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
           echo roster_image_histogramm::check_timeliness_of_pep_data();
           }
          */
-        $unix_datum = strtotime($datum);
-        $sql_weekday = date('N', $unix_datum) - 1;
-        $month_day = date('j', $unix_datum);
-        $month = date('n', $unix_datum);
+        $sql_weekday = date('N', $date_unix) - 1;
+        $month_day = date('j', $date_unix);
+        $month = date('n', $date_unix);
 
         $branch_pep_id = $List_of_branch_objects[$branch_id]->PEP;
         if (empty($branch_pep_id)) {

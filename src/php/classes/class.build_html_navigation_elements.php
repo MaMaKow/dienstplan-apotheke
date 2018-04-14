@@ -233,6 +233,32 @@ abstract class build_html_navigation_elements {
         return $text;
     }
 
+    public static function build_select_weekday($weekday_selected) {
+        $Weekday_names = build_html_navigation_elements::get_weekday_names();
+
+        $html = '';
+        $html .= "<form id='week_day_form' method=post>";
+        $html .= "<select class='no-print large' name=weekday onchange=this.form.submit()>\n";
+        foreach ($Weekday_names as $weekday_temp => $weekday_name) {
+            if ($weekday_temp != $weekday_selected) {
+                $html .= "<option value='$weekday_temp'>$weekday_name</option>\n";
+            } else {
+                $html .= "<option value='$weekday_temp' selected>$weekday_name</option>\n";
+            }
+        }
+        $html .= "</select></form>\n";
+        return $html;
+    }
+
+    private static function get_weekday_names() {
+
+        for ($weekday = 1; $weekday <= 7; ++$weekday) {
+            $pseudo_date = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
+            $Weekday_names[$weekday] = strftime('%A', $pseudo_date);
+        }
+        return $Weekday_names;
+    }
+
     public static function build_input_date(
     $date_sql) {
         $text = "";
