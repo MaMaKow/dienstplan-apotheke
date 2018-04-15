@@ -115,33 +115,42 @@ function null_from_post_to_mysql($value) {
     }
 }
 
-function print_debug_variable_old($variable) {
-    $argument_list = func_get_args();
-    error_log(var_export($argument_list, TRUE));
-    return true;
-}
-
 function print_debug_variable($variable) {
+    /*
+     * Enhanced with https://stackoverflow.com/a/19788805/2323627
+     */
+    $line = 0;
+    $name = '';
     $argument_list = func_get_args();
     $backtrace = debug_backtrace()[0];
+    /*
+     * Open the source file returned by debug_backtrace and find the line which called this function:
+     */
     $fh = fopen($backtrace['file'], 'r');
-    $line = 0;
     while (++$line <= $backtrace['line']) {
         $code = fgets($fh);
     }
     fclose($fh);
+    /*
+     * In the found line of source code, grep for the argument (= variable name):
+     */
     preg_match('/' . __FUNCTION__ . '\s*\((.*)\)\s*;/u', $code, $name);
     $variable_name = trim($name[1]);
+    /*
+     * Write a structured output to the standard error log:
+     */
     error_log('in file: ' . $backtrace['file'] . "\n on line: " . $backtrace['line'] . "\n variable: " . $variable_name . "\n value:\n " . var_export($argument_list, TRUE));
-    return true;
 }
 
-function print_debug_backtrace() {
-    $trace = debug_backtrace();
-    $message = $trace;
-    error_log(var_export($message, TRUE));
-    return true;
-}
+/*
+ *
+  function print_debug_backtrace() {
+  $trace = debug_backtrace();
+  $message = $trace;
+  error_log(var_export($message, TRUE));
+  return true;
+  }
+ */
 
 /**
  * Test if PHP is running on a Windows machine.
