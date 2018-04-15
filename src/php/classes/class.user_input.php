@@ -56,57 +56,32 @@ abstract class user_input {
     }
 
     public static function principle_roster_write_user_input_to_database($branch_id) {
-        global $List_of_employee_lunch_break_minutes, $List_of_employees;
+        global $List_of_employee_lunch_break_minutes, $List_of_employees, $workforce;
         if (!isset($List_of_employees)) {
             require 'db-lesen-mitarbeiter.php';
         }
+        $Principle_roster_new = user_input::get_Roster_from_POST_secure();
 
-        $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $pseudo_date_sql_start = date('Y-m-d', min(array_keys($Principle_roster_new)));
+        $pseudo_date_sql_end = date('Y-m-d', max(array_keys($Principle_roster_new)));
+        $Principle_roster_old = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+        $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
+        $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
+        $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
 
-        foreach (array_keys($Grundplan) as $wochentag) {
-            //First, the old values are deleted.
-            $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND Mandant='$branch_id'";
-            $result = mysqli_query_verbose($sql_query);
-            //New values are composed from the Grundplan from $_POST.
-            foreach ($Grundplan[$wochentag]['VK'] as $key => $VK) {
-                //Die einzelnen Zeilen im Grundplan
-                if (!empty($VK)) {
-                    //Wir ignorieren die nicht ausgefüllten Felder
-                    list($VK) = explode(' ', $VK); //Wir brauchen nur die VK Nummer. Die steht vor dem Leerzeichen.
-                    $dienstbeginn = user_input::escape_sql_value(user_input::convert_post_empty_to_php_null($Grundplan[$wochentag]['Dienstbeginn'][$key]));
-                    $dienstende = user_input::escape_sql_value(user_input::convert_post_empty_to_php_null($Grundplan[$wochentag]['Dienstende'][$key]));
-                    $mittagsbeginn = user_input::escape_sql_value(user_input::convert_post_empty_to_php_null($Grundplan[$wochentag]['Mittagsbeginn'][$key]));
-                    $mittagsende = user_input::escape_sql_value(user_input::convert_post_empty_to_php_null($Grundplan[$wochentag]['Mittagsende'][$key]));
-                    $kommentar = user_input::escape_sql_value(user_input::convert_post_empty_to_php_null($Grundplan[$wochentag]['Kommentar'][$key]));
-                    if (!empty($mittagsbeginn) && !empty($mittagsende)) {
-                        $sekunden = (strtotime($dienstende) - strtotime($dienstbeginn)) - (strtotime($mittagsende) - strtotime($mittagsbeginn));
-                        $stunden = round($sekunden / 3600, 1);
-                    } else {
-                        $sekunden = strtotime($dienstende) - strtotime($dienstbeginn);
-                        //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-
-                        if ($sekunden - $List_of_employee_lunch_break_minutes[$VK] * 60 >= 6 * 3600) {
-                            $mittagspause = $List_of_employee_lunch_break_minutes[$VK] * 60;
-                            $sekunden = $sekunden - $mittagspause;
-                        } else {
-                            //Keine Mittagspause
-                        }
-                        $stunden = round($sekunden / 3600, 1);
-                    }
-                    //The new values are stored inside the database.
-                    $sql_query = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Kommentar, Mandant)
-			             VALUES ('$VK', '$wochentag', $dienstbeginn, $dienstende, $mittagsbeginn, $mittagsende, '$stunden', $kommentar, '$branch_id')";
-                    $result = mysqli_query_verbose($sql_query);
-                }
-            }
-        }
+        mysqli_query_verbose("START TRANSACTION");
+        user_input::remove_changed_entries_from_database_principle_roster($branch_id, $Deleted_roster_employee_id_list);
+        user_input::remove_changed_entries_from_database_principle_roster($branch_id, $Changed_roster_employee_id_list);
+        user_input::insert_changed_entries_into_database_principle_roster($Principle_roster_new, $Changed_roster_employee_id_list);
+        user_input::insert_changed_entries_into_database_principle_roster($Principle_roster_new, $Inserted_roster_employee_id_list);
+        mysqli_query_verbose("COMMIT");
     }
 
     public static function get_Roster_from_POST_secure() {
         $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
         $Roster = array();
-        foreach ($Roster_from_post as $date_unix => $Roster_day_array) {
-            foreach ($Roster_day_array as $roster_row_iterator => $Roster_row_array) {
+        foreach ($Roster_from_post as $date_unix => $Roster_from_post_day_array) {
+            foreach ($Roster_from_post_day_array as $roster_row_iterator => $Roster_row_array) {
                 $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
                 $employee_id = filter_var($Roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT);
                 $branch_id = filter_var($Roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
@@ -142,11 +117,24 @@ abstract class user_input {
         }
     }
 
+    private static function remove_changed_entries_from_database_principle_roster($branch_id, $Employee_id_list) {
+        foreach ($Employee_id_list as $date_unix => $Employee_id_list_day) {
+            $weekday = date('w', $date_unix);
+            if (!empty($Employee_id_list_day)) {
+                $sql_query = "DELETE FROM `Grundplan`"
+                        . " WHERE `Wochentag` = '$weekday'"
+                        . " AND `VK` IN (" . implode(', ', $Employee_id_list_day) . ")"
+                        . " AND `Mandant` = '$branch_id';";
+                mysqli_query_verbose($sql_query, TRUE);
+            }
+        }
+    }
+
     private static function insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_id_list[$date_unix])) {
                 /* There are no changes. */
-                return FALSE;
+                continue;
             }
             foreach ($Roster_day_array as $roster_row_object) {
                 if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
@@ -173,8 +161,40 @@ abstract class user_input {
         }
     }
 
+    private static function insert_changed_entries_into_database_principle_roster($Roster, $Changed_roster_employee_id_list) {
+        foreach ($Roster as $date_unix => $Roster_day_array) {
+            if (!isset($Changed_roster_employee_id_list[$date_unix])) {
+                /* There are no changes. */
+                continue;
+            }
+            foreach ($Roster_day_array as $roster_row_object) {
+                if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                    continue;
+                }
+                /*
+                 * TODO: Should we use an INSERT ON DUPLICATE UPDATE here instead of the REPLACE?
+                 * Are there any advantages to that?
+                 */
+                $sql_query = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar) VALUES ("
+                        . user_input::escape_sql_value($roster_row_object->employee_id)
+                        . ", " . user_input::escape_sql_value(date('w', $roster_row_object->date_unix))
+                        . ", " . user_input::escape_sql_value($roster_row_object->duty_start_sql)
+                        . ", " . user_input::escape_sql_value($roster_row_object->duty_end_sql)
+                        . ", " . user_input::escape_sql_value($roster_row_object->break_start_sql)
+                        . ", " . user_input::escape_sql_value($roster_row_object->break_end_sql)
+                        . ", " . user_input::escape_sql_value($roster_row_object->working_hours)
+                        . ", " . user_input::escape_sql_value($roster_row_object->branch_id)
+                        . ", " . user_input::escape_sql_value($roster_row_object->comment)
+                        . ")";
+                mysqli_query_verbose($sql_query, TRUE);
+            }
+        }
+    }
+
     private static function insert_new_approval_into_database($date_sql, $branch_id) {
-        //TODO: We should manage situations, where an entry already exists better.
+        /*
+         * TODO: We should manage situations, where an entry already exists better.
+         */
         $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
 			VALUES ('$date_sql', 'not_yet_approved', '$branch_id', " . user_input::escape_sql_value($_SESSION['user_name']) . ")";
         $result = mysqli_query_verbose($sql_query);
@@ -189,8 +209,8 @@ abstract class user_input {
             } elseif (filter_has_var(INPUT_POST, 'submit_disapproval')) {
                 $state = "disapproved";
             } else {
-                //no state is given.
-                // TODO: This is an Exception. Should we fail fast and loud?
+//no state is given.
+// TODO: This is an Exception. Should we fail fast and loud?
                 die("An Error has occurred during approval!");
             }
             $sql_query = "INSERT INTO `approval` (date, branch, state, user) values ('$date_sql', '$branch_id', '$state', '" . $_SESSION['user_employee_id'] . "') ON DUPLICATE KEY UPDATE date='$date_sql', branch='$branch_id', state='$state', user='" . $_SESSION['user_employee_id'] . "'";
@@ -280,7 +300,7 @@ abstract class user_input {
     public static function old_roster_write_user_input_to_database($Roster, $branch_id) {
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
-            //The following line will add an entry for every day in the table approval.
+//The following line will add an entry for every day in the table approval.
             user_input::insert_new_approval_into_database($date_sql, $branch_id);
             $Roster_old = roster::read_roster_from_database($branch_id, $date_sql);
 
@@ -290,7 +310,7 @@ abstract class user_input {
              */
             $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Roster_old);
             $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Roster, $Roster_old);
-            $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Roster, $Roster_old, $date_unix);
+            $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Roster, $Roster_old);
 
             mysqli_query_verbose("START TRANSACTION");
             user_input::remove_changed_entries_from_database($branch_id, $Deleted_roster_employee_id_list);

@@ -25,6 +25,7 @@
 class roster_item {
 
     public $date_sql;
+    public $date_unix;
     public $employee_id;
     public $branch_id;
     public $duty_start_int;
