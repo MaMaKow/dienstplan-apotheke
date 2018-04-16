@@ -32,13 +32,18 @@ abstract class roster_image_bar_plot {
              * CAVE: It is currently assumed, that only one day is submitted.
              * TODO: Test the behaviour with a whole week as input.
              */
-            if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
-                $cursor_style_box = 'move';
-                $cursor_style_break_box = 'cell';
-            } else {
-                $cursor_style_box = 'default';
-                $cursor_style_break_box = 'default';
-            }
+            /*
+             *
+              if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
+              $cursor_style_box = 'move';
+              $cursor_style_break_box = 'cell';
+              } else {
+              $cursor_style_box = 'default';
+              $cursor_style_break_box = 'default';
+              }
+             */
+            $cursor_style_box = 'move';
+            $cursor_style_break_box = 'cell';
 
 
             $bar_height = 20;

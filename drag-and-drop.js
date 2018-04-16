@@ -24,13 +24,14 @@ var currentY = 0;
 var currentMatrix = 0;
 var firstX = 0;
 var firstY = 0;
-
 function selectElement(evt, moveType) {
-    var url = window.location.pathname;
-    var filename = url.substring(url.lastIndexOf('/') + 1);
-    if (filename !== 'tag-in.php') {
+    if (!document.getElementById('roster_form') && !document.getElementById('principle_roster_form')) {
+        /*
+         * If there is no roster form, then there is nothing to change by moving around.
+         */
         return;
-    } //will stop execution in all other interfaces.
+    }
+
 
     if (moveType === 'single') {
         selectedElement = evt.target;
@@ -44,7 +45,6 @@ function selectElement(evt, moveType) {
     currentX = evt.clientX;
     currentY = evt.clientY;
     currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7, -1).split(' ');
-
     for (var i = 0; i < currentMatrix.length; i++) {
         currentMatrix[i] = parseFloat(currentMatrix[i]);
     }
@@ -64,7 +64,6 @@ function moveElement(evt) {
     dx = (evt.clientX - currentX) * 0.8;
     currentMatrix[4] += dx;
     newMatrix = "matrix(" + currentMatrix.join(' ') + ")";
-
     selectedElement.setAttributeNS(null, "transform", newMatrix);
     currentX = evt.clientX;
     currentY = evt.clientY;
@@ -100,7 +99,6 @@ function syncToTable(line, column, diff_hour) {
     var input_id = List_of_input_elements[line];
 //    var previous_time = input_id.value;
     var previous_time = input_id.defaultValue;
-
     var previous_hour = parseFloat(previous_time.substring(0, previous_time.lastIndexOf(':')));
     var previous_minute = parseFloat(previous_time.substring(previous_time.lastIndexOf(':') + 1));
     var previous_minute_float = parseFloat(previous_minute / 60);
