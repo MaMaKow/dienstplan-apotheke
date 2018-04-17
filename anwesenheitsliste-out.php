@@ -5,8 +5,6 @@
  */
 
 require 'default.php';
-require 'db-lesen-abwesenheit.php';
-
 $month = user_input::get_variable_from_any_input('month', FILTER_SANITIZE_STRING, date('n'));
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_STRING, date('Y'));
 $start_date_unix = mktime(0, 0, 0, $month, 1, $year);
