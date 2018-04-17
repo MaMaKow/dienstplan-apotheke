@@ -1,7 +1,5 @@
 <?php
 require 'default.php';
-require 'db-lesen-abwesenheit.php';
-require 'schreiben-ics.php'; //Dieses Script enthält eine Funktion zum schreiben von kleinen ICS Dateien, die mehrere VEVENTs enthalten können.
 
 $tage = 7;
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));

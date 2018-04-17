@@ -15,7 +15,6 @@ create_cookie('mandant', $branch_id, 30);
 $number_of_days = 1;
 $Fehlermeldung = array();
 $Warnmeldung = array();
-require_once 'db-lesen-abwesenheit.php';
 
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $datum = $date_sql; //TODO: Make sure, we can delete this!
@@ -130,7 +129,7 @@ if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empt
     echo "<br>\n";
     echo "<br>\n";
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
-    echo roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_sql);
+    echo roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);
     echo "</div>\n";
 }
 

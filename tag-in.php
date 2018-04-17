@@ -24,7 +24,6 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
-require_once 'db-lesen-abwesenheit.php';
 $Abwesende = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
@@ -132,7 +131,7 @@ if (!empty($Roster)) {
     $html_text .= "<div class=image>\n";
     $html_text .= roster_image_bar_plot::draw_image_dienstplan($Roster);
     $html_text .= "<br>\n";
-    $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_sql);
+    $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);
     $html_text .= "</div>\n";
 }
 $html_text .= "</div>";

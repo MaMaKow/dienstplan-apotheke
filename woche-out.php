@@ -1,6 +1,5 @@
 <?php
 require_once "default.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "db-lesen-abwesenheit.php";
 
 $tage = 7; //One week
 
