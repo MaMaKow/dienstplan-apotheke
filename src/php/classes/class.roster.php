@@ -157,7 +157,12 @@ abstract class roster {
     }
 
     public static function read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
-        global $List_of_employees;
+        mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
+        mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
+        /*
+         * TODO: Make sure, that these two repair calls are not necessary anymore:
+         */
+        global $workforce;
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
@@ -167,11 +172,6 @@ abstract class roster {
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
             $Absentees = absence::read_absentees_from_database($date_sql);
-            /*
-             * TODO: Make sure, that these two repair calls are not necessary anymore:
-             */
-            mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
-            mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
             $sql_query = "SELECT * FROM `Grundplan`"
                     . "WHERE `Wochentag` = '" . date("N", $date_unix) . "'"
                     . "AND `Mandant` = '$branch_id'"
@@ -185,8 +185,8 @@ abstract class roster {
                 if (isset($Absentees[$row->VK])) {
                     continue 1;
                 }
-                if (isset($List_of_employees) AND array_search($row->VK, array_keys($List_of_employees)) === false) {
-                    //$Fehlermeldung[]=$List_of_employees[$row->VK]." ist nicht angestellt.<br>\n";
+                if (isset($workforce->List_of_employees) AND array_search($row->VK, array_keys($workforce->List_of_employees)) === false) {
+                    //$Fehlermeldung[]=$workforce->List_of_employees[$row->VK]->last_name." ist nicht angestellt.<br>\n";
                     continue 1;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
@@ -195,6 +195,34 @@ abstract class roster {
             }
         }
         roster::determine_lunch_breaks($Roster);
+        return $Roster;
+    }
+
+    public static function read_principle_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end = NULL) {
+        global $workforce;
+        if (NULL === $date_sql_end) {
+            $date_sql_end = $date_sql_start;
+        }
+        $date_unix_start = strtotime($date_sql_start);
+        $date_unix_end = strtotime($date_sql_end);
+        $Roster = array();
+        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
+            $date_sql = date('Y-m-d', $date_unix);
+            /*
+             * TODO: Make sure, that these two repair calls are not necessary anymore:
+             */
+            $sql_query = "SELECT * FROM `Grundplan`"
+                    . "WHERE `Wochentag` = '" . date("N", $date_unix) . "'"
+                    . "AND `VK` = '$employee_id'"
+                    . "ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`";
+
+            $result = mysqli_query_verbose($sql_query);
+            $roster_row_iterator = 0;
+            while ($row = mysqli_fetch_object($result)) {
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
+                $roster_row_iterator++;
+            }
+        }
         return $Roster;
     }
 

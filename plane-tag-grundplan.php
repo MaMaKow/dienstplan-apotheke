@@ -15,11 +15,11 @@ function get_principle_roster($date_sql, $branch = 1, $day_index = 0, $number_of
             //Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
             //TODO: This should be put somewhere else as a seperate function!
             if (isset($Abwesende[$row->VK])) {
-                $Fehlermeldung[] = $List_of_employees[$row->VK] . " ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n";
+                $Fehlermeldung[] = $workforce->List_of_employees[$row->VK]->last_name . " ist abwesend. 	Die Lücke eventuell auffüllen($row->Dienstbeginn - $row->Dienstende).<br>\n";
                 continue 1;
             }
-            if (isset($List_of_employees) AND array_search($row->VK, array_keys($List_of_employees)) === false) {
-                //$Fehlermeldung[]=$List_of_employees[$row->VK]." ist nicht angestellt.<br>\n";
+            if (isset($workforce->List_of_employees) AND array_search($row->VK, array_keys($workforce->List_of_employees)) === false) {
+                //$Fehlermeldung[]=$workforce->List_of_employees[$row->VK]->last_name." ist nicht angestellt.<br>\n";
                 continue 1;
             }
             $Dienstplan[$day_index]['Datum'][] = $current_date_sql;
@@ -27,7 +27,6 @@ function get_principle_roster($date_sql, $branch = 1, $day_index = 0, $number_of
             $Dienstplan[$day_index]['Dienstbeginn'][] = date("H:i", strtotime($row->Dienstbeginn));
             $Dienstplan[$day_index]['Dienstende'][] = date("H:i", strtotime($row->Dienstende));
             $Dienstplan[$day_index]['Mittagsbeginn'][] = $row->Mittagsbeginn;
-            //echo $List_of_employees[$row->VK].": ".$row->Mittagsbeginn."<br>\n";
             //TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
             $Dienstplan[$day_index]['Mittagsende'][] = $row->Mittagsende;
             $Dienstplan[$day_index]['Stunden'][] = $row->Stunden;
@@ -59,7 +58,6 @@ function determine_lunch_breaks($Dienstplan, $tag) {
         $Besetzte_mittags_enden = array_map('strtotime', $Dienstplan[$tag]['Mittagsende']); //Zeiten, zu denen jemand mit dem Essen fertig ist.
         $pausen_start = strtotime('11:30:00');
         foreach ($Dienstplan[$tag]['VK'] as $position => $vk) { //Die einzelnen Zeilen im Dienstplan
-            //echo "Mittag für $List_of_employees[$vk]?<br>\n";
             if (!empty($List_of_employee_lunch_break_minutes[$vk]) AND ! ($Dienstplan[$tag]['Mittagsbeginn'][$position] > 0) AND ! ($Dienstplan[$tag]['Mittagsende'][$position] > 0)) {
                 //echo "Mittag ist noch nicht definiert<br>\n";
                 //Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.

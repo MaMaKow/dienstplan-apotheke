@@ -34,7 +34,7 @@ if (filter_has_var(INPUT_POST, 'submit_user_data')) {
 }
 
 function read_user_data_from_database($employee_id) {
-    global $List_of_employees;
+    global $workforce;
     $sql_query = "SELECT * FROM `users` WHERE `employee_id` = '$employee_id'";
     $result = mysqli_query_verbose($sql_query);
     while ($row = mysqli_fetch_object($result)) {
@@ -42,7 +42,7 @@ function read_user_data_from_database($employee_id) {
         $User["user_name"] = $row->user_name;
         $User["email"] = $row->email;
         $User["status"] = $row->status;
-        $User["last_name"] = $List_of_employees[$row->employee_id];
+        $User["last_name"] = $workforce->List_of_employees[$row->employee_id]->last_name;
     }
     $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = '$employee_id'";
     $result = mysqli_query_verbose($sql_query);

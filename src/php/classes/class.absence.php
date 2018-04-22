@@ -12,7 +12,7 @@ class absence {
     public static function read_absentees_from_database($date_sql) {
 
         $Absentees = array();
-        global $List_of_employees;
+        global $workforce;
         if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
             throw new Exception("\$date_sql has to be a string! $date_sql given.");
         }
@@ -21,10 +21,10 @@ class absence {
          * We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
          * TODO: Build an option to delete future vacations of people when leaving.
          */
-        if (!isset($List_of_employees)) {
-            throw new UnexpectedValueException("\$List_of_employees must be set but was '$List_of_employees'. ");
+        if (!isset($workforce)) {
+            throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
         }
-        $mitarbeiterliste = implode(", ", array_keys($List_of_employees));
+        $mitarbeiterliste = implode(", ", array_keys($workforce->List_of_employees));
 
         $sql_query = "SELECT * FROM `absence` "
                 . "WHERE `start` <= '$date_sql' "

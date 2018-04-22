@@ -88,12 +88,12 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     </SELECT>
     <SELECT name=employee_id onchange=this.form.submit()>
         <?php
-        foreach ($List_of_employees as $employee_id_option => $employee_name) {
+        foreach ($workforce->List_of_employees as $employee_id_option => $employee_object) {
             echo "<option value=$employee_id_option";
             if ($employee_id_option == $employee_id) {
                 echo " SELECTED ";
             }
-            echo ">$employee_name</option>\n";
+            echo ">$employee_object->last_name</option>\n";
         }
         ?>
     </SELECT>

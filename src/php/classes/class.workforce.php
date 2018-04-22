@@ -49,10 +49,10 @@ class workforce {
             if (in_array($row->profession, array('Apotheker', 'PI'))) {
                 $this->List_of_qualified_pharmacist_employees[] = $row->id;
             }
-            if (TRUE === $row->goods_receipt) {
+            if (TRUE == $row->goods_receipt) {
                 $this->List_of_goods_receipt_employees[] = $row->id;
             }
-            if (TRUE === $row->compounding) {
+            if (TRUE == $row->compounding) {
                 $this->List_of_compounding_employees[] = $row->id;
             }
         }

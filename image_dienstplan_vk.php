@@ -19,12 +19,12 @@
 
 /**
  *
- * @global array $List_of_employees
+ * @global object $workforce
  * @param array $Dienstplan
  * @return string The svg element
  */
 function draw_image_dienstplan_vk($Dienstplan) {
-    global $List_of_employees, $List_of_employee_professions;
+    global $workforce, $List_of_employee_professions;
 
     $bar_height = 20;
     $bar_width_factor = 40;
@@ -138,7 +138,7 @@ function draw_image_dienstplan_vk($Dienstplan) {
 
             $svg_box_text .= "<g id=work_box_$day transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' >";
             $svg_box_text .= "<rect x='$x_pos_box' y='$y_pos_box' width='$width' height='$bar_height' style='fill: $Worker_style[$worker_style];cursor: $cursor_style_box;' />\n";
-            $svg_box_text .= "<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>" . $List_of_employees[$vk] . "</text>\n";
+            $svg_box_text .= "<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic'>" . $workforce->List_of_employees[$vk]->last_name . "</text>\n";
             $svg_box_text .= "<text x='$x_pos_text_secondary' y='$y_pos_text' font-family='sans-serif' font-size='$font_size' alignment-baseline='ideographic' text-anchor='end'>" . $working_hours . "</text>\n";
             $svg_box_text .= "</g>";
 

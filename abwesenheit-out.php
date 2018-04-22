@@ -2,7 +2,7 @@
 require 'default.php';
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-$VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
+$VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen die höchste VK-Nummer.
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie("employee_id", $employee_id, 1);
 $vk = $employee_id;
@@ -42,7 +42,7 @@ require 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
 echo "<div id=main-area>\n";
 
-echo build_select_employee($employee_id, $List_of_employees);
+echo build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo "<a class=no-print href='abwesenheit-in.php?employee_id=$employee_id'><br>[" . gettext("Edit") . "]</a>";
 echo "<table>\n";

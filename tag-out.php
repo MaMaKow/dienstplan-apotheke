@@ -61,7 +61,7 @@ $max_vk_count_in_rooster_days = 0;
 foreach ($Roster as $Roster_day_array) {
     $max_vk_count_in_rooster_days = max($max_vk_count_in_rooster_days, count($Roster_day_array));
 }
-$VKmax = max(array_keys($List_of_employees)); //The highest given employee_id
+$VKmax = max(array_keys($workforce->List_of_employees)); //The highest given employee_id
 require 'head.php';
 require 'navigation.php';
 require 'src/php/pages/menu.php';
@@ -99,8 +99,8 @@ for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this i
     $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
     if (FALSE !== $having_emergency_service) {
         echo "<br>NOTDIENST<br>";
-        if (isset($List_of_employees[$having_emergency_service['employee_id']])) {
-            echo $List_of_employees[$having_emergency_service['employee_id']];
+        if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
+            echo $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name;
         } else {
             echo "???";
         }
@@ -112,8 +112,6 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
 
     echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
     echo "<tr><td></td></tr>\n";
-    //require_once 'schreiben-tabelle.php';
-
     echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
     echo "<tr><td><br></td></tr>";
     if (isset($Abwesende)) {
@@ -125,7 +123,8 @@ echo "</div>\n";
 
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empty($Dienstplan[0]["Dienstbeginn"])) {
     echo "<div id=roster_image_div class=image>\n";
-    echo roster_image_bar_plot::draw_image_dienstplan($Roster);
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster);
+    echo $roster_image_bar_plot->svg_string;
     echo "<br>\n";
     echo "<br>\n";
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);

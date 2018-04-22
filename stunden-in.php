@@ -116,7 +116,7 @@ if (!$session->user_has_privilege('create_roster') and ! $session->user_has_priv
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo build_select_employee($employee_id, $List_of_employees);
+echo build_select_employee($employee_id, $workforce->List_of_employees);
 echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[" . gettext("Read") . "]</a>\n";
 
 echo "<table>\n";

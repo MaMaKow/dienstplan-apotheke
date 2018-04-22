@@ -218,7 +218,7 @@ function approve_absence_to_database() {
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_year($year) {
-    global $List_of_employee_professions, $List_of_employees;
+    global $List_of_employee_professions, $workforce;
     $start_date = mktime(0, 0, 0, 1, 1, $year);
     $current_month = date("n", $start_date);
     //$system_encoding = mb_detect_encoding(strftime("äöüÄÖÜß %B", 1490388361), "auto");
@@ -279,14 +279,14 @@ function build_absence_year($year) {
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
-                        . $List_of_employees[$Absence['employee_id']] . "\n"
+                        . $workforce->List_of_employees[$Absence['employee_id']]->last_name . "\n"
                         . $Absence['reason'] . "\n"
                         . gettext("from") . " " . strftime('%x', strtotime($Absence['start'])) . "\n"
                         . gettext("to") . " " . strftime('%x', strtotime($Absence['end'])) . "\n"
                         . gettext($Absence['approval']) . "";
 
                 $absent_employees_containers .= "<span "
-                        . "class='absent_employee_container $List_of_employee_professions[$employee_id] " . $Absence['approval'] . "' "
+                        . "class='absent_employee_container " . $workforce->List_of_employees[$employee_id]->profession . " " . $Absence['approval'] . "' "
                         . "onclick='insert_form_div(\"edit\")' "
                         . "title='$absence_title_text'"
                         . "data-absence_details='" . json_encode($Absence) . "'>";
@@ -355,7 +355,7 @@ function build_absence_year($year) {
  * @return string HTML div element containing a calendar with absences.
  */
 function build_absence_month($year, $month_number) {
-    global $List_of_employees, $List_of_employee_professions;
+    global $workforce, $List_of_employee_professions;
     $input_date = mktime(8, 0, 0, $month_number, 1, $year);
     $monday_difference = date('w', $input_date) - 1; //Get start of the week
     if (-1 === $monday_difference) {
@@ -447,18 +447,18 @@ function build_absence_month($year, $month_number) {
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
-                        . $List_of_employees[$Absence['employee_id']] . "\n"
+                        . $workforce->List_of_employees[$Absence['employee_id']]->last_name . "\n"
                         . $Absence['reason'] . "\n"
                         . gettext("from") . " " . strftime('%x', strtotime($Absence['start'])) . "\n"
                         . gettext("to") . " " . strftime('%x', strtotime($Absence['end'])) . "\n"
                         . gettext($Absence['approval']) . "";
 
                 $absent_employees_containers .= "<span "
-                        . "class='absent_employee_container $List_of_employee_professions[$employee_id] " . $Absence['approval'] . "' "
+                        . "class='absent_employee_container " . $workforce->List_of_employees[$employee_id]->profession . " " . $Absence['approval'] . "' "
                         . "onclick='insert_form_div(\"edit\")' "
                         . "title='$absence_title_text'"
                         . "data-absence_details='" . json_encode($Absence) . "'>";
-                $absent_employees_containers .= $employee_id . " " . mb_substr($List_of_employees[$employee_id], 0, 16);
+                $absent_employees_containers .= $employee_id . " " . mb_substr($workforce->List_of_employees[$employee_id]->last_name, 0, 16);
                 $absent_employees_containers .= "</span><br>\n";
             }
         } else {
@@ -508,7 +508,7 @@ function build_absence_month($year, $month_number) {
                     . ":<br>"
                     . $List_of_branch_objects[$having_emergency_service["branch_id"]]->short_name
                     . ",<br>"
-                    . $List_of_employees[$having_emergency_service["employee_id"]]
+                    . $workforce->List_of_employees[$having_emergency_service["employee_id"]]->last_name
                     . "</p>\n";
         }
         $p_html .= $p_html_javascript;

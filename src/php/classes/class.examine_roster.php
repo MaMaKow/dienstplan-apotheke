@@ -20,10 +20,11 @@ class examine_roster {
         $this->Wareneingang_Anwesende = roster_headcount::headcount_roster($this->Roster_of_goods_receipt_employees, $this->Changing_times);
         $this->Approbierten_anwesende = roster_headcount::headcount_roster($this->Roster_of_qualified_pharmacist_employees, $this->Changing_times);
         $this->Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
+        //print_debug_variable($this->Roster_of_qualified_pharmacist_employees);
     }
 
     public function check_for_overlap($date_sql, &$Error_message) {
-        global $List_of_branch_objects, $List_of_employees;
+        global $List_of_branch_objects, $workforce;
         $sql_query = "SELECT `first`.`VK`,"
                 . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
                 . " `first`.`Mandant` as first_branch,"
@@ -38,7 +39,7 @@ class examine_roster {
 
         $result = mysqli_query_verbose($sql_query);
         while ($row = mysqli_fetch_array($result)) {
-            $Error_message[] = "Konflikt bei Mitarbeiter " . $List_of_employees[$row['VK']] . "<br>"
+            $Error_message[] = "Konflikt bei Mitarbeiter " . $workforce->List_of_employees[$row['VK']]->last_name . "<br>"
                     . $row['first_start'] . " bis " . $row['first_end'] . " (" . $List_of_branch_objects[$row['first_branch']]->short_name . ") "
                     . "mit <br>" . $row['second_start'] . " bis " . $row['second_end'] . " (" . $List_of_branch_objects[$row['second_branch']]->short_name . ")!";
         }
