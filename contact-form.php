@@ -33,7 +33,7 @@
     $message .= $trace[0]['file'];
     $message .= "\n\n";
     $message .= "Die Nachricht stammt von:";
-    $message .= $List_of_employee_full_names[$_SESSION['user_employee_id']];
+    $message .= $workforce->List_of_employees[$_SESSION['user_employee_id']]->full_name;
     $message .= "\n\n";
     if (filter_has_var(INPUT_POST, 'message')) {
         $message .= "<<<Nachricht<<<\n";

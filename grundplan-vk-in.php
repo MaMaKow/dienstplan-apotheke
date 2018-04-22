@@ -1,126 +1,26 @@
 <?php
 require 'default.php';
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
-//$datenübertragung="";
-$tage = 7;
+$number_of_days = 7;
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 30);
-if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    $Grundplan = filter_input(INPUT_POST, 'Grundplan', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-}
-if (isset($Grundplan)) {
-    unset($Sql_query_list);
-    /*
-     * Extract variables from the array:
-     * @var $max_rows int number of rows in the principle roster array
-     */
-    foreach ($Grundplan as $wochentag => $Columns) {
-        $row_number = count($Grundplan[$wochentag]['VK']);
-        $max_rows = max($row_number, $max_rows);
-    }
-    for ($row = 0; $row <= $max_rows; ++$row) {
-        foreach ($Grundplan as $wochentag => $Columns) {
-            foreach ($Columns as $column => $Rows) {
-                if (isset($Rows[$row])) {
-                    ${$column} = $Rows[$row];
-                }
-            }
-            //TODO: It seems that the $Stunden should be calculated here!
-            /*
-             * Test if all the variables were set:
-             */
-            if (isset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant)) {
-                /*
-                 * First, the old values are deleted.
-                 */
-                $sql_query = "DELETE FROM `Grundplan` WHERE Wochentag='$wochentag' AND VK='$VK'";
-                $result = mysqli_query_verbose($sql_query);
-                /*
-                 * Second, new values are inserted.
-                 */
-                $Sql_query_list[] = "INSERT INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Kommentar, Stunden, Mandant)
-					      VALUES ('$VK', '$wochentag', '$Dienstbeginn', '$Dienstende', '$Mittagsbeginn', '$Mittagsende', '$Kommentar', '$Stunden', '$Mandant')";
-                unset($VK, $wochentag, $Dienstbeginn, $Dienstende, $Mittagsbeginn, $Mittagsende, $Kommentar, $Stunden, $Mandant);
-            }
-        }
-    }
-    foreach ($Sql_query_list as $sql_query) {
-        $result = mysqli_query_verbose($sql_query);
-    }
-}
+$weekday = user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
+create_cookie('weekday', $weekday, 1);
+$pseudo_date_unix = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
+$pseudo_date_sql_start = date('Y-m-d', $pseudo_date_unix);
+$pseudo_date_sql_end = date('Y-m-d', strtotime('+ ' . ($number_of_days - 1) . ' days', $pseudo_date_unix));
 
-//Abruf der gespeicherten Daten aus der Datenbank
-unset($Grundplan);
-for ($wochentag = 1; $wochentag <= 5; ++$wochentag) {
-    $sql_query = 'SELECT *
-		FROM `Grundplan`
-		WHERE `Wochentag` = "' . $wochentag . '"
-			AND `VK`="' . $employee_id . '"
-		;';
-    $result = mysqli_query_verbose($sql_query);
-    while ($row = mysqli_fetch_object($result)) {
-        $Grundplan[$wochentag]['Wochentag'][] = $row->Wochentag;
-        $Grundplan[$wochentag]['VK'][] = $row->VK;
-        $Grundplan[$wochentag]['Dienstbeginn'][] = $row->Dienstbeginn;
-        $Grundplan[$wochentag]['Dienstende'][] = $row->Dienstende;
-        $Grundplan[$wochentag]['Mittagsbeginn'][] = $row->Mittagsbeginn;
-        $Grundplan[$wochentag]['Mittagsende'][] = $row->Mittagsende;
+$workforce = new workforce($pseudo_date_sql_start);
+$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $workforce->List_of_employees[$employee_id]->principle_branch_id);
 
-        if (!empty($row->Mittagsbeginn) and ! empty($row->Mittagsende) and $row->Mittagsbeginn > 0 and $row->Mittagsende > 0) {
-            $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
-            $mittagspause = strtotime($row->Mittagsende) - strtotime($row->Mittagsbeginn);
-            $sekunden = $sekunden - $mittagspause;
-            $stunden = round($sekunden / 3600, 1);
-        } else {
-            $sekunden = strtotime($row->Dienstende) - strtotime($row->Dienstbeginn);
-            //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-            if ($sekunden - $List_of_employee_lunch_break_minutes[$employee_id] * 60 >= 6 * 3600) {
-                $mittagspause = $List_of_employee_lunch_break_minutes[$employee_id] * 60;
-                $sekunden = $sekunden - $mittagspause;
-            } else {
-                $mittagspause = false;
-            }
-            $stunden = round($sekunden / 3600, 1);
-        }
-        $Grundplan[$wochentag]['Stunden'][] = $stunden;
-        $Grundplan[$wochentag]['Pause'][] = $mittagspause / 60;
-        $Grundplan[$wochentag]['Kommentar'][] = $row->Kommentar;
-        $Grundplan[$wochentag]['Mandant'][] = $row->Mandant;
-    }
-    //Wir füllen komplett leere Tage mit Werten, damit trotzdem eine Anzeige entsteht.
-    if (!isset($Grundplan[$wochentag])) {
-        $Grundplan[$wochentag]["Wochentag"][] = $wochentag;
-        $Grundplan[$wochentag]["VK"][] = "$employee_id";
-        $Grundplan[$wochentag]["Dienstbeginn"][] = null;
-        $Grundplan[$wochentag]["Dienstende"][] = null;
-        $Grundplan[$wochentag]["Mittagsbeginn"][] = null;
-        $Grundplan[$wochentag]["Mittagsende"][] = null;
-        $Grundplan[$wochentag]["Stunden"][] = null;
-        $Grundplan[$wochentag]["Kommentar"][] = null;
-    }
-    //Wir machen aus den Nummern 1 bis 7 wieder Wochentage
-    // Wir wollen den Anfang der Woche und von dort aus unseren Tag
-    $pseudo_datum = strtotime('-' . (date('w') - 1) . ' day', time());
-    $pseudo_datum = strtotime('+' . ($wochentag - 1) . ' day', $pseudo_datum);
-    //In der default.php wurde die Sprache für Zeitangaben auf Deutsch gestzt. Daher steht hier z.B. Montag statt Monday.
-    $Wochentag[$wochentag] = strftime('%A', $pseudo_datum);
-}
+$Principle_roster = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
 
-$VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-$VKmax = max(array_keys($List_of_employees));
-foreach ($Grundplan as $key => $Grundplantag) {
-    $Plan_anzahl[] = (count($Grundplantag['VK']));
-}
-$plan_anzahl = max($Plan_anzahl);
 
 //Produziere die Ausgabe
 require 'head.php';
 ?>
 <a name=top></a>
 <?php
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('create_roster')) {
     echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
@@ -128,106 +28,33 @@ if (!$session->user_has_privilege('create_roster')) {
     die();
 }
 echo "<div id=main-area>\n";
-echo build_select_employee($employee_id, $List_of_employees);
+//TODO: find out how to respect the lunch breaks!
+echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo "<form method='POST' id='change_principle_roster_employee'>";
-echo $submit_button_img;
+echo build_html_navigation_elements::build_button_submit('change_principle_roster_employee');
 echo "</form>";
 
-echo "<table>\n";
-echo "<thead>\n";
-echo "<tr>\n";
-foreach ($Grundplan as $wochentag => $Plan) {
+$html_text = '';
+$html_text .= "<table>\n";
+$html_text .= "<thead>\n";
+$html_text .= "<tr>\n";
+$Weekday_names = build_html_navigation_elements::get_weekday_names();
+foreach ($Weekday_names as $weekday_name) {
     //Wochentag
-    echo "<td width=14%>";
-    echo $Wochentag[$wochentag];
-    echo "</td>\n";
+    $html_text .= "<td width=10%>";
+    $html_text .= $weekday_name;
+    $html_text .= "</td>\n";
 }
-for ($j = 0; $j < $plan_anzahl; ++$j) {
-    echo "</tr></thead>";
-    echo "<tbody><tr>\n";
-    //for ($wochentag=1; $wochentag<=count($Grundplan); $wochentag++)
-    foreach ($Grundplan as $wochentag => $Plan) {
-        $zeile = "";
-        echo "<td>&nbsp;";
-        //Dienstbeginn
-        if (isset($Grundplan[$wochentag]["VK"][$j])) {
-            $zeile .= "<input type=time name='Grundplan[" . $wochentag . "][Dienstbeginn][$j]' value='";
-            if (empty($Grundplan[$wochentag]["Dienstbeginn"][$j])) {
-                $zeile .= "";
-            } else {
-                $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Dienstbeginn"][$j]));
-            }
-            $zeile .= "' form='change_principle_roster_employee'>";
-        }
-        //Dienstende
-        if (isset($Grundplan[$wochentag]['VK'][$j])) {
-            $zeile .= " bis <input type=time name='Grundplan[" . $wochentag . "][Dienstende][$j]' value='";
-            if (empty($Grundplan[$wochentag]["Dienstende"][$j])) {
-                $zeile .= "";
-            } else {
-                $zeile .= strftime("%H:%M", strtotime($Grundplan[$wochentag]["Dienstende"][$j]));
-            }
-            $zeile .= "' form='change_principle_roster_employee'>";
-        }
-        echo $zeile;
-
-        //Mittagspause
-        $zeile = '';
-        echo "<br>\n";
-        if (isset($Grundplan[$wochentag]['VK'][$j]) and $Grundplan[$wochentag]['Mittagsbeginn'][$j] > 0 and $Grundplan[$wochentag]['Mittagsende'][$j] > 0) {
-            $zeile .= " " . gettext("break") . ": ";
-            $zeile .= '<input type=time name=Grundplan[' . $wochentag . "][Mittagsbeginn][$j] value=";
-            $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsbeginn'][$j]));
-            $zeile .= " form='change_principle_roster_employee'>";
-            $zeile .= ' bis <input type=time name=Grundplan[' . $wochentag . "][Mittagsende][$j] value=";
-            $zeile .= strftime('%H:%M', strtotime($Grundplan[$wochentag]['Mittagsende'][$j]));
-            $zeile .= " form='change_principle_roster_employee'>\n";
-        } else {
-            $zeile .= "<div class=mittags_ersatz>";
-            if (!empty($Grundplan[$wochentag]['Pause'][$j])) {
-                $zeile .= " " . gettext("break") . ": ";
-                $zeile .= $Grundplan[$wochentag]['Pause'][$j];
-                $zeile .= ' min';
-            } else {
-                //If there is no break specified and no beak is intended:
-                $zeile .= gettext("No break");
-            }
-            $zeile .= ' <a href=#top onclick=unhide_mittag()>+</a></div>';
-            $zeile .= '<div class=mittags_input style=display:none>';
-            $zeile .= gettext("break") . ": <input type=time name=Grundplan[" . $wochentag . "][Mittagsbeginn][$j]  form='change_principle_roster_employee'> bis ";
-            $zeile .= "<input type=time name=Grundplan[$wochentag][Mittagsende][$j]  form='change_principle_roster_employee'> <a href=#top onclick=rehide_mittag()>-</a></div>";
-        }
-        //Mittagsende
-        if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Mandant'][$j])) {
-            $zeile .= "<br>\n";
-            $zeile .= "<select name=Grundplan[$wochentag][Mandant][$j] form='change_principle_roster_employee'>\n";
-            foreach ($List_of_branch_objects as $branch_id => $branch_object) {
-                if ($branch_id != $Grundplan[$wochentag]['Mandant'][$j]) {
-                    $zeile .= "<option value=" . $branch_id . '>' . $branch_object->short_name . "</option>\n";
-                } else {
-                    $zeile .= "<option value=" . $branch_id . ' selected>' . $branch_object->short_name . "</option>\n";
-                }
-            }
-        }
-        if (isset($Grundplan[$wochentag]['VK'][$j]) and isset($Grundplan[$wochentag]['Kommentar'][$j])) {
-            $zeile .= "<input type=hidden name=Grundplan[$wochentag][Kommentar][$j] value='" . $Grundplan[$wochentag]["Kommentar"][$j] . "' form='change_principle_roster_employee'>\n";
-        } else {
-            $zeile .= "<input type=hidden name=Grundplan[$wochentag][Kommentar][$j] form='change_principle_roster_employee'>\n";
-        }
-        if (isset($Grundplan[$wochentag]['VK'][$j])) {
-            $zeile .= "<input type=hidden name=Grundplan[$wochentag][VK][$j] value='" . $Grundplan[$wochentag]["VK"][$j] . "' form='change_principle_roster_employee'>\n";
-        }
-        if (isset($Grundplan[$wochentag]["VK"][$j]) and isset($Grundplan[$wochentag]["Stunden"][$j])) {
-            $zeile .= "<input type=hidden name=Grundplan[$wochentag][Stunden][$j] value=" . $Grundplan[$wochentag]["Stunden"][$j] . " form='change_principle_roster_employee'>\n";
-            $zeile .= " " . $Grundplan[$wochentag]["Stunden"][$j] . " Stunden";
-        }
-        $zeile .= "";
-
-        echo $zeile;
-        echo "</td>\n";
+$max_employee_count = roster::calculate_max_employee_count($Principle_roster);
+for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
+    $html_text .= "<tr>\n";
+    foreach (array_keys($Principle_roster) as $day_iterator) {
+        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $pseudo_date_unix, $branch_id);
     }
+    $html_text .= "</tr>\n";
 }
+echo $html_text;
 echo "</tr>\n";
 /*
  * TODO: Write JavaScript Code to allow adding more rows to the form
@@ -242,20 +69,13 @@ echo "</tr>\n";
 echo "</tbody>\n";
 echo "<tfoot>\n";
 echo "<tr>\n";
-echo "<td colspan=$tage>\n";
+echo "<td colspan=$number_of_days>\n";
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.
-foreach (array_keys($Grundplan) as $wochentag) {
-    /*
-      // Wir wollen nicht wirklich die ganze Woche. Es zählen nur die "Arbeitswochenstunden".
-      if ($wochentag >= 6) {
-      continue 1;
-      }
-     *
-     */
-    foreach ($Grundplan[$wochentag]["Stunden"] as $key => $stunden) {
-        $Stunden[$employee_id][] = $stunden;
+foreach ($Principle_roster as $Principle_roster_day_array) {
+    foreach ($Principle_roster_day_array as $roster_object) {
+        $Stunden[$employee_id][] = $roster_object->working_hours;
     }
 }
 echo "Wochenstunden ";
@@ -265,9 +85,9 @@ $j = 1; //Zahler für den Stunden-Array (wir wollen nach je x Elementen einen Um
 foreach ($Stunden as $mitarbeiter => $stunden) {
     echo array_sum($stunden);
     echo ' / ';
-    echo $List_of_employee_working_week_hours[$mitarbeiter];
-    if ($List_of_employee_working_week_hours[$mitarbeiter] != array_sum($stunden)) {
-        $differenz = array_sum($stunden) - $List_of_employee_working_week_hours[$mitarbeiter];
+    echo $workforce->List_of_employees[$mitarbeiter]->working_week_hours;
+    if ($workforce->List_of_employees[$mitarbeiter]->working_week_hours != array_sum($stunden)) {
+        $differenz = array_sum($stunden) - $workforce->List_of_employees[$mitarbeiter]->working_week_hours;
         echo " <b>( " . $differenz . " )</b>";
     }
 }
@@ -280,9 +100,13 @@ echo "</table>\n";
 //echo "</form>\n";
 echo "</div>\n";
 
-require_once 'image_dienstplan_vk.php';
-$svg_image_dienstplan = draw_image_dienstplan_vk($Grundplan);
-echo $svg_image_dienstplan;
+/*
+  require_once 'image_dienstplan_vk.php';
+ * $svg_image_dienstplan = draw_image_dienstplan_vk($Grundplan);
+  echo $svg_image_dienstplan;
+ */
+$roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);
+echo $roster_image_bar_plot->svg_string;
 
 
 require 'contact-form.php';

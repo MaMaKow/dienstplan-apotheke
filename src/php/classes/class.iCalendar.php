@@ -15,7 +15,6 @@ class iCalendar {
     /**
 
      *
-     * @global array $List_of_employees
      * @param array $Roster
      * @return string $textICS the ICS text file
      */
@@ -84,6 +83,11 @@ class iCalendar {
         $textICS .= "LOCATION:$branch_address\n";
         return $textICS;
     }
+
+    /*
+     * @param $roster_object object An object of the class roster_item
+     * @global object $workforce
+     */
 
     private static function build_ics_roster_employee_description($roster_object) {
         global $List_of_branch_objects, $workforce;

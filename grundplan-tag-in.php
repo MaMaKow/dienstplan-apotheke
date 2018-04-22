@@ -28,8 +28,8 @@ $workforce = new workforce($pseudo_date_sql);
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql);
 
 
-$VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-$VKmax = max(array_keys($List_of_employees));
+$VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+$VKmax = max(array_keys($workforce->List_of_employees));
 
 //Produziere die Ausgabe
 require 'head.php';
@@ -70,7 +70,8 @@ if (!empty($Principle_roster)) {
     //TODO: This does not work yet. PLease check Dienstplan equals Grundplan?
     echo "<div class=above-image>\n";
     echo "<div class=image>\n";
-    echo roster_image_bar_plot::draw_image_dienstplan($Principle_roster);
+    $roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);
+    echo $roster_image_bar_plot->svg_string;
     echo "<br>\n";
     $Changing_times = roster::calculate_changing_times($Principle_roster);
     $Attendees = roster_headcount::headcount_roster($Principle_roster, $Changing_times);

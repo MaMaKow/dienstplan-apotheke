@@ -4,10 +4,11 @@ abstract class roster_headcount {
 
     public static function get_roster_of_qualified_pharmacist_employees($Roster) {
         $Roster_of_qualified_pharmacist_employees = array();
-        global $Approbierte_mitarbeiter;
+        global $workforce;
+        print_debug_variable($workforce->List_of_qualified_pharmacist_employees);
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
-                if (in_array($roster_item_object->employee_id, array_keys($Approbierte_mitarbeiter))) {
+                if (in_array($roster_item_object->employee_id, $workforce->List_of_qualified_pharmacist_employees)) {
                     $Roster_of_qualified_pharmacist_employees[$roster_item_object->date_unix][] = $roster_item_object;
                 }
             }
@@ -17,10 +18,10 @@ abstract class roster_headcount {
 
     public static function get_roster_of_goods_receipt_employees($Roster) {
         $Roster_of_goods_receipt_employees = array();
-        global $Wareneingang_Mitarbeiter;
+        global $workforce;
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
-                if (in_array($roster_item_object->employee_id, array_keys($Wareneingang_Mitarbeiter))) {
+                if (in_array($roster_item_object->employee_id, $workforce->List_of_goods_receipt_employees)) {
                     $Roster_of_goods_receipt_employees[$roster_item_object->date_unix][] = $roster_item_object;
                 }
             }

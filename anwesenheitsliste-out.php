@@ -55,8 +55,8 @@ require 'src/php/pages/menu.php';
     <TR>
         <TD>Anwesenheit</TD>
         <?php
-        foreach ($List_of_employees as $employee_id => $name) {
-            echo '<TD style="padding-bottom: 0">' . mb_substr($name, 0, 4) . "<br>$employee_id</TD>";
+        foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
+            echo '<TD style="padding-bottom: 0">' . mb_substr($employee_object->last_name, 0, 4) . "<br>$employee_id</TD>";
         }
         ?>
     </TR>
@@ -65,7 +65,7 @@ require 'src/php/pages/menu.php';
         $date_sql = date("Y-m-d", $date_unix);
         if (date('N', $date_unix) >= 6) {
             echo '<TR class=wochenende><TD style="padding-bottom: 0">' . strftime('%a %d.%m.', $date_unix) . '</TD>';
-            foreach ($List_of_employees as $employee_id => $name) {
+            foreach (array_keys($workforce->List_of_employees) as $employee_id) {
                 echo '<TD></TD>';
             }
         } else {
@@ -73,7 +73,7 @@ require 'src/php/pages/menu.php';
             $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
             echo '<TR><TD style="padding-bottom: 0">' . strftime('%a %d.%m.%Y', $date_unix) . '</TD>';
             //TODO: The following part is not localized. It will not wrk in any other language:
-            foreach ($List_of_employees as $employee_id => $name) {
+            foreach (array_keys($workforce->List_of_employees) as $employee_id) {
                 if (isset($Absentees[$employee_id])) {
                     /*
                      * TODO: Once, that the database only accepts a SET of absences, find some akronyms to put here!

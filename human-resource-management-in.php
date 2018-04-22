@@ -20,7 +20,7 @@ if (!$session->user_has_privilege('create_employee')) {
  */
 ?>
 <div class="centered_form_div">
-    <?= build_select_employee($employee_id, $List_of_employees) ?>
+    <?= build_select_employee($employee_id, $workforce->List_of_employees) ?>
     <form method='POST' id='human_resource_management'>
 
         <fieldset>

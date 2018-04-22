@@ -59,23 +59,23 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     <p><?= gettext("Employee") ?><br><select name="employee_id" id="employee_id_select"></p>
     <?php
     if ($session->user_has_privilege('create_absence')) {
-        foreach ($List_of_employees as $employee_id_option => $last_name) {
+        foreach ($workforce->List_of_employees as $employee_id_option => $employee_object) {
             if ($employee_id_option == $employee_id) {
                 $option_selected = "selected";
             } else {
                 $option_selected = "";
             }
             echo "<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
-            echo "$employee_id_option $last_name";
+            echo "$employee_id_option $employee_object->last_name";
             echo "</option>\n";
         }
     } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_id) {
         echo "<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
-        echo $_SESSION['user_employee_id'] . " " . $List_of_employees[$_SESSION['user_employee_id']];
+        echo $_SESSION['user_employee_id'] . " " . $workforce->List_of_employees[$_SESSION['user_employee_id']]->last_name;
         echo "</option>\n";
     } else {
         echo "<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
-        echo $employee_id . " " . $List_of_employees[$employee_id];
+        echo $employee_id . " " . $workforce->List_of_employees[$employee_id]->last_name;
         echo "</option>\n";
     }
     ?>

@@ -18,14 +18,14 @@
  */
 
 function task_rotation_main($Dates_unix, $task) {
-    global $List_of_employees;
+    global $workforce;
     $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
     $weekly_rotation_div_html .= $task . ":<br>\n";
     foreach ($Dates_unix as $date_unix) {
         unset($rotation_vk);
         $rotation_vk = task_rotation_get_worker($date_unix, $task);
         $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
-        $weekly_rotation_div_html .= $List_of_employees[$rotation_vk] . "<br>\n";
+        $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_vk]->last_name . "<br>\n";
     }
     $weekly_rotation_div_html .= "</div>\n";
     return $weekly_rotation_div_html;
@@ -33,7 +33,7 @@ function task_rotation_main($Dates_unix, $task) {
 
 function task_rotation_get_worker($date_unix, $task) {
     $date_sql = date("Y-m-d", $date_unix);
-    global $List_of_employees;
+    global $workforce;
     //We want the PTAs to take turns in the lab at a weekly basis.
     //We sort them by VK number and check for the last one to take his turn.
     //TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?

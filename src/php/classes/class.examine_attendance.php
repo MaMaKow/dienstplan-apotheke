@@ -25,7 +25,7 @@
 abstract class examine_attendance {
 
     public static function check_for_attendant_absentees($Roster, $datum, $Abwesende, &$Fehlermeldung) {
-        global $List_of_employees;
+        global $workforce;
         foreach ($Roster as $Roster_day) {
             foreach ($Roster_day as $roster_object) {
                 $Roster_workers[] = $roster_object->employee_id;
@@ -40,7 +40,7 @@ abstract class examine_attendance {
         }
         if (isset($Arbeitende_abwesende)) {
             foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
-                $Fehlermeldung[] = $List_of_employees[$arbeitender_abwesender] . " ist abwesend (" . $Abwesende[$arbeitender_abwesender] . ") und sollte nicht im Dienstplan stehen.";
+                $Fehlermeldung[] = $workforce->List_of_employees[$arbeitender_abwesender]->last_name . " ist abwesend (" . $Abwesende[$arbeitender_abwesender] . ") und sollte nicht im Dienstplan stehen.";
             }
         }
     }
@@ -48,7 +48,7 @@ abstract class examine_attendance {
     public static function check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, &$Warnmeldung) {
         $Roster_workers = array();
         $Principle_roster_workers = array();
-        global $List_of_employees, $Mandanten_mitarbeiter;
+        global $workforce, $Mandanten_mitarbeiter;
         foreach ($Principle_roster as $Principle_roster_day) {
             foreach ($Principle_roster_day as $principle_roster_object) {
                 $Principle_roster_workers[] = $principle_roster_object->employee_id;
@@ -72,7 +72,7 @@ abstract class examine_attendance {
                     if ($arbeiter == $principle_roster_object->employee_id) {
                         $duty_start = $principle_roster_object->duty_start_sql;
                         $duty_end = $principle_roster_object->duty_end_sql;
-                        $fehler .= $separator . $List_of_employees[$arbeiter];
+                        $fehler .= $separator . $workforce->List_of_employees[$arbeiter]->last_name;
                         $fehler .= " ($duty_start - $duty_end)";
                         $separator = ", <br>";
                         break;

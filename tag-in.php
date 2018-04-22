@@ -14,6 +14,8 @@ $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STR
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 
+$workforce = new workforce($date_sql);
+
 if (filter_has_var(INPUT_POST, 'Roster')) {
     $Roster = user_input::get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
@@ -22,7 +24,6 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
 }
 
 //Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Abwesende = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
@@ -52,7 +53,7 @@ if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
 
 
 
-$VKmax = max(array_keys($List_of_employees));
+$VKmax = max(array_keys($workforce->List_of_employees));
 
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
 examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, $Warnmeldung);
@@ -62,7 +63,6 @@ examine_attendance::check_for_attendant_absentees($Roster, $date_sql, $Abwesende
 
 //Produziere die Ausgabe
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
@@ -75,7 +75,7 @@ $html_text .= build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 $html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
 $html_text .= "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
-$html_text .= build_select_branch($branch_id, $date_sql);
+$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 
 $html_text .= "<div id=navigation_elements>";
@@ -103,8 +103,8 @@ if (FALSE !== $holiday) {
 }
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
-    if (isset($List_of_employees[$having_emergency_service['employee_id']])) {
-        $html_text .= "<br>NOTDIENST<br>" . $List_of_employees[$having_emergency_service['employee_id']] . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+    if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
+        $html_text .= "<br>NOTDIENST<br>" . $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     } else {
         $html_text .= "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     }
@@ -129,7 +129,8 @@ $html_text .= "</form>\n";
 
 if (!empty($Roster)) {
     $html_text .= "<div class=image>\n";
-    $html_text .= roster_image_bar_plot::draw_image_dienstplan($Roster);
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster);
+    $html_text .= $roster_image_bar_plot->svg_string;
     $html_text .= "<br>\n";
     $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);
     $html_text .= "</div>\n";

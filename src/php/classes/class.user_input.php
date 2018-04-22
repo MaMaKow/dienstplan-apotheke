@@ -56,10 +56,6 @@ abstract class user_input {
     }
 
     public static function principle_roster_write_user_input_to_database($branch_id) {
-        global $List_of_employee_lunch_break_minutes, $List_of_employees, $workforce;
-        if (!isset($List_of_employees)) {
-            require 'db-lesen-mitarbeiter.php';
-        }
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
 
         $pseudo_date_sql_start = date('Y-m-d', min(array_keys($Principle_roster_new)));

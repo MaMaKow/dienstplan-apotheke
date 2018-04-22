@@ -47,10 +47,10 @@ abstract class build_html_roster_views {
      */
 
     public static function build_absentees_column($Absentees) {
-        global $List_of_employees;
+        global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($Absentees as $employee_id => $reason) {
-            $text .= $List_of_employees[$employee_id] . " (" . $reason . ")<br>";
+            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . $reason . ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -100,15 +100,15 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
-        global $List_of_employees;
+        global $workforce;
         $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
-
-        foreach ($List_of_employees as $employee_id => $last_name) {
+        //print_debug_variable($workforce);
+        foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
             if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
-                $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $last_name . "</option>";
+                $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
             } else {
-                $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $last_name . "</option>";
+                $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
             }
         }
 
@@ -191,7 +191,7 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        global $List_of_employees;
+        global $workforce;
         global $config;
         $table_html = "";
         $table_html .= "<tbody>";
@@ -220,9 +220,6 @@ abstract class build_html_roster_views {
                     continue;
                 }
                 $roster_object = $Roster[$date_unix][$table_row_iterator];
-                if (!isset($List_of_employees[$roster_object->employee_id])) {
-//$List_of_employees[$roster_object->employee_id] = '?';
-                }
                 /*
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
@@ -245,7 +242,7 @@ abstract class build_html_roster_views {
                 $zeile .= "$emphasis_start<b><a href='mitarbeiter-out.php?"
                         . "datum=" . htmlentities($roster_object->date_sql)
                         . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
-                $zeile .= $List_of_employees[$roster_object->employee_id];
+                $zeile .= $workforce->List_of_employees[$roster_object->employee_id]->last_name;
                 $zeile .= "</a></b> / ";
                 $zeile .= htmlentities($roster_object->working_hours);
                 $zeile .= " ";
@@ -276,7 +273,7 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        global $List_of_employees, $List_of_branch_objects;
+        global $workforce, $List_of_branch_objects;
         global $config;
         $table_html = "";
         $table_html .= "<tbody>";
@@ -302,9 +299,6 @@ abstract class build_html_roster_views {
                     continue;
                 }
                 $roster_object = $Roster[$date_unix][$table_row_iterator];
-                if (!isset($List_of_employees[$roster_object->employee_id])) {
-
-                }
                 /*
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
@@ -363,7 +357,7 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $Options = NULL) {
-        global $List_of_employees, $List_of_employee_working_week_hours, $Mandanten_mitarbeiter;
+        global $workforce, $List_of_employee_working_week_hours, $Mandanten_mitarbeiter;
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
         $week_hours_table_html .= "<H2>Wochenstunden</H2>\n";
         $week_hours_table_html .= "<p>\n";
@@ -377,7 +371,7 @@ abstract class build_html_roster_views {
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
                 continue; /* Only the specified employees is shown. */
             }
-            $week_hours_table_html .= "<span>" . $List_of_employees[$employee_id] . " " . round($working_hours_have, 2);
+            $week_hours_table_html .= "<span>" . $workforce->List_of_employees[$employee_id]->last_name . " " . round($working_hours_have, 2);
             $week_hours_table_html .= " / ";
             if (isset($Working_hours_week_should[$employee_id])) {
                 $week_hours_table_html .= round($Working_hours_week_should[$employee_id], 1) . "\n";

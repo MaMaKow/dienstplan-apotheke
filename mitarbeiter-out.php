@@ -33,16 +33,13 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($workforce->List_of_employees[$employee_id]->principle_branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
 }
 
-//$VKcount = count($List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
-//$VKmax = max(array_keys($List_of_employees));
 //Produce the output:
 require 'head.php';
 require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 echo "<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
 
-echo build_html_navigation_elements::build_select_employee($employee_id, $List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 //Navigation between the weeks:
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
