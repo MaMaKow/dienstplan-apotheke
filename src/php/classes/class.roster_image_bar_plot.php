@@ -23,9 +23,30 @@ class roster_image_bar_plot {
     private $Employee_style_array;
 
     public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
+        /*
+         * color of the employee bars:
+         */
         $this->Employee_style_array[1] = "#73AC22"; /* Apotheker, PI (qualified pharmacists) */
         $this->Employee_style_array[2] = "#BDE682"; /* PTA */
         $this->Employee_style_array[3] = "#B4B4B4"; /* non pharmaceutical employees */
+        /*
+         * margins and default lengths:
+         */
+        $this->bar_height = 20;
+        $this->bar_width_factor = 40;
+        $this->font_size = $this->bar_height * 0.6;
+        $this->outer_margin_x = 20;
+        $this->outer_margin_y = 20;
+        $this->inner_margin_x = $this->bar_height * 0.2;
+        $this->inner_margin_y = $this->inner_margin_x;
+        /*
+         * cursor styles:
+         * TODO: These could be turned back to default in read_only views:
+         */
+        $this->cursor_style_box = 'move';
+        $this->cursor_style_break_box = 'cell';
+
+        $this->set_start_end_times($Roster);
         $this->svg_string = $this->draw_image_dienstplan($Roster, $svg_width, $svg_height);
     }
 
@@ -38,44 +59,19 @@ class roster_image_bar_plot {
     private function draw_image_dienstplan($Roster, $svg_width, $svg_height) {
         global $workforce;
         $this->line = 0;
+        $javascript_variables = "var bar_width_factor = $this->bar_width_factor;";
+
         $svg_text = "";
         $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' >\n";
-        $this->set_start_end_times($Roster);
-        /*
-         * CAVE: It is currently assumed, that only one day is submitted.
-         * TODO: Test the behaviour with a whole week as input.
-         */
-        /*
-         *
-          if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
-          $cursor_style_box = 'move';
-          $cursor_style_break_box = 'cell';
-          } else {
-          $cursor_style_box = 'default';
-          $cursor_style_break_box = 'default';
-          }
-         */
-        $cursor_style_box = 'move';
-        $cursor_style_break_box = 'cell';
-
-
-        $this->bar_height = 20;
-        $this->bar_width_factor = 40;
-        $javascript_variables = "var bar_width_factor = $this->bar_width_factor;";
-        $this->font_size = $this->bar_height * 0.6;
-
-        $this->inner_margin_x = $this->bar_height * 0.2;
-        $this->inner_margin_y = $this->inner_margin_x;
-        $this->outer_margin_x = 20;
-        $this->outer_margin_y = 20;
-
 
 
         foreach ($Roster as $date_unix => $Roster_day_array) {
 
             $svg_text .= "<g id='svgimg_g_$date_unix'>\n";
 
-//draw the bars from start to end for every employee
+            /*
+             * draw the bars from start to end for every employee
+             */
             $svg_box_text = "<!--Boxes-->\n";
             foreach ($Roster_day_array as $roster_item) {
                 $employee_id = $roster_item->employee_id;
@@ -93,17 +89,16 @@ class roster_image_bar_plot {
                 $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $this->bar_width_factor);
                 $this->x_pos_text = $x_pos_box;
                 $y_pos_box = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
-                //$y_pos_text = $y_pos_box + $this->bar_height;
                 $width = $width_in_hours * $this->bar_width_factor;
                 $break_width = $break_width_in_hours * $this->bar_width_factor;
-                $svg_box_text .= "<foreignObject id=work_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' style='cursor: $cursor_style_box;'>"
+                $svg_box_text .= "<foreignObject id=work_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' style='cursor: $this->cursor_style_box;'>"
                         . "<p xmlns='http://www.w3.org/1999/xhtml' style='background-color: $employee_style; margin-top: 0px;'>"
                         . $workforce->List_of_employees[$employee_id]->last_name
                         . "<span style='float: right'>$working_hours</span>"
                         . "</p>"
                         . "</foreignObject>";
 
-                $svg_box_text .= "<rect id=break_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $cursor_style_break_box;' />\n";
+                $svg_box_text .= "<rect id=break_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $this->cursor_style_break_box;' />\n";
                 $this->line++;
             }
             $svg_text .= $svg_box_text;
@@ -122,8 +117,8 @@ class roster_image_bar_plot {
 
         $svg_inner_height = $this->inner_margin_x * ($this->line + 1) + $this->bar_height * $this->line;
         $svg_outer_height = $svg_inner_height + ($this->outer_margin_y * 2);
-        $svg_inner_width = $this->inner_margin_x * 2 + ((ceil($this->last_end) - floor($this->first_start)) * $this->bar_width_factor);
-        $svg_outer_width = $svg_inner_width + ($this->outer_margin_x * 2);
+        //$svg_inner_width = $this->inner_margin_x * 2 + ((ceil($this->last_end) - floor($this->first_start)) * $this->bar_width_factor);
+        //$svg_outer_width = $svg_inner_width + ($this->outer_margin_x * 2);
 
         $svg_grid_text = "<!--Grid-->\n";
 
