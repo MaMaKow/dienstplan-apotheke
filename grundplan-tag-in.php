@@ -22,7 +22,6 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
 //Hole eine Liste aller Mitarbeiter
 //We construct a pseudo date for the chosen weekday.
 
-require 'db-lesen-mitarbeiter.php';
 $workforce = new workforce($pseudo_date_sql);
 
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql);
@@ -33,7 +32,6 @@ $VKmax = max(array_keys($workforce->List_of_employees));
 
 //Produziere die Ausgabe
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('create_roster')) {
     echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);

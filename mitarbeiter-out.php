@@ -14,7 +14,6 @@ $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILT
 create_cookie('employee_id', $employee_id, 1);
 
 //Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
 if (!isset($workforce->List_of_employees[$employee_id])) {
     /* This happens if a coworker is not working with us anymore.
      * He can still be chosen within abwesenheit and stunden.

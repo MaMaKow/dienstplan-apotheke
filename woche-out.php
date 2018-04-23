@@ -25,7 +25,7 @@ for ($i = 0; $i < $tage; $i++) {
 }
 
 //Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
+$workforce = new workforce($date_sql);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($date_sql, $tage, $branch_id); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $Roster = roster::read_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
@@ -44,14 +44,13 @@ $weekly_rotation_div_html = task_rotation_main(array_keys($Roster), "Rezeptur");
 
 //Produziere die Ausgabe
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 $main_div_html = "<div id='main-area'>\n";
 $date_info_line_html = "<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
-$main_div_html .= build_select_branch($branch_id, $date_sql);
+$main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 $duty_roster_form_html = "";
 $buttons_div_html = "";

@@ -1,7 +1,8 @@
 <?php
 require 'default.php';
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
+$Fehlermeldung = array();
+$Warnmeldung = array();
+$workforce = new workforce();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 30);
 
@@ -139,7 +140,6 @@ $datalist .= "</datalist>\n";
 
 //Here beginns the output:
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('create_absence')) {
     echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
@@ -159,7 +159,7 @@ if (isset($Feiertagsmeldung)) {
     echo "</div>\n";
     echo "</div>\n";
 }
-echo build_select_employee($employee_id, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[" . gettext("Read") . "]</a>";
 echo "\n";

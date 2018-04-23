@@ -20,6 +20,9 @@
         <p><!--Nur damit der Submit-Button nicht ganz am unteren Seitenrand klebt.-->
     </form>
     <?php
+    if (!isset($workforce)) {
+        $workforce = new workforce();
+    }
     if (isset($config['application_name'])) {
         $application_name = $config['application_name'];
     } else {

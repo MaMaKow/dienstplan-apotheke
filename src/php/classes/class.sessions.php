@@ -137,7 +137,7 @@ class sessions {
              */
             $this->read_Privileges_from_database();
         }
-        if (TRUE === $_SESSION['Privileges'][$privilege]) {
+        if (isset($_SESSION['Privileges'][$privilege]) and TRUE === $_SESSION['Privileges'][$privilege]) {
             return TRUE;
         } else {
             return FALSE;

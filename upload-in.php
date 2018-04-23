@@ -1,19 +1,17 @@
-<!DOCTYPE html>
 <?php
 require "default.php";
+$Fehlermeldung = array();
+$Warnmeldung = array();
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    echo build_warning_messages("", [gettext("Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator.")]);
     die();
 }
 
 if (filter_has_var(INPUT_POST, "submit")) {
-    define('SITE_ROOT', realpath(dirname(__FILE__)));
-
     $target_dir = "/upload/";
-    $target_file = SITE_ROOT . $target_dir . uniqid() . "_pep";
+    $target_file = PDR_FILE_SYSTEM_APPLICATION_PATH . $target_dir . uniqid() . "_pep";
     $upload_file_name = basename($_FILES["fileToUpload"]["name"]);
     $upload_ok = 1;
     $file_type = pathinfo($upload_file_name, PATHINFO_EXTENSION);

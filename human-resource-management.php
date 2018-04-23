@@ -104,6 +104,7 @@ function make_radio_profession_list($checked) {
         $set_column = $row["Type"];
         $clean_set_column = str_replace(["set(", ")", "'"], "", $set_column);
         $Professions = explode(",", $clean_set_column);
+        $text = "";
         $text .= "<fieldset>\n";
         $text .= "<legend>" . gettext("Profession") . ":</legend>";
         //$text .= "<label for='profession'>Ausbildung: </label>\n";
@@ -129,6 +130,7 @@ function make_radio_profession_list($checked) {
 }
 
 function make_radio_branch_list($checked_branch_id) {
+    $text = "";
     $text .= "<fieldset>\n";
 
     $text .= "<legend>" . gettext("Branch") . ": </legend>\n";

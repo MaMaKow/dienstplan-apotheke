@@ -109,7 +109,6 @@ class roster_image_bar_plot {
         $svg_text .= "</svg>\n";
         $svg_text .= "<script>$javascript_variables</script>";
         $svg_text .= "<script src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "drag-and-drop.js' ></script>";
-//print_debug_variable($svg_text);
         return $svg_text;
     }
 

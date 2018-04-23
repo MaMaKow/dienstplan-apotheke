@@ -553,9 +553,10 @@ button.form_button img{
 button.form_button p{
     font-size: larger;
 }
-branch_management_form_div{
+div#branch_management_form_div{
+    clear:  both;
     /*
-    clear:  both
+    float: left;
     */
 }
 div.overlay_top

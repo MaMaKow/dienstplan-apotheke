@@ -20,7 +20,6 @@ class examine_roster {
         $this->Wareneingang_Anwesende = roster_headcount::headcount_roster($this->Roster_of_goods_receipt_employees, $this->Changing_times);
         $this->Approbierten_anwesende = roster_headcount::headcount_roster($this->Roster_of_qualified_pharmacist_employees, $this->Changing_times);
         $this->Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
-        //print_debug_variable($this->Roster_of_qualified_pharmacist_employees);
     }
 
     public function check_for_overlap($date_sql, &$Error_message) {
