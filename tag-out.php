@@ -17,7 +17,6 @@ $Fehlermeldung = array();
 $Warnmeldung = array();
 
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
-$datum = $date_sql; //TODO: Make sure, we can delete this!
 $date_unix = strtotime($date_sql);
 create_cookie("datum", $date_sql, 0.5);
 
@@ -46,7 +45,7 @@ if (isset($approval)) {
 
 
 //Get a list of all employees:
-require 'db-lesen-mitarbeiter.php';
+$workforce = new workforce($date_sql);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($date_sql, $number_of_days, $branch_id);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
@@ -63,7 +62,6 @@ foreach ($Roster as $Roster_day_array) {
 }
 $VKmax = max(array_keys($workforce->List_of_employees)); //The highest given employee_id
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 
 
@@ -71,7 +69,7 @@ echo "<div id=main-area>\n";
 
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
-echo build_select_branch($branch_id, $date_sql);
+echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 echo "<div id=navigation_form_div class=no-print>\n";
 echo build_html_navigation_elements::build_button_day_backward($date_unix);
 echo build_html_navigation_elements::build_button_day_forward($date_unix);

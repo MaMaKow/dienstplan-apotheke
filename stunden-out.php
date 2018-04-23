@@ -1,12 +1,11 @@
 <?php
 require 'default.php';
+$workforce = new workforce();
 $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen die höchste VK-Nummer.
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 $vk = $employee_id;
 
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
 $sql_query = "SELECT * FROM `Stunden`
 				WHERE `VK` = " . $vk . "
 				ORDER BY `Aktualisierung` ASC
@@ -41,11 +40,10 @@ $tablebody .= "</tbody>\n";
 
 //Hier beginnt die Ausgabe
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 
-echo build_select_employee($employee_id, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 echo "<div class=no-print><br><a href=stunden-in.php?employee_id=$employee_id>[" . gettext("Edit") . "]</a><br><br></div>\n";
 echo "<table>\n";
 //Überschrift

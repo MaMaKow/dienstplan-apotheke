@@ -19,6 +19,7 @@ if (filter_has_var(INPUT_POST, "year")) {
 }
 $start_datum = mktime(0, 0, 0, $month, 1, $year);
 $date_unix = $start_datum;
+$date_sql = date('Y-m-d', $date_unix);
 
 if (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
@@ -26,9 +27,7 @@ if (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = $_SESSION['user_employee_id'];
 }
 
-//The employee list needs a $date_unix, because nobody is working with us forever.
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mitarbeiter.php';
-
+$workforce = new workforce($date_sql);
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {
     $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
@@ -52,7 +51,7 @@ foreach ($result as $row_number => $row) {
     $table_body_html .= "<td>" . strftime('%a %x', strtotime($row['date'])) . "</td>";
     $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";
     $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['end'])) . "</td>";
-    $table_body_html .= "<td>" . $row['hours'] . "</td>";
+    $table_body_html .= "<td>" . round($row['hours'], 2) . "</td>";
     $table_body_html .= "</tr>";
 }
 $table_body_html .= "</tbody>";
@@ -60,7 +59,6 @@ $table_body_html .= "</tbody>";
  */
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'navigation.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
 <FORM method=post class="no-print">
@@ -99,7 +97,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     </SELECT>
 </FORM>
 <H1>Stundenzettel</H1>
-<H2><?= $List_of_employee_full_names[$employee_id] ?></H2>
+<H2><?= $workforce->List_of_employees[$employee_id]->full_name ?></H2>
 <TABLE class="table_with_border" id="marginal_employment_hours_list_table">
     <THEAD>
         <TR><!--This following part is specific to German law. No other translation semms necessary.-->

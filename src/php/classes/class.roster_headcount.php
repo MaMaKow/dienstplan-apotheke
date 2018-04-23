@@ -5,7 +5,6 @@ abstract class roster_headcount {
     public static function get_roster_of_qualified_pharmacist_employees($Roster) {
         $Roster_of_qualified_pharmacist_employees = array();
         global $workforce;
-        print_debug_variable($workforce->List_of_qualified_pharmacist_employees);
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
                 if (in_array($roster_item_object->employee_id, $workforce->List_of_qualified_pharmacist_employees)) {

@@ -103,7 +103,6 @@ abstract class build_html_roster_views {
         global $workforce;
         $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
-        //print_debug_variable($workforce);
         foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
             if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
                 $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
@@ -252,6 +251,13 @@ abstract class build_html_roster_views {
 //Dienstende
                 $zeile .= " - ";
                 $zeile .= htmlentities($roster_object->duty_end_sql);
+                if (!empty($roster_object->comment)) {
+                    /*
+                     * In case, there is a comment available, add a hint in form of a single letter.
+                     * That single letter is the first letter of the word Comment (in the chosen language).
+                     */
+                    $zeile .= '&nbsp;' . '<sup>' . mb_substr(gettext('Comment'), 0, 1) . '</sup>';
+                }
 //	Mittagspause
                 $zeile .= "<br>\n";
                 if ($roster_object->break_start_int > 0) {
@@ -392,8 +398,10 @@ abstract class build_html_roster_views {
     }
 
     public static function calculate_working_hours_week_should($Roster) {
-        global $Mandanten_mitarbeiter, $List_of_employee_working_week_hours;
-        $Working_hours_week_should = $List_of_employee_working_week_hours;
+        global $Mandanten_mitarbeiter, $workforce;
+        foreach ($workforce->List_of_employees as $employee_object) {
+            $Working_hours_week_should[$employee_object->employee_id] = $employee_object->working_week_hours;
+        }
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
             $holiday = holidays::is_holiday($date_unix);

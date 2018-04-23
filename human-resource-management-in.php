@@ -2,17 +2,15 @@
 require 'default.php';
 require 'human-resource-management.php';
 write_employee_data_to_database(); //$success = write_employee_data_to_database();
-require 'db-lesen-mitarbeiter.php';
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 
 $Worker = read_employee_data_from_database($employee_id);
-
+$workforce = new workforce();
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('create_employee')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
+    echo build_warning_messages("", [gettext("Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator.")]);
     die();
 }
 /*
@@ -20,7 +18,7 @@ if (!$session->user_has_privilege('create_employee')) {
  */
 ?>
 <div class="centered_form_div">
-    <?= build_select_employee($employee_id, $workforce->List_of_employees) ?>
+    <?= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees) ?>
     <form method='POST' id='human_resource_management'>
 
         <fieldset>

@@ -279,8 +279,8 @@ function build_absence_year($year) {
 
 
 
+        $absent_employees_containers = "";
         if (isset($Abwesende)) {
-            $absent_employees_containers = "";
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
@@ -298,8 +298,6 @@ function build_absence_year($year) {
                 $absent_employees_containers .= $employee_id;
                 $absent_employees_containers .= "</span>\n";
             }
-        } else {
-            $absent_employees_containers = "";
         }
         $p_html = "<p class='day_paragraph ";
         if ($current_week_day_number < 6 and ! $is_holiday) {
@@ -447,8 +445,8 @@ function build_absence_month($year, $month_number) {
 
 
 
-        $absent_employees_containers = "";
         if (isset($Abwesende)) {
+            unset($absent_employees_containers);
             foreach ($Abwesende as $employee_id => $reason) {
                 $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
@@ -466,6 +464,8 @@ function build_absence_month($year, $month_number) {
                 $absent_employees_containers .= $employee_id . " " . mb_substr($workforce->List_of_employees[$employee_id]->last_name, 0, 16);
                 $absent_employees_containers .= "</span><br>\n";
             }
+        } else {
+            $absent_employees_containers = "";
         }
         $p_html = "<td class='day_paragraph ";
         if ($current_week_day_number < 6 and ! $is_holiday) {

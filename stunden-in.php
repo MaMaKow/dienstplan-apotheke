@@ -1,7 +1,8 @@
 <?php
 require 'default.php';
-//Get a list of employees:
-require 'db-lesen-mitarbeiter.php';
+$Fehlermeldung = array();
+$Warnmeldung = array();
+$workforce = new workforce();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 
@@ -106,7 +107,6 @@ if (empty($saldo)) {
 
 //Start of output:
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
     echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
@@ -116,7 +116,7 @@ if (!$session->user_has_privilege('create_roster') and ! $session->user_has_priv
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo build_select_employee($employee_id, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[" . gettext("Read") . "]</a>\n";
 
 echo "<table>\n";

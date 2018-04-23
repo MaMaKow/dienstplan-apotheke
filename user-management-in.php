@@ -1,18 +1,8 @@
 <?php
 require 'default.php';
-require 'db-lesen-mitarbeiter.php';
-if (filter_has_var(INPUT_POST, "employee_id")) {
-    $employee_id = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);
-} elseif (filter_has_var(INPUT_GET, "employee_id")) {
-    $employee_id = filter_input(INPUT_GET, "employee_id", FILTER_VALIDATE_INT);
-} elseif (filter_has_var(INPUT_COOKIE, "employee_id")) {
-    $employee_id = filter_input(INPUT_COOKIE, "employee_id", FILTER_VALIDATE_INT);
-} else {
-    $employee_id = $_SESSION['user_employee_id'];
-}
-if (isset($employee_id)) {
-    create_cookie('employee_id', $employee_id, 30);
-}
+$workforce = new workforce();
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie('employee_id', $employee_id, 30);
 
 function insert_user_data_into_database() {
     $User["employee_id"] = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
@@ -46,6 +36,7 @@ function read_user_data_from_database($employee_id) {
     }
     $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = '$employee_id'";
     $result = mysqli_query_verbose($sql_query);
+    $User["privilege"] = array();
     while ($row = mysqli_fetch_object($result)) {
         $User["privilege"][] = $row->privilege;
     }
@@ -57,6 +48,7 @@ function read_user_list_from_database() {
     $result = mysqli_query_verbose($sql_query);
     while ($row = mysqli_fetch_object($result)) {
         $User_list[$row->employee_id] = $row->user_name;
+        $User_list[$row->employee_id] = new employee((int) $row->employee_id, $row->user_name, NULL, NULL, NULL, NULL, NULL);
     }
     return $User_list;
 }
@@ -64,7 +56,6 @@ function read_user_list_from_database() {
 $User = read_user_data_from_database($employee_id);
 $User_list = read_user_list_from_database();
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('administration')) {
     echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
@@ -73,7 +64,7 @@ if (!$session->user_has_privilege('administration')) {
 
 
 
-echo build_select_employee($employee_id, $User_list);
+echo build_html_navigation_elements::build_select_employee($employee_id, $User_list);
 
 function build_checkbox_permission($privilege, $checked) {
     $privilege_name = gettext(str_replace('_', ' ', $privilege));
