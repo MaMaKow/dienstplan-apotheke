@@ -71,7 +71,8 @@ function task_rotation_get_worker($date_unix, $task) {
  */
 
 function task_rotation_set_worker($date_unix, $task) {
-    global $Rezeptur_Mitarbeiter;
+    global $workforce;
+    $Rezeptur_Mitarbeiter = $workforce->List_of_goods_receipt_employees;
     reset($Rezeptur_Mitarbeiter);
     $date_sql = date("Y-m-d", $date_unix);
     $task_workers_count = count($Rezeptur_Mitarbeiter);
