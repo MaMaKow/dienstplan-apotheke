@@ -68,9 +68,21 @@ class roster_image_bar_plot {
         foreach ($Roster as $date_unix => $Roster_day_array) {
 
             $svg_text .= "<g id='svgimg_g_$date_unix'>\n";
-
+            if (1 < count($Roster)) {
+                /*
+                 * Insert the name of the weekday if there is more than one day in the plot:
+                 */
+                $x_pos_svg_weekday_text = $this->outer_margin_x + $this->inner_margin_x;
+                $y_pos_svg_weekday_text = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
+                $svg_text .= "<foreignObject id=svg_weekday_text_$date_unix x='$x_pos_svg_weekday_text' y='$y_pos_svg_weekday_text' width='100%' height='$this->bar_height'>"
+                        . "<p xmlns='http://www.w3.org/1999/xhtml' style='margin-top: 0px;'>"
+                        . strftime('%A', $date_unix)
+                        . "</p>"
+                        . "</foreignObject>";
+                $this->line++;
+            }
             /*
-             * draw the bars from start to end for every employee
+             * Draw the bars from start to end for every employee:
              */
             $svg_box_text = "<!--Boxes-->\n";
             foreach ($Roster_day_array as $roster_item) {
@@ -103,7 +115,6 @@ class roster_image_bar_plot {
             }
             $svg_text .= $svg_box_text;
             $svg_text .= "</g>\n";
-            $this->line++;
         }
         $svg_text .= $this->draw_image_dienstplan_add_axis_labeling();
         $svg_text .= "</svg>\n";

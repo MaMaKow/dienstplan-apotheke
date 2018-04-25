@@ -420,14 +420,14 @@ abstract class build_html_roster_views {
              * That would make querying it much easier.
              */
             if (FALSE !== $holiday and date('N', $date_unix) < 6) {
-                foreach (array_keys($Mandanten_mitarbeiter) as $employee_id) {
-                    $Working_hours_week_should[$employee_id] -= $List_of_employee_working_week_hours[$employee_id] / 5;
+                foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
+                    $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / 5;
                 }
             }
             /* Substract days, which are respected absence_days: */
             foreach ($Absentees as $employee_id => $reason) {
                 if (in_array($reason, $List_of_respected_absence_reasons) and FALSE === $holiday and date('N', $date_unix) < 6) {
-                    $Working_hours_week_should[$employee_id] -= $List_of_employee_working_week_hours[$employee_id] / 5;
+                    $Working_hours_week_should[$employee_id] -= $workforce->List_of_employees[$employee_id]->working_week_hours / 5;
                 }
             }
         }
