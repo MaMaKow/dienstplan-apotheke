@@ -30,6 +30,7 @@ class employee {
     public $full_name;
     public $principle_branch_id;
     public $working_week_hours;
+    public $lunch_break_minutes;
 
     public function __construct($employee_id, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch) {
         $this->employee_id = $employee_id;
