@@ -234,7 +234,7 @@ abstract class roster {
      */
 
     public static function determine_lunch_breaks($Roster) {
-        global $List_of_employee_lunch_break_minutes;
+        global $workforce;
         $lunch_break_length_standard = 30 * 60;
         foreach (array_keys($Roster) as $date_unix) {
             if (empty($Roster[$date_unix])) {
@@ -247,13 +247,13 @@ abstract class roster {
             $lunch_break_start = roster_item::convert_time_to_seconds('11:30:00');
             foreach ($Roster[$date_unix] as $roster_item_object) {
                 $employee_id = $roster_item_object->employee_id;
-                if (!empty($List_of_employee_lunch_break_minutes[$employee_id]) AND ! ($roster_item_object->break_start_int > 0) AND ! ($roster_item_object->break_end_int > 0)) {
+                if (!empty($workforce->List_of_employees[$employee_id]->lunch_break_minutes) AND ! ($roster_item_object->break_start_int > 0) AND ! ($roster_item_object->break_end_int > 0)) {
                     //Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
-                    $duty_seconds_with_a_break = $roster_item_object->duty_end_int - $roster_item_object->duty_start_int - $List_of_employee_lunch_break_minutes[$employee_id] * 60;
+                    $duty_seconds_with_a_break = $roster_item_object->duty_end_int - $roster_item_object->duty_start_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes * 60;
                     if ($duty_seconds_with_a_break >= 6 * 3600) {
                         //echo "Mehr als 6 Stunden, also gibt es Mittag!";
                         //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
-                        $lunch_break_end = $lunch_break_start + $List_of_employee_lunch_break_minutes[$employee_id] * 60;
+                        $lunch_break_end = $lunch_break_start + $workforce->List_of_employees[$employee_id]->lunch_break_minutes * 60;
                         for ($number_of_trys = 0; $number_of_trys < 3; $number_of_trys++) {
                             if (FALSE !== array_search($lunch_break_start, $break_start_taken_int) OR FALSE !== array_search($lunch_break_end, $break_end_taken_int)) {
                                 //Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
@@ -274,15 +274,35 @@ abstract class roster {
                         $lunch_break_start = $lunch_break_end;
                     }
                 } elseif (!empty($employee_id) AND ! empty($roster_item_object->break_start_int) AND empty($roster_item_object->break_end_int)) {
-                    $roster_item_object->break_end_int = $roster_item_object->break_start_int + $List_of_employee_lunch_break_minutes[$employee_id];
+                    $roster_item_object->break_end_int = $roster_item_object->break_start_int + $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
                     $roster_item_object->break_end_sql = roster_item::format_time_integer_to_string($roster_item_object->break_end_int);
                 } elseif (!empty($employee_id) AND empty($roster_item_object->break_start_int) AND ! empty($roster_item_object->break_end_int)) {
-                    $roster_item_object->break_start_int = $roster_item_object->break_end_int - $List_of_employee_lunch_break_minutes[$employee_id];
+                    $roster_item_object->break_start_int = $roster_item_object->break_end_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
                     $roster_item_object->break_start_sql = roster_item::format_time_integer_to_string($roster_item_object->break_start_int);
                 }
             }
         }
         return NULL;
+    }
+
+    public static function transfer_lunch_breaks($Principle_employee_roster, $Principle_roster) {
+        foreach ($Principle_employee_roster as $date_unix => $Principle_employee_roster_day_array) {
+            foreach ($Principle_employee_roster_day_array as $principle_employee_roster_object) {
+                if (NULL === $principle_employee_roster_object->break_start_int) {
+                    foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
+                        if ($principle_roster_object->employee_id === $principle_employee_roster_object->employee_id
+                                and $principle_roster_object->duty_start_int === $principle_employee_roster_object->duty_start_int
+                                and NULL !== $principle_roster_object->break_start_int) {
+                            $principle_employee_roster_object->break_start_int = $principle_roster_object->break_start_int;
+                            $principle_employee_roster_object->break_end_int = $principle_roster_object->break_end_int;
+                            $principle_employee_roster_object->break_start_sql = $principle_roster_object->break_start_sql;
+                            $principle_employee_roster_object->break_end_sql = $principle_roster_object->break_end_sql;
+                            /* The durations are automagically recalculated using roster_intem->__set() which calls roster_item->calculate_durations() */
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static function calculate_changing_times($Roster) {

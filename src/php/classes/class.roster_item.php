@@ -17,30 +17,62 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Description of class
+/*
+ * One roster_item holds one set of information of one employee on one day.
  *
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
+
 class roster_item {
 
     public $date_sql;
     public $date_unix;
     public $employee_id;
     public $branch_id;
-    public $duty_start_int;
-    public $duty_start_sql;
-    public $duty_end_int;
-    public $duty_end_sql;
-    public $break_start_int;
-    public $break_start_sql;
-    public $break_end_int;
-    public $break_end_sql;
+    public $comment;
+    protected $duty_start_int;
+    protected $duty_start_sql;
+    protected $duty_end_int;
+    protected $duty_end_sql;
+    protected $break_start_int;
+    protected $break_start_sql;
+    protected $break_end_int;
+    protected $break_end_sql;
     public $working_hours;
     public $break_duration;
-    public $comment;
+    public $duty_duration;
+    public $working_seconds;
+    private $List_of_allowed_variables;
 
-    function __construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
+    public function __set($variable_name, $variable_value) {
+        if (in_array($variable_name, $this->List_of_allowed_variables)) {
+            $this->$variable_name = $variable_value;
+            $this->calculate_durations();
+        } else {
+            throw new Exception($variable_name . " is private and not allowed to be called by " . __METHOD__);
+        }
+    }
+
+    public function __get($variable_name) {
+        if (in_array($variable_name, $this->List_of_allowed_variables)) {
+            return $this->$variable_name;
+        } else {
+            throw new Exception($variable_name . " is private and not allowed to be called by " . __METHOD__);
+        }
+    }
+
+    public function __construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
+
+        $this->List_of_allowed_variables = array(
+            'duty_start_int',
+            'duty_start_sql',
+            'duty_end_int',
+            'duty_end_sql',
+            'break_start_int',
+            'break_start_sql',
+            'break_end_int',
+            'break_end_sql',
+        );
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;
@@ -54,19 +86,21 @@ class roster_item {
         $this->break_end_sql = $this->format_time_string_correct($break_end);
         $this->break_end_int = $this->convert_time_to_seconds($break_end);
         $this->comment = $comment;
-        $this->duty_duration = $this->duty_end_int - $this->duty_start_int;
-        $this->break_duration = $this->break_end_int - $this->break_start_int;
         /*
          * TODO: This might be a good place to issue an error, if the break times are not within the working times.
          * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?
          */
         //$this->check_roster_item_sequence();
+        $this->calculate_durations();
+    }
 
-
+    private function calculate_durations() {
         /*
          * TODO: This does not take into account, that emergency service is not calculated as full hours.
          * Emergeny service calculation might differ between states, federal states, or even employees with different contracts.
          */
+        $this->duty_duration = $this->duty_end_int - $this->duty_start_int;
+        $this->break_duration = $this->break_end_int - $this->break_start_int;
         $this->working_seconds = ($this->duty_duration - $this->break_duration);
         $this->working_hours = round($this->working_seconds / 3600, 2);
     }

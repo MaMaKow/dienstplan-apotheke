@@ -11,10 +11,11 @@ $pseudo_date_sql_start = date('Y-m-d', $pseudo_date_unix);
 $pseudo_date_sql_end = date('Y-m-d', strtotime('+ ' . ($number_of_days - 1) . ' days', $pseudo_date_unix));
 
 $workforce = new workforce($pseudo_date_sql_start);
-$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $workforce->List_of_employees[$employee_id]->principle_branch_id);
+$branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
 
-$Principle_roster = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
-
+$Principle_employee_roster = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+$Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
 
 //Produziere die Ausgabe
 require 'head.php';
@@ -46,11 +47,11 @@ foreach ($Weekday_names as $weekday_name) {
     $html_text .= $weekday_name;
     $html_text .= "</td>\n";
 }
-$max_employee_count = roster::calculate_max_employee_count($Principle_roster);
+$max_employee_count = roster::calculate_max_employee_count($Principle_employee_roster);
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
-    foreach (array_keys($Principle_roster) as $day_iterator) {
-        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $pseudo_date_unix, $branch_id);
+    foreach (array_keys($Principle_employee_roster) as $day_iterator) {
+        $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $pseudo_date_unix, $branch_id);
     }
     $html_text .= "</tr>\n";
 }
@@ -73,8 +74,8 @@ echo "<td colspan=$number_of_days>\n";
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.
-foreach ($Principle_roster as $Principle_roster_day_array) {
-    foreach ($Principle_roster_day_array as $roster_object) {
+foreach ($Principle_employee_roster as $Principle_employee_roster_day_array) {
+    foreach ($Principle_employee_roster_day_array as $roster_object) {
         $Stunden[$employee_id][] = $roster_object->working_hours;
     }
 }
@@ -105,7 +106,7 @@ echo "</div>\n";
  * $svg_image_dienstplan = draw_image_dienstplan_vk($Grundplan);
   echo $svg_image_dienstplan;
  */
-$roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);
+$roster_image_bar_plot = new roster_image_bar_plot($Principle_employee_roster);
 echo $roster_image_bar_plot->svg_string;
 
 
