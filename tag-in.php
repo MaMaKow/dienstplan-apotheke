@@ -19,7 +19,7 @@ $workforce = new workforce($date_sql);
 if (filter_has_var(INPUT_POST, 'Roster')) {
     $Roster = user_input::get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
-        user_input::old_roster_write_user_input_to_database($Roster, $branch_id);
+        user_input::roster_write_user_input_to_database($Roster, $branch_id);
     }
 }
 
@@ -112,11 +112,23 @@ if (isset($having_emergency_service['branch_id'])) {
 $html_text .= "</td>\n";
 $html_text .= "</tr>\n";
 $max_employee_count = roster::calculate_max_employee_count($Roster);
-for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
-    $html_text .= "<tr>\n";
-    foreach (array_keys($Roster) as $day_iterator) {
-        $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $date_unix, $branch_id);
+if (array() !== $Roster) {
+    for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
+        $html_text .= "<tr>\n";
+        foreach (array_keys($Roster) as $day_iterator) {
+            $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $date_unix, $branch_id);
+        }
+        $html_text .= "</tr>\n";
     }
+} else {
+    /*
+     * Write an empty line in case the roster is empty:
+     */
+    $html_text .= "<tr>\n";
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $date_unix, $branch_id);
+    $html_text .= "</tr>\n";
+    $html_text .= "<tr>\n";
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $date_unix, $branch_id);
     $html_text .= "</tr>\n";
 }
 
