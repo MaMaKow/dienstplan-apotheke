@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once "../../../default.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
+$workforce = new workforce();
 
 
 if (filter_has_var(INPUT_GET, 'absence_details_json')) {
@@ -44,15 +44,13 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'date_range_max' => FILTER_SANITIZE_STRING,
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
-    $employee_id = $Highlight_details['employee_id'];
+    $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
     $Absence_details['reason'] = gettext("Vacation");
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
     $Absence_details['mode'] = "create";
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
-    $employee_id = $_SESSION['user_employee_id'];
+    $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 }
 ?>
 <form id="input_box_form" method="POST">

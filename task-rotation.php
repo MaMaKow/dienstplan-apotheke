@@ -17,21 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function task_rotation_main($Dates_unix, $task) {
+function task_rotation_main($Dates_unix, $task, $branch_id) {
     global $workforce;
     $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
     $weekly_rotation_div_html .= $task . ":<br>\n";
     foreach ($Dates_unix as $date_unix) {
-        unset($rotation_vk);
-        $rotation_vk = task_rotation_get_worker($date_unix, $task);
+        unset($rotation_employee_id);
+        $rotation_employee_id = task_rotation_get_worker($date_unix, $task, $branch_id);
         $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
-        $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_vk]->last_name . "<br>\n";
+        print_debug_variable($rotation_employee_id);
+        if (NULL !== $rotation_employee_id) {
+            $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_employee_id]->last_name;
+        }
+        $weekly_rotation_div_html .= "<br>\n";
     }
     $weekly_rotation_div_html .= "</div>\n";
     return $weekly_rotation_div_html;
 }
 
-function task_rotation_get_worker($date_unix, $task) {
+function task_rotation_get_worker($date_unix, $task, $branch_id) {
     $date_sql = date("Y-m-d", $date_unix);
     global $workforce;
     //We want the PTAs to take turns in the lab at a weekly basis.
@@ -53,12 +57,12 @@ function task_rotation_get_worker($date_unix, $task) {
     $result = mysqli_query_verbose($sql_query);
     $row = mysqli_fetch_object($result);
     if (!empty($row->task)) {
-        $rotation_vk = $row->VK;
-        return $rotation_vk;
+        $rotation_employee_id = $row->VK;
+        return $rotation_employee_id;
     } else {
-        $rotation_vk = task_rotation_set_worker($date_unix, $task);
-        if (!empty($rotation_vk)) {
-            return $rotation_vk;
+        $rotation_employee_id = task_rotation_set_worker($date_unix, $task, $branch_id);
+        if (!empty($rotation_employee_id)) {
+            return $rotation_employee_id;
         }
     }
     return NULL;
@@ -67,12 +71,16 @@ function task_rotation_get_worker($date_unix, $task) {
 /*
  * @param int $date_unix The date as a unix time stamp.
  * @param string $task The task that is to be rotated.
- * @return int $rotation_vk A worker for a given day and task.
+ * @return int $rotation_employee_id A worker for a given day and task.
  */
 
-function task_rotation_set_worker($date_unix, $task) {
+function task_rotation_set_worker($date_unix, $task, $branch_id) {
     global $workforce;
-    $Rezeptur_Mitarbeiter = $workforce->List_of_compounding_employees;
+    foreach ($workforce->List_of_compounding_employees as $employee_id) {
+        if ($workforce->List_of_employees[$employee_id]->principle_branch_id == $branch_id) {
+            $Rezeptur_Mitarbeiter[$employee_id] = $employee_id;
+        }
+    }
     reset($Rezeptur_Mitarbeiter);
     $date_sql = date("Y-m-d", $date_unix);
     $task_workers_count = count($Rezeptur_Mitarbeiter);
@@ -111,26 +119,23 @@ function task_rotation_set_worker($date_unix, $task) {
                 while (current($Rezeptur_Mitarbeiter) != $next_VK and $run_iterator++ < count($Rezeptur_Mitarbeiter)) {
                     next($Rezeptur_Mitarbeiter);
                 }
-                $rotation_vk = current($Rezeptur_Mitarbeiter); //will be overwritten if not present on thet day because of illnes or holidays
-print_debug_variable('using current key');
+                $rotation_employee_id = current($Rezeptur_Mitarbeiter); //will be overwritten if not present on thet day because of illnes or holidays
 
                 $Abwesende = absence::read_absentees_from_database($temp_date_sql);
 
                 //In case the person is ill or on holidays, someone else has to take the turn:
-                if (isset($Abwesende[$rotation_vk])) {
-                    $Standard_rotation_vk = $rotation_vk;
+                if (isset($Abwesende[$rotation_employee_id])) {
+                    //$Standard_rotation_vk = $rotation_employee_id;
                     if (empty(array_diff(array_keys($Rezeptur_Mitarbeiter), array_keys($Abwesende)))) {
-print_debug_variable('nobody is working');
                         //There is nobody working:
-                        $rotation_vk = NULL;
+                        $rotation_employee_id = NULL;
                         continue;
                     }
-                    while (isset($Abwesende[$rotation_vk])) {
+                    while (isset($Abwesende[$rotation_employee_id])) {
                         if (FALSE === next($Rezeptur_Mitarbeiter)) {
                             reset($Rezeptur_Mitarbeiter);
                         }
-                        $rotation_vk = current($Rezeptur_Mitarbeiter); //overwrites previously defined value
-print_debug_variable('overwriting previous value');
+                        $rotation_employee_id = current($Rezeptur_Mitarbeiter); //overwrites previously defined value
                     }
                 }
                 if (time() > $temp_date) {
@@ -138,18 +143,17 @@ print_debug_variable('overwriting previous value');
                      * This value is only stored in the database, if it is in the past.
                      * This is to make sure, that fresh absences can be regarded.
                      */
-                    $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$temp_date_sql', '$rotation_vk')";
+                    $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$temp_date_sql', '$rotation_employee_id')";
                     $result = mysqli_query_verbose($sql_query);
                 }
             }
         }
-        return $rotation_vk;
+        return $rotation_employee_id;
     } else {
         //If there is noone anywhere in the past we just take the first person in the array.
-        $rotation_vk = min($Rezeptur_Mitarbeiter);
-print_debug_variable('using first task employee as default');
-        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$date_sql', '$rotation_vk')";
+        $rotation_employee_id = min($Rezeptur_Mitarbeiter);
+        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$date_sql', '$rotation_employee_id')";
         $result = mysqli_query_verbose($sql_query);
     }
-    return $rotation_vk;
+    return $rotation_employee_id;
 }

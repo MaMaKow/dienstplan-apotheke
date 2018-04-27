@@ -41,20 +41,9 @@ class roster_item_empty extends roster_item {
     public $break_duration;
     public $duty_duration;
     public $working_seconds;
-    protected $List_of_allowed_variables;
     public $empty;
 
     public function __construct($date_sql, $branch_id) {
-        $this->List_of_allowed_variables = array(
-            'duty_start_int',
-            'duty_start_sql',
-            'duty_end_int',
-            'duty_end_sql',
-            'break_start_int',
-            'break_start_sql',
-            'break_end_int',
-            'break_end_sql',
-        );
 
         $this->empty = TRUE;
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');

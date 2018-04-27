@@ -115,10 +115,10 @@ abstract class build_html_navigation_elements {
         $button_html = "<form class='inline_button_form' action='webdav.php?employee_id=$employee_id&datum=$date_sql' method='get'>"
                 . " <button type='submit' class='btn-primary no-print' "
                 //. " onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql\"' "
-                . " title='Download ics Kalender Datei'>"
+                . " title='" . gettext("Download iCalendar file") . "'>"
                 . " <img src='img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
                 . " <br>"
-                . gettext("ICS File")
+                . gettext("iCalendar File")
                 . " </button></form>\n";
         return $button_html;
     }

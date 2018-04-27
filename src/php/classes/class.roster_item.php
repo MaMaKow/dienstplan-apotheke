@@ -42,10 +42,19 @@ class roster_item {
     public $break_duration;
     public $duty_duration;
     public $working_seconds;
-    protected $List_of_allowed_variables;
+    protected static $List_of_allowed_variables = array(
+        'duty_start_int',
+        'duty_start_sql',
+        'duty_end_int',
+        'duty_end_sql',
+        'break_start_int',
+        'break_start_sql',
+        'break_end_int',
+        'break_end_sql',
+    );
 
     public function __set($variable_name, $variable_value) {
-        if (in_array($variable_name, $this->List_of_allowed_variables)) {
+        if (in_array($variable_name, self::$List_of_allowed_variables)) {
             $this->$variable_name = $variable_value;
             $this->calculate_durations();
         } else {
@@ -54,7 +63,7 @@ class roster_item {
     }
 
     public function __get($variable_name) {
-        if (in_array($variable_name, $this->List_of_allowed_variables)) {
+        if (in_array($variable_name, self::$List_of_allowed_variables)) {
             return $this->$variable_name;
         } else {
             throw new Exception($variable_name . " is private and not allowed to be called by " . __METHOD__);
@@ -63,16 +72,6 @@ class roster_item {
 
     public function __construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
 
-        $this->List_of_allowed_variables = array(
-            'duty_start_int',
-            'duty_start_sql',
-            'duty_end_int',
-            'duty_end_sql',
-            'break_start_int',
-            'break_start_sql',
-            'break_end_int',
-            'break_end_sql',
-        );
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;

@@ -40,7 +40,7 @@ $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen nach der h
 //Build a div containing assignment of tasks:
 require 'task-rotation.php';
 //TODO: Works only for "Rezeptur" right now!
-$weekly_rotation_div_html = task_rotation_main(array_keys($Roster), "Rezeptur");
+$weekly_rotation_div_html = task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id);
 
 //Produziere die Ausgabe
 require 'head.php';
