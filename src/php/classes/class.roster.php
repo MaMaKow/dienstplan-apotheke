@@ -376,6 +376,7 @@ abstract class roster {
          * CAVE! This function expects an array of the format: $Branch_roster[$branch_id][$date_unix][$roster_item]
          * The standard $Roster array ($Roster[$date_unix][$roster_item]) will not return any usefull information.
          */
+        $Working_hours_week = array();
         foreach ($Branch_roster as $Branch_roster_branch_array) {
             foreach ($Branch_roster_branch_array as $Roster_day_array) {
                 foreach ($Roster_day_array as $roster_item) {

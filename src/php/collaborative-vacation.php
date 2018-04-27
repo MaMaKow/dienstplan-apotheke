@@ -92,13 +92,13 @@ function handle_user_data_input() {
 function write_user_input_to_database() {
     global $session;
 
-    $employee_id = filter_input(INPUT_POST, employee_id, FILTER_SANITIZE_NUMBER_INT);
-    $start_date_string = filter_input(INPUT_POST, start_date, FILTER_SANITIZE_STRING);
-    $end_date_string = filter_input(INPUT_POST, end_date, FILTER_SANITIZE_STRING);
-    $reason = filter_input(INPUT_POST, reason, FILTER_SANITIZE_STRING);
-    $command = filter_input(INPUT_POST, command, FILTER_SANITIZE_STRING);
-    $employee_id_old = filter_input(INPUT_POST, employee_id_old, FILTER_SANITIZE_STRING);
-    $start_date_old_string = filter_input(INPUT_POST, start_date_old, FILTER_SANITIZE_STRING);
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+    $start_date_string = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
+    $end_date_string = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
+    $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
+    $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING);
+    $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
+    $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
 
     if ($session->user_has_privilege('create_absence')) {
         /*

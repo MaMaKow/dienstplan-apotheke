@@ -9,9 +9,10 @@ $month = user_input::get_variable_from_any_input('month', FILTER_SANITIZE_STRING
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_STRING, date('Y'));
 $start_date_unix = mktime(0, 0, 0, $month, 1, $year);
 $date_unix = $start_date_unix;
+$date_sql = date('Y-m-d', $date_unix);
 
 //The employee list needs a $date_unix, because nobody is working with us forever.
-require 'db-lesen-mitarbeiter.php';
+$workforce = new workforce($date_sql);
 
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {

@@ -259,8 +259,8 @@ abstract class user_input {
     }
 
     private static function get_deleted_roster_employee_id_list($Roster, $Roster_old) {
+        $List_of_employees_in_Roster = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
-
             if (empty($Roster_day_array)) {
                 foreach ($Roster_old[$date_unix] as $roster_row_object) {
                     $Deleted_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;

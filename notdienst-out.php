@@ -3,13 +3,13 @@ require 'default.php';
 
 
 //Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
 $mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $datum = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $year = date('Y', strtotime($datum));
 create_cookie('mandant', $mandant, 30);
 create_cookie('datum', $datum, 0.5);
 create_cookie('year', $year, 0.5);
+$workforce = new workforce();
 
 $sql_query = "SELECT * FROM Notdienst WHERE YEAR(Datum) = $year AND Mandant = $mandant";
 $result = mysqli_query_verbose($sql_query);

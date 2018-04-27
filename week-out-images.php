@@ -14,7 +14,7 @@ $date_sql = $datum;
 create_cookie("datum", $datum, 0.5);
 
 //Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
+$workforce = new workforce();
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
 
