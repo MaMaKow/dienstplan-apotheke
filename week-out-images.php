@@ -3,7 +3,7 @@
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
 $tage = 7; //Dies ist eine Tagesansicht für einen einzelnen Tag.
-$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie('mandant', $mandant, 30);
 
 

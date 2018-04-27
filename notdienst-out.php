@@ -4,7 +4,7 @@ require 'default.php';
 
 //Hole eine Liste aller Mitarbeiter
 require 'db-lesen-mitarbeiter.php';
-$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+$mandant = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $datum = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $year = date('Y', strtotime($datum));
 create_cookie('mandant', $mandant, 30);
