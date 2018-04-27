@@ -58,7 +58,7 @@ class examine_roster {
         foreach ($this->Anwesende as $zeit => $anwesende) {
             if ($anwesende < $minimum_number_of_employees and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $Fehlermeldung[] = 'Um ' . date('H:i', $zeit) . " Uhr sind weniger als $minimum_number_of_employees Mitarbeiter anwesend.";
+                    $Fehlermeldung[] = 'Um ' . roster_item::format_time_integer_to_string($zeit) . " Uhr sind weniger als $minimum_number_of_employees Mitarbeiter anwesend.";
                     $attendant_error = true;
                 }
             } else {
@@ -75,7 +75,7 @@ class examine_roster {
             // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($Opening_times['day_opening_end'])
             if ($anwesende_wareneingang === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $Warning_message[] = 'Um ' . date('H:i', $zeit) . ' Uhr ist niemand für den Wareneingang anwesend.';
+                    $Warning_message[] = 'Um ' . roster_item::format_time_integer_to_string($zeit) . ' Uhr ist niemand für den Wareneingang anwesend.';
                     $attendant_error = true;
                 }
             } else {
@@ -91,7 +91,7 @@ class examine_roster {
         foreach ($this->Approbierten_anwesende as $zeit => $anwesende_approbierte) {
             if ($anwesende_approbierte === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $Error_message[] = sprintf(gettext('At %1s there is no authorized person present.'), date('H:i', $zeit));
+                    $Error_message[] = sprintf(gettext('At %1s there is no authorized person present.'), roster_item::format_time_integer_to_string($zeit));
                     $attendant_error = true;
                 }
             } else {

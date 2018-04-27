@@ -94,6 +94,8 @@ abstract class user_input {
                      * roster_item::check_roster_item_sequence();
                      */
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
+                } else {
+                    $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                 }
             }
         }
@@ -134,6 +136,14 @@ abstract class user_input {
             }
             foreach ($Roster_day_array as $roster_row_object) {
                 if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                    continue;
+                }
+                if (NULL === $roster_row_object->employee_id) {
+                    /*
+                     * This is the case, if there is an empty roster_item produced.
+                     * e.g. inside user_input::get_Roster_from_POST_secure() if ('' !== $employee_id)
+                     *
+                     */
                     continue;
                 }
                 /*
@@ -220,6 +230,9 @@ abstract class user_input {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Roster_old[$date_unix])) {
                 foreach ($Roster_day_array as $roster_row_object) {
+                    if (NULL === $roster_row_object->employee_id) {
+                        continue;
+                    }
                     $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
                 }
                 return $Changed_roster_employee_id_list;
@@ -262,6 +275,9 @@ abstract class user_input {
                     }
                 }
                 foreach ($Roster[$date_unix] as $roster_row_object) {
+                    if (NULL === $roster_row_object->employee_id) {
+                        continue;
+                    }
                     $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
                 }
                 $Deleted_roster_employee_ids = array_diff($List_of_employees_in_Roster_old, $List_of_employees_in_Roster);
@@ -293,7 +309,7 @@ abstract class user_input {
         return $Inserted_roster_employee_id_list;
     }
 
-    public static function old_roster_write_user_input_to_database($Roster, $branch_id) {
+    public static function roster_write_user_input_to_database($Roster, $branch_id) {
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
 //The following line will add an entry for every day in the table approval.
@@ -307,7 +323,6 @@ abstract class user_input {
             $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Roster_old);
             $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Roster, $Roster_old);
             $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Roster, $Roster_old);
-
             mysqli_query_verbose("START TRANSACTION");
             user_input::remove_changed_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
             user_input::remove_changed_entries_from_database($branch_id, $Changed_roster_employee_id_list);

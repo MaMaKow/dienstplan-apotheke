@@ -34,6 +34,10 @@ abstract class roster_headcount {
         }
         /* @var $Anwesende array */
         $Anwesende = array();
+        $Duty_start_times = array();
+        $Duty_end_times = array();
+        $Break_start_times = array();
+        $Break_end_times = array();
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
                 $Duty_start_times[] = $roster_item_object->duty_start_int;
@@ -42,7 +46,12 @@ abstract class roster_headcount {
                 $Break_end_times[] = $roster_item_object->break_end_int;
             }
         }
-
+        if (array() === $Duty_start_times) {
+            foreach ($Changing_times as $time) {
+                $Anwesende[$time] = 0;
+            }
+            return $Anwesende;
+        }
         foreach ($Changing_times as $time) {
             $Anwesende[$time] = 0;
             foreach ($Duty_start_times as $dienstbeginn) {
@@ -70,7 +79,6 @@ abstract class roster_headcount {
                 }
             }
         }
-
         return $Anwesende;
     }
 

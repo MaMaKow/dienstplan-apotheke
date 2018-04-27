@@ -25,7 +25,11 @@
 abstract class examine_attendance {
 
     public static function check_for_attendant_absentees($Roster, $datum, $Abwesende, &$Fehlermeldung) {
+        if (array() === $Roster) {
+            return FALSE;
+        }
         global $workforce;
+        $Roster_workers = array();
         foreach ($Roster as $Roster_day) {
             foreach ($Roster_day as $roster_object) {
                 $Roster_workers[] = $roster_object->employee_id;

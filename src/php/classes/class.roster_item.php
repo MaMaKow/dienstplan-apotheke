@@ -42,7 +42,7 @@ class roster_item {
     public $break_duration;
     public $duty_duration;
     public $working_seconds;
-    private $List_of_allowed_variables;
+    protected $List_of_allowed_variables;
 
     public function __set($variable_name, $variable_value) {
         if (in_array($variable_name, $this->List_of_allowed_variables)) {
