@@ -72,7 +72,7 @@ function task_rotation_get_worker($date_unix, $task) {
 
 function task_rotation_set_worker($date_unix, $task) {
     global $workforce;
-    $Rezeptur_Mitarbeiter = $workforce->List_of_goods_receipt_employees;
+    $Rezeptur_Mitarbeiter = $workforce->List_of_compounding_employees;
     reset($Rezeptur_Mitarbeiter);
     $date_sql = date("Y-m-d", $date_unix);
     $task_workers_count = count($Rezeptur_Mitarbeiter);
@@ -88,7 +88,7 @@ function task_rotation_set_worker($date_unix, $task) {
             $from_date_sql = date("Y-m-d", strtotime("- $task_workers_count WEEKS SUNDAY", $temp_date));
             $to_date_sql = date("Y-m-d", strtotime("- 1 WEEKS SUNDAY", $temp_date));
             $temp_date_sql = date("Y-m-d", $temp_date);
-            foreach ($Rezeptur_Mitarbeiter as $vk => $name) {
+            foreach ($Rezeptur_Mitarbeiter as $vk) {
                 $sql_query = "SELECT `VK`, COUNT(`date`) as `count`"
                         . "FROM `task_rotation` "
                         . "WHERE `VK` = '$vk' "
@@ -108,10 +108,11 @@ function task_rotation_set_worker($date_unix, $task) {
             $next_VK = current(array_keys($Rezeptur_Count, min($Rezeptur_Count)));
             if (!empty($next_VK)) {
                 $run_iterator = 0;
-                while (key($Rezeptur_Mitarbeiter) != $next_VK and $run_iterator++ < count($Rezeptur_Mitarbeiter)) {
+                while (current($Rezeptur_Mitarbeiter) != $next_VK and $run_iterator++ < count($Rezeptur_Mitarbeiter)) {
                     next($Rezeptur_Mitarbeiter);
                 }
-                $rotation_vk = key($Rezeptur_Mitarbeiter); //will be overwritten if not present on thet day because of illnes or holidays
+                $rotation_vk = current($Rezeptur_Mitarbeiter); //will be overwritten if not present on thet day because of illnes or holidays
+print_debug_variable('using current key');
 
                 $Abwesende = absence::read_absentees_from_database($temp_date_sql);
 
@@ -119,6 +120,7 @@ function task_rotation_set_worker($date_unix, $task) {
                 if (isset($Abwesende[$rotation_vk])) {
                     $Standard_rotation_vk = $rotation_vk;
                     if (empty(array_diff(array_keys($Rezeptur_Mitarbeiter), array_keys($Abwesende)))) {
+print_debug_variable('nobody is working');
                         //There is nobody working:
                         $rotation_vk = NULL;
                         continue;
@@ -127,7 +129,8 @@ function task_rotation_set_worker($date_unix, $task) {
                         if (FALSE === next($Rezeptur_Mitarbeiter)) {
                             reset($Rezeptur_Mitarbeiter);
                         }
-                        $rotation_vk = key($Rezeptur_Mitarbeiter); //overwrites previously defined value
+                        $rotation_vk = current($Rezeptur_Mitarbeiter); //overwrites previously defined value
+print_debug_variable('overwriting previous value');
                     }
                 }
                 if (time() > $temp_date) {
@@ -143,7 +146,8 @@ function task_rotation_set_worker($date_unix, $task) {
         return $rotation_vk;
     } else {
         //If there is noone anywhere in the past we just take the first person in the array.
-        $rotation_vk = key($Rezeptur_Mitarbeiter);
+        $rotation_vk = min($Rezeptur_Mitarbeiter);
+print_debug_variable('using first task employee as default');
         $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$date_sql', '$rotation_vk')";
         $result = mysqli_query_verbose($sql_query);
     }
