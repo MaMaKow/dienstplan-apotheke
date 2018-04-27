@@ -4,7 +4,7 @@ require 'default.php';
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
-$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie('mandant', $branch_id, 30);
 /*
  * weekday

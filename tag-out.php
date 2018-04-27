@@ -5,7 +5,7 @@ require_once 'default.php';
  * @var $mandant int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
  */
-$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min($List_of_branch_objects));
+$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $mandant = $branch_id; //TODO: Make sure, that $mandant can be removed savely!
 create_cookie('mandant', $branch_id, 30);
 /*
