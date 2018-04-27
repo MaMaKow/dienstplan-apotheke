@@ -21,8 +21,15 @@ class roster_image_bar_plot {
 
     public $svg_string;
     private $Employee_style_array;
+    private $total_number_of_lines;
+    private $first_start;
+    private $last_end;
 
     public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
+        $this->set_start_end_times($Roster);
+        foreach ($Roster as $Roster_day_array) {
+            $this->total_number_of_lines += count($Roster_day_array) + 1;
+        }
         /*
          * color of the employee bars:
          */
@@ -39,6 +46,11 @@ class roster_image_bar_plot {
         $this->outer_margin_y = 20;
         $this->inner_margin_x = $this->bar_height * 0.2;
         $this->inner_margin_y = $this->inner_margin_x;
+
+        $svg_inner_width = $this->inner_margin_x * 2 + ((ceil($this->last_end) - floor($this->first_start)) * $this->bar_width_factor);
+        $this->svg_outer_width = $svg_inner_width + ($this->outer_margin_x * 2);
+        $this->svg_inner_height = $this->inner_margin_x * ($this->total_number_of_lines + 1) + $this->bar_height * $this->total_number_of_lines;
+        $this->svg_outer_height = $this->svg_inner_height + ($this->outer_margin_y * 2);
         /*
          * cursor styles:
          * TODO: These could be turned back to default in read_only views:
@@ -46,7 +58,6 @@ class roster_image_bar_plot {
         $this->cursor_style_box = 'move';
         $this->cursor_style_break_box = 'cell';
 
-        $this->set_start_end_times($Roster);
         $this->svg_string = $this->draw_image_dienstplan($Roster, $svg_width, $svg_height);
     }
 
@@ -61,8 +72,9 @@ class roster_image_bar_plot {
         $this->line = 0;
         $javascript_variables = "var bar_width_factor = $this->bar_width_factor;";
 
+
         $svg_text = "";
-        $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' >\n";
+        $svg_text .= "<svg id='svgimg' width='$svg_width' height='$svg_height' class='noselect' viewBox='0 0 $this->svg_outer_width $this->svg_outer_height'>\n";
 
 
         foreach ($Roster as $date_unix => $Roster_day_array) {
@@ -124,12 +136,6 @@ class roster_image_bar_plot {
     }
 
     private function draw_image_dienstplan_add_axis_labeling() {
-
-        $svg_inner_height = $this->inner_margin_x * ($this->line + 1) + $this->bar_height * $this->line;
-        $svg_outer_height = $svg_inner_height + ($this->outer_margin_y * 2);
-        //$svg_inner_width = $this->inner_margin_x * 2 + ((ceil($this->last_end) - floor($this->first_start)) * $this->bar_width_factor);
-        //$svg_outer_width = $svg_inner_width + ($this->outer_margin_x * 2);
-
         $svg_grid_text = "<!--Grid-->\n";
 
         for ($time = floor($this->first_start); $time <= ceil($this->last_end); $time = $time + 2) {
@@ -138,11 +144,11 @@ class roster_image_bar_plot {
             $this->x_pos_text = $x_pos;
             $y_pos_text = $this->font_size;
             $y_pos_grid_start = $this->outer_margin_y;
-            $y_pos_grid_end = $this->outer_margin_y + $svg_inner_height;
+            $y_pos_grid_end = $this->outer_margin_y + $this->svg_inner_height;
             $svg_grid_text .= "<line x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end' stroke-dasharray='1, 8' style='stroke:black;stroke-width:2' />\n";
             $svg_grid_text .= "<line x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' stroke-dasharray='1, 16' style='stroke:black;stroke-width:2' />\n";
             $svg_grid_text .= "<text x='$this->x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
-            $svg_grid_text .= "<text x='$this->x_pos_text' y='$svg_outer_height' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
+            $svg_grid_text .= "<text x='$this->x_pos_text' y='$this->svg_outer_height' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
         }
         return $svg_grid_text;
     }

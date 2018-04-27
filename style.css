@@ -14,6 +14,10 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
         border: 1px solid #FF0000;
         */
     }
+    div.image{
+        margin-top: 1em;
+        float: left;
+    }
 }
 body
 {
