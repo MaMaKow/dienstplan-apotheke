@@ -26,5 +26,23 @@
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class saturday_rotation {
-
+  
+    protected $target_date_sql;
+    protected $last_date_sql;
+    protected $team_id;
+    
+  
+    public function __construct($date_sql){
+        $this->target_date_sql = $date_sql;
+        
+    }
+    protected function read_participation_from_database(){
+      
+    }
+    
+    protected function write_participation_to_database(){
+      
+    }
+   
+    protected function cleanup_database_table_saturday_rotation
 }
