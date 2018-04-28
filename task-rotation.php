@@ -25,7 +25,6 @@ function task_rotation_main($Dates_unix, $task, $branch_id) {
         unset($rotation_employee_id);
         $rotation_employee_id = task_rotation_get_worker($date_unix, $task, $branch_id);
         $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
-        print_debug_variable($rotation_employee_id);
         if (NULL !== $rotation_employee_id) {
             $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_employee_id]->last_name;
         }

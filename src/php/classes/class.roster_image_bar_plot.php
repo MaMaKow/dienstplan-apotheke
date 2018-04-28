@@ -26,10 +26,13 @@ class roster_image_bar_plot {
     private $last_end;
 
     public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
-        $this->set_start_end_times($Roster);
         foreach ($Roster as $Roster_day_array) {
             $this->total_number_of_lines += count($Roster_day_array) + 1;
         }
+        if (NULL === $this->total_number_of_lines) {
+            return FALSE;
+        }
+        $this->set_start_end_times($Roster);
         /*
          * color of the employee bars:
          */
@@ -98,6 +101,9 @@ class roster_image_bar_plot {
              */
             $svg_box_text = "<!--Boxes-->\n";
             foreach ($Roster_day_array as $roster_item) {
+                if (NULL === $roster_item->employee_id) {
+                    continue;
+                }
                 $employee_id = $roster_item->employee_id;
                 $dienst_beginn = $roster_item->duty_start_int / 3600;
                 $dienst_ende = $roster_item->duty_end_int / 3600;
@@ -156,6 +162,9 @@ class roster_image_bar_plot {
     private function set_start_end_times($Roster) {
         foreach ($Roster as $Roster_day_array) {
             foreach ($Roster_day_array as $roster_item) {
+                if (NULL === $roster_item->duty_start_int) {
+                    continue;
+                }
                 $duty_start_list[] = $roster_item->duty_start_int;
                 $duty_end_list[] = $roster_item->duty_end_int;
             }

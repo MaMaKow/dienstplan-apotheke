@@ -13,6 +13,7 @@ $weekday = user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NU
 create_cookie('weekday', $weekday, 1);
 $pseudo_date_unix = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
 $pseudo_date_sql = date('Y-m-d', $pseudo_date_unix);
+$workforce = new workforce($pseudo_date_sql);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     //TODO: Test if this works:
@@ -22,7 +23,6 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
 //Hole eine Liste aller Mitarbeiter
 //We construct a pseudo date for the chosen weekday.
 
-$workforce = new workforce($pseudo_date_sql);
 
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql);
 
