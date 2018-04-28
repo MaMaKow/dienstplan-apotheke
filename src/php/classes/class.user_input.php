@@ -177,6 +177,9 @@ abstract class user_input {
                 if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
                     continue;
                 }
+                if (NULL === $roster_row_object->employee_id) {
+                    continue;
+                }
                 /*
                  * TODO: Should we use an INSERT ON DUPLICATE UPDATE here instead of the REPLACE?
                  * Are there any advantages to that?

@@ -25,7 +25,6 @@ while ($row = mysqli_fetch_object($result)) {
     $Years[] = $row->year;
 }
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 ?>
 <FORM method=post class="no-print">

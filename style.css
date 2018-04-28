@@ -422,9 +422,22 @@ div#roster_table_div span.roster_table_lunch_break_span {
  * tag-in.php
  * -->
  */
-div.image{
+div.image {
+    /*
+    border: solid black 1px;
+    */
     margin-top: 1em;
     float: left;
+}
+div.image p{
+    margin-bottom: 0em;
+}
+div.image div.image_part {
+    /*
+    border: black  dashed 2px;
+    */
+    float: left;
+    margin-right: 1em;
 }
 /*
  * <--
