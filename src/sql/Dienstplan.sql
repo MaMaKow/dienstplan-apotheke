@@ -1,5 +1,5 @@
-CREATE TABLE `dienstplan` (
-  `VK` int(11) NOT NULL,
+CREATE TABLE `Dienstplan` (
+  `VK` tinyint(3) unsigned NOT NULL,
   `Datum` date NOT NULL,
   `Dienstbeginn` time NOT NULL DEFAULT '00:00:00',
   `Dienstende` time DEFAULT NULL,

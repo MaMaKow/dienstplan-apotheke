@@ -1,4 +1,4 @@
-CREATE TABLE `sonderöffnungszeiten` (
+CREATE TABLE `Sonderöffnungszeiten` (
   `Datum` date NOT NULL,
   `Beginn` time NOT NULL,
   `Ende` time NOT NULL,
