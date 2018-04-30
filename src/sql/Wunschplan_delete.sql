@@ -1,4 +1,4 @@
-CREATE TABLE `wunschplan` (
+CREATE TABLE `Wunschplan_delete` (
   `VK` tinyint(11) NOT NULL,
   `Wochentag` tinyint(4) NOT NULL,
   `Dienstbeginn` varchar(64) CHARACTER SET latin1 DEFAULT NULL,

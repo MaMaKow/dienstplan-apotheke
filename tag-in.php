@@ -32,11 +32,20 @@ if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST,
     user_input::old_write_approval_to_database($branch_id, $Roster);
 }
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql);
-if (!isset($Roster[$date_unix]) AND ! empty($Principle_roster) AND FALSE === $holiday) { //No plans on Saturday, Sunday and holidays.
-    //Wir wollen eine automatische Dienstplanfindung beginnen.
-    //Mal sehen, wie viel die Maschine selbst gestalten kann.
-    $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
-    $Roster = $Principle_roster;
+if (!isset($Roster[$date_unix]) and FALSE === $holiday) { //No plans on holidays.
+    if (!empty($Principle_roster)) {
+        //Wir wollen eine automatische Dienstplanfindung beginnen.
+        //Mal sehen, wie viel die Maschine selbst gestalten kann.
+        $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
+        $Roster = $Principle_roster;
+    } elseif (6 == strftime('%u', $date_unix)) {
+        try {
+            $saturday_rotation = new saturday_rotation($date_sql, $branch_id);
+            $Roster = $saturday_rotation->fill_roster();
+        } catch (Exception $exception) {
+            error_log($exception->getMessage());
+        }
+    }
 }
 if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);

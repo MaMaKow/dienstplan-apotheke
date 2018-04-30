@@ -1,4 +1,4 @@
-CREATE TABLE `feiertage` (
+CREATE TABLE `Feiertage_delete` (
   `Name` varchar(64) NOT NULL,
   `Datum` date NOT NULL,
   PRIMARY KEY (`Datum`)

@@ -26,9 +26,9 @@ function delete_old_table_data() {
     $files_to_be_deleted = array_diff($Old_table_files, $New_table_files);
     foreach ($files_to_be_deleted as $file) { // iterate files
         if (is_file($file)) {
-              if (!unlink($file)) { // delete file
-              return FALSE;
-              }
+            if (!unlink($file)) { // delete file
+                return FALSE;
+            }
         }
     }
     return TRUE;
@@ -45,7 +45,12 @@ function write_new_table_data() {
         $sql_result = mysqli_query_verbose($sql_query);
         while ($row = mysqli_fetch_array($sql_result)) {
             $table_structure_create = $row['Create Table'];
-            $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
+            if (TRUE === runing_on_windows()) {
+                print_debug_variable($table_name);
+                $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
+            } else {
+                $file_name = utf8_decode($table_name);
+            }
             $file_name = 'src/sql/' . $file_name . '.sql';
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
             $New_table_files[] = $file_name;

@@ -1,4 +1,4 @@
-CREATE TABLE `öffnungszeiten` (
+CREATE TABLE `Öffnungszeiten` (
   `Wochentag` int(11) NOT NULL,
   `Beginn` time NOT NULL,
   `Ende` time NOT NULL,
