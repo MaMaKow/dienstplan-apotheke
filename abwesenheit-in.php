@@ -61,16 +61,16 @@ function write_absence_data_to_database($beginn, $ende, $grund) {
             . "(employee_id, start, end, days, reason, user, approval) "
             . "VALUES ('$employee_id', '$beginn', '$ende', '$tage', '$grund', '" . $_SESSION['user_name'] . "', '$approval')";
     //echo "$sql_query<br>\n";
-    global $verbindungi; //TODO: There must be a much better way to solve this!
-    if (!($result = mysqli_query($verbindungi, $sql_query))) {
-        $error_string = mysqli_error($verbindungi);
+    global $database_connection_mysqli; //TODO: There must be a much better way to solve this!
+    if (!($result = mysqli_query($database_connection_mysqli, $sql_query))) {
+        $error_string = mysqli_error($database_connection_mysqli);
         if (strpos($error_string, 'Duplicate') !== false) {
             global $Fehlermeldung;
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
             //Are there other errors, that we should handle?
-            error_log("Error: $sql_query <br>" . mysqli_error($verbindungi));
-            die("Error: $sql_query <br>" . mysqli_error($verbindungi));
+            error_log("Error: $sql_query <br>" . mysqli_error($database_connection_mysqli));
+            die("Error: $sql_query <br>" . mysqli_error($database_connection_mysqli));
         }
     }
 }
@@ -85,7 +85,7 @@ $tablebody = '';
 $i = 1;
 while ($row = mysqli_fetch_object($result)) {
     $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
-            . "<form method=POST id='change_absence_entry_" . $row->start . "'>"
+            . "<form accept-charset='utf-8' method=POST id='change_absence_entry_" . $row->start . "'>"
             . "\n";
     $tablebody .= "<td>\n<div id=beginn_out_" . $row->start . ">";
     $tablebody .= date('d.m.Y', strtotime($row->start)) . "</div>";
@@ -194,7 +194,7 @@ echo "<tfoot>"
  . "\n";
 echo "";
 echo "<tr class=no-print id=input_line_new>\n"
- . "<form method=POST id='new_absence_entry'>\n";
+ . "<form accept-charset='utf-8' method=POST id='new_absence_entry'>\n";
 echo "<td>\n"
  . "<input type=hidden name=employee_id value=$employee_id form='new_absence_entry'>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=" . date("Y-m-d") . " form='new_absence_entry'>";

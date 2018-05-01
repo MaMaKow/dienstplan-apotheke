@@ -11,7 +11,7 @@
         }
     </script>
     <p><a href=#bottom onclick=unhideContactForm()><?= gettext("Wishes, criticism, suggestions") ?>&nbsp;+</a></p>
-    <form id=contactForm style=display:none method=POST>
+    <form accept-charset='utf-8' id=contactForm style=display:none method=POST>
         <table>
             <tr><td><?= gettext("Message") ?></td><td><textarea style=width:320px name=message rows=5></textarea></td></tr>
         </table>
@@ -50,9 +50,10 @@
     $message .= "\n";
     $message .= ">>>   >>>";
     $message .= "\n\n";
-    $header = 'From: ' . $_SESSION['user_email'] . "\r\n";
-    $header .= 'Reply-To: ' . $_SESSION['user_email'] . "\r\n";
-    $header .= 'X-Mailer: PHP/' . phpversion();
+    $header = 'From: ' . $_SESSION['user_email'] . '\r\n';
+    $header .= 'Reply-To: ' . $_SESSION['user_email'] . '\r\n';
+    $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+    $header .= 'Content-type: text/plain; charset=UTF-8;\r\n';
     if (filter_has_var(INPUT_POST, 'submitContactForm')) {
         $versendet = mail($recipient, $subject, $message, $header);
         if ($versendet) {

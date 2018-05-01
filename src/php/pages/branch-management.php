@@ -124,7 +124,7 @@ if (empty($List_of_branch_objects)) {
     echo build_html_navigation_elements::build_select_branch($current_branch_id, NULL);
 }
 ?>
-<form method='POST' id='branch_management_form'>
+<form accept-charset='utf-8' method='POST' id='branch_management_form'>
 </form>
 
 <div id="branch_management_form_div">

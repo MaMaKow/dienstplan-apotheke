@@ -8,7 +8,7 @@ require_once 'install_head.php'
 ?>
 <H1>Database configuration</H1>
 
-<form method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+<form accept-charset='utf-8' method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <p>
         <LABEL for="database_management_system">Database type (DBMS):</LABEL><br>
         <select name="database_management_system" id="database_management_system">

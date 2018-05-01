@@ -77,7 +77,7 @@ if ($showFormular) {
     echo "<div class=centered_form_div>";
     echo "<H1>" . $application_name . "</H1>\n";
     ?>
-    <form action="?register=1" method="post">
+    <form accept-charset='utf-8' action="?register=1" method="post">
         <input type="text" size="40" maxlength="250" name="user_name" required placeholder="Benutzername" value="<?= $user_name ?>"><br>
         <input type="text" size="40" maxlength="250" name="employee_id" required placeholder="VK Nummer" value="<?= $employee_id ?>"><br>
         <input type="email" size="40" maxlength="250" name="email" required placeholder="Email" value="<?= $email ?>"><br>
