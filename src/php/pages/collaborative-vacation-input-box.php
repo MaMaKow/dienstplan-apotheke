@@ -53,7 +53,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 }
 ?>
-<form id="input_box_form" method="POST">
+<form accept-charset='utf-8' id="input_box_form" method="POST">
     <p><?= gettext("Employee") ?><br><select name="employee_id" id="employee_id_select"></p>
     <?php
     if ($session->user_has_privilege('create_absence')) {

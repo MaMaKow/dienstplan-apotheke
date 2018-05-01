@@ -19,7 +19,7 @@ if (!$session->user_has_privilege('create_employee')) {
 ?>
 <div class="centered_form_div">
     <?= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees) ?>
-    <form method='POST' id='human_resource_management'>
+    <form accept-charset='utf-8' method='POST' id='human_resource_management'>
 
         <fieldset>
             <legend><?= gettext("Personal Data") ?>:</legend>

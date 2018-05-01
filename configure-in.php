@@ -150,7 +150,7 @@ require 'head.php';?>
     <div style=font-size:larger>
       <H1>Installation</H1>
       <p>Bitte ergänzen Sie die folgenden Werte um den Dienstplan zu konfigurieren.</p>
-      <form class="" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+      <form accept-charset='utf-8' class="" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <pre><?php //echo "$datalist_locales";?></pre>
         <table width=10%>
           <th colspan="99">

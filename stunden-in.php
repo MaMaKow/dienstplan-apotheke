@@ -55,13 +55,13 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
             . ", '"
             . filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
             . "')";
-    if (!($result = mysqli_query($verbindungi, $sql_query))) {
-        $error_string = mysqli_error($verbindungi);
+    if (!($result = mysqli_query($database_connection_mysqli, $sql_query))) {
+        $error_string = mysqli_error($database_connection_mysqli);
         if (strpos($error_string, 'Duplicate') !== false) {
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
             //Are there other errors, that we should handle?
-            error_log("Error: $sql_query <br>" . mysqli_error($verbindungi));
+            error_log("Error: $sql_query <br>" . mysqli_error($database_connection_mysqli));
             die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
         }
     }
@@ -77,7 +77,7 @@ $i = 1;
 while ($row = mysqli_fetch_object($result)) {
     $tablebody .= "<tr>\n";
     $tablebody .= "<td>\n";
-    $tablebody .= "<form onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
+    $tablebody .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
     $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlentities($vk) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
     $tablebody .= "</form>\n";
     $tablebody .= "\n</td>\n";
@@ -159,7 +159,7 @@ echo "</tr>\n";
 echo "$tablebody";
 echo "</table>\n";
 echo "</div>\n";
-echo "<form method=POST id=insert_new_overtime>\n"
+echo "<form accept-charset='utf-8' method=POST id=insert_new_overtime>\n"
  . "<input hidden name=employee_id value=" . htmlentities($employee_id) . " form=insert_new_overtime>\n"
  . "</form>\n";
 require 'contact-form.php';

@@ -17,7 +17,7 @@ echo "<div class=centered_form_div>";
 echo "<H1>" . $application_name . "</H1>\n";
 ?>
 
-<form action="?session_escalation=1&referrer=<?php echo $referrer; ?>" method="post">
+<form accept-charset='utf-8' action="?session_escalation=1&referrer=<?php echo $referrer; ?>" method="post">
     <input type="text" size="25" maxlength="250" name="user_name" placeholder="Benutzername"><br>
     <input type="password" size="25" name="user_password" placeholder="Passwort"><br>
     <input type="submit"><br>

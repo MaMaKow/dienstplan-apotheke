@@ -49,7 +49,7 @@ function build_lost_password_form($employee_id, $user_name, $token) {
         ?>
         <div class=centered_form_div>
             <H1><?= $application_name ?> </H1>
-            <form action="reset_lost_password.php" method="post">
+            <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
                 <H2><?= $user_name ?></H2>
                 <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>

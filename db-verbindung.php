@@ -1,11 +1,12 @@
 <?php
 
-global $verbindungi;
-$verbindungi = new mysqli($config['database_host'], $config['database_user'], $config['database_password'], $config['database_name']);
+global $database_connection_mysqli;
+$database_connection_mysqli = new mysqli($config['database_host'], $config['database_user'], $config['database_password'], $config['database_name']);
 if (mysqli_connect_errno()) {
     error_log("Connect failed: %s\n", mysqli_connect_error() . " in file:" . __FILE__ . " on line:" . __LINE__);
     die("<p>There was an error while connecting to the database. Please see the error log for more details!</p>");
 }
+$database_connection_mysqli->set_charset('utf8');
 try {
     $pdo = new PDO($config['database_management_system'] . ':host=localhost;charset=utf8;dbname=' . $config['database_name'], $config['database_user'], $config['database_password'], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8', PDO::ATTR_EMULATE_PREPARES => false));
     /*
@@ -16,8 +17,8 @@ try {
     error_log("Error!: " . $exception->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
     die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
 }// change character set to utf8
-if (!$verbindungi->set_charset("utf8")) {
-    printf("Error loading character set utf8: %s\n", $verbindungi->error);
+if (!$database_connection_mysqli->set_charset("utf8")) {
+    printf("Error loading character set utf8: %s\n", $database_connection_mysqli->error);
 }
 
 /*

@@ -98,7 +98,7 @@ if ($session->user_has_privilege('approve_roster')) {
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('tag-out.php', $date_sql);
 $html_text .= "</div>\n";
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
-$html_text .= "<form id='roster_form' method=post>\n";
+$html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
 $html_text .= "<td>";

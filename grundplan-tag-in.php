@@ -50,7 +50,7 @@ echo "<div id=navigation_elements>";
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
 echo "</div>\n";
 $html_text = '';
-$html_text .= "<form id=principle_roster_form method=post>\n";
+$html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
 $html_text .= "<table>\n";
 $max_employee_count = roster::calculate_max_employee_count($Principle_roster);
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
