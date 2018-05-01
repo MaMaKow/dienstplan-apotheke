@@ -51,13 +51,13 @@ function pdo_query($sql_query, $bind_array = null, $inside_transaction = FALSE) 
 }
 
 function mysqli_query_verbose($sql_query, $inside_transaction = FALSE) {
-    global $config;
-    $result = mysqli_query($GLOBALS['verbindungi'], $sql_query);
+    global $config, $database_connection_mysqli;
+    $result = mysqli_query($database_connection_mysqli, $sql_query);
     if ($result === FALSE) {
-        $message = "Error: $sql_query <br>" . mysqli_error($GLOBALS['verbindungi']);
+        $message = "Error: $sql_query <br>" . mysqli_error($database_connection_mysqli);
         error_log($message);
         if ($inside_transaction !== FALSE) {
-            mysqli_query($GLOBALS['verbindungi'], "ROLLBACK");
+            mysqli_query($database_connection_mysqli, "ROLLBACK");
         }
         die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
     } elseif (isset($config['debug_mode']) and TRUE === $config['debug_mode']) {
