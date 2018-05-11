@@ -83,12 +83,12 @@ abstract class roster_headcount {
     }
 
     public static function read_opening_hours_from_database($date_unix, $branch_id) {
-        $sql_query = "SELECT * FROM Öffnungszeiten WHERE Wochentag = " . date('N', $date_unix) . " AND Mandant = " . $branch_id;
+        $sql_query = "SELECT * FROM opening_times WHERE weekday = " . date('N', $date_unix) . " AND branch_id = " . $branch_id;
         $result = mysqli_query_verbose($sql_query);
         $row = mysqli_fetch_object($result);
-        if (!empty($row->Beginn) and ! empty($row->Ende)) {
-            $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->Beginn);
-            $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->Ende);
+        if (!empty($row->start) and ! empty($row->end)) {
+            $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->start);
+            $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->end);
         } else {
             /*
              * TODO: Make an exception handler for error- and warning-messages!

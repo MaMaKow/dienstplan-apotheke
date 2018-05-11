@@ -44,13 +44,15 @@ function write_new_table_data() {
         $sql_query = "SHOW CREATE TABLE " . $table_name;
         $sql_result = mysqli_query_verbose($sql_query);
         while ($row = mysqli_fetch_array($sql_result)) {
-            $table_structure_create = $row['Create Table'];
+            $table_structure_create = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
             if (TRUE === runing_on_windows()) {
-                print_debug_variable($table_name);
                 $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
             } else {
-                $file_name = utf8_decode($table_name);
+                //$file_name = iconv("ISO-8859-15", "UTF-8", $table_name);
+                //$file_name = iconv("ISO-8859-1", "UTF-8", $table_name);
+                $file_name = $table_name;
             }
+            echo "Writing file: " . $file_name . "<br>\n";
             $file_name = 'src/sql/' . $file_name . '.sql';
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
             $New_table_files[] = $file_name;

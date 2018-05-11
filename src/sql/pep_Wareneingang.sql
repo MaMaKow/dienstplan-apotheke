@@ -1,4 +1,4 @@
-CREATE TABLE `pep_Wareneingang` (
+CREATE TABLE IF NOT EXISTS `pep_Wareneingang` (
   `Datum` date NOT NULL,
   `Zeit` time NOT NULL,
   `Anzahl` int(11) NOT NULL,

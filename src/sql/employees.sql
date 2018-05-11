@@ -1,4 +1,4 @@
-CREATE TABLE `employees` (
+CREATE TABLE IF NOT EXISTS `employees` (
   `pseudo_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id` smallint(5) unsigned NOT NULL,
   `last_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,

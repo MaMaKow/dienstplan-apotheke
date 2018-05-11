@@ -1,4 +1,4 @@
-CREATE TABLE `saturday_rotation` (
+CREATE TABLE IF NOT EXISTS `saturday_rotation` (
   `date` date NOT NULL,
   `team_id` tinyint(4) NOT NULL,
   `branch_id` tinyint(4) NOT NULL,

@@ -31,13 +31,6 @@ class update_database {
         'Dienstplan' => 'roster',
     );
 
-    function __construct() {
-        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-verbindung.php';
-        if (pdr_database_table_exists("Dienstplan") and ! pdr_database_table_exists("roster")) {
-            $this->refactor_roster_table();
-        }
-    }
-
     public function rename_database_table($table_name_old, $table_name_new) {
         /*
          * The table will be automatically locked during the command.
@@ -48,20 +41,30 @@ class update_database {
         $pdo->execute($sql_query);
     }
 
+    private function refactor_opening_times_special_table() {
+        if (database_wrapper::database_table_exists('Sonderöffnungszeiten') and ! database_wrapper::database_table_exists('opening_times_special')) {
+            $pdo->execute("RENAME TABLE `Sonderöffnungszeiten` TO `opening_times_special`;");
+            $sql_query = "ALTER TABLE `opening_times_special` CHANGE `Datum` `date` DATE NOT NULL, CHANGE `Beginn` `start` TIME NOT NULL, CHANGE `Ende` `end` TIME NOT NULL, CHANGE `Bezeichnung` `event_name` VARCHAR(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;";
+            $pdo->execute($sql_query);
+        }
+    }
+
     private function refactor_roster_table() {
-        $sql_query = "ALTER TABLE `Dienstplan` "
-                . "CHANGE `VK` `employee_id` TINYINT UNSIGNED NOT NULL, "
-                . "CHANGE `Datum` `date` DATE NOT NULL, "
-                . "CHANGE `Dienstbeginn` `start_of_shift` TIME NOT NULL DEFAULT '00:00:00', "
-                . "CHANGE `Dienstende` `end_of_shift` TIME NULL DEFAULT NULL, "
-                . "CHANGE `Mittagsbeginn` `start_of_lunch_break` TIME NULL DEFAULT NULL, "
-                . "CHANGE `Mittagsende` `end_of_lunch_break` TIME NULL DEFAULT NULL, "
-                . "CHANGE `Kommentar` `comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, "
-                . "CHANGE `Stunden` `working_hours` FLOAT NULL DEFAULT NULL, "
-                . "CHANGE `Mandant` `branch` TINYINT UNSIGNED NOT NULL DEFAULT '1', "
-                . "CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
-        $pdo->execute($sql_query);
-        $pdo->execute("RENAME TABLE `Dienstplan` TO `roster`;");
+        if (database_wrapper::database_table_exists('Dienstplan') and ! database_wrapper::database_table_exists('roster')) {
+            $sql_query = "ALTER TABLE `Dienstplan` "
+                    . "CHANGE `VK` `employee_id` TINYINT UNSIGNED NOT NULL, "
+                    . "CHANGE `Datum` `date` DATE NOT NULL, "
+                    . "CHANGE `Dienstbeginn` `start_of_shift` TIME NOT NULL DEFAULT '00:00:00', "
+                    . "CHANGE `Dienstende` `end_of_shift` TIME NULL DEFAULT NULL, "
+                    . "CHANGE `Mittagsbeginn` `start_of_lunch_break` TIME NULL DEFAULT NULL, "
+                    . "CHANGE `Mittagsende` `end_of_lunch_break` TIME NULL DEFAULT NULL, "
+                    . "CHANGE `Kommentar` `comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, "
+                    . "CHANGE `Stunden` `working_hours` FLOAT NULL DEFAULT NULL, "
+                    . "CHANGE `Mandant` `branch` TINYINT UNSIGNED NOT NULL DEFAULT '1', "
+                    . "CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
+            $pdo->execute($sql_query);
+            $pdo->execute("RENAME TABLE `Dienstplan` TO `roster`;");
+        }
     }
 
 }

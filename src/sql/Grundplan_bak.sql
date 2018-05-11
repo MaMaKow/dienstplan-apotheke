@@ -1,4 +1,4 @@
-CREATE TABLE `Grundplan_bak` (
+CREATE TABLE IF NOT EXISTS `Grundplan_bak` (
   `VK` tinyint(11) NOT NULL,
   `Wochentag` tinyint(4) NOT NULL,
   `Dienstbeginn` time DEFAULT NULL,

@@ -36,6 +36,9 @@ class workforce {
             $sql_query = 'SELECT * FROM `employees` '
                     . 'ORDER BY `id` ASC, ISNULL(`end_of_employment`) ASC, `end_of_employment` ASC;';
         } else {
+            /*
+             * TODO: DO NOT USE A VARIABLE HERE!
+             */
             $sql_query = 'SELECT * FROM `employees` '
                     . 'WHERE  (`end_of_employment` >= "' . $date_sql . '" OR `end_of_employment` IS NULL) '
                     . 'AND  (`start_of_employment` <= "' . $date_sql . '" OR `start_of_employment` IS NULL) '

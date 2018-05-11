@@ -1,4 +1,4 @@
-CREATE TABLE `employees_backup` (
+CREATE TABLE IF NOT EXISTS `employees_backup` (
   `backup_id` int(11) NOT NULL AUTO_INCREMENT,
   `id` smallint(5) unsigned NOT NULL,
   `last_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,

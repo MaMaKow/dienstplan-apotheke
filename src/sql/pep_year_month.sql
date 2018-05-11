@@ -1,4 +1,4 @@
-CREATE TABLE `pep_year_month` (
+CREATE TABLE IF NOT EXISTS `pep_year_month` (
   `month` int(11) NOT NULL,
   `factor` float NOT NULL,
   `branch` int(11) NOT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE `branch` (
+CREATE TABLE IF NOT EXISTS `branch` (
   `branch_id` tinyint(3) unsigned NOT NULL,
   `name` varchar(64) NOT NULL,
   `short_name` varchar(16) NOT NULL,
