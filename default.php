@@ -31,6 +31,7 @@ if (!isset($config['hide_disapproved'])) {
 }
 //Setup if errors should be reorted to the user:
 ini_set("display_errors", 1); //debugging
+ini_set('log_errors', 1);
 ini_set("error_log", PDR_FILE_SYSTEM_APPLICATION_PATH . "error.log");
 if (isset($config['error_reporting'])) {
     error_reporting($config['error_reporting']);

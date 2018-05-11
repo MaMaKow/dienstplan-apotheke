@@ -1,4 +1,4 @@
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `employee_id` tinyint(3) unsigned NOT NULL,
   `user_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE `users_lost_password_token` (
+CREATE TABLE IF NOT EXISTS `users_lost_password_token` (
   `employee_id` tinyint(3) unsigned NOT NULL,
   `token` binary(20) NOT NULL,
   `time_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP

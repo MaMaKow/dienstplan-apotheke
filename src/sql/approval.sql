@@ -1,4 +1,4 @@
-CREATE TABLE `approval` (
+CREATE TABLE IF NOT EXISTS `approval` (
   `date` date NOT NULL,
   `state` set('approved','not_yet_approved','disapproved','changed_after_approval') NOT NULL,
   `branch` int(11) NOT NULL,
