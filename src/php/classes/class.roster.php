@@ -93,17 +93,17 @@ abstract class roster {
             $date_sql = date('Y-m-d', $date_unix);
             $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
-                    . 'WHERE Mandant = "' . $branch_id . '" AND `Datum` = "' . $date_sql . '" '
+                    . 'WHERE Mandant = :branch_id AND `Datum` = :date '
                     . 'ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
-            $result = mysqli_query_verbose($sql_query);
+            $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'date' => $date_sql));
 
             $roster_row_iterator = 0;
-            while ($row = mysqli_fetch_object($result)) {
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
-            if (0 === $result->num_rows) {
+            if (0 === $roster_row_iterator) {
                 /*
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
@@ -157,10 +157,10 @@ abstract class roster {
     }
 
     public static function read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
-        mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
-        mysqli_query_verbose("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
+        database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
+        database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
         /*
-         * TODO: Make sure, that these two repair calls are not necessary anymore:
+         * TODO: Make sure, that these two repair calls are not necessary anymore
          */
         global $workforce;
         if (NULL === $date_sql_end) {
@@ -172,14 +172,15 @@ abstract class roster {
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
             $Absentees = absence::read_absentees_from_database($date_sql);
-            $sql_query = "SELECT * FROM `Grundplan`"
-                    . "WHERE `Wochentag` = '" . date("N", $date_unix) . "'"
-                    . "AND `Mandant` = '$branch_id'"
+            $weekday = date("N", $date_unix);
+            $sql_query = "SELECT * FROM `Grundplan` "
+                    . "WHERE `Wochentag` = :weekday "
+                    . "AND `Mandant` = :branch_id "
                     . "ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`";
 
-            $result = mysqli_query_verbose($sql_query);
+            $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
             $roster_row_iterator = 0;
-            while ($row = mysqli_fetch_object($result)) {
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 //Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
                 //TODO: This should be put somewhere else as a seperate function!
                 if (isset($Absentees[$row->VK])) {
