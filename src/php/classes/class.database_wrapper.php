@@ -81,6 +81,7 @@ class database_wrapper {
 
     public function run($sql_query, $arguments = []) {
         try {
+            print_debug_variable($sql_query, $arguments);
             $stmt = $this->pdo->prepare($sql_query);
             $stmt->execute($arguments);
         } catch (Exception $exception) {
@@ -162,6 +163,34 @@ class database_wrapper {
 
     protected static function quote_identifier($field) {
         return "`" . str_replace("`", "``", $field) . "`";
+    }
+
+    /*
+     * Enable the usage of prepared statements for IN clauses
+     *
+     * This methods helps to prevent sql injection.
+     *
+     * @param array an array of values to be queryed in an IN clause
+     * @return array the placeholders and the fitting bind array
+     * @return string $in_placeholder_trimmed the placeholder string
+     * @return array $in_parameters the array items appended with ":in_placeholder"
+     */
+
+    public static function create_placeholder_for_mysql_IN_function($input_array, $named_placeholders = FALSE) {
+        if (FALSE === $named_placeholders) {
+            $in_placeholder = str_repeat('?,', count($input_array) - 1) . '?';
+            return array($in_placeholder, $input_array);
+        } else {
+            $in = "";
+            $in_parameters = array();
+            foreach ($input_array as $iterator => $item) {
+                $key = ":in_placeholder" . $iterator;
+                $in .= "$key,";
+                $in_parameters[$key] = $item; // collecting values into key-value array
+            }
+            $in_placeholder_trimmed = rtrim($in, ","); // :id0,:id1,:id2
+            return array($in_placeholder_trimmed, $in_parameters);
+        }
     }
 
 }

@@ -35,9 +35,9 @@ abstract class pharmacy_emergency_service {
     public static function having_emergency_service($date_sql) {
         $sql_query = "SELECT *
 		FROM `Notdienst`
-		WHERE `Datum` = '$date_sql';";
-        $result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_object($result)) {
+		WHERE `Datum` = :date";
+        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $having_emergency_service["employee_id"] = $row->VK;
             $having_emergency_service["branch_id"] = $row->Mandant;
         }

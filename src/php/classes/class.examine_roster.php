@@ -32,13 +32,13 @@ class examine_roster {
                 . " FROM `Dienstplan` AS first"
                 . " 	INNER JOIN `Dienstplan` as second"
                 . " 		ON first.VK = second.VK AND first.datum = second.datum" //compare multiple different rows together
-                . " WHERE `first`.`Datum` = '$date_sql'" //some real date here
+                . " WHERE `first`.`Datum` = :date " //some real date here
                 . " 	AND ((`first`.`Dienstbeginn` != `second`.`Dienstbeginn` ) OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates, primary key is VK+start+mandant
                 . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
 
-        $result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_array($result)) {
-            $Error_message[] = "Konflikt bei Mitarbeiter " . $workforce->List_of_employees[$row['VK']]->last_name . "<br>"
+        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Error_message[] = "Konflikt bei Mitarbeiter " . $workforce->List_of_employees[$row->VK]->last_name . "<br>"
                     . $row['first_start'] . " bis " . $row['first_end'] . " (" . $List_of_branch_objects[$row['first_branch']]->short_name . ") "
                     . "mit <br>" . $row['second_start'] . " bis " . $row['second_end'] . " (" . $List_of_branch_objects[$row['second_branch']]->short_name . ")!";
         }

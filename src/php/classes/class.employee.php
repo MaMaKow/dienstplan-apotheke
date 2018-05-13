@@ -46,9 +46,9 @@ class employee {
 
     protected function read_principle_roster_from_database() {
         $sql_query = "SELECT * FROM `Grundplan`"
-                . "WHERE `VK` = " . $this->employee_id;
-        $result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_object($result)) {
+                . "WHERE `VK` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             /*
              * The primary key of the table `Grundplan` is VK + Wochentag + Mandant.
              * This is reflected by the keys in this array:

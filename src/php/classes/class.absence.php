@@ -24,17 +24,17 @@ class absence {
         if (!isset($workforce)) {
             throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
         }
-        $mitarbeiterliste = implode(", ", array_keys($workforce->List_of_employees));
+        list($in_placeholder, $IN_employees_list) = database_wrapper::create_placeholder_for_mysql_IN_function(array_keys($workforce->List_of_employees), TRUE);
 
         $sql_query = "SELECT * FROM `absence` "
-                . "WHERE `start` <= '$date_sql' "
-                . "AND `end` >= '$date_sql' "
-                . "AND `employee_id` IN (" . $mitarbeiterliste . ")"; //Employees, whose absence has started but not ended yet.
+                . "WHERE `start` <= :start "
+                . "AND `end` >= :end "
+                . "AND `employee_id` IN ($in_placeholder)"; //Employees, whose absence has started but not ended yet.
         /*
          * TODO: The above query does not discriminate between approved an non-approved vacations.
          */
-        $result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_object($result)) {
+        $result = database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array('start' => $date_sql, 'end' => $date_sql)));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Absentees[$row->employee_id] = $row->reason;
         }
         return $Absentees;

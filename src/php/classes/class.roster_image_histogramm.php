@@ -181,16 +181,16 @@ abstract class roster_image_histogramm {
             return FALSE;
         }
 
-        $result = mysqli_query_verbose("SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = $branch_pep_id and Wochentag = $sql_weekday");
-        while ($row = mysqli_fetch_object($result)) {
+        $result = database_wrapper::instance()->run("SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = :branch_pep_id and Wochentag = :weekday", array('branch_pep_id' => $branch_pep_id, 'weekday' => $sql_weekday));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Packungen[$row->Uhrzeit] = $row->Mittelwert;
         }
-        $result = mysqli_query_verbose("SELECT factor FROM `pep_month_day`  WHERE `branch` = $branch_pep_id and `day` = $month_day");
-        $row = mysqli_fetch_object($result);
+        $result = database_wrapper::instance()->run("SELECT factor FROM `pep_month_day`  WHERE `branch` = :branch_pep_id and `day` = :month_day", array('branch_pep_id' => $branch_pep_id, 'month_day' => $month_day));
+        $row = $result->fetch(PDO::FETCH_OBJ);
         $factor_tag_im_monat = $row->factor;
 
-        $result = mysqli_query_verbose("SELECT factor FROM `pep_year_month`  WHERE `branch` = $branch_pep_id and `month` = $month");
-        $row = mysqli_fetch_object($result);
+        $result = database_wrapper::instance()->run("SELECT factor FROM `pep_year_month`  WHERE `branch` = :branch_pep_id and `month` = :month", array('branch_pep_id' => $branch_pep_id, 'month' => $month));
+        $row = $result->fetch(PDO::FETCH_OBJ);
         $factor_monat_im_jahr = $row->factor;
 
         foreach ($Packungen as $time => $average) {
