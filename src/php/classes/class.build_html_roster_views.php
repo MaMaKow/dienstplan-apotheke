@@ -156,8 +156,8 @@ abstract class build_html_roster_views {
                 continue;
             }
             $table_html .= "</tbody><tbody><tr class='branch_roster_title_tr'><th colspan=";
-            $table_html .= htmlentities($number_of_days) . ">"; 
-            $table_html .= $List_of_branch_objects[$branch_id]->short_name; 
+            $table_html .= htmlentities($number_of_days) . ">";
+            $table_html .= $List_of_branch_objects[$branch_id]->short_name;
             $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->short_name . "</th></tr>";
             $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id);
         }
@@ -356,9 +356,9 @@ abstract class build_html_roster_views {
         /*
          * TODO: This might be better placed in some other class.
          */
-        $sql_query = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch_id'";
-        $result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_object($result)) {
+        $sql_query = "SELECT state FROM `approval` WHERE date = :date AND branch = :branch_id";
+        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $approval = $row->state;
             return $approval;
         }

@@ -109,7 +109,12 @@ function hex2rgb($hexstring) {
 
 function null_from_post_to_mysql($value) {
     if ('' === $value) {
-        return 'NULL';
+        /*
+         * Changed during the change to PDO
+         * TODO: Move this into the database_wrapper?
+         * return 'NULL';
+         */
+        return NULL;
     } else {
         return $value;
     }
@@ -157,7 +162,7 @@ function print_debug_variable($variable) {
  *
  * @return boolean True if Operating system is Windows.
  */
-function runing_on_windows() {
+function running_on_windows() {
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         return true;
     }
@@ -175,7 +180,7 @@ function runing_on_windows() {
  */
 function get_utf8_month_name($date_unix) {
     $month_name = strftime("%B", $date_unix);
-    if (runing_on_windows()) {
+    if (running_on_windows()) {
         return utf8_encode($month_name);
     }
     return $month_name;

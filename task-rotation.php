@@ -40,21 +40,12 @@ function task_rotation_get_worker($date_unix, $task, $branch_id) {
     //We want the PTAs to take turns in the lab at a weekly basis.
     //We sort them by VK number and check for the last one to take his turn.
     //TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?
-    //Setup a table in the database:
-    $sql_query = "CREATE TABLE IF NOT EXISTS "
-            . "`task_rotation` ( "
-            . "`date` DATE NOT NULL , "
-            . "`task` VARCHAR(64) NOT NULL , "
-            . "`VK` TINYINT NOT NULL , "
-            . "PRIMARY KEY (`date`,`task`)) "
-            . "ENGINE = InnoDB;";
-    $result = mysqli_query_verbose($sql_query);
 
-    mysqli_query_verbose("DELETE FROM `task_rotation` WHERE `date` > NOW()");
+    database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` > NOW()");
     //Was this day already planned?
-    $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = '$task' and `date` = '$date_sql'";
-    $result = mysqli_query_verbose($sql_query);
-    $row = mysqli_fetch_object($result);
+    $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = :task and `date` = :date";
+    $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql));
+    $row = $result->fetch(PDO::FETCH_OBJ);
     if (!empty($row->task)) {
         $rotation_employee_id = $row->VK;
         return $rotation_employee_id;
@@ -84,9 +75,9 @@ function task_rotation_set_worker($date_unix, $task, $branch_id) {
     $date_sql = date("Y-m-d", $date_unix);
     $task_workers_count = count($Rezeptur_Mitarbeiter);
 
-    $sql_query = "SELECT * FROM `task_rotation` WHERE `date` <= '$date_sql' and `task` = '$task' ORDER BY `date` DESC LIMIT 1";
-    $result = mysqli_query_verbose($sql_query);
-    $row = mysqli_fetch_object($result);
+    $sql_query = "SELECT * FROM `task_rotation` WHERE `date` <= :date and `task` = :task ORDER BY `date` DESC LIMIT 1";
+    $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'task' => $task));
+    $row = $result->fetch(PDO::FETCH_OBJ);
     if (!empty($row->date)) {
         $last_date = $row->date;
         //If nobody is stored to do a task. Then we have to decide, whos is up to do it.
@@ -98,13 +89,17 @@ function task_rotation_set_worker($date_unix, $task, $branch_id) {
             foreach ($Rezeptur_Mitarbeiter as $vk) {
                 $sql_query = "SELECT `VK`, COUNT(`date`) as `count`"
                         . "FROM `task_rotation` "
-                        . "WHERE `VK` = '$vk' "
-                        . "AND `date` > '$from_date_sql' "
-                        . "AND `date` < '$to_date_sql' "
+                        . "WHERE `VK` = :employee_id "
+                        . "AND `date` > :date_from "
+                        . "AND `date` < :date_to "
                         . "GROUP BY `VK` "
                         . "ORDER BY COUNT(`date`) ASC, `VK` ASC ";
-                $result = mysqli_query_verbose($sql_query);
-                $row = mysqli_fetch_object($result);
+                $result = database_wrapper::instance()->run($sql_query, array(
+                    'employee_id' => $vk,
+                    'date_from' => $from_date_sql,
+                    'date_to' => $to_date_sql
+                ));
+                $row = $result->fetch(PDO::FETCH_OBJ);
                 if (!empty($row->count)) {
                     $Rezeptur_Count[$vk] = $row->count;
                 } else {
@@ -142,8 +137,12 @@ function task_rotation_set_worker($date_unix, $task, $branch_id) {
                      * This value is only stored in the database, if it is in the past.
                      * This is to make sure, that fresh absences can be regarded.
                      */
-                    $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$temp_date_sql', '$rotation_employee_id')";
-                    $result = mysqli_query_verbose($sql_query);
+                    $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES (:task, :date, :employee_id)";
+                    database_wrapper::instance()->run($sql_query, array(
+                        'task' => $task,
+                        'date' => $temp_date_sql,
+                        'employee_id' => $rotation_employee_id
+                    ));
                 }
             }
         }
@@ -151,8 +150,12 @@ function task_rotation_set_worker($date_unix, $task, $branch_id) {
     } else {
         //If there is noone anywhere in the past we just take the first person in the array.
         $rotation_employee_id = min($Rezeptur_Mitarbeiter);
-        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES ('$task', '$date_sql', '$rotation_employee_id')";
-        $result = mysqli_query_verbose($sql_query);
+        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES (:task, :date, :employee_id)";
+        database_wrapper::instance()->run($sql_query, array(
+            'task' => $task,
+            'date' => $temp_date_sql,
+            'employee_id' => $rotation_employee_id
+        ));
     }
     return $rotation_employee_id;
 }

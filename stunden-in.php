@@ -18,8 +18,8 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
         $employee_id = intval($employee_id);
         foreach ($Data as $date_sql => $X) {
             $sql_query = "DELETE FROM `Stunden`
-			WHERE `VK` = '$employee_id' AND `Datum` = '$date_sql'";
-            $result = mysqli_query_verbose($sql_query);
+			WHERE `VK` = :employee_id AND `Datum` = :date";
+            $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'date' => $date_sql));
         }
     }
 }
@@ -32,16 +32,14 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
     }
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    $sql_query = "SELECT * FROM `Stunden`
-				WHERE `VK` = " . $employee_id . "
-				ORDER BY `Aktualisierung` DESC
-                                LIMIT 1
-				";
-    $result = mysqli_query_verbose($sql_query);
-    $row = mysqli_fetch_object($result);
+    $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC LIMIT 1";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    $row = $result->fetch(PDO::FETCH_OBJ);
     $balance_old = $row->Saldo;
     $balance_new = $balance_old + $overtime_hours_new;
-
+    /*
+     * TODO: The following part has to be rewritten to database_wrapper::instance()->run
+     */
     $sql_query = "INSERT INTO `Stunden`
         (VK, Datum, Stunden, Saldo, Grund)
         VALUES ("
@@ -66,19 +64,15 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
         }
     }
 }
-$vk = $employee_id;
-$sql_query = "SELECT * FROM `Stunden`
-				WHERE `VK` = " . $vk . "
-				ORDER BY `Aktualisierung` DESC
-				";
-$result = mysqli_query_verbose($sql_query);
+$sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC";
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
 $tablebody = "<tbody>\n";
 $i = 1;
-while ($row = mysqli_fetch_object($result)) {
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>\n";
     $tablebody .= "<td>\n";
     $tablebody .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
-    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlentities($vk) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
+    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlentities($employee_id) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
     $tablebody .= "</form>\n";
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";

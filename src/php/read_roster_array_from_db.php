@@ -4,14 +4,15 @@
  * This function reads the roster of one or more days from the database into an array.
  *
  * @param int $number_of_days number of days (typically just 1 or 5, 6, 7)
- * @param int $mandant
+ * @param int $branch_id
  * @param string $branch_of_target_employees as regular expression.
  *      This is used for the selection of which employees to show in the branch roster table.
  *      The default is to show the employees of all branches (regexp [0-9]*).
- * @return array $Roster for the branch $mandant including $number_of_days days beginning with $date_sql
+ * @return array $Roster for the branch $branch_id including $number_of_days days beginning with $date_sql
  */
 
-function read_roster_array_from_db($date_sql, $number_of_days, $mandant, $branch_of_target_employees = '[0-9]*') {
+function read_roster_array_from_db($date_sql, $number_of_days, $branch_id, $branch_of_target_employees = '[0-9]*') {
+    $branch_of_target_employees = '^' . $branch_of_target_employees . '$';
     //Abruf der gespeicherten Daten aus der Datenbank
     //$number_of_days ist die Anzahl der Tage. 5 Tage = Woche; 1 Tag = 1 Tag.
     //Branch #0 can be used for the boss, the cleaning lady, and other special people, who do not regularly appear in the roster.
@@ -19,11 +20,11 @@ function read_roster_array_from_db($date_sql, $number_of_days, $mandant, $branch
     for ($i = 0; $i < $number_of_days; $i++) {
         $sql_query = 'SELECT DISTINCT Dienstplan.* '
                 . 'FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id '
-                . 'WHERE Dienstplan.Mandant = "' . $mandant . '" AND `Datum` = "' . $date_sql . '" AND employees.branch REGEXP "^' . $branch_of_target_employees . '$" '
+                . 'WHERE Dienstplan.Mandant = :branch_id AND `Datum` = :date AND employees.branch REGEXP :branch_of_target_employees '
                 . 'ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
-        $result = mysqli_query_verbose($sql_query);
+        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'date' => $date_sql, 'branch_of_target_employees' => $branch_of_target_employees));
 
-        while ($row = mysqli_fetch_object($result)) {
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Roster[$i]["Datum"][] = $row->Datum;
             $Roster[$i]["VK"][] = $row->VK;
             $Roster[$i]["Dienstbeginn"][] = $row->Dienstbeginn;

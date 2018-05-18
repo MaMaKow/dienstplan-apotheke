@@ -34,8 +34,8 @@ for ($i = 1; $i <= 12; $i++) {
 }
 $Years = array();
 $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-$result = mysqli_query_verbose($sql_query);
-while ($row = mysqli_fetch_object($result)) {
+$result = database_wrapper::instance()->run($sql_query);
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $Years[] = $row->year;
 }
 $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"

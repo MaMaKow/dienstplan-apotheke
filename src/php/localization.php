@@ -23,7 +23,7 @@ if (isset($config["language"])) {
 } else {
     $locale = "de_DE";
 }
-if (runing_on_windows()) {
+if (running_on_windows()) {
     /*
      * Windows accepts the locale string as en-GB while linux accepts en_GB.
      * These lines replace the underscore _ by the dash - and vice versa.

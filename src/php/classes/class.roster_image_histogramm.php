@@ -204,7 +204,7 @@ abstract class roster_image_histogramm {
       //Check if the PEP information is still up-to-date:
       $sql_query = "SELECT max(Datum) as Datum FROM `pep`";
       $result = mysqli_query_verbose($sql_query);
-      $row = mysqli_fetch_object($result);
+      $row = $result->fetch(PDO::FETCH_OBJ);
       $newest_pep_date = strtotime($row->Datum);
       $today = time();
       $seconds_since_last_update = $today - $newest_pep_date;

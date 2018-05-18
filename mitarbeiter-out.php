@@ -23,7 +23,6 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
     $employee_id = $_SESSION['user_employee_id'];
 }
 
-//require 'db-lesen-woche-mitarbeiter.php';
 $Roster = roster::read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
