@@ -30,9 +30,9 @@
 function build_datalist() {
     //Build a datalist with common reasons fo absence:
     $query = "SELECT `reason` FROM `absence` GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
-    $result = mysqli_query_verbose($query);
+    $result = database_wrapper::instance()->run($query);
     $datalist = "<datalist id='reasons'>\n";
-    while ($row = mysqli_fetch_object($result)) {
+    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $datalist .= "<option value='$row->reason'>\n";
     }
     $datalist .= "</datalist>\n";
@@ -132,7 +132,7 @@ function write_user_input_to_database() {
      * Therefore we currently do not need the following block of code:
       $query = "SELECT `approval` FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
       $result = mysqli_query_verbose($query);
-      $row = mysqli_fetch_object($result);
+      $row = $result->fetch(PDO::FETCH_OBJ);
       if (empty($approval) and empty($row->approval)) {
       $approval = "not_yet_approved";
       } elseif (empty($approval)) {
@@ -149,8 +149,8 @@ function write_user_input_to_database() {
      *
      * $employee_id_old and $start_date_old_string are NULL for new entries. Therefore there will be no deletions.
      */
-    $query = "DELETE FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
-    $result = mysqli_query_verbose($query);
+    $query = "DELETE FROM absence WHERE `employee_id` = :employee_id AND `start` = :start";
+    $result = database_wrapper::instance()->run($query, array('employee_id' => $employee_id_old, 'start' => $start_date_old_string));
 
     /*
      * Insert new entry data into the table absence.
@@ -161,24 +161,17 @@ function write_user_input_to_database() {
          * TODO: Maybe there should be a common library/class for all the (common) absence functions.
          */
         $days = absence::calculate_absence_days($start_date_string, $end_date_string);
-        $query = "INSERT INTO absence ("
-                . " `employee_id`,"
-                . " `start`,"
-                . " `end`,"
-                . " `days`,"
-                . " `reason`,"
-                . " `approval`,"
-                . " `user`"
-                . ") VALUES ("
-                . " '$employee_id',"
-                . " '$start_date_string',"
-                . " '$end_date_string',"
-                . " '$days',"
-                . " '$reason',"
-                . " '$approval',"
-                . " '" . $_SESSION['user_name'] . "'"
-                . ")";
-        $result = mysqli_query_verbose($query);
+        $query = "INSERT INTO absence (`employee_id`, `start`, `end`, `days`, `reason`, `approval`, `user`) "
+                . "VALUES (:employee_id, :start, :end, :days, :reason, :approval, :user)";
+        $result = database_wrapper::instance()->run($query, array(
+            'employee_id' => $employee_id,
+            'start' => $start_date_string,
+            'end' => $end_date_string,
+            'days' => $days,
+            'reason' => $reason,
+            'approval' => $approval,
+            'user' => $_SESSION['user_name']
+        ));
     }
 }
 
@@ -201,10 +194,9 @@ function approve_absence_to_database() {
     $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
     $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
 
-    $query = "UPDATE `absence` "
-            . " SET `approval` = \"$approval\" "
-            . " WHERE `employee_id` = \"$employee_id_old\" AND `start` = \"$start_date_old_string\"";
-    $result = mysqli_query_verbose($query);
+    $query = "UPDATE `absence` SET `approval` = :approval "
+            . " WHERE `employee_id` = :employee_id AND `start` = :start";
+    $result = database_wrapper::instance()->run($query, array('approval' => $approval, 'employee_id' => $employee_id_old, 'start' => $start_date_old_string));
 }
 
 /**
@@ -236,8 +228,8 @@ function build_absence_year($year) {
     //The following lines for the year select are common code with anwesenheitsliste-out.php
     $Years = array();
     $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $result = mysqli_query_verbose($sql_query);
-    while ($row = mysqli_fetch_object($result)) {
+    $result = database_wrapper::instance()->run($sql_query);
+    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $Years[] = $row->year;
     }
     $Years[] = max($Years) + 1;
@@ -377,11 +369,14 @@ function build_absence_month($year, $month_number) {
 
     $month_container_html = "";
 
-    //The following lines for the year select are common code with anwesenheitsliste-out.php
+    /*
+     * The following lines for the year select are common code with anwesenheitsliste-out.php
+     * TODO: make it a common funtion
+     */
     $Years = array();
     $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $result = mysqli_query_verbose($sql_query);
-    while ($row = mysqli_fetch_object($result)) {
+    $result = database_wrapper::instance()->run($sql_query);
+    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $Years[] = $row->year;
     }
     $Years[] = max($Years) + 1;

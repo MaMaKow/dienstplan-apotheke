@@ -13,9 +13,9 @@ if ($command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING) and '
 
 function delete_absence_data() {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
-    $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
-    $sql_query = "DELETE FROM `absence` WHERE `employee_id` = '$employee_id' AND `start` = '$beginn'";
-    $result = mysqli_query_verbose($sql_query);
+    $start = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
+    $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start));
     return $result;
 }
 
@@ -51,10 +51,10 @@ function write_absence_data_to_database($beginn, $ende, $grund) {
     }
     //var_export($tage);
     if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
-        $beginn_old = filter_input(INPUT_POST, 'beginn_old', FILTER_SANITIZE_STRING);
-        $sql_query = "DELETE FROM `absence` WHERE `employee_id` = '$employee_id' AND `start` = '$beginn_old'";
+        $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
+        $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
         //echo "$sql_query<br>\n";
-        $result = mysqli_query_verbose($sql_query);
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start_old));
     }
     $approval = "approved"; //TODO: There will be a time to handle cases of non-approved holidays!
     $sql_query = "INSERT INTO `absence` "
@@ -75,41 +75,38 @@ function write_absence_data_to_database($beginn, $ende, $grund) {
     }
 }
 
-$sql_query = 'SELECT * FROM `absence`
-				WHERE `employee_id` = ' . $employee_id . '
-				ORDER BY `start` ASC
+$sql_query = 'SELECT * FROM `absence` WHERE `employee_id` = :employee_id ORDER BY `start` DESC
 				';
-$result = mysqli_query_verbose($sql_query);
-$number_of_rows = mysqli_num_rows($result);
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
 $tablebody = '';
 $i = 1;
-while ($row = mysqli_fetch_object($result)) {
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
             . "<form accept-charset='utf-8' method=POST id='change_absence_entry_" . $row->start . "'>"
             . "\n";
-    $tablebody .= "<td>\n<div id=beginn_out_" . $row->start . ">";
+    $tablebody .= "<td><div id=beginn_out_" . $row->start . ">";
     $tablebody .= date('d.m.Y', strtotime($row->start)) . "</div>";
     $tablebody .= "<input id=beginn_in_" . $row->start . " style='display: none;' type=date name='beginn' value=" . date('Y-m-d', strtotime($row->start)) . " form='change_absence_entry_" . $row->start . "'> ";
-    $tablebody .= "<input id=beginn_in_old_" . $row->start . " style='display: none;' type=date name='beginn_old' value=" . date('Y-m-d', strtotime($row->start)) . " form='change_absence_entry_" . $row->start . "'> ";
-    $tablebody .= "\n</td>\n";
-    $tablebody .= "<td>\n<div id=ende_out_" . $row->start . " form='change_absence_entry_" . $row->start . "'>";
+    $tablebody .= "<input id=beginn_in_old_" . $row->start . " style='display: none;' type=date name='start_old' value=" . date('Y-m-d', strtotime($row->start)) . " form='change_absence_entry_" . $row->start . "'> ";
+    $tablebody .= "</td>\n";
+    $tablebody .= "<td><div id=ende_out_" . $row->start . " form='change_absence_entry_" . $row->start . "'>";
     $tablebody .= date('d.m.Y', strtotime($row->end)) . "</div>";
     $tablebody .= "<input id=ende_in_" . $row->start . " style='display: none;' type=date name='ende' value=" . date('Y-m-d', strtotime($row->end)) . " form='change_absence_entry_" . $row->start . "'> ";
-    $tablebody .= "\n</td>\n";
-    if ($i == $number_of_rows) {
+    $tablebody .= "</td>\n";
+    if ($i == 1) {
         $tablebody .= "<td id=letzterGrund><div id=grund_out_" . $row->start . ">\n";
     } else {
-        $tablebody .= "<td>\n<div id=grund_out_" . $row->start . ">";
+        $tablebody .= "<td><div id=grund_out_" . $row->start . ">";
     }
     $tablebody .= "$row->reason" . "</div>";
     $tablebody .= "<input id=grund_in_" . $row->start . " style='display: none;' list='reasons' type=text name='grund' value='" . $row->reason . "' form='change_absence_entry_" . $row->start . "'> ";
-    $tablebody .= "\n</td>\n";
+    $tablebody .= "</td>\n";
     $tablebody .= "<td>\n";
     $tablebody .= "$row->days";
-    $tablebody .= "\n</td>\n";
+    $tablebody .= "</td>\n";
     $tablebody .= "<td>\n";
     $tablebody .= "$row->approval";
-    $tablebody .= "\n</td>\n";
+    $tablebody .= "</td>\n";
     $tablebody .= "<td style='font-size: 1em; height: 1em'>\n"
             . "<input hidden name='employee_id' value='$employee_id' form='change_absence_entry_" . $row->start . "'>\n"
             . "<button type=submit id=delete_" . $row->start . " class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
@@ -125,15 +122,15 @@ while ($row = mysqli_fetch_object($result)) {
             . "<img src='img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
             . "</button>\n"
             . "";
-    $tablebody .= "\n</td>\n";
+    $tablebody .= "</td>\n";
     $tablebody .= "</form>\n"
             . "</tr>\n";
     ++$i;
 }
 $sql_query = "SELECT `reason` FROM `absence`  GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
-$result = mysqli_query_verbose($sql_query);
+$result = database_wrapper::instance()->run($sql_query);
 $datalist = "<datalist id='reasons'>\n";
-while ($row = mysqli_fetch_object($result)) {
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $datalist .= "<option value='$row->reason'>\n";
 }
 $datalist .= "</datalist>\n";
@@ -152,7 +149,7 @@ echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 if (isset($Feiertagsmeldung)) {
     echo "<div class=error_container>\n";
-    echo "<div class=warningmsg>\n<H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
+    echo "<div class=warningmsg><H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
     foreach ($Feiertagsmeldung as $holiday) {
         echo "<p>" . $holiday . "</p>\n";
     }
@@ -164,63 +161,48 @@ echo build_html_navigation_elements::build_select_employee($employee_id, $workfo
 echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[" . gettext("Read") . "]</a>";
 echo "\n";
 echo "<table id=absence_table>\n";
-//Überschrift
-echo "<thead>\n"
- . "<tr>\n"
- . "<th>\n"
- . "Beginn\n"
- . "</th>\n"
- . "<th>\n"
- . "Ende\n"
- . "</th>\n"
- . "<th>\n"
- . "Grund\n"
- . "</th>\n"
- . "<th>\n"
- . "Tage\n"
- . "</th>\n"
- . "<th>\n"
- . ""
- . "</th>\n"
- . "</tr>\n"
- . "</thead>\n";
-//Ausgabe
-echo "<tbody>\n"
- . "$tablebody"
- . "</tbody>\n";
-//echo "</form>\n";
-//Eingabe. Der Saldo wird natürlich berechnet.
-echo "<tfoot>"
- . "\n";
-echo "";
+/*
+ * Head
+ */
+echo "<thead>\n";
+echo "<tr><th>Beginn</th><th>Ende</th><th>Grund</th><th>Tage</th><th></th></tr>\n";
+/*
+ * Input with calculation of the saldo via javascript.
+ */
 echo "<tr class=no-print id=input_line_new>\n"
  . "<form accept-charset='utf-8' method=POST id='new_absence_entry'>\n";
 echo "<td>\n"
  . "<input type=hidden name=employee_id value=$employee_id form='new_absence_entry'>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=" . date("Y-m-d") . " form='new_absence_entry'>";
-echo "\n</td>\n";
+echo "</td>\n";
 echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
-echo "\n</td>\n";
+echo "</td>\n";
 echo "<td>\n";
 echo "<input list='reasons' name=grund form='new_absence_entry'>";
 echo "$datalist";
-echo "\n</td>\n";
+echo "</td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>\n";
 echo "1";
-echo "\n</td>\n";
+echo "</td>\n";
 echo "<td>\n";
-echo "";
-echo "\n</td>\n";
-echo "\n</tr>\n";
-echo "\n<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";
-echo "<td id=warning_message_td colspan='5'>\n";
-echo "\n</td>\n";
-echo "</form>\n"
- . "</tr>\n"
- . "</tfoot>";
-echo "</table>\n";
+echo "</td>\n";
+echo "<td>\n";
 echo "<input type=submit id=save_new class=no-print name=submitStunden value='Eintragen' form='new_absence_entry'>";
+echo "</td>\n";
+echo "</tr>\n";
+echo "<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";
+echo "<td id=warning_message_td colspan='5'>\n";
+echo "Foo!";
+echo "</td>\n";
+echo "</form>\n";
+echo "</tr>\n";
+echo "</thead>\n";
+//Ausgabe
+echo "<tbody>\n"
+ . "$tablebody"
+ . "</tbody>\n";
+echo "</table>\n";
 echo "</div>\n";
 require 'contact-form.php';
 ?>

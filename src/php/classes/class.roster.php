@@ -45,12 +45,12 @@ abstract class roster {
             $date_sql = date('Y-m-d', $date_unix);
             $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
-                    . "WHERE `Datum` = '$date_sql' and `VK` = '$employee_id' "
+                    . "WHERE `Datum` = :date and `VK` = :employee_id "
                     . 'ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
-            $result = mysqli_query_verbose($sql_query);
+            $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'employee_id' => $employee_id));
 
             $roster_row_iterator = 0;
-            while ($row = mysqli_fetch_object($result)) {
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
@@ -131,17 +131,17 @@ abstract class roster {
             $date_sql = date('Y-m-d', $date_unix);
             $sql_query = 'SELECT DISTINCT Dienstplan.* '
                     . ' FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id '
-                    . ' WHERE Dienstplan.Mandant = ' . user_input::escape_sql_value($other_branch_id) . ' AND `Datum` = ' . user_input::escape_sql_value($date_sql) . ' AND employees.branch =' . user_input::escape_sql_value($branch_id)
+                    . ' WHERE Dienstplan.Mandant = :other_branch_id AND `Datum` = :date AND employees.branch = :branch_id '
                     . ' ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
-            $result = mysqli_query_verbose($sql_query);
+            $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'other_branch_id' => $other_branch_id, 'date' => $date_sql));
 
             $roster_row_iterator = 0;
-            while ($row = mysqli_fetch_object($result)) {
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
-            if (0 === $result->num_rows) {
+            if (0 === $roster_row_iterator) {
                 /*
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
@@ -209,17 +209,15 @@ abstract class roster {
         $Roster = array();
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
-            /*
-             * TODO: Make sure, that these two repair calls are not necessary anymore:
-             */
+            $weekday = date("N", $date_unix);
             $sql_query = "SELECT * FROM `Grundplan`"
-                    . "WHERE `Wochentag` = '" . date("N", $date_unix) . "'"
-                    . "AND `VK` = '$employee_id'"
+                    . "WHERE `Wochentag` = :weekday"
+                    . "AND `VK` = :employee_id"
                     . "ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`";
 
-            $result = mysqli_query_verbose($sql_query);
+            $result = database_wrapper::instance()->run($sql_query, array('weekday' => $weekday, 'employee_id' => $employee_id));
             $roster_row_iterator = 0;
-            while ($row = mysqli_fetch_object($result)) {
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
                 $roster_row_iterator++;
             }

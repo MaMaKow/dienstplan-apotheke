@@ -24,8 +24,8 @@ create_cookie("datum", $date_sql, 0.5);
 //Duty rosters have to be approved by the leader, before the staff can view them.
 unset($approval);
 $sql_query = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch_id'";
-$result = mysqli_query_verbose($sql_query);
-while ($row = mysqli_fetch_object($result)) {
+$result = database_wrapper::instance()->run($sql_query);
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $approval = $row->state;
 }
 if (isset($approval)) {

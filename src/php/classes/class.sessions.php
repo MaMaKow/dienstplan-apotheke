@@ -308,14 +308,9 @@ class sessions {
 
     function write_lost_password_token_to_database($employee_id, $token) {
         if (!is_null($employee_id) and ! is_null($token)) {
-            mysqli_query_verbose("CREATE TABLE IF NOT EXISTS `users_lost_password_token` (
-            `employee_id` tinyint(3) UNSIGNED NOT NULL,
-            `token` binary(20) NOT NULL,
-            `time_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;");
-            mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
-            $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES ('$employee_id', UNHEX('$token'))";
-            mysqli_query_verbose($sql_query);
+            database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
+            $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES (:employee_id, UNHEX(:token))";
+            database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
             return TRUE;
         }
         return FALSE;

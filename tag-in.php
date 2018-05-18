@@ -15,12 +15,7 @@ create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 
 $workforce = new workforce($date_sql);
-$database_wrapper = database_wrapper::instance();
-$result = database_wrapper::run('SELECT * FROM absence')->fetchAll(PDO::FETCH_OBJ);
-//$result = $database_wrapper->run('SELECT * FROM absence')->fetchAll(PDO::FETCH_OBJ);
-print_debug_variable($result);
-//$database_wrapper->run('SELECT wrongcolumn FROM wrongtable');
-die("Done with testing");
+$result = database_wrapper::instance()->run('SELECT * FROM absence')->fetchAll(PDO::FETCH_OBJ);
 if (filter_has_var(INPUT_POST, 'Roster')) {
     $Roster = user_input::get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {

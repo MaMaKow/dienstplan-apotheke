@@ -38,14 +38,14 @@ function write_new_table_data() {
     //Collect the new data and write it to files:
     global $New_table_files;
     $sql_query = "SHOW TABLES";
-    $sql_result_with_tables = mysqli_query_verbose($sql_query);
-    while ($table_row = mysqli_fetch_array($sql_result_with_tables)) {
+    $sql_result_with_tables = database_wrapper::instance()->run($sql_query);
+    while ($table_row = $sql_result_with_tables->fetch(PDO::FETCH_ASSOC)) {
         $table_name = $table_row[0];
         $sql_query = "SHOW CREATE TABLE " . $table_name;
-        $sql_result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_array($sql_result)) {
+        $sql_result = database_wrapper::instance()->run($sql_query);
+        while ($row = $sql_result->fetch(PDO::FETCH_ASSOC)) {
             $table_structure_create = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
-            if (TRUE === runing_on_windows()) {
+            if (TRUE === running_on_windows()) {
                 $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
             } else {
                 //$file_name = iconv("ISO-8859-15", "UTF-8", $table_name);
@@ -68,12 +68,12 @@ function write_new_trigger_data() {
     //Collect the new data and write it to files:
     global $New_table_files;
     $sql_query = "SHOW TRIGGERS";
-    $sql_result_with_triggers = mysqli_query_verbose($sql_query);
-    while ($trigger_row = mysqli_fetch_array($sql_result_with_triggers)) {
+    $sql_result_with_triggers = database_wrapper::instance()->run($sql_query);
+    while ($trigger_row = $sql_result_with_triggers->fetch(PDO::FETCH_ASSOC)) {
         $trigger_name = $trigger_row["Trigger"];
         $sql_query = "SHOW CREATE TRIGGER " . $trigger_name;
-        $sql_result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_array($sql_result)) {
+        $sql_result = database_wrapper::instance()->run($sql_query);
+        while ($row = $sql_result->fetch(PDO::FETCH_ASSOC)) {
             $trigger_structure_create = $row['SQL Original Statement'];
             $file_name = iconv("UTF-8", "ISO-8859-1", $trigger_name); //This is necessary for Microsoft Windows to recognise special chars.
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?

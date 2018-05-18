@@ -340,5 +340,3 @@ function clear_form(form_id) {
         }
     }
 }
-
-

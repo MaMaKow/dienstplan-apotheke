@@ -7,16 +7,15 @@ create_cookie('employee_id', $employee_id, 30);
 function insert_user_data_into_database() {
     $User["employee_id"] = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $User["privilege"] = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-
-    mysqli_query_verbose("START TRANSACTION");
-    $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = " . $User["employee_id"];
-    mysqli_query_verbose($sql_query);
+    database_wrapper::instance()->beginTransaction();
+    $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = :user";
+    database_wrapper::instance()->run($sql_query, array('user' => $User["employee_id"]));
 
     foreach ($User["privilege"] as $privilege) {
-        $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES('" . $User["employee_id"] . "', '" . $privilege . "')";
-        mysqli_query_verbose($sql_query);
+        $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES(:user, :privilege)";
+        database_wrapper::instance()->run($sql_query, array('user' => $User["employee_id"], 'privilege' => $privilege));
     }
-    mysqli_query_verbose("COMMIT");
+    database_wrapper::instance()->commit();
 }
 
 if (filter_has_var(INPUT_POST, 'submit_user_data')) {
@@ -25,19 +24,19 @@ if (filter_has_var(INPUT_POST, 'submit_user_data')) {
 
 function read_user_data_from_database($employee_id) {
     global $workforce;
-    $sql_query = "SELECT * FROM `users` WHERE `employee_id` = '$employee_id'";
-    $result = mysqli_query_verbose($sql_query);
-    while ($row = mysqli_fetch_object($result)) {
+    $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $User["employee_id"] = $row->employee_id;
         $User["user_name"] = $row->user_name;
         $User["email"] = $row->email;
         $User["status"] = $row->status;
         $User["last_name"] = $workforce->List_of_employees[$row->employee_id]->last_name;
     }
-    $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = '$employee_id'";
-    $result = mysqli_query_verbose($sql_query);
+    $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = :employee_id";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
     $User["privilege"] = array();
-    while ($row = mysqli_fetch_object($result)) {
+    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $User["privilege"][] = $row->privilege;
     }
     return $User;
@@ -45,8 +44,8 @@ function read_user_data_from_database($employee_id) {
 
 function read_user_list_from_database() {
     $sql_query = "SELECT `employee_id`, `user_name` FROM `users` ORDER BY `employee_id` ASC";
-    $result = mysqli_query_verbose($sql_query);
-    while ($row = mysqli_fetch_object($result)) {
+    $result = database_wrapper::instance()->run($sql_query);
+    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $User_list[$row->employee_id] = $row->user_name;
         $User_list[$row->employee_id] = new employee((int) $row->employee_id, $row->user_name, NULL, NULL, NULL, NULL, NULL);
     }

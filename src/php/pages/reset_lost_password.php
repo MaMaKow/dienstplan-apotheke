@@ -20,13 +20,13 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
 
 function clean_up_after_password_change($employee_id) {
-    mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `employee_id` = $employee_id");
+    database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `employee_id` = :employee_id", array('employee_id' => $employee_id));
 }
 
 function lost_password_token_is_valid($employee_id, $token) {
-    $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = $employee_id and `token` = UNHEX('$token')";
-    $result = mysqli_query_verbose($sql_query);
-    $row = mysqli_fetch_object($result);
+    $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = :employee_id and `token` = UNHEX(:token)";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
+    $row = $result->fetch(PDO::FETCH_OBJ);
     if (!empty($row->employee_id) and $employee_id === $row->employee_id) {
         return TRUE; //The form is shown
     } else {
@@ -79,7 +79,7 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
     /*
      * Remove expired tokens:
      */
-    mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
+    database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
     build_lost_password_form($employee_id, $user_name, $token);
 } elseif (filter_has_var(INPUT_POST, 'employee_id')) {
     $error = FALSE;

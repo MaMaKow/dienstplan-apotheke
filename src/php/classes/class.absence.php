@@ -43,9 +43,9 @@ class absence {
     public static function get_absence_data_specific($date_sql, $employee_id) {
         $query = "SELECT *
 		FROM `absence`
-		WHERE `start` <= '$date_sql' AND `end` >= '$date_sql' AND `employee_id` = '$employee_id'";
-        $result = mysqli_query_verbose($query);
-        while ($row = mysqli_fetch_object($result)) {
+		WHERE `start` <= :start AND `end` >= :end AND `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($query, array('start' => $date_sql, 'end' => $date_sql, 'employee_id' => $employee_id));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Absence['employee_id'] = $row->employee_id;
             $Absence['reason'] = $row->reason;
             $Absence['start'] = $row->start;
@@ -59,9 +59,9 @@ class absence {
       function get_all_absence_data_in_period($start_date_sql, $end_date_sql) {
       $query = "SELECT *
       FROM `absence`
-      WHERE `start` <= '$start_date_sql' AND `end` >= '$end_date_sql'";
-      $result = mysqli_query_verbose($query);
-      while ($row = mysqli_fetch_object($result)) {
+      WHERE `start` <= :start AND `end` >= :end";
+      $result = database_wrapper::instance()->run($query, array('start'=>$start_date_sql,'end'=>$end_date_sql));
+      while ($row = $result->fetch(PDO::FETCH_OBJ)) {
       $Absences[]['employee_id'] = $row->employee_id;
       $Absences[]['reason'] = $row->reason;
       $Absences[]['start'] = $row->start;

@@ -1,10 +1,9 @@
 <?php
 
 function read_employee_data_from_database($employee_id) {
-    $sql_query = "SELECT * FROM `employees` WHERE `id` = '$employee_id'";
-    //echo "$sql_query<br>\n";
-    $result = mysqli_query_verbose($sql_query);
-    while ($row = mysqli_fetch_object($result)) {
+    $sql_query = "SELECT * FROM `employees` WHERE `id` = :employee_id";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $Worker["employee_id"] = $row->id;
         $Worker["first_name"] = $row->first_name;
         $Worker["last_name"] = $row->last_name;
@@ -24,73 +23,77 @@ function read_employee_data_from_database($employee_id) {
 
 function write_employee_data_to_database() {
     if (filter_input(INPUT_POST, "submitStunden", FILTER_SANITIZE_STRING)) {
-        $Worker["employee_id"] = user_input::escape_sql_value(filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT));
-        $Worker["first_name"] = user_input::escape_sql_value(filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING));
-        $Worker["last_name"] = user_input::escape_sql_value(filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING));
-        $Worker["profession"] = user_input::escape_sql_value(filter_input(INPUT_POST, "profession", FILTER_SANITIZE_STRING));
-        $Worker["working_hours"] = user_input::escape_sql_value(filter_input(INPUT_POST, "working_hours", FILTER_VALIDATE_FLOAT));
-        $Worker["working_week_hours"] = user_input::escape_sql_value(filter_input(INPUT_POST, "working_week_hours", FILTER_VALIDATE_FLOAT));
-        $Worker["holidays"] = user_input::escape_sql_value(filter_input(INPUT_POST, "holidays", FILTER_VALIDATE_INT));
-        $Worker["lunch_break_minutes"] = user_input::escape_sql_value(filter_input(INPUT_POST, "lunch_break_minutes", FILTER_VALIDATE_INT));
-        $Worker["goods_receipt"] = user_input::escape_sql_value(filter_input(INPUT_POST, "goods_receipt", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0); //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
-        $Worker["compounding"] = user_input::escape_sql_value(filter_input(INPUT_POST, "compounding", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0); //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
-        $Worker["branch"] = user_input::escape_sql_value(filter_input(INPUT_POST, "branch", FILTER_VALIDATE_INT));
-        $Worker["start_of_employment"] = user_input::escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING)));
-        $Worker["end_of_employment"] = user_input::escape_sql_value(null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING)));
+        $Worker["employee_id"] = filter_input(INPUT_POST, "employee_id", FILTER_VALIDATE_INT);
+        $Worker["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING);
+        $Worker["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING);
+        $Worker["profession"] = filter_input(INPUT_POST, "profession", FILTER_SANITIZE_STRING);
+        $Worker["working_hours"] = filter_input(INPUT_POST, "working_hours", FILTER_VALIDATE_FLOAT);
+        $Worker["working_week_hours"] = filter_input(INPUT_POST, "working_week_hours", FILTER_VALIDATE_FLOAT);
+        $Worker["holidays"] = filter_input(INPUT_POST, "holidays", FILTER_VALIDATE_INT);
+        $Worker["lunch_break_minutes"] = filter_input(INPUT_POST, "lunch_break_minutes", FILTER_VALIDATE_INT);
+        $Worker["goods_receipt"] = filter_input(INPUT_POST, "goods_receipt", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0; //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
+        $Worker["compounding"] = filter_input(INPUT_POST, "compounding", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0; //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
+        $Worker["branch"] = filter_input(INPUT_POST, "branch", FILTER_VALIDATE_INT);
+        $Worker["start_of_employment"] = null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING));
+        $Worker["end_of_employment"] = null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING));
 
         $sql_query = "INSERT INTO `employees` (
-        `id`, `first_name`, `last_name`,
-        `profession`,
+        `id`, `first_name`, `last_name`, `profession`,
         `working_hours`, `working_week_hours`, `holidays`, `lunch_break_minutes`,
         `goods_receipt`, `compounding`,
         `branch`,
         `start_of_employment`, `end_of_employment`
         )
-        VALUES ("
-                . $Worker['employee_id'] . ", "
-                . $Worker['first_name'] . ", "
-                . $Worker['last_name'] . ", "
-                . $Worker['profession'] . ", "
-                . $Worker['working_hours'] . ", "
-                . $Worker['working_week_hours'] . ", "
-                . $Worker['holidays'] . ", "
-                . $Worker['lunch_break_minutes'] . ", "
-                . $Worker['goods_receipt'] . ", "
-                . $Worker['compounding'] . ", "
-                . $Worker['branch'] . ", "
-                . $Worker['start_of_employment'] . ", "
-                . $Worker['end_of_employment']
-                . ")"
-                . " ON DUPLICATE KEY UPDATE  `id` = "
-                . $Worker['employee_id'] . ", "
-                . "`first_name` = "
-                . $Worker['first_name'] . ", "
-                . " `last_name` = "
-                . $Worker['last_name'] . ", "
-                . "`profession` = "
-                . $Worker['profession'] . ", "
-                . "`working_hours` = "
-                . $Worker['working_hours'] . ", "
-                . " `working_week_hours` = "
-                . $Worker['working_week_hours'] . ", "
-                . " `holidays` = "
-                . $Worker['holidays'] . ", "
-                . " `lunch_break_minutes` = "
-                . $Worker['lunch_break_minutes'] . ", "
-                . " `goods_receipt` = "
-                . $Worker['goods_receipt'] . ", "
-                . " `compounding` = "
-                . $Worker['compounding'] . ", "
-                . " `branch` = "
-                . $Worker['branch'] . ", "
-                . " `start_of_employment` = "
-                . $Worker['start_of_employment'] . ", "
-                . " `end_of_employment` = "
-                . $Worker['end_of_employment']
-                . "";
+        VALUES (
+:employee_id, :first_name, :last_name, :profession,
+:working_hours, :working_week_hours, :holidays, :lunch_break_minutes,
+:goods_receipt, :compounding, :branch,
+:start_of_employment, :end_of_employment)
+ON DUPLICATE KEY UPDATE
+`id` = :employee_id2,
+`first_name` = :first_name2,
+`last_name` = :last_name2,
+`profession` = :profession2,
+`working_hours` = :working_hours2,
+ `working_week_hours` = :working_week_hours2,
+`holidays` = :holidays2,
+ `lunch_break_minutes` = :lunch_break_minutes2,
+`goods_receipt` = :goods_receipt2,
+ `compounding` = :compounding2,
+`branch` = :branch2,
+ `start_of_employment` = :start_of_employment2,
+`end_of_employment` = :end_of_employment2
+";
 
 
-        $result = mysqli_query_verbose($sql_query);
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'employee_id' => $Worker['employee_id'],
+            'first_name' => $Worker['first_name'],
+            'last_name' => $Worker['last_name'],
+            'profession' => $Worker['profession'],
+            'working_hours' => $Worker['working_hours'],
+            'working_week_hours' => $Worker['working_week_hours'],
+            'holidays' => $Worker['holidays'],
+            'lunch_break_minutes' => $Worker['lunch_break_minutes'],
+            'goods_receipt' => $Worker['goods_receipt'],
+            'compounding' => $Worker['compounding'],
+            'branch' => $Worker['branch'],
+            'start_of_employment' => $Worker['start_of_employment'],
+            'end_of_employment' => $Worker['end_of_employment'],
+            'employee_id2' => $Worker['employee_id'],
+            'first_name2' => $Worker['first_name'],
+            'last_name2' => $Worker['last_name'],
+            'profession2' => $Worker['profession'],
+            'working_hours2' => $Worker['working_hours'],
+            'working_week_hours2' => $Worker['working_week_hours'],
+            'holidays2' => $Worker['holidays'],
+            'lunch_break_minutes2' => $Worker['lunch_break_minutes'],
+            'goods_receipt2' => $Worker['goods_receipt'],
+            'compounding2' => $Worker['compounding'],
+            'branch2' => $Worker['branch'],
+            'start_of_employment2' => $Worker['start_of_employment'],
+            'end_of_employment2' => $Worker['end_of_employment']
+        ));
         return $result;
     } else {
         return FALSE;
@@ -99,8 +102,8 @@ function write_employee_data_to_database() {
 
 function make_radio_profession_list($checked) {
     $sql_query = "SHOW COLUMNS FROM `employees` LIKE 'profession'";
-    $result = mysqli_query_verbose($sql_query);
-    while ($row = mysqli_fetch_array($result)) {
+    $result = database_wrapper::instance()->run($sql_query);
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $set_column = $row["Type"];
         $clean_set_column = str_replace(["set(", ")", "'"], "", $set_column);
         $Professions = explode(",", $clean_set_column);

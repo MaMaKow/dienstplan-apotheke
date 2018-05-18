@@ -18,7 +18,7 @@ if (!$database_connection_mysqli->set_charset("utf8")) {
     printf("Error loading character set utf8: %s\n", $database_connection_mysqli->error);
 }
 
-function mysqli_query_verbose($sql_query, $inside_transaction = FALSE) {
+function mysqli_query_verbose_deleted($sql_query, $inside_transaction = FALSE) {
     global $config, $database_connection_mysqli;
     $result = mysqli_query($database_connection_mysqli, $sql_query);
     if (1146 == $database_connection_mysqli->connect_errno) {

@@ -85,33 +85,7 @@ class database_wrapper {
             $stmt = $this->pdo->prepare($sql_query);
             $stmt->execute($arguments);
         } catch (Exception $exception) {
-            if ('42S02' == $exception->getCode()) {
-                /*
-                 * Base table or view not found: 1146 Table doesn't exist
-                 * We try to create the table from the template.
-                 * Some refactored tables will be populated from their old versions.
-                 */
-                $message = $exception->getMessage();
-                foreach (glob(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/*.sql') as $filename_with_extension_and_path) {
-                    $filename_with_extension = basename($filename_with_extension_and_path);
-                    $table_name = substr($filename_with_extension, 0, strlen($filename_with_extension) - 4);
-                    if (FALSE !== strpos($message, ".$table_name'")) { //the dot (.) and the single quotation mark (') are part of the string: 'database_name.table_name'
-                        self::create_table_from_template($filename_with_extension_and_path);
-                        self::create_table_insert_from_old_table($table_name);
-                    }
-                }
-                try {
-                    /*
-                     * Retry the query to the database with the newly created table:
-                     */
-                    $stmt = $this->pdo->prepare($sql_query);
-                    $stmt->execute($arguments);
-                } catch (Exception $exc) {
-                    throw $exception;
-                }
-            } else {
-                throw $exception;
-            }
+            $this->handle_exceptions($exception, $sql_query, $arguments);
         }
         return $stmt;
     }
@@ -190,6 +164,44 @@ class database_wrapper {
             }
             $in_placeholder_trimmed = rtrim($in, ","); // :id0,:id1,:id2
             return array($in_placeholder_trimmed, $in_parameters);
+        }
+    }
+
+    protected function handle_exceptions($exception, $sql_query, $arguments) {
+        if (TRUE === $this->pdo->inTransaction()) {
+            $this->pdo->rollBack();
+        } elseif ('42S02' == $exception->getCode()) {
+            /*
+             * Base table or view not found: 1146 Table doesn't exist
+             * We try to create the table from the template.
+             * Some refactored tables will be populated from their old versions.
+             * CAVE: This will not be called on querys, which are inside a transaction.
+             */
+            $message = $exception->getMessage();
+            foreach (glob(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/*.sql') as $filename_with_extension_and_path) {
+                $filename_with_extension = basename($filename_with_extension_and_path);
+                $table_name = substr($filename_with_extension, 0, strlen($filename_with_extension) - 4);
+                if (FALSE !== strpos($message, ".$table_name'")) { //the dot (.) and the single quotation mark (') are part of the string: 'database_name.table_name'
+                    self::create_table_from_template($filename_with_extension_and_path);
+                    self::create_table_insert_from_old_table($table_name);
+                }
+            }
+            try {
+                unset($exception);
+                /*
+                 * Retry the query to the database with the newly created table:
+                 */
+                $stmt = $this->pdo->prepare($sql_query);
+                $stmt->execute($arguments);
+            } catch (Exception $exception) {
+                /*
+                 * This catch is superfluous.
+                 * But we might want to add another layer of complication here sometime :-)
+                 */
+                throw $exception;
+            }
+        } else {
+            throw $exception;
         }
     }
 
