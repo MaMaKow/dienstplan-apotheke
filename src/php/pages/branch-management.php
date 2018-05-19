@@ -36,8 +36,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
     if (filter_has_var(INPUT_POST, 'remove_branch')) {
         $old_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
         $sql_query = "DELETE FROM `branch` WHERE `branch_id` = :branch_id";
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute(array('branch_id' => $old_branch_id));
+        database_wrapper::instance()->run($sql_query, array('branch_id' => $old_branch_id));
         $List_of_branch_objects = branch::read_branches_from_database();
         $current_branch_id = min(array_keys($List_of_branch_objects));
         //TODO: Test if the deletion-query to sql was successfull.
@@ -56,7 +55,6 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
          * We will simply insert it into the database table.
          */
         $sql_query = "INSERT INTO `branch` (`branch_id`, `name`, `short_name`, `address`, `manager`, `PEP`) VALUES (:branch_id, :name, :short_name, :address, :manager, :PEP);";
-        $statement = $pdo->prepare($sql_query);
         $new_branch_data = array(
             'branch_id' => $new_branch_id,
             'name' => $new_branch_name,
@@ -65,7 +63,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'manager' => $new_branch_manager,
             'PEP' => $new_branch_pep_id
         );
-        $statement->execute($new_branch_data);
+        database_wrapper::instance()->run($sql_query, $new_branch_data);
         $List_of_branch_objects = branch::read_branches_from_database();
         $current_branch_id = $new_branch_id;
     } else {
@@ -80,7 +78,6 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
                 . " `manager` = :manager,"
                 . " `PEP` = :PEP"
                 . " WHERE `branch_id` = :branch_id";
-        $statement = $pdo->prepare($sql_query);
         $new_branch_data = array(
             'branch_id' => $new_branch_id,
             'name' => $new_branch_name,
@@ -89,7 +86,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'manager' => $new_branch_manager,
             'PEP' => $new_branch_pep_id
         );
-        $statement->execute($new_branch_data);
+        database_wrapper::instance()->run($sql_query, $new_branch_data);
         $List_of_branch_objects = branch::read_branches_from_database();
         $current_branch_id = $new_branch_id;
     }

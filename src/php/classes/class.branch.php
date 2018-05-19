@@ -36,11 +36,9 @@ class branch {
         $sql_query = 'SELECT *
 	FROM `branch`
 	;';
-        global $pdo;
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute();
+        $result = database_wrapper::instance()->run($sql_query);
 
-        while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             if ($row->short_name != "") {
                 $Branches[$row->branch_id] = new branch();
                 $Branches[$row->branch_id]->name = $row->name;

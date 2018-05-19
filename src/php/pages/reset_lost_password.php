@@ -71,9 +71,9 @@ function build_lost_password_form($employee_id, $user_name, $token) {
 if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_id')) {
     $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
-    $statement = $pdo->prepare("SELECT * FROM `users` WHERE `employee_id` = :employee_id");
-    $statement->execute(array('employee_id' => $employee_id));
-    $User_data = $statement->fetch();
+    $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    $User_data = $result->fetch();
     $user_name = $User_data['user_name'];
 
     /*
@@ -101,8 +101,8 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
     if (!$error and lost_password_token_is_valid($employee_id, $token)) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $statement = $pdo->prepare("UPDATE users SET password = :password WHERE `employee_id` = :employee_id");
-        $result = $statement->execute(array('employee_id' => $employee_id, 'password' => $password_hash));
+        $sql_query = "UPDATE users SET password = :password WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'password' => $password_hash));
 
         if ($result) {
             clean_up_after_password_change($employee_id);

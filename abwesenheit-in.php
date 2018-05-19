@@ -54,23 +54,31 @@ function write_absence_data_to_database($beginn, $ende, $grund) {
         $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
         $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
         //echo "$sql_query<br>\n";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start_old));
+        database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start_old));
     }
     $approval = "approved"; //TODO: There will be a time to handle cases of non-approved holidays!
     $sql_query = "INSERT INTO `absence` "
             . "(employee_id, start, end, days, reason, user, approval) "
-            . "VALUES ('$employee_id', '$beginn', '$ende', '$tage', '$grund', '" . $_SESSION['user_name'] . "', '$approval')";
-    //echo "$sql_query<br>\n";
-    global $database_connection_mysqli; //TODO: There must be a much better way to solve this!
-    if (!($result = mysqli_query($database_connection_mysqli, $sql_query))) {
-        $error_string = mysqli_error($database_connection_mysqli);
-        if (strpos($error_string, 'Duplicate') !== false) {
+            . "VALUES (:employee_id, :start, :end, :days, :reason, :user, :approval)";
+    //TODO: There must be a much better way to solve this!
+    try {
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'employee_id' => $employee_id,
+            'start' => $beginn,
+            'end' => $ende,
+            'days' => $tage,
+            'reason' => $grund,
+            'user' => $_SESSION['user_name'],
+            'approval' => $grund
+        ));
+    } catch (Exception $exception) {
+        $error_string = $exception->getMessage();
+        if ('Duplicate entry for key' === $exception->getMessage()) {
             global $Fehlermeldung;
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
-            //Are there other errors, that we should handle?
-            error_log("Error: $sql_query <br>" . mysqli_error($database_connection_mysqli));
-            die("Error: $sql_query <br>" . mysqli_error($database_connection_mysqli));
+            print_debug_variable($exception);
+            die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
         }
     }
 }

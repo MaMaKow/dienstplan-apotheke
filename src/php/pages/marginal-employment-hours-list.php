@@ -40,13 +40,12 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
 }
 $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
         . "FROM `Dienstplan` "
-        . "WHERE  `VK` = $employee_id AND MONTH(`Datum`) = $month AND YEAR(`Datum`) = $year "
+        . "WHERE  `VK` = :employee_id AND MONTH(`Datum`) = :month AND YEAR(`Datum`) = :year "
         . "GROUP BY `Datum`";
-$statement = $pdo->prepare($sql_query);
-$statement->execute();
-$result = $statement->fetchAll();
+
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'month' => $month, 'year' => $year));
 $table_body_html = "<tbody>";
-foreach ($result as $row_number => $row) {
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
     $table_body_html .= "<tr>";
     $table_body_html .= "<td>" . strftime('%a %x', strtotime($row['date'])) . "</td>";
     $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";

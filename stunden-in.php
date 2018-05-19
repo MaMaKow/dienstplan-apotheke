@@ -40,26 +40,23 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
     /*
      * TODO: The following part has to be rewritten to database_wrapper::instance()->run
      */
-    $sql_query = "INSERT INTO `Stunden`
-        (VK, Datum, Stunden, Saldo, Grund)
-        VALUES ("
-            . $employee_id
-            . ", '"
-            . filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING)
-            . "', "
-            . $overtime_hours_new
-            . ", "
-            . $balance_new
-            . ", '"
-            . filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
-            . "')";
-    if (!($result = mysqli_query($database_connection_mysqli, $sql_query))) {
-        $error_string = mysqli_error($database_connection_mysqli);
-        if (strpos($error_string, 'Duplicate') !== false) {
+    $sql_query = "INSERT INTO `Stunden` (VK, Datum, Stunden, Saldo, Grund)
+        VALUES (:employee_id, :date, :overtime_hours, :balance, :reason)";
+    try {
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'employee_id' => $employee_id,
+            'date' => filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING),
+            'overtime_hours' => $overtime_hours_new,
+            'balance' => $balance_new,
+            'reason' => filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
+        ));
+    } catch (Exception $exception) {
+        $error_string = $exception->getMessage();
+        if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
+            global $Fehlermeldung;
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
-            //Are there other errors, that we should handle?
-            error_log("Error: $sql_query <br>" . mysqli_error($database_connection_mysqli));
+            print_debug_variable($exception);
             die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
         }
     }

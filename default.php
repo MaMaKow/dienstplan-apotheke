@@ -61,8 +61,6 @@ if (isset($config['mb_internal_encoding'])) {
 }
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
 
-//Create a connection to the database:
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-verbindung.php';
 
 //session management
 //require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.sessions.php';

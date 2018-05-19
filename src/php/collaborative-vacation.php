@@ -131,7 +131,7 @@ function write_user_input_to_database() {
      * Every change is put back to "not_yet_approved".
      * Therefore we currently do not need the following block of code:
       $query = "SELECT `approval` FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
-      $result = mysqli_query_verbose($query);
+      $result = database_wrapper::instance()->run($query);
       $row = $result->fetch(PDO::FETCH_OBJ);
       if (empty($approval) and empty($row->approval)) {
       $approval = "not_yet_approved";

@@ -113,10 +113,9 @@ class sessions {
     }
 
     private function read_Privileges_from_database() {
-        global $pdo;
-        $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `employee_id` = :employee_id");
-        $statement->execute(array('employee_id' => $_SESSION['user_employee_id']));
-        while ($privilege_data = $statement->fetch()) {
+        $sql_query = "SELECT * FROM users_privileges WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $_SESSION['user_employee_id']));
+        while ($privilege_data = $result->fetch(PDO::FETCH_ASSOC)) {
             $Privileges[$privilege_data['privilege']] = TRUE;
         }
         $_SESSION['Privileges'] = $Privileges;
@@ -174,9 +173,8 @@ class sessions {
         /*
          * Get user data:
          */
-        $statement = $pdo->prepare("SELECT * FROM users WHERE `user_name` = :user_name AND `status` = 'active'");
-        $result = $statement->execute(array('user_name' => $user_name));
-        $user = $statement->fetch();
+        $result = database_wrapper::instance()->run("SELECT * FROM users WHERE `user_name` = :user_name AND `status` = 'active'", array('user_name' => $user_name));
+        $user = $result->fetch(PDO::FETCH_ASSOC);
 
         /*
          * Check for multiple failed login attempts
@@ -196,11 +194,11 @@ class sessions {
             $_SESSION['user_employee_id'] = $user['employee_id'];
             $_SESSION['user_email'] = $user['email'];
             //Reset failed_login_attempts
-            $statement = $pdo->prepare("UPDATE users"
-                    . " SET failed_login_attempt_time = NOW(),"
-                    . " failed_login_attempts = 0"
-                    . " WHERE `user_name` = :user_name");
-            $result = $statement->execute(array('user_name' => $user['user_name']));
+            $sql_query = "UPDATE users "
+                    . " SET failed_login_attempt_time = NOW(), "
+                    . " failed_login_attempts = 0 "
+                    . " WHERE `user_name` = :user_name";
+            $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user['user_name']));
 
             if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
@@ -214,11 +212,11 @@ class sessions {
             }
         } else {
             //Register failed_login_attempts
-            $statement = $pdo->prepare("UPDATE users"
+            $sql_query = "UPDATE users"
                     . " SET failed_login_attempt_time = NOW(),"
                     . " failed_login_attempts = IFNULL(failed_login_attempts, 0)+1"
-                    . " WHERE `user_name` = :user_name");
-            $result = $statement->execute(array('user_name' => $user['user_name']));
+                    . " WHERE `user_name` = :user_name";
+            $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user['user_name']));
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             return $errorMessage;
         }
