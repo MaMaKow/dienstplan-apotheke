@@ -27,7 +27,6 @@ set_time_limit(0); //Do not stop execution even if we take a LONG time to finish
 ignore_user_abort(true);
 
 function read_file_write_db($filename) {
-    global $pdo;
     echo 'Working on input file.<br>\n';
     $handle = fopen($filename, "r");
     if ($handle) {
@@ -39,8 +38,8 @@ function read_file_write_db($filename) {
                 continue;
             }
             $sql_date = date('Y-m-d', strtotime($date));
-            $statement = $pdo->prepare("INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)");
-            $statement->execute(array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
+            $sql_query = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)";
+            database_wrapper::instance()->run(array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
         }
         echo 'Finished processing.<br>';
         fclose($handle);

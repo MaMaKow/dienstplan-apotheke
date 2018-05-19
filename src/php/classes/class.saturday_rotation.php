@@ -58,37 +58,31 @@ class saturday_rotation {
     }
 
     protected function read_participation_from_database() {
-        global $pdo;
         $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `date` = :date and `branch_id` = :branch_id';
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute(array(
+        $result = database_wrapper::instance()->run($sql_query, array(
             'date' => $this->target_date_sql,
             'branch_id' => $this->branch_id
         ));
-        while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             return $row->team_id;
         }
         return NULL;
     }
 
     protected function read_teams_from_database() {
-        global $pdo;
         $List_of_teams = array();
         $sql_query = 'SELECT `team_id`, `employee_id` FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id';
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute(array('branch_id' => $this->branch_id));
-        while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
+        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $List_of_teams[$row->team_id][] = $row->employee_id;
         }
         return $List_of_teams;
     }
 
     protected function set_new_participation() {
-        global $pdo;
         $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `branch_id` = :branch_id ORDER BY `date` DESC LIMIT 1';
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute(array('branch_id' => $this->branch_id));
-        while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
+        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $last_team_id = (int) $row->team_id;
             $last_date_sql = $row->date;
         }
@@ -115,8 +109,7 @@ class saturday_rotation {
     protected function write_participation_to_database() {
         global $pdo;
         $sql_query = "INSERT INTO `saturday_rotation` (`date`, `team_id`, `branch_id`) VALUES (:date, :team_id, :branch_id)";
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute(array(
+        database_wrapper::instance()->run($sql_query, array(
             'date' => $this->target_date_sql,
             'team_id' => $this->team_id,
             'branch_id' => $this->branch_id
@@ -133,13 +126,10 @@ class saturday_rotation {
      */
 
     protected function cleanup_database_table_saturday_rotation() {
-        global $pdo;
         $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 3 month";
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute();
+        database_wrapper::instance()->run($sql_query);
         $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` >= now()+interval 3 month";
-        $statement = $pdo->prepare($sql_query);
-        $statement->execute();
+        database_wrapper::instance()->run($sql_query);
     }
 
     public function fill_roster() {

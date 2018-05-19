@@ -38,9 +38,9 @@ if (isset($_GET['register'])) {
 
     //Überprüfe, dass der Benutzer noch nicht registriert wurde
     if (!$error) {
-        $statement = $pdo->prepare("SELECT * FROM users WHERE user_name = :user_name");
-        $result = $statement->execute(array('user_name' => $user_name));
-        $user = $statement->fetch();
+        $sql_query = "SELECT * FROM users WHERE user_name = :user_name";
+        $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name));
+        $user = $result->fetch();
 
         if ($user !== false) {
             $Error_message[] = 'Dieser Benutzername ist bereits vergeben<br>';
@@ -52,8 +52,8 @@ if (isset($_GET['register'])) {
     if (!$error) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $statement = $pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
-        $result = $statement->execute(array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
+        $sql_query = "INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')";
+        $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
 
         if ($result) {
             send_mail_about_registration();

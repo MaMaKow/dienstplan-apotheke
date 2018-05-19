@@ -36,16 +36,18 @@ class update_database {
          * The table will be automatically locked during the command.
          *
          */
-        global $pdo;
-        $sql_query = "RENAME TABLE `$table_name_old` TO `$table_name_new`";
-        $pdo->execute($sql_query);
+        $sql_query = "RENAME TABLE "
+                . database_wrapper::quote_identifier($table_name_old)
+                . " TO "
+                . database_wrapper::quote_identifier($table_name_new);
+        database_wrapper::instance()->run($sql_query);
     }
 
     private function refactor_opening_times_special_table() {
         if (database_wrapper::database_table_exists('Sonderöffnungszeiten') and ! database_wrapper::database_table_exists('opening_times_special')) {
-            $pdo->execute("RENAME TABLE `Sonderöffnungszeiten` TO `opening_times_special`;");
+            database_wrapper::instance()->run("RENAME TABLE `Sonderöffnungszeiten` TO `opening_times_special`;");
             $sql_query = "ALTER TABLE `opening_times_special` CHANGE `Datum` `date` DATE NOT NULL, CHANGE `Beginn` `start` TIME NOT NULL, CHANGE `Ende` `end` TIME NOT NULL, CHANGE `Bezeichnung` `event_name` VARCHAR(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;";
-            $pdo->execute($sql_query);
+            database_wrapper::instance()->run($sql_query);
         }
     }
 
@@ -62,8 +64,8 @@ class update_database {
                     . "CHANGE `Stunden` `working_hours` FLOAT NULL DEFAULT NULL, "
                     . "CHANGE `Mandant` `branch` TINYINT UNSIGNED NOT NULL DEFAULT '1', "
                     . "CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
-            $pdo->execute($sql_query);
-            $pdo->execute("RENAME TABLE `Dienstplan` TO `roster`;");
+            database_wrapper::instance()->run($sql_query);
+            database_wrapper::instance()->run("RENAME TABLE `Dienstplan` TO `roster`;");
         }
     }
 
