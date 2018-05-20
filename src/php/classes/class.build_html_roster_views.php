@@ -155,11 +155,12 @@ abstract class build_html_roster_views {
             if (array() === $Branch_roster[$other_branch_id]) {
                 continue;
             }
-            $table_html .= "</tbody><tbody><tr class='branch_roster_title_tr'><th colspan=";
+            $table_html .= "<tbody><tr class='branch_roster_title_tr'><th colspan=";
             $table_html .= htmlentities($number_of_days) . ">";
             $table_html .= $List_of_branch_objects[$branch_id]->short_name;
             $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->short_name . "</th></tr>";
             $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id);
+            $table_html .= "</tbody>\n";
         }
         return $table_html;
     }
@@ -275,6 +276,8 @@ abstract class build_html_roster_views {
             }
         }
         $table_html .= "</tr>\n";
+        $table_html .= "</tbody>\n";
+
         return $table_html;
     }
 
@@ -349,6 +352,8 @@ abstract class build_html_roster_views {
             }
         }
         $table_html .= "</tr>\n";
+        $table_html .= "</tbody>\n";
+
         return $table_html;
     }
 

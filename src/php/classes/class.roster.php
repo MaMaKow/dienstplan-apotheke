@@ -55,7 +55,7 @@ abstract class roster {
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
-            if (0 === $result->num_rows) {
+            if (0 === $roster_row_iterator) {
                 /*
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
@@ -66,7 +66,7 @@ abstract class roster {
         }
         if (TRUE === $the_whole_roster_is_empty) {
             /* reset the roster to be completely empty */
-            $Roster = array();
+            //$Roster = array();
         }
         return $Roster;
     }
@@ -210,10 +210,10 @@ abstract class roster {
         for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
             $date_sql = date('Y-m-d', $date_unix);
             $weekday = date("N", $date_unix);
-            $sql_query = "SELECT * FROM `Grundplan`"
-                    . "WHERE `Wochentag` = :weekday"
-                    . "AND `VK` = :employee_id"
-                    . "ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`";
+            $sql_query = "SELECT * FROM `Grundplan` "
+                    . " WHERE `Wochentag` = :weekday "
+                    . " AND `VK` = :employee_id "
+                    . " ORDER BY `Dienstbeginn` + `Dienstende`, `Dienstbeginn`";
 
             $result = database_wrapper::instance()->run($sql_query, array('weekday' => $weekday, 'employee_id' => $employee_id));
             $roster_row_iterator = 0;

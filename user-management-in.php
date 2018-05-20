@@ -1,7 +1,16 @@
 <?php
 require 'default.php';
 $workforce = new workforce();
+$User_list = read_user_list_from_database();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+if (FALSE === in_array($employee_id, array_keys($User_list))) {
+    /* This happens if a coworker does not have a user account (yet).
+     * He can still be chosen within other pages.
+     * Therefore we might get his/her id in the cookie.
+     * Now we just change it to someone, who does have a user account:
+     */
+    $employee_id = min(array_keys($User_list));
+}
 create_cookie('employee_id', $employee_id, 30);
 
 function insert_user_data_into_database() {
@@ -53,7 +62,6 @@ function read_user_list_from_database() {
 }
 
 $User = read_user_data_from_database($employee_id);
-$User_list = read_user_list_from_database();
 require 'head.php';
 require 'src/php/pages/menu.php';
 if (!$session->user_has_privilege('administration')) {
