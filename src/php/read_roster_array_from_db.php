@@ -1,6 +1,23 @@
 <?php
 
 /*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * This function reads the roster of one or more days from the database into an array.
  *
  * @param int $number_of_days number of days (typically just 1 or 5, 6, 7)
@@ -10,7 +27,6 @@
  *      The default is to show the employees of all branches (regexp [0-9]*).
  * @return array $Roster for the branch $branch_id including $number_of_days days beginning with $date_sql
  */
-
 function read_roster_array_from_db($date_sql, $number_of_days, $branch_id, $branch_of_target_employees = '[0-9]*') {
     $branch_of_target_employees = '^' . $branch_of_target_employees . '$';
     //Abruf der gespeicherten Daten aus der Datenbank
