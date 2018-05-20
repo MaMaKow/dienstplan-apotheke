@@ -1,15 +1,32 @@
 <?php
 
+/*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 require_once '../../default.php';
-if(!$session->user_has_privilege('administration')){
-    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
+if (!$session->user_has_privilege('administration')) {
+    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
     die();
 }
 echo test_folders(array("/tmp/", "/config/", "/upload/", "/tests/"));
 
 /*
  * Call the folder via http:// to see if it is visible
- * 
+ *
  * @param string $folder the name and position of the folder to call.
  * @return bool | string TRUE for blocked folders, an error message for visible folders.
  */
@@ -26,7 +43,7 @@ function secret_folder_is_secure($folder = "/tmp/") {
      * If there is the need to prevent this, a whitelist has to be put into the configuration file.
      * Any given hostname then has to be checked against it then.
      */
-    $url= "https://" . $hostname . $dir_above2 . $folder;
+    $url = "https://" . $hostname . $dir_above2 . $folder;
 
     $Response = get_headers($url);
     $response = $Response[0];
@@ -44,7 +61,6 @@ function secret_folder_is_secure($folder = "/tmp/") {
         $error_message = "Error! The result could not be interpreted for the directory $url. The server returned: '$response'. Please make sure that the directory is not accessible by the public!<br>";
         foreach ($Response as $key => $response_http) {
             $error_message .= $key . ": " . $response_http . "<br>\n";
-                    
         }
         return $error_message;
     }
