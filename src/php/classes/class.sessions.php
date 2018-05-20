@@ -52,6 +52,13 @@ class sessions {
 
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
+        global $config;
+        /*
+         * In case there are several instances of the program on the same machine,
+         * we need a specific identifier for the different instances.
+         * Therefore we define a specific session_name:
+         */
+        session_name(md5(serialize($config)));
         session_start();
         if (!empty($_SESSION['escalated']) AND TRUE === $_SESSION['escalated']) {
             if (5 <= ++$_SESSION['escalated_count']) {

@@ -90,10 +90,10 @@ class database_wrapper {
             //print_debug_variable($sql_query, $arguments);
             $statement = $this->pdo->prepare($sql_query);
             $statement->execute($arguments);
+            return $statement;
         } catch (Exception $exception) {
-            $this->handle_exceptions($exception, $sql_query, $arguments);
+            return $this->handle_exceptions($exception, $sql_query, $arguments);
         }
-        return $statement;
     }
 
     /**
@@ -120,7 +120,7 @@ class database_wrapper {
      */
     protected static function create_table_insert_from_old_table($table_name) {
         switch ($table_name) {
-            case opening_times:
+            case 'opening_times':
                 /*
                  * renamed table after commit 3b03e70f991208313eed872bfda3da273bd2c7ec
                  */
@@ -237,6 +237,7 @@ class database_wrapper {
                      */
                     $statement = $this->pdo->prepare($sql_query);
                     $statement->execute($arguments);
+                    return $statement;
                 }
             } catch (Exception $exception) {
                 /*

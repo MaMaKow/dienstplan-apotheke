@@ -13,7 +13,9 @@ $workforce = new workforce($date_sql);
 $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 
-//Hole eine Liste aller Mitarbeiter
+/*
+ * Get a list of employees:
+ */
 if (!isset($workforce->List_of_employees[$employee_id])) {
     /* This happens if a coworker is not working with us anymore.
      * He can still be chosen within abwesenheit and stunden.
@@ -46,12 +48,30 @@ echo build_html_navigation_elements::build_button_link_download_ics_file($date_s
 
 echo "<table>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster);
-
-foreach ($Roster as $Roster_day_array) {
-    $Row_count[] = count($Roster_day_array);
-}
-$row_count = max($Row_count);
 echo build_html_roster_views::build_roster_readonly_employee_table($Roster, $workforce->List_of_employees[$employee_id]->principle_branch_id);
+$table_foot_html = "<tfoot>"
+        //. "<tr class=page-break></tr>"
+        . "\n<tr>\n";
+
+/*
+ * We are having a look into the absence data:
+ */
+foreach (array_keys($Roster) as $date_unix) {
+    $date_sql = date('Y-m-d', $date_unix);
+    $Absentees = absence::read_absentees_from_database($date_sql);
+
+    /*
+     * Now we build a row of absent employees in the foot of the table.
+     */
+    if (isset($Absentees)) {
+        $table_foot_html .= build_html_roster_views::build_absentees_column($Absentees);
+    } else {
+        $table_foot_html .= "</td><td>";
+    }
+}
+$table_foot_html .= "</tr>\n";
+$table_foot_html .= "</tfoot>\n";
+echo "$table_foot_html";
 echo "</table>\n";
 
 

@@ -76,7 +76,6 @@ if (isset($Overlay_message)) {
 $table_html .= $table_body_html;
 $table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end);
 
-$table_html .= "</tbody>\n";
 //echo "</div>\n";
 $table_foot_html = "<tfoot>"
         //. "<tr class=page-break></tr>"
