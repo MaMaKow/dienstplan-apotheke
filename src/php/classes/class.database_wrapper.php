@@ -152,7 +152,6 @@ class database_wrapper {
             $table_name_clean = self::quote_identifier($table_name);
             $result = self::instance()->query("SELECT 1 FROM $table_name_clean LIMIT 1");
         } catch (Exception $exception) {
-            error_log(var_export($exception, TRUE));
             /*
              *  We got an exception == table not found
              */
@@ -164,11 +163,16 @@ class database_wrapper {
         return $result !== FALSE;
     }
 
+    /**
+     *
+     * @param string $field database identifier (i.e. database name, table name, column name)
+     * @return string securely quoted identifier
+     */
     protected static function quote_identifier($field) {
         return "`" . str_replace("`", "``", $field) . "`";
     }
 
-    /*
+    /**
      * Enable the usage of prepared statements for IN clauses
      *
      * This methods helps to prevent sql injection.
@@ -178,7 +182,6 @@ class database_wrapper {
      * @return string $in_placeholder_trimmed the placeholder string
      * @return array $in_parameters the array items appended with ":in_placeholder"
      */
-
     public static function create_placeholder_for_mysql_IN_function($input_array, $named_placeholders = FALSE) {
         if (FALSE === $named_placeholders) {
             $in_placeholder = str_repeat('?,', count($input_array) - 1) . '?';
@@ -226,25 +229,26 @@ class database_wrapper {
                 if (FALSE !== strpos($message, ".$table_name'")) { //the dot (.) and the single quotation mark (') are part of the string: 'database_name.table_name'
                     self::create_table_from_template($filename_with_extension_and_path);
                     self::create_table_insert_from_old_table($table_name);
+                    try {
+                        unset($exception);
+                        if (self::database_table_exists($table_name)) {
+                            /*
+                             * If we had success with creating the table,
+                             * retry the query to the database with the newly created table:
+                             */
+                            $statement = $this->pdo->prepare($sql_query);
+                            $statement->execute($arguments);
+                            return $statement;
+                        }
+                    } catch (Exception $exception) {
+                        /*
+                         * This catch is superfluous.
+                         * But we might want to add another layer of complication here sometime :-)
+                         */
+                        throw $exception;
+                    }
+                    break;
                 }
-            }
-            try {
-                unset($exception);
-                if (self::database_table_exists($table_name)) {
-                    /*
-                     * If we had success with creating the table,
-                     * retry the query to the database with the newly created table:
-                     */
-                    $statement = $this->pdo->prepare($sql_query);
-                    $statement->execute($arguments);
-                    return $statement;
-                }
-            } catch (Exception $exception) {
-                /*
-                 * This catch is superfluous.
-                 * But we might want to add another layer of complication here sometime :-)
-                 */
-                throw $exception;
             }
         } elseif ('23000' == $exception->getCode() and 1062 === $exception->errorInfo[1]) {
             /*
