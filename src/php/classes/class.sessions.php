@@ -59,7 +59,7 @@ class sessions {
          * we need a specific identifier for the different instances.
          * Therefore we define a specific session_name:
          */
-        session_name(PDR . md5($config["session_secret"]));
+        session_name('PDR' . md5($config["session_secret"]));
         session_start();
 
         /*
