@@ -23,10 +23,7 @@ require_once "src/php/collaborative-vacation.php";
 handle_user_data_input();
 require "head.php";
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('request_own_absence') and ! $session->user_has_privilege('create_absence')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Beantragen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('request_own_absence');
 
 echo "<div id='input_box_data_div'></div>";
 echo build_datalist();

@@ -80,10 +80,7 @@ function read_user_list_from_database() {
 $User = read_user_data_from_database($employee_id);
 require 'head.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
 
 
 

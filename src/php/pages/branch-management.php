@@ -105,10 +105,8 @@ if (!empty($deletion_done_div_html)) {
      * https://stackoverflow.com/questions/48491976/how-can-one-prevent-php-reading-mysql-before-deletion-success
      */
 }
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["The necessary authorization to create branches is missing. Please contact an administrator."]);
-    die();
-}
+
+$session->exit_on_missing_privilege('administration');
 
 echo "<div class='centered_form_div'>";
 if (empty($List_of_branch_objects)) {

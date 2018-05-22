@@ -162,10 +162,7 @@ $datalist .= "</datalist>\n";
 //Here beginns the output:
 require 'head.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('create_absence')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('create_absence');
 
 echo "<div id=main-area>\n";
 

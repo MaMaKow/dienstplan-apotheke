@@ -39,11 +39,7 @@ require 'head.php';
 <a name=top></a>
 <?php
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('create_roster')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    //die("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt. Bitte wenden Sie sich an einen Administrator.");
-    die();
-}
+$session->exit_on_missing_privilege('create_roster');
 echo "<div id=main-area>\n";
 //TODO: find out how to respect the lunch breaks!
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);

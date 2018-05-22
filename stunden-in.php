@@ -24,10 +24,7 @@ create_cookie('employee_id', $employee_id, 1);
 
 //Deleting rows of data:
 if (filter_has_var(INPUT_POST, 'loeschen')) {
-    if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
-        echo build_warning_messages("", ["Die notwendige Berechtigung zum Entfernen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
-        die();
-    }
+    $session->exit_on_missing_privilege('create_overtime');
 
     $Remove = filter_input(INPUT_POST, 'loeschen', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
     foreach ($Remove as $employee_id => $Data) {
@@ -42,10 +39,7 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
 
 //Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
 if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'grund')) {
-    if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
-        echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
-        die();
-    }
+    $session->exit_on_missing_privilege('create_overtime');
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC LIMIT 1";
@@ -115,10 +109,7 @@ if (empty($saldo)) {
 //Start of output:
 require 'head.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('create_roster') and ! $session->user_has_privilege('create_overtime') and ! $session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Arbeitszeitverlagerungen fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('create_overtime');
 
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);

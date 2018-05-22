@@ -25,10 +25,7 @@ $Worker = read_employee_data_from_database($employee_id);
 $workforce = new workforce();
 require 'head.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('create_employee')) {
-    echo build_warning_messages("", [gettext("Die notwendige Berechtigung zum Erstellen von Mitarbeitern fehlt. Bitte wenden Sie sich an einen Administrator.")]);
-    die();
-}
+$session->exit_on_missing_privilege('create_employee');
 /*
  * TODO: Test what it looks like, when the input fields are in front of their labels, not behind them.
  */

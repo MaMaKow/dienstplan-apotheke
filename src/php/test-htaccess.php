@@ -18,10 +18,8 @@
  */
 
 require_once '../../default.php';
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
+
 echo test_folders(array("/tmp/", "/config/", "/upload/", "/tests/"));
 
 /*
