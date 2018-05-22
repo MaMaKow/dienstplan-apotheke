@@ -394,6 +394,7 @@ class install {
 
     private function write_config_to_file() {
         $this->Config["contact_email"] = $this->Config["admin"]["email"];
+        $this->Config["session_secret"] = random_bytes(8); //In case there are several instances of the program on the same machine
         unset($this->Config["admin"]);
         $dirname = $this->pdr_file_system_application_path . 'config';
         $result = file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');

@@ -40,9 +40,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>css/collaborative-vacation.css" media="all">
     </HEAD>
     <BODY>
-        <?php
-        /*
-         * TODO: Get rid of the whole idea of escalation!
-         */
-        echo sessions::build_escalation_div();
-

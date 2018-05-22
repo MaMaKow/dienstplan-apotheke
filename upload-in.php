@@ -20,10 +20,7 @@ $Fehlermeldung = array();
 $Warnmeldung = array();
 require 'head.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", [gettext("Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator.")]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
 
 if (filter_has_var(INPUT_POST, "submit")) {
     $target_dir = "/upload/";

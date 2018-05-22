@@ -17,10 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require "default.php";
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
 
 // include the Diff class
 require_once 'src/php/classes/class.diff.php';

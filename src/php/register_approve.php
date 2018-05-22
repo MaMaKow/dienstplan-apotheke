@@ -18,12 +18,8 @@
  */
 require_once "../../default.php";
 require_once "../../head.php";
-require '../../navigation.php';
 require '../../src/php/pages/menu.php';
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
 
 
 if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT)) {

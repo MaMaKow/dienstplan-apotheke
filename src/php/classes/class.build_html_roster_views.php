@@ -236,11 +236,11 @@ abstract class build_html_roster_views {
                 $zeile = "";
 
                 if (isset($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
-                    $emphasis_start = ""; //No emphasis
-                    $emphasis_end = ""; //No emphasis
-                } else {
                     $emphasis_start = "<strong>"; //Significant emphasis
                     $emphasis_end = "</strong>"; //Significant emphasis
+                } else {
+                    $emphasis_start = ""; //No emphasis
+                    $emphasis_end = ""; //No emphasis
                 }
                 $zeile .= "$emphasis_start<b><a href='mitarbeiter-out.php?"
                         . "datum=" . htmlentities($roster_object->date_sql)
@@ -249,10 +249,11 @@ abstract class build_html_roster_views {
                 $zeile .= "</a></b> / ";
                 $zeile .= htmlentities($roster_object->working_hours);
                 $zeile .= " ";
-//Dienstbeginn
                 $zeile .= " <br> ";
+                /*
+                 * start and end of duty
+                 */
                 $zeile .= htmlentities($roster_object->duty_start_sql);
-//Dienstende
                 $zeile .= " - ";
                 $zeile .= htmlentities($roster_object->duty_end_sql);
                 if (!empty($roster_object->comment)) {
@@ -262,7 +263,9 @@ abstract class build_html_roster_views {
                      */
                     $zeile .= '&nbsp;' . '<sup>' . mb_substr(gettext('Comment'), 0, 1) . '</sup>';
                 }
-//	Mittagspause
+                /*
+                 * start and end of break
+                 */
                 $zeile .= "<br>\n";
                 if ($roster_object->break_start_int > 0) {
                     $zeile .= " " . gettext("break") . ": ";

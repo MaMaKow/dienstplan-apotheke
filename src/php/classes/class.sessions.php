@@ -34,13 +34,14 @@ class sessions {
         'request_own_absence',
     );
 
+    /**
+     * poEdit and gettext are not willing to include words, that are not in the source files.
+     * Therefore we randomly include some words here, which are necessary.
+     * Used in function build_checkbox_permission() in user-management-in.php
+     * Used in session->exit_on_missing_privilege()
+     */
     private function gettext_fake() {
         return TRUE;
-        /*
-         * poEdit and gettext are not willing to include words, that are not in the source files.
-         * Therefore we randomly include some words here, which are necessary.
-         * Used in function build_checkbox_permission() in user-management-in.php
-         */
         gettext('administration');
         gettext('create employee');
         gettext('create roster');
@@ -58,13 +59,8 @@ class sessions {
          * we need a specific identifier for the different instances.
          * Therefore we define a specific session_name:
          */
-        session_name(md5(serialize($config)));
+        session_name(PDR . md5($config["session_secret"]));
         session_start();
-        if (!empty($_SESSION['escalated']) AND TRUE === $_SESSION['escalated']) {
-            if (5 <= ++$_SESSION['escalated_count']) {
-                $this->close_escalated_session();
-            }
-        }
 
         /*
          * Interpret $_SERVER values:
@@ -79,7 +75,9 @@ class sessions {
          * header("strict-transport-security: max-age=31536000");
          * for now we present a value of one minute while writing and debugging the code.
          */
-        header("strict-transport-security: max-age=60");
+        if ("localhost" != $http_host AND "" != $http_host) {
+            header("strict-transport-security: max-age=31536000");
+        }
         /* Force HTTPS:
          * We make an exception for localhost. If data is not sent through the net, there is no absolute need for HTTPS.
          * People are still free to use it on their own. Administrators are able to force it in Apache (or any other web server).
@@ -153,12 +151,11 @@ class sessions {
     public function exit_on_missing_privilege($privilege) {
         if (!$this->user_has_privilege($privilege)) {
             $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
-            $escalation_authentication = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/session-escalation-login.php?referrer=" . $request_uri;
-            //$missing_permission_text = gettext("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt.");
-            $Warning_messages[] = gettext("The permission to create a roster is missing.");
-            $Warning_messages[] = gettext("Please contact the administrator.");
-            $Warning_messages[] = " <a href=$escalation_authentication>&rarr;" . gettext("Escalate privileges") . "</a>";
-            echo build_warning_messages("", $Warning_messages);
+            $Warning_messages[] = gettext("You are missing the necessary permission to use this page.");
+            $Warning_messages[] = gettext("Please contact the administrator if you feel this is an error.");
+            $Warning_messages[] = " (" . gettext(str_replace('_', ' ', $privilege))
+                    . " " . gettext("is required for") . " " . basename($request_uri) . ")";
+            echo build_warning_messages($Warning_messages, []);
             exit();
         }
     }
@@ -230,43 +227,11 @@ class sessions {
         return FALSE;
     }
 
-    public function escalate_session() {
-        session_start();
-        $_SESSION['before_escalation'] = $_SESSION;
-        $this->login(NULL, NULL, TRUE);
-        $_SESSION['escalated'] = TRUE;
-        $_SESSION['escalated_count'] = 0;
-    }
-
-    public function close_escalated_session() {
-        $_Session_temp = $_SESSION['before_escalation'];
-        session_destroy();
-        session_start();
-        $_SESSION = $_Session_temp;
-    }
-
-    public static function build_escalation_div() {
-        if (!empty($_SESSION['escalated']) AND TRUE === $_SESSION['escalated']) {
-            return "<div id=escalation_div></div>";
-        }
-    }
-
     public function logout() {
-        if (TRUE === $_SESSION['escalated']) {
-            $this->close_escalated_session();
-            $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
-            if (!empty($referrer)) {
-                header("Location:" . $referrer);
-            } else {
-                header("Location:" . get_root_folder());
-            }
-        } else {
-
-            if (session_start() and session_destroy()) {
-                echo "Logout erfolgreich";
-            }
-            header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php");
+        if (session_start() and session_destroy()) {
+            echo "Logout erfolgreich";
         }
+        header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php");
     }
 
     public function build_logout_button() {

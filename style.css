@@ -523,26 +523,6 @@ nav ul li a img.image_tiles{
     height: 128px;
     width: 128px;
 }
-#escalation_div {
-    z-index: -90;
-    position: fixed;
-    top: -10%;
-    left: -10%;
-    width: 200%;
-    height: 200%;
-    margin: 0;
-    padding: 0;
-    background-color: red;
-    opacity: 0.2;
-}
-#escalation_div ~ nav, #escalation_div ~ nav ul li, #escalation_div ~ nav ul, #escalation_div ~ nav ul li a, #escalation_div ~ nav ul li a:hover {
-    background-color: #E6828B;
-    border-color: #E6828B;
-}
-#escalation_div ~ div button {
-    background-color: #E6828B;
-}
-
 /*
  * The following lines are added for stunden-in.php
  * -->

@@ -21,10 +21,7 @@ if (!file_exists('./config/config.php')) {
 //session management
 require_once 'src/php/classes/class.sessions.php';
 $session = new sessions;
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
 
 require 'funktionen.php';
 
@@ -168,7 +165,7 @@ require 'head.php';
     <H1>Installation</H1>
     <p>Bitte ergänzen Sie die folgenden Werte um den Dienstplan zu konfigurieren.</p>
     <form accept-charset='utf-8' class="" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <pre><?php //echo "$datalist_locales"; ?></pre>
+        <pre><?php //echo "$datalist_locales";  ?></pre>
         <table width=10%>
             <th colspan="99">
                 Database settings
@@ -253,14 +250,14 @@ require 'head.php';
                 <td>Locale
                 </td>
                 <td><input list="locales" value="<?php echo $config['LC_TIME'] ?>" name="LC_TIME">
-<?php echo "$datalist_locales"; ?>
+                    <?php echo "$datalist_locales"; ?>
                 </td>
             </tr>
             <tr>
                 <td>Charset
                 </td>
                 <td><input list="encodings" value="<?php echo $config['mb_internal_encoding'] ?>" name="mb_internal_encoding">
-<?php echo "$datalist_encodings"; ?>
+                    <?php echo "$datalist_encodings"; ?>
                 </td>
             </tr>
             <th colspan="99"> Debugging

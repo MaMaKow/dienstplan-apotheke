@@ -111,10 +111,18 @@ function write_user_input_to_database() {
          * User is only allowed to ask for specific changes to the database.
          */
         if ($_SESSION['user_employee_id'] !== $employee_id) {
+            /*
+             * TODO: Make this an email.
+             * TODO: Build a contact class to handle this.
+             */
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays for employee " . $employee_id);
             return FALSE;
         }
         if ("" !== $employee_id_old and $_SESSION['user_employee_id'] !== $employee_id_old) {
+            /*
+             * TODO: Make this an email.
+             * TODO: Build a contact class to handle this.
+             */
             error_log("Permissions: Employee " . $_SESSION['user_employee_id'] . " tried to request holidays from employee " . $employee_id_old);
             return FALSE;
         }
