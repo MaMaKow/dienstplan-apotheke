@@ -70,8 +70,7 @@ class roster_item {
         }
     }
 
-    public function __construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
-
+    public function __construct($date_sql, int $employee_id = NULL, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;

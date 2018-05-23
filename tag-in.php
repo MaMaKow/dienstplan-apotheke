@@ -30,9 +30,7 @@ create_cookie("mandant", $branch_id, 30);
 $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
-
 $workforce = new workforce($date_sql);
-$result = database_wrapper::instance()->run('SELECT * FROM absence')->fetchAll(PDO::FETCH_OBJ);
 if (filter_has_var(INPUT_POST, 'Roster')) {
     $Roster = user_input::get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
