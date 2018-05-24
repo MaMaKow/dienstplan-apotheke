@@ -48,7 +48,7 @@ require_once 'install_head.php'
         }
         ?>
     </li>
-    <li> PHP is at least version 7.0.0
+    <li> Required PHP version
         <?php
         /*
          * Check if the PHP version is new enough to support the required features:

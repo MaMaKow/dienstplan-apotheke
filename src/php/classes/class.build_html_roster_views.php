@@ -62,7 +62,7 @@ abstract class build_html_roster_views {
              * Insert a prefilled pseudo roster_item.
              * It contains a valid date and branch.
              */
-            $Roster[$day_iterator][$roster_row_iterator] = new roster_item(date('Y-m-d', $day_iterator), NULL, $branch_id, NULL, NULL, NULL, NULL);
+            $Roster[$day_iterator][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $day_iterator), $branch_id);
         }
         $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
 //employee input:
@@ -205,16 +205,14 @@ abstract class build_html_roster_views {
         $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
         $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
         /*
-         * TODO:Maybe use the roster stored in the workforce->employee object instead
+         * TODO: Maybe use the roster stored in the workforce->employee object instead
+         * TODO: user_input::get_changed_roster_employee_id_list compares the full roster,
+         * but we are only interested in finding changes in duty_start_int or duty_end_int
+         * The same is true for self::build_roster_readonly_employee_table()
          */
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
-            /*
-             * if (isset($feiertag) && !isset($notdienst)) {
-             * break 1;
-             * }
-             */
             $table_html .= "<tr>\n";
             foreach (array_keys($Roster) as $date_unix) {
                 $date_sql = date('Y-m-d', $date_unix);
@@ -327,11 +325,11 @@ abstract class build_html_roster_views {
                 $zeile = "";
 
                 if (isset($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
-                    $emphasis_start = ""; //No emphasis
-                    $emphasis_end = ""; //No emphasis
-                } else {
                     $emphasis_start = "<strong>"; //Significant emphasis
                     $emphasis_end = "</strong>"; //Significant emphasis
+                } else {
+                    $emphasis_start = ""; //No emphasis
+                    $emphasis_end = ""; //No emphasis
                 }
                 $zeile .= "$emphasis_start";
                 $zeile .= htmlentities($roster_object->duty_start_sql);
