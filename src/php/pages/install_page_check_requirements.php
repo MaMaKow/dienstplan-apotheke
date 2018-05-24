@@ -22,12 +22,38 @@ require_once 'install_head.php'
 ?>
 <p>This page is meant to check if:</p>
 <ul>
-    <li> php supports connections to a supported database
+    <li> PHP supports connections to a supported database
         <?php
         /*
-         * Check if there is write access to all write-necessary directories:
+         * Check if there is any supported database driver available:
          */
         if ($install->database_driver_is_installed()) {
+            echo "<em class='install_info_postive'>done</em>";
+        } else {
+            echo "<em class='install_info_negative'>failed</em>";
+            echo $install->build_error_message_div();
+        }
+        ?>
+    </li>
+    <li> Required PHP extensions are loaded
+        <?php
+        /*
+         * Check if the PHP version is new enough to support the required features:
+         */
+        if ($install->php_extension_requirements_are_fulfilled()) {
+            echo "<em class='install_info_postive'>done</em>";
+        } else {
+            echo "<em class='install_info_negative'>failed</em>";
+            echo $install->build_error_message_div();
+        }
+        ?>
+    </li>
+    <li> PHP is at least version 7.0.0
+        <?php
+        /*
+         * Check if the PHP version is new enough to support the required features:
+         */
+        if ($install->php_version_requirement_is_fulfilled()) {
             echo "<em class='install_info_postive'>done</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
