@@ -51,7 +51,7 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -60,7 +60,6 @@ abstract class roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                //$Roster[$date_unix][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $date_unix), NULL, $branch_id, NULL, NULL, NULL, NULL);
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, NULL);
             }
         }
@@ -99,7 +98,7 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -108,7 +107,6 @@ abstract class roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                //$Roster[$date_unix][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $date_unix), NULL, $branch_id, NULL, NULL, NULL, NULL);
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
@@ -137,7 +135,7 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -157,8 +155,8 @@ abstract class roster {
     }
 
     public static function read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
-        database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
-        database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
+        //database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
+        //database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
         /*
          * TODO: Make sure, that these two repair calls are not necessary anymore
          */
@@ -190,7 +188,7 @@ abstract class roster {
                     //$Fehlermeldung[]=$workforce->List_of_employees[$row->VK]->last_name." ist nicht angestellt.<br>\n";
                     continue 1;
                 }
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
                 $roster_row_iterator++;
                 //TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
             }
@@ -218,7 +216,7 @@ abstract class roster {
             $result = database_wrapper::instance()->run($sql_query, array('weekday' => $weekday, 'employee_id' => $employee_id));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
                 $roster_row_iterator++;
             }
         }
