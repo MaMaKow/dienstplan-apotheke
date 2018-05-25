@@ -75,6 +75,7 @@ class examine_roster {
         foreach ($this->Anwesende as $zeit => $anwesende) {
             if ($anwesende < $minimum_number_of_employees and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
+                    //TODO: translate into english
                     $Fehlermeldung[] = 'Um ' . roster_item::format_time_integer_to_string($zeit) . " Uhr sind weniger als $minimum_number_of_employees Mitarbeiter anwesend.";
                     $attendant_error = true;
                 }
