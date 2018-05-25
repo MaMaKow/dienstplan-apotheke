@@ -37,10 +37,6 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
     user_input::principle_roster_write_user_input_to_database($branch_id);
 }
 
-//Hole eine Liste aller Mitarbeiter
-//We construct a pseudo date for the chosen weekday.
-
-
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql);
 
 

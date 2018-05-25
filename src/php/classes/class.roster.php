@@ -29,6 +29,8 @@ abstract class roster {
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
 
+    const OPTION_CONTINUE_ON_ABSENCE = 'continue_on_absence';
+
     public static function read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end = NULL) {
         /*
          * TODO: unify this with read_roster_from_database
@@ -154,7 +156,7 @@ abstract class roster {
         return $Roster;
     }
 
-    public static function read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
+    public static function read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL, $Options = array()) {
         //database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsbeginn` = NULL WHERE `Grundplan`.`Mittagsbeginn` = '0:00:00'");
         //database_wrapper::instance()->run("UPDATE `Grundplan` SET `Mittagsende` = NULL WHERE `Grundplan`.`Mittagsende` = '0:00:00'");
         /*
@@ -163,6 +165,9 @@ abstract class roster {
         global $workforce;
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
+        }
+        if (array() !== $Options and ! is_array($Options)) {
+            $Options = (array) $Options;
         }
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
@@ -179,9 +184,11 @@ abstract class roster {
             $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                //Mitarbeiter, die im Urlaub/Krank sind, werden gar nicht erst beachtet.
-                //TODO: This should be put somewhere else as a seperate function!
-                if (isset($Absentees[$row->VK])) {
+                if (in_array(self::OPTION_CONTINUE_ON_ABSENCE, $Options) and isset($Absentees[$row->VK])) {
+                    /*
+                     * Absent employees will be excluded, if an actual roster is built.
+                     */
+                    //TODO: This should be put somewhere else as a seperate function!
                     continue 1;
                 }
                 if (isset($workforce->List_of_employees) AND array_search($row->VK, array_keys($workforce->List_of_employees)) === false) {
