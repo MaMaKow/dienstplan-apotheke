@@ -292,10 +292,11 @@ abstract class roster {
     public static function transfer_lunch_breaks($Principle_employee_roster, $Principle_roster) {
         foreach ($Principle_employee_roster as $date_unix => $Principle_employee_roster_day_array) {
             foreach ($Principle_employee_roster_day_array as $principle_employee_roster_object) {
-                if (NULL === $principle_employee_roster_object->break_start_int) {
+                if (NULL === $principle_employee_roster_object->break_start_int and isset($Principle_roster[$date_unix])) {
                     foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
                         if ($principle_roster_object->employee_id === $principle_employee_roster_object->employee_id
                                 and $principle_roster_object->duty_start_int === $principle_employee_roster_object->duty_start_int
+                                and $principle_roster_object->branch_id === $principle_employee_roster_object->branch_id
                                 and NULL !== $principle_roster_object->break_start_int) {
                             $principle_employee_roster_object->break_start_int = $principle_roster_object->break_start_int;
                             $principle_employee_roster_object->break_end_int = $principle_roster_object->break_end_int;

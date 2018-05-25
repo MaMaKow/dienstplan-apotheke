@@ -70,6 +70,10 @@ if (isset($config['LC_TIME'])) {
     setlocale(LC_TIME, 'de_DE.utf8', 'de_DE@euro', 'de_DE', 'de', 'ge', 'deu-deu');
     //setlocale(LC_ALL, 'de_DE'); // Leider versteht die Datenbank dann nicht mehr, was die Kommata sollen.
 }
+/*
+ * TODO: Make the timezone a configuration parameter
+ */
+date_default_timezone_set('Europe/Berlin');
 //Setup the encoding for multibyte functions:
 if (isset($config['mb_internal_encoding'])) {
     mb_internal_encoding($config['mb_internal_encoding']); //Dies ist notwendig für die Verarbeitung von UTF-8 Zeichen mit einigen funktionen wie mb_substr

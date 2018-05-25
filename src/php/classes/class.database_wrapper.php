@@ -87,7 +87,6 @@ class database_wrapper {
      */
     public function run($sql_query, $arguments = []) {
         try {
-            //print_debug_variable($sql_query, $arguments);
             $statement = $this->pdo->prepare($sql_query);
             $statement->execute($arguments);
             return $statement;

@@ -20,11 +20,9 @@ $number_of_days = 7;
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 30);
-$weekday = user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
-create_cookie('weekday', $weekday, 1);
-$pseudo_date_unix = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
+$pseudo_date_unix = time() - (date('w') - 1) * PDR_ONE_DAY_IN_SECONDS;
 $pseudo_date_sql_start = date('Y-m-d', $pseudo_date_unix);
-$pseudo_date_sql_end = date('Y-m-d', strtotime('+ ' . ($number_of_days - 1) . ' days', $pseudo_date_unix));
+$pseudo_date_sql_end = date('Y-m-d', $pseudo_date_unix + ($number_of_days - 1) * PDR_ONE_DAY_IN_SECONDS);
 
 $workforce = new workforce($pseudo_date_sql_start);
 $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;

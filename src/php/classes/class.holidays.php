@@ -20,7 +20,7 @@
 class holidays {
     /*
      * TODO: Holidays might be a configuration parameter.
-     * The application might query the administrator to choose which holidays should be condidered.
+     * The application might query the administrator to choose which holidays should be considered.
      * That choice can then be saved in the database.
      */
 
