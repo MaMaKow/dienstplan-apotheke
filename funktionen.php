@@ -1,5 +1,22 @@
 <?php
 
+/*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * @param string $cookie_name Name of the cookie.
  * @param mixed $cookie_value Value to be stored inside the cookie.
@@ -107,37 +124,62 @@ function hex2rgb($hexstring) {
     //return $rgb; // returns an array with the rgb values
 }
 
-function escape_sql_value($value) {
-    if ('NULL' === $value or 'null' === $value) {
-        //echo "$value is null<br>\n";
-        return $value;
-    } elseif (NULL === $value) {
-        return 'NULL';
-    } else {
-        return "'" . $value . "'";
-    }
-}
-
 function null_from_post_to_mysql($value) {
     if ('' === $value) {
-        return 'NULL';
+        /*
+         * Changed during the change to PDO
+         * TODO: Move this into the database_wrapper?
+         * return 'NULL';
+         */
+        return NULL;
     } else {
         return $value;
     }
 }
 
 function print_debug_variable($variable) {
+    /*
+     * Enhanced with https://stackoverflow.com/a/19788805/2323627
+     */
+    $line = 0;
+    $name = '';
     $argument_list = func_get_args();
-    error_log(var_export($argument_list, TRUE));
-    return true;
+    $backtrace = debug_backtrace()[0];
+    /*
+     * Open the source file returned by debug_backtrace and find the line which called this function:
+     */
+    $fh = fopen($backtrace['file'], 'r');
+    while (++$line <= $backtrace['line']) {
+        $code = fgets($fh);
+    }
+    fclose($fh);
+    /*
+     * In the found line of source code, grep for the argument (= variable name):
+     */
+    preg_match('/' . __FUNCTION__ . '\s*\((.*)\)\s*;/u', $code, $name);
+    $variable_name = trim($name[1]);
+    /*
+     * Write a structured output to the standard error log:
+     */
+    error_log('in file: ' . $backtrace['file'] . "\n on line: " . $backtrace['line'] . "\n variable: " . $variable_name . "\n value:\n " . var_export($argument_list, TRUE));
 }
+
+/*
+ *
+  function print_debug_backtrace() {
+  $trace = debug_backtrace();
+  $message = $trace;
+  error_log(var_export($message, TRUE));
+  return true;
+  }
+ */
 
 /**
  * Test if PHP is running on a Windows machine.
  *
  * @return boolean True if Operating system is Windows.
  */
-function runing_on_windows() {
+function running_on_windows() {
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         return true;
     }
@@ -155,7 +197,7 @@ function runing_on_windows() {
  */
 function get_utf8_month_name($date_unix) {
     $month_name = strftime("%B", $date_unix);
-    if (runing_on_windows()) {
+    if (running_on_windows()) {
         return utf8_encode($month_name);
     }
     return $month_name;
@@ -188,12 +230,4 @@ function get_root_folder() {
 
 function is_valid_date($date_string) {
     return (bool) strtotime($date_string);
-}
-
-function tomorow_date_string($date_sql) {
-    return date('Y-m-d', strtotime($date_sql, '+1 day'));
-}
-
-function yesterday_date_string($date_sql) {
-    return date('Y-m-d', strtotime($date_sql, '-1 day'));
 }

@@ -1,11 +1,11 @@
 "use strict";
 //This function is called by grundplan-vk-in.php
 function unhide_mittag() {
-    var mittags_input = document.getElementsByClassName("mittags_input")
+    var mittags_input = document.getElementsByClassName("mittags_input");
     for (var i = 0; i < mittags_input.length; i++) {
         mittags_input[i].style.display = "inline";
     }
-    var mittags_ersatz = document.getElementsByClassName("mittags_ersatz")
+    var mittags_ersatz = document.getElementsByClassName("mittags_ersatz");
     for (var i = 0; i < mittags_ersatz.length; i++) {
         mittags_ersatz[i].style.display = "none";
     }
@@ -14,11 +14,11 @@ function unhide_mittag() {
 }
 //This function is called by grundplan-vk-in.php
 function rehide_mittag() {
-    var mittags_input = document.getElementsByClassName("mittags_input")
+    var mittags_input = document.getElementsByClassName("mittags_input");
     for (var i = 0; i < mittags_input.length; i++) {
         mittags_input[i].style.display = "none";
     }
-    var mittags_ersatz = document.getElementsByClassName("mittags_ersatz")
+    var mittags_ersatz = document.getElementsByClassName("mittags_ersatz");
     for (var i = 0; i < mittags_ersatz.length; i++) {
         mittags_ersatz[i].style.display = "inline";
     }
@@ -66,7 +66,7 @@ function checkUpdateTage()
 //Wir lesen die Objekte aus dem HTML code.
     var beginn_Id = document.getElementById("beginn");
     var ende_Id = document.getElementById("ende");
-    var tage_Id = document.getElementById("tage");
+    //var tage_Id = document.getElementById("tage");
     var warning_message_tr_Id = document.getElementById("warning_message_tr");
     var warning_message_td_Id = document.getElementById("warning_message_td");
     //Wir entnehmen die vorhandenen Werte.
@@ -82,39 +82,16 @@ function checkUpdateTage()
 
 }
 //This function is called by tag-in.php
-function unhide_kommentar() {
-    var kommentar_input = document.getElementsByClassName("kommentar_input")
-    for (var i = 0; i < kommentar_input.length; i++) {
-        kommentar_input[i].style.display = "inline";
-    }
-    var kommentar_ersatz = document.getElementsByClassName("kommentar_ersatz")
-    for (var i = 0; i < kommentar_ersatz.length; i++) {
-        kommentar_ersatz[i].style.display = "none";
-    }
+function roster_input_row_comment_show(roster_input_row_comment_input_id, roster_input_row_comment_input_link_div_show_id, roster_input_row_comment_input_link_div_hide_id) {
+    roster_input_row_comment_input_id.style.display = "inline";
+    roster_input_row_comment_input_link_div_show_id.style.display = "none";
+    roster_input_row_comment_input_link_div_hide_id.style.display = "inline";
 }
 //This function is called by tag-in.php
-function rehide_kommentar() {
-    var kommentar_input = document.getElementsByClassName("kommentar_input")
-    for (var i = 0; i < kommentar_input.length; i++) {
-        kommentar_input[i].style.display = "none";
-    }
-    var kommentar_ersatz = document.getElementsByClassName("kommentar_ersatz")
-    for (var i = 0; i < kommentar_ersatz.length; i++) {
-        kommentar_ersatz[i].style.display = "inline";
-    }
-}
-//This function is called by navigation.php
-function toggle_show_administration()
-{
-    var admin_div_id = document.getElementById('administration');
-    if (admin_div_id.style.display == "block")
-    {
-        admin_div_id.style.display = "none";
-    } else
-    {
-        admin_div_id.style.display = "block";
-    }
-
+function roster_input_row_comment_hide(roster_input_row_comment_input_id, roster_input_row_comment_input_link_div_show_id, roster_input_row_comment_input_link_div_hide_id) {
+    roster_input_row_comment_input_id.style.display = "none";
+    roster_input_row_comment_input_link_div_show_id.style.display = "inline";
+    roster_input_row_comment_input_link_div_hide_id.style.display = "none";
 }
 
 //This function is used by stunden-in.php
@@ -158,7 +135,7 @@ function updatesaldo()
 //Die Stunden sind eine Ganzzahl oder eine Kommazahl.
 //Wir entnehmen die vorhandenen Werte.
 //Wir brauchen die Kommazahl mit einem Punkt, nicht mit einem Komma.
-        stundenInputId.value = stundenInputId.value.replace(/,/g, '.')
+        stundenInputId.value = stundenInputId.value.replace(/,/g, '.');
         var stundenInputValue = Number(stundenInputId.value);
     }
     var ergebnis = stundenInputValue + stundenSaldoValue;
@@ -169,11 +146,11 @@ function updatesaldo()
 function compare_passwords() {
     var first_pass = document.getElementById('first_pass').value;
     var second_pass = document.getElementById('second_pass').value;
-    if (first_pass == second_pass && first_pass != "") {
+    if (first_pass === second_pass && first_pass !== "") {
 //document.getElementById('clear_pass').value = 'same';
         document.getElementById('disapprove_pass_img').style.display = 'none';
         document.getElementById('approve_pass_img').style.display = "block";
-    } else if (second_pass != "") {
+    } else if (second_pass !== "") {
 //document.getElementById('clear_pass').value = 'different';
         document.getElementById('disapprove_pass_img').style.display = "block";
         document.getElementById('approve_pass_img').style.display = 'none';
@@ -192,7 +169,7 @@ function update_pep() {
     var xml_http_request = new XMLHttpRequest();
     xml_http_request.onreadystatechange = function () {
 //        if (this.readyState == 4 && this.status == 200) {
-        if (this.readyState >= 3 && this.status == 200) {
+        if (this.readyState >= 3 && this.status === 200) {
             document.getElementById("xmlhttpresult").innerHTML = this.responseText;
         }
     };
@@ -208,10 +185,10 @@ function reset_update_pep() {
 function showEdit(beginn) {
     document.getElementById('save_' + beginn).style.display = 'inline';
     document.getElementById('beginn_in_' + beginn).style.display = 'inline';
-    document.getElementById('beginn_in_' + beginn).className += 'datepicker'
+    document.getElementById('beginn_in_' + beginn).className += 'datepicker';
     document.getElementById('beginn_out_' + beginn).style.display = 'none';
     document.getElementById('ende_in_' + beginn).style.display = 'inline';
-    document.getElementById('ende_in_' + beginn).className += 'datepicker'
+    document.getElementById('ende_in_' + beginn).className += 'datepicker';
     document.getElementById('ende_out_' + beginn).style.display = 'none';
     document.getElementById('grund_in_' + beginn).style.display = 'inline';
     document.getElementById('grund_out_' + beginn).style.display = 'none';
@@ -323,3 +300,43 @@ function set_value(object, value)
 
 
 
+/*
+ * Clear all data from a html FORM element
+ * This function is used by branch-management.php
+ */
+function clear_form(form_id) {
+    console.log(form_id);
+    var elements = form_id.elements;
+
+    form_id.reset();
+
+    for (i = 0; i < elements.length; i++) {
+
+        var field_type = elements[i].type.toLowerCase();
+        switch (field_type) {
+
+            case "text":
+            case "password":
+            case "textarea":
+            case "hidden":
+
+                elements[i].defaultValue = "";
+                break;
+
+            case "radio":
+            case "checkbox":
+                if (elements[i].checked) {
+                    elements[i].checked = false;
+                }
+                break;
+
+            case "select-one":
+            case "select-multi":
+                elements[i].selectedIndex = -1;
+                break;
+
+            default:
+                break;
+        }
+    }
+}

@@ -1,5 +1,21 @@
 <?php
 /*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/*
  * This script is upposed to prepare a list of days and hours worked by people in "mini jobs".
  * German law defines "Geringfügig entlohnte Beschäftigung" in § 8 Abs. 1 Nr. 1 SGB IV
  * This list will be filled with the known data from the database.
@@ -19,6 +35,7 @@ if (filter_has_var(INPUT_POST, "year")) {
 }
 $start_datum = mktime(0, 0, 0, $month, 1, $year);
 $date_unix = $start_datum;
+$date_sql = date('Y-m-d', $date_unix);
 
 if (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
@@ -26,33 +43,30 @@ if (filter_has_var(INPUT_POST, "employee_id")) {
     $employee_id = $_SESSION['user_employee_id'];
 }
 
-//The employee list needs a $date_unix, because nobody is working with us forever.
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'db-lesen-mitarbeiter.php';
-
+$workforce = new workforce($date_sql);
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {
     $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
 }
 $Years = array();
 $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-$result = mysqli_query_verbose($sql_query);
-while ($row = mysqli_fetch_object($result)) {
+$result = database_wrapper::instance()->run($sql_query);
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $Years[] = $row->year;
 }
 $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
         . "FROM `Dienstplan` "
-        . "WHERE  `VK` = $employee_id AND MONTH(`Datum`) = $month AND YEAR(`Datum`) = $year "
+        . "WHERE  `VK` = :employee_id AND MONTH(`Datum`) = :month AND YEAR(`Datum`) = :year "
         . "GROUP BY `Datum`";
-$statement = $pdo->prepare($sql_query);
-$statement->execute();
-$result = $statement->fetchAll();
+
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'month' => $month, 'year' => $year));
 $table_body_html = "<tbody>";
-foreach ($result as $row_number => $row) {
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
     $table_body_html .= "<tr>";
     $table_body_html .= "<td>" . strftime('%a %x', strtotime($row['date'])) . "</td>";
     $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";
     $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['end'])) . "</td>";
-    $table_body_html .= "<td>" . $row['hours'] . "</td>";
+    $table_body_html .= "<td>" . round($row['hours'], 2) . "</td>";
     $table_body_html .= "</tr>";
 }
 $table_body_html .= "</tbody>";
@@ -60,7 +74,6 @@ $table_body_html .= "</tbody>";
  */
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'navigation.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
 <FORM method=post class="no-print">
@@ -88,18 +101,18 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     </SELECT>
     <SELECT name=employee_id onchange=this.form.submit()>
         <?php
-        foreach ($List_of_employees as $employee_id_option => $employee_name) {
+        foreach ($workforce->List_of_employees as $employee_id_option => $employee_object) {
             echo "<option value=$employee_id_option";
             if ($employee_id_option == $employee_id) {
                 echo " SELECTED ";
             }
-            echo ">$employee_name</option>\n";
+            echo ">$employee_object->last_name</option>\n";
         }
         ?>
     </SELECT>
 </FORM>
 <H1>Stundenzettel</H1>
-<H2><?= $List_of_employee_full_names[$employee_id] ?></H2>
+<H2><?= $workforce->List_of_employees[$employee_id]->full_name ?></H2>
 <TABLE class="table_with_border" id="marginal_employment_hours_list_table">
     <THEAD>
         <TR><!--This following part is specific to German law. No other translation semms necessary.-->

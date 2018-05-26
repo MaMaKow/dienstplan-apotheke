@@ -1,230 +1,181 @@
 <?php
 
+/*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
 require 'default.php';
-require PDR_FILE_SYSTEM_APPLICATION_PATH . "/src/php/classes/build_html_roster_views.php";
-
-require "src/php/calculate-holidays.php";
-
-$mandant = 1; //First branch is allways the default.
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
-$datenübertragung = "";
-$dienstplanCSV = "";
 
+//$employee_id = user_input::get_variable_from_any_input("employee_id", FILTER_SANITIZE_NUMBER_INT);
+//$year = user_input::get_variable_from_any_input("year", FILTER_SANITIZE_NUMBER_INT);
+$branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+create_cookie("mandant", $branch_id, 30);
 
-$datum = date('Y-m-d'); //Dieser Wert wird überschrieben, wenn "$wochenauswahl und $woche per POST übergeben werden."
-
-
-
-require 'cookie-auswertung.php'; //Auswerten der per COOKIE gespeicherten Daten.
-require 'get-auswertung.php'; //Auswerten der per GET übergebenen Daten.
-require 'post-auswertung.php'; //Auswerten der per POST übergebenen Daten.
-$date_unix = strtotime($datum);
-if (isset($mandant)) {
-    create_cookie("mandant", $mandant, 30);
-}
-if (isset($datum)) {
-    create_cookie("datum", $datum, 0.5);
-}
-$date_sql = $datum;
+$date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
+create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
+$workforce = new workforce($date_sql);
+if (filter_has_var(INPUT_POST, 'Roster')) {
+    $Roster = user_input::get_Roster_from_POST_secure();
+    if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
+        user_input::roster_write_user_input_to_database($Roster, $branch_id);
+    }
+}
+
 //Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
-$Dienstplan = read_roster_array_from_db($datum, $tage, $mandant);
-
-require_once 'db-lesen-abwesenheit.php';
-$Abwesende = db_lesen_abwesenheit($datum);
-$holiday = is_holiday($date_unix);
-require_once 'plane-tag-grundplan.php';
-$Principle_roster = get_principle_roster($datum, $mandant, $tag, $tage);
-if (array_sum($Dienstplan[0]['VK']) <= 1 AND empty($Dienstplan[0]['VK'][0]) AND NULL !== $Principle_roster AND FALSE === $holiday) { //No plans on Saturday, SUnday and holidays.
-    //Wir wollen eine automatische Dienstplanfindung beginnen.
-    //Mal sehen, wie viel die Maschine selbst gestalten kann.
-    $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
-    //sort_roster_array($Principle_roster);
-    $Dienstplan = determine_lunch_breaks($Principle_roster, $tag);
+$Abwesende = absence::read_absentees_from_database($date_sql);
+$holiday = holidays::is_holiday($date_unix);
+$Roster = roster::read_roster_from_database($branch_id, $date_sql);
+if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
+    user_input::old_write_approval_to_database($branch_id, $Roster);
 }
-if ((array_sum($Dienstplan[0]['VK']) > 1 OR ! empty($Dienstplan[0]['VK'][0]))
-        and "7" !== date('N', strtotime($datum))
-        and ! is_holiday(strtotime($datum))) {
-    require 'pruefe-dienstplan.php';
-    examine_duty_roster();
+$Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql, NULL, array(roster::OPTION_CONTINUE_ON_ABSENCE));
+if (!isset($Roster[$date_unix]) and FALSE === $holiday) { //No plans on holidays.
+    if (!empty($Principle_roster)) {
+        //Wir wollen eine automatische Dienstplanfindung beginnen.
+        //Mal sehen, wie viel die Maschine selbst gestalten kann.
+        $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
+        $Roster = $Principle_roster;
+    } elseif (6 == strftime('%u', $date_unix)) {
+        try {
+            $saturday_rotation = new saturday_rotation($date_sql, $branch_id);
+            $Roster = $saturday_rotation->fill_roster();
+        } catch (Exception $exception) {
+            error_log($exception->getMessage());
+        }
+    }
 }
-$roster_first_key = min(array_keys($Dienstplan[$tag]['Datum']));
+if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
+    $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
+    $examine_roster->check_for_overlap($date_sql, $Fehlermeldung);
+    $examine_roster->check_for_sufficient_employee_count($Fehlermeldung, 2);
+    $examine_roster->check_for_sufficient_goods_receipt_count($Warnmeldung);
+    $examine_roster->check_for_sufficient_qualified_pharmacist_count($Fehlermeldung);
+}
 
-require 'db-lesen-notdienst.php';
-if (isset($notdienst['mandant'])) {
+if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
     $Warnmeldung[] = "An den Notdienst denken!";
 }
 
 
 
 
-//Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-//$VKcount=count($List_of_employees);
-$VKcount = calculate_VKcount($Dienstplan);
-
-//end($List_of_employees); $VKmax=key($List_of_employees); reset($List_of_employees); //Wir suchen nach der höchsten VK-Nummer VKmax.
-$VKmax = max(array_keys($List_of_employees));
+$VKmax = max(array_keys($workforce->List_of_employees));
 
 //Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
-require 'pruefe-abwesenheit.php';
-
+examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, $Warnmeldung);
+examine_attendance::check_for_attendant_absentees($Roster, $date_sql, $Abwesende, $Fehlermeldung);
 
 
 
 //Produziere die Ausgabe
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
+$html_text = "";
 
 //Hier beginnt die Normale Ausgabe.
-echo "<div id=main-area>\n";
+$html_text .= "<div id=main-area>\n";
 
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
-echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+$html_text .= build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t" . strftime(gettext("calendar week") . ' %V', strtotime($datum)) . "<br>";
-echo "<div class=only-print><b>" . $Branch_name[$mandant] . "</b></div><br>\n";
-echo build_select_branch($mandant, $date_sql);
+$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
+$html_text .= "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
+$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 
-echo "\t\t<form id=myform method=post>\n";
-echo "\t\t\t<div id=navigation_elements>";
-echo "$backward_button_img";
-echo "$forward_button_img";
-echo "$submit_button_img";
-echo "<br>\n";
+$html_text .= "<div id=navigation_elements>";
+$html_text .= build_html_navigation_elements::build_button_day_backward($date_unix);
+$html_text .= build_html_navigation_elements::build_button_day_forward($date_unix);
+$html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 if ($session->user_has_privilege('approve_roster')) {
-    echo "$submit_approval_button_img";
-    echo "$submit_disapproval_button_img";
-    echo "<br>\n";
+    $html_text .= build_html_navigation_elements::build_button_approval();
+    $html_text .= build_html_navigation_elements::build_button_disapproval();
 }
-
-echo "\t\t\t\t<a href='tag-out.php?datum=" . $datum . "'>[" . gettext("Read") . "]</a>\n";
-echo "\t\t\t</div>\n";
-echo "\t\t\t<div id=wochenAuswahl>\n";
-echo "\t\t\t\t<input name=date_sql type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d', strtotime($datum)) . ">\n";
-echo "\t\t\t\t<input type=submit name=tagesAuswahl value=Anzeigen>\n";
-echo "\t\t\t</div>\n";
-echo "\t\t\t<table>\n";
-echo "\t\t\t\t<tr>\n";
-for ($i = 0; $i < count($Dienstplan); $i++) {//Datum
-    //TODO: This loop probably is not necessary. Is there any case where $i ist not 0?
-    $zeile = "";
-    echo "\t\t\t\t\t<td>";
-    $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][$roster_first_key] . ">";
-    $zeile .= "<input type=hidden name=mandant value=" . htmlentities($mandant) . ">";
-    $zeile .= strftime('%d.%m. ', strtotime($Dienstplan[$i]["Datum"][$roster_first_key]));
-    echo $zeile;
+$html_text .= build_html_navigation_elements::build_button_open_readonly_version('tag-out.php', $date_sql);
+$html_text .= "</div>\n";
+$html_text .= build_html_navigation_elements::build_input_date($date_sql);
+$html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
+$html_text .= "<table>\n";
+$html_text .= "<tr>\n";
+$html_text .= "<td>";
+$html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
+$html_text .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
+$html_text .= strftime('%d.%m. ', $date_unix);
 //Wochentag
-    $zeile = "";
-    $zeile .= strftime('%A ', strtotime($Dienstplan[$i]["Datum"][$roster_first_key]));
-    echo $zeile;
-    if (FALSE !== $holiday) {
-        echo " " . $holiday . " ";
-    }
-    require 'db-lesen-notdienst.php';
-    if (isset($notdienst['mandant'])) {
-        if (isset($List_of_employees[$notdienst['vk']])) {
-            echo "<br>NOTDIENST<br>" . $List_of_employees[$notdienst['vk']] . " / " . $Branch_name[$notdienst['mandant']];
-        } else {
-            echo "<br>NOTDIENST<br>??? / " . $Branch_name[$notdienst['mandant']];
-        }
-    }
-    echo "</td>\n";
+$html_text .= strftime('%A ', $date_unix);
+if (FALSE !== $holiday) {
+    $html_text .= " " . $holiday . " ";
 }
-for ($j = 0; $j < $VKcount; $j++) {
-    echo "\t\t\t\t</tr><tr>\n";
-    for ($i = 0; $i < count($Dienstplan); $i++) {//Mitarbeiter
-        $zeile = "";
-        echo "\t\t\t\t\t<td>";
-        $zeile .= "<select name=Dienstplan[" . $i . "][VK][" . $j . "] tabindex=" . (($i * $VKcount * 5) + ($j * 5) + 1) . ">";
-        $zeile .= "<option value=''>&nbsp;</option>";
-
-        for ($k = 1; $k < $VKmax + 1; $k++) { //k=1 means that we will ignore any worker with a number smaller than one. Specific people like the cleaning lady will not be visible in the plan. But their holiday can still be organized with the holiday module.
-            if (isset($Dienstplan[$i]["VK"][$j])) {
-                if (isset($List_of_employees[$k]) and $Dienstplan[$i]["VK"][$j] != $k) { //Dieser Ausdruck dient nur dazu, dass der vorgesehene  Mitarbeiter nicht zwei mal in der Liste auftaucht.
-                    $zeile .= "<option value=$k>" . $k . " " . $List_of_employees[$k] . "</option>";
-                } elseif (isset($List_of_employees[$k])) {
-                    $zeile .= "<option value=$k selected>" . $k . " " . $List_of_employees[$k] . "</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
-                }
-            } elseif (isset($List_of_employees[$k])) {
-                $zeile .= "<option value=$k>" . $k . " " . $List_of_employees[$k] . "</option>";
-            }
-        }
-        $zeile .= "</select>\n";
-        //Dienstbeginn
-        $zeile .= "\t\t\t\t\t\t<input type=hidden name=Dienstplan[" . $i . "][Datum][" . $j . "] value=" . htmlentities($Dienstplan[0]["Datum"][$roster_first_key]) . ">\n";
-        $zeile .= "\t\t\t\t\t\t<input type=time size=5 class=Dienstplan_Dienstbeginn name=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] id=Dienstplan[" . $i . "][Dienstbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 2 ) . " value='";
-        if (isset($Dienstplan[$i]["VK"][$j])) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstbeginn"][$j]));
-        }
-        $zeile .= "'> bis <input type=time size=5 class=Dienstplan_Dienstende name=Dienstplan[" . $i . "][Dienstende][" . $j . "] id=Dienstplan[" . $i . "][Dienstende][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 3 ) . " value='";
-        //Dienstende
-        if (isset($Dienstplan[$i]["VK"][$j])) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Dienstende"][$j]));
-        }
-        $zeile .= "'>";
-        echo $zeile;
-
-        echo "</td>\n";
-    }
-    echo "\t\t\t\t</tr><tr>\n";
-    for ($i = 0; $i < count($Dienstplan); $i++) {//Mittagspause
-        $zeile = "";
-        echo "\t\t\t\t\t<td>";
-        $zeile .= "<div class='no-print kommentar_ersatz' style=display:inline><a onclick=unhide_kommentar() title='Kommentar anzeigen'>K+</a></div>";
-        $zeile .= "<div class='no-print kommentar_input' style=display:none><a onclick=rehide_kommentar() title='Kommentar ausblenden'>K-</a></div>";
-        $zeile .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] id=Dienstplan[" . $i . "][Mittagsbeginn][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 4 ) . " value='";
-        if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsbeginn"][$j]));
-        }
-        $zeile .= "'> bis <input type=time size=5 class=Dienstplan_Mittagsende name=Dienstplan[" . $i . "][Mittagsende][" . $j . "] id=Dienstplan[" . $i . "][Mittagsende][" . $j . "] tabindex=" . ($i * $VKcount * 5 + $j * 5 + 5 ) . " value='";
-        if (isset($Dienstplan[$i]["VK"][$j]) and $Dienstplan[$i]["Mittagsbeginn"][$j] > 0) {
-            $zeile .= strftime('%H:%M', strtotime($Dienstplan[$i]["Mittagsende"][$j]));
-        }
-        $zeile .= "'>";
-        $zeile .= "<div class=kommentar_input style=display:none><br>Kommentar: <input type=text name=Dienstplan[" . $i . "][Kommentar][" . $j . "] value=\"";
-        if (isset($Dienstplan[$i]["Kommentar"][$j])) {
-            $zeile .= $Dienstplan[$i]["Kommentar"][$j];
-        }
-        $zeile .= "\"></div>";
-        echo $zeile;
-        echo "</td>\n";
+$having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
+if (isset($having_emergency_service['branch_id'])) {
+    if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
+        $html_text .= "<br>NOTDIENST<br>" . $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+    } else {
+        $html_text .= "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     }
 }
-echo "\t\t\t\t</tr>";
+$html_text .= "</td>\n";
+$html_text .= "</tr>\n";
+$max_employee_count = roster::calculate_max_employee_count($Roster);
+if (array() !== $Roster) {
+    for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
+        $html_text .= "<tr>\n";
+        foreach (array_keys($Roster) as $day_iterator) {
+            $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $date_unix, $branch_id);
+        }
+        $html_text .= "</tr>\n";
+    }
+} else {
+    /*
+     * Write an empty line in case the roster is empty:
+     */
+    $html_text .= "<tr>\n";
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $date_unix, $branch_id);
+    $html_text .= "</tr>\n";
+    $html_text .= "<tr>\n";
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $date_unix, $branch_id);
+    $html_text .= "</tr>\n";
+}
 
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
-if (isset($Abwesende)) {
-    echo build_absentees_row($Abwesende);
-}
-echo "\t\t\t</table>\n";
-echo "\t\t</form>\n";
+$html_text .= build_html_roster_views::build_absentees_row($Abwesende);
+$html_text .= "</table>\n";
+$html_text .= "</form>\n";
 
 
-if (!empty($Dienstplan[0]["Dienstbeginn"])) {
-    echo "\t\t\t<div class=image>\n";
-    require_once 'image_dienstplan.php';
-    $svg_image_dienstplan = draw_image_dienstplan($Dienstplan);
-    echo $svg_image_dienstplan;
-    echo "<br>\n";
-    require_once 'image_histogramm.php';
-    $svg_image_histogramm = draw_image_histogramm($Dienstplan);
-    echo $svg_image_histogramm;
-    echo "\t\t\t</div>\n";
+if (!empty($Roster)) {
+    $html_text .= "<div class=image>\n";
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster);
+    $html_text .= $roster_image_bar_plot->svg_string;
+    $html_text .= "<br>\n";
+    $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);
+    $html_text .= "</div>\n";
 }
-echo "</div>";
+$html_text .= "</div>";
+echo "$html_text";
 
 require 'contact-form.php';
 
-echo "\t</body>\n";
+echo "</body>\n";
 echo "</html>";
 ?>

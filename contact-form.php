@@ -11,26 +11,33 @@
         }
     </script>
     <p><a href=#bottom onclick=unhideContactForm()><?= gettext("Wishes, criticism, suggestions") ?>&nbsp;+</a></p>
-    <form id=contactForm style=display:none method=POST>
+    <form accept-charset='utf-8' id=contactForm style=display:none method=POST>
         <table>
             <tr><td><?= gettext("Message") ?></td><td><textarea style=width:320px name=message rows=5></textarea></td></tr>
         </table>
-        <input type="hidden" name=dienstplan value="<?php var_export($Dienstplan) ?>">
+        <input type="hidden" name=Roster value="<?php var_export($Roster) ?>">
         <input type="submit" name=submitContactForm value="Absenden">
         <p><!--Nur damit der Submit-Button nicht ganz am unteren Seitenrand klebt.-->
     </form>
     <?php
+    if (!isset($workforce)) {
+        $workforce = new workforce();
+    }
+    if (isset($config['application_name'])) {
+        $application_name = $config['application_name'];
+    } else {
+        $application_name = 'PDR';
+    }
+
     $recipient = $config['contact_email'];
-    $subject = "PDR " . $config['application_name'] . " " . gettext('has a comment');
+    $subject = $application_name . " " . gettext('has a comment');
     $message = "";
     $trace = debug_backtrace();
     $message .= $trace[0]['file'];
     $message .= "\n\n";
-    if (filter_has_var(INPUT_POST, 'VK')) {
-        $message .= "Die Nachricht stammt von:";
-        $message .= $List_of_employee_full_names[$_SESSION['user_employee_id']];
-        $message .= "\n\n";
-    }
+    $message .= "Die Nachricht stammt von:";
+    $message .= $workforce->List_of_employees[$_SESSION['user_employee_id']]->full_name;
+    $message .= "\n\n";
     if (filter_has_var(INPUT_POST, 'message')) {
         $message .= "<<<Nachricht<<<\n";
         $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
@@ -38,20 +45,15 @@
         $message .= ">>>   >>>\n";
         $message .= "\n\n";
     }
-    if (filter_has_var(INPUT_POST, 'dienstplan')) {
-        $message .= "<<<Dienstplan<<<\n";
-        $message .= filter_input(INPUT_POST, 'dienstplan', FILTER_SANITIZE_STRING);
-        $message .= "\n";
-        $message .= ">>>   >>>";
-        $message .= "\n\n";
-    }
-    if (!empty($_SESSION['user_email'])) {
-        $header = 'From: ' . $_SESSION['user_email'] . "\r\n";
-        $header .= 'Reply-To: ' . $_SESSION['user_email'] . "\r\n";
-    } else {
-        $header = 'From: ' . $config['contact_email'] . "\r\n";
-    }
-    $header .= 'X-Mailer: PHP/' . phpversion();
+    $message .= "<<<Trace<<<\n";
+    $message .= htmlentities(var_export($trace, TRUE));
+    $message .= "\n";
+    $message .= ">>>   >>>";
+    $message .= "\n\n";
+    $header = 'From: ' . $_SESSION['user_email'] . '\r\n';
+    $header .= 'Reply-To: ' . $_SESSION['user_email'] . '\r\n';
+    $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+    $header .= 'Content-type: text/plain; charset=UTF-8;\r\n';
     if (filter_has_var(INPUT_POST, 'submitContactForm')) {
         $versendet = mail($recipient, $subject, $message, $header);
         if ($versendet) {

@@ -1,4 +1,4 @@
-CREATE TABLE `pep` (
+CREATE TABLE IF NOT EXISTS `pep` (
   `hash` binary(32) NOT NULL,
   `Datum` date NOT NULL,
   `Zeit` time NOT NULL,

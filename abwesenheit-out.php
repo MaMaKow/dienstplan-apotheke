@@ -1,83 +1,58 @@
 <?php
+/*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 require 'default.php';
-//Hole eine Liste aller Mitarbeiter
-require 'db-lesen-mitarbeiter.php';
-$VKmax = max(array_keys($List_of_employees)); //Wir suchen die höchste VK-Nummer.
-//Hole eine Liste aller Mandanten (Filialen)
-require 'db-lesen-mandant.php';
-if (filter_has_var(INPUT_POST, 'employee_id')) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_GET, 'employee_id')) {
-    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} else {
-    $employee_id = 1;
-}
-if (isset($employee_id)) {
-    create_cookie("employee_id", $employee_id, 30); //Diese Funktion wird von cookie-auswertung.php bereit gestellt. Sie muss vor dem ersten echo durchgeführt werden.
-}
+$workforce = new workforce();
+$VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen die höchste VK-Nummer.
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+create_cookie("employee_id", $employee_id, 1);
 $vk = $employee_id;
-$sql_query = "SELECT * FROM `absence`
-		WHERE `employee_id` = " . $vk . "
-		ORDER BY `start` ASC
-		";
-$result = mysqli_query_verbose($sql_query);
-$number_of_rows = mysqli_num_rows($result);
+$sql_query = "SELECT * FROM `absence` WHERE `employee_id` = :employee_id ORDER BY `start` DESC";
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
 $tablebody = "";
-$i = 1;
-while ($row = mysqli_fetch_object($result)) {
-    $tablebody.= "\t\t\t<tr>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= date('d.m.Y', strtotime($row->start));
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= date('d.m.Y', strtotime($row->end));
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    if ($i == $number_of_rows) {
-        //TODO: This whole part might be unnecessary. We might remove it with some testing.
-        $tablebody.= "\t\t\t\t<td id=letzterGrund>\n\t\t\t\t\t";
-    } else {
-        $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    }
-    $tablebody.= "$row->reason";
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\t\t\t\t<td>\n\t\t\t\t\t";
-    $tablebody.= "$row->days";
-    $tablebody.= "\n\t\t\t\t</td>\n";
-    $tablebody.= "\n\t\t\t</tr>\n";
-    $i++;
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+    $tablebody .= "<tr>";
+    $tablebody .= "<td>" . date('d.m.Y', strtotime($row->start)) . "</td>";
+    $tablebody .= "<td>" . date('d.m.Y', strtotime($row->end)) . "</td>";
+    $tablebody .= "<td>" . "$row->reason" . "</td>";
+    $tablebody .= "<td>" . "$row->days" . "</td>";
+    $tablebody .= "</tr>\n";
 }
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
-echo "\t\t<div id=main-area>\n";
+echo "<div id=main-area>\n";
 
-echo build_select_employee($employee_id, $List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo "<a class=no-print href='abwesenheit-in.php?employee_id=$employee_id'><br>[" . gettext("Edit") . "]</a>";
-echo "\t\t<table>\n";
+echo "<table>\n";
 //Überschrift
-echo "\t\t\t<tr>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("Start") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("End") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("Reason") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t\t<th>\n"
- . "\t\t\t\t\t" . gettext("Days") . "\n"
- . "\t\t\t\t</th>\n"
- . "\t\t\t</tr>\n";
+echo "<tr>\n"
+ . "<th>" . gettext("Start") . "</th>"
+ . "<th>" . gettext("End") . "</th>"
+ . "<th>" . gettext("Reason") . "</th>"
+ . "<th>" . gettext("Days") . "</th>"
+ . "</tr>\n";
 //Ausgabe
 echo "$tablebody";
-echo "\t\t</table>\n";
-echo "\t</form>";
-echo "\t\t</div>\n";
+echo "</table>\n";
+echo "</form>";
+echo "</div>\n";
 require 'contact-form.php';
 ?>
 

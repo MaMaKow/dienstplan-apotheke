@@ -1,3 +1,4 @@
+@charset "utf-8";
 /*
 Our main colors were picked by and from http://www.colorsontheweb.com/colorwizard.asp
 #BDE682, foreground, light green
@@ -307,6 +308,7 @@ button {
     border: none;
     color: black;
     padding: 1em 2em;
+    margin-right: 1em;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -349,11 +351,13 @@ button:hover{
 }
 .btn-primary {
     width: 10em;
+    height: 6em;
     padding: 0.5em;
     margin-bottom: 0.5em;
 }
 .btn-secondary {
     width: 10em;
+    height: 6em;
     margin-bottom: 0.5em;
     background-color: #B4B4B4;
 }
@@ -379,6 +383,8 @@ button:hover{
 }
 #mandantenformular
 {
+    margin-right: 1em;
+    float: left;
     clear: left;
 }
 div#bottom
@@ -386,10 +392,14 @@ div#bottom
     position: absolute;
     bottom: 0;
 }
-#myform
+#roster_form, #navigation_form, #principle_roster_form
 {
     float: left;
     clear: left;
+}
+#week_day_form{
+    margin-right: 1em;
+    float: left;
 }
 #navigation_form_div
 {
@@ -409,6 +419,31 @@ div#roster_table_div span.roster_table_lunch_break_span {
     white-space: nowrap;
     font-size: smaller;
 }
+/*
+ * tag-in.php
+ * -->
+ */
+div.image {
+    /*
+    border: solid black 1px;
+    */
+    margin-top: 1em;
+    float: left;
+}
+div.image p{
+    margin-bottom: 0em;
+}
+div.image div.image_part {
+    /*
+    border: black  dashed 2px;
+    */
+    float: left;
+    margin-right: 1em;
+}
+/*
+ * <--
+ * tag-in.php
+ */
 
 @media screen and (max-width: 628px) {
     #roster_table_div {
@@ -432,7 +467,9 @@ div#roster_table_div span.roster_table_lunch_break_span {
     }
     #roster_image_div svg, #roster_image_div canvas{
         width: 99%;
+        /*
         border: 1px solid #000000;
+        */
     }
 }
 div.centered_form_div {
@@ -443,6 +480,11 @@ div.centered_form_div {
     margin: auto;
 }
 div.centered_form_div form input {
+    margin-bottom: 1em;
+}
+div.centered_form_div form fieldset {
+    text-align: left;
+    margin-top: 1em;
     margin-bottom: 1em;
 }
 nav#nav_tiles{
@@ -481,26 +523,6 @@ nav ul li a img.image_tiles{
     height: 128px;
     width: 128px;
 }
-#escalation_div {
-    z-index: -90;
-    position: fixed;
-    top: -10%;
-    left: -10%;
-    width: 200%;
-    height: 200%;
-    margin: 0;
-    padding: 0;
-    background-color: red;
-    opacity: 0.2;
-}
-#escalation_div ~ nav, #escalation_div ~ nav ul li, #escalation_div ~ nav ul, #escalation_div ~ nav ul li a, #escalation_div ~ nav ul li a:hover {
-    background-color: #E6828B;
-    border-color: #E6828B;
-}
-#escalation_div ~ div button {
-    background-color: #E6828B;
-}
-
 /*
  * The following lines are added for stunden-in.php
  * -->
@@ -514,3 +536,136 @@ table tr td input#stunden{
  */
 
 
+/*
+ * The following lines are added for src/php/pages/branch-management.php
+ * -->
+ */
+div#form_buttons_container{
+    overflow:  auto;
+}
+button.form_button{
+    width: 10em;
+    padding-left: 0em;
+    padding-right: 0em;
+    margin-bottom: 1em;
+}
+button.form_button img{
+    max-width: 2em;
+    max-height: 2em;
+    /*
+    float:  right;
+    */
+}
+button.form_button p{
+    font-size: larger;
+}
+div#branch_management_form_div{
+    clear:  both;
+    /*
+    float: left;
+    */
+}
+div.overlay_top
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*
+    left: 25%;
+    top:25%;
+    margin-top: 1.2em;
+    */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*
+    float: left;
+    clear: both;
+    */
+    background-color: #73AC22;
+    z-index: 99;
+}
+/*
+ * <--
+ * The above lines are added for src/php/pages/branch-management.php
+ */
+
+/*
+ * The following lines are added for abwesenheit-in.php
+ * -->
+ */
+
+tr.absence_row[data-approval='approved'] {
+    color: green;
+}
+/*
+ * <--
+ * The above lines are added for abwesenheit-in.php
+ */
+
+/*
+ * The below lines are added for image_histogram
+ * -->
+ */
+#canvas_histogram{
+    /*
+    background-color: blue;
+    border-style: solid;
+    border-width: 5px;
+    border-color: green;
+    float: left;
+    clear: both;
+    */
+}
+/*
+ * <--
+ * The above lines are added for image_histogram
+ */
+
+/*
+ * The below lines are added for human-resource-management
+ * -->
+ */
+span.form_input_unit{
+    margin-left: 1em;
+}
+.nowrap{
+    white-space: nowrap;
+}
+/*
+ * <--
+ * The above lines are added for human-resource-management
+ */
+/*
+ * The below lines are added for all sites containing build_html_navigation_elements
+ * -->
+ */
+div#navigation_elements{
+    float: left;
+    clear: left;
+}
+.inline_button_form{
+    display: inline;
+}
+/*
+ * <--
+ * The above lines are added added for all sites containing build_html_navigation_elements
+ */
+
+svg#svgimg {
+    cursor: default;
+}
+svg#svgimg foreignObject p.selected{
+    color: white;
+}
+
+
+body table tbody tr.branch_roster_title_tr th{
+    padding-top: 1em;
+    font-size: x-large;
+}
+body div#week_hours_table_div p span {
+    margin-right: 1em;
+    white-space: nowrap;
+}

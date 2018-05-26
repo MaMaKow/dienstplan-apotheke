@@ -1,4 +1,4 @@
-CREATE TABLE `task_rotation` (
+CREATE TABLE IF NOT EXISTS `task_rotation` (
   `date` date NOT NULL,
   `task` varchar(64) NOT NULL,
   `VK` tinyint(4) NOT NULL,

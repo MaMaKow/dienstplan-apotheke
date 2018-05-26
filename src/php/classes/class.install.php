@@ -28,13 +28,22 @@ class install {
     public $Error_message;
     public $pdr_file_system_application_path;
 
+    /*
+     * The requirements have been calculated by phpcompatinfo-5.0.12
+     * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
+     */
+
+    const PHP_VERSION_ID_REQUIRED = 70002;
+
     function __construct() {
         $this->pdr_supported_database_management_systems = array("mysql");
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         session_start();
         session_regenerate_id();
-        if ($this->config_exists_in_file()) {
+        //TODO: activate the following check again:
+        //if ($this->config_exists_in_file()) {
+        if (FALSE) {
             $this->Error_message[] = gettext("There already is a configuration file."); //Nobody will ever read this.
             echo $this->build_error_message_div();
             header("Location: ../../configure-in.php");
@@ -304,6 +313,72 @@ class install {
         }
     }
 
+    public function php_extension_requirements_are_fulfilled() {
+        /*
+         * The requirements have been calculated by phpcompatinfo-5.0.12
+         * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
+         */
+        $Loaded_extensions = get_loaded_extensions();
+        $Required_extensions = array(
+            'Core', 'PDO', 'calendar', 'date', 'filter', 'gettext', 'hash', 'iconv', 'json', 'mbstring',
+            'openssl', 'pcre', 'posix', 'session', 'standard', 'xml',
+        );
+        $success = TRUE;
+        foreach ($Required_extensions as $required_extension) {
+            if (!in_array($required_extension, $Loaded_extensions)) {
+                $this->Error_message[] = "PHP extension $required_extension is missing.";
+                $success = FALSE;
+            }
+        }
+        return $success;
+    }
+
+    public function php_version_requirement_is_fulfilled($version_required = self::PHP_VERSION_ID_REQUIRED) {
+        $version_required_string_major = round($version_required / 10000, 0);
+        $version_required_string_minor = round($version_required % 10000 / 100, 0);
+        $version_required_string_release = round($version_required % 100, 0);
+        $version_required_string = $version_required_string_major
+                . "." . $version_required_string_minor
+                . "." . $version_required_string_release;
+        /*
+         * The requirements have been calculated by phpcompatinfo-5.0.12
+         * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
+         * usage:
+         * php phpcompatinfo-5.0.12.phar analyser:run ..
+         * with phpcompatinfo-5.0.12.phar lying in the folder tests/
+         */
+        /*
+         *  PHP_VERSION_ID is available as of PHP 5.2.7,
+         *  if our version is lower than that, then emulate it:
+         */
+        if (!defined('PHP_VERSION_ID')) {
+            $version = explode('.', PHP_VERSION);
+            //define('PHP_MAJOR_VERSION',   $version[0]);
+            //define('PHP_MINOR_VERSION',   $version[1]);
+            //define('PHP_RELEASE_VERSION', $version[2]);
+
+            define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+        }
+
+        /* PHP_VERSION_ID is defined as a number, where the higher the number is,
+         * the newer a PHP version is used. It's defined as used in the above expression:
+         *
+         * $version_id = $major_version * 10000 + $minor_version * 100 + $release_version;
+         *
+         * Now with PHP_VERSION_ID we can check for features this PHP version
+         * may have, this doesn't require to use version_compare() everytime
+         * you check if the current PHP version may not support a feature.
+         *
+         */
+        if (PHP_VERSION_ID < $version_required) {
+            $this->Error_message[] = "The PHP version running on this webserver is " . PHP_VERSION
+                    . " but the application requires at least version " . $version_required_string . ".";
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    }
+
     public function pdr_directories_are_writable() {
         $List_of_directories = array(
             "upload",
@@ -394,6 +469,7 @@ class install {
 
     private function write_config_to_file() {
         $this->Config["contact_email"] = $this->Config["admin"]["email"];
+        $this->Config["session_secret"] = random_bytes(8); //In case there are several instances of the program on the same machine
         unset($this->Config["admin"]);
         $dirname = $this->pdr_file_system_application_path . 'config';
         $result = file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');
@@ -424,6 +500,9 @@ class install {
     }
 
     public function build_error_message_div() {
+        if (empty($this->Error_message)) {
+            return FALSE;
+        }
         $text_html = "<div id='error_message_div'>\n";
         foreach ($this->Error_message as $error_message) {
             $text_html .= "<p>" . $error_message . "</p>\n";

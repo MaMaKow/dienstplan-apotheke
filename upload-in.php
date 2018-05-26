@@ -1,19 +1,30 @@
-<!DOCTYPE html>
 <?php
+/*
+ * Copyright (C) 2017 Mandelkow
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 require "default.php";
+$Fehlermeldung = array();
+$Warnmeldung = array();
 require 'head.php';
-require 'navigation.php';
 require 'src/php/pages/menu.php';
-if (!$session->user_has_privilege('administration')) {
-    echo build_warning_messages("", ["Die notwendige Berechtigung zur Administration fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
 
 if (filter_has_var(INPUT_POST, "submit")) {
-    define('SITE_ROOT', realpath(dirname(__FILE__)));
-
     $target_dir = "/upload/";
-    $target_file = SITE_ROOT . $target_dir . uniqid() . "_pep";
+    $target_file = PDR_FILE_SYSTEM_APPLICATION_PATH . $target_dir . uniqid() . "_pep";
     $upload_file_name = basename($_FILES["fileToUpload"]["name"]);
     $upload_ok = 1;
     $file_type = pathinfo($upload_file_name, PATHINFO_EXTENSION);
@@ -52,9 +63,9 @@ if (filter_has_var(INPUT_POST, "submit")) {
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
-echo "\t\t\t<p id=xmlhttpresult></p>\n";
-echo "\t\t\t<p id=javascriptmessage></p>\n";
-echo "\t\t</div>";
+echo "<p id=xmlhttpresult></p>\n";
+echo "<p id=javascriptmessage></p>\n";
+echo "</div>";
 require 'contact-form.php';
 ?>
 <script type="text/javascript">

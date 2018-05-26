@@ -1,4 +1,4 @@
-CREATE TABLE `pep_tag_im_monat` (
+CREATE TABLE IF NOT EXISTS `pep_tag_im_monat` (
   `Tag` int(11) NOT NULL,
   `25-perzentile` int(11) NOT NULL,
   `Median` int(11) NOT NULL,

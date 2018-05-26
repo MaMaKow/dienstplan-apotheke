@@ -27,20 +27,19 @@ set_time_limit(0); //Do not stop execution even if we take a LONG time to finish
 ignore_user_abort(true);
 
 function read_file_write_db($filename) {
-    global $pdo;
     echo 'Working on input file.<br>\n';
     $handle = fopen($filename, "r");
     if ($handle) {
         while (($line = fgets($handle)) !== false) {
             $hash = hash('sha265', $line); //The hash is stored binary in the database.
-            $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the 
+            $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the
             list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
             if (!is_valid_date($date) OR ! is_valid_date($time) OR ! is_numeric($sales_count) OR ! is_numeric($branch)) {
                 continue;
             }
             $sql_date = date('Y-m-d', strtotime($date));
-            $statement = $pdo->prepare("INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)");
-            $statement->execute(array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
+            $sql_query = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)";
+            database_wrapper::instance()->run(array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
         }
         echo 'Finished processing.<br>';
         fclose($handle);
@@ -62,90 +61,60 @@ foreach (glob("upload/*_pep") as $filename) {
     read_file_write_db($filename);
 }
 
-$sql_query = "UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'";
-$result = mysqli_query_verbose($sql_query);
-$sql_query = "UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:00:00'";
-$result = mysqli_query_verbose($sql_query);
+/*
+ * Some sanitary work
+ */
+database_wrapper::instance()->run("UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'");
+database_wrapper::instance()->run("UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:00:00'");
+/*
+ * Remove old data:
+ */
+database_wrapper::instance()->run("TRUNCATE `pep_weekday_time`;");
+database_wrapper::instance()->run("TRUNCATE `pep_month_day`;");
+database_wrapper::instance()->run("TRUNCATE `pep_year_month`;");
+/*
+ * Ignore christmas:
+ */
+database_wrapper::instance()->run("DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';");
 
+$sql_query = "SELECT DISTINCT `Mandant` FROM pep";
+$List_of_pep_branch_ids = database_wrapper::instance()->run($sql_query)->fetchAll(PDO::FETCH_COLUMN);
 
-$sql_query = "DROP TABLE IF EXISTS `pep_weekday_time`;";
-$result = mysqli_query_verbose($sql_query);
-
-$sql_query = "
-   CREATE TABLE IF NOT EXISTS `pep_weekday_time` (
-  `Uhrzeit` time NOT NULL,
-  `Wochentag` int(11) NOT NULL COMMENT '0=Monday',
-  `Mittelwert` float DEFAULT NULL,
-  `Mandant` int(11) NOT NULL,
-  PRIMARY KEY (`Uhrzeit`,`Wochentag`,`Mandant`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-";
-$result = mysqli_query_verbose($sql_query);
-
-$sql_query = "DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';";
-$result = mysqli_query_verbose($sql_query);
-
-$sql_query = "
-    INSERT INTO `pep_weekday_time`
+foreach ($List_of_pep_branch_ids as $pep_branch_id) {
+    $sql_query = "INSERT INTO `pep_weekday_time`
         SELECT SEC_TO_TIME(round(TIME_TO_SEC(`Zeit`)/60/15)*15*60),
             WEEKDAY(Datum),
             sum(Anzahl)/COUNT(DISTINCT `Datum`),
             Mandant
         FROM `pep`
+        WHERE `Mandant` = :pep_branch_id
         GROUP BY round(TIME_TO_SEC(`Zeit`)/60/15)*15/60,
-            WEEKDAY(Datum),
-            Mandant
-    ;
-";
-$result = mysqli_query_verbose($sql_query);
+            WEEKDAY(Datum)
+        ";
+    database_wrapper::instance()->run($sql_query, array('pep_branch_id' => $pep_branch_id));
 
-$sql_query = "DROP TABLE IF EXISTS `pep_month_day`;";
-$result = mysqli_query_verbose($sql_query);
 
-$sql_query = "
-CREATE TABLE IF NOT EXISTS `pep_month_day` (
-  `day` int(11) NOT NULL,
-  `factor` float NOT NULL,
-  `branch` int(11) NOT NULL,
-  PRIMARY KEY (`day`,`branch`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-";
-$result = mysqli_query_verbose($sql_query);
 
-$sql_query = "
+    $sql_query = "
     INSERT INTO `pep_month_day`
         SELECT DAYOFMONTH(`Datum`),
-            SUM(`Anzahl`)/COUNT(DISTINCT `Datum`)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`),
+            SUM(`Anzahl`)/COUNT(DISTINCT `Datum`)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep` WHERE `Mandant` = :pep_branch_id1),
             `Mandant`
         FROM `pep`
-        GROUP BY DAYOFMONTH(`Datum`),
-            `Mandant`
-    ;
-";
-$result = mysqli_query_verbose($sql_query);
+        WHERE `Mandant` = :pep_branch_id2
+        GROUP BY DAYOFMONTH(`Datum`)
+        ";
+    database_wrapper::instance()->run($sql_query, array('pep_branch_id1' => $pep_branch_id, 'pep_branch_id2' => $pep_branch_id));
 
-$sql_query = "
-    DROP TABLE IF EXISTS `pep_year_month`;
-";
-$result = mysqli_query_verbose($sql_query);
-
-$sql_query = "
-CREATE TABLE IF NOT EXISTS `pep_year_month` (
-  `month` int(11) NOT NULL,
-  `factor` float NOT NULL,
-  `branch` int(11) NOT NULL,
-  PRIMARY KEY (`month`, `branch`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-";
-$result = mysqli_query_verbose($sql_query);
-
-$sql_query = "    
+    $sql_query = "
     INSERT INTO `pep_year_month`
         SELECT MONTH(Datum),
-            SUM(Anzahl)/COUNT(DISTINCT Datum)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`),
+            SUM(Anzahl)/COUNT(DISTINCT Datum)/(SELECT SUM(Anzahl)/COUNT(DISTINCT Datum) FROM `pep`  WHERE `Mandant` = :pep_branch_id1),
             `Mandant`
         FROM `pep`
-        GROUP BY MONTH(Datum), `Mandant`
-    ;";
-//TODO: The above code gives a factor of about 0.2 for our smaller pharmacy. We have to check if that is a double factor together with the others!
-$result = mysqli_query_verbose($sql_query);
+        WHERE `Mandant` = :pep_branch_id2
+        GROUP BY MONTH(Datum)
+        ";
+    database_wrapper::instance()->run($sql_query, array('pep_branch_id1' => $pep_branch_id, 'pep_branch_id2' => $pep_branch_id));
+}
+echo "<br>done<br>\n";

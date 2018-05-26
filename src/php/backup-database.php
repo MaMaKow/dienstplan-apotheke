@@ -19,9 +19,9 @@
 
 require_once '../../default.php';
 
-$sql_query = "SELECT TABLE_NAME FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" . $config['database_name'] . "'";
-$result = mysqli_query_verbose($sql_query);
-while ($row = mysqli_fetch_object($result)) {
+$sql_query = "SELECT TABLE_NAME FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = :database_name";
+$result = database_wrapper::instance()->run($sql_query, array('database_name' => $config['database_name']));
+while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $Table_names[] = $row->TABLE_NAME;
 }
 
@@ -32,8 +32,8 @@ foreach ($Table_names as $key => $table_name) {
     $dir_above2 = dirname(dirname($dirname));
 
     $backup_file = $dir_above2 . "/tmp/$table_name.sql";
-    $backup_file = iconv("UTF-8", "ISO-8859-1", $backup_file); //This is necessary for Microsoft Windows to recognise special chars.
+    $file_name = iconv("UTF-8", "ISO-8859-1", $backup_file); //This is necessary for Microsoft Windows to recognise special chars.
 
-    $sql_query = "SELECT * INTO OUTFILE '$backup_file' FROM $table_name";
-    $result = mysqli_query_verbose($sql_query);
+    $sql_query = "SELECT * INTO OUTFILE :file_name FROM :table_name";
+    $result = database_wrapper::instance()->run($sql_query, array('file_name' => $file_name, 'table_name' => $table_name));
 }
