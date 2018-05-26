@@ -13,12 +13,12 @@ The latest release of PDR is available on GitHub:
 ## Installing PDR
 Make sure to unpack PDR to a directory, that your webserver has access to.
 PHP and the webserver must have read access to all the files and folders.
-It also needs write access to the subdirectories upload, tmp and config.
+It also needs write access to the subdirectories `upload`, `tmp` and `config`.
 You might want to change the owner of the directory to the webservers user with e.g.:
 ```
 chown -R www-data:www-data /var/www/html/pdr/`
 ```
 
 ## License
-PDR is open source software under the GPL license.
-Please see the [license file](LICENSE) for details!
+PDR is open source software under the AGPL license.
+Please see the [license file](LICENSE.md) for details!
