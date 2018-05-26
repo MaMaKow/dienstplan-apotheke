@@ -205,6 +205,7 @@ class roster_image_bar_plot {
                     $employee_style = 3;
                     break;
                 default:
+                    $employee_style = 3;
             }
         } else {
             /*
