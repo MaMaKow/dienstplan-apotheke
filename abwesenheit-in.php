@@ -76,7 +76,6 @@ function write_absence_data_to_database($beginn, $ende, $grund) {
     $sql_query = "INSERT INTO `absence` "
             . "(employee_id, start, end, days, reason, user, approval) "
             . "VALUES (:employee_id, :start, :end, :days, :reason, :user, :approval)";
-    //TODO: There must be a much better way to solve this!
     try {
         $result = database_wrapper::instance()->run($sql_query, array(
             'employee_id' => $employee_id,
@@ -89,7 +88,7 @@ function write_absence_data_to_database($beginn, $ende, $grund) {
         ));
     } catch (Exception $exception) {
         $error_string = $exception->getMessage();
-        if ('Duplicate entry for key' === $exception->getMessage()) {
+        if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
             global $Fehlermeldung;
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
