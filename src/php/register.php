@@ -38,9 +38,9 @@ if (isset($_GET['register'])) {
 
     //Überprüfe, dass der Benutzer noch nicht registriert wurde
     if (!$error) {
-        $statement = $pdo->prepare("SELECT * FROM users WHERE user_name = :user_name");
-        $result = $statement->execute(array('user_name' => $user_name));
-        $user = $statement->fetch();
+        $sql_query = "SELECT * FROM users WHERE user_name = :user_name";
+        $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name));
+        $user = $result->fetch();
 
         if ($user !== false) {
             $Error_message[] = 'Dieser Benutzername ist bereits vergeben<br>';
@@ -52,25 +52,32 @@ if (isset($_GET['register'])) {
     if (!$error) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $statement = $pdo->prepare("INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')");
-        $result = $statement->execute(array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
+        $sql_query = "INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')";
+        $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
 
         if ($result) {
             send_mail_about_registration();
             echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
             $showFormular = false;
         } else {
-            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . var_export($statement->errorInfo(),TRUE));
+            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . var_export($statement->errorInfo(), TRUE));
             $Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
         }
     }
 }
 
 if ($showFormular) {
+    if (isset($config['application_name'])) {
+        $application_name = $config['application_name'];
+    } else {
+        $application_name = 'PDR';
+    }
+
+
     echo "<div class=centered_form_div>";
-    echo "<H1>" . $config['application_name'] . "</H1>\n";
+    echo "<H1>" . $application_name . "</H1>\n";
     ?>
-    <form action="?register=1" method="post">
+    <form accept-charset='utf-8' action="?register=1" method="post">
         <input type="text" size="40" maxlength="250" name="user_name" required placeholder="Benutzername" value="<?= $user_name ?>"><br>
         <input type="text" size="40" maxlength="250" name="employee_id" required placeholder="VK Nummer" value="<?= $employee_id ?>"><br>
         <input type="email" size="40" maxlength="250" name="email" required placeholder="Email" value="<?= $email ?>"><br>

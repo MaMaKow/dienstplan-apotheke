@@ -1,3 +1,4 @@
+@charset "utf-8";
 /*
  * Copyright (C) 2017 Mandelkow
  *
@@ -106,24 +107,36 @@ td span.absent_employee_container{
     width: 2em;
     background-color: rgba(180, 180, 180, 0.9);
 }
-span.absent_employee_container.not_yet_approved{
-    background-color: #FEFEFF;
-}
 span.absent_employee_container.Apotheker{
     background-color: rgba(115,172,34, 0.9);
 }
-span.absent_employee_container.not_yet_approved.Apotheker{
-    background-color: #FEFEFF;
-    color: rgba(115,172,34, 0.9);
+span.absent_employee_container.Apotheker.not_yet_approved{
+    background-color: red;
+    background-image: linear-gradient(to bottom right, rgba(115,172,34, 0.9) 50%, red);
 }
 span.absent_employee_container.PI{
     background-color: rgba(115,172,34, 0.9);
 }
+span.absent_employee_container.PI.not_yet_approved{
+    background-color: red;
+    background-image: linear-gradient(to bottom right, rgba(115,172,34, 0.9) 50%, red);
+}
 span.absent_employee_container.PTA{
     background-color: rgba(189, 230, 130, 0.9);
 }
+span.absent_employee_container.PTA.not_yet_approved{
+    background-color: red;
+    background-image: linear-gradient(to bottom right, rgba(189, 230, 130, 0.9) 50%, red);
+}
 span.absent_employee_container.PKA{
     background-color: rgba(180, 180, 180, 0.9);
+}
+span.absent_employee_container.not_yet_approved{
+    background-color: red;
+    background-image: linear-gradient(to bottom right, rgba(180, 180, 180, 0.9) 50%, red);
+}
+span.absent_employee_container.disapproved{
+    background-color: red;
 }
 div.input_box_div{
     position: fixed;

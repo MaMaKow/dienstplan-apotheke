@@ -20,13 +20,13 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
 
 function clean_up_after_password_change($employee_id) {
-    mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `employee_id` = $employee_id");
+    database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `employee_id` = :employee_id", array('employee_id' => $employee_id));
 }
 
 function lost_password_token_is_valid($employee_id, $token) {
-    $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = $employee_id and `token` = UNHEX('$token')";
-    $result = mysqli_query_verbose($sql_query);
-    $row = mysqli_fetch_object($result);
+    $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = :employee_id and `token` = UNHEX(:token)";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
+    $row = $result->fetch(PDO::FETCH_OBJ);
     if (!empty($row->employee_id) and $employee_id === $row->employee_id) {
         return TRUE; //The form is shown
     } else {
@@ -38,11 +38,18 @@ function lost_password_token_is_valid($employee_id, $token) {
 function build_lost_password_form($employee_id, $user_name, $token) {
     global $config;
     global $Error_message;
+    if (isset($config['application_name'])) {
+        $application_name = $config['application_name'];
+    } else {
+        $application_name = 'PDR';
+    }
+
+
     if (lost_password_token_is_valid($employee_id, $token)) {
         ?>
         <div class=centered_form_div>
-            <H1><?= $config['application_name'] ?> </H1>
-            <form action="reset_lost_password.php" method="post">
+            <H1><?= $application_name ?> </H1>
+            <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
                 <H2><?= $user_name ?></H2>
                 <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>
@@ -64,15 +71,15 @@ function build_lost_password_form($employee_id, $user_name, $token) {
 if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_id')) {
     $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
-    $statement = $pdo->prepare("SELECT * FROM `users` WHERE `employee_id` = :employee_id");
-    $statement->execute(array('employee_id' => $employee_id));
-    $User_data = $statement->fetch();
+    $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id";
+    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    $User_data = $result->fetch();
     $user_name = $User_data['user_name'];
 
     /*
      * Remove expired tokens:
      */
-    mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
+    database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
     build_lost_password_form($employee_id, $user_name, $token);
 } elseif (filter_has_var(INPUT_POST, 'employee_id')) {
     $error = FALSE;
@@ -94,8 +101,8 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
     if (!$error and lost_password_token_is_valid($employee_id, $token)) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $statement = $pdo->prepare("UPDATE users SET password = :password WHERE `employee_id` = :employee_id");
-        $result = $statement->execute(array('employee_id' => $employee_id, 'password' => $password_hash));
+        $sql_query = "UPDATE users SET password = :password WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'password' => $password_hash));
 
         if ($result) {
             clean_up_after_password_change($employee_id);

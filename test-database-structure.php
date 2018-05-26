@@ -17,10 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require "default.php";
-if(!$session->user_has_privilege('administration')){
-    echo build_warning_messages("",["Die notwendige Berechtigung zum Erstellen von Abwesenheiten fehlt. Bitte wenden Sie sich an einen Administrator."]);
-    die();
-}
+$session->exit_on_missing_privilege('administration');
 
 // include the Diff class
 require_once 'src/php/classes/class.diff.php';
@@ -28,12 +25,12 @@ require_once 'src/php/classes/class.diff.php';
 function echo_table_diff() {
 //Then we collect the new data and write it to files:
     $sql_query = "SHOW TABLES";
-    $sql_result_with_tables = mysqli_query_verbose($sql_query);
-    while ($table_row = mysqli_fetch_array($sql_result_with_tables)) {
+    $sql_result_with_tables = database_wrapper::instance()->run($sql_query);
+    while ($table_row = $sql_result_with_tables->fetch(PDO::FETCH_ASSOC)) {
         $table_name = $table_row[0];
-        $sql_query = "SHOW CREATE TABLE " . $table_name;
-        $sql_result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_array($sql_result)) {
+        $sql_query = "SHOW CREATE TABLE :table_name";
+        $sql_result = database_wrapper::instance()->run($sql_query, array('table_name' => $table_name));
+        while ($row = $sql_result->fetch(PDO::FETCH_ASSOC)) {
             $table_structure_create_new = $row['Create Table'];
             $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
             $file_name = 'src/sql/' . $file_name . '.sql';
@@ -67,12 +64,12 @@ function echo_table_diff() {
 function get_new_trigger_data() {
 //Then we collect the new data and write it to files:
     $sql_query = "SHOW TRIGGERS";
-    $sql_result_with_triggers = mysqli_query_verbose($sql_query);
-    while ($trigger_row = mysqli_fetch_array($sql_result_with_triggers)) {
+    $sql_result_with_triggers = database_wrapper::instance()->run($sql_query);
+    while ($trigger_row = $sql_result_with_triggers->fetch(PDO::FETCH_ASSOC)) {
         $trigger_name = $trigger_row["Trigger"];
-        $sql_query = "SHOW CREATE TRIGGER " . $trigger_name;
-        $sql_result = mysqli_query_verbose($sql_query);
-        while ($row = mysqli_fetch_array($sql_result)) {
+        $sql_query = "SHOW CREATE TRIGGER :trigger_name";
+        $sql_result = database_wrapper::instance()->run($sql_query, array('trigger_name' => $trigger_name));
+        while ($row = $sql_result->fetch(PDO::FETCH_ASSOC)) {
             $trigger_structure_create = $row['SQL Original Statement'];
             $Triggers[$trigger_name] = $trigger_structure_create;
         }

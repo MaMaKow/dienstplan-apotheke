@@ -34,14 +34,33 @@ class sessions {
         'request_own_absence',
     );
 
+    /**
+     * poEdit and gettext are not willing to include words, that are not in the source files.
+     * Therefore we randomly include some words here, which are necessary.
+     * Used in function build_checkbox_permission() in user-management-in.php
+     * Used in session->exit_on_missing_privilege()
+     */
+    private function gettext_fake() {
+        return TRUE;
+        gettext('administration');
+        gettext('create employee');
+        gettext('create roster');
+        gettext('approve roster');
+        gettext('create overtime');
+        gettext('create absence');
+        gettext('request own absence');
+    }
+
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
+        global $config;
+        /*
+         * In case there are several instances of the program on the same machine,
+         * we need a specific identifier for the different instances.
+         * Therefore we define a specific session_name:
+         */
+        session_name('PDR' . md5($config["session_secret"]));
         session_start();
-        if (!empty($_SESSION['escalated']) AND TRUE === $_SESSION['escalated']) {
-            if (5 <= ++$_SESSION['escalated_count']) {
-                $this->close_escalated_session();
-            }
-        }
 
         /*
          * Interpret $_SERVER values:
@@ -56,12 +75,14 @@ class sessions {
          * header("strict-transport-security: max-age=31536000");
          * for now we present a value of one minute while writing and debugging the code.
          */
-        header("strict-transport-security: max-age=60");
+        if ("localhost" != $http_host AND "" != $http_host) {
+            header("strict-transport-security: max-age=31536000");
+        }
         /* Force HTTPS:
          * We make an exception for localhost. If data is not sent through the net, there is no absolute need for HTTPS.
          * People are still free to use it on their own. Administrators are able to force it in Apache (or any other web server).
          */
-        if ("localhost" != $http_host AND ( empty($https) OR $https != "on")) {
+        if ("localhost" != $http_host AND "" != $http_host AND ( empty($https) OR $https != "on")) {
             header("Location: https://" . $http_host . $request_uri);
             die("<p>Dieses Programm erfordert die Nutzung von "
                     . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
@@ -73,14 +94,7 @@ class sessions {
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
         if (!isset($_SESSION['user_employee_id']) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
-            /*
-             * Test if the current file is on the top level or deeper in the second level:
-             */
-            if (strpos(pathinfo($script_name, PATHINFO_DIRNAME), 'src/php')) {
-                $location = "login.php";
-            } else {
-                $location = "src/php/login.php";
-            }
+            $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location . "?referrer=" . $request_uri);
             die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>');
         }
@@ -104,11 +118,10 @@ class sessions {
     }
 
     private function read_Privileges_from_database() {
-        global $pdo;
-        $statement = $pdo->prepare("SELECT * FROM users_privileges WHERE `employee_id` = :employee_id");
-        $statement->execute(array('employee_id' => $_SESSION['user_employee_id']));
-        while ($privilege_data = $statement->fetch()) {
-            $Privileges[$privilege_data[privilege]] = TRUE;
+        $sql_query = "SELECT * FROM users_privileges WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $_SESSION['user_employee_id']));
+        while ($privilege_data = $result->fetch(PDO::FETCH_ASSOC)) {
+            $Privileges[$privilege_data['privilege']] = TRUE;
         }
         $_SESSION['Privileges'] = $Privileges;
         return;
@@ -128,7 +141,7 @@ class sessions {
              */
             $this->read_Privileges_from_database();
         }
-        if (TRUE === $_SESSION['Privileges'][$privilege]) {
+        if (isset($_SESSION['Privileges'][$privilege]) and TRUE === $_SESSION['Privileges'][$privilege]) {
             return TRUE;
         } else {
             return FALSE;
@@ -138,12 +151,11 @@ class sessions {
     public function exit_on_missing_privilege($privilege) {
         if (!$this->user_has_privilege($privilege)) {
             $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
-            $escalation_authentication = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/session-escalation-login.php?referrer=" . $request_uri;
-            //$missing_permission_text = gettext("Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt.");
-            $Warning_messages[] = gettext("The permission to create a roster is missing.");
-            $Warning_messages[] = gettext("Please contact the administrator.");
-            $Warning_messages[] = " <a href=$escalation_authentication>&rarr;" . gettext("Escalate privileges") . "</a>";
-            echo build_warning_messages("", $Warning_messages);
+            $Warning_messages[] = gettext("You are missing the necessary permission to use this page.");
+            $Warning_messages[] = gettext("Please contact the administrator if you feel this is an error.");
+            $Warning_messages[] = " (" . gettext(str_replace('_', ' ', $privilege))
+                    . " " . gettext("is required for") . " " . basename($request_uri) . ")";
+            echo build_warning_messages($Warning_messages, []);
             exit();
         }
     }
@@ -165,9 +177,8 @@ class sessions {
         /*
          * Get user data:
          */
-        $statement = $pdo->prepare("SELECT * FROM users WHERE `user_name` = :user_name AND `status` = 'active'");
-        $result = $statement->execute(array('user_name' => $user_name));
-        $user = $statement->fetch();
+        $result = database_wrapper::instance()->run("SELECT * FROM users WHERE `user_name` = :user_name AND `status` = 'active'", array('user_name' => $user_name));
+        $user = $result->fetch(PDO::FETCH_ASSOC);
 
         /*
          * Check for multiple failed login attempts
@@ -187,11 +198,11 @@ class sessions {
             $_SESSION['user_employee_id'] = $user['employee_id'];
             $_SESSION['user_email'] = $user['email'];
             //Reset failed_login_attempts
-            $statement = $pdo->prepare("UPDATE users"
-                    . " SET failed_login_attempt_time = NOW(),"
-                    . " failed_login_attempts = 0"
-                    . " WHERE `user_name` = :user_name");
-            $result = $statement->execute(array('user_name' => $user['user_name']));
+            $sql_query = "UPDATE users "
+                    . " SET failed_login_attempt_time = NOW(), "
+                    . " failed_login_attempts = 0 "
+                    . " WHERE `user_name` = :user_name";
+            $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user['user_name']));
 
             if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
@@ -205,54 +216,22 @@ class sessions {
             }
         } else {
             //Register failed_login_attempts
-            $statement = $pdo->prepare("UPDATE users"
+            $sql_query = "UPDATE users"
                     . " SET failed_login_attempt_time = NOW(),"
                     . " failed_login_attempts = IFNULL(failed_login_attempts, 0)+1"
-                    . " WHERE `user_name` = :user_name");
-            $result = $statement->execute(array('user_name' => $user['user_name']));
+                    . " WHERE `user_name` = :user_name";
+            $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user['user_name']));
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             return $errorMessage;
         }
         return FALSE;
     }
 
-    public function escalate_session() {
-        session_start();
-        $_SESSION['before_escalation'] = $_SESSION;
-        $this->login(NULL, NULL, TRUE);
-        $_SESSION['escalated'] = TRUE;
-        $_SESSION['escalated_count'] = 0;
-    }
-
-    public function close_escalated_session() {
-        $_Session_temp = $_SESSION['before_escalation'];
-        session_destroy();
-        session_start();
-        $_SESSION = $_Session_temp;
-    }
-
-    public static function build_escalation_div() {
-        if (TRUE === $_SESSION['escalated']) {
-            return "<div id=escalation_div></div>";
-        }
-    }
-
     public function logout() {
-        if (TRUE === $_SESSION['escalated']) {
-            $this->close_escalated_session();
-            $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
-            if (!empty($referrer)) {
-                header("Location:" . $referrer);
-            } else {
-                header("Location:" . get_root_folder());
-            }
-        } else {
-
-            if (session_start() and session_destroy()) {
-                echo "Logout erfolgreich";
-            }
-            header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php");
+        if (session_start() and session_destroy()) {
+            echo "Logout erfolgreich";
         }
+        header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php");
     }
 
     public function build_logout_button() {
@@ -263,11 +242,17 @@ class sessions {
 
     function send_mail_about_lost_password($employee_id, $user_name, $recipient, $token) {
         global $config;
+        if (isset($config['application_name'])) {
+            $application_name = $config['application_name'];
+        } else {
+            $application_name = 'PDR';
+        }
+
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
                 . gettext("Dear User,\n\n in order to set a new password for")
                 . " '"
-                . $config["application_name"]
+                . $application_name
                 . "' "
                 . gettext("user name") . ": " . $user_name . ", "
                 . gettext("please visit")
@@ -293,14 +278,9 @@ class sessions {
 
     function write_lost_password_token_to_database($employee_id, $token) {
         if (!is_null($employee_id) and ! is_null($token)) {
-            mysqli_query_verbose("CREATE TABLE IF NOT EXISTS `users_lost_password_token` (
-            `employee_id` tinyint(3) UNSIGNED NOT NULL,
-            `token` binary(20) NOT NULL,
-            `time_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;");
-            mysqli_query_verbose("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
-            $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES ('$employee_id', UNHEX('$token'))";
-            mysqli_query_verbose($sql_query);
+            database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
+            $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES (:employee_id, UNHEX(:token))";
+            database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
             return TRUE;
         }
         return FALSE;

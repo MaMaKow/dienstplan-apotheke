@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once "../../../default.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "/db-lesen-mitarbeiter.php";
+$workforce = new workforce();
 
-print_debug_variable($_GET);
 
 if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     //An existing entry will be edited
@@ -29,6 +28,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'reason' => FILTER_SANITIZE_STRING,
         'start' => FILTER_SANITIZE_STRING,
         'end' => FILTER_SANITIZE_STRING,
+        'approval' => FILTER_SANITIZE_STRING,
     );
     $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
     $Absence_details['mode'] = "edit";
@@ -44,39 +44,36 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'date_range_max' => FILTER_SANITIZE_STRING,
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
-    $employee_id = $Highlight_details['employee_id'];
-    print_debug_variable($Highlight_details);
+    $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
     $Absence_details['reason'] = gettext("Vacation");
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
     $Absence_details['mode'] = "create";
-} elseif (filter_has_var(INPUT_COOKIE, 'employee_id')) {
-    $employee_id = filter_input(INPUT_COOKIE, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
 } else {
-    $employee_id = $_SESSION['user_employee_id'];
+    $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 }
 ?>
-<form id="input_box_form" method="POST">
+<form accept-charset='utf-8' id="input_box_form" method="POST">
     <p><?= gettext("Employee") ?><br><select name="employee_id" id="employee_id_select"></p>
     <?php
     if ($session->user_has_privilege('create_absence')) {
-        foreach ($List_of_employees as $employee_id_option => $last_name) {
+        foreach ($workforce->List_of_employees as $employee_id_option => $employee_object) {
             if ($employee_id_option == $employee_id) {
                 $option_selected = "selected";
             } else {
                 $option_selected = "";
             }
-            echo "\t\t<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
-            echo "$employee_id_option $last_name";
+            echo "<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
+            echo "$employee_id_option $employee_object->last_name";
             echo "</option>\n";
         }
     } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_id) {
-        echo "\t\t<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
-        echo $_SESSION['user_employee_id'] . " " . $List_of_employees[$_SESSION['user_employee_id']];
+        echo "<option id='employee_id_option_" . $_SESSION['user_employee_id'] . "' value=" . $_SESSION['user_employee_id'] . ">";
+        echo $_SESSION['user_employee_id'] . " " . $workforce->List_of_employees[$_SESSION['user_employee_id']]->last_name;
         echo "</option>\n";
     } else {
-        echo "\t\t<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
-        echo $employee_id . " " . $List_of_employees[$employee_id];
+        echo "<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
+        echo $employee_id . " " . $workforce->List_of_employees[$employee_id]->last_name;
         echo "</option>\n";
     }
     ?>
@@ -91,6 +88,14 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
 <p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>"></p>
 <p><?= gettext("Reason") ?><br><input type="text" id="input_box_form_reason" name="reason" list='reasons' value="<?= $Absence_details['reason'] ?>"></p>
 <?php
+if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {
+    //TODO: Remove all occurences of "disapprove" and change them to "deny".
+    if ("approved" !== $Absence_details['approval']) {
+        echo "<button type='submit' value='approved'         name='approve_absence' />" . gettext("Approve") . "</button>";
+        echo "<button type='submit' value='not_yet_approved' name='approve_absence' />" . gettext("Pending") . ".</button>";
+        echo "<button type='submit' value='disapproved'      name='approve_absence' />" . gettext("Deny") . "</button>";
+    }
+}
 if (
         $session->user_has_privilege('create_absence')
         or ( $session->user_has_privilege('request_own_absence')

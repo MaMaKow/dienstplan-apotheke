@@ -1,4 +1,4 @@
-CREATE TABLE `users_privileges` (
+CREATE TABLE IF NOT EXISTS `users_privileges` (
   `employee_id` smallint(6) unsigned NOT NULL,
   `privilege` varchar(32) COLLATE latin1_german1_ci NOT NULL,
   PRIMARY KEY (`employee_id`,`privilege`)

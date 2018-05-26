@@ -1,4 +1,4 @@
-CREATE TABLE `absence` (
+CREATE TABLE IF NOT EXISTS `absence` (
   `employee_id` tinyint(4) NOT NULL,
   `reason` varchar(64) CHARACTER SET latin1 NOT NULL,
   `start` date NOT NULL,
