@@ -65,6 +65,12 @@ function task_rotation_get_worker($date_unix, $task, $branch_id) {
  */
 
 function task_rotation_set_worker($date_unix, $task, $branch_id) {
+    if ($date_unix < time()) {
+        /*
+         * We will not change the past anymore.
+         */
+        return FALSE;
+    }
     global $workforce;
     foreach ($workforce->List_of_compounding_employees as $employee_id) {
         if ($workforce->List_of_employees[$employee_id]->principle_branch_id == $branch_id) {
@@ -153,7 +159,7 @@ function task_rotation_set_worker($date_unix, $task, $branch_id) {
         $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES (:task, :date, :employee_id)";
         database_wrapper::instance()->run($sql_query, array(
             'task' => $task,
-            'date' => $temp_date_sql,
+            'date' => $date_sql,
             'employee_id' => $rotation_employee_id
         ));
     }

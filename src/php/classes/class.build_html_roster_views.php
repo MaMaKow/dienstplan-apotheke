@@ -243,7 +243,11 @@ abstract class build_html_roster_views {
                 $zeile .= "$emphasis_start<b><a href='mitarbeiter-out.php?"
                         . "datum=" . htmlentities($roster_object->date_sql)
                         . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
-                $zeile .= $workforce->List_of_employees[$roster_object->employee_id]->last_name;
+                if (isset($workforce->List_of_employees[$roster_object->employee_id]->last_name)) {
+                    $zeile .= $workforce->List_of_employees[$roster_object->employee_id]->last_name;
+                } else {
+                    $zeile .= "Unknown employee: " . $roster_object->employee_id;
+                }
                 $zeile .= "</a></b> / ";
                 $zeile .= htmlentities($roster_object->working_hours);
                 $zeile .= " ";
@@ -386,7 +390,13 @@ abstract class build_html_roster_views {
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
                 continue; /* Only the specified employees is shown. */
             }
-            $week_hours_table_html .= "<span>" . $workforce->List_of_employees[$employee_id]->last_name . " " . round($working_hours_have, 2);
+            $week_hours_table_html .= "<span>";
+            if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
+                $week_hours_table_html .= $workforce->List_of_employees[$employee_id]->last_name;
+            } else {
+                $week_hours_table_html .= "Unknown employee: " . $employee_id;
+            }
+            $week_hours_table_html .= " " . round($working_hours_have, 2);
             $week_hours_table_html .= " / ";
             if (isset($Working_hours_week_should[$employee_id])) {
                 $week_hours_table_html .= round($Working_hours_week_should[$employee_id], 1) . "\n";
