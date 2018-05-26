@@ -102,13 +102,23 @@ abstract class build_html_roster_views {
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
         global $workforce;
         $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
-        $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>"; // Es ist sinnvoll, auch eine leere Zeile zu besitzen, damit Mitarbeiter auch wieder gelöscht werden können.
-        foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-            if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
-                $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
-            } else {
-                $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+        /*
+         * The emplty option is necessary to enable the deletion of employees from the roster:
+         */
+        $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
+        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name)) {
+            foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
+                if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
+                    $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                } else {
+                    $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                }
             }
+        } else {
+            /*
+             * Unknown employee, probably someone from the past.
+             */
+            $roster_input_row_employee_select .= "<option value=$roster_employee_id selected>" . $roster_employee_id . " Unknown employee" . "</option>";
         }
 
         $roster_input_row_employee_select .= "</select>\n";
