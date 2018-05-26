@@ -257,7 +257,6 @@ abstract class user_input {
                              * TODO: Make sure, that both employee ids are integers.
                               Also make sure, that all of the other values are properly formated!
                              */
-                            error_log($roster_row_object->employee_id . "<>" . $roster_row_object_old->employee_id);
                             continue;
                         }
                         if ($roster_row_object != $roster_row_object_old) {

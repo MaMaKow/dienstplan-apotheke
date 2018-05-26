@@ -39,6 +39,7 @@ class roster_image_bar_plot {
         $this->Employee_style_array[1] = "#73AC22"; /* Apotheker, PI (qualified pharmacists) */
         $this->Employee_style_array[2] = "#BDE682"; /* PTA */
         $this->Employee_style_array[3] = "#B4B4B4"; /* non pharmaceutical employees */
+        $this->Employee_style_array[4] = "#FFA0A0"; /* unknown employees, probably from the past */
         /*
          * margins and default lengths:
          */
@@ -121,12 +122,16 @@ class roster_image_bar_plot {
                 $y_pos_box = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
                 $width = $width_in_hours * $this->bar_width_factor;
                 $break_width = $break_width_in_hours * $this->bar_width_factor;
-                $svg_box_text .= "<foreignObject id=work_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' style='cursor: $this->cursor_style_box;'>"
-                        . "<p xmlns='http://www.w3.org/1999/xhtml' style='background-color: $employee_style; margin-top: 0px;'>"
-                        . $workforce->List_of_employees[$employee_id]->last_name
-                        . "<span style='float: right'>$working_hours</span>"
-                        . "</p>"
-                        . "</foreignObject>";
+                $svg_box_text .= "<foreignObject id=work_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' style='cursor: $this->cursor_style_box;'>";
+                $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' style='background-color: $employee_style; margin-top: 0px;'>";
+                if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
+                    $svg_box_text .= $workforce->List_of_employees[$employee_id]->last_name;
+                } else {
+                    $svg_box_text .= "Unknown employee: " . $employee_id;
+                }
+                $svg_box_text .= "<span style='float: right'>$working_hours</span>";
+                $svg_box_text .= "</p>";
+                $svg_box_text .= "</foreignObject>";
 
                 $svg_box_text .= "<rect id=break_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"single\")' x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $this->cursor_style_break_box;' />\n";
                 $this->line++;
@@ -186,19 +191,26 @@ class roster_image_bar_plot {
 
     private function get_employee_style($employee_id) {
         global $workforce;
-        switch ($workforce->List_of_employees[$employee_id]->profession) {
-            case "Apotheker":
-            case "PI":
-                $employee_style = 1;
-                break;
-            case "PTA":
-                $employee_style = 2;
-                break;
-            case "PKA":
-                $employee_style = 3;
-                break;
-            default:
-                $employee_style = 3;
+        if (isset($workforce->List_of_employees[$employee_id]->profession)) {
+
+            switch ($workforce->List_of_employees[$employee_id]->profession) {
+                case "Apotheker":
+                case "PI":
+                    $employee_style = 1;
+                    break;
+                case "PTA":
+                    $employee_style = 2;
+                    break;
+                case "PKA":
+                    $employee_style = 3;
+                    break;
+                default:
+            }
+        } else {
+            /*
+             * Unknown employee, probably someone from the past
+             */
+            $employee_style = 4;
         }
         $employee_style_string = $this->Employee_style_array[$employee_style];
         return $employee_style_string;
