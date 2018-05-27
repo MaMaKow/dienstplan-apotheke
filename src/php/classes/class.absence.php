@@ -26,6 +26,78 @@ class absence {
      * @return array $Absentees array(employee_id => reason)
      */
 
+    public static $List_of_absence_reasons = array(
+        'vacation',
+        'remaining holiday',
+        'sickness',
+        'sickness of child',
+        'unpaid leave of absence',
+        'paid leave of absence',
+        'parental leave',
+        'maternity leave',
+    );
+    public static $List_of_approval_states = array(
+        'approved',
+        'not_yet_approved',
+        'disapproved',
+        'changed_after_approval',
+    );
+
+    /**
+     * poEdit and gettext are not willing to include words, that are not in the source files.
+     * Therefore we randomly include some words here, which are necessary.
+     */
+    private function gettext_fake() {
+        return TRUE;
+        gettext('vacation');
+        gettext('remaining holiday');
+        gettext('sickness');
+        gettext('sickness of child');
+        gettext('unpaid leave of absence');
+        gettext('paid leave of absence');
+        gettext('parental leave');
+        gettext('maternity leave');
+        gettext('approved');
+        gettext('not_yet_approved');
+        gettext('disapproved');
+        gettext('changed_after_approval');
+    }
+
+    /**
+     * Build a select element for easy input of absence entries.
+     *
+     * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krank").
+     *
+     * TODO: This function could also be used by abwesenheit-in.php.
+     *
+     * @return string $html_text HTML datalist element.
+     */
+    public static function build_reason_input_select($reason_specified, $html_id = NULL, $html_form = NULL) {
+        $html_text = "<select id='$html_id' form='$html_form' class='absence_reason_input_select' name='reason'>\n";
+        foreach (absence::$List_of_absence_reasons as $reason) {
+            if ($reason == $reason_specified) {
+                $html_text .= "<option value='$reason' selected>" . gettext($reason) . "</option>\n";
+            } else {
+                $html_text .= "<option value='$reason'>" . gettext($reason) . "</option>\n";
+            }
+        }
+        $html_text .= "</select>\n";
+        return $html_text;
+    }
+
+    public static function build_approval_input_select($approval_specified, $html_id = NULL, $html_form = NULL) {
+        $html_text = "<select id='$html_id' form='$html_form' class='absence_approval_input_select' name='approval'>\n";
+        foreach (absence::$List_of_approval_states as $approval) {
+            if ($approval == $approval_specified) {
+                $html_text .= "<option value='$approval' selected>" . gettext($approval) . "</option>\n";
+            } else {
+                $html_text .= "<option value='$approval'>" . gettext($approval) . "</option>\n";
+            }
+        }
+        $html_text .= "</select>\n";
+        return $html_text;
+    }
+
     public static function read_absentees_from_database($date_sql) {
 
         $Absentees = array();
@@ -88,11 +160,97 @@ class absence {
       }
      */
 
+    public static function handle_user_input() {
+        global $session;
+        if (!$session->user_has_privilege('create_absence')) {
+            return FALSE;
+        }
+        $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING);
+        /*
+         * Deleting existing entries:
+         */
+        if ('delete' === $command) {
+            self::delete_absence_data();
+        }
+        /*
+         * We create new entries or edit old entries. (Empty values are not accepted.)
+         */
+        if (('insert_new' === $command or 'replace' === $command)
+                and $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT)
+                and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)
+                and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
+                and $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING)
+                and $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING)
+        ) {
+            self::write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $approval);
+        }
+    }
+
+    private static function write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $approval = 'approved') {
+        if ($employee_id === FALSE) {
+            return FALSE;
+        }
+        $days = self::calculate_absence_days_verbose($start_date_string, $end_date_string);
+        if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
+            $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
+            $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
+            database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start_old));
+        }
+        $sql_query = "INSERT INTO `absence` "
+                . "(employee_id, start, end, days, reason, user, approval) "
+                . "VALUES (:employee_id, :start, :end, :days, :reason, :user, :approval)";
+        try {
+            $result = database_wrapper::instance()->run($sql_query, array(
+                'employee_id' => $employee_id,
+                'start' => $beginn,
+                'end' => $ende,
+                'days' => $days,
+                'reason' => $reason,
+                'user' => $_SESSION['user_name'],
+                'approval' => $approval
+            ));
+        } catch (Exception $exception) {
+            $error_string = $exception->getMessage();
+            if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
+                global $Fehlermeldung;
+                $Fehlermeldung[] = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+            } else {
+                print_debug_variable($exception);
+                die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+            }
+        }
+    }
+
+    private static function delete_absence_data() {
+        $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+        $start = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
+        $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start));
+        return $result;
+    }
+
     public static function calculate_absence_days($start_date_string, $end_date_string) {
         $days = 0;
-        for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix = strtotime('+1 day', $date_unix)) {
-            if (6 !== intval(date('w', $date_unix)) and 0 !== intval(date('w', $date_unix)) and FALSE === holidays::is_holiday($date_unix)) {
-                $days++;
+        for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix += PDR_ONE_DAY_IN_SECONDS) {
+            if (date('w', $date_unix) != 6 and date('w', $date_unix) != 0) {
+                /*
+                 * Saturday and Sunday are not counted
+                 */
+                $holiday = holidays::is_holiday($date_unix);
+                if (FALSE !== $holiday) {
+                    /*
+                     * Holidays are not counted
+                     * Also we inform the user about not counting those days.
+                     */
+                    global $Feiertagsmeldung; //TODO: This might better be handled by a class for user information.
+                    $date_string = strftime('%x', $date_unix);
+                    $Feiertagsmeldung[] = htmlentities("$holiday ($date_string)\n");
+                } else {
+                    /*
+                     * Only days which are neither a holiday nor a weekend are counted
+                     */
+                    $days++;
+                }
             }
         }
         return $days;

@@ -669,3 +669,9 @@ body div#week_hours_table_div p span {
     margin-right: 1em;
     white-space: nowrap;
 }
+/*
+ * abwesenheit-in.php
+ */
+select[id^='reason_in_'], select[id^='absence_in_']{
+    display: none;
+}

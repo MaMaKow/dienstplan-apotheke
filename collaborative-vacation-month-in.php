@@ -26,7 +26,6 @@ require 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('request_own_absence');
 
 echo "<div id='input_box_data_div'></div>";
-echo build_datalist();
 echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";
 echo build_absence_month($year, $month_number);
 require 'contact-form.php';

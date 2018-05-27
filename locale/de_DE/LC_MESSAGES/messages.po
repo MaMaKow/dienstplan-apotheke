@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-05-22 14:51+0100\n"
-"PO-Revision-Date: 2018-05-22 20:37+0100\n"
+"POT-Creation-Date: 2018-05-27 13:23+0100\n"
+"PO-Revision-Date: 2018-05-27 13:24+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -16,7 +16,15 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: abwesenheit-in.php:182
+#: abwesenheit-in.php:95
+msgid ""
+"There is already an entry on this date. The data was therefore not inserted "
+"in the database."
+msgstr ""
+"An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
+"in die Datenbank eingefügt."
+
+#: abwesenheit-in.php:170
 #: src/php/classes/class.build_html_navigation_elements.php:31
 #: src/php/classes/class.build_html_navigation_elements.php:34
 #: src/php/classes/class.build_html_navigation_elements.php:45
@@ -50,7 +58,7 @@ msgid "Days"
 msgstr "Tage"
 
 #: anwesenheitsliste-out.php:115 anwesenheitsliste-out.php:116
-#: src/php/collaborative-vacation.php:513
+#: src/php/collaborative-vacation.php:491
 msgid "emergency service"
 msgstr "Notdienst"
 
@@ -134,9 +142,57 @@ msgstr "Filiale"
 msgid "None"
 msgstr "Kein"
 
-#: mitarbeiter-out.php:56 tag-in.php:102 tag-out.php:106 woche-out.php:65
+#: mitarbeiter-out.php:56 tag-in.php:100 tag-out.php:106 woche-out.php:65
 msgid "calendar week"
 msgstr "Kalenderwoche"
+
+#: src/php/classes/class.absence.php:52
+msgid "vacation"
+msgstr "Urlaub"
+
+#: src/php/classes/class.absence.php:53
+msgid "remaining holiday"
+msgstr "Resturlaub"
+
+#: src/php/classes/class.absence.php:54
+msgid "sickness"
+msgstr "Krankheit"
+
+#: src/php/classes/class.absence.php:55
+msgid "sickness of child"
+msgstr "Krankheit des Kindes"
+
+#: src/php/classes/class.absence.php:56
+msgid "unpaid leave of absence"
+msgstr "unbezahlte Freistellung"
+
+#: src/php/classes/class.absence.php:57
+msgid "paid leave of absence"
+msgstr "bezahlte Freistellung"
+
+#: src/php/classes/class.absence.php:58
+msgid "parental leave"
+msgstr "Elternzeit"
+
+#: src/php/classes/class.absence.php:59
+msgid "maternity leave"
+msgstr "Mutterschutz"
+
+#: src/php/classes/class.absence.php:60
+msgid "approved"
+msgstr "genehmigt"
+
+#: src/php/classes/class.absence.php:61
+msgid "not_yet_approved"
+msgstr "noch nicht genehmigt"
+
+#: src/php/classes/class.absence.php:62
+msgid "disapproved"
+msgstr "abgelehnt"
+
+#: src/php/classes/class.absence.php:63
+msgid "changed_after_approval"
+msgstr "nach Genehmigung verändert"
 
 #: src/php/classes/class.build_html_navigation_elements.php:60
 #: src/php/classes/class.build_html_navigation_elements.php:63
@@ -190,23 +246,23 @@ msgstr "Abwesende"
 
 #: src/php/classes/class.build_html_roster_views.php:78
 #: src/php/classes/class.build_html_roster_views.php:92
-#: src/php/collaborative-vacation.php:290
-#: src/php/collaborative-vacation.php:461
+#: src/php/collaborative-vacation.php:268
+#: src/php/collaborative-vacation.php:439
 msgid "to"
 msgstr "bis"
 
 #: src/php/classes/class.build_html_roster_views.php:88
-#: src/php/classes/class.build_html_roster_views.php:271
-#: src/php/classes/class.build_html_roster_views.php:345
+#: src/php/classes/class.build_html_roster_views.php:283
+#: src/php/classes/class.build_html_roster_views.php:357
 msgid "break"
 msgstr "Pause"
 
-#: src/php/classes/class.build_html_roster_views.php:139
-#: src/php/classes/class.build_html_roster_views.php:264
+#: src/php/classes/class.build_html_roster_views.php:149
+#: src/php/classes/class.build_html_roster_views.php:276
 msgid "Comment"
 msgstr "Kommentar"
 
-#: src/php/classes/class.examine_roster.php:111
+#: src/php/classes/class.examine_roster.php:112
 #, php-format
 msgid "At %1s there is no authorized person present."
 msgstr "Um %1s Uhr ist kein Approbierter anwesend."
@@ -223,44 +279,44 @@ msgstr "enthält den Dienstplan für"
 msgid "Weekday"
 msgstr "Wochentag"
 
-#: src/php/classes/class.install.php:38
+#: src/php/classes/class.install.php:47
 msgid "There already is a configuration file."
 msgstr "Es existiert bereits eine Konfigurationsdatei."
 
-#: src/php/classes/class.install.php:221
+#: src/php/classes/class.install.php:230
 msgid "The passwords aren't the same."
 msgstr "Die Passwörter sind nicht identisch."
 
-#: src/php/classes/class.install.php:254
+#: src/php/classes/class.install.php:263
 msgid "Error while trying to create administrative user."
 msgstr "Fehler beim Erstellen des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:262
+#: src/php/classes/class.install.php:271
 msgid "Administrative user already exists."
 msgstr "Der administrative Benutzer existiert bereits."
 
-#: src/php/classes/class.install.php:280
+#: src/php/classes/class.install.php:289
 msgid "Error while trying to create administrative user privileges."
 msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:330
+#: src/php/classes/class.install.php:405
 msgid "Make sure that the directories are writable by pdr!"
 msgstr "Stellen Sie sicher, dass die Verzeichnisse durch pdr schreibbar sind!"
 
-#: src/php/classes/class.install.php:364
+#: src/php/classes/class.install.php:439
 msgid "Error while trying to create the database."
 msgstr "Fehler beim Erstellen der Datenbank."
 
-#: src/php/classes/class.install.php:371
+#: src/php/classes/class.install.php:446
 msgid "Error while trying to create the database tables."
 msgstr "Fehler beim Erstellen der Datenbank-Tabellen."
 
-#: src/php/classes/class.install.php:401
+#: src/php/classes/class.install.php:477
 msgid "Error while writing the configuration to the filesystem."
 msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 
 # Listing elements one two AND three
-#: src/php/classes/class.install.php:438
+#: src/php/classes/class.install.php:517
 msgid "and"
 msgstr "und"
 
@@ -340,8 +396,8 @@ msgstr "diese Adresse"
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/collaborative-vacation.php:289
-#: src/php/collaborative-vacation.php:460
+#: src/php/collaborative-vacation.php:267
+#: src/php/collaborative-vacation.php:438
 msgid "from"
 msgstr "von"
 
@@ -417,7 +473,7 @@ msgstr ""
 msgid "Please enter a password with a minimum length of 8 characters."
 msgstr "Bitte wählen Sie ein Passwort mit mindestens 8 Zeichen."
 
-#: src/php/pages/install_page_check_requirements.php:56
+#: src/php/pages/install_page_check_requirements.php:82
 #: src/php/pages/install_page_intro.php:37
 #: src/php/pages/install_page_welcome.php:42
 msgid "Next"

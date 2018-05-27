@@ -18,28 +18,6 @@
  */
 
 /**
- * Build a datalist for easy input of absence entries.
- *
- * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krank").
- * Only reasons that have been used at least 4 times are shown. (HAVING COUNT(*) > 3)
- *
- * TODO: This function could also be used by abwesenheit-in.php.
- *
- * @return string $datalist HTML datalist element.
- */
-function build_datalist() {
-    //Build a datalist with common reasons fo absence:
-    $query = "SELECT `reason` FROM `absence` GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
-    $result = database_wrapper::instance()->run($query);
-    $datalist = "<datalist id='reasons'>\n";
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $datalist .= "<option value='$row->reason'>\n";
-    }
-    $datalist .= "</datalist>\n";
-    return $datalist;
-}
-
-/**
  * Handle the user input.
  *
  * @global int $year
@@ -470,20 +448,21 @@ function build_absence_month($year, $month_number) {
                 $absent_employees_containers .= "</span><br>\n";
             }
         }
-        $p_html = "<td class='day_paragraph ";
         if ($current_week_day_number < 6 and ! $is_holiday) {
-            $paragraph_weekday_class = "weekday";
+            $Paragraph_class[] = "weekday";
         } else {
-            $paragraph_weekday_class = "weekend";
+            $Paragraph_class[] = "weekend";
         }
         if (date('n', $date_unix) !== date('n', $input_date)) {
-            $paragraph_adjacent_month_class = "adjacent_month";
-        } else {
-            $paragraph_adjacent_month_class = "";
+            $Paragraph_class[] = "adjacent_month";
         }
-
-        $p_html .= $paragraph_weekday_class . " " . $paragraph_adjacent_month_class . "'";
-//                $p_html_javascript = "' onclick='insert_form_div(\"create\")'";
+        if (date('Y-m-d', $date_unix) === date('Y-m-d', time())) {
+            $Paragraph_class[] = "today";
+        }
+        $html_class_list = get_classes_of_day_paragraph($current_week_day_number, $is_holiday, $date_unix, $input_date);
+        $p_html = "<td class='$html_class_list'";
+        unset($Paragraph_class);
+        //$p_html .= $paragraph_weekday_class . " " . $paragraph_adjacent_month_class . "'";
         $p_html_javascript = " onmousedown='highlight_absence_create_start(event)'";
         $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate(event)'";
         $p_html_javascript .= " onmouseup='highlight_absence_create_end(event)'";
@@ -527,4 +506,21 @@ function build_absence_month($year, $month_number) {
     $month_container_html .= $week_container_html;
 
     return $month_container_html;
+}
+
+function get_classes_of_day_paragraph($current_week_day_number, $is_holiday, $date_unix, $input_date) {
+    $Paragraph_class = array('day_paragraph');
+    if ($current_week_day_number < 6 and ! $is_holiday) {
+        $Paragraph_class[] = 'weekday';
+    } else {
+        $Paragraph_class[] = 'weekend';
+    }
+    if (date('n', $date_unix) !== date('n', $input_date)) {
+        $Paragraph_class[] = 'adjacent_month';
+    }
+    if (date('Y-m-d', $date_unix) === date('Y-m-d', time())) {
+        $Paragraph_class[] = 'today';
+    }
+    $html_class_list = implode(' ', $Paragraph_class);
+    return $html_class_list;
 }

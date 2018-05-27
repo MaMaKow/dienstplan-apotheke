@@ -51,6 +51,16 @@ class update_database {
         }
     }
 
+    private function refactor_absence_table() {
+        global $config;
+        if (!database_wrapper::database_table_column_exists($config['database_name'], 'absence', 'comment')) {
+            $sql_query = "ALTER TABLE `absence` ADD `comment` VARCHAR(64) NULL DEFAULT NULL AFTER `days`;";
+            database_wrapper::instance()->run($sql_query);
+            $sql_query = "ALTER TABLE `absence` CHANGE `reason` `reason` ENUM('maternity leave','paid leave of absence','parental leave','remaining holiday','sickness','sickness of child','unpaid leave of absence','vacation') CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL;";
+            database_wrapper::instance()->run($sql_query);
+        }
+    }
+
     private function refactor_roster_table() {
         if (database_wrapper::database_table_exists('Dienstplan') and ! database_wrapper::database_table_exists('roster')) {
             $sql_query = "ALTER TABLE `Dienstplan` "
