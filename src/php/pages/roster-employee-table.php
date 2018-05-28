@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
+require '../../../default.php';
 
 $tage = 7;
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
@@ -50,10 +50,10 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 }
 
 //Produce the output:
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "<a href='woche-out.php?datum=" . htmlentities($date_unix) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
+echo "<a href=" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
@@ -96,7 +96,7 @@ $Working_hours_week_should = build_html_roster_views::calculate_working_hours_we
 echo build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, array('employee_id' => $employee_id));
 echo "</div>\n";
 
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 </BODY>
 </HTML>

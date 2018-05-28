@@ -209,7 +209,7 @@ class sessions {
                 if (!empty($referrer)) {
                     header("Location:" . $referrer);
                 } else {
-                    header("Location:" . get_root_folder());
+                    header("Location:" . PDR_HTTP_SERVER_APPLICATION_PATH);
                 }
             } else {
                 return TRUE;
@@ -236,7 +236,7 @@ class sessions {
 
     public function build_logout_button() {
         $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
-        $text_html = '<a href="' . get_root_folder() . 'src/php/logout.php?referrer=' . $request_uri . '">' . gettext("Logout") . '</a>';
+        $text_html = "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/logout.php'>" . gettext('Logout') . '</a>';
         return $text_html;
     }
 

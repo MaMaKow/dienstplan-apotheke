@@ -79,6 +79,10 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 <FORM method=post class="no-print">
     <SELECT name=month onchange=this.form.submit()>
         <?php
+        /*
+         * TODO: Add more options:
+         * e.g. whole year, first/second/third/fourth quarter
+         */
         foreach ($Months as $month_number_option => $month_name) {
             echo "<option value=$month_number_option";
             if ($month_number_option == $month) {

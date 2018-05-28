@@ -15,16 +15,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
-require 'human-resource-management.php';
-write_employee_data_to_database(); //$success = write_employee_data_to_database();
+require '../../../default.php';
+human_resource_management::write_employee_data_to_database(); //$success = write_employee_data_to_database();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 
-$Worker = read_employee_data_from_database($employee_id);
+$Worker = human_resource_management::read_employee_data_from_database($employee_id);
 $workforce = new workforce();
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_employee');
 /*
  * TODO: Test what it looks like, when the input fields are in front of their labels, not behind them.
@@ -46,7 +45,7 @@ $session->exit_on_missing_privilege('create_employee');
             <input type='text' name='first_name' id="first_name" value="<?php echo $Worker["first_name"] ?>">
         </fieldset>
         <p>
-            <?php echo make_radio_profession_list($Worker["profession"]) ?>
+            <?php echo human_resource_management::make_radio_profession_list($Worker["profession"]) ?>
         </p>
         <fieldset class="nowrap">
             <legend><?= gettext("Working hours") ?>:</legend>
@@ -68,12 +67,12 @@ $session->exit_on_missing_privilege('create_employee');
                 <span class="form_input_unit">d</span>
             </p>
         </fieldset>
-        <?php echo make_radio_branch_list($Worker["branch"]); ?>
+        <?php echo human_resource_management::make_radio_branch_list($Worker["branch"]); ?>
         <fieldset>
             <legend><?= gettext("Abilities") ?></legend>
-            <?php echo make_checkbox_ability("goods_receipt", "Wareneingang", $Worker["goods_receipt"]); ?>
+            <?php echo human_resource_management::make_checkbox_ability("goods_receipt", "Wareneingang", $Worker["goods_receipt"]); ?>
             <br>
-            <?php echo make_checkbox_ability("compounding", "Rezeptur", $Worker["compounding"]); ?>
+            <?php echo human_resource_management::make_checkbox_ability("compounding", "Rezeptur", $Worker["compounding"]); ?>
         </fieldset>
         <fieldset>
             <legend><?= gettext("Employment") ?></legend>
@@ -90,5 +89,8 @@ $session->exit_on_missing_privilege('create_employee');
 
     </form>
 </div>
+<?php
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+?>
 </body>
 </html>

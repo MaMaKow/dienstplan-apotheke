@@ -33,7 +33,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $Notdienste['Datum'][] = $row->Datum;
     $Notdienste['Mandant'][] = $row->Mandant;
 }
-require 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql)
 ?>
 <table class="table_with_border">

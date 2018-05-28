@@ -40,7 +40,7 @@ abstract class build_html_roster_views {
     /*
      * Build one table column for a weekly view
      *
-     * used by: woche-out.php
+     * used by: src/php/pages/roster-week-table.php
      * @param $Absentees array expects an array of absent employees in the format array(employee_id => reason_for_absence)
      *
      * @return string HTML table column
@@ -250,7 +250,7 @@ abstract class build_html_roster_views {
                     $emphasis_start = ""; //No emphasis
                     $emphasis_end = ""; //No emphasis
                 }
-                $zeile .= "$emphasis_start<b><a href='mitarbeiter-out.php?"
+                $zeile .= "$emphasis_start<b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlentities($roster_object->date_sql)
                         . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
                 if (isset($workforce->List_of_employees[$roster_object->employee_id]->last_name)) {

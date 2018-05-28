@@ -244,7 +244,6 @@ ul#navigation ul, ul#navigation ul li ul{
     padding-left: 0;
     margin-left: 2.0em;
     z-index:  20;
-    background-color: violet;
 }
 ul#navigation ul li {
     clear: both;

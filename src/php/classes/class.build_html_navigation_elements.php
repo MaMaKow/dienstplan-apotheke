@@ -28,7 +28,7 @@ abstract class build_html_navigation_elements {
         $button_img = "<form class='inline_button_form' action='$url?datum=$date_sql' method='get'>
 		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
-				<img src='img/read-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/read-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
 			</i>
 			<br>
 			" . gettext("Read") . "
@@ -42,7 +42,7 @@ abstract class build_html_navigation_elements {
             <form class='inline_button_form' action='$url?datum=$date_sql' method='get'>
 		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
-				<img src='img/edit-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/edit-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
 			</i>
 			<br>
 			" . gettext("Edit") . "
@@ -57,7 +57,7 @@ abstract class build_html_navigation_elements {
             <form class='inline_button_form'>
 		<button type='submit' class='btn-primary no-print' value='$yesterday_date_string' name='datum'>
 			<i class='icon-black'>
-				<img src='img/backward.png' class='button-image' alt='" . gettext("1 day backward") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("1 day backward") . "'>
 			</i>
 			<br>
 			" . gettext("1 day backward") . "
@@ -72,7 +72,7 @@ abstract class build_html_navigation_elements {
             <form class='inline_button_form'>
 		<button type='submit' class='btn-primary no-print' value='$tomorow_date_string' name='datum'>
 			<i class='icon-black'>
-				<img src='img/foreward.png' class='button-image' alt='" . gettext("1 day forward") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/foreward.png' class='button-image' alt='" . gettext("1 day forward") . "'>
 			</i>
 			<br>
 			" . gettext("1 day forward") . "
@@ -87,7 +87,7 @@ abstract class build_html_navigation_elements {
             <form class='inline_button_form'>
 		<button type='submit' class='btn-primary no-print' value='$date_last_week_sql' name='datum'>
 			<i class='icon-black'>
-				<img src='img/backward.png' class='button-image' alt='" . gettext("1 week backward") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("1 week backward") . "'>
 			</i>
 			<br>
 			" . gettext("1 week backward") . "
@@ -102,7 +102,7 @@ abstract class build_html_navigation_elements {
             <form class='inline_button_form'>
 		<button type='submit' class='btn-primary no-print' value='$date_next_week_sql' name='datum'>
 			<i class='icon-black'>
-				<img src='img/foreward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/foreward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
 			</i>
 			<br>
 			" . gettext("1 week forward") . "
@@ -116,7 +116,7 @@ abstract class build_html_navigation_elements {
                 . " <button type='submit' class='btn-primary no-print' "
                 //. " onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql\"' "
                 . " title='" . gettext("Download iCalendar file") . "'>"
-                . " <img src='img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
+                . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
                 . " <br>"
                 . gettext("iCalendar File")
                 . " </button></form>\n";
@@ -128,7 +128,7 @@ abstract class build_html_navigation_elements {
         $submit_button_img = "
         <button type='submit' id='submit_button_img' class='btn-primary btn-save no-print' value=Absenden name='submit_roster' form='$form_id'>
                 <i class='icon-white'>
-                <img src='img/save.png' class='button-image' alt='" . gettext("Save") . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' class='button-image' alt='" . gettext("Save") . "' >
                 </i>
                 <br>
                 " . gettext("Save") . "
@@ -138,13 +138,11 @@ abstract class build_html_navigation_elements {
 
     public static function build_button_approval() {
 // TODO: The button should be inactive when the approval already was done.
-
-
         $submit_approval_button_img = "
         <form method=post class='inline_button_form'>
                 <button type='submit' class='btn-secondary no-print' value='approve' name='submit_approval'>
                 <i class='icon-grey'>
-                <img src='img/approve.png' class='button-image' alt='" . gettext("1 day forward") . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png' class='button-image' alt='" . gettext("1 day forward") . "' >
                 </i>
                 <br>
                 " . gettext("Approve") . "
@@ -161,7 +159,7 @@ abstract class build_html_navigation_elements {
         <form method=post class='inline_button_form'>
                 <button type='submit' class='btn-secondary no-print' value='disapprove' name='submit_disapproval'>
                 <i class='icon-grey'>
-                <img src='img/disapprove.png' class='button-image' alt='" . gettext("Disapprove") . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/disapprove.png' class='button-image' alt='" . gettext("Disapprove") . "' >
                 </i>
                 <br>
                 " . gettext("Disapprove") . "
