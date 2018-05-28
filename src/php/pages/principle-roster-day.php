@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require 'default.php';
+require '../../../default.php';
 #Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
@@ -44,8 +44,8 @@ $VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. E
 $VKmax = max(array_keys($workforce->List_of_employees));
 
 //Produziere die Ausgabe
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 
 //Hier beginnt die Normale Ausgabe.
@@ -88,7 +88,7 @@ if (!empty($Principle_roster)) {
 }
 echo '</div>';
 
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 
 echo "</body>\n";
 echo '</html>';

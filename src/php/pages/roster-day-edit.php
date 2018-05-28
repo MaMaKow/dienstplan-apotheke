@@ -86,8 +86,8 @@ examine_attendance::check_for_attendant_absentees($Roster, $date_sql, $Abwesende
 
 
 //Produziere die Ausgabe
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
 
@@ -174,7 +174,7 @@ if (!empty($Roster)) {
 $html_text .= "</div>";
 echo "$html_text";
 
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 
 echo "</body>\n";
 echo "</html>";

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
+require '../../../default.php';
 $Fehlermeldung = array();
 $Warnmeldung = array();
 $workforce = new workforce();
@@ -55,16 +55,16 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<td style='font-size: 1em; height: 1em'>\n"
             . "<input hidden name='employee_id' value='$employee_id' form='$html_form'>\n"
             . "<button type=submit id=delete_$row->start class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
-            . "<img src='img/delete.png' alt='Diese Zeile löschen'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Diese Zeile löschen'>\n"
             . "</button>\n"
             . "<button type=button id=cancel_$row->start class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$row->start\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
-            . "<img src='img/delete.png' alt='Bearbeitung abbrechen'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Bearbeitung abbrechen'>\n"
             . "</button>\n"
             . "<button type=button id=edit_$row->start class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
-            . "<img src='img/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
             . "</button>\n"
             . "<button type='submit' id='save_$row->start' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
-            . "<img src='img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
             . "</button>\n"
             . "";
     $tablebody .= "</td>\n";
@@ -73,8 +73,8 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
 }
 
 //Here beginns the output:
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_absence');
 
 echo "<div id=main-area>\n";
@@ -132,7 +132,7 @@ echo "<tbody>\n"
  . "</tbody>\n";
 echo "</table>\n";
 echo "</div>\n";
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 </body>
 </html>

@@ -204,24 +204,6 @@ function get_utf8_month_name($date_unix) {
 }
 
 /*
- * This function will guess the root folder
- *
- * Currently there are only two options for the position of php files.
- * They can be directly in the root folder, or they are in the folder ./src/php/ .
- *
- * @return string path of the root folder of the application
- */
-
-function get_root_folder() {
-    if (strpos(pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME), 'src/php')) {
-        $root_folder = "../../";
-    } else {
-        $root_folder = "./";
-    }
-    return $root_folder;
-}
-
-/*
  * This function will check if a given string represents a valid date.
  *
  * @param $date_string string any string that is supposed to represent a date.

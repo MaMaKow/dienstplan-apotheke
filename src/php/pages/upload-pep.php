@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require "default.php";
+require "../../../default.php";
 $Fehlermeldung = array();
 $Warnmeldung = array();
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
 
 if (filter_has_var(INPUT_POST, "submit")) {
@@ -66,7 +66,7 @@ echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo "<p id=xmlhttpresult></p>\n";
 echo "<p id=javascriptmessage></p>\n";
 echo "</div>";
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 <script type="text/javascript">
     update_pep();

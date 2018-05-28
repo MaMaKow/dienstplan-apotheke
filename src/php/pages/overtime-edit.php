@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
+require '../../../default.php';
 $Fehlermeldung = array();
 $Warnmeldung = array();
 $workforce = new workforce();
@@ -107,8 +107,8 @@ if (empty($saldo)) {
 
 
 //Start of output:
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_overtime');
 
 echo "<div id=main-area>\n";
@@ -160,7 +160,7 @@ echo "</div>\n";
 echo "<form accept-charset='utf-8' method=POST id=insert_new_overtime>\n"
  . "<input hidden name=employee_id value=" . htmlentities($employee_id) . " form=insert_new_overtime>\n"
  . "</form>\n";
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 </body>
 </html>
