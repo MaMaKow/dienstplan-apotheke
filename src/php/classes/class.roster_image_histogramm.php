@@ -168,9 +168,7 @@ abstract class roster_image_histogramm {
     private static function get_expectation($date_unix, $branch_id) {
         global $List_of_branch_objects;
         /*
-          if (basename($_SERVER["SCRIPT_FILENAME"]) === 'tag-in.php') {
-          echo roster_image_histogramm::check_timeliness_of_pep_data();
-          }
+         * echo roster_image_histogramm::check_timeliness_of_pep_data();
          */
         $sql_weekday = date('N', $date_unix) - 1;
         $month_day = date('j', $date_unix);

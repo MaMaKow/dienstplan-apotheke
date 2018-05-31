@@ -159,7 +159,7 @@ $datalist_locales .= "</datalist>\n";
 //echo "<pre>"; var_export($new_config); echo "</pre>";
 
 
-require 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 ?>
 <div style=font-size:larger>
     <H1>Installation</H1>

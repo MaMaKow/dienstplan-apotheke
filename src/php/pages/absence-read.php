@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
+require '../../../default.php';
 $workforce = new workforce();
 $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen die höchste VK-Nummer.
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
@@ -32,14 +32,14 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<td>" . "$row->days" . "</td>";
     $tablebody .= "</tr>\n";
 }
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
 echo "<div id=main-area>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/absence-edit.php', array('employee_id' => $employee_id));
 
-echo "<a class=no-print href='abwesenheit-in.php?employee_id=$employee_id'><br>[" . gettext("Edit") . "]</a>";
 echo "<table>\n";
 //Überschrift
 echo "<tr>\n"
@@ -53,7 +53,7 @@ echo "$tablebody";
 echo "</table>\n";
 echo "</form>";
 echo "</div>\n";
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 
 </body>

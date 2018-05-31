@@ -244,7 +244,6 @@ ul#navigation ul, ul#navigation ul li ul{
     padding-left: 0;
     margin-left: 2.0em;
     z-index:  20;
-    background-color: violet;
 }
 ul#navigation ul li {
     clear: both;
@@ -668,4 +667,10 @@ body table tbody tr.branch_roster_title_tr th{
 body div#week_hours_table_div p span {
     margin-right: 1em;
     white-space: nowrap;
+}
+/*
+ * abwesenheit-in.php
+ */
+select[id^='reason_in_'], select[id^='absence_in_']{
+    display: none;
 }

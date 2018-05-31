@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
+require '../../../default.php';
+$Error_message = array();
+$Warnmeldung = array();
 $workforce = new workforce();
 $User_list = read_user_list_from_database();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
@@ -30,12 +32,24 @@ if (FALSE === in_array($employee_id, array_keys($User_list))) {
 create_cookie('employee_id', $employee_id, 30);
 
 function insert_user_data_into_database() {
+    global $session;
     $User["employee_id"] = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $User["privilege"] = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+    if ($_SESSION['user_employee_id'] == $User["employee_id"] and $session->user_has_privilege('administration')) {
+        /*
+         * We want to avoid an administrator loosing the administration privilege by accident.
+         * The privilege can only be lost, if an other administrator is taking it away.
+         * This way we make sure, that there always is at least one user with administrative privileges.
+         */
+        if (!in_array('administration', $User["privilege"])) {
+            $User["privilege"][] = 'administration';
+            global $Error_message;
+            $Error_message[] = "An administrative user cannot get rid of the 'administration' privilege himself. Only another administrator can take it away.";
+        }
+    }
     database_wrapper::instance()->beginTransaction();
     $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = :user";
     database_wrapper::instance()->run($sql_query, array('user' => $User["employee_id"]));
-
     foreach ($User["privilege"] as $privilege) {
         $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES(:user, :privilege)";
         database_wrapper::instance()->run($sql_query, array('user' => $User["employee_id"], 'privilege' => $privilege));
@@ -78,9 +92,10 @@ function read_user_list_from_database() {
 }
 
 $User = read_user_data_from_database($employee_id);
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
+echo build_warning_messages($Error_message, $Warnmeldung);
 
 
 
@@ -112,5 +127,8 @@ function build_checkbox_permission($privilege, $checked) {
     </p>
 
 </form>
+<?php
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+?>
 </body>
 </html>

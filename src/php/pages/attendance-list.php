@@ -15,15 +15,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* This script is upposed to prepare an attendance list.
+/* This script is supposed to prepare an attendance list.
  * That list can be attached on a white wall and filled by pencil.
  * Known absences are prefilled.
  */
 
-require 'default.php';
-$month = user_input::get_variable_from_any_input('month', FILTER_SANITIZE_STRING, date('n'));
+require '../../../default.php';
+$month_number = user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_STRING, date('n'));
+create_cookie("month_number", $month_number, 1);
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_STRING, date('Y'));
-$start_date_unix = mktime(0, 0, 0, $month, 1, $year);
+create_cookie("year", $year, 1);
+$start_date_unix = mktime(0, 0, 0, $month_number, 1, $year);
 $date_unix = $start_date_unix;
 $date_sql = date('Y-m-d', $date_unix);
 
@@ -40,33 +42,11 @@ $result = database_wrapper::instance()->run($sql_query);
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $Years[] = $row->year;
 }
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
+echo absence::build_html_select_month($month_number);
+echo absence::build_html_select_year($year);
 ?>
-<FORM method=post class="no-print">
-    <SELECT name=month onchange=this.form.submit()>
-        <?php
-        foreach ($Months as $month_number => $month_name) {
-            echo "<option value=$month_number";
-            if ($month_number == $month) {
-                echo " SELECTED ";
-            }
-            echo ">$month_name</option>\n";
-        }
-        ?>
-    </SELECT>
-    <SELECT name=year onchange=this.form.submit()>
-        <?php
-        foreach ($Years as $year_number) {
-            echo "<option value=$year_number";
-            if ($year_number == $year) {
-                echo " SELECTED ";
-            }
-            echo ">$year_number</option>\n";
-        }
-        ?>
-    </SELECT>
-</FORM>
 <TABLE class="table_with_border">
     <TR>
         <TD>Anwesenheit</TD>
@@ -132,6 +112,6 @@ Legende
         <TD>N/A</TD><TD>Nicht angestellt</TD><TD>N</TD><TD>Notdienst</TD><TD>NA</TD><TD>Ausgleich nach Notdienst</TD></TR>
 </TABLE>
 -->
-<?php require 'contact-form.php'; ?>
+<?php require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php'; ?>
 </BODY>
 </HTML>

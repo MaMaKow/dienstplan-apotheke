@@ -78,10 +78,18 @@ td.day_paragraph strong{
     font-size: large;
 }
 td.day_paragraph.weekday{
+    background-color: #ece7e8;
     width: 20%;
 }
-td.day_paragraph.adjacent_month{
-    background-color: #F0F0F0;
+td.day_paragraph.today{
+    border-color: #E6828B;
+    border-width: 0.5em;
+    border-style: solid;
+}
+td.day_paragraph.adjacent_month, td.day_paragraph.adjacent_month strong{
+    background-color: #FFFFFF;
+    border: none;
+    font-size: xx-small;
 }
 p.weekday, td.weekday{
     background-color: #FEFEFF;

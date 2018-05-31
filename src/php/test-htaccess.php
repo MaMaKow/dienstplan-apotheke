@@ -79,7 +79,7 @@ function test_folders($Folders) {
     }
     $error_message_html .= "</div>\n";
     if ($error_message_exists) {
-        require_once get_root_folder() . 'head.php';
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
         return $error_message_html;
     } else {
         return FALSE;

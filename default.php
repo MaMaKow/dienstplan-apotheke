@@ -25,6 +25,11 @@ define('PDR_FILE_SYSTEM_APPLICATION_PATH', __DIR__ . '/');
  * @var PDR_HTTP_SERVER_APPLICATION_PATH The relative path of the application root on the web server.
  */
 $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
+/*
+ * TODO:
+ * For some weird reason, the following line is wrong now. It appands one to many slash /
+ * But that was neseccary before.
+ */
 $root_folder = substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars) . "/";
 define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
 //TODO: This does not work, if the location is a symbolic link.

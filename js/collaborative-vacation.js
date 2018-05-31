@@ -17,7 +17,7 @@
 
 
 "use strict";
-
+var http_server_application_path = get_http_server_application_path();
 function remove_form_div_on_escape(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
     //console.log("remove_form_div_on_escape");
@@ -46,7 +46,7 @@ function remove_form_div() {
 }
 
 function highlight_absence_create_start(evt) {
-    console.log("highlight_absence_create_start");
+    //console.log("highlight_absence_create_start");
     var input_box_data_div = document.getElementById('input_box_data_div');
     var evt = evt || window.event;
     //window.highlight_event = evt;
@@ -60,12 +60,12 @@ function highlight_absence_create_start(evt) {
          * The form div is already/still there.
          * There is nothing to do here:
          */
-        console.log("The form div is already/still there.");
+        //console.log("The form div is already/still there.");
         return false;
     }
     var date_unix_from = element_mouse_is_over.dataset.date_unix || element_mouse_is_over.parentNode.dataset.date_unix;
     if (!date_unix_from) {
-        console.log("date_unix_from is missing");
+        //console.log("date_unix_from is missing");
         /*
          console.log(date_unix_from);
          console.log(element_mouse_is_over);
@@ -152,7 +152,7 @@ function highlight_absence_create_end(evt) {
          */
         return false;
     }
-    console.log("highlight_absence_create_end");
+    //console.log("highlight_absence_create_end");
     //var date_sql_from = window.highlight_absence_create_from_date_sql;
     if (element_mouse_is_over.dataset.date_sql) {
         var date_sql_to = element_mouse_is_over.dataset.date_sql;
@@ -167,7 +167,7 @@ function highlight_absence_create_end(evt) {
 
 function insert_form_div(edit_create) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    console.log("insert_form_div");
+    //console.log("insert_form_div");
     var evt = evt || window.event || input_box_data_div.highlight_event;
     var x = evt.clientX;
     var y = evt.clientY;
@@ -211,7 +211,7 @@ function insert_form_div(edit_create) {
 }
 
 function is_descendant(parent, child) {
-    console.log("is_descendant");
+    //console.log("is_descendant");
     var node = child.parentNode;
     while (node !== null) {
         if (node === parent) {
@@ -234,10 +234,7 @@ function fill_input_box_from_prototype(element_mouse_is_over) {
     var input_box_data_div = document.getElementById('input_box_data_div');
 
 
-    //console.log("fill_input_box_from_prototype with:");
-    //console.log(element_mouse_is_over);
     /*
-     * This following part is relevant only to the edit mode. ->
      * The employee_id is transfered to the php script collaborative-vacation-input-box.php via GET
      * It is necessary for the handling of session permissions.
      */
@@ -245,36 +242,42 @@ function fill_input_box_from_prototype(element_mouse_is_over) {
     var absence_details_json = element_mouse_is_over.dataset.absence_details;
     if (absence_details_json) {
         //edit mode:
-        var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php?absence_details_json=' + absence_details_json;
+        var filename = http_server_application_path + 'src/php/pages/collaborative-vacation-input-box.php?absence_details_json=' + absence_details_json;
     } else {
         //create mode:
         var highlight_details_json = JSON.stringify(input_box_data_div.dataset);
-        var filename = get_php_script_folder() + 'pages/collaborative-vacation-input-box.php?highlight_details_json=' + highlight_details_json;
+        var filename = http_server_application_path + 'src/php/pages/collaborative-vacation-input-box.php?highlight_details_json=' + highlight_details_json;
     }
-    /*
-     * <- This previous part is relevant only to the edit mode.
-     */
-
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             input_box_div.innerHTML = xmlhttp.responseText;
         }
+        //console.log(xmlhttp);
     };
     xmlhttp.open("GET", filename, true);
     xmlhttp.send();
 }
 
-function get_php_script_folder() {
-    console.log("get_php_script_folder");
-    var url = window.location.pathname;
-    var php_script_folder;
-    if (url.indexOf('\\src\\php') !== -1 || url.indexOf('/src/php') !== -1) {
-        php_script_folder = './';
-    } else {
-        php_script_folder = './src/php/';
-    }
-    return php_script_folder;
+function get_http_server_application_path() {
+    var javascript_folder_path_depth = -2;
+    /*
+     * This would be one way to get to the script path name:
+     console.log((new Error).stack.split(':')[1].split('//')[1]);
+     */
+    /*
+     * This is a way to get the script path name:
+     * TODO: The number -2 in slice(0, javascript_folder_path_depth) is dependent on the position of the js folder.
+     * var javascript_folder_path_depth = -2
+     * It might change in future versions.
+     * Make sure, that we have a test for this!
+     * Maybe call default.php in the PDR_HTTP_SERVER_APPLICATION_PATH_JS.
+     * It should be existing and give a result of "" (empty output) without any error.
+     */
+    var scripts = document.getElementsByTagName('script');
+    var script = scripts[scripts.length - 1].src;
+    var http_server_application_path = script.split('/').slice(0, javascript_folder_path_depth).join('/') + '/';
+    return http_server_application_path;
 }
 
 /*
@@ -282,7 +285,7 @@ function get_php_script_folder() {
  * We do not want this behaviour.
  */
 function stop_click_propagation(evt) {
-    console.log("stop_click_propagation");
+    //console.log("stop_click_propagation");
     var evt = evt || window.event;
     if (evt.stopPropagation) {
         evt.stopPropagation();
