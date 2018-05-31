@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
+require '../../../default.php';
 $number_of_days = 7;
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
@@ -32,11 +32,8 @@ $Principle_roster = roster::read_principle_roster_from_database($branch_id, $pse
 roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
 
 //Produziere die Ausgabe
-require 'head.php';
-?>
-<a name=top></a>
-<?php
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 echo "<div id=main-area>\n";
 //TODO: find out how to respect the lunch breaks!
@@ -111,16 +108,11 @@ echo "</table>\n";
 //echo "</form>\n";
 echo "</div>\n";
 
-/*
-  require_once 'image_dienstplan_vk.php';
- * $svg_image_dienstplan = draw_image_dienstplan_vk($Grundplan);
-  echo $svg_image_dienstplan;
- */
 $roster_image_bar_plot = new roster_image_bar_plot($Principle_employee_roster);
 echo $roster_image_bar_plot->svg_string;
 
 
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 </body>
 </html>

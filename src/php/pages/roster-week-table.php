@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once "default.php";
+require_once "../../../default.php";
 
 $tage = 7; //One week
 
@@ -42,8 +42,6 @@ for ($i = 0; $i < $tage; $i++) {
 
 //Hole eine Liste aller Mitarbeiter
 $workforce = new workforce($date_sql);
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
-$Dienstplan = read_roster_array_from_db($date_sql, $tage, $branch_id); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $Roster = roster::read_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
@@ -54,13 +52,12 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 $VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 //Build a div containing assignment of tasks:
-require 'task-rotation.php';
 //TODO: Works only for "Rezeptur" right now!
-$weekly_rotation_div_html = task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id);
+$weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id);
 
 //Produziere die Ausgabe
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $main_div_html = "<div id='main-area'>\n";
 $date_info_line_html = "<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
 $main_div_html .= $date_info_line_html;
@@ -140,7 +137,7 @@ echo $warning_message_html;
 
 echo $main_div_html;
 
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 </BODY>
 </HTML>

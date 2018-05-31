@@ -18,15 +18,17 @@
  */
 
 abstract class build_html_roster_views {
-    /*
+
+    const OPTION_SHOW_EMERGENCY_SERVICE_NAME = 'show_emergency_service_name';
+    const OPTION_SHOW_CALENDAR_WEEK = 'show_calendar_week';
+
+    /**
      * Build one table row for a daily view
      *
-     * used by: tag-in.php
      * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (string)reason_for_absence)
      *
      * @return string HTML table row
      */
-
     public static function build_absentees_row($Absentees) {
         if (NULL === $Absentees) {
             return FALSE;
@@ -37,15 +39,14 @@ abstract class build_html_roster_views {
         return $text;
     }
 
-    /*
+    /**
      * Build one table column for a weekly view
      *
-     * used by: woche-out.php
+     * used by: src/php/pages/roster-week-table.php
      * @param $Absentees array expects an array of absent employees in the format array(employee_id => reason_for_absence)
      *
      * @return string HTML table column
      */
-
     public static function build_absentees_column($Absentees) {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
@@ -65,32 +66,42 @@ abstract class build_html_roster_views {
             $Roster[$day_iterator][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $day_iterator), $branch_id);
         }
         $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
-//employee input:
+        /*
+         * employee input:
+         */
         $roster_input_row = "<td>\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][branch_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->branch_id . ">\n";
         $roster_input_row .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
-//start of duty:
+        /*
+         * start of duty:
+         */
         $roster_input_row .= "<input type=time size=5 class=Dienstplan_Dienstbeginn name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_start_sql] id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 ) . " value='";
         $roster_input_row .= roster::get_duty_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n ";
 
         $roster_input_row .= gettext("to");
 
-//end of duty:
+        /*
+         * end of duty:
+         */
         $roster_input_row .= " <input type=time size=5 class=Dienstplan_Dienstende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_end_sql] id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 ) . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n";
 
         $roster_input_row .= "<br>\n";
 
-//start of break:
+        /*
+         * start of break:
+         */
         $roster_input_row .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_start_sql] id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 ) . " value='";
         $roster_input_row .= roster::get_break_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
 
         $roster_input_row .= "'> ";
         $roster_input_row .= gettext("to");
-//end of break:
+        /*
+         * end of break:
+         */
         $roster_input_row .= " <input type=time size=5 class=Dienstplan_Mittagsende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_end_sql] id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 ) . " value='";
         $roster_input_row .= roster::get_break_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>";
@@ -175,14 +186,15 @@ abstract class build_html_roster_views {
         return $table_html;
     }
 
-    public static function build_roster_read_only_table_head($Roster) {
+    public static function build_roster_read_only_table_head($Roster, $Options = array()) {
+        global $workforce, $List_of_branch_objects;
         $head_table_html = "";
         $head_table_html .= "<thead>\n";
         $head_table_html .= "<tr>\n";
         foreach (array_keys($Roster) as $date_unix) {//Datum
             $date_sql = date('Y-m-d', $date_unix);
             $head_table_html .= "<td>";
-            $head_table_html .= "<a href='tag-out.php?datum=$date_sql'>";
+            $head_table_html .= "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-day-read.php?datum=$date_sql'>";
             $head_table_html .= strftime('%A', $date_unix);
             $head_table_html .= " \n";
             $head_table_html .= strftime('%d.%m.', $date_unix);
@@ -190,11 +202,24 @@ abstract class build_html_roster_views {
             if (FALSE !== $holiday) {
                 $head_table_html .= "<br>$holiday";
             }
-
-            if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
-                $head_table_html .= "<br> <em>NOTDIENST</em> ";
+            $head_table_html .= "</a>";
+            if (in_array(self::OPTION_SHOW_CALENDAR_WEEK, $Options)) {
+                $head_table_html .= "<br><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . $date_sql . "'>" . gettext("calendar week") . strftime(' %V', strtotime($date_sql)) . "</a>\n";
             }
-            $head_table_html .= "</a></td>\n";
+
+            $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
+            if (FALSE !== $having_emergency_service) {
+                $head_table_html .= "<br><em>NOTDIENST</em><br>";
+                if (in_array(self::OPTION_SHOW_EMERGENCY_SERVICE_NAME, $Options)) {
+                    if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
+                        $head_table_html .= $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name;
+                    } else {
+                        $head_table_html .= "???";
+                    }
+                    $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+                }
+            }
+            $head_table_html .= "</td>\n";
         }
         $head_table_html .= "</tr></thead>";
         return $head_table_html;
@@ -250,7 +275,7 @@ abstract class build_html_roster_views {
                     $emphasis_start = ""; //No emphasis
                     $emphasis_end = ""; //No emphasis
                 }
-                $zeile .= "$emphasis_start<b><a href='mitarbeiter-out.php?"
+                $zeile .= "$emphasis_start<b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlentities($roster_object->date_sql)
                         . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
                 if (isset($workforce->List_of_employees[$roster_object->employee_id]->last_name)) {

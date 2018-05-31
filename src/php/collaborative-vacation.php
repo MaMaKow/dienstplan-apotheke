@@ -18,28 +18,6 @@
  */
 
 /**
- * Build a datalist for easy input of absence entries.
- *
- * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krank").
- * Only reasons that have been used at least 4 times are shown. (HAVING COUNT(*) > 3)
- *
- * TODO: This function could also be used by abwesenheit-in.php.
- *
- * @return string $datalist HTML datalist element.
- */
-function build_datalist() {
-    //Build a datalist with common reasons fo absence:
-    $query = "SELECT `reason` FROM `absence` GROUP BY `reason` HAVING COUNT(*) > 3 ORDER BY `reason` ASC";
-    $result = database_wrapper::instance()->run($query);
-    $datalist = "<datalist id='reasons'>\n";
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $datalist .= "<option value='$row->reason'>\n";
-    }
-    $datalist .= "</datalist>\n";
-    return $datalist;
-}
-
-/**
  * Handle the user input.
  *
  * @global int $year
@@ -233,26 +211,8 @@ function build_absence_year($year) {
 
     $year_container_html = "<div class=year_container>\n";
 
-    //The following lines for the year select are common code with anwesenheitsliste-out.php
-    $Years = array();
-    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $result = database_wrapper::instance()->run($sql_query);
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $Years[] = $row->year;
-    }
-    $Years[] = max($Years) + 1;
 
-    $year_input_select = "<form id='select_year' method=post><select name=year onchange=this.form.submit()>";
-    foreach ($Years as $year_number) {
-        $year_input_select .= "<option value=$year_number";
-        if ($year_number == $current_year) {
-            $year_input_select .= " SELECTED ";
-        }
-        $year_input_select .= ">$year_number</option>\n";
-    }
-    $year_input_select .= "</select></form>";
-
-    $year_container_html .= $year_input_select;
+    $year_container_html .= absence::build_html_select_year($current_year);
     $month_container_html = "<div class='year_quarter_container'>";
     $month_container_html .= "<div class=month_container>";
     $month_container_html .= $current_month_name . "<br>\n";
@@ -377,48 +337,8 @@ function build_absence_month($year, $month_number) {
 
     $month_container_html = "";
 
-    /*
-     * The following lines for the year select are common code with anwesenheitsliste-out.php
-     * TODO: make it a common funtion
-     */
-    $Years = array();
-    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $result = database_wrapper::instance()->run($sql_query);
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $Years[] = $row->year;
-    }
-    $Years[] = max($Years) + 1;
-
-    $year_input_select = "<form id='select_year' method=post><select name=year onchange=this.form.submit()>";
-    foreach ($Years as $year_number) {
-        $year_input_select .= "<option value=$year_number";
-        if ($year_number == $current_year) {
-            $year_input_select .= " SELECTED ";
-        }
-        $year_input_select .= ">$year_number</option>\n";
-    }
-    $year_input_select .= "</select></form>";
-
-
-
-    $Months = array();
-    for ($i = 1; $i <= 12; $i++) {
-        $timestamp = mktime(0, 0, 0, $i, 1);
-        $Months[date('n', $timestamp)] = date('F', $timestamp);
-    }
-    $month_input_select = "<form id='select_month' method=post><select name=month_number onchange=this.form.submit()>";
-    foreach ($Months as $month_number => $month_name) {
-        $month_input_select .= "<option value=$month_number";
-        if ($month_number == $current_month) {
-            $month_input_select .= " SELECTED ";
-        }
-        $month_input_select .= ">$month_name</option>\n";
-    }
-    $month_input_select .= "</select></form>";
-
-
-    $month_container_html .= $year_input_select;
-    $month_container_html .= $month_input_select;
+    $month_container_html .= absence::build_html_select_year($current_year);
+    $month_container_html .= absence::build_html_select_month($current_month);
     $table_header_of_weekdays = "<tr>";
     for ($date_unix = $start_date; $date_unix < $start_date + 7 * PDR_ONE_DAY_IN_SECONDS; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $table_header_of_weekdays .= "<td class=day_column_head>" . strftime("%A", $date_unix) . "</td>";
@@ -470,20 +390,21 @@ function build_absence_month($year, $month_number) {
                 $absent_employees_containers .= "</span><br>\n";
             }
         }
-        $p_html = "<td class='day_paragraph ";
         if ($current_week_day_number < 6 and ! $is_holiday) {
-            $paragraph_weekday_class = "weekday";
+            $Paragraph_class[] = "weekday";
         } else {
-            $paragraph_weekday_class = "weekend";
+            $Paragraph_class[] = "weekend";
         }
         if (date('n', $date_unix) !== date('n', $input_date)) {
-            $paragraph_adjacent_month_class = "adjacent_month";
-        } else {
-            $paragraph_adjacent_month_class = "";
+            $Paragraph_class[] = "adjacent_month";
         }
-
-        $p_html .= $paragraph_weekday_class . " " . $paragraph_adjacent_month_class . "'";
-//                $p_html_javascript = "' onclick='insert_form_div(\"create\")'";
+        if (date('Y-m-d', $date_unix) === date('Y-m-d', time())) {
+            $Paragraph_class[] = "today";
+        }
+        $html_class_list = get_classes_of_day_paragraph($current_week_day_number, $is_holiday, $date_unix, $input_date);
+        $p_html = "<td class='$html_class_list'";
+        unset($Paragraph_class);
+        //$p_html .= $paragraph_weekday_class . " " . $paragraph_adjacent_month_class . "'";
         $p_html_javascript = " onmousedown='highlight_absence_create_start(event)'";
         $p_html_javascript .= " onmouseover='highlight_absence_create_intermediate(event)'";
         $p_html_javascript .= " onmouseup='highlight_absence_create_end(event)'";
@@ -527,4 +448,21 @@ function build_absence_month($year, $month_number) {
     $month_container_html .= $week_container_html;
 
     return $month_container_html;
+}
+
+function get_classes_of_day_paragraph($current_week_day_number, $is_holiday, $date_unix, $input_date) {
+    $Paragraph_class = array('day_paragraph');
+    if ($current_week_day_number < 6 and ! $is_holiday) {
+        $Paragraph_class[] = 'weekday';
+    } else {
+        $Paragraph_class[] = 'weekend';
+    }
+    if (date('n', $date_unix) !== date('n', $input_date)) {
+        $Paragraph_class[] = 'adjacent_month';
+    }
+    if (date('Y-m-d', $date_unix) === date('Y-m-d', time())) {
+        $Paragraph_class[] = 'today';
+    }
+    $html_class_list = implode(' ', $Paragraph_class);
+    return $html_class_list;
 }

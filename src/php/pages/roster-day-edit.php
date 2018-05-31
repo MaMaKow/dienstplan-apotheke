@@ -18,7 +18,7 @@
  */
 
 #Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
-require 'default.php';
+require '../../../default.php';
 $tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
 $tag = 0;
 
@@ -38,8 +38,6 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
     }
 }
 
-//Hole eine Liste aller Mitarbeiter
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
 $Abwesende = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
@@ -86,8 +84,8 @@ examine_attendance::check_for_attendant_absentees($Roster, $date_sql, $Abwesende
 
 
 //Produziere die Ausgabe
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
 
@@ -110,7 +108,7 @@ if ($session->user_has_privilege('approve_roster')) {
     $html_text .= build_html_navigation_elements::build_button_approval();
     $html_text .= build_html_navigation_elements::build_button_disapproval();
 }
-$html_text .= build_html_navigation_elements::build_button_open_readonly_version('tag-out.php', $date_sql);
+$html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
 $html_text .= "</div>\n";
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
@@ -174,7 +172,7 @@ if (!empty($Roster)) {
 $html_text .= "</div>";
 echo "$html_text";
 
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 
 echo "</body>\n";
 echo "</html>";

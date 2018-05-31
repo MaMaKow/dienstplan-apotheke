@@ -162,6 +162,20 @@ class database_wrapper {
         return $result !== FALSE;
     }
 
+    public static function database_table_column_exists($database_name, $table_name, $column_name) {
+        $sql_query = "SELECT * FROM information_schema.COLUMNS "
+                . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name";
+        $result = self::instance()->run($sql_query, array(
+            'database_name' => $database_name,
+            'table_name' => $table_name,
+            'column_name' => $column_name
+        ));
+        while ($result->fetch()) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
     /**
      *
      * @param string $field database identifier (i.e. database name, table name, column name)

@@ -184,14 +184,16 @@ function reset_update_pep() {
 
 function showEdit(beginn) {
     document.getElementById('save_' + beginn).style.display = 'inline';
-    document.getElementById('beginn_in_' + beginn).style.display = 'inline';
-    document.getElementById('beginn_in_' + beginn).className += 'datepicker';
-    document.getElementById('beginn_out_' + beginn).style.display = 'none';
-    document.getElementById('ende_in_' + beginn).style.display = 'inline';
-    document.getElementById('ende_in_' + beginn).className += 'datepicker';
-    document.getElementById('ende_out_' + beginn).style.display = 'none';
-    document.getElementById('grund_in_' + beginn).style.display = 'inline';
-    document.getElementById('grund_out_' + beginn).style.display = 'none';
+    document.getElementById('start_in_' + beginn).style.display = 'inline';
+    document.getElementById('start_in_' + beginn).className += 'datepicker';
+    document.getElementById('start_out_' + beginn).style.display = 'none';
+    document.getElementById('end_in_' + beginn).style.display = 'inline';
+    document.getElementById('end_in_' + beginn).className += 'datepicker';
+    document.getElementById('end_out_' + beginn).style.display = 'none';
+    document.getElementById('reason_in_' + beginn).style.display = 'inline';
+    document.getElementById('absence_in_' + beginn).style.display = 'inline';
+    document.getElementById('reason_out_' + beginn).style.display = 'none';
+    document.getElementById('absence_out_' + beginn).style.display = 'none';
     document.getElementById('edit_' + beginn).style.display = 'none';
     document.getElementById('delete_' + beginn).style.display = 'none';
     document.getElementById('cancel_' + beginn).style.display = 'inline';
@@ -214,14 +216,16 @@ function showEdit(beginn) {
 
 function cancelEdit(beginn) {
     document.getElementById('save_' + beginn).style.display = 'none';
-    document.getElementById('beginn_in_' + beginn).style.display = 'none';
-    document.getElementById('beginn_in_' + beginn).classList.remove('datepicker');
-    document.getElementById('beginn_out_' + beginn).style.display = 'inline';
-    document.getElementById('ende_in_' + beginn).style.display = 'none';
-    document.getElementById('ende_in_' + beginn).classList.remove('datepicker');
-    document.getElementById('ende_out_' + beginn).style.display = 'inline';
-    document.getElementById('grund_in_' + beginn).style.display = 'none';
-    document.getElementById('grund_out_' + beginn).style.display = 'inline';
+    document.getElementById('start_in_' + beginn).style.display = 'none';
+    document.getElementById('start_in_' + beginn).classList.remove('datepicker');
+    document.getElementById('start_out_' + beginn).style.display = 'inline';
+    document.getElementById('end_in_' + beginn).style.display = 'none';
+    document.getElementById('end_in_' + beginn).classList.remove('datepicker');
+    document.getElementById('end_out_' + beginn).style.display = 'inline';
+    document.getElementById('reason_in_' + beginn).style.display = 'none';
+    document.getElementById('absence_in_' + beginn).style.display = 'none';
+    document.getElementById('reason_out_' + beginn).style.display = 'inline';
+    document.getElementById('absence_out_' + beginn).style.display = 'inline';
     document.getElementById('edit_' + beginn).style.display = 'inline';
     document.getElementById('delete_' + beginn).style.display = 'inline';
     document.getElementById('cancel_' + beginn).style.display = 'none';
@@ -254,7 +258,7 @@ function cancelEdit(beginn) {
 }
 
 function gettext(string_to_translate, object, callback_function) {
-    var filename = get_php_script_folder() + 'gettext.php?string_to_translate=' + string_to_translate;
+    var filename = get_http_server_application_path() + '/src/php/gettext.php?string_to_translate=' + string_to_translate;
     var xml_http_request = new XMLHttpRequest();
 
     /*

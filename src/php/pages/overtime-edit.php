@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
+require '../../../default.php';
 $Fehlermeldung = array();
 $Warnmeldung = array();
 $workforce = new workforce();
@@ -107,15 +107,15 @@ if (empty($saldo)) {
 
 
 //Start of output:
-require 'head.php';
-require 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_overtime');
 
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
-echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[" . gettext("Read") . "]</a>\n";
+echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_id' => $employee_id));
 
 echo "<table>\n";
 //Heading
@@ -160,7 +160,7 @@ echo "</div>\n";
 echo "<form accept-charset='utf-8' method=POST id=insert_new_overtime>\n"
  . "<input hidden name=employee_id value=" . htmlentities($employee_id) . " form=insert_new_overtime>\n"
  . "</form>\n";
-require 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 </body>
 </html>

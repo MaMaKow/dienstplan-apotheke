@@ -112,10 +112,12 @@ abstract class roster {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
-        if (TRUE === $the_whole_roster_is_empty) {
-            /* reset the roster to be completely empty */
-            $Roster = array();
-        }
+        /*
+          if (TRUE === $the_whole_roster_is_empty) {
+          // reset the roster to be completely empty
+          $Roster = array();
+          }
+         */
         return $Roster;
     }
 
