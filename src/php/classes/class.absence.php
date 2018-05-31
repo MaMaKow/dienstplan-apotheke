@@ -19,7 +19,7 @@
 
 class absence {
     /*
-     * This function gets a ist of absent employees
+     * This function gets a list of absent employees
      *
      * @param date_sql string date in the format 'Y-m-d' a unix date is accepted. This might be removed in the future
      *
@@ -66,9 +66,9 @@ class absence {
     /**
      * Build a select element for easy input of absence entries.
      *
-     * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krank").
-     *
-     * TODO: This function could also be used by abwesenheit-in.php.
+     * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krankheit").
+     * The values are stored in the database in a SET column accepting only predefined english terms.
+     * Those terms can also be found in absence::$List_of_absence_reasons.
      *
      * @return string $html_text HTML datalist element.
      */
@@ -190,7 +190,7 @@ class absence {
         if ($employee_id === FALSE) {
             return FALSE;
         }
-        $days = self::calculate_absence_days_verbose($start_date_string, $end_date_string);
+        $days = self::calculate_absence_days($beginn, $ende);
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
             $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
             $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
@@ -254,6 +254,66 @@ class absence {
             }
         }
         return $days;
+    }
+
+    /**
+     *
+     * @return array $Years <p>An array containing all the years, that are stored with at least one day in the `Dienstplan`table.
+     *
+     * </p>
+     */
+    private static function get_rostering_month_names() {
+        $Months = array();
+        for ($i = 1; $i <= 12; $i++) {
+            $timestamp = mktime(0, 0, 0, $i, 1);
+            $Months[date('n', $timestamp)] = date('F', $timestamp);
+        }
+        return $Months;
+    }
+
+    private static function get_rostering_years() {
+        $Years = array();
+        $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Years[] = $row->year;
+        }
+        $Years[] = max($Years) + 1;
+        return $Years;
+    }
+
+    public static function build_html_select_year($current_year) {
+        $Years = self::get_rostering_years();
+        $html_select_year = "";
+        $html_select_year .= "<form id='select_year' method=post>";
+        $html_select_year .= "<select name=year onchange=this.form.submit()>";
+        foreach ($Years as $year_number) {
+            $html_select_year .= "<option value=$year_number";
+            if ($year_number == $current_year) {
+                $html_select_year .= " SELECTED ";
+            }
+            $html_select_year .= ">$year_number</option>\n";
+        }
+        $html_select_year .= "</select>";
+        $html_select_year .= "</form>";
+        return $html_select_year;
+    }
+
+    public static function build_html_select_month($current_month) {
+        $Months = self::get_rostering_month_names();
+        $html_select_month = "";
+        $html_select_month .= "<form id='select_month' method=post>";
+        $html_select_month .= "<select name=month_number onchange=this.form.submit()>";
+        foreach ($Months as $month_number => $month_name) {
+            $html_select_month .= "<option value=$month_number";
+            if ($month_number == $current_month) {
+                $html_select_month .= " SELECTED ";
+            }
+            $html_select_month .= ">$month_name</option>\n";
+        }
+        $html_select_month .= "</select>";
+        $html_select_month .= "</form>";
+        return $html_select_month;
     }
 
 }

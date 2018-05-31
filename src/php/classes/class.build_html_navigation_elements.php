@@ -24,8 +24,27 @@
  */
 abstract class build_html_navigation_elements {
 
-    public static function build_button_open_readonly_version($url, $date_sql) {
-        $button_img = "<form class='inline_button_form' action='$url?datum=$date_sql' method='get'>
+    static $List_of_allowed_input_names = array(
+        'employee_id',
+        'datum',
+    );
+
+    private static function build_referrer_from_array($Name_value_array) {
+        if (NULL !== $Name_value_array) {
+            $referrer = '?';
+            foreach ($Name_value_array as $name => $value) {
+                if (in_array($name, self::$List_of_allowed_input_names)) {
+                    $referrer .= $name . '=' . htmlentities($value) . '&';
+                }
+            }
+            return rtrim($referrer, '&');
+        }
+        return FALSE;
+    }
+
+    public static function build_button_open_readonly_version($url, $Name_value_array) {
+        $referrer = self::build_referrer_from_array($Name_value_array);
+        $button_img = "<form class='inline_button_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . $url . $referrer . "' method='get'>
 		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/read-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
@@ -33,13 +52,14 @@ abstract class build_html_navigation_elements {
 			<br>
 			" . gettext("Read") . "
 		</button>
-            </form>";
+            </form>\n";
         return $button_img;
     }
 
-    public static function build_button_open_edit_version($url, $date_sql) {
+    public static function build_button_open_edit_version($url, $Name_value_array) {
+        $referrer = self::build_referrer_from_array($Name_value_array);
         $button_img = "
-            <form class='inline_button_form' action='$url?datum=$date_sql' method='get'>
+            <form class='inline_button_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . $url . $referrer . "' method='get'>
 		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/edit-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
@@ -112,9 +132,8 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_link_download_ics_file($date_sql, $employee_id) {
-        $button_html = "<form class='inline_button_form' action='webdav.php?employee_id=$employee_id&datum=$date_sql' method='get'>"
+        $button_html = "<form class='inline_button_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php?employee_id=$employee_id&datum=$date_sql' method='get'>"
                 . " <button type='submit' class='btn-primary no-print' "
-                //. " onclick='location=\"webdav.php?employee_id=$employee_id&datum=$date_sql\"' "
                 . " title='" . gettext("Download iCalendar file") . "'>"
                 . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
                 . " <br>"

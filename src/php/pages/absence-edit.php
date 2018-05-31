@@ -92,8 +92,7 @@ if (isset($Feiertagsmeldung)) {
 }
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
-echo "<a class=no-print href='abwesenheit-out.php?employee_id=$employee_id'>[" . gettext("Read") . "]</a>";
-echo "\n";
+echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/absence-read.php', array('employee_id' => $employee_id));
 echo "<table id=absence_table>\n";
 /*
  * Head

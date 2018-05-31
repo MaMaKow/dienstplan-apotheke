@@ -1,6 +1,10 @@
-<!--
-This file is part of nearly every page. But DO NOT include it inside head.php! It is not part and should not be part of e.g. install.php!
--->
+<?php
+/*
+ * This file is part of nearly every page.
+ * But DO NOT include it inside head.php!
+ * It is not part and should not be part of e.g. install.php
+ */
+?>
 <nav id="nav" class="no-print">
     <ul id="navigation">
         <li>
@@ -28,7 +32,7 @@ This file is part of nearly every page. But DO NOT include it inside head.php! I
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-edit.php><?= gettext("Daily input") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
                     </a>
-                    <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/tag-out.php><?= gettext("Daily output") ?></a>
+                    <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-read.php><?= gettext("Daily output") ?></a>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/principle-roster-day.php><?= gettext("Principle roster daily") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
                     </a>

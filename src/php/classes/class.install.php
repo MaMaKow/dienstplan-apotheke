@@ -28,11 +28,11 @@ class install {
     public $Error_message;
     public $pdr_file_system_application_path;
 
-    /*
+    /**
+     * @var int PHP_VERSION_ID_REQUIRED
      * The requirements have been calculated by phpcompatinfo-5.0.12
      * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
      */
-
     const PHP_VERSION_ID_REQUIRED = 70002;
 
     function __construct() {

@@ -27,9 +27,17 @@ class roster_image_bar_plot {
 
     public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
         foreach ($Roster as $Roster_day_array) {
-            $this->total_number_of_lines += count($Roster_day_array) + 1;
+            $this->total_number_of_lines ++;
+            foreach ($Roster_day_array as $roster_item) {
+                if ($roster_item->employee_id !== NULL) {
+                    $this->total_number_of_lines ++;
+                }
+            }
         }
-        if (NULL === $this->total_number_of_lines) {
+        if (count($Roster) == $this->total_number_of_lines) {
+            /*
+             * There are no non-empty roster items in the roster.
+             */
             return FALSE;
         }
         $this->set_start_end_times($Roster);

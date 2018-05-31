@@ -24,15 +24,15 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php title="Woche"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/week_2.svg" class="image_tiles"></a>
         </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>tag-out.php title="Tag"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/day.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-read.php title="Tag"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/day.svg" class="image_tiles"></a>
         </li>
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-employee-table.php title="Mitarbeiter"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/employee_2.svg" class="image_tiles"></a>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>stunden-out.php title="Überstunden"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/watch_overtime.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-read.php title="Überstunden"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/watch_overtime.svg" class="image_tiles"></a>
         </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>abwesenheit-out.php title="Abwesenheit"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/absence.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-read.php title="Abwesenheit"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/absence.svg" class="image_tiles"></a>
         </li>
     </ul>
 </nav>

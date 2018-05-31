@@ -211,26 +211,8 @@ function build_absence_year($year) {
 
     $year_container_html = "<div class=year_container>\n";
 
-    //The following lines for the year select are common code with anwesenheitsliste-out.php
-    $Years = array();
-    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $result = database_wrapper::instance()->run($sql_query);
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $Years[] = $row->year;
-    }
-    $Years[] = max($Years) + 1;
 
-    $year_input_select = "<form id='select_year' method=post><select name=year onchange=this.form.submit()>";
-    foreach ($Years as $year_number) {
-        $year_input_select .= "<option value=$year_number";
-        if ($year_number == $current_year) {
-            $year_input_select .= " SELECTED ";
-        }
-        $year_input_select .= ">$year_number</option>\n";
-    }
-    $year_input_select .= "</select></form>";
-
-    $year_container_html .= $year_input_select;
+    $year_container_html .= absence::build_html_select_year($current_year);
     $month_container_html = "<div class='year_quarter_container'>";
     $month_container_html .= "<div class=month_container>";
     $month_container_html .= $current_month_name . "<br>\n";
@@ -355,48 +337,8 @@ function build_absence_month($year, $month_number) {
 
     $month_container_html = "";
 
-    /*
-     * The following lines for the year select are common code with anwesenheitsliste-out.php
-     * TODO: make it a common funtion
-     */
-    $Years = array();
-    $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-    $result = database_wrapper::instance()->run($sql_query);
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $Years[] = $row->year;
-    }
-    $Years[] = max($Years) + 1;
-
-    $year_input_select = "<form id='select_year' method=post><select name=year onchange=this.form.submit()>";
-    foreach ($Years as $year_number) {
-        $year_input_select .= "<option value=$year_number";
-        if ($year_number == $current_year) {
-            $year_input_select .= " SELECTED ";
-        }
-        $year_input_select .= ">$year_number</option>\n";
-    }
-    $year_input_select .= "</select></form>";
-
-
-
-    $Months = array();
-    for ($i = 1; $i <= 12; $i++) {
-        $timestamp = mktime(0, 0, 0, $i, 1);
-        $Months[date('n', $timestamp)] = date('F', $timestamp);
-    }
-    $month_input_select = "<form id='select_month' method=post><select name=month_number onchange=this.form.submit()>";
-    foreach ($Months as $month_number => $month_name) {
-        $month_input_select .= "<option value=$month_number";
-        if ($month_number == $current_month) {
-            $month_input_select .= " SELECTED ";
-        }
-        $month_input_select .= ">$month_name</option>\n";
-    }
-    $month_input_select .= "</select></form>";
-
-
-    $month_container_html .= $year_input_select;
-    $month_container_html .= $month_input_select;
+    $month_container_html .= absence::build_html_select_year($current_year);
+    $month_container_html .= absence::build_html_select_month($current_month);
     $table_header_of_weekdays = "<tr>";
     for ($date_unix = $start_date; $date_unix < $start_date + 7 * PDR_ONE_DAY_IN_SECONDS; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
         $table_header_of_weekdays .= "<td class=day_column_head>" . strftime("%A", $date_unix) . "</td>";

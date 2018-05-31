@@ -63,7 +63,7 @@ echo build_html_navigation_elements::build_button_week_forward($date_sql);
 echo build_html_navigation_elements::build_button_link_download_ics_file($date_sql, $employee_id);
 
 echo "<table>\n";
-echo build_html_roster_views::build_roster_read_only_table_head($Roster);
+echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME));
 echo build_html_roster_views::build_roster_readonly_employee_table($Roster, $workforce->List_of_employees[$employee_id]->principle_branch_id);
 $table_foot_html = "<tfoot>"
         //. "<tr class=page-break></tr>"

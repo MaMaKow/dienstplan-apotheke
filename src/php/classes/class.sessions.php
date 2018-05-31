@@ -37,7 +37,7 @@ class sessions {
     /**
      * poEdit and gettext are not willing to include words, that are not in the source files.
      * Therefore we randomly include some words here, which are necessary.
-     * Used in function build_checkbox_permission() in user-management-in.php
+     * Used in function build_checkbox_permission() in user-management.php
      * Used in session->exit_on_missing_privilege()
      */
     private function gettext_fake() {

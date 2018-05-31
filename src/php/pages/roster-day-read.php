@@ -62,8 +62,6 @@ if (isset($approval)) {
 
 //Get a list of all employees:
 $workforce = new workforce($date_sql);
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
-$Dienstplan = read_roster_array_from_db($date_sql, $number_of_days, $branch_id);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
@@ -89,45 +87,20 @@ echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 echo "<div id=navigation_form_div class=no-print>\n";
 echo build_html_navigation_elements::build_button_day_backward($date_unix);
 echo build_html_navigation_elements::build_button_day_forward($date_unix);
-echo build_html_navigation_elements::build_button_open_edit_version('tag-in.php', $date_sql);
+echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/roster-day-edit.php', array('datum' => $date_sql));
 echo "<br><br>\n";
 echo build_html_navigation_elements::build_input_date($date_sql);
 echo "</div>\n";
 echo "<div id=roster_table_div>\n";
 echo "<table id=roster_table>\n";
-echo "<tr>\n";
-for ($i = 0; $i < count($Dienstplan); $i++) { //$i will be zero, beacause this is just one day.//Datum
-    $date_unix = strtotime($Dienstplan[$i]["Datum"][0]);
-    $zeile = "";
-    echo "<td>\n";
-    $zeile .= "<input type=hidden name=Dienstplan[" . $i . "][Datum][0] value=" . $Dienstplan[$i]["Datum"][0] . ">\n";
-    $zeile .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">\n";
-    $zeile .= strftime('%A, %d.%m. ', $date_unix);
-    $zeile .= "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . $date_sql . "'>" . gettext("calendar week") . strftime(' %V', strtotime($date_sql)) . "</a>\n";
-    echo $zeile;
-    $holiday = holidays::is_holiday($date_unix);
-    if (FALSE !== $holiday) {
-        echo "<p>" . $holiday . "</p>\n";
-    }
-    $Abwesende = absence::read_absentees_from_database($date_sql);
-    $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
-    if (FALSE !== $having_emergency_service) {
-        echo "<br>NOTDIENST<br>";
-        if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
-            echo $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name;
-        } else {
-            echo "???";
-        }
-        echo " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
-    }
-    echo "</td>\n";
-}
+echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME, build_html_roster_views::OPTION_SHOW_CALENDAR_WEEK));
 if ($approval == "approved" OR $config['hide_disapproved'] == false) {
 
     echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
     echo "<tr><td></td></tr>\n";
     echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
     echo "<tr><td><br></td></tr>";
+    $Abwesende = absence::read_absentees_from_database($date_sql);
     if (isset($Abwesende)) {
         echo build_html_roster_views::build_absentees_row($Abwesende);
     }
@@ -135,7 +108,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
 echo "</table>\n";
 echo "</div>\n";
 
-if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE) AND ! empty($Dienstplan[0]["Dienstbeginn"])) {
+if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE)) {
     echo "<div id=roster_image_div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Roster);
     echo $roster_image_bar_plot->svg_string;
