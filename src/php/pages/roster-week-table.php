@@ -42,8 +42,6 @@ for ($i = 0; $i < $tage; $i++) {
 
 //Hole eine Liste aller Mitarbeiter
 $workforce = new workforce($date_sql);
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/read_roster_array_from_db.php';
-$Dienstplan = read_roster_array_from_db($date_sql, $tage, $branch_id); //Die Funktion ruft die Daten nur für den angegebenen Mandanten und für den angegebenen Zeitraum ab.
 $Roster = roster::read_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*

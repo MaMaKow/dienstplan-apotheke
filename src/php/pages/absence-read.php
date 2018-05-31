@@ -38,8 +38,8 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/absence-edit.php', array('employee_id' => $employee_id));
 
-echo "<a class=no-print href='abwesenheit-in.php?employee_id=$employee_id'><br>[" . gettext("Edit") . "]</a>";
 echo "<table>\n";
 //Überschrift
 echo "<tr>\n"

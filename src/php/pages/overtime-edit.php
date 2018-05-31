@@ -115,7 +115,7 @@ echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
-echo "<a class=no-print href='stunden-out.php?employee_id=" . htmlentities($employee_id) . "'>[" . gettext("Read") . "]</a>\n";
+echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_id' => $employee_id));
 
 echo "<table>\n";
 //Heading

@@ -258,7 +258,7 @@ function cancelEdit(beginn) {
 }
 
 function gettext(string_to_translate, object, callback_function) {
-    var filename = get_php_script_folder() + 'gettext.php?string_to_translate=' + string_to_translate;
+    var filename = get_http_server_application_path() + '/src/php/gettext.php?string_to_translate=' + string_to_translate;
     var xml_http_request = new XMLHttpRequest();
 
     /*
