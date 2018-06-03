@@ -29,10 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     ?>>
         <META charset=UTF-8>
         <TITLE><?= $application_name ?></TITLE>
-        <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>javascript.js" ></SCRIPT>
+        <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/javascript.js" ></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>datepicker.css" />
         <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>datepicker.js"></SCRIPT>
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>style.css" media="all">
+        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/style.css" media="all">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>print.css" media="print">
         <?php
         /* The following two files are relevant only to collaborative-vacation-*.php
