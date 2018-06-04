@@ -52,7 +52,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     /*
      * reason
      */
-    $tablebody .= "<td><div id=reason_out_$row->start>$row->reason</div>";
+    $tablebody .= "<td><div id=reason_out_$row->start>" . pdr_gettext($row->reason) . "</div>";
     $html_id = "reason_in_$row->start";
     $tablebody .= absence::build_reason_input_select($row->reason, $html_id, $html_form);
     $tablebody .= "</td>\n";
