@@ -27,6 +27,17 @@ if (!empty($_POST)) {
 }
 
 /*
+ * Check the hide_disapproved value
+ */
+if (FALSE != $config['hide_disapproved']) {
+    $hide_disapproved_yes = 'checked';
+    $hide_disapproved_no = '';
+} else {
+    $hide_disapproved_yes = '';
+    $hide_disapproved_no = 'checked';
+}
+
+/*
  * Check which error reporting strength has been set roughly. This is not precise!
  */
 $error_all_checked = "";
@@ -186,9 +197,9 @@ echo build_warning_messages($Fehlermeldung, $Warnmeldung);
                 </th>
             </tr>
             <tr>
-                <td><input type="radio" name="hide_disapproved" value="true">Hide
+                <td><input type="radio" name="hide_disapproved" value=1 <?= $hide_disapproved_yes ?>>Hide
                     <br>
-                    <input type="radio" name="hide_disapproved" value="false" checked>Show
+                    <input type="radio" name="hide_disapproved" value=0 <?= $hide_disapproved_no ?>>Show
                 </td>
             </tr>
         </table>
