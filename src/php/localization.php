@@ -63,3 +63,20 @@ $results = bind_textdomain_codeset("messages", 'UTF-8');
 if (!$results) {
     print_debug_variable('bind_textdomain_codeset failed');
 }
+
+/**
+ * gettext function that does return empty strings if empty strings are inserted
+ *
+ * There is a known bug in gettext:
+ * When an empty string is used for msgid, the functions may return a nonempty string.
+ * As a result gettext returns the headers from .mo files if the message parameter is set to empty.
+ *
+ * @var string english input string
+ * @return string localized string
+ */
+function pdr_gettext($text) {
+    if (empty($text))
+        return "";
+    else
+        return gettext($text);
+}

@@ -28,7 +28,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>";
     $tablebody .= "<td>" . date('d.m.Y', strtotime($row->start)) . "</td>";
     $tablebody .= "<td>" . date('d.m.Y', strtotime($row->end)) . "</td>";
-    $tablebody .= "<td>" . "$row->reason" . "</td>";
+    $tablebody .= "<td>" . pdr_gettext($row->reason) . "</td>";
     $tablebody .= "<td>" . "$row->days" . "</td>";
     $tablebody .= "</tr>\n";
 }

@@ -34,21 +34,40 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
             . "<form accept-charset='utf-8' method=POST id='$html_form'>"
             . "\n";
+    /*
+     * start
+     */
     $tablebody .= "<td><div id=start_out_$row->start>";
     $tablebody .= date('d.m.Y', strtotime($row->start)) . "</div>";
     $tablebody .= "<input id=start_in_$row->start style='display: none;' type=date name='beginn' value=" . date('Y-m-d', strtotime($row->start)) . " form='$html_form'> ";
     $tablebody .= "<input style='display: none;' type=date name='start_old' value=" . date('Y-m-d', strtotime($row->start)) . " form='$html_form'> ";
     $tablebody .= "</td>\n";
+    /*
+     * end
+     */
     $tablebody .= "<td><div id=end_out_$row->start form='$html_form'>";
     $tablebody .= date('d.m.Y', strtotime($row->end)) . "</div>";
     $tablebody .= "<input id=end_in_$row->start style='display: none;' type=date name='ende' value=" . date('Y-m-d', strtotime($row->end)) . " form='$html_form'> ";
     $tablebody .= "</td>\n";
+    /*
+     * reason
+     */
     $tablebody .= "<td><div id=reason_out_$row->start>$row->reason</div>";
     $html_id = "reason_in_$row->start";
     $tablebody .= absence::build_reason_input_select($row->reason, $html_id, $html_form);
     $tablebody .= "</td>\n";
+    /*
+     * comment
+     */
+    $tablebody .= "<td><div id=comment_out_$row->start>$row->comment</div>";
+    $html_id = "comment_in_$row->start";
+    $tablebody .= "<input id=comment_in_$row->start style='display: none;' type=text name='comment' value=$row->comment form='$html_form'> ";
+    $tablebody .= "</td>\n";
+    /*
+     * days
+     */
     $tablebody .= "<td>$row->days</td>\n";
-    $tablebody .= "<td><span id=absence_out_$row->start>$row->approval</span>";
+    $tablebody .= "<td><span id=absence_out_$row->start>" . pdr_gettext($row->approval) . "</span>";
     $html_id = "absence_in_$row->start";
     $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form);
     $tablebody .= "</td>\n";
@@ -98,7 +117,7 @@ echo "<table id=absence_table>\n";
  * Head
  */
 echo "<thead>\n";
-echo "<tr><th>Beginn</th><th>Ende</th><th>Grund</th><th>Tage</th><th></th></tr>\n";
+echo "<tr><th>" . gettext('Start') . "</th><th>" . gettext('End') . "</th><th>" . gettext('Reason') . "</th><th>" . gettext('Comment') . "</th><th>" . gettext('Days') . "</th><th>" . gettext('Approval') . "</th></tr>\n";
 /*
  * Input with calculation of the saldo via javascript.
  */
@@ -112,6 +131,7 @@ echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
 echo "</td>\n";
 echo "<td>" . absence::build_reason_input_select(NULL, NULL, 'new_absence_entry') . "</td>\n";
+echo "<td><input type='text' name='comment' form='new_absence_entry'></td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
 echo "<td>" . absence::build_approval_input_select('not_yet_approved', NULL, 'new_absence_entry') . "</td>\n";
 echo "<td>\n";

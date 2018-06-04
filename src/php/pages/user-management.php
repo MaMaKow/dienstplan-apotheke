@@ -102,7 +102,7 @@ echo build_warning_messages($Error_message, $Warnmeldung);
 echo build_html_navigation_elements::build_select_employee($employee_id, $User_list);
 
 function build_checkbox_permission($privilege, $checked) {
-    $privilege_name = gettext(str_replace('_', ' ', $privilege));
+    $privilege_name = pdr_gettext(str_replace('_', ' ', $privilege));
     $text = "<label for='$privilege'>" . $privilege_name . ": </label>";
     $text .= "<input type='checkbox' name='privilege[]' value='$privilege' id='$privilege' ";
     if ($checked) {
