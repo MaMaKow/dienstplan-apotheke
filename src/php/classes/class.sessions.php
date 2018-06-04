@@ -153,7 +153,7 @@ class sessions {
             $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
             $Warning_messages[] = gettext("You are missing the necessary permission to use this page.");
             $Warning_messages[] = gettext("Please contact the administrator if you feel this is an error.");
-            $Warning_messages[] = " (" . gettext(str_replace('_', ' ', $privilege))
+            $Warning_messages[] = " (" . pdr_gettext(str_replace('_', ' ', $privilege))
                     . " " . gettext("is required for") . " " . basename($request_uri) . ")";
             echo build_warning_messages($Warning_messages, []);
             exit();
@@ -231,7 +231,7 @@ class sessions {
         if (session_start() and session_destroy()) {
             echo "Logout erfolgreich";
         }
-        header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php");
+        header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php");
     }
 
     public function build_logout_button() {

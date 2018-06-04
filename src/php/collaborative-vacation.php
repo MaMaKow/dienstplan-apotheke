@@ -74,6 +74,7 @@ function write_user_input_to_database() {
     $start_date_string = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
     $end_date_string = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
     $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
+    $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
     $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING);
     $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
     $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
@@ -147,14 +148,15 @@ function write_user_input_to_database() {
          * TODO: Maybe there should be a common library/class for all the (common) absence functions.
          */
         $days = absence::calculate_absence_days($start_date_string, $end_date_string);
-        $query = "INSERT INTO absence (`employee_id`, `start`, `end`, `days`, `reason`, `approval`, `user`) "
-                . "VALUES (:employee_id, :start, :end, :days, :reason, :approval, :user)";
+        $query = "INSERT INTO absence (`employee_id`, `start`, `end`, `days`, `reason`, `comment`, `approval`, `user`) "
+                . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :approval, :user)";
         $result = database_wrapper::instance()->run($query, array(
             'employee_id' => $employee_id,
             'start' => $start_date_string,
             'end' => $end_date_string,
             'days' => $days,
             'reason' => $reason,
+            'comment' => $comment,
             'approval' => $approval,
             'user' => $_SESSION['user_name']
         ));
@@ -245,10 +247,11 @@ function build_absence_year($year) {
                 $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
                         . $workforce->List_of_employees[$Absence['employee_id']]->last_name . "\n"
-                        . $Absence['reason'] . "\n"
+                        . pdr_gettext($Absence['reason']) . "\n"
+                        . $Absence['comment'] . "\n"
                         . gettext("from") . " " . strftime('%x', strtotime($Absence['start'])) . "\n"
                         . gettext("to") . " " . strftime('%x', strtotime($Absence['end'])) . "\n"
-                        . gettext($Absence['approval']) . "";
+                        . pdr_gettext($Absence['approval']) . "";
 
                 $absent_employees_containers .= "<span "
                         . "class='absent_employee_container " . $workforce->List_of_employees[$employee_id]->profession . " " . $Absence['approval'] . "' "
@@ -376,10 +379,11 @@ function build_absence_month($year, $month_number) {
                 $Absence = absence::get_absence_data_specific($date_sql, $employee_id);
                 $absence_title_text = ""
                         . $workforce->List_of_employees[$Absence['employee_id']]->last_name . "\n"
-                        . $Absence['reason'] . "\n"
+                        . pdr_gettext($Absence['reason']) . "\n"
+                        . $Absence['comment'] . "\n"
                         . gettext("from") . " " . strftime('%x', strtotime($Absence['start'])) . "\n"
                         . gettext("to") . " " . strftime('%x', strtotime($Absence['end'])) . "\n"
-                        . gettext($Absence['approval']) . "";
+                        . pdr_gettext($Absence['approval']) . "";
 
                 $absent_employees_containers .= "<span "
                         . "class='absent_employee_container " . $workforce->List_of_employees[$employee_id]->profession . " " . $Absence['approval'] . "' "
