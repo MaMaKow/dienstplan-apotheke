@@ -150,7 +150,7 @@ class roster_image_bar_plot {
         $svg_text .= $this->draw_image_dienstplan_add_axis_labeling();
         $svg_text .= "</svg>\n";
         $svg_text .= "<script>$javascript_variables</script>";
-        $svg_text .= "<script src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "drag-and-drop.js' ></script>";
+        $svg_text .= "<script src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/js/drag-and-drop.js'></script>";
         return $svg_text;
     }
 
