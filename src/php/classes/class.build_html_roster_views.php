@@ -51,7 +51,7 @@ abstract class build_html_roster_views {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($Absentees as $employee_id => $reason) {
-            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . $reason . ")<br>";
+            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . pdr_gettext($reason) . ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -347,7 +347,7 @@ abstract class build_html_roster_views {
             foreach (array_keys($Roster) as $date_unix) {
                 $date_sql = date('Y-m-d', $date_unix);
                 if (!isset($Roster[$date_unix][$table_row_iterator]) or NULL === $Roster[$date_unix][$table_row_iterator]->employee_id) {
-                    $table_html .= "<td></td>\n";
+                    $table_html .= "<td><!--No more data in roster--></td>\n";
                     continue;
                 }
                 $roster_object = $Roster[$date_unix][$table_row_iterator];
@@ -356,8 +356,8 @@ abstract class build_html_roster_views {
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
                 $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
-                if ("approved" !== $approval and false !== $config['hide_disapproved']) {
-                    $table_html .= "<td></td>";
+                if ("approved" !== $approval and false != $config['hide_disapproved']) {
+                    $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
                 }
                 $table_html .= "<td>";
@@ -460,12 +460,11 @@ abstract class build_html_roster_views {
             $date_sql = date('Y-m-d', $date_unix);
             $holiday = holidays::is_holiday($date_unix);
             $Absentees = absence::read_absentees_from_database($date_sql);
-            /*
-             * TODO: This list has to be carfully chosen:
-             * Also there should be a SET in the database.
+            /**
+             * @var $List_of_non_respected_absence_reasons
+             * @see absence::$List_of_absence_reasons for a full list of absence reasons (paid and unpaid)
              */
-            $List_of_respected_absence_reasons = array('Krank', 'Krank mit Kind', 'Vacation', 'Freistellung', 'Elternzeit', 'Urlaub', 'Fortbildung', 'Resturlaub', 'Sonderurlaub', 'Kur');
-            $List_of_non_respected_absence_reasons = array('Freistellung_unbezahlt', 'Fortbildung_unbezahlt', 'Überstunden Abbau');
+            $List_of_non_respected_absence_reasons = array('unpaid leave of absence');
 
             /* Substract days, which are holidays: */
             /*
@@ -480,7 +479,7 @@ abstract class build_html_roster_views {
             }
             /* Substract days, which are respected absence_days: */
             foreach ($Absentees as $employee_id => $reason) {
-                if (in_array($reason, $List_of_respected_absence_reasons) and FALSE === $holiday and date('N', $date_unix) < 6) {
+                if (!in_array($reason, $List_of_non_respected_absence_reasons) and FALSE === $holiday and date('N', $date_unix) < 6) {
                     $Working_hours_week_should[$employee_id] -= $workforce->List_of_employees[$employee_id]->working_week_hours / 5;
                 }
             }

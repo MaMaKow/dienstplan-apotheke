@@ -91,8 +91,6 @@ foreach ($Principle_employee_roster as $Principle_employee_roster_day_array) {
 }
 echo "Wochenstunden ";
 ksort($Stunden);
-$i = 1;
-$j = 1; //Zahler für den Stunden-Array (wir wollen nach je x Elementen einen Umbruch)
 foreach ($Stunden as $mitarbeiter => $stunden) {
     echo array_sum($stunden);
     echo ' / ';

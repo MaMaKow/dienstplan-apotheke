@@ -34,16 +34,49 @@ if (running_on_windows()) {
 }
 //$locale = $locale . ".UTF-8";
 //putenv("LC_ALL=$locale");
-putenv("LANGUAGE=$locale");
-putenv("LANG=$locale");
+$results = putenv("LANGUAGE=$locale");
+if (!$results) {
+    print_debug_variable('putenv failed');
+}
+$results = putenv("LANG=$locale");
+if (!$results) {
+    print_debug_variable('putenv failed');
+}
 //setlocale(LC_ALL, $locale);
-setlocale(LC_MESSAGES, $locale);
+$results = setlocale(LC_MESSAGES, $locale, $locale . ".UTF-8");
+if (!$results) {
+    print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+}
 $results = setlocale(LC_COLLATE, $locale, $locale . ".UTF-8");
 if (!$results) {
-    exit('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+    print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
 }
-//TODO: Remove the following line:
-bindtextdomain("messages", "./locale/nocache"); //This is only for debugging
-bindtextdomain("messages", "./locale");
-textdomain("messages");
-bind_textdomain_codeset("messages", 'UTF-8');
+$results = bindtextdomain("messages", PDR_FILE_SYSTEM_APPLICATION_PATH . "locale");
+if (!$results) {
+    print_debug_variable('bindtextdomain failed: maybe the file does not exist');
+}
+$results = textdomain("messages");
+if (!$results) {
+    print_debug_variable('textdomain failed');
+}
+$results = bind_textdomain_codeset("messages", 'UTF-8');
+if (!$results) {
+    print_debug_variable('bind_textdomain_codeset failed');
+}
+
+/**
+ * gettext function that does return empty strings if empty strings are inserted
+ *
+ * There is a known bug in gettext:
+ * When an empty string is used for msgid, the functions may return a nonempty string.
+ * As a result gettext returns the headers from .mo files if the message parameter is set to empty.
+ *
+ * @var string english input string
+ * @return string localized string
+ */
+function pdr_gettext($text) {
+    if (empty($text))
+        return "";
+    else
+        return gettext($text);
+}

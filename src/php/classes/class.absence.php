@@ -76,9 +76,9 @@ class absence {
         $html_text = "<select id='$html_id' form='$html_form' class='absence_reason_input_select' name='reason'>\n";
         foreach (absence::$List_of_absence_reasons as $reason) {
             if ($reason == $reason_specified) {
-                $html_text .= "<option value='$reason' selected>" . gettext($reason) . "</option>\n";
+                $html_text .= "<option value='$reason' selected>" . pdr_gettext($reason) . "</option>\n";
             } else {
-                $html_text .= "<option value='$reason'>" . gettext($reason) . "</option>\n";
+                $html_text .= "<option value='$reason'>" . pdr_gettext($reason) . "</option>\n";
             }
         }
         $html_text .= "</select>\n";
@@ -89,9 +89,9 @@ class absence {
         $html_text = "<select id='$html_id' form='$html_form' class='absence_approval_input_select' name='approval'>\n";
         foreach (absence::$List_of_approval_states as $approval) {
             if ($approval == $approval_specified) {
-                $html_text .= "<option value='$approval' selected>" . gettext($approval) . "</option>\n";
+                $html_text .= "<option value='$approval' selected>" . pdr_gettext($approval) . "</option>\n";
             } else {
-                $html_text .= "<option value='$approval'>" . gettext($approval) . "</option>\n";
+                $html_text .= "<option value='$approval'>" . pdr_gettext($approval) . "</option>\n";
             }
         }
         $html_text .= "</select>\n";
@@ -137,6 +137,7 @@ class absence {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Absence['employee_id'] = $row->employee_id;
             $Absence['reason'] = $row->reason;
+            $Absence['comment'] = $row->comment;
             $Absence['start'] = $row->start;
             $Absence['end'] = $row->end;
             $Absence['approval'] = $row->approval;
@@ -180,13 +181,14 @@ class absence {
                 and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)
                 and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
                 and $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING)
+                and $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING)
                 and $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING)
         ) {
-            self::write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $approval);
+            self::write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $comment, $approval);
         }
     }
 
-    private static function write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $approval = 'approved') {
+    private static function write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $comment = NULL, $approval = 'approved') {
         if ($employee_id === FALSE) {
             return FALSE;
         }
@@ -197,8 +199,8 @@ class absence {
             database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start_old));
         }
         $sql_query = "INSERT INTO `absence` "
-                . "(employee_id, start, end, days, reason, user, approval) "
-                . "VALUES (:employee_id, :start, :end, :days, :reason, :user, :approval)";
+                . "(employee_id, start, end, days, reason, comment, user, approval) "
+                . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :user, :approval)";
         try {
             $result = database_wrapper::instance()->run($sql_query, array(
                 'employee_id' => $employee_id,
@@ -206,6 +208,7 @@ class absence {
                 'end' => $ende,
                 'days' => $days,
                 'reason' => $reason,
+                'comment' => $comment,
                 'user' => $_SESSION['user_name'],
                 'approval' => $approval
             ));
