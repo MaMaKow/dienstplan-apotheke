@@ -1,22 +1,23 @@
 <?php
 
 /**
- * *    Copyright (C) 2017  Dr. Martin Mandelkow
- * *
- * *    This program is free software: you can redistribute it and/or modify
- * *    **it under the terms of the GNU Affero General Public License as published by
- * *    the Free Software Foundation, either version 3 of the License, or
- * *    (at your option) any later version.
- * *
- * *    This program is distributed in the hope that it will be useful,
- * *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- * *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * *    GNU Affero General Public License for more details.
- * *
- * *    You should have received a copy of the GNU Affero General Public License
- * *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * */
-/*
+ *     Copyright (C) 2017  Dr. Martin Mandelkow
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Affero General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Affero General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Affero General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * This class holds all necessary functions for the installation of PDR.
  *
  */
@@ -41,12 +42,10 @@ class install {
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         session_start();
         session_regenerate_id();
-        //TODO: activate the following check again:
-        //if ($this->config_exists_in_file()) {
-        if (FALSE) {
+        if ($this->config_exists_in_file()) {
             $this->Error_message[] = gettext("There already is a configuration file."); //Nobody will ever read this.
             echo $this->build_error_message_div();
-            header("Location: ../../configure-in.php");
+            header("Location: ../pages/configuration.php");
             die();
         }
         $this->read_config_from_session();
@@ -56,10 +55,9 @@ class install {
         $this->write_config_to_session();
     }
 
-    /*
+    /**
      * Connect to the given database
      */
-
     private function connect_to_database() {
         $database_connect_string = $this->Config["database_management_system"] . ":";
         $database_connect_string .= "host=" . $this->Config["database_host"] . ";";
@@ -191,7 +189,7 @@ class install {
         $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@localhost");
         if ("localhost" !== $this->Config["database_host"]) {
             /*
-             * Allow access from any remote.
+             * Allow access from any remote (@%).
              * TODO: Should we place a warning to the administrator?
              */
             $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@%");
@@ -199,7 +197,7 @@ class install {
     }
 
     public function setup_mysql_database_tables() {
-//private function setup_mysql_database_tables() {
+//  private function setup_mysql_database_tables() {
         $this->connect_to_database();
         $sql_files = glob($this->pdr_file_system_application_path . "src/sql/*.sql");
         foreach ($sql_files as $sql_file_name) {
