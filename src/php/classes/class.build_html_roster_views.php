@@ -51,7 +51,7 @@ abstract class build_html_roster_views {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($Absentees as $employee_id => $reason) {
-            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . $reason . ")<br>";
+            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . pdr_gettext($reason) . ")<br>";
         }
         $text .= "</td>\n";
         return $text;

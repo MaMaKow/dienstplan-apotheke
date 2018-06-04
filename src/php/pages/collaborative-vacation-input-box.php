@@ -26,6 +26,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $filters = array(
         'employee_id' => FILTER_SANITIZE_NUMBER_INT,
         'reason' => FILTER_SANITIZE_STRING,
+        'comment' => FILTER_SANITIZE_STRING,
         'start' => FILTER_SANITIZE_STRING,
         'end' => FILTER_SANITIZE_STRING,
         'approval' => FILTER_SANITIZE_STRING,
@@ -87,6 +88,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
 <p><?= gettext("Start") ?><br><input type="date" id="input_box_form_start_date" name="start_date" value="<?= $Absence_details['start'] ?>"></p>
 <p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>"></p>
 <p><?= gettext("Reason") ?><br><?= absence::build_reason_input_select($Absence_details['reason'], NULL, 'input_box_form') ?></p>
+<p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $Absence_details['comment'] ?>"></p>
 <?php
 if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {
     //TODO: Remove all occurences of "disapprove" and change them to "deny".
