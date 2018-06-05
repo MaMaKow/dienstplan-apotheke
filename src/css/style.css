@@ -493,6 +493,7 @@ nav#nav_tiles{
     */
     display: table;
     margin: auto;
+    margin-top: 2em;
 }
 nav#nav_tiles ul#navigation_tiles {
     list-style-type: none;
