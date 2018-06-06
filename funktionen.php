@@ -59,84 +59,6 @@ function calculate_percentile($arr, $percentile) {
     return $median;
 }
 
-/**
- *
- * @global array $Mandanten_mitarbeiter
- * @param array $Dienstplan
- * @return int
- */
-function calculate_VKcount($Dienstplan) {
-    global $Mandanten_mitarbeiter;
-    foreach ($Dienstplan as $key => $Dienstplantag) {
-        if (isset($Dienstplantag['VK'])) {
-            $Plan_anzahl[] = (count($Dienstplantag['VK']));
-        } else {
-            $Plan_anzahl[] = 0;
-        }
-    }
-    $plan_anzahl = max($Plan_anzahl); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
-    $VKcount = max($plan_anzahl + 1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-    return $VKcount;
-}
-
-/**
- *
- * @param mixed $data
- * @return mixed
- */
-function sanitize_user_input($data) {
-    $clean_data = htmlspecialchars(stripslashes(trim($data)));
-    return $clean_data;
-}
-
-/**
- *
- * @param array $Dienstplan
- * @return array A list of tie points where the number of employees might change.
- */
-function calculate_changing_times($Dienstplan) {
-    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'], $Dienstplan[0]['Dienstende'], $Dienstplan[0]['Mittagsbeginn'], $Dienstplan[0]['Mittagsende']);
-//    $Changing_times = array_merge_recursive($Dienstplan[0]['Dienstbeginn'],[--Beginn--] ,$Dienstplan[0]['Dienstende'],[--Ende--], $Dienstplan[0]['Mittagsbeginn'],[--Beginn--], $Dienstplan[0]['Mittagsende']);
-//    echo "<pre>\$Changing_times:"; var_export($Changing_times); echo "</pre>\n";//die;
-    sort($Changing_times);
-    $Unique_changing_times = array_unique($Changing_times);
-    //Remove empty and null values from the array:
-    $Clean_changing_times = array_filter($Unique_changing_times, 'strlen');
-    //echo "<pre>\$Clean_changing_times:"; var_export($Clean_changing_times); echo "</pre>\n";die;
-
-    return $Clean_changing_times;
-}
-
-function hex2rgb($hexstring) {
-    $hex = str_replace("#", "", $hexstring);
-
-    if (strlen($hex) == 3) {
-        $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
-        $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
-        $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-    } else {
-        $r = hexdec(substr($hex, 0, 2));
-        $g = hexdec(substr($hex, 2, 2));
-        $b = hexdec(substr($hex, 4, 2));
-    }
-    $rgb = array($r, $g, $b);
-    return implode(",", $rgb); // returns the rgb values separated by commas
-    //return $rgb; // returns an array with the rgb values
-}
-
-function null_from_post_to_mysql($value) {
-    if ('' === $value) {
-        /*
-         * Changed during the change to PDO
-         * TODO: Move this into the database_wrapper?
-         * return 'NULL';
-         */
-        return NULL;
-    } else {
-        return $value;
-    }
-}
-
 function print_debug_variable($variable) {
     /*
      * Enhanced with https://stackoverflow.com/a/19788805/2323627
@@ -184,32 +106,4 @@ function running_on_windows() {
         return true;
     }
     return false;
-}
-
-/**
- * Returns the localized name of the month correctly on Windows and *nix
- *
- * On windows systems the function strftime() will not use utf8 encoding.
- * It ignores setlocale().
- *
- * @param int $date_unix unix time.
- * @return string $month_name month name.
- */
-function get_utf8_month_name($date_unix) {
-    $month_name = strftime("%B", $date_unix);
-    if (running_on_windows()) {
-        return utf8_encode($month_name);
-    }
-    return $month_name;
-}
-
-/*
- * This function will check if a given string represents a valid date.
- *
- * @param $date_string string any string that is supposed to represent a date.
- * @return bool validity of the date.
- */
-
-function is_valid_date($date_string) {
-    return (bool) strtotime($date_string);
 }

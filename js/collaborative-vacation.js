@@ -17,12 +17,9 @@
 
 
 "use strict";
-var http_server_application_path = get_http_server_application_path();
 function remove_form_div_on_escape(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    //console.log("remove_form_div_on_escape");
     evt = evt || window.event;
-    //window.highlight_event = evt;
     input_box_data_div.highlight_event = evt;
     if (evt.keyCode === 27) {
         remove_form_div();
@@ -30,13 +27,10 @@ function remove_form_div_on_escape(evt) {
 }
 function remove_form_div() {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    //console.log("remove_form_div");
     var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
         //Reset the global variables:
-        //delete window.highlight_absence_create_intermediate_date_unix;
         delete input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix;
-        //delete window.highlight_absence_create_from_date_unix;
         delete input_box_data_div.dataset.highlight_absence_create_from_date_unix;
         //Remove the formatting from the last selection:
         draw_style_highlight_absence_create();
@@ -46,35 +40,27 @@ function remove_form_div() {
 }
 
 function highlight_absence_create_start(evt) {
-    //console.log("highlight_absence_create_start");
     var input_box_data_div = document.getElementById('input_box_data_div');
     var evt = evt || window.event;
-    //window.highlight_event = evt;
     input_box_data_div.highlight_event = evt;
     var x = evt.clientX;
     var y = evt.clientY;
-    //console.log(evt);
     var element_mouse_is_over = document.elementFromPoint(x, y);
     if ("input_box_div" === element_mouse_is_over.id) {
         /*
          * The form div is already/still there.
          * There is nothing to do here:
          */
-        //console.log("The form div is already/still there.");
         return false;
     }
     var date_unix_from = element_mouse_is_over.dataset.date_unix || element_mouse_is_over.parentNode.dataset.date_unix;
     if (!date_unix_from) {
-        //console.log("date_unix_from is missing");
         /*
-         console.log(date_unix_from);
-         console.log(element_mouse_is_over);
-         console.log(element_mouse_is_over.parentNode);
+         * date_unix_from is missing
          */
         return false;
     }
     var date_sql_from = element_mouse_is_over.dataset.date_sql || element_mouse_is_over.parentNode.dataset.date_sql;
-    //window.highlight_absence_create_from_date_unix = date_unix_from;
     input_box_data_div.dataset.highlight_absence_create_from_date_unix = date_unix_from;
     input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix = date_unix_from;
     /*
@@ -83,19 +69,9 @@ function highlight_absence_create_start(evt) {
      */
     input_box_data_div.dataset.date_range_min = date_unix_from;
     input_box_data_div.dataset.date_range_max = date_unix_from;
-    //console.log("input_box_data_div in highlight_absence_create_start");
-    //console.log(input_box_data_div);
 
-    //window.highlight_absence_create_from_date_sql = date_sql_from;
     input_box_data_div.dataset.highlight_absence_create_from_date_sql = date_sql_from;
     element_mouse_is_over.classList.add("highlight");
-    //element_mouse_is_over.style.background = "linear-gradient(180deg, #00ABE7 0, #0081AF 100%), #B4B4B4";
-    /*
-     delete window.highlight_absence_create_intermediate_date_unix;
-     //delete input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix;
-     delete window.highlight_absence_create_to_date_unix;
-
-     */
     delete input_box_data_div.dataset.highlight_absence_create_to_date_unix;
     draw_style_highlight_absence_create();
 }
@@ -104,10 +80,8 @@ function highlight_absence_create_intermediate(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
 
     evt = evt || window.event;
-    //window.highlight_event = evt;
     input_box_data_div.highlight_event = evt;
     if (detect_left_button_press(evt)) { //Only if the left mouse button is pressed down
-        //console.log("highlight_absence_create_intermediate");
         var x = evt.clientX;
         var y = evt.clientY;
         var element_mouse_is_over = document.elementFromPoint(x, y);
@@ -116,13 +90,11 @@ function highlight_absence_create_intermediate(evt) {
         } else if (element_mouse_is_over.parentNode.dataset.date_unix) {
             input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix = element_mouse_is_over.parentNode.dataset.date_unix;
         }
-        //window.highlight_absence_create_intermediate_date_unix = date_unix_intermediate;
         draw_style_highlight_absence_create();
     }
 }
 function draw_style_highlight_absence_create() {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    //console.log("draw_style_highlight_absence_create");
     var list_of_day_paragraphs = document.getElementsByClassName("day_paragraph");
     for (var i = 0; i < list_of_day_paragraphs.length; i++) {
         var date_unix_current = list_of_day_paragraphs[i].dataset.date_unix;
@@ -140,7 +112,6 @@ function draw_style_highlight_absence_create() {
 function highlight_absence_create_end(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
     evt = evt || window.event;
-    //window.highlight_event = evt;
     input_box_data_div.highlight_event = evt;
     var x = evt.clientX;
     var y = evt.clientY;
@@ -152,22 +123,18 @@ function highlight_absence_create_end(evt) {
          */
         return false;
     }
-    //console.log("highlight_absence_create_end");
-    //var date_sql_from = window.highlight_absence_create_from_date_sql;
     if (element_mouse_is_over.dataset.date_sql) {
         var date_sql_to = element_mouse_is_over.dataset.date_sql;
     } else if (element_mouse_is_over.parentNode.dataset.date_unix) {
         var date_sql_to = element_mouse_is_over.parentNode.dataset.date_sql;
     }
 
-    //window.highlight_absence_create_to_date_sql = date_sql_to;
     input_box_data_div.dataset.highlight_absence_create_to_date_sql = date_sql_to;
     insert_form_div("create");
 }
 
 function insert_form_div(edit_create) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    //console.log("insert_form_div");
     var evt = evt || window.event || input_box_data_div.highlight_event;
     var x = evt.clientX;
     var y = evt.clientY;
@@ -181,24 +148,9 @@ function insert_form_div(edit_create) {
         return false; //Do not remove and rebuild when clicking inside the form.
     }
     var div = document.createElement('div');
-    //console.log(document.body);
-    //element_mouse_is_over.appendChild(div);
     document.body.appendChild(div);
-    //var rect = element_mouse_is_over.getBoundingClientRect();
-    //div.style.left = rect.left;
-    //div.style.top = rect.top;
-    //div.style.position = 'absolute';
-    if ("create" === edit_create) {
-        //div.style.backgroundColor will be taken from the CSS file.
-    } else {
-        //div.style.backgroundColor will reflect the profession of the absent employee:
-        //TODO: This does not work anymore, as the div is not a child of the span anymore.
-        //div.style.backgroundColor = 'inherit';
-    }
     div.id = 'input_box_div';
     div.className = 'input_box_div';
-    //div.onmousedown = stop_click_propagation();
-    //div.onmouseup = stop_click_propagation();
     fill_input_box_from_prototype(element_mouse_is_over);
 
     //Add a handler to BODY to catch [Esc] for closing the div.
@@ -211,7 +163,6 @@ function insert_form_div(edit_create) {
 }
 
 function is_descendant(parent, child) {
-    //console.log("is_descendant");
     var node = child.parentNode;
     while (node !== null) {
         if (node === parent) {
@@ -232,8 +183,6 @@ function detect_left_button_press(evt) {
 
 function fill_input_box_from_prototype(element_mouse_is_over) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-
-
     /*
      * The employee_id is transfered to the php script collaborative-vacation-input-box.php via GET
      * It is necessary for the handling of session permissions.
@@ -253,39 +202,17 @@ function fill_input_box_from_prototype(element_mouse_is_over) {
         if (this.readyState === 4 && this.status === 200) {
             input_box_div.innerHTML = xmlhttp.responseText;
         }
-        //console.log(xmlhttp);
     };
     xmlhttp.open("GET", filename, true);
     xmlhttp.send();
 }
 
-function get_http_server_application_path() {
-    var javascript_folder_path_depth = -2;
-    /*
-     * This would be one way to get to the script path name:
-     console.log((new Error).stack.split(':')[1].split('//')[1]);
-     */
-    /*
-     * This is a way to get the script path name:
-     * TODO: The number -2 in slice(0, javascript_folder_path_depth) is dependent on the position of the js folder.
-     * var javascript_folder_path_depth = -2
-     * It might change in future versions.
-     * Make sure, that we have a test for this!
-     * Maybe call default.php in the PDR_HTTP_SERVER_APPLICATION_PATH_JS.
-     * It should be existing and give a result of "" (empty output) without any error.
-     */
-    var scripts = document.getElementsByTagName('script');
-    var script = scripts[scripts.length - 1].src;
-    var http_server_application_path = script.split('/').slice(0, javascript_folder_path_depth).join('/') + '/';
-    return http_server_application_path;
-}
 
 /*
  * The div element inherits the onmousedown event from the td.
  * We do not want this behaviour.
  */
 function stop_click_propagation(evt) {
-    //console.log("stop_click_propagation");
     var evt = evt || window.event;
     if (evt.stopPropagation) {
         evt.stopPropagation();
@@ -293,6 +220,5 @@ function stop_click_propagation(evt) {
     if (evt.cancelBubble !== null) {
         evt.cancelBubble = true;
     }
-    //console.log("stopping mouse propagation")
     return false;
 }

@@ -58,7 +58,6 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
         }
     }
 }
-
 /*
  * Setup if errors should be reported to the user, if to log them, and where:
  */

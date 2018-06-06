@@ -53,8 +53,8 @@ abstract class human_resource_management {
             $Worker["goods_receipt"] = filter_input(INPUT_POST, "goods_receipt", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0; //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
             $Worker["compounding"] = filter_input(INPUT_POST, "compounding", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0; //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
             $Worker["branch"] = filter_input(INPUT_POST, "branch", FILTER_VALIDATE_INT);
-            $Worker["start_of_employment"] = null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING));
-            $Worker["end_of_employment"] = null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING));
+            $Worker["start_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING));
+            $Worker["end_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING));
 
             $sql_query = "INSERT INTO `employees` (
         `id`, `first_name`, `last_name`, `profession`,
