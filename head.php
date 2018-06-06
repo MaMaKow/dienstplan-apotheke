@@ -17,28 +17,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <HTML lang='<?= strstr($config["language"], '_', TRUE) ?>'>
-    <HEAD<?php
-    if (!empty($navigator_language)) {
-        echo " lang=$navigator_language";
-    }
-    if (isset($config['application_name'])) {
-        $application_name = $config['application_name'];
-    } else {
-        $application_name = 'PDR';
-    }
-    ?>>
+    <HEAD lang="<?= $config["language"] ?>">
         <META charset=UTF-8>
-        <TITLE><?= $application_name ?></TITLE>
+        <TITLE><?= $config['application_name'] ?></TITLE>
+        <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/translations.json" ></SCRIPT>
         <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/javascript.js" ></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/datepicker.css" />
         <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/datepicker.js"></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/style.css" media="all">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/print.css" media="print">
-        <?php
-        /* The following two files are relevant only to collaborative-vacation-*.php
-         * TODO: Maybe we should load them only where necessary.
-         */
-        ?>
         <SCRIPT type="text/javascript" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>js/collaborative-vacation.js" ></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>css/collaborative-vacation.css" media="all">
     </HEAD>

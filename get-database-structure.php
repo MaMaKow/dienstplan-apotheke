@@ -53,7 +53,7 @@ function write_new_table_data() {
                 $file_name = $table_name;
             }
             echo "Writing file: " . $file_name . "<br>\n";
-            $file_name = 'src/sql/' . $file_name . '.sql';
+            $file_name = PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/' . $file_name . '.sql';
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
             $New_table_files[] = $file_name;
             if (!file_put_contents($file_name, $table_structure_create)) {
@@ -77,7 +77,7 @@ function write_new_trigger_data() {
             $trigger_structure_create = $row['SQL Original Statement'];
             $file_name = iconv("UTF-8", "ISO-8859-1", $trigger_name); //This is necessary for Microsoft Windows to recognise special chars.
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
-            $file_name = 'src/sql/' . $file_name . '.sql';
+            $file_name = PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/trigger.' . $file_name . '.sql';
             $New_table_files[] = $file_name;
             if (!file_put_contents($file_name, $trigger_structure_create)) {
                 return FALSE;
@@ -87,10 +87,9 @@ function write_new_trigger_data() {
     return TRUE;
 }
 
-if (write_new_table_data() and write_new_trigger_data() and delete_old_table_data()) {
+if (write_new_trigger_data() and write_new_table_data() and delete_old_table_data()) {
     echo "<p>New sql table structure files have been written.</p>";
 } else {
     echo "<p>Error while writing sql table structure files.</p>";
 }
-//TODO: Triggers should also be saved.
 //Have another look into: https://www.slideshare.net/jonoxer/selfhealing-databases-managing-schema-updates-in-the-field/18-Missing_column_Record_schema_changes

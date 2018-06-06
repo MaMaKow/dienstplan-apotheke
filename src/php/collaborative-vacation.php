@@ -470,3 +470,20 @@ function get_classes_of_day_paragraph($current_week_day_number, $is_holiday, $da
     $html_class_list = implode(' ', $Paragraph_class);
     return $html_class_list;
 }
+
+/**
+ * Returns the localized name of the month correctly on Windows and *nix
+ *
+ * On windows systems the function strftime() will not use utf8 encoding.
+ * It ignores setlocale().
+ *
+ * @param int $date_unix unix time.
+ * @return string $month_name month name.
+ */
+function get_utf8_month_name($date_unix) {
+    $month_name = strftime("%B", $date_unix);
+    if (running_on_windows()) {
+        return utf8_encode($month_name);
+    }
+    return $month_name;
+}

@@ -18,51 +18,7 @@
  */
 
 
-if (isset($config["language"])) {
-    $locale = $config["language"];
-} else {
-    $locale = "de_DE";
-}
-if (running_on_windows()) {
-    /*
-     * Windows accepts the locale string as en-GB while linux accepts en_GB.
-     * These lines replace the underscore _ by the dash - and vice versa.
-     */
-    $locale = preg_replace('~([a-z]{2,3})_([A-Z]{2,3})~', '\1-\2', $locale);
-} else {
-    $locale = preg_replace('~([a-z]{2,3})-([A-Z]{2,3})~', '\1_\2', $locale);
-}
-//$locale = $locale . ".UTF-8";
-//putenv("LC_ALL=$locale");
-$results = putenv("LANGUAGE=$locale");
-if (!$results) {
-    print_debug_variable('putenv failed');
-}
-$results = putenv("LANG=$locale");
-if (!$results) {
-    print_debug_variable('putenv failed');
-}
-//setlocale(LC_ALL, $locale);
-$results = setlocale(LC_MESSAGES, $locale, $locale . ".UTF-8");
-if (!$results) {
-    print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
-}
-$results = setlocale(LC_COLLATE, $locale, $locale . ".UTF-8");
-if (!$results) {
-    print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
-}
-$results = bindtextdomain("messages", PDR_FILE_SYSTEM_APPLICATION_PATH . "locale");
-if (!$results) {
-    print_debug_variable('bindtextdomain failed: maybe the file does not exist');
-}
-$results = textdomain("messages");
-if (!$results) {
-    print_debug_variable('textdomain failed');
-}
-$results = bind_textdomain_codeset("messages", 'UTF-8');
-if (!$results) {
-    print_debug_variable('bind_textdomain_codeset failed');
-}
+initialize_gettext($config["language"]);
 
 /**
  * gettext function that does return empty strings if empty strings are inserted
@@ -79,4 +35,48 @@ function pdr_gettext($text) {
         return "";
     else
         return gettext($text);
+}
+
+/**
+ *  public static
+ */
+function initialize_gettext($locale) {
+    if (running_on_windows()) {
+        /*
+         * Windows accepts the locale string as en-GB while linux accepts en_GB.
+         * These lines replace the underscore _ by the dash - and vice versa.
+         */
+        $locale = preg_replace('~([a-z]{2,3})_([A-Z]{2,3})~', '\1-\2', $locale);
+    } else {
+        $locale = preg_replace('~([a-z]{2,3})-([A-Z]{2,3})~', '\1_\2', $locale);
+    }
+    $results = putenv("LANGUAGE=$locale");
+    if (!$results) {
+        print_debug_variable('putenv failed');
+    }
+    $results = putenv("LANG=$locale");
+    if (!$results) {
+        print_debug_variable('putenv failed');
+    }
+//setlocale(LC_ALL, $locale);
+    $results = setlocale(LC_MESSAGES, $locale, $locale . ".UTF-8");
+    if (!$results) {
+        print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+    }
+    $results = setlocale(LC_COLLATE, $locale, $locale . ".UTF-8");
+    if (!$results) {
+        print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+    }
+    $results = bindtextdomain("messages", PDR_FILE_SYSTEM_APPLICATION_PATH . "locale");
+    if (!$results) {
+        print_debug_variable('bindtextdomain failed: maybe the file does not exist');
+    }
+    $results = textdomain("messages");
+    if (!$results) {
+        print_debug_variable('textdomain failed');
+    }
+    $results = bind_textdomain_codeset("messages", 'UTF-8');
+    if (!$results) {
+        print_debug_variable('bind_textdomain_codeset failed');
+    }
 }
