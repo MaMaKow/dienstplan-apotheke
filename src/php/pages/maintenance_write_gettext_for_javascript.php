@@ -36,7 +36,13 @@ foreach ($Localization_folders as $localization_folder) {
     $localization = basename($localization_folder);
     initialize_gettext($localization);
     foreach ($Strings_to_translate as $string_to_translate) {
-        $Translations[$localization][$string_to_translate] = pdr_gettext($string_to_translate);
+        $translated_string = pdr_gettext($string_to_translate);
+        if ($translated_string !== $string_to_translate) {
+            /*
+             * The string only gets inserted, if a translation is existent.
+             */
+            $Translations[$localization][$string_to_translate] = $translated_string;
+        }
     }
 }
 
