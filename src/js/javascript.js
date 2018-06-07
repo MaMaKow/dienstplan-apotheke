@@ -4,6 +4,7 @@ function gettext(string_to_translate) {
     var locale = document.getElementsByTagName("head")[0].lang;
     var translated_string = pdr_translations[locale][string_to_translate];
     if (translated_string) {
+        console.log('"' + string_to_translate + '" found in "' + locale + '": ' + translated_string);
         return translated_string;
     } else {
         console.log('"' + string_to_translate + '" could not be translated into "' + locale + '". See existing translations below:');
