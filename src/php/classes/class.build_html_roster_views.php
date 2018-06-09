@@ -117,7 +117,7 @@ abstract class build_html_roster_views {
          * The emplty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name)) {
+        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name) or !isset($roster_employee_id)) {
             foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
                 if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
                     $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
