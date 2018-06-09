@@ -1,4 +1,46 @@
 "use strict";
+var http_server_application_path = get_http_server_application_path();
+function gettext(string_to_translate) {
+    var locale = document.getElementsByTagName("head")[0].lang;
+    var translated_string = pdr_translations[locale][string_to_translate];
+    if (translated_string) {
+        console.log('"' + string_to_translate + '" found in "' + locale + '": ' + translated_string);
+        return translated_string;
+    } else {
+        console.log('"' + string_to_translate + '" could not be translated into "' + locale + '". See existing translations below:');
+        console.log(pdr_translations);
+        query_webserver_without_response(http_server_application_path + "src/php/pages/maintenance_write_gettext_for_javascript.php");
+        return string_to_translate;
+    }
+}
+function get_http_server_application_path() {
+    var javascript_folder_path_depth = -3;
+    /*
+     * This would be one way to get to the script path name:
+     console.log((new Error).stack.split(':')[1].split('//')[1]);
+     */
+    /*
+     * This is a way to get the script path name:
+     * TODO: The number -2 in slice(0, javascript_folder_path_depth) is dependent on the position of the js folder.
+     * var javascript_folder_path_depth = -2
+     * It might change in future versions.
+     * Make sure, that we have a test for this!
+     * Maybe call default.php in the PDR_HTTP_SERVER_APPLICATION_PATH_JS.
+     * It should be existing and give a result of "" (empty output) without any error.
+     */
+    var scripts = document.getElementsByTagName('script');
+    var script = scripts[scripts.length - 1].src;
+    var http_server_application_path = script.split('/').slice(0, javascript_folder_path_depth).join('/') + '/';
+    return http_server_application_path;
+}
+
+function query_webserver_without_response(url) {
+    var xml_http_request = new XMLHttpRequest();
+    xml_http_request.open("GET", url, true);
+    xml_http_request.send();
+
+}
+
 //This function is called by grundplan-vk-in.php
 function unhide_mittag() {
     var mittags_input = document.getElementsByClassName("mittags_input");
@@ -29,13 +71,9 @@ function rehide_mittag() {
 function confirmDelete(link)
 {
 //TODO: Do we need the argument for this function?
-    var r = confirm("Diesen Datensatz wirklich löschen?");
+//TODO: Build a list of translated strings as an array.
+    var r = confirm(gettext("Really delete this data set?"));
     return r;
-}
-//This function is called by abwesenheit-in.php
-function leavePage()
-{
-    window.location.replace("https://www.google.de"); //Wechselt automatisch heraus aus der Eingabemaske.
 }
 //This function is called by abwesenheit-in.php
 function updateTage()
@@ -74,7 +112,7 @@ function checkUpdateTage()
     var ende = new Date(ende_Id.value);
     if (beginn > ende) {
         warning_message_tr_Id.style.display = "table-row";
-        warning_message_td_Id.innerHTML = "Das Ende liegt vor dem Startdatum!";
+        warning_message_td_Id.innerHTML = gettext("The end date is before the start date.");
         //alert('Das Ende liegt vor dem Startdatum');
     } else {
         warning_message_tr_Id.style.display = "none";
@@ -261,54 +299,7 @@ function cancelEdit(beginn) {
     return false;
 }
 
-function gettext(string_to_translate, object, callback_function) {
-    var filename = get_http_server_application_path() + '/src/php/gettext.php?string_to_translate=' + string_to_translate;
-    var xml_http_request = new XMLHttpRequest();
-
-    /*
-     * Default values:
-     */
-    if (undefined === callback_function) {
-        callback_function = set_value;
-    }
-    /*
-     * Input error handling:
-     */
-    if (typeof object !== "object") {
-        console.log("Error:" + object + " is not an object.");
-        return false;
-    }
-    if (typeof callback_function === "function") {
-        xml_http_request.callback = callback_function; // add a callback to the xml_http_request
-    } else {
-        console.log("Error:" + callback_function + " is not a function.");
-        return false;
-    }
-
-    xml_http_request.onreadystatechange = function ()
-    {
-        //target found and request complete
-        if (this.status === 200 && this.readyState === 4) {
-            //send result to the callback function
-            this.callback(object, this.responseText);
-        } else if (this.readyState === 4) {
-            console.log("Error while translating " + string_to_translate + " Status " + xml_http_request.status);
-            this.callback(object, string_to_translate);
-        }
-    };
-    xml_http_request.open("GET", filename, true);
-    xml_http_request.send();
-}
-//callback function specific for gettext
-function set_value(object, value)
-{
-    object.value = value;
-}
-
-
-
-
-/*
+/**
  * Clear all data from a html FORM element
  * This function is used by branch-management.php
  */

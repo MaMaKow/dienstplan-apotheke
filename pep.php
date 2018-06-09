@@ -26,6 +26,16 @@ require_once 'default.php';
 set_time_limit(0); //Do not stop execution even if we take a LONG time to finish.
 ignore_user_abort(true);
 
+/**
+ * This function will check if a given string represents a valid date.
+ *
+ * @param $date_string string any string that is supposed to represent a date.
+ * @return bool validity of the date.
+ */
+function is_valid_date($date_string) {
+    return (bool) strtotime($date_string);
+}
+
 function read_file_write_db($filename) {
     echo 'Working on input file.<br>\n';
     $handle = fopen($filename, "r");
