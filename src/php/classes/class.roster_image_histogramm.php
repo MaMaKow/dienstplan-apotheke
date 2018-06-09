@@ -20,7 +20,7 @@
 abstract class roster_image_histogramm {
 
     private static function draw_image_dienstplan_add_Expectation($outer_margin_x, $outer_margin_y, $width_factor, $height_factor, $start_time, $canvas_height, $Expectation) {
-        $red = hex2rgb('#FF0000');
+        $red = self::hex2rgb('#FF0000');
         $x_start = $outer_margin_x / $width_factor;
         $y_start = $outer_margin_y / $height_factor * -1;
 
@@ -99,7 +99,7 @@ abstract class roster_image_histogramm {
             $canvas_text .= "ctx.lineTo($x_pos_line_end, $y_pos_line_start);\n";
             $canvas_text .= "ctx.lineTo($x_pos_line_end, $y_pos_line_end);\n";
         }
-        $green = hex2rgb('#73AC22');
+        $green = self::hex2rgb('#73AC22');
         $canvas_text .= "ctx.strokeStyle = 'rgba($green, 0.5)';";
         $canvas_text .= "ctx.stroke();\n";
         $canvas_text .= "ctx.closePath();\n";
@@ -214,4 +214,22 @@ abstract class roster_image_histogramm {
       }
       }
      */
+
+    private static function hex2rgb($hexstring) {
+        $hex = str_replace("#", "", $hexstring);
+
+        if (strlen($hex) == 3) {
+            $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
+            $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
+            $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
+        } else {
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+        }
+        $rgb = array($r, $g, $b);
+        return implode(",", $rgb); // returns the rgb values separated by commas
+        //return $rgb; // returns an array with the rgb values
+    }
+
 }

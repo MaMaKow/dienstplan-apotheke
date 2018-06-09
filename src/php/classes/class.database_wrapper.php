@@ -287,4 +287,12 @@ class database_wrapper {
         }
     }
 
+    public static function null_from_post_to_mysql($value) {
+        if ('' === $value) {
+            return NULL;
+        } else {
+            return $value;
+        }
+    }
+
 }

@@ -327,7 +327,9 @@ abstract class roster {
         }
         sort($Changing_times);
         $Unique_changing_times = array_unique($Changing_times);
-        //Remove empty and null values from the array:
+        /*
+         * Remove empty and null values from the array:
+         */
         $Clean_changing_times = array_filter($Unique_changing_times, 'strlen');
         return $Clean_changing_times;
     }

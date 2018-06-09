@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-06-04 13:40+0100\n"
-"PO-Revision-Date: 2018-06-04 13:49+0100\n"
+"POT-Creation-Date: 2018-06-06 22:20+0100\n"
+"PO-Revision-Date: 2018-06-06 22:20+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian-ux31a@martin-mandelkow."
 "de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
@@ -11,7 +11,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.10\n"
-"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-Basepath: /home/martin/ownCloud/documents/Arbeit privat/dienstplan-"
+"apotheke\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -80,7 +81,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:216
+#: src/php/classes/class.absence.php:219
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -129,13 +130,13 @@ msgstr "iCalendar Datei"
 
 #: src/php/classes/class.build_html_navigation_elements.php:150
 #: src/php/classes/class.build_html_navigation_elements.php:153
-#: src/php/pages/absence-edit.php:118 src/php/pages/branch-management.php:158
-#: src/php/pages/collaborative-vacation-input-box.php:108
+#: src/php/pages/absence-edit.php:138 src/php/pages/branch-management.php:158
+#: src/php/pages/collaborative-vacation-input-box.php:110
 msgid "Save"
 msgstr "Speichern"
 
 #: src/php/classes/class.build_html_navigation_elements.php:167
-#: src/php/pages/collaborative-vacation-input-box.php:94
+#: src/php/pages/collaborative-vacation-input-box.php:96
 msgid "Approve"
 msgstr "Genehmigen"
 
@@ -150,8 +151,8 @@ msgstr "Abwesende"
 
 #: src/php/classes/class.build_html_roster_views.php:83
 #: src/php/classes/class.build_html_roster_views.php:101
-#: src/php/collaborative-vacation.php:250
-#: src/php/collaborative-vacation.php:381
+#: src/php/collaborative-vacation.php:253
+#: src/php/collaborative-vacation.php:385
 msgid "to"
 msgstr "bis"
 
@@ -163,6 +164,8 @@ msgstr "Pause"
 
 #: src/php/classes/class.build_html_roster_views.php:160
 #: src/php/classes/class.build_html_roster_views.php:301
+#: src/php/pages/absence-edit.php:120
+#: src/php/pages/collaborative-vacation-input-box.php:91
 msgid "Comment"
 msgstr "Kommentar"
 
@@ -319,12 +322,12 @@ msgstr "diese Adresse"
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/collaborative-vacation.php:249
-#: src/php/collaborative-vacation.php:380
+#: src/php/collaborative-vacation.php:252
+#: src/php/collaborative-vacation.php:384
 msgid "from"
 msgstr "von"
 
-#: src/php/collaborative-vacation.php:434 src/php/pages/attendance-list.php:95
+#: src/php/collaborative-vacation.php:438 src/php/pages/attendance-list.php:95
 #: src/php/pages/attendance-list.php:96
 msgid "emergency service"
 msgstr "Notdienst"
@@ -337,24 +340,28 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/absence-read.php:46
-#: src/php/pages/collaborative-vacation-input-box.php:87
+#: src/php/pages/absence-edit.php:120 src/php/pages/absence-read.php:46
+#: src/php/pages/collaborative-vacation-input-box.php:88
 msgid "Start"
 msgstr "Beginn"
 
-#: src/php/pages/absence-read.php:47
-#: src/php/pages/collaborative-vacation-input-box.php:88
+#: src/php/pages/absence-edit.php:120 src/php/pages/absence-read.php:47
+#: src/php/pages/collaborative-vacation-input-box.php:89
 msgid "End"
 msgstr "Ende"
 
-#: src/php/pages/absence-read.php:48
-#: src/php/pages/collaborative-vacation-input-box.php:89
+#: src/php/pages/absence-edit.php:120 src/php/pages/absence-read.php:48
+#: src/php/pages/collaborative-vacation-input-box.php:90
 msgid "Reason"
 msgstr "Grund"
 
-#: src/php/pages/absence-read.php:49
+#: src/php/pages/absence-edit.php:120 src/php/pages/absence-read.php:49
 msgid "Days"
 msgstr "Tage"
+
+#: src/php/pages/absence-edit.php:120
+msgid "Approval"
+msgstr "Genehmigung"
 
 #: src/php/pages/branch-management.php:114
 msgid ""
@@ -386,40 +393,40 @@ msgstr ""
 "Nutzen Sie \"Formular zurücksetzen\" um Daten für einen neuen Mandanten "
 "einzugeben"
 
-#: src/php/pages/collaborative-vacation-input-box.php:48
+#: src/php/pages/collaborative-vacation-input-box.php:49
 msgid "Vacation"
 msgstr "Urlaub"
 
-#: src/php/pages/collaborative-vacation-input-box.php:57
-#: src/php/pages/menu.php:42
+#: src/php/pages/collaborative-vacation-input-box.php:58
+#: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:42
 msgid "Employee"
 msgstr "Mitarbeiter"
 
-#: src/php/pages/collaborative-vacation-input-box.php:95
+#: src/php/pages/collaborative-vacation-input-box.php:97
 msgid "Pending"
 msgstr "Offen"
 
-#: src/php/pages/collaborative-vacation-input-box.php:96
+#: src/php/pages/collaborative-vacation-input-box.php:98
 msgid "Deny"
 msgstr "Ablehnen"
 
-#: src/php/pages/collaborative-vacation-input-box.php:110
+#: src/php/pages/collaborative-vacation-input-box.php:112
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/php/pages/collaborative-vacation-input-box.php:118
+#: src/php/pages/collaborative-vacation-input-box.php:120
 msgid "Close"
 msgstr "Schießen"
 
-#: src/php/pages/configuration.php:61
+#: src/php/pages/configuration.php:72
 msgid "Configuration"
 msgstr "Konfiguration"
 
-#: src/php/pages/configuration.php:68
+#: src/php/pages/configuration.php:79
 msgid "The installation script will create a new MySQL database."
 msgstr "Das Installations-Script wird eine neue MySQL Datenbank erstellen."
 
-#: src/php/pages/configuration.php:70
+#: src/php/pages/configuration.php:81
 msgid ""
 "All the information about the duty rosters will be stored password protected "
 "in this database."
@@ -427,31 +434,31 @@ msgstr ""
 "Alle Informationen zum Dienstplan werden Passwort-gesichert in dieser  "
 "Datenbank gespeichert."
 
-#: src/php/pages/configuration.php:75
+#: src/php/pages/configuration.php:86
 msgid "Application name"
 msgstr "Programm-Name"
 
-#: src/php/pages/configuration.php:80
+#: src/php/pages/configuration.php:91
 msgid "Database name"
 msgstr "Datenbank Name"
 
-#: src/php/pages/configuration.php:85
+#: src/php/pages/configuration.php:96
 msgid "Database user"
 msgstr "Datenbank Benutzer"
 
-#: src/php/pages/configuration.php:90
+#: src/php/pages/configuration.php:101
 msgid "Database user password"
 msgstr "Datenbank Benutzer Passwort"
 
-#: src/php/pages/configuration.php:106
+#: src/php/pages/configuration.php:117
 msgid "Repeat password"
 msgstr "Passwort wiederholen"
 
-#: src/php/pages/configuration.php:120
+#: src/php/pages/configuration.php:131
 msgid "Contact information"
 msgstr "Kontakt-Information"
 
-#: src/php/pages/configuration.php:122
+#: src/php/pages/configuration.php:133
 msgid ""
 "Viewing users will be invited to address wishes and suggestions to the "
 "editor of the duty rosters."
@@ -459,53 +466,53 @@ msgstr ""
 "Lesende Benutzer werden eingeladen, Wünsche und Vorschläge an den Ersteller "
 "des Dienstplanes zu richten."
 
-#: src/php/pages/configuration.php:127
+#: src/php/pages/configuration.php:138
 msgid "Email"
 msgstr "Email"
 
-#: src/php/pages/configuration.php:134
+#: src/php/pages/configuration.php:145
 msgid "Technical details"
 msgstr "Technische Details"
 
-#: src/php/pages/configuration.php:136
+#: src/php/pages/configuration.php:147
 msgid "Time values can be adapted to various local user's environments."
 msgstr ""
 "Darstellungen der Zeit können an verschiedene Benutzerumgebungen angepasst "
 "werden."
 
-#: src/php/pages/configuration.php:138
+#: src/php/pages/configuration.php:149
 msgid "They depend on language and cultural conventions."
 msgstr "Sie hängen von der Sprache und von kulturellen Konventionen ab."
 
-#: src/php/pages/configuration.php:143
+#: src/php/pages/configuration.php:154
 msgid "Locale"
 msgstr "Gebietsschema"
 
-#: src/php/pages/configuration.php:150
+#: src/php/pages/configuration.php:161
 msgid "Charset"
 msgstr "Zeichensatz"
 
-#: src/php/pages/configuration.php:157
+#: src/php/pages/configuration.php:168
 msgid "Debugging"
 msgstr "Fehlersuche"
 
-#: src/php/pages/configuration.php:158
+#: src/php/pages/configuration.php:169
 msgid "Which types of errors should be reported to the user?"
 msgstr "Welche Sorten von Fehlern sollen gemeldet werden?"
 
-#: src/php/pages/configuration.php:163
+#: src/php/pages/configuration.php:174
 msgid "Only fatal errors"
 msgstr "Nur fatale Fehler"
 
-#: src/php/pages/configuration.php:166
+#: src/php/pages/configuration.php:177
 msgid "Also warnings"
 msgstr "Auch Warnungen"
 
-#: src/php/pages/configuration.php:169
+#: src/php/pages/configuration.php:180
 msgid "And notices"
 msgstr "Und Hinweise"
 
-#: src/php/pages/configuration.php:172
+#: src/php/pages/configuration.php:183
 msgid "Everything"
 msgstr "Alle Fehler"
 
@@ -587,6 +594,22 @@ msgstr ""
 msgid "identifier"
 msgstr "Bezeichner"
 
+#: src/php/pages/menu-tiles.php:25
+msgid "Week"
+msgstr "Woche"
+
+#: src/php/pages/menu-tiles.php:28
+msgid "Day"
+msgstr "Tag"
+
+#: src/php/pages/menu-tiles.php:33 src/php/pages/menu.php:54
+msgid "Overtime"
+msgstr "Überstunden"
+
+#: src/php/pages/menu-tiles.php:36 src/php/pages/menu.php:67
+msgid "Absence"
+msgstr "Abwesenheit"
+
 #: src/php/pages/menu.php:11
 msgid "Weekly view"
 msgstr "Wochenansicht"
@@ -623,10 +646,6 @@ msgstr "Mitarbeiteransicht"
 msgid "Principle roster employee"
 msgstr "Grundplan Mitarbeiter"
 
-#: src/php/pages/menu.php:54
-msgid "Overtime"
-msgstr "Überstunden"
-
 #: src/php/pages/menu.php:59
 msgid "Overtime input"
 msgstr "Überstunden Eingabe"
@@ -634,10 +653,6 @@ msgstr "Überstunden Eingabe"
 #: src/php/pages/menu.php:62
 msgid "Overtime output"
 msgstr "Überstunden Ausgabe"
-
-#: src/php/pages/menu.php:67
-msgid "Absence"
-msgstr "Abwesenheit"
 
 #: src/php/pages/menu.php:72
 msgid "Absence input"
@@ -723,6 +738,14 @@ msgstr ""
 "Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
 "Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
 
+#: src/js/javascript.js:74
+msgid "Really delete this data set?"
+msgstr "Dieses Datum tatsächlich löschen?"
+
+#: src/js/javascript.js:114
+msgid "The end date is before the start date."
+msgstr "Das End-Datum ist vor dem Start-Datum."
+
 #~ msgid "The permission to create a roster is missing."
 #~ msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 
@@ -740,8 +763,3 @@ msgstr ""
 
 #~ msgid "From"
 #~ msgstr "Absender"
-
-#~ msgid "Day"
-#~ msgid_plural "Days"
-#~ msgstr[0] "Tag"
-#~ msgstr[1] "Tage"
