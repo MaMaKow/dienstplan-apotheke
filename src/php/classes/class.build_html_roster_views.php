@@ -117,7 +117,7 @@ abstract class build_html_roster_views {
          * The emplty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name) or !isset($roster_employee_id)) {
+        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name) or ! isset($roster_employee_id)) {
             foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
                 if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
                     $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
@@ -252,7 +252,7 @@ abstract class build_html_roster_views {
             foreach (array_keys($Roster) as $date_unix) {
                 $date_sql = date('Y-m-d', $date_unix);
                 if (!isset($Roster[$date_unix][$table_row_iterator]) or NULL === $Roster[$date_unix][$table_row_iterator]->employee_id) {
-                    $table_html .= "<td></td>\n";
+                    $table_html .= "<td><!--No more data in roster--></td>\n";
                     continue;
                 }
                 $roster_object = $Roster[$date_unix][$table_row_iterator];
@@ -261,8 +261,8 @@ abstract class build_html_roster_views {
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
                 $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
-                if ("approved" !== $approval and false !== $config['hide_disapproved']) {
-                    $table_html .= "<td></td>";
+                if ("approved" !== $approval and TRUE == $config['hide_disapproved']) {
+                    $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
                 }
                 $table_html .= "<td>";
