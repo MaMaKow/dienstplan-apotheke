@@ -45,7 +45,7 @@ if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST,
     user_input::old_write_approval_to_database($branch_id, $Roster);
 }
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql, NULL, array(roster::OPTION_CONTINUE_ON_ABSENCE));
-if (!isset($Roster[$date_unix]) and FALSE === $holiday) { //No plans on holidays.
+if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     if (!empty($Principle_roster)) {
         //Wir wollen eine automatische Dienstplanfindung beginnen.
         //Mal sehen, wie viel die Maschine selbst gestalten kann.

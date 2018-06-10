@@ -23,14 +23,14 @@
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 abstract class roster {
-    /*
+
+    const OPTION_CONTINUE_ON_ABSENCE = 'continue_on_absence';
+
+    /**
      * Read the roster data from the database.
      * @param $start_date_sql string A string representation in the form of 'Y-m-d'. The first day, that is to be read.
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
-
-    const OPTION_CONTINUE_ON_ABSENCE = 'continue_on_absence';
-
     public static function read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end = NULL) {
         /*
          * TODO: unify this with read_roster_from_database
@@ -402,6 +402,31 @@ abstract class roster {
         }
         ksort($Working_hours_week);
         return $Working_hours_week;
+    }
+
+    /**
+     * Test if a duty roster is completely empty
+     *
+     * @param array $Roster
+     * @return boolean
+     */
+    public static function is_empty($Roster) {
+        foreach ($Roster as $roster_array) {
+            foreach ($roster_array as $roster_object) {
+                if (NULL !== $roster_object->employee_id) {
+                    /*
+                     * In most cases we do not have to loop through the whole array.
+                     * If the first element is filled, then we allready stop searching.
+                     */
+                    return FALSE;
+                }
+            }
+        }
+        /*
+         * In those cases, where there is no actual roster data given, the array is mostly small.
+         * Therefore this should also not be a huge load of work.
+         */
+        return TRUE;
     }
 
 }
