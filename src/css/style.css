@@ -16,6 +16,9 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
         */
     }
 }
+html {
+    font-size: 16px;
+}
 body
 {
     background-color: #FEFEFF;
