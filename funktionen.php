@@ -84,6 +84,13 @@ function print_debug_variable($variable) {
      * Write a structured output to the standard error log:
      */
     error_log('in file: ' . $backtrace['file'] . "\n on line: " . $backtrace['line'] . "\n variable: " . $variable_name . "\n value:\n " . var_export($argument_list, TRUE));
+    /*
+     *  $result = error_log('in file: ' . $backtrace['file'] . "\n on line: " . $backtrace['line'] . "\n variable: " . $variable_name . "\n value:\n " . var_export($argument_list, TRUE));
+     *  if (FALSE === $result) {
+     *     echo "<H1>could not write to error_log</H1>";
+     * }
+     *
+     */
 }
 
 /*

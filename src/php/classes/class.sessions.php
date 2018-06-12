@@ -150,12 +150,13 @@ class sessions {
 
     public function exit_on_missing_privilege($privilege) {
         if (!$this->user_has_privilege($privilege)) {
-            $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
-            $Warning_messages[] = gettext("You are missing the necessary permission to use this page.");
-            $Warning_messages[] = gettext("Please contact the administrator if you feel this is an error.");
-            $Warning_messages[] = " (" . pdr_gettext(str_replace('_', ' ', $privilege))
-                    . " " . gettext("is required for") . " " . basename($request_uri) . ")";
-            echo build_warning_messages($Warning_messages, []);
+            $request_uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
+            $message = gettext('You are missing the necessary permission to use this page.')
+                    . ' ' . gettext('Please contact the administrator if you feel this is an error.')
+                    . ' ("' . pdr_gettext(str_replace('_', ' ', $privilege))
+                    . '" ' . gettext('is required for') . ' ' . basename($request_uri) . ')';
+            user_dialog::add_message($message, user_dialog::TYPE_ERROR);
+            echo user_dialog::build_messages();
             exit();
         }
     }
