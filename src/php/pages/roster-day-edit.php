@@ -94,7 +94,7 @@ $html_text .= "<div id=main-area>\n";
 
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
 $html_text .= build_warning_messages($Fehlermeldung, $Warnmeldung);
-
+$html_text .= user_dialog::build_messages();
 $html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
 $html_text .= "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
 $html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);

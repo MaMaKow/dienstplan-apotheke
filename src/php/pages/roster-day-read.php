@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once '../../../default.php';
-
 /*
  * @var $mandant int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
@@ -83,6 +82,7 @@ echo "<div id=main-area>\n";
 
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+echo user_dialog::build_messages();
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 echo "<div id=navigation_form_div class=no-print>\n";
 echo build_html_navigation_elements::build_button_day_backward($date_unix);

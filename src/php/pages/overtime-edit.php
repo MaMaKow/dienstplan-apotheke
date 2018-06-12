@@ -113,6 +113,7 @@ $session->exit_on_missing_privilege('create_overtime');
 
 echo "<div id=main-area>\n";
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+echo user_dialog::build_messages();
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_id' => $employee_id));
