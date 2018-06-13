@@ -47,6 +47,26 @@ class configuration {
         'contact_email' => '',
         'hide_disapproved' => FALSE, //We set it up to false in order not to disconcert new administrators.
     );
+    private static $List_of_configuration_parameter_types = array(
+        'application_name' => FILTER_SANITIZE_STRING,
+        'database_management_system' => FILTER_SANITIZE_STRING,
+        'database_host' => FILTER_SANITIZE_STRING,
+        'database_name' => FILTER_SANITIZE_STRING,
+        'database_port' => FILTER_SANITIZE_NUMBER_INT,
+        'database_user' => FILTER_SANITIZE_STRING,
+        'database_password' => FILTER_UNSAFE_RAW,
+        'session_secret' => FILTER_UNSAFE_RAW,
+        'error_reporting' => FILTER_SANITIZE_NUMBER_INT,
+        'display_errors' => FILTER_SANITIZE_NUMBER_INT,
+        'log_errors' => FILTER_SANITIZE_NUMBER_INT,
+        'error_log' => FILTER_SANITIZE_STRING,
+        'LC_TIME' => FILTER_SANITIZE_STRING,
+        'timezone' => FILTER_SANITIZE_STRING,
+        'language' => FILTER_SANITIZE_STRING,
+        'mb_internal_encoding' => FILTER_SANITIZE_STRING,
+        'contact_email' => FILTER_SANITIZE_EMAIL,
+        'hide_disapproved' => FILTER_SANITIZE_NUMBER_INT,
+    );
 
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
     const ERROR_WARNING = self::ERROR_ERROR | E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;

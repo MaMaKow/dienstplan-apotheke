@@ -117,10 +117,15 @@ abstract class roster_image_histogramm {
      * @return string The canvas element
      */
     public static function draw_image_histogramm($Roster, $branch_id, $Anwesende, $date_unix) {
-        $factor_employee = 6;
         if (empty($Anwesende)) {
             return FALSE;
         }
+        $Expectation = roster_image_histogramm::get_expectation($date_unix, $branch_id);
+        if (FALSE === $Expectation) {
+            return FALSE;
+        }
+
+        $factor_employee = 6;
         $canvas_width = 650;
         $canvas_height = 300;
 
@@ -138,8 +143,6 @@ abstract class roster_image_histogramm {
         $end_time = max($End_times) / 3600;
         $duration = $end_time - $start_time;
         $width_factor = ($canvas_width - ($outer_margin_x * 2)) / $duration;
-        $Expectation = roster_image_histogramm::get_expectation($date_unix, $branch_id);
-
         $max_work_load = max($Expectation);
         $max_workforce = max($Anwesende) * $factor_employee;
         $max_height = max($max_work_load, $max_workforce);

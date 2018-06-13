@@ -28,11 +28,11 @@ if (isset($_GET['register'])) {
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
     if (strlen($password) == 0) {
-        $Error_message[] = 'Bitte ein Passwort angeben<br>';
+        user_dialog::add_message(gettext('Please enter a password!'));
         $error = true;
     }
     if ($password != $password2) {
-        $Error_message[] = 'Die Passwörter müssen übereinstimmen';
+        user_dialog::add_message(gettext('The passwords must match!'));
         $error = true;
     }
 
@@ -43,7 +43,7 @@ if (isset($_GET['register'])) {
         $user = $result->fetch();
 
         if ($user !== false) {
-            $Error_message[] = 'Dieser Benutzername ist bereits vergeben<br>';
+            user_dialog::add_message(gettext('This username is already taken.'));
             $error = true;
         }
     }
@@ -86,6 +86,7 @@ if ($showFormular) {
         <?php
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
         echo build_warning_messages($Error_message, array());
+        echo user_dialog::build_messages();
         ?>
         <input type="submit" value="Abschicken">
     </form>
