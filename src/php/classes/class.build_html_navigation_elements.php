@@ -252,7 +252,7 @@ abstract class build_html_navigation_elements {
 
         $html = '';
         $html .= "<form id='week_day_form' method=post>";
-        $html .= "<select class='no-print large' name=weekday onchange=this.form.submit()>\n";
+        $html .= "<select class='large' name=weekday onchange=this.form.submit()>\n";
         foreach ($Weekday_names as $weekday_temp => $weekday_name) {
             if ($weekday_temp != $weekday_selected) {
                 $html .= "<option value='$weekday_temp'>$weekday_name</option>\n";
