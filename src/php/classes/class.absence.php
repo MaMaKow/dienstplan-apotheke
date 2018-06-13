@@ -219,7 +219,9 @@ class absence {
                 $Fehlermeldung[] = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
             } else {
                 print_debug_variable($exception);
-                die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+                $message = gettext('There was an error while querying the database.')
+                        . " " . gettext('Please see the error log for more details!');
+                die("<p>$message</p>");
             }
         }
     }

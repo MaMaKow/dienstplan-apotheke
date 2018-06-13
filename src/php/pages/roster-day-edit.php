@@ -45,7 +45,7 @@ if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST,
     user_input::old_write_approval_to_database($branch_id, $Roster);
 }
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql, NULL, array(roster::OPTION_CONTINUE_ON_ABSENCE));
-if (!isset($Roster[$date_unix]) and FALSE === $holiday) { //No plans on holidays.
+if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     if (!empty($Principle_roster)) {
         //Wir wollen eine automatische Dienstplanfindung beginnen.
         //Mal sehen, wie viel die Maschine selbst gestalten kann.
@@ -94,7 +94,7 @@ $html_text .= "<div id=main-area>\n";
 
 //Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
 $html_text .= build_warning_messages($Fehlermeldung, $Warnmeldung);
-
+$html_text .= user_dialog::build_messages();
 $html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
 $html_text .= "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
 $html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);

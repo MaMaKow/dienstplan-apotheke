@@ -89,7 +89,7 @@ echo absence::build_html_select_year($year);
                       $reason_short_string = mb_substr($Absentees[$employee_id], 0, 4);
                       }
                      */
-                    $reason_short_string = mb_substr($Absentees[$employee_id], 0, 4);
+                    $reason_short_string = mb_substr(gettext($Absentees[$employee_id]), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . $Absentees[$employee_id] . "'>" . $reason_short_string . "</TD>";
                 } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_id'] == $employee_id) {
                     $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);

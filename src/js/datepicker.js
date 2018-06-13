@@ -47,7 +47,8 @@ function getDateString(date) {
  * @returns {String}
  */
 function getMonthYearString(date) {
-    month_string = date.toLocaleString(navigator_language, {month: 'long'}); //"numeric", "2-digit", "narrow", "short" and "long"
+    navigator_language_hyphen = navigator_language.replace('_', '-');
+    month_string = date.toLocaleString(navigator_language_hyphen, {month: 'long'}); //"numeric", "2-digit", "narrow", "short" and "long"
     return month_string + ' ' + date.getFullYear();
     //console.log('getMonthYearString with date: ' + date);
     /*
