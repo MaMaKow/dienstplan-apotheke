@@ -109,6 +109,7 @@ class absence {
         /*
          * We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
          * TODO: Build an option to delete future vacations of people when leaving.
+         * DELETE `absence` FROM `absence` LEFT JOIN `employees` ON `employees`.`id`= `absence`.`employee_id` WHERE `employees`.`end_of_employment` < `absence`.`start`
          */
         if (!isset($workforce)) {
             throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
@@ -181,9 +182,13 @@ class absence {
                 and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)
                 and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
                 and $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING)
-                and $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING)
                 and $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING)
         ) {
+            /*
+             * $comment is allowed to be empty.
+             * Therefore it is not part of the if():
+             */
+            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
             self::write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $comment, $approval);
         }
     }

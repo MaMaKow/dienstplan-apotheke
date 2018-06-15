@@ -33,7 +33,6 @@ $pseudo_date_sql = date('Y-m-d', $pseudo_date_unix);
 $workforce = new workforce($pseudo_date_sql);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    //TODO: Test if this works:
     user_input::principle_roster_write_user_input_to_database($branch_id);
 }
 
@@ -74,7 +73,6 @@ $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 echo $html_text;
 if (!empty($Principle_roster)) {
-    //TODO: This does not work yet. PLease check Dienstplan equals Grundplan?
     echo "<div class=above-image>\n";
     echo "<div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);

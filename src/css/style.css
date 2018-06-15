@@ -634,7 +634,7 @@ div.overlay_top
  */
 
 /*
- * The following lines are added for abwesenheit-in.php
+ * The following lines are added for absence-edit.php
  * -->
  */
 
@@ -643,7 +643,7 @@ tr.absence_row[data-approval='approved'] {
 }
 /*
  * <--
- * The above lines are added for abwesenheit-in.php
+ * The above lines are added for absence-edit.php
  */
 
 /*
@@ -674,6 +674,13 @@ span.form_input_unit{
 }
 .nowrap{
     white-space: nowrap;
+}
+input[type=number] {
+    /*
+     * We are dealing with numbers only up to 60 in our input boxes.
+     * 2em are for the numbers, 1em is for the broswer styles and 1em is free space left.
+     */
+    width: 4em;
 }
 /*
  * <--
@@ -712,7 +719,7 @@ body div#week_hours_table_div p span {
     white-space: nowrap;
 }
 /*
- * abwesenheit-in.php
+ * absence-edit.php
  */
 select[id^='reason_in_'], select[id^='absence_in_']{
     display: none;
