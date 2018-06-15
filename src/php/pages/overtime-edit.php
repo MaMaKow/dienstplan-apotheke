@@ -43,13 +43,15 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC LIMIT 1";
+    /*
+     * TODO: Recalculate the whole branch if that is necessary.
+     * The user must be warned if a new result is inserted before the last one!
+     * It should be impossible to submit before-data if JavaScript (=Client-side warning) does not work (check on server side).
+     */
     $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
     $row = $result->fetch(PDO::FETCH_OBJ);
     $balance_old = $row->Saldo;
     $balance_new = $balance_old + $overtime_hours_new;
-    /*
-     * TODO: The following part has to be rewritten to database_wrapper::instance()->run
-     */
     $sql_query = "INSERT INTO `Stunden` (VK, Datum, Stunden, Saldo, Grund)
         VALUES (:employee_id, :date, :overtime_hours, :balance, :reason)";
     try {
@@ -67,7 +69,9 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
             $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
         } else {
             print_debug_variable($exception);
-            die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+            $message = gettext('There was an error while querying the database.')
+                    . " " . gettext('Please see the error log for more details!');
+            die("<p>$message</p>");
         }
     }
 }
@@ -85,7 +89,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<td>\n";
     $tablebody .= htmlentities($row->Stunden);
     $tablebody .= "\n</td>\n";
-    if ($i === 1) { //Get the last row. //TODO: Perhaps the server should calculate on it's own again afterwards.
+    if ($i === 1) { //Get the last row.
         $tablebody .= "<td id=saldoAlt>\n";
         $saldo = $row->Saldo;
     } else {

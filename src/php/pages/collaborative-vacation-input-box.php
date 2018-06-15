@@ -20,7 +20,9 @@ $workforce = new workforce();
 
 
 if (filter_has_var(INPUT_GET, 'absence_details_json')) {
-    //An existing entry will be edited
+    /*
+     * An existing entry will be edited:
+     */
     $absence_details_json_unsafe = filter_input(INPUT_GET, 'absence_details_json', FILTER_UNSAFE_RAW);
     $Absence_details_unsafe = json_decode($absence_details_json_unsafe, TRUE);
     $filters = array(
@@ -35,7 +37,9 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $Absence_details['mode'] = "edit";
     $employee_id = $Absence_details['employee_id'];
 } elseif (filter_has_var(INPUT_GET, 'highlight_details_json')) {
-    //A new entry will be created
+    /*
+     * A new entry will be created:
+     */
     $highlight_details_json_unsafe = filter_input(INPUT_GET, 'highlight_details_json', FILTER_UNSAFE_RAW);
     $Highlight_details_unsafe = json_decode($highlight_details_json_unsafe, TRUE);
     $filters = array(
@@ -46,9 +50,11 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
     $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
-    $Absence_details['reason'] = gettext("Vacation");
+    $Absence_details['employee_id'] = $employee_id;
+    $Absence_details['reason'] = gettext('Vacation');
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
+    $Absence_details['comment'] = '';
     $Absence_details['mode'] = "create";
 } else {
     $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);

@@ -21,24 +21,31 @@ function get_http_server_application_path() {
      */
     /*
      * This is a way to get the script path name:
-     * TODO: The number -2 in slice(0, javascript_folder_path_depth) is dependent on the position of the js folder.
-     * var javascript_folder_path_depth = -2
-     * It might change in future versions.
-     * Make sure, that we have a test for this!
-     * Maybe call default.php in the PDR_HTTP_SERVER_APPLICATION_PATH_JS.
-     * It should be existing and give a result of "" (empty output) without any error.
      */
     var scripts = document.getElementsByTagName('script');
     var script = scripts[scripts.length - 1].src;
     var http_server_application_path = script.split('/').slice(0, javascript_folder_path_depth).join('/') + '/';
+    test_http_server_application_path(http_server_application_path);
     return http_server_application_path;
+}
+function test_http_server_application_path(http_server_application_path) {
+    var xml_http_request = new XMLHttpRequest();
+    xml_http_request.onreadystatechange = function () {
+        if (this.status === 404) {
+            console.log(http_server_application_path + "default.php not found.");
+            console.log("There is a problem with get_http_server_application_path(). Please talk to a PDR developer");
+            console.log(this);
+            xml_http_request.onreadystatechange = "";
+        }
+    };
+    xml_http_request.open("GET", http_server_application_path + "default.php", true);
+    xml_http_request.send();
 }
 
 function query_webserver_without_response(url) {
     var xml_http_request = new XMLHttpRequest();
     xml_http_request.open("GET", url, true);
     xml_http_request.send();
-
 }
 
 //This function is called by grundplan-vk-in.php
@@ -51,8 +58,8 @@ function unhide_mittag() {
     for (var i = 0; i < mittags_ersatz.length; i++) {
         mittags_ersatz[i].style.display = "none";
     }
-    //document.getElementById("mittagspause").style.display = "inline";
-    //document.getElementById("mittagspause").type = "text";
+//document.getElementById("mittagspause").style.display = "inline";
+//document.getElementById("mittagspause").type = "text";
 }
 //This function is called by grundplan-vk-in.php
 function rehide_mittag() {
@@ -67,15 +74,13 @@ function rehide_mittag() {
 }
 
 
-//This function is called by abwesenheit-in.php
-function confirmDelete(link)
+//This function is called by absence-edit.php
+function confirmDelete()
 {
-//TODO: Do we need the argument for this function?
-//TODO: Build a list of translated strings as an array.
     var r = confirm(gettext("Really delete this data set?"));
     return r;
 }
-//This function is called by abwesenheit-in.php
+//This function is called by absence-edit.php
 function updateTage()
 {
 //Wir lesen die Objekte aus dem HTML code.
@@ -98,7 +103,7 @@ function updateTage()
     }
     tageId.innerHTML = count;
 }
-//This function is called by abwesenheit-in.php
+//This function is called by absence-edit.php
 function checkUpdateTage()
 {
 //Wir lesen die Objekte aus dem HTML code.
@@ -306,9 +311,7 @@ function cancelEdit(beginn) {
 function clear_form(form_id) {
     console.log(form_id);
     var elements = form_id.elements;
-
     form_id.reset();
-
     for (i = 0; i < elements.length; i++) {
 
         var field_type = elements[i].type.toLowerCase();
@@ -321,19 +324,16 @@ function clear_form(form_id) {
 
                 elements[i].defaultValue = "";
                 break;
-
             case "radio":
             case "checkbox":
                 if (elements[i].checked) {
                     elements[i].checked = false;
                 }
                 break;
-
             case "select-one":
             case "select-multi":
                 elements[i].selectedIndex = -1;
                 break;
-
             default:
                 break;
         }
