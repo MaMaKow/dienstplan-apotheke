@@ -402,6 +402,10 @@ button:hover{
     margin-bottom: 0.5em;
     background-color: #B4B4B4;
 }
+button:disabled, .btn-secondary:disabled {
+    filter: opacity(0.5);
+    box-shadow:  none;
+}
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Chrome/Safari/Opera */
@@ -559,7 +563,6 @@ nav ul#navigation_tiles li:hover a img.image_tiles{
     -ms-filter: brightness(0) invert(100%);
     -o-filter: brightness(0) invert(100%);
     filter: brightness(0) invert(100%);
-
 }
 nav ul li a img.image_tiles{
     height: 128px;
