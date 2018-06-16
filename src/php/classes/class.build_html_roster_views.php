@@ -240,7 +240,6 @@ abstract class build_html_roster_views {
         $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
         $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
         /*
-         * TODO: Maybe use the roster stored in the workforce->employee object instead
          * TODO: user_input::get_changed_roster_employee_id_list compares the full roster,
          * but we are only interested in finding changes in duty_start_int or duty_end_int
          * The same is true for self::build_roster_readonly_employee_table()
@@ -268,14 +267,7 @@ abstract class build_html_roster_views {
                 $table_html .= "<td>";
                 $zeile = "";
 
-                if (isset($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
-                    $emphasis_start = "<strong>"; //Significant emphasis
-                    $emphasis_end = "</strong>"; //Significant emphasis
-                } else {
-                    $emphasis_start = ""; //No emphasis
-                    $emphasis_end = ""; //No emphasis
-                }
-                $zeile .= "$emphasis_start<b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
+                $zeile .= "<b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlentities($roster_object->date_sql)
                         . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
                 if (isset($workforce->List_of_employees[$roster_object->employee_id]->last_name)) {
@@ -290,9 +282,9 @@ abstract class build_html_roster_views {
                 /*
                  * start and end of duty
                  */
-                $zeile .= htmlentities($roster_object->duty_start_sql);
+                $zeile .= self::build_roster_readonly_table_add_time($roster_object, 'duty_start_sql');
                 $zeile .= " - ";
-                $zeile .= htmlentities($roster_object->duty_end_sql);
+                $zeile .= self::build_roster_readonly_table_add_time($roster_object, 'duty_end_sql');
                 if (!empty($roster_object->comment)) {
                     /*
                      * In case, there is a comment available, add a hint in form of a single letter.
@@ -310,7 +302,6 @@ abstract class build_html_roster_views {
                     $zeile .= " - ";
                     $zeile .= htmlentities($roster_object->break_end_sql);
                 }
-                $zeile .= "$emphasis_end";
                 $table_html .= $zeile;
                 $table_html .= "</td>\n";
             }
@@ -319,6 +310,15 @@ abstract class build_html_roster_views {
         $table_html .= "</tbody>\n";
 
         return $table_html;
+    }
+
+    private static function build_roster_readonly_table_add_time($roster_object, $parameter) {
+        if (self::equals_principle_roster($roster_object, $parameter)) {
+            $html = htmlentities($roster_object->$parameter);
+        } else {
+            $html = "<strong>" . htmlentities($roster_object->$parameter) . "</strong>";
+        }
+        return $html;
     }
 
     public static function build_roster_readonly_employee_table($Roster, $branch_id) {
@@ -485,6 +485,21 @@ abstract class build_html_roster_views {
             }
         }
         return $Working_hours_week_should;
+    }
+
+    public static function equals_principle_roster($roster_object, $parameter) {
+        global $workforce;
+        $employee_id = $roster_object->employee_id;
+        $weekday = $roster_object->weekday;
+        if (!isset($workforce->List_of_employees[$employee_id]->Principle_roster[$weekday])) {
+            return FALSE;
+        }
+        foreach ($workforce->List_of_employees[$employee_id]->Principle_roster[$weekday] as $principle_roster_item) {
+            if ($principle_roster_item->$parameter == $roster_object->$parameter) {
+                return TRUE;
+            }
+        }
+        return FALSE;
     }
 
 }
