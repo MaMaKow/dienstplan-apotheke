@@ -274,6 +274,7 @@ abstract class build_html_navigation_elements {
     public static function get_weekday_names() {
         /*
          * TODO: Move this function to somewhere more general!
+         * It should go into the localization class, once that it exists.
          */
         for ($weekday = 1; $weekday <= 7; ++$weekday) {
             $pseudo_date = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
