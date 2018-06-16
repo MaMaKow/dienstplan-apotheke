@@ -155,28 +155,35 @@ abstract class build_html_navigation_elements {
         return $submit_button_img;
     }
 
-    public static function build_button_approval() {
-// TODO: The button should be inactive when the approval already was done.
+    public static function build_button_approval($approval) {
+        if ('approved' === $approval) {
+            $disabled = 'disabled';
+        } else {
+            $disabled = '';
+        }
         $submit_approval_button_img = "
         <form method=post class='inline_button_form'>
-                <button type='submit' class='btn-secondary no-print' value='approve' name='submit_approval'>
+                <button type='submit' class='btn-secondary no-print' value='approve' name='submit_approval' $disabled>
                 <i class='icon-grey'>
-                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png' class='button-image' alt='" . gettext("1 day forward") . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png' class='button-image' alt='" . gettext('Approve') . "' >
                 </i>
                 <br>
-                " . gettext("Approve") . "
+                " . gettext('Approve') . "
                 </button>
                 </form>
                 ";
         return $submit_approval_button_img;
     }
 
-    public static function build_button_disapproval() {
-
-
+    public static function build_button_disapproval($approval) {
+        if ('disapproved' === $approval) {
+            $disabled = 'disabled';
+        } else {
+            $disabled = '';
+        }
         $submit_disapproval_button_img = "
         <form method=post class='inline_button_form'>
-                <button type='submit' class='btn-secondary no-print' value='disapprove' name='submit_disapproval'>
+                <button type='submit' class='btn-secondary no-print' value='disapprove' name='submit_disapproval' $disabled>
                 <i class='icon-grey'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/disapprove.png' class='button-image' alt='" . gettext("Disapprove") . "' >
                 </i>

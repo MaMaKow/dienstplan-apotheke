@@ -105,8 +105,10 @@ $html_text .= build_html_navigation_elements::build_button_day_backward($date_un
 $html_text .= build_html_navigation_elements::build_button_day_forward($date_unix);
 $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 if ($session->user_has_privilege('approve_roster')) {
-    $html_text .= build_html_navigation_elements::build_button_approval();
-    $html_text .= build_html_navigation_elements::build_button_disapproval();
+    $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+
+    $html_text .= build_html_navigation_elements::build_button_approval($approval);
+    $html_text .= build_html_navigation_elements::build_button_disapproval($approval);
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
 $html_text .= "</div>\n";

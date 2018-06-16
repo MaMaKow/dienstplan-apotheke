@@ -397,7 +397,7 @@ abstract class build_html_roster_views {
         return $table_html;
     }
 
-    private static function get_approval_from_database($date_sql, $branch_id) {
+    public static function get_approval_from_database($date_sql, $branch_id) {
         /*
          * TODO: This might be better placed in some other class.
          */
