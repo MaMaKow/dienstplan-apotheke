@@ -24,7 +24,7 @@
  */
 abstract class examine_attendance {
 
-    public static function check_for_attendant_absentees($Roster, $datum, $Abwesende, &$Fehlermeldung) {
+    public static function check_for_attendant_absentees($Roster, $Abwesende) {
         if (array() === $Roster) {
             return FALSE;
         }
@@ -44,15 +44,16 @@ abstract class examine_attendance {
         }
         if (isset($Arbeitende_abwesende)) {
             foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
-                $Fehlermeldung[] = $workforce->List_of_employees[$arbeitender_abwesender]->last_name . " ist abwesend (" . $Abwesende[$arbeitender_abwesender] . ") und sollte nicht im Dienstplan stehen.";
+                $message = sprintf(gettext("%1s is absent (%2s) and should not be in the roster."), $workforce->List_of_employees[$arbeitender_abwesender]->last_name, pdr_gettext($Abwesende[$arbeitender_abwesender]));
+                user_dialog::add_message($message);
             }
         }
     }
 
-    public static function check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, &$Warnmeldung) {
+    public static function check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix) {
         $Roster_workers = array();
         $Principle_roster_workers = array();
-        global $workforce, $Mandanten_mitarbeiter;
+        global $workforce;
         foreach ($Principle_roster as $Principle_roster_day) {
             foreach ($Principle_roster_day as $principle_roster_object) {
                 $Principle_roster_workers[] = $principle_roster_object->employee_id;
@@ -63,27 +64,25 @@ abstract class examine_attendance {
                 $Roster_workers[] = $roster_object->employee_id;
             }
         }
-        //$Available_roster_workers = array_unique(array_merge(array_keys($Mandanten_mitarbeiter), $Principle_roster_workers)); //We combine the employees in the branch and the employees in the principle roster.
         $Mitarbeiter_differenz = array_diff($Principle_roster_workers, $Roster_workers);
         if (isset($Abwesende)) {
             $Mitarbeiter_differenz = array_diff($Mitarbeiter_differenz, array_keys($Abwesende));
         }
         if (!empty($Mitarbeiter_differenz)) {
-            $separator = "";
-            $fehler = "Es sind folgende Mitarbeiter nicht eingesetzt: <br>\n";
+            $message = gettext('The following employees are not scheduled:');
+            user_dialog::add_message($message, E_USER_WARNING);
             foreach ($Mitarbeiter_differenz as $arbeiter) {
                 foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
                     if ($arbeiter == $principle_roster_object->employee_id) {
                         $duty_start = $principle_roster_object->duty_start_sql;
                         $duty_end = $principle_roster_object->duty_end_sql;
-                        $fehler .= $separator . $workforce->List_of_employees[$arbeiter]->last_name;
-                        $fehler .= " ($duty_start - $duty_end)";
-                        $separator = ", <br>";
+                        $message = $workforce->List_of_employees[$arbeiter]->last_name;
+                        $message .= " ($duty_start - $duty_end)";
+                        user_dialog::add_message($message, E_USER_WARNING);
                         break;
                     }
                 }
             }
-            $Warnmeldung[] = $fehler;
         }
     }
 

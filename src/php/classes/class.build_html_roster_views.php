@@ -235,16 +235,6 @@ abstract class build_html_roster_views {
         $table_html .= "<tbody>";
 
         $max_employee_count = roster::calculate_max_employee_count($Roster);
-        $List_of_date_unix_in_roster = array_keys($Roster);
-        $date_sql_start = date('Y-m-d', min($List_of_date_unix_in_roster));
-        $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
-        $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
-        /*
-         * TODO: user_input::get_changed_roster_employee_id_list compares the full roster,
-         * but we are only interested in finding changes in duty_start_int or duty_end_int
-         * The same is true for self::build_roster_readonly_employee_table()
-         */
-        $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
             $table_html .= "<tr>\n";
@@ -411,17 +401,11 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $Options = NULL) {
-        global $workforce, $List_of_employee_working_week_hours, $Mandanten_mitarbeiter;
+        global $workforce, $List_of_employee_working_week_hours;
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
-        $week_hours_table_html .= "<H2>Wochenstunden</H2>\n";
+        $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
         $week_hours_table_html .= "<p>\n";
         foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
-            if (isset($Mandanten_mitarbeiter) and FALSE === array_key_exists($employee_id, $Mandanten_mitarbeiter)) {
-                /*
-                 * TODO: Make this an optional paramater.
-                 */
-                continue; /* Only employees who belong to the branch are shown. */
-            }
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
                 continue; /* Only the specified employees is shown. */
             }
@@ -452,12 +436,13 @@ abstract class build_html_roster_views {
     }
 
     public static function calculate_working_hours_week_should($Roster) {
-        global $Mandanten_mitarbeiter, $workforce;
+        global $workforce;
         foreach ($workforce->List_of_employees as $employee_object) {
             $Working_hours_week_should[$employee_object->employee_id] = $employee_object->working_week_hours;
         }
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
+            $weekday = date('N', $date_unix);
             $holiday = holidays::is_holiday($date_unix);
             $Absentees = absence::read_absentees_from_database($date_sql);
             /**
@@ -466,18 +451,20 @@ abstract class build_html_roster_views {
              */
             $List_of_non_respected_absence_reasons = array('unpaid leave of absence');
 
-            /* Substract days, which are holidays: */
             /*
-             * TODO: date('N', $date_unix) < 6 should be substituted for a call to the principle roster.
-             * It might be a good idea to save that roster in an employee_item object.
-             * That would make querying it much easier.
+             * Substract days, which are holidays:
              */
-            if (FALSE !== $holiday and date('N', $date_unix) < 6) {
+            if (FALSE !== $holiday) {
                 foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-                    $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / 5;
+                    if (!empty($employee_object->Principle_roster[$weekday])) {
+                        $number_of_working_days_per_week = count($employee_object->Principle_roster);
+                        $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / $number_of_working_days_per_week;
+                    }
                 }
             }
-            /* Substract days, which are respected absence_days: */
+            /*
+             * Substract days, which are respected absence_days:
+             */
             foreach ($Absentees as $employee_id => $reason) {
                 if (!in_array($reason, $List_of_non_respected_absence_reasons) and FALSE === $holiday and date('N', $date_unix) < 6) {
                     $Working_hours_week_should[$employee_id] -= $workforce->List_of_employees[$employee_id]->working_week_hours / 5;

@@ -120,9 +120,6 @@ class absence {
                 . "WHERE `start` <= :start "
                 . "AND `end` >= :end "
                 . "AND `employee_id` IN ($in_placeholder)"; //Employees, whose absence has started but not ended yet.
-        /*
-         * TODO: The above query does not discriminate between approved an non-approved vacations.
-         */
         $result = database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array('start' => $date_sql, 'end' => $date_sql)));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Absentees[$row->employee_id] = $row->reason;
@@ -220,8 +217,8 @@ class absence {
         } catch (Exception $exception) {
             $error_string = $exception->getMessage();
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
-                global $Fehlermeldung;
-                $Fehlermeldung[] = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+                user_dialog::add_message($message, E_USER_ERROR);
             } else {
                 print_debug_variable($exception);
                 $message = gettext('There was an error while querying the database.')
@@ -252,9 +249,9 @@ class absence {
                      * Holidays are not counted
                      * Also we inform the user about not counting those days.
                      */
-                    global $Feiertagsmeldung; //TODO: This might better be handled by a class for user information.
                     $date_string = strftime('%x', $date_unix);
-                    $Feiertagsmeldung[] = htmlentities("$holiday ($date_string)\n");
+                    $message = $date_string . " " . gettext('is a holiday') . " (" . $holiday . ") " . gettext('and will not be counted.');
+                    user_dialog::add_message($message, E_USER_NOTICE);
                 } else {
                     /*
                      * Only days which are neither a holiday nor a weekend are counted
@@ -298,7 +295,7 @@ class absence {
         $html_select_year .= "<form id='select_year' method=post>";
         $html_select_year .= "<select name=year onchange=this.form.submit()>";
         foreach ($Years as $year_number) {
-            $html_select_year .= "<option value=$year_number";
+            $html_select_year .= "<option value='$year_number'";
             if ($year_number == $current_year) {
                 $html_select_year .= " SELECTED ";
             }
@@ -315,7 +312,7 @@ class absence {
         $html_select_month .= "<form id='select_month' method=post>";
         $html_select_month .= "<select name=month_number onchange=this.form.submit()>";
         foreach ($Months as $month_number => $month_name) {
-            $html_select_month .= "<option value=$month_number";
+            $html_select_month .= "<option value='$month_number'";
             if ($month_number == $current_month) {
                 $html_select_month .= " SELECTED ";
             }

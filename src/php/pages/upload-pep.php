@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require "../../../default.php";
-$Fehlermeldung = array();
-$Warnmeldung = array();
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
@@ -30,21 +28,27 @@ if (filter_has_var(INPUT_POST, "submit")) {
     $file_type = pathinfo($upload_file_name, PATHINFO_EXTENSION);
 
     if ($file_type != "asy") {
-        // Allow certain file formats
-        $Fehlermeldung[] = "Sorry, only ASYS PEP files are allowed.";
+        /*
+         * Allow certain file formats
+         */
+        user_dialog::add_message(gettext('Sorry, only ASYS PEP files are allowed.'));
         $upload_ok = 0;
-    } elseif ($upload_ok == 0) {
-        // Check if $upload_ok is set to 0 by an error
-        $Fehlermeldung[] = "Sorry, your file was not uploaded.";
+    } elseif (0 == $upload_ok) {
+        /*
+         * Check if $upload_ok is set to 0 by an error
+         */
+        user_dialog::add_message(gettext('Sorry, your file was not uploaded.'));
         // if everything is ok, try to upload file
     } else {
         if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-            $Message[] = "The file " . htmlentities(basename($_FILES["fileToUpload"]["name"])) . " has been uploaded.";
-            $Message[] = "It will be processed in the background.";
+            $message = sprintf(gettext("The file %1s has been uploaded."), htmlentities(basename($_FILES["fileToUpload"]["name"])));
+            $message .= ' ' . gettext('It will be processed in the background.');
+            user_dialog::add_message($message, E_USER_NOTICE);
             echo "<input hidden type=text id=filename value=upload/" . htmlentities($_FILES["fileToUpload"]["name"]) . ">\n";
             echo "<input hidden type=text id=targetfilename value=" . htmlentities($target_file) . ">\n";
         } else {
-            $Fehlermeldung[] = "Sorry, there was an error uploading your file.<br>\n";
+            $message = gettext('Sorry, there was an error uploading your file');
+            user_dialog::add_message($message, E_USER_ERROR);
         }
     }
 }
@@ -52,16 +56,12 @@ if (filter_has_var(INPUT_POST, "submit")) {
 <p style=height:2em></p>
 <div id=main-area>
     <form action="upload-in.php" method="post" enctype="multipart/form-data">
-        Eine PEP-Datei zum Hochladen auswählen:<br>
+        <label for="fileToUpload">Eine PEP-Datei zum Hochladen auswählen:</label><br>
         <input type="file" name="fileToUpload" id="fileToUpload" onchange="reset_update_pep()"><br>
         <input type="submit" value="Upload" name="submit"><br>
     </form>
 </div>
 <?php
-//Hier beginnt die Fehlerausgabe. Es werden alle Fehler angezeigt, die wir in $Fehlermeldung gesammelt haben.
-
-
-echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo user_dialog::build_messages();
 
 echo "<p id=xmlhttpresult></p>\n";
@@ -72,26 +72,5 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 <script type="text/javascript">
     update_pep();
 </script>
-<!-- The following lines might be an alternative to using javascript with ajax.
-
-function do_post_request($url, $data, $optional_headers = null,$getresponse = false) {
-$params = array('http' => array(
-       'method' => 'POST',
-       'content' => $data
-    ));
-if ($optional_headers !== null) {
-$params['http']['header'] = $optional_headers;
-}
-$ctx = stream_context_create($params);
-$fp = @fopen($url, 'rb', false, $ctx);
-if (!$fp) {
-return false;
-}
-if ($getresponse){
-$response = stream_get_contents($fp);
-return $response;
-}
-return true;
-}-->
 </body>
 </html>

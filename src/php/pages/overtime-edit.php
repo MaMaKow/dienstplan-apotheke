@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-$Fehlermeldung = array();
-$Warnmeldung = array();
 $workforce = new workforce();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
@@ -65,8 +63,8 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
     } catch (Exception $exception) {
         $error_string = $exception->getMessage();
         if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
-            global $Fehlermeldung;
-            $Fehlermeldung[] = "<b>An diesem Datum existiert bereits ein Eintrag!</b>\n Die Daten wurden daher nicht in die Datenbank eingefügt.";
+            user_dialog::add_message(gettext('There is already an entry on this date.'), E_USER_ERROR);
+            user_dialog::add_message(gettext('The data was therefore not inserted in the database.'), E_USER_WARNING);
         } else {
             print_debug_variable($exception);
             $message = gettext('There was an error while querying the database.')
@@ -116,7 +114,6 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_overtime');
 
 echo "<div id=main-area>\n";
-echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo user_dialog::build_messages();
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);

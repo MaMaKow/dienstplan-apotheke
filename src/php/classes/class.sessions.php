@@ -155,7 +155,7 @@ class sessions {
                     . ' ' . gettext('Please contact the administrator if you feel this is an error.')
                     . ' ("' . pdr_gettext(str_replace('_', ' ', $privilege))
                     . '" ' . gettext('is required for') . ' ' . basename($request_uri) . ')';
-            user_dialog::add_message($message, user_dialog::TYPE_ERROR);
+            user_dialog::add_message($message, E_USER_ERROR);
             echo user_dialog::build_messages();
             exit();
         }

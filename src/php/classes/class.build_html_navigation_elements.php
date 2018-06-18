@@ -239,7 +239,7 @@ abstract class build_html_navigation_elements {
         $text .= "<div id=mandantenformular_div>\n";
         $text .= "<form id=mandantenformular method=post>\n";
         $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
-        $text .= "<select id=branch_form_select class='no-print large' name=mandant onchange=this.form.submit()>\n";
+        $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
             if ($branch_id != $current_branch_id) {
                 $text .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";

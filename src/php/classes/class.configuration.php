@@ -118,11 +118,9 @@ class configuration {
     /**
      * Get a list of supported encodings:
      *
+     * @return string HTML datalist of supported encodings
      */
     public static function build_supported_encodings_datalist() {
-        /*
-         *  TODO: is perhaps /usr/share/i18n/SUPPORTED better for supported encodings?
-         */
         $datalist_encodings = "<datalist id='encodings'>\n";
         $supported_encodings = mb_list_encodings();
         foreach ($supported_encodings as $key => $supported_encoding) {
@@ -135,6 +133,7 @@ class configuration {
     /**
      * Get a list of supported locales:
      *
+     * @return string HTML datalist of supported locales
      */
     public static function build_supported_locales_datalist() {
         $datalist_locales = "<datalist id='locales'>\n";
@@ -163,8 +162,7 @@ class configuration {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
-                        global $Fehlermeldung;
-                        $Fehlermeldung[] = 'Passwords do not match!';
+                        user_dialog::add_message(gettext('Passwords do not match!'));
                         $new_config[$key] = $config[$key];
                         continue;
                     }

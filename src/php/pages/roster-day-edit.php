@@ -49,7 +49,8 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     if (!empty($Principle_roster)) {
         //Wir wollen eine automatische Dienstplanfindung beginnen.
         //Mal sehen, wie viel die Maschine selbst gestalten kann.
-        $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
+        $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
+        user_dialog::add_message($message);
         $Roster = $Principle_roster;
     } elseif (6 == strftime('%u', $date_unix)) {
         try {
@@ -62,27 +63,23 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
 }
 if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
-    $examine_roster->check_for_overlap($date_sql, $Fehlermeldung);
-    $examine_roster->check_for_sufficient_employee_count($Fehlermeldung, 2);
-    $examine_roster->check_for_sufficient_goods_receipt_count($Warnmeldung);
-    $examine_roster->check_for_sufficient_qualified_pharmacist_count($Fehlermeldung);
+    $examine_roster->check_for_overlap($date_sql);
+    $examine_roster->check_for_sufficient_employee_count();
+    $examine_roster->check_for_sufficient_goods_receipt_count();
+    $examine_roster->check_for_sufficient_qualified_pharmacist_count();
+    examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix);
 }
+/*
+ * examine_attendance::check_for_attendant_absentees() should be done regardless of weekday and holiday:
+ */
+examine_attendance::check_for_attendant_absentees($Roster, $Abwesende);
 
 if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
-    $Warnmeldung[] = "An den Notdienst denken!";
+    $message = gettext('Beware the emergency service!');
+    user_dialog::add_message($message, E_USER_WARNING);
 }
 
-
-
-
-$VKmax = max(array_keys($workforce->List_of_employees));
-
-//Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
-examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, $Warnmeldung);
-examine_attendance::check_for_attendant_absentees($Roster, $date_sql, $Abwesende, $Fehlermeldung);
-
-
-
+//$VKmax = max(array_keys($workforce->List_of_employees));
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -92,11 +89,7 @@ $html_text = "";
 //Hier beginnt die Normale Ausgabe.
 $html_text .= "<div id=main-area>\n";
 
-//Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
-$html_text .= build_warning_messages($Fehlermeldung, $Warnmeldung);
-$html_text .= user_dialog::build_messages();
 $html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
-$html_text .= "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
 $html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 
@@ -113,6 +106,10 @@ if ($session->user_has_privilege('approve_roster')) {
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
 $html_text .= "</div>\n";
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
+/*
+ * Here we put the output of errors and warnings.
+ */
+$html_text .= user_dialog::build_messages();
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
@@ -164,6 +161,9 @@ $html_text .= "</form>\n";
 
 
 if (!empty($Roster)) {
+    if (!isset($examine_roster)) {
+        $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
+    }
     $html_text .= "<div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Roster);
     $html_text .= $roster_image_bar_plot->svg_string;

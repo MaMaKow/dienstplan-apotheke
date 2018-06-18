@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * TODO: insert license header in this file and every other file!
- */
-
 class examine_roster {
 
     public $Anwesende; //this will also be used by: roster_image_histogramm::draw_image_histogramm
@@ -39,7 +35,7 @@ class examine_roster {
         $this->Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
     }
 
-    public function check_for_overlap($date_sql, &$Error_message) {
+    public function check_for_overlap($date_sql) {
         global $List_of_branch_objects, $workforce;
         $sql_query = "SELECT `first`.`VK`,"
                 . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
@@ -55,28 +51,24 @@ class examine_roster {
 
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Error_message[] = "Konflikt bei Mitarbeiter " . $workforce->List_of_employees[$row->VK]->last_name . "<br>"
-                    . $row->first_start . " bis " . $row->first_end . " (" . $List_of_branch_objects[$row->first_branch]->short_name . ") "
-                    . "mit <br>" . $row->second_start . " bis " . $row->second_end . " (" . $List_of_branch_objects[$row->second_branch]->short_name . ")!";
+            $message = sprintf(gettext('Conflict at employee %1s <br> %2s to %3s (%4s) with %5s to %6s (%7s)'), $workforce->List_of_employees[$row->VK]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->short_name, $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->short_name
+            );
+            user_dialog::add_message($message, E_USER_ERROR);
         }
     }
 
-    public function check_for_sufficient_employee_count(&$Fehlermeldung, $minimum_number_of_employees = 2) {
-        /*
-         * TODO: Write a more general version of this, maybe?
-         * This might obsolete the function examine_roster::check_for_sufficient_goods_receipt_count
-         * There are different types of employees to check for.
-         * THere are different grades of severity.
-         *
-         */
+    public function check_for_sufficient_employee_count() {
         if (FALSE === $this->Anwesende) {
             return FALSE;
         }
+        $minimum_number_of_employees = 2;
         foreach ($this->Anwesende as $zeit => $anwesende) {
             if ($anwesende < $minimum_number_of_employees and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     //TODO: translate into english
-                    $Fehlermeldung[] = 'Um ' . roster_item::format_time_integer_to_string($zeit) . " Uhr sind weniger als $minimum_number_of_employees Mitarbeiter anwesend.";
+                    $message = sprintf(gettext('At %1s there are less than %2s employees present.'), roster_item::format_time_integer_to_string($zeit), $minimum_number_of_employees);
+                    user_dialog::add_message($message, E_USER_WARNING);
+
                     $attendant_error = true;
                 }
             } else {
@@ -85,7 +77,7 @@ class examine_roster {
         }
     }
 
-    public function check_for_sufficient_goods_receipt_count(&$Warning_message) {
+    public function check_for_sufficient_goods_receipt_count() {
         if (FALSE === $this->Wareneingang_Anwesende) {
             return FALSE;
         }
@@ -93,7 +85,8 @@ class examine_roster {
             // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($Opening_times['day_opening_end'])
             if ($anwesende_wareneingang === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $Warning_message[] = 'Um ' . roster_item::format_time_integer_to_string($zeit) . ' Uhr ist niemand für den Wareneingang anwesend.';
+                    $message = sprintf(gettext('At %1s there is no goods receipt employee present.'), roster_item::format_time_integer_to_string($zeit));
+                    user_dialog::add_message($message, E_USER_WARNING);
                     $attendant_error = true;
                 }
             } else {
@@ -102,14 +95,15 @@ class examine_roster {
         }
     }
 
-    public function check_for_sufficient_qualified_pharmacist_count(&$Error_message) {
+    public function check_for_sufficient_qualified_pharmacist_count() {
         if (FALSE === $this->Approbierten_anwesende) {
             return FALSE;
         }
         foreach ($this->Approbierten_anwesende as $zeit => $anwesende_approbierte) {
             if ($anwesende_approbierte === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $Error_message[] = sprintf(gettext('At %1s there is no authorized person present.'), roster_item::format_time_integer_to_string($zeit));
+                    $message = sprintf(gettext('At %1s there is no authorized person present.'), roster_item::format_time_integer_to_string($zeit));
+                    user_dialog::add_message($message);
                     $attendant_error = true;
                 }
             } else {
