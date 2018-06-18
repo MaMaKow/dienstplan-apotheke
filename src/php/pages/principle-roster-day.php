@@ -64,7 +64,7 @@ $max_employee_count = roster::calculate_max_employee_count($Principle_roster);
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
     foreach (array_keys($Principle_roster) as $day_iterator) {
-        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $pseudo_date_unix, $branch_id);
+        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
     }
     $html_text .= "</tr>\n";
 }
