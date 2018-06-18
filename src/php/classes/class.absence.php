@@ -204,7 +204,7 @@ class absence {
                 . "(employee_id, start, end, days, reason, comment, user, approval) "
                 . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :user, :approval)";
         try {
-            $result = database_wrapper::instance()->run($sql_query, array(
+            database_wrapper::instance()->run($sql_query, array(
                 'employee_id' => $employee_id,
                 'start' => $beginn,
                 'end' => $ende,
@@ -215,7 +215,6 @@ class absence {
                 'approval' => $approval
             ));
         } catch (Exception $exception) {
-            $error_string = $exception->getMessage();
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
                 $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
                 user_dialog::add_message($message, E_USER_ERROR);

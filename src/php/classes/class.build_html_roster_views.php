@@ -57,7 +57,7 @@ abstract class build_html_roster_views {
         return $text;
     }
 
-    public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $date_unix, $branch_id) {
+    public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id) {
         if (!isset($Roster[$day_iterator]) or ! isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
