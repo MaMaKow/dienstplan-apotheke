@@ -23,15 +23,11 @@ $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_
 $mandant = $branch_id;
 create_cookie('mandant', $branch_id, 30);
 
-$error_message_html = "";
 $overlay_message_html = "";
-$Fehlermeldung = array();
-$Warnmeldung = array();
 
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
 $date_unix = strtotime($date_sql);
-$datum = $date_sql;
 $date_sql_start = $date_sql;
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
 create_cookie('datum', $date_sql, 1);
@@ -131,9 +127,6 @@ $main_div_html .= $duty_roster_form_html;
 
 $main_div_html .= "</div>\n";
 
-$warning_message_html = build_warning_messages($Fehlermeldung, $Warnmeldung);
-
-echo $warning_message_html;
 echo user_dialog::build_messages();
 
 echo $main_div_html;

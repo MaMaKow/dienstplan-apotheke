@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-$Fehlermeldung = array();
-$Warnmeldung = array();
 $workforce = new workforce();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 30);
@@ -61,7 +59,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
      */
     $tablebody .= "<td><div id=comment_out_$row->start>$row->comment</div>";
     $html_id = "comment_in_$row->start";
-    $tablebody .= "<input id=comment_in_$row->start style='display: none;' type=text name='comment' value=$row->comment form='$html_form'> ";
+    $tablebody .= "<input id=comment_in_$row->start style='display: none;' type=text name='comment' value='$row->comment' form='$html_form'> ";
     $tablebody .= "</td>\n";
     /*
      * days
@@ -98,18 +96,7 @@ $session->exit_on_missing_privilege('create_absence');
 
 echo "<div id=main-area>\n";
 
-echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo user_dialog::build_messages();
-
-if (isset($Feiertagsmeldung)) {
-    echo "<div class=error_container>\n";
-    echo "<div class=warningmsg><H3>Die folgenden Feiertage werden nicht auf die Abwesenheit angerechnet:</H3>";
-    foreach ($Feiertagsmeldung as $holiday) {
-        echo "<p>" . $holiday . "</p>\n";
-    }
-    echo "</div>\n";
-    echo "</div>\n";
-}
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/absence-read.php', array('employee_id' => $employee_id));

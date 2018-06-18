@@ -695,7 +695,7 @@ input[type=number] {
  */
 div#navigation_elements{
     float: left;
-    clear: left;
+    clear: both;
 }
 .inline_button_form{
     display: inline;

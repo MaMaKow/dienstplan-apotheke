@@ -190,11 +190,9 @@ abstract class roster {
                     /*
                      * Absent employees will be excluded, if an actual roster is built.
                      */
-                    //TODO: This should be put somewhere else as a seperate function!
                     continue 1;
                 }
                 if (isset($workforce->List_of_employees) AND array_search($row->VK, array_keys($workforce->List_of_employees)) === false) {
-                    //$Fehlermeldung[]=$workforce->List_of_employees[$row->VK]->last_name." ist nicht angestellt.<br>\n";
                     continue 1;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
@@ -360,19 +358,16 @@ abstract class roster {
 
     /**
      *
-     * @global array $Mandanten_mitarbeiter
-     * @param array $Dienstplan
+     * @param array $Roster
      * @return int
      */
     public static function calculate_max_employee_count($Roster) {
         $Employee_count[] = 0;
-        //global $Mandanten_mitarbeiter;
         foreach ($Roster as $Roster_day_array) {
             $Employee_count[] = (count($Roster_day_array));
         }
-        $roster_employee_count = max($Employee_count); //Die Anzahl der Zeilen der Tabelle richtet sich nach dem Tag mit den meisten Einträgen.
-        //$max_employee_count = max($roster_employee_count + 1, count($Mandanten_mitarbeiter)); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-        $max_employee_count = $roster_employee_count + 1; //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
+        $roster_employee_count = max($Employee_count); //The number of rows is defined by the column (=day) with the most lines
+        $max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
         return $max_employee_count;
     }
 

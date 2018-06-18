@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
 
 function clean_up_after_password_change($employee_id) {
@@ -30,7 +29,7 @@ function lost_password_token_is_valid($employee_id, $token) {
     if (!empty($row->employee_id) and $employee_id === $row->employee_id) {
         return TRUE; //The form is shown
     } else {
-        user_dialog::add_message(gettext('Invalid token'), user_dialog::TYPE_ERROR);
+        user_dialog::add_message(gettext('Invalid token'), E_USER_ERROR);
         echo user_dialog::build_messages();
         return FALSE;
     }
