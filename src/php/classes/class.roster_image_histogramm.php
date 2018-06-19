@@ -212,7 +212,7 @@ abstract class roster_image_histogramm {
       if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) { //3 months
       $timeliness_warning_html = "<br><div class=warningmsg>Die PEP Information ist veraltet. <br>"
       . "Letzter Eintrag " . date('d.m.Y', strtotime($row->Datum)) . ". <br>"
-      . "Bitte neue PEP-Datei <a href=upload-in.php>hochladen</a>!</div><br>\n";
+      . "Bitte neue PEP-Datei <a href=upload-pep.php>hochladen</a>!</div><br>\n";
       return $timeliness_warning_html;
       }
       }

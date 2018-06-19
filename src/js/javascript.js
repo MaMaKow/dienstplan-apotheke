@@ -205,6 +205,10 @@ function compare_passwords() {
 
 }
 function update_pep() {
+    if (!document.getElementById("filename")) {
+        return 0;
+    }
+    console.log('update_pep');
     var filename = document.getElementById("filename").value;
     var targetfilename = document.getElementById("targetfilename").value;
 //    document.getElementById("xmlhttpresult").innerHTML = "<div class=warningmsg><p>working on: " + filename+"</p></div>";
@@ -217,12 +221,18 @@ function update_pep() {
         }
     };
     xml_http_request.open("GET", "pep.php?filename=" + targetfilename, true);
+    console.log('opening pep.php?filename=' + targetfilename);
     xml_http_request.send();
 }
 function reset_update_pep() {
-    document.getElementById("xmlhttpresult").innerHTML = "";
-    document.getElementById("javascriptmessage").innerHTML = "";
-    document.getElementById("phpscriptmessages").innerHTML = "";
+    console.log('reset_update_pep');
+    /*
+     document.getElementById("xmlhttpresult").innerHTML = "";
+     document.getElementById("javascriptmessage").innerHTML = "";
+     document.getElementById("phpscriptmessages").innerHTML = "";
+     */
+    console.log(document.getElementById("pep_upload_form"));
+    document.getElementById("pep_upload_form").submit();
 }
 
 function showEdit(beginn) {
