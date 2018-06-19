@@ -39,34 +39,38 @@ function is_valid_date($date_string) {
 function read_file_write_db($filename) {
     echo 'Working on input file.<br>\n';
     $handle = fopen($filename, "r");
-    if ($handle) {
-        while (($line = fgets($handle)) !== false) {
-            $hash = hash('sha265', $line); //The hash is stored binary in the database.
-            $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the
-            list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
-            if (!is_valid_date($date) OR ! is_valid_date($time) OR ! is_numeric($sales_count) OR ! is_numeric($branch)) {
-                continue;
-            }
-            $sql_date = date('Y-m-d', strtotime($date));
-            $sql_query = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)";
-            database_wrapper::instance()->run(array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
-        }
-        echo 'Finished processing.<br>';
-        fclose($handle);
-        if (unlink($filename)) { //delete the file
-            error_log('The input file was deleted.');
-            echo 'The input file was deleted.<br>';
-        } else {
-            error_log('Error while deleting input file!');
-            echo 'Error while deleting input file!<br>';
-        }
-    } else {
+    if (!$handle) {
         error_log(error_get_last());
         error_log('Error while opening input file!');
+        return FALSE;
+    }
+    while (($line = fgets($handle)) !== false) {
+        $hash = hash('sha265', $line); //The hash is stored binary in the database.
+        $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the
+        list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
+        unset($sales_value, $foo);
+        if (!is_valid_date($date) OR ! is_valid_date($time) OR ! is_numeric($sales_count) OR ! is_numeric($branch)) {
+            continue;
+        }
+        $sql_date = date('Y-m-d', strtotime($date));
+        $sql_query = "INSERT IGNORE INTO pep (hash, Datum, Zeit, Anzahl, Mandant) VALUES (:hash, :sql_date, :time, :sales_count, :branch)";
+        database_wrapper::instance()->run($sql_query, array('hash' => $hash, 'sql_date' => $sql_date, 'time' => $time, 'sales_count' => $sales_count, 'branch' => $branch));
+    }
+    echo 'Finished processing.<br>';
+    fclose($handle);
+    /*
+     * Delete the file:
+     */
+    if (unlink($filename)) {
+        error_log('The input file was deleted.');
+        echo 'The input file was deleted.<br>';
+    } else {
+        error_log('Error while deleting input file!');
+        echo 'Error while deleting input file!<br>';
     }
 }
 
-foreach (glob("upload/*_pep") as $filename) {
+foreach (glob(PDR_FILE_SYSTEM_APPLICATION_PATH . "upload/*_pep") as $filename) {
     error_log("pep.php is working on $filename");
     read_file_write_db($filename);
 }
@@ -102,8 +106,6 @@ foreach ($List_of_pep_branch_ids as $pep_branch_id) {
             WEEKDAY(Datum)
         ";
     database_wrapper::instance()->run($sql_query, array('pep_branch_id' => $pep_branch_id));
-
-
 
     $sql_query = "
     INSERT INTO `pep_month_day`
