@@ -38,20 +38,20 @@ class iCalendar {
     /**
      *
      * @param array $Roster
-     * @return string $textICS the ICS text file
+     * @return string $text_ics the ICS text file
      */
     public static function build_ics_roster_employee($Roster, $create_valarm = self::VALARM_NONE) {
 
-        $textICS = "";
-        $textICS .= "BEGIN:VCALENDAR\r\n";
-        $textICS .= "VERSION:2.0\r\n";
-        $textICS .= "PRODID:-//MaMaKow/martin-mandelkow.de//PDR//DE\r\n";
-        foreach ($Roster as $date_unix => $Roster_day_array) {
-            /*
-             * @var $same_employee_count array This array has the format array(employee_id => int).
-             * It is used for the case, when a single employee has multiple duty start times.
-             * e.g. Start at 8:00, leave at 10:00 for a doctors meeting, come back at 13:00 and leave at 17:00.
-             * Without this the UID would not be unique. Therefore one VEVENT would overwrite the other in the calendaring application.
+        $text_ics = "";
+        $text_ics .= "BEGIN:VCALENDAR\r\n";
+        $text_ics .= "VERSION:2.0\r\n";
+        $text_ics .= "PRODID:-//MaMaKow/martin-mandelkow.de//PDR//DE\r\n";
+        foreach ($Roster as $Roster_day_array) {
+            /**
+             * @var $same_employee_count array <p>This array has the format array(employee_id => int).<br>
+             * It is used for the case, when a single employee has multiple duty start times.<br>
+             * e.g. Start at 8:00, leave at 10:00 for a doctors meeting, come back at 13:00 and leave at 17:00.<br>
+             * Without this the UID would not be unique. Therefore one VEVENT would overwrite the other in the calendaring application.</p>
              */
             $same_employee_count = array();
             foreach ($Roster_day_array as $roster_object) {
@@ -69,17 +69,17 @@ class iCalendar {
                 /*
                  * Output the data in iCalendar format:
                  */
-                $textICS .= "BEGIN:VEVENT\r\n";
-                $textICS .= iCalendar::build_ics_roster_employee_head($roster_object, $same_employee_count);
-                $textICS .= iCalendar::build_ics_roster_employee_description($roster_object);
-                $textICS .= iCalendar::build_ics_roster_employee_valarm($roster_object, $create_valarm);
-                $textICS .= "END:VEVENT\r\n";
+                $text_ics .= "BEGIN:VEVENT\r\n";
+                $text_ics .= iCalendar::build_ics_roster_employee_head($roster_object, $same_employee_count);
+                $text_ics .= iCalendar::build_ics_roster_employee_description($roster_object);
+                $text_ics .= iCalendar::build_ics_roster_employee_valarms($roster_object, $create_valarm);
+                $text_ics .= "END:VEVENT\r\n";
             }
         }
 
-        $textICS .= "END:VCALENDAR\r\n";
+        $text_ics .= "END:VCALENDAR\r\n";
 
-        return $textICS;
+        return $text_ics;
     }
 
     private static function build_ics_roster_employee_head($roster_object, $same_employee_count) {
@@ -98,19 +98,19 @@ class iCalendar {
         $branch_address = $List_of_branch_objects[$branch_id]->address;
         $branch_manager = $List_of_branch_objects[$branch_id]->manager;
 
-        $textICS = '';
-        $textICS .= "METHOD:REQUEST\r\n";
-        $textICS .= "UID:" . $date_unix . "-" . $roster_object->employee_id . "-" . $branch_id . "-" . $same_employee_count[$roster_object->employee_id] . "@martin-mandelkow.de\r\n";
-        $textICS .= "DTSTAMP:" . gmdate('Ymd\THis\Z') . "\r\n";
-        $textICS .= "LAST-MODIFIED:" . gmdate('Ymd\THis\Z') . "\r\n";
-        $textICS .= "ORGANIZER;CN=$branch_manager:MAILTO:$administrator_email\r\n";
-        //$textICS .= "DTSTART;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstbeginn . "\r\n";
-        //$textICS .= "DTEND;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstende . "\r\n";
-        $textICS .= "DTSTART:" . date('Ymd', $date_unix) . 'T' . $duty_start_string . "\r\n";
-        $textICS .= "DTEND:" . date('Ymd', $date_unix) . 'T' . $duty_end_string . "\r\n";
-        $textICS .= "SUMMARY:$branch_name\n";
-        $textICS .= "LOCATION:$branch_address\n";
-        return $textICS;
+        $text_ics = '';
+        $text_ics .= "METHOD:REQUEST\r\n";
+        $text_ics .= "UID:" . $date_unix . "-" . $roster_object->employee_id . "-" . $branch_id . "-" . $same_employee_count[$roster_object->employee_id] . "@martin-mandelkow.de\r\n";
+        $text_ics .= "DTSTAMP:" . gmdate('Ymd\THis\Z') . "\r\n";
+        $text_ics .= "LAST-MODIFIED:" . gmdate('Ymd\THis\Z') . "\r\n";
+        $text_ics .= "ORGANIZER;CN=$branch_manager:MAILTO:$administrator_email\r\n";
+        //$text_ics .= "DTSTART;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstbeginn . "\r\n";
+        //$text_ics .= "DTEND;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstende . "\r\n";
+        $text_ics .= "DTSTART:" . date('Ymd', $date_unix) . 'T' . $duty_start_string . "\r\n";
+        $text_ics .= "DTEND:" . date('Ymd', $date_unix) . 'T' . $duty_end_string . "\r\n";
+        $text_ics .= "SUMMARY:$branch_name\n";
+        $text_ics .= "LOCATION:$branch_address\n";
+        return $text_ics;
     }
 
     /**
@@ -130,15 +130,15 @@ class iCalendar {
         /*
          * New lines have to be escaped via \\r\\n
          */
-        $textICS = '';
-        $textICS .= "DESCRIPTION:"
+        $text_ics = '';
+        $text_ics .= "DESCRIPTION:"
                 . gettext("Calendar file for employee ") . " " . $roster_object->employee_id . " (" . $workforce->List_of_employees[$roster_object->employee_id]->full_name . ") \\r\\n"
                 . gettext("contains the roster for") . " $branch_name. \\r\\n"
                 . gettext("Weekday") . ": $date_weekday_name\\r\\n";
         if (!empty($mittags_beginn) and ! empty($mittags_ende)) {
-            $textICS .= sprintf(gettext('Lunch from %1s to %2s'), $mittags_beginn, $mittags_ende) . "\\r\\n";
+            $text_ics .= sprintf(gettext('Lunch from %1s to %2s'), $mittags_beginn, $mittags_ende) . "\\r\\n";
         }
-        $textICS .= "\r\n";
+        $text_ics .= "\r\n";
         /*
          * RFC 5545 3.1. Content Lines
          * Lines of text SHOULD NOT be longer than 75 octets, excluding the line break.
@@ -148,28 +148,51 @@ class iCalendar {
          * Any sequence of CRLF followed immediately by a single linear white-space character is ignored (i.e., removed)
          *  when processing the content type.
          */
-        $Array_ICS = str_split($textICS, 70);
+        $Array_ICS = str_split($text_ics, 70);
         return implode($Array_ICS, "\r\n ");
     }
 
-    private static function build_ics_roster_employee_valarm($roster_object, $create_valarm) {
+    private static function build_ics_roster_employee_valarms($roster_object, $create_valarm) {
         if (0 == $create_valarm) {
             return NULL;
         }
-        $textICS = "";
-        if ($create_valarm & self::VALARM_FOR_BREAK_START and NULL !== $roster_object->break_start_sql) {
-            $trigger_time_string = self::time_int_to_utc_string($roster_object->break_start_int);
-            $date_unix = $roster_object->date_unix;
-            $textICS .= "BEGIN:VALARM" . "\r\n";
-            //$textICS .= "TRIGGER:-PT24H" . "\r\n";
-            $textICS .= "TRIGGER;VALUE=DATE-TIME:" . date('Ymd', $date_unix) . "T" . $trigger_time_string . "\r\n";
-            //$textICS .= "REPEAT:1"."\r\n";
-            //$textICS .= "DURATION:PT15M"."\r\n";
-            $textICS .= "ACTION:DISPLAY" . "\r\n";
-            $textICS .= "DESCRIPTION:" . gettext('Lunch break') . "\r\n";
-            $textICS .= "END:VALARM" . "\r\n";
+        $text_ics = "";
+        if ($create_valarm & self::VALARM_FOR_DUTY_START and NULL !== $roster_object->duty_start_int) {
+            $seconds_before_duty = 30 * 60;
+            $description = gettext('Time to go to work');
+            $trigger_time_string = self::time_int_to_utc_string($roster_object->duty_start_int - $seconds_before_duty);
+            $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
+            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
         }
-        return $textICS;
+        if ($create_valarm & self::VALARM_FOR_DUTY_END and NULL !== $roster_object->duty_end_int) {
+            $description = gettext('Time to leave');
+            $trigger_time_string = self::time_int_to_utc_string($roster_object->duty_end_int);
+            $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
+            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
+        }
+        if ($create_valarm & self::VALARM_FOR_BREAK_START and NULL !== $roster_object->break_start_int) {
+            $description = gettext('Time for lunch break');
+            $trigger_time_string = self::time_int_to_utc_string($roster_object->break_start_int);
+            $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
+            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
+        }
+        if ($create_valarm & self::VALARM_FOR_BREAK_END and NULL !== $roster_object->break_end_int) {
+            $description = gettext('Lunch break ends now');
+            $trigger_time_string = self::time_int_to_utc_string($roster_object->break_end_int);
+            $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
+            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
+        }
+        return $text_ics;
+    }
+
+    private static function build_ics_roster_employee_valarm($trigger_date_time, $description) {
+        $text_ics = "";
+        $text_ics .= "BEGIN:VALARM\r\n";
+        $text_ics .= "TRIGGER;VALUE=DATE-TIME:$trigger_date_time\r\n";
+        $text_ics .= "ACTION:DISPLAY\r\n";
+        $text_ics .= "DESCRIPTION:$description\r\n";
+        $text_ics .= "END:VALARM\r\n";
+        return $text_ics;
     }
 
     private static function time_int_to_utc_string($time_int) {
