@@ -34,10 +34,12 @@ $build_lunch_break_alert = user_input::get_variable_from_any_input('build_lunch_
 $days_into_the_future = user_input::get_variable_from_any_input('days_into_the_future', FILTER_SANITIZE_STRING, 30);
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_STRING, date('Y-m-d'));
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$create_valarm = user_input::get_variable_from_any_input('create_valarm', FILTER_SANITIZE_NUMBER_INT, 0);
 $workforce = new workforce($date_sql);
 $date_sql_start = $date_sql;
 $date_sql_end = date('Y-m-d', strtotime("+ $days_into_the_future days", strtotime($date_sql)));
 $Roster = roster::read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end);
 header('Content-type: text/Calendar');
 header('Content-Disposition: attachment; filename="Calendar.ics"');
-echo iCalendar::build_ics_roster_employee($Roster);
+
+echo iCalendar::build_ics_roster_employee($Roster, $create_valarm);
