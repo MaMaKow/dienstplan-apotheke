@@ -45,8 +45,8 @@ abstract class task_rotation {
 
         database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` > NOW()");
         //Was this day already planned?
-        $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = :task and `date` = :date";
-        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql));
+        $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = :task and `date` = :date and `branch_id` = :branch_id";
+        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id));
         $row = $result->fetch(PDO::FETCH_OBJ);
         if (!empty($row->task)) {
             $rotation_employee_id = $row->VK;
@@ -83,8 +83,8 @@ abstract class task_rotation {
         $date_sql = date("Y-m-d", $date_unix);
         $task_workers_count = count($Rezeptur_Mitarbeiter);
 
-        $sql_query = "SELECT * FROM `task_rotation` WHERE `date` <= :date and `task` = :task ORDER BY `date` DESC LIMIT 1";
-        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'task' => $task));
+        $sql_query = "SELECT * FROM `task_rotation` WHERE `date` <= :date and `task` = :task and `branch_id` = :branch_id ORDER BY `date` DESC LIMIT 1";
+        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'task' => $task, 'branch_id' => $branch_id));
         $row = $result->fetch(PDO::FETCH_OBJ);
         if (!empty($row->date)) {
             $last_date = $row->date;
@@ -145,10 +145,11 @@ abstract class task_rotation {
                          * This value is only stored in the database, if it is in the past.
                          * This is to make sure, that fresh absences can be regarded.
                          */
-                        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES (:task, :date, :employee_id)";
+                        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id´, :branch_id)";
                         database_wrapper::instance()->run($sql_query, array(
                             'task' => $task,
                             'date' => $temp_date_sql,
+                            'branch_id' => $branch_id,
                             'employee_id' => $rotation_employee_id
                         ));
                     }
@@ -158,10 +159,11 @@ abstract class task_rotation {
         } else {
             //If there is noone anywhere in the past we just take the first person in the array.
             $rotation_employee_id = min($Rezeptur_Mitarbeiter);
-            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES (:task, :date, :employee_id)";
+            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id´, :branch_id)";
             database_wrapper::instance()->run($sql_query, array(
                 'task' => $task,
                 'date' => $date_sql,
+                'branch_id' => $branch_id,
                 'employee_id' => $rotation_employee_id
             ));
         }
