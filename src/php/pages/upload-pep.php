@@ -62,6 +62,7 @@ if (filter_has_var(INPUT_POST, "submit")) {
 
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+echo user_dialog::build_messages();
 
 echo "<p id=xmlhttpresult></p>\n";
 echo "<p id=javascriptmessage></p>\n";

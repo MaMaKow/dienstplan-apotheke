@@ -56,8 +56,8 @@ class examine_roster {
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Error_message[] = "Konflikt bei Mitarbeiter " . $workforce->List_of_employees[$row->VK]->last_name . "<br>"
-                    . $row['first_start'] . " bis " . $row['first_end'] . " (" . $List_of_branch_objects[$row['first_branch']]->short_name . ") "
-                    . "mit <br>" . $row['second_start'] . " bis " . $row['second_end'] . " (" . $List_of_branch_objects[$row['second_branch']]->short_name . ")!";
+                    . $row->first_start . " bis " . $row->first_end . " (" . $List_of_branch_objects[$row->first_branch]->short_name . ") "
+                    . "mit <br>" . $row->second_start . " bis " . $row->second_end . " (" . $List_of_branch_objects[$row->second_branch]->short_name . ")!";
         }
     }
 

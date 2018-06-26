@@ -134,6 +134,7 @@ $main_div_html .= "</div>\n";
 $warning_message_html = build_warning_messages($Fehlermeldung, $Warnmeldung);
 
 echo $warning_message_html;
+echo user_dialog::build_messages();
 
 echo $main_div_html;
 

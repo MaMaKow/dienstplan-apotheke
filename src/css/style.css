@@ -5,6 +5,7 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #73AC22, contrast, strong green
 #FEFEFF, background, white
 #B4B4B4, ?,  grey
+#ECE7E8, small boxes, light grey
 #E6828B; alert, red
 */
 @media screen {
@@ -179,6 +180,44 @@ div.overlay:hover
 {
     opacity: 0.2;
     z-index: -10;
+}
+div.user_dialog_container {
+    position: relative;
+    float: right;
+    top:0;
+    max-width: 650px;
+}
+div.user_dialog_container div {
+    /*
+    padding-right: 2em;
+    */
+    padding-left: 15px;
+    margin-top: 0em;
+    margin-left: 0em;
+    margin-right: 0em;
+    margin-bottom: 0em;
+    z-index: 10;
+}
+div.user_dialog_container div p{
+    padding-top: 0.3em;
+    padding-bottom: 0.3em ;
+    /*
+    */
+}
+div.user_dialog_container div.error {
+    background-color: #73AC22;
+    font-size: xx-large;
+    font-family: monospace;
+}
+div.user_dialog_container div.warning {
+    background-color: #BDE682;
+    font-size: large;
+    font-family: sans-serif;
+}
+div.user_dialog_container div.notification {
+    background-color: #ECE7E8;
+    font-size: medium;
+    font-family: serif;
 }
 div.error_container
 {

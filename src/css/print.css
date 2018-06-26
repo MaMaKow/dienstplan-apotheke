@@ -15,6 +15,11 @@ a, body
     */
     color: #000000; /*!important;*/
 }
+select{
+color: #000000;
+-webkit-appearance: none; 
+border: none;
+}
 .no-print, .no-print *
 {
     /*Elemente die nicht gedruckt werden sollen.*/

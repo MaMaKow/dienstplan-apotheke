@@ -67,6 +67,7 @@ $error_error = configuration::ERROR_ERROR;
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+echo user_dialog::build_messages();
 ?>
 <div style=font-size:larger>
     <H1><?= gettext('Configuration') ?></H1>
