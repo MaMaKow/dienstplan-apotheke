@@ -30,41 +30,32 @@ function lost_password_token_is_valid($employee_id, $token) {
     if (!empty($row->employee_id) and $employee_id === $row->employee_id) {
         return TRUE; //The form is shown
     } else {
-        echo build_warning_messages([gettext("Invalid token")]);
+        user_dialog::add_message(gettext('Invalid token'), user_dialog::TYPE_ERROR);
+        echo user_dialog::build_messages();
         return FALSE;
     }
 }
 
 function build_lost_password_form($employee_id, $user_name, $token) {
     global $config;
-    global $Error_message;
-    if (isset($config['application_name'])) {
-        $application_name = $config['application_name'];
-    } else {
-        $application_name = 'PDR';
-    }
-
 
     if (lost_password_token_is_valid($employee_id, $token)) {
         ?>
         <div class=centered_form_div>
-            <H1><?= $application_name ?> </H1>
+            <H1><?= $config['application_name'] ?> </H1>
             <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
                 <H2><?= $user_name ?></H2>
                 <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>
                 <input type="password" size="40" name="password" required placeholder="Passwort"><br>
                 <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
-                <?php
-                echo build_warning_messages([$Error_message], array());
-                ?>
                 <input type="submit" value="Abschicken">
             </form>
         </div>
 
         <?php
     } else {
-        //echo build_warning_messages(["Invalid token"], array());
+        user_dialog::add_message(gettext('Invalid token'));
     } //End of if($show_formular)
 }
 
@@ -89,15 +80,17 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
     if (strlen($password) == 0) {
-        $Error_message[] = 'Bitte ein Passwort angeben<br>';
+        user_dialog::add_message(gettext('Please enter a password!'));
         $error = TRUE;
     }
     if ($password !== $password2) {
-        $Error_message[] = 'Die Passwörter müssen übereinstimmen';
+        user_dialog::add_message(gettext('The passwords must match!'));
         $error = TRUE;
     }
 
-//No error, we can update the password in the database.
+    /*
+     * No error, we can update the password in the database.
+     */
     if (!$error and lost_password_token_is_valid($employee_id, $token)) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -108,15 +101,16 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
             clean_up_after_password_change($employee_id);
             echo gettext('Your password has successfully been changed.'), " <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php'>" . gettext("Login") . "</a>";
         } else {
-            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . print_r($statement->errorInfo(), TRUE));
-//$Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
-            $Error_message[] = gettext("There was an error while saving the data.");
+            error_log(gettext('There was an error while saving the data.') . print_r($statement->errorInfo(), TRUE));
+            user_dialog::add_message(gettext('There was an error while saving the data.'));
+            user_dialog::add_message(gettext('Please see the error log for more details!'));
             build_lost_password_form($employee_id, $user_name, $token);
         }
     }
 } else {
-    echo build_warning_messages([gettext("Missing input token")]);
+    user_dialog::add_message(gettext('Missing input token'));
 }
+echo user_dialog::build_messages();
 ?>
 </BODY>
 </HTML>

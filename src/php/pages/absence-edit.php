@@ -99,6 +99,7 @@ $session->exit_on_missing_privilege('create_absence');
 echo "<div id=main-area>\n";
 
 echo build_warning_messages($Fehlermeldung, $Warnmeldung);
+echo user_dialog::build_messages();
 
 if (isset($Feiertagsmeldung)) {
     echo "<div class=error_container>\n";

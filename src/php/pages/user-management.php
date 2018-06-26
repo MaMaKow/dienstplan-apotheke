@@ -96,6 +96,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
 echo build_warning_messages($Error_message, $Warnmeldung);
+echo user_dialog::build_messages();
 
 
 
