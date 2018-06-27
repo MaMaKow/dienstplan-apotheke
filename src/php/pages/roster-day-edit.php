@@ -89,8 +89,6 @@ $html_text = "";
 //Hier beginnt die Normale Ausgabe.
 $html_text .= "<div id=main-area>\n";
 
-$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
-$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 
 $html_text .= "<div id=navigation_elements>";
@@ -104,7 +102,8 @@ if ($session->user_has_privilege('approve_roster')) {
     $html_text .= build_html_navigation_elements::build_button_disapproval($approval);
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
-$html_text .= "</div>\n";
+$html_text .= "</div><!--id=navigation_elements-->\n";
+$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 /*
  * Here we put the output of errors and warnings.
@@ -122,6 +121,8 @@ $html_text .= strftime('%A ', $date_unix);
 if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
+$html_text .= "<br>";
+$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix);
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {

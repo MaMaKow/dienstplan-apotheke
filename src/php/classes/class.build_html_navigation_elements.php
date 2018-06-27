@@ -283,8 +283,10 @@ abstract class build_html_navigation_elements {
         return $Weekday_names;
     }
 
-    public static function build_input_date(
-    $date_sql) {
+    public static function build_input_date($date_sql) {
+        /*
+         * TODO: Make this a button perhaps? With a form only displayed after clicking on it (or on hover?)
+         */
         $text = "";
         $text .= "<div id=date_chooser_div>\n";
         $text .= "<form id=date_chooser_form method=post>\n";
