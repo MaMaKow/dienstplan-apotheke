@@ -1,4 +1,7 @@
 <Files error.log>
     deny from all
 </Files>
-php_value upload_max_filesize 300M 
+php_value upload_max_filesize 300M
+php_value post_max_size 300M
+php_value max_execution_time 180
+php_value max_input_time 180
