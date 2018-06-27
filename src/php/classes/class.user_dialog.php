@@ -50,14 +50,14 @@ abstract class user_dialog {
         $html_messages = "<div class='user_dialog_container'>\n";
         foreach (self::$Messages as $message_array) {
             $html_messages .= "<div class=" . htmlentities($message_array['type']) . ">\n";
-            $html_messages .= "<p>" . htmlentities($message_array['text']) . "</p>\n";
+            $html_messages .= "<p>" . $message_array['text'] . "</p>\n";
             $html_messages .= "</div>\n";
         }
         $html_messages .= "</div>\n";
         return $html_messages;
     }
 
-    public static function add_message($text, $type = E_USER_ERROR) {
+    public static function add_message($text, $type = E_USER_ERROR, $formated_input = FALSE) {
         switch ($type) {
             case E_USER_ERROR:
                 $type_string = 'error';
@@ -71,7 +71,11 @@ abstract class user_dialog {
             default :
                 throw new Exception('$type must be E_USER_ERROR, E_USER_NOTICE or E_USER_WARNING but was: ' . $type);
         }
-        self::$Messages[] = array('text' => $text, 'type' => $type_string);
+        if ($formated_input) {
+            self::$Messages[] = array('text' => '<pre>' . $text . '</pre>', 'type' => $type_string);
+            return TRUE;
+        }
+        self::$Messages[] = array('text' => htmlentities($text), 'type' => $type_string);
         return TRUE;
     }
 

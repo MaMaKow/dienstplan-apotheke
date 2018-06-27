@@ -215,12 +215,12 @@ function update_pep() {
     document.getElementById("xmlhttpresult").innerHTML = "<p>working on: " + filename + "</p>";
     var xml_http_request = new XMLHttpRequest();
     xml_http_request.onreadystatechange = function () {
-//        if (this.readyState == 4 && this.status == 200) {
         if (this.readyState >= 3 && this.status === 200) {
-            document.getElementById("xmlhttpresult").innerHTML = this.responseText;
+            //document.getElementById("xmlhttpresult").innerHTML = this.responseText;
         }
+        document.getElementById("xmlhttpresult").innerHTML = this.responseText;
     };
-    xml_http_request.open("GET", "pep.php?filename=" + targetfilename, true);
+    xml_http_request.open("GET", http_server_application_path + "pep.php?filename=" + targetfilename, true);
     console.log('opening pep.php?filename=' + targetfilename);
     xml_http_request.send();
 }
