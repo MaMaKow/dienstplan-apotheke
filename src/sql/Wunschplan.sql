@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `Wunschplan_delete` (
+CREATE TABLE IF NOT EXISTS `Wunschplan` (
   `VK` tinyint(11) NOT NULL,
   `Wochentag` tinyint(4) NOT NULL,
   `Dienstbeginn` varchar(64) CHARACTER SET latin1 DEFAULT NULL,

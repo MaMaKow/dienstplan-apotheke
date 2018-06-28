@@ -90,6 +90,10 @@ $session->exit_on_missing_privilege('create_employee');
     </form>
 </div>
 <?php
+/*
+ * TODO: Add a delete employee button.
+ * The deletion of employees is cascading to delete also the associated user.
+ */
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
 ?>
 </body>
