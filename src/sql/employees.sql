@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `employees` (
   `pseudo_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `id` smallint(5) unsigned NOT NULL,
+  `id` tinyint(3) unsigned NOT NULL,
   `last_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
   `first_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
   `profession` set('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') COLLATE latin1_german1_ci NOT NULL,
@@ -16,4 +16,4 @@ CREATE TABLE IF NOT EXISTS `employees` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `pseudo` (`pseudo_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci

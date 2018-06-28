@@ -105,11 +105,8 @@ class absence {
         if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
             throw new Exception("\$date_sql has to be a string! $date_sql given.");
         }
-
         /*
          * We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
-         * TODO: Build an option to delete future vacations of people when leaving.
-         * DELETE `absence` FROM `absence` LEFT JOIN `employees` ON `employees`.`id`= `absence`.`employee_id` WHERE `employees`.`end_of_employment` < `absence`.`start`
          */
         if (!isset($workforce)) {
             throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");

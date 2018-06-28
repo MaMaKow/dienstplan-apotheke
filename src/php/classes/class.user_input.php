@@ -353,6 +353,12 @@ abstract class user_input {
             user_input::insert_changed_entries_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
         }
+        /*
+         * This might be a good place to do some maintenance tasks.
+         * The function is not called on every view.
+         * But it has to be called on a regular basis when editing the roster.
+         */
+        new maintenance();
     }
 
 }
