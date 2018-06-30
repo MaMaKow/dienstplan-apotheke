@@ -17,6 +17,8 @@
  */
 require '../../../default.php';
 $workforce = new workforce();
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
+create_cookie('year', $year, 1);
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 
@@ -35,7 +37,9 @@ if (filter_has_var(INPUT_POST, 'loeschen')) {
     }
 }
 
-//Wir fügen neue Datensätze ein, wenn ALLE Daten übermittelt werden. (Leere Daten klappen vielleicht auch.)
+/*
+ * Insert new data:
+ */
 if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'grund')) {
     $session->exit_on_missing_privilege('create_overtime');
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
@@ -73,8 +77,21 @@ if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, '
         }
     }
 }
-$sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC";
+/*
+ * Get the current balance
+ */
+$sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC LIMIT 1";
 $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+$row = $result->fetch(PDO::FETCH_OBJ);
+$saldo = $row->Saldo;
+if (empty($saldo)) {
+    $saldo = 0;
+}
+/*
+ * Get the overtime data for the chosen year:
+ */
+$sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id and Year(`Datum`) = :year ORDER BY `Aktualisierung` DESC";
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year));
 $tablebody = "<tbody>\n";
 $i = 1;
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -89,7 +106,6 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "\n</td>\n";
     if ($i === 1) { //Get the last row.
         $tablebody .= "<td id=saldoAlt>\n";
-        $saldo = $row->Saldo;
     } else {
         $tablebody .= "<td>\n";
     }
@@ -103,9 +119,6 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
 }
 $tablebody .= "</tbody>\n";
 
-if (empty($saldo)) {
-    $saldo = 0;
-}
 
 
 //Start of output:
@@ -116,6 +129,7 @@ $session->exit_on_missing_privilege('create_overtime');
 echo "<div id=main-area>\n";
 echo user_dialog::build_messages();
 
+echo absence::build_html_select_year($year);
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_id' => $employee_id));
 
