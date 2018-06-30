@@ -138,14 +138,14 @@ select
     color: #73AC22;
     background-color: #FEFEFF;
 
-    border-top: 3px dotted #B4B4B4;
-    border-left: 3px dotted #B4B4B4;
-    border-right: 3px dotted #B4B4B4;
-    border-bottom: 3px dotted #B4B4B4;
+    border-top: 1px dashed #B4B4B4;
+    border-left: 1px dashed #B4B4B4;
+    border-right: 1px dashed #B4B4B4 ;
+    border-bottom: 1px dashed #B4B4B4;
 }
 select:hover
 {
-    border: 3px dotted #BDE682;
+    border: 1px double #BDE682;
 }
 label
 {
@@ -697,7 +697,7 @@ div#navigation_elements{
     float: left;
     clear: both;
 }
-.inline_button_form{
+.inline_form{
     display: inline;
 }
 /*

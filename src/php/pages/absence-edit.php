@@ -17,15 +17,19 @@
  */
 require '../../../default.php';
 $workforce = new workforce();
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
+create_cookie('year', $year, 1);
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 30);
 absence::handle_user_input();
 
 
+/*
+ * TODO: Find overlapping absences.
+ */
 
-
-$sql_query = 'SELECT * FROM `absence` WHERE `employee_id` = :employee_id ORDER BY `start` DESC				';
-$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+$sql_query = 'SELECT * FROM `absence` WHERE `employee_id` = :employee_id and (Year(`start`) = :year or Year(`end`) =:year2) ORDER BY `start` DESC';
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year, 'year2' => $year));
 $tablebody = '';
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $html_form = "change_absence_entry_" . $row->start;
@@ -97,6 +101,7 @@ $session->exit_on_missing_privilege('create_absence');
 echo "<div id=main-area>\n";
 
 echo user_dialog::build_messages();
+echo absence::build_html_select_year($year);
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/absence-read.php', array('employee_id' => $employee_id));
