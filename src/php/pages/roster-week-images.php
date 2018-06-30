@@ -39,7 +39,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo "<div class='main-area'>\n";
-echo "<div id=navigation_elements class='no-print'>";
+echo "<div id=navigation_elements class='no_print'>";
 echo build_html_navigation_elements::build_select_branch($mandant, $date_sql);
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
@@ -57,7 +57,7 @@ for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += 
     echo "</div>\n";
 }
 echo "</div><!--id=roster_image_div-->\n";
-echo "</div><!--class='main-area no-print'-->\n";
+echo "</div><!--class='main-area no_print'-->\n";
 
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';

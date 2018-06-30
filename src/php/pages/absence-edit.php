@@ -75,16 +75,16 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "</td>\n";
     $tablebody .= "<td style='font-size: 1em; height: 1em'>\n"
             . "<input hidden name='employee_id' value='$employee_id' form='$html_form'>\n"
-            . "<button type=submit id=delete_$row->start class='button_small delete_button' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
+            . "<button type=submit id=delete_$row->start class='button_small delete_button no_print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Diese Zeile löschen'>\n"
             . "</button>\n"
-            . "<button type=button id=cancel_$row->start class='button_small' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$row->start\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
+            . "<button type=button id=cancel_$row->start class='button_small no_print' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$row->start\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Bearbeitung abbrechen'>\n"
             . "</button>\n"
-            . "<button type=button id=edit_$row->start class='button_small edit_button' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
+            . "<button type=button id=edit_$row->start class='button_small edit_button no_print' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
             . "</button>\n"
-            . "<button type='submit' id='save_$row->start' class='button_small' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+            . "<button type='submit' id='save_$row->start' class='button_small no_print' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
             . "</button>\n"
             . "";
@@ -114,7 +114,7 @@ echo "<tr><th>" . gettext('Start') . "</th><th>" . gettext('End') . "</th><th>" 
 /*
  * Input with calculation of the saldo via javascript.
  */
-echo "<tr class=no-print id=input_line_new>\n"
+echo "<tr class=no_print id=input_line_new>\n"
  . "<form accept-charset='utf-8' method=POST id='new_absence_entry'>\n";
 echo "<td>\n"
  . "<input type=hidden name=employee_id value=$employee_id form='new_absence_entry'>\n";
@@ -128,7 +128,7 @@ echo "<td><input type='text' name='comment' form='new_absence_entry'></td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
 echo "<td>" . absence::build_approval_input_select('not_yet_approved', NULL, 'new_absence_entry') . "</td>\n";
 echo "<td>\n";
-echo "<button type=submit id=save_new class=no-print name=command value='insert_new' form='new_absence_entry'>" . gettext('Save') . "</button>";
+echo "<button type=submit id=save_new class=no_print name=command value='insert_new' form='new_absence_entry'>" . gettext('Save') . "</button>";
 echo "</td>\n";
 echo "</tr>\n";
 echo "<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";

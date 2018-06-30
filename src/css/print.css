@@ -20,7 +20,7 @@ color: #000000;
 -webkit-appearance: none; 
 border: none;
 }
-.no-print, .no-print *
+.no_print, .no_print *
 {
     /*Elemente die nicht gedruckt werden sollen.*/
     display: none !important;
