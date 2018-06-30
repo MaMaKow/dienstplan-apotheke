@@ -153,15 +153,15 @@ if (empty($List_of_branch_objects)) {
     </p>
 
     <div id="form_buttons_container">
-        <button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no-print">
+        <button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no_print">
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/save.png">
             <p> <?= gettext("Save") ?>  </p>
         </button>
-        <button type='reset' form='branch_management_form' class="form_button no-print" onclick='clear_form(getElementById("branch_management_form")); getElementById("branch_form_select").selectedIndex = -1'>
+        <button type='reset' form='branch_management_form' class="form_button no_print" onclick='clear_form(getElementById("branch_management_form")); getElementById("branch_form_select").selectedIndex = -1'>
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/edit-icon.svg">
             <p> <?= gettext("Clear form data") ?>  </p>
         </button>
-        <button type='submit' name="remove_branch" form='branch_management_form' class="form_button no-print" onclick='return confirmDelete()'>
+        <button type='submit' name="remove_branch" form='branch_management_form' class="form_button no_print" onclick='return confirmDelete()'>
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
             <p> <?= gettext("Remove branch") ?>  </p>
         </button>

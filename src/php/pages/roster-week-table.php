@@ -55,7 +55,7 @@ $weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $main_div_html = "<div id='main-area'>\n";
-$date_info_line_html = "<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
+$date_info_line_html = "<div id=date_info_line class='no_print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
@@ -63,7 +63,7 @@ $main_div_html .= build_html_navigation_elements::build_select_branch($branch_id
 
 $duty_roster_form_html = "";
 $buttons_div_html = "";
-$buttons_div_html .= "<div id=buttons_div class=no-print>";
+$buttons_div_html .= "<div id=buttons_div class=no_print>";
 $buttons_div_html .= build_html_navigation_elements::build_button_week_backward($date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_button_week_forward($date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_input_date($date_sql);
@@ -75,7 +75,7 @@ $table_html .= build_html_roster_views::build_roster_read_only_table_head($Roste
 
 $table_body_html = build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
 if (isset($Overlay_message)) {
-    $overlay_message_html .= "<div class='overlay no-print'>\n";
+    $overlay_message_html .= "<div class='overlay no_print'>\n";
     $Overlay_message = array_unique($Overlay_message);
     foreach ($Overlay_message as $message) {
         $overlay_message_html .= "<H1>" . $message . "</H1>\n";

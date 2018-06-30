@@ -5,7 +5,7 @@
  * It is not part and should not be part of e.g. install.php
  */
 ?>
-<nav id="nav" class="no-print">
+<nav id="nav" class="no_print">
     <ul id="navigation">
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php><?= gettext("Weekly view") ?>

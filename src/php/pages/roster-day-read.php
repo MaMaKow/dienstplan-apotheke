@@ -88,7 +88,7 @@ echo "<div id=main-area>\n";
 
 echo user_dialog::build_messages();
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
-echo "<div id=navigation_form_div class=no-print>\n";
+echo "<div id=navigation_form_div class=no_print>\n";
 echo build_html_navigation_elements::build_button_day_backward($date_unix);
 echo build_html_navigation_elements::build_button_day_forward($date_unix);
 echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/roster-day-edit.php', array('datum' => $date_sql));

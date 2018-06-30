@@ -1,4 +1,4 @@
-<div class="foot no-print">
+<div class="foot no_print">
     <script>
         /**
          * Displays the element "contactForm".

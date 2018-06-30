@@ -22,7 +22,12 @@ create_cookie('year', $year, 1);
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
 
-//Deleting rows of data:
+/*
+ * Deleting rows of data:
+ * TODO: Recalculate the whole dataset after any input or deletion,
+ * also sort the input by date.
+ * TODO: Warn if an input is before the last one inserted.
+ */
 if (filter_has_var(INPUT_POST, 'loeschen')) {
     $session->exit_on_missing_privilege('create_overtime');
 
@@ -98,7 +103,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>\n";
     $tablebody .= "<td>\n";
     $tablebody .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
-    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlentities($employee_id) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
+    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no_print type=submit name=loeschen[" . htmlentities($employee_id) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
     $tablebody .= "</form>\n";
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
@@ -153,7 +158,7 @@ echo "<tr>\n"
  . "</thead>\n";
 
 //Eingabe. Der Saldo wird natürlich berechnet.
-echo "<tr>\n";
+echo "<tr class='no_print'>\n";
 echo "<td>\n";
 echo "<input type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime>\n";
 echo "</td>\n";
@@ -167,7 +172,7 @@ echo "<td>\n";
 echo "<input type=text id=grund name=grund form=insert_new_overtime>\n";
 echo "</td>\n";
 echo "<td>";
-echo "<input class=no-print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime></td>\n";
+echo "<input class=no_print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime></td>\n";
 echo "</tr>\n";
 //Ausgabe
 echo "$tablebody";
