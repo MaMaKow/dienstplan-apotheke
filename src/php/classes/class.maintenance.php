@@ -31,7 +31,6 @@ class maintenance {
     private $last_execution = 0;
 
     public function __construct() {
-        //print_debug_variable('SHOULD WE DO SOME' . __CLASS__ . '?');
         $sql_query = "SELECT UNIX_TIMESTAMP(`last_execution`) as `last_execution_unix` from `maintenance`";
         $result = database_wrapper::instance()->run($sql_query);
         $row = $result->fetch(PDO::FETCH_OBJ);
@@ -44,6 +43,7 @@ class maintenance {
         if ($this->last_execution < time() - PDR_ONE_DAY_IN_SECONDS) {
             error_log('YES');
             $this->cleanup_absence();
+            //$this->cleanup_overtime();
             $sql_query = "UPDATE `maintenance` SET `last_execution` = FROM_UNIXTIME(:time)";
             database_wrapper::instance()->run($sql_query, array('time' => time()));
         } else {
@@ -57,6 +57,24 @@ class maintenance {
          */
         $sql_query = "DELETE `absence` FROM `absence` LEFT JOIN `employees` ON `employees`.`id`= `absence`.`employee_id` WHERE `employees`.`end_of_employment` < `absence`.`start`";
         database_wrapper::instance()->run($sql_query);
+        /*
+         * TODO: Cleanup absences of existing employees, that happened before they entered the company.
+         * Those are from former employees with the same employee_id
+         * Take care, not to delete data from employees with unkown employment start/end date
+         */
+    }
+
+    private function cleanup_overtime() {
+        /*
+         * Cleanup overtime data of employees, who left the company:
+         */
+        $sql_query = "";
+        database_wrapper::instance()->run($sql_query);
+        /*
+         * TODO: Cleanup absences of existing employees, that happened before they entered the company.
+         * Those are from former employees with the same employee_id
+         * Take care, not to delete data from employees with unkown employment start/end date
+         */
     }
 
 }
