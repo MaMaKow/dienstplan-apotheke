@@ -4,6 +4,6 @@ CREATE TABLE IF NOT EXISTS `Stunden` (
   `Stunden` float DEFAULT NULL,
   `Saldo` float NOT NULL,
   `Grund` varchar(64) DEFAULT NULL,
-  `Aktualisierung` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Aktualisierung` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`VK`,`Datum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1

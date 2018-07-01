@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-06-27 10:50+0100\n"
-"PO-Revision-Date: 2018-06-27 10:59+0100\n"
+"POT-Creation-Date: 2018-07-01 12:56+0100\n"
+"PO-Revision-Date: 2018-07-01 12:57+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -30,6 +30,14 @@ msgstr "hat einen Kommentar"
 #: contact-form.php:69
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
+
+#: get-database-structure.php:57
+msgid "Error while writing the file to disk."
+msgstr "Fehler beim Schreiben der Datei auf die Festplatte."
+
+#: get-database-structure.php:81
+msgid "Error while writing the trigger file to disk."
+msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 
 #: pep.php:35
 msgid "Working on input file."
@@ -83,7 +91,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:219
+#: src/php/classes/class.absence.php:216
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -91,26 +99,26 @@ msgstr ""
 "An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
 "in die Datenbank eingefügt."
 
-#: src/php/classes/class.absence.php:223
+#: src/php/classes/class.absence.php:220
 #: src/php/classes/class.database_wrapper.php:238
 #: src/php/classes/class.database_wrapper.php:288
-#: src/php/pages/overtime-edit.php:70
+#: src/php/classes/class.overtime.php:70
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/php/classes/class.absence.php:224
+#: src/php/classes/class.absence.php:221
 #: src/php/classes/class.database_wrapper.php:239
 #: src/php/classes/class.database_wrapper.php:289
-#: src/php/pages/overtime-edit.php:71
+#: src/php/classes/class.overtime.php:71
 #: src/php/pages/reset_lost_password.php:105
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
-#: src/php/classes/class.absence.php:252
+#: src/php/classes/class.absence.php:249
 msgid "is a holiday"
 msgstr "ist ein Feiertag"
 
-#: src/php/classes/class.absence.php:252
+#: src/php/classes/class.absence.php:249
 msgid "and will not be counted."
 msgstr "und wird nicht berechnet."
 
@@ -154,7 +162,7 @@ msgstr "iCalendar Datei"
 
 #: src/php/classes/class.build_html_navigation_elements.php:150
 #: src/php/classes/class.build_html_navigation_elements.php:153
-#: src/php/pages/absence-edit.php:126 src/php/pages/branch-management.php:158
+#: src/php/pages/absence-edit.php:131 src/php/pages/branch-management.php:158
 #: src/php/pages/collaborative-vacation-input-box.php:116
 msgid "Save"
 msgstr "Speichern"
@@ -189,13 +197,13 @@ msgstr "Pause"
 
 #: src/php/classes/class.build_html_roster_views.php:160
 #: src/php/classes/class.build_html_roster_views.php:283
-#: src/php/pages/absence-edit.php:108
+#: src/php/pages/absence-edit.php:113
 #: src/php/pages/collaborative-vacation-input-box.php:97
 msgid "Comment"
 msgstr "Kommentar"
 
 #: src/php/classes/class.build_html_roster_views.php:207
-#: src/php/pages/roster-day-edit.php:92
+#: src/php/pages/roster-day-edit.php:125
 #: src/php/pages/roster-employee-table.php:56
 #: src/php/pages/roster-week-table.php:58
 msgid "calendar week"
@@ -325,6 +333,27 @@ msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 msgid "and"
 msgstr "und"
 
+#: src/php/classes/class.overtime.php:40
+msgid "An error has occured while inserting the overtime data."
+msgstr "Beim Speichern der Überstunden trat ein Fehler auf."
+
+#: src/php/classes/class.overtime.php:42 src/js/overtime.js:80
+msgid "The input date lies before the last existent date."
+msgstr "Das Datum des Eintrages liegt vor dem letzten vorhandenen Datum."
+
+#: src/php/classes/class.overtime.php:44
+msgid "Please enable JavaScript in order to allow PDR to handle this case."
+msgstr ""
+"Bitte aktivieren Sie JavaScript um PDR zu erlauben, diesen Fall zu handhaben."
+
+#: src/php/classes/class.overtime.php:66
+msgid "There is already an entry on this date."
+msgstr "An diesem Datum existiert bereits ein Eintrag."
+
+#: src/php/classes/class.overtime.php:67
+msgid "The data was therefore not inserted in the database."
+msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
+
 #: src/php/classes/class.sessions.php:45
 msgid "administration"
 msgstr "Administration"
@@ -419,26 +448,26 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:46
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:46
 #: src/php/pages/collaborative-vacation-input-box.php:94
 msgid "Start"
 msgstr "Beginn"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:47
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:47
 #: src/php/pages/collaborative-vacation-input-box.php:95
 msgid "End"
 msgstr "Ende"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:48
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:48
 #: src/php/pages/collaborative-vacation-input-box.php:96
 msgid "Reason"
 msgstr "Grund"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:49
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:49
 msgid "Days"
 msgstr "Tage"
 
-#: src/php/pages/absence-edit.php:108
+#: src/php/pages/absence-edit.php:113
 msgid "Approval"
 msgstr "Genehmigung"
 
@@ -777,14 +806,6 @@ msgstr "Mandantenverwaltung"
 msgid "User management"
 msgstr "Benutzerverwaltung"
 
-#: src/php/pages/overtime-edit.php:66
-msgid "There is already an entry on this date."
-msgstr "An diesem Datum existiert bereits ein Eintrag."
-
-#: src/php/pages/overtime-edit.php:67
-msgid "The data was therefore not inserted in the database."
-msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
-
 #: src/php/pages/reset_lost_password.php:32
 #: src/php/pages/reset_lost_password.php:57
 msgid "Invalid token"
@@ -961,11 +982,17 @@ msgstr ""
 "Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
 "Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
 
-#~ msgid "Really delete this data set?"
-#~ msgstr "Dieses Datum tatsächlich löschen?"
+#: src/js/javascript.js:80
+msgid "Really delete this data set?"
+msgstr "Dieses Datum tatsächlich löschen?"
 
-#~ msgid "The end date is before the start date."
-#~ msgstr "Das End-Datum ist vor dem Start-Datum."
+#: src/js/javascript.js:120
+msgid "The end date is before the start date."
+msgstr "Das End-Datum liegt vor dem Start-Datum."
+
+#: src/js/overtime.js:82
+msgid "Are you sure, that the data is correct?"
+msgstr "Sind Sie sicher, dass die Daten korrekt sind?"
 
 #~ msgid "The permission to create a roster is missing."
 #~ msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
