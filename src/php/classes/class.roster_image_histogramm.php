@@ -121,7 +121,7 @@ abstract class roster_image_histogramm {
             return FALSE;
         }
         $Expectation = roster_image_histogramm::get_expectation($date_unix, $branch_id);
-        if (FALSE === $Expectation) {
+        if (FALSE === $Expectation or array() === $Expectation) {
             return FALSE;
         }
 
@@ -170,6 +170,10 @@ abstract class roster_image_histogramm {
 
     private static function get_expectation($date_unix, $branch_id) {
         global $List_of_branch_objects;
+        $Packungen = array();
+        $Expectation = array();
+        $factor_tag_im_monat = 1;
+        $factor_monat_im_jahr = 1;
         /*
          * echo roster_image_histogramm::check_timeliness_of_pep_data();
          */
@@ -181,19 +185,19 @@ abstract class roster_image_histogramm {
         if (empty($branch_pep_id)) {
             return FALSE;
         }
-
         $result = database_wrapper::instance()->run("SELECT Uhrzeit, Mittelwert FROM `pep_weekday_time`  WHERE Mandant = :branch_pep_id and Wochentag = :weekday", array('branch_pep_id' => $branch_pep_id, 'weekday' => $sql_weekday));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Packungen[$row->Uhrzeit] = $row->Mittelwert;
         }
         $result = database_wrapper::instance()->run("SELECT factor FROM `pep_month_day`  WHERE `branch` = :branch_pep_id and `day` = :month_day", array('branch_pep_id' => $branch_pep_id, 'month_day' => $month_day));
-        $row = $result->fetch(PDO::FETCH_OBJ);
-        $factor_tag_im_monat = $row->factor;
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $factor_tag_im_monat = $row->factor;
+        }
 
         $result = database_wrapper::instance()->run("SELECT factor FROM `pep_year_month`  WHERE `branch` = :branch_pep_id and `month` = :month", array('branch_pep_id' => $branch_pep_id, 'month' => $month));
-        $row = $result->fetch(PDO::FETCH_OBJ);
-        $factor_monat_im_jahr = $row->factor;
-
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $factor_monat_im_jahr = $row->factor;
+        }
         foreach ($Packungen as $time => $average) {
             $Expectation[$time] = $average * $factor_monat_im_jahr * $factor_tag_im_monat;
         }

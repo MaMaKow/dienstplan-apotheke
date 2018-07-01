@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
+/*
+ * TODO: Edit option for existing entries
+ */
 $workforce = new workforce();
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
 create_cookie('year', $year, 1);

@@ -103,7 +103,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
     echo "<tr><td></td></tr>\n";
     echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
-    echo "<tr><td><br></td></tr>";
+    echo "<tr><td></td></tr>\n";
     $Abwesende = absence::read_absentees_from_database($date_sql);
     if (isset($Abwesende)) {
         echo build_html_roster_views::build_absentees_row($Abwesende);
