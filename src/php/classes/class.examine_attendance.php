@@ -37,7 +37,7 @@ abstract class examine_attendance {
         }
         foreach (array_keys($Abwesende) as $abwesender) {
             foreach ($Roster_workers as $anwesender) {
-                if ($abwesender == $anwesender) {
+                if ($abwesender == $anwesender and NULL !== $anwesender) {
                     $Arbeitende_abwesende[] = $anwesender;
                 }
             }
