@@ -50,6 +50,15 @@ abstract class examine_attendance {
         }
     }
 
+    /**
+     * Check if any employee is not in the roster although there is no known absence:
+     * @param array $Roster Roster array of scheduled roster_items
+     * @param array $Principle_roster Roster array of normal/principle roster_items
+     * @param array $Abwesende Array of absent employees and the reason of absence
+     * @param integer $date_unix Unix timestamp of the current day.
+     * @return void <p>This function does not return anything.
+     *  It uses user_dialog::add_message with it's results.</p>
+     */
     public static function check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix) {
         $Roster_workers = array();
         $Principle_roster_workers = array();
@@ -67,6 +76,28 @@ abstract class examine_attendance {
         $Mitarbeiter_differenz = array_diff($Principle_roster_workers, $Roster_workers);
         if (isset($Abwesende)) {
             $Mitarbeiter_differenz = array_diff($Mitarbeiter_differenz, array_keys($Abwesende));
+        }
+        if (!empty($Mitarbeiter_differenz)) {
+            /*
+             * Check if that worker is scheduled in any of the other branches:
+             */
+            foreach ($Mitarbeiter_differenz as $key => $employee_id) {
+                $working_hours_should = 0;
+                $working_hours = 0;
+                $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `VK` = :employee_id";
+                $result = database_wrapper::instance()->run($sql_query, array('date' => date('Y-m-d', $date_unix), 'employee_id' => $employee_id));
+                while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+                    $working_hours = $row->working_hours;
+                }
+                $sql_query = "SELECT sum(`Stunden`) as `working_hours_should` FROM `Grundplan` WHERE `Wochentag` = :weekday and `VK` = :employee_id";
+                $result = database_wrapper::instance()->run($sql_query, array('weekday' => date('w', $date_unix), 'employee_id' => $employee_id));
+                while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+                    $working_hours_should = $row->working_hours_should;
+                }
+                if ($working_hours >= $working_hours_should) {
+                    unset($Mitarbeiter_differenz[$key]);
+                }
+            }
         }
         if (!empty($Mitarbeiter_differenz)) {
             $message = gettext('The following employees are not scheduled:');

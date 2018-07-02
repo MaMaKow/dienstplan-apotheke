@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-07-01 12:56+0100\n"
-"PO-Revision-Date: 2018-07-01 12:57+0100\n"
+"POT-Creation-Date: 2018-07-02 10:06+0100\n"
+"PO-Revision-Date: 2018-07-02 10:06+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -203,7 +203,7 @@ msgid "Comment"
 msgstr "Kommentar"
 
 #: src/php/classes/class.build_html_roster_views.php:207
-#: src/php/pages/roster-day-edit.php:125
+#: src/php/pages/roster-day-edit.php:131
 #: src/php/pages/roster-employee-table.php:56
 #: src/php/pages/roster-week-table.php:58
 msgid "calendar week"
@@ -222,15 +222,17 @@ msgstr "Die Passwörter stimmen nicht überein."
 msgid "%1s is absent (%2s) and should not be in the roster."
 msgstr "%1s ist abwesend (%2s) und sollte nicht im Dienstplan stehen"
 
-#: src/php/classes/class.examine_attendance.php:72
+#: src/php/classes/class.examine_attendance.php:98
 msgid "The following employees are not scheduled:"
 msgstr "Es sind folgende Mitarbeiter nicht eingesetzt:"
 
 #: src/php/classes/class.examine_roster.php:54
 #, php-format
-msgid "Conflict at employee %1s <br> %2s to %3s (%4s) with %5s to %6s (%7s)"
+msgid ""
+"Conflict at employee %1s <br>%2s to %3s (%4s) <br>with<br>%5s to %6s (%7s)"
 msgstr ""
-"Konflikt bei Mitarbeiter %1s <br> %2s bis %3s (%4s) mit %5s bis %6s (%7s)"
+"Konflikt bei Mitarbeiter %1s <br>%2s bis %3s (%4s) <br>mit <br>%5s bis %6s "
+"(%7s)"
 
 #: src/php/classes/class.examine_roster.php:69
 #, php-format
@@ -836,15 +838,15 @@ msgstr "Beim Speichern der Daten trat ein Fehler auf."
 msgid "Missing input token"
 msgstr "Es wurde kein Token übergeben."
 
-#: src/php/pages/roster-day-edit.php:52
+#: src/php/pages/roster-day-edit.php:58
 msgid "There is no roster in the database."
 msgstr "In der Datenbank befindet sich kein Dienstplan."
 
-#: src/php/pages/roster-day-edit.php:52
+#: src/php/pages/roster-day-edit.php:58
 msgid "This is a proposal."
 msgstr "Dies ist ein Vorschlag."
 
-#: src/php/pages/roster-day-edit.php:78
+#: src/php/pages/roster-day-edit.php:84
 msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
 
