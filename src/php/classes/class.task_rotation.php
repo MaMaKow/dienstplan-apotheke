@@ -22,7 +22,7 @@ abstract class task_rotation {
     public static function task_rotation_main($Dates_unix, $task, $branch_id) {
         global $workforce;
         $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
-        $weekly_rotation_div_html .= $task . ":<br>\n";
+        $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
         foreach ($Dates_unix as $date_unix) {
             unset($rotation_employee_id);
             $rotation_employee_id = self::task_rotation_get_worker($date_unix, $task, $branch_id);

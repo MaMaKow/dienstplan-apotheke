@@ -41,13 +41,10 @@ class maintenance {
             database_wrapper::instance()->run($sql_query, array('time' => time()));
         }
         if ($this->last_execution < time() - PDR_ONE_DAY_IN_SECONDS) {
-            error_log('YES');
             $this->cleanup_absence();
             //$this->cleanup_overtime();
             $sql_query = "UPDATE `maintenance` SET `last_execution` = FROM_UNIXTIME(:time)";
             database_wrapper::instance()->run($sql_query, array('time' => time()));
-        } else {
-            error_log('NO');
         }
     }
 

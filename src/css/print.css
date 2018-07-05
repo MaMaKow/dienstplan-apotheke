@@ -25,7 +25,7 @@ border: none;
     /*Elemente die nicht gedruckt werden sollen.*/
     display: none !important;
 }
-.only-print
+.only_print
 {
     display: block;
 }

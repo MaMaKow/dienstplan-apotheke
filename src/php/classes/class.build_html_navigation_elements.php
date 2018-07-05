@@ -204,7 +204,7 @@ abstract class build_html_navigation_elements {
     public static function build_select_employee($employee_id, $Employee_object_list) {
         $text = "<!-- employee select form-->\n";
         $text .= "<form method='POST' id='select_employee' class='inline_form'>\n";
-        $text .= "<select name=employee_id class='no_print large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
+        $text .= "<select name=employee_id class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_object_list as $employee_object) {
             if ($employee_object->employee_id == $employee_id) {
                 $text .= "<option value=$employee_object->employee_id selected>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
@@ -215,7 +215,6 @@ abstract class build_html_navigation_elements {
         $text .= "</select>\n";
         $text .= "<input hidden type=submit value=select_employee name='submit_select_employee' id='submit_select_employee' class=no_print>\n";
         $text .= "</form>\n";
-        $text .= "<H1 class='only-print'>" . $Employee_object_list[$employee_id]->last_name . "</H1>\n";
         $text .= "<!--/employee select form-->\n";
 
         return $text;
