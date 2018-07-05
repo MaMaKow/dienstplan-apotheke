@@ -404,12 +404,12 @@ abstract class build_html_roster_views {
         global $workforce, $List_of_employee_working_week_hours;
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
         $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
-        $week_hours_table_html .= "<p>\n";
+        $week_hours_table_html .= "<p>";
         foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
                 continue; /* Only the specified employees is shown. */
             }
-            $week_hours_table_html .= "<span>";
+            //$week_hours_table_html .= "<br>";
             if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
                 $week_hours_table_html .= $workforce->List_of_employees[$employee_id]->last_name;
             } else {
@@ -428,7 +428,7 @@ abstract class build_html_roster_views {
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
 
-            $week_hours_table_html .= "</span>\n";
+            $week_hours_table_html .= "<br>\n";
         }
         $week_hours_table_html .= "</p>\n";
         $week_hours_table_html .= "</div>"; // id=week_hours_table_div

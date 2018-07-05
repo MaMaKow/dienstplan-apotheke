@@ -70,7 +70,7 @@ a:hover
 {
     text-decoration: underline;
 }
-.only-print
+.only_print
 {
     display: none;
 }
@@ -318,6 +318,10 @@ img.worker-img:hover {
     font-size: xx-large;
     margin-bottom: 1em;
 }
+.tiny {
+    font-size: xx-small;
+    font-weight: lighter;
+}
 .unobtrusive{
     font-size: smaller;
     font-weight: lighter;
@@ -416,18 +420,29 @@ button:disabled, .btn-secondary:disabled {
                           not supported by any browser */
 }
 
-#weekly_rotation
-{
+div#weekly_rotation {
     font-family: monospace;
+    font-size: smaller;
     position: absolute;
     right: 0px;
     top: 0px;
-    margin: auto;
-    width: 10%;
-    padding: 5px;
 }
-#mandantenformular
-{
+div#print_time_info {
+    position:  absolute;
+    bottom: 0em;
+    right: 0em;
+}
+div#roster_week_image_div {
+    page-break-inside: avoid;
+}
+div#week_hours_table_div {
+    font-family: monospace;
+    font-size: smaller;
+    position: absolute;
+    right: 0px;
+    bottom: 10em;
+}
+#mandantenformular {
     margin-right: 1em;
     float: left;
     clear: left;

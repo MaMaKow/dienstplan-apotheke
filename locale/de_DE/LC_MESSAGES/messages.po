@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-07-02 10:06+0100\n"
-"PO-Revision-Date: 2018-07-02 10:06+0100\n"
+"POT-Creation-Date: 2018-07-05 22:50+0100\n"
+"PO-Revision-Date: 2018-07-05 22:51+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -205,7 +205,7 @@ msgstr "Kommentar"
 #: src/php/classes/class.build_html_roster_views.php:207
 #: src/php/pages/roster-day-edit.php:131
 #: src/php/pages/roster-employee-table.php:56
-#: src/php/pages/roster-week-table.php:58
+#: src/php/pages/roster-week-table.php:66
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
@@ -222,7 +222,7 @@ msgstr "Die Passwörter stimmen nicht überein."
 msgid "%1s is absent (%2s) and should not be in the roster."
 msgstr "%1s ist abwesend (%2s) und sollte nicht im Dienstplan stehen"
 
-#: src/php/classes/class.examine_attendance.php:98
+#: src/php/classes/class.examine_attendance.php:103
 msgid "The following employees are not scheduled:"
 msgstr "Es sind folgende Mitarbeiter nicht eingesetzt:"
 
@@ -861,6 +861,11 @@ msgstr "Der Dienstplan wird noch überarbeitet."
 #: src/php/pages/roster-day-read.php:56
 msgid "Missing data in table `approval`"
 msgstr "Fehlende Daten in der Tabelle `approval`"
+
+#: src/php/pages/roster-week-table.php:133
+#, php-format
+msgid "Time of print: %1s"
+msgstr "Druckdatum: %1s"
 
 #: src/php/pages/upload-pep.php:36
 msgid "There was an error while trying to upload the file."
