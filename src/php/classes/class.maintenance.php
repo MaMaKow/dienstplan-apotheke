@@ -42,7 +42,7 @@ class maintenance {
         }
         if ($this->last_execution < time() - PDR_ONE_DAY_IN_SECONDS) {
             $this->cleanup_absence();
-            //$this->cleanup_overtime();
+            $this->cleanup_overtime();
             $sql_query = "UPDATE `maintenance` SET `last_execution` = FROM_UNIXTIME(:time)";
             database_wrapper::instance()->run($sql_query, array('time' => time()));
         }
@@ -52,12 +52,13 @@ class maintenance {
         /*
          * Cleanup absence data of employees, who left the company:
          */
-        $sql_query = "DELETE `absence` FROM `absence` LEFT JOIN `employees` ON `employees`.`id`= `absence`.`employee_id` WHERE `employees`.`end_of_employment` < `absence`.`start`";
+        $sql_query = "SELECT * FROM `absence` LEFT JOIN `employees` ON `employees`.`id`= `absence`.`employee_id` WHERE `employees`.`end_of_employment` < `absence`.`start`";
         database_wrapper::instance()->run($sql_query);
         /*
          * TODO: Cleanup absences of existing employees, that happened before they entered the company.
          * Those are from former employees with the same employee_id
          * Take care, not to delete data from employees with unkown employment start/end date
+         * Make an archive table to store the old data.
          */
     }
 
@@ -65,12 +66,13 @@ class maintenance {
         /*
          * Cleanup overtime data of employees, who left the company:
          */
-        $sql_query = "";
+        $sql_query = "SELECT * FROM `Stunden` LEFT JOIN `employees` ON `employees`.`id` = `Stunden`.`VK` WHERE `employees`.`start_of_employment` > `Stunden`.`Datum`";
         database_wrapper::instance()->run($sql_query);
         /*
-         * TODO: Cleanup absences of existing employees, that happened before they entered the company.
+         * TODO: Cleanup overtime of existing employees, that happened before they entered the company.
          * Those are from former employees with the same employee_id
          * Take care, not to delete data from employees with unkown employment start/end date
+         * Make an archive table to store the old data.
          */
     }
 
