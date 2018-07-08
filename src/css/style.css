@@ -147,6 +147,9 @@ select:hover
 {
     border: 1px double #BDE682;
 }
+img.roster_input_row_add_row_image {
+    width: 2em;
+}
 label
 {
     margin-top: 0.5em;

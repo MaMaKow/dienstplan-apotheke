@@ -140,6 +140,7 @@ if (isset($having_emergency_service['branch_id'])) {
 $html_text .= "</td>\n";
 $html_text .= "</tr>\n";
 $max_employee_count = roster::calculate_max_employee_count($Roster);
+$day_iterator = $date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 if (array() !== $Roster) {
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
         $html_text .= "<tr>\n";
@@ -159,6 +160,8 @@ if (array() !== $Roster) {
     $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $branch_id);
     $html_text .= "</tr>\n";
 }
+$html_text .= build_html_roster_views::build_roster_input_row_add_row($day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
+
 $html_text .= "<tr><td></td></tr>\n";
 $html_text .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
 $html_text .= "<tr><td></td></tr>\n";
