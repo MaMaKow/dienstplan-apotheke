@@ -145,4 +145,55 @@ class overtime {
         return [$balance, $date];
     }
 
+    public static function build_overview_table() {
+        $table_head = overtime::build_overview_table_head();
+        $table_body = overtime::build_overview_table_body();
+        $table = "<table id='overtime_overview_table'>" . $table_head . $table_body . "</table>";
+        return $table;
+    }
+
+    private static function build_overview_table_head() {
+        $table_head = "<thead>";
+        $table_head .= "<th>" . gettext('Employee') . "</th>";
+        $table_head .= "<th>" . gettext('Balance') . "</th>";
+        $table_head .= "<th>" . gettext('Date') . "</th>";
+        $table_head .= "</thead>\n";
+        return $table_head;
+    }
+
+    private static function build_overview_table_body() {
+        $workforce = new workforce();
+        $table_rows = "<tbody>";
+        foreach (array_keys($workforce->List_of_employees) as $employee_id) {
+            $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` DESC LIMIT 1";
+            $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+                switch (TRUE) {
+                    case 40 < $row->Saldo:
+                        $class = "positive_very_high";
+                        break;
+                    case 20 < $row->Saldo:
+                        $class = "positive_high";
+                        break;
+                    case 0 == $row->Saldo:
+                        $class = "zero";
+                        break;
+                    case 0 > $row->Saldo:
+                        $class = "negative";
+                        break;
+                    default:
+                        $class = "positive";
+                        break;
+                }
+                $table_rows .= "<tr class='$class'>";
+                $table_rows .= "<td>" . $row->VK . " " . $workforce->List_of_employees[$row->VK]->last_name . "</td>";
+                $table_rows .= "<td>" . $row->Saldo . "</td>";
+                $table_rows .= "<td>" . strftime('%x', strtotime($row->Datum)) . "</td>";
+                $table_rows .= "</tr>\n";
+            }
+        }
+        $table_rows .= "</tbody>\n";
+        return $table_rows;
+    }
+
 }
