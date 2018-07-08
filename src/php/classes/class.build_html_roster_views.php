@@ -110,8 +110,26 @@ abstract class build_html_roster_views {
         return $roster_input_row;
     }
 
+    public static function build_roster_input_row_add_row($day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id) {
+        $id = "roster_input_row_add_row_target_" . $day_iterator . "_" . $roster_row_iterator;
+
+        $roster_input_row_add_row = "<tr id='$id' data-id=$id data-day_iterator=$day_iterator data-roster_row_iterator=$roster_row_iterator data-maximum_number_of_rows=$maximum_number_of_rows data-branch_id=$branch_id><td></td></tr>\n";
+        $roster_input_row_add_row .= "<tr>\n";
+        $roster_input_row_add_row .= "<td>";
+
+        $roster_input_row_add_row .= "<button type='button' onclick='roster_input_row_add($id);'>";
+        $roster_input_row_add_row .= "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/add.svg' class='roster_input_row_add_row_image' alt='Add one row'>";
+        $roster_input_row_add_row .= "</button>\n";
+        $roster_input_row_add_row .= "</td>\n";
+        $roster_input_row_add_row .= "</tr>\n";
+        return $roster_input_row_add_row;
+    }
+
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
         global $workforce;
+        if (NULL === $workforce) {
+            $workforce = new workforce(date('Y-m-d', $date_unix));
+        }
         $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
         /*
          * The emplty option is necessary to enable the deletion of employees from the roster:
