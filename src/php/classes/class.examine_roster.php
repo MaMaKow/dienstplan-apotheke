@@ -63,12 +63,12 @@ class examine_roster {
         }
         $minimum_number_of_employees = 2;
         foreach ($this->Anwesende as $zeit => $anwesende) {
-            if ($anwesende < $minimum_number_of_employees and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
+            if ($anwesende < $minimum_number_of_employees
+                    and $zeit < $this->Opening_times['day_opening_end']
+                    and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    //TODO: translate into english
                     $message = sprintf(gettext('At %1s there are less than %2s employees present.'), roster_item::format_time_integer_to_string($zeit), $minimum_number_of_employees);
                     user_dialog::add_message($message, E_USER_WARNING);
-
                     $attendant_error = true;
                 }
             } else {

@@ -100,20 +100,31 @@ abstract class roster_headcount {
     }
 
     public static function read_opening_hours_from_database($date_unix, $branch_id) {
+        $Opening_times['day_opening_start'] = NULL;
+        $Opening_times['day_opening_end'] = NULL;
+
         $weekday = date('N', $date_unix);
-        $sql_query = "SELECT * FROM opening_times WHERE weekday = :weekday AND branch_id = :branch_id";
+
+        $sql_query = "SELECT * FROM `opening_times` WHERE `weekday` = :weekday AND `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
         $row = $result->fetch(PDO::FETCH_OBJ);
         if (!empty($row->start) and ! empty($row->end)) {
             $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->start);
             $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->end);
         } else {
+            $message = gettext("The are no opening times stored inside the database for this weekday.");
+            $message .= " ";
+            $message .= gettext("Please configure the opening times!");
             /*
-             * TODO: Make an exception handler for error- and warning-messages!
-             * throw new Exception_warning_message("Es wurden keine Öffnungszeiten hinterlegt. Bitte konfigurieren Sie den Mandanten.");
+             * TODO: Make a page to configure the opening times.
              */
-            $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds('1:00');
-            $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds('23:00');
+            user_dialog::add_message($message, E_USER_NOTICE);
+            $sql_query = "SELECT min(`Dienstbeginn`) as `day_opening_start`, max(`Dienstende`) as `day_opening_end` FROM `Grundplan` WHERE `Wochentag` = :weekday AND `Mandant` = :branch_id";
+            $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+                $Opening_times['day_opening_start'] = $row->day_opening_start;
+                $Opening_times['day_opening_end'] = $row->day_opening_end;
+            }
         }
         return $Opening_times;
     }
