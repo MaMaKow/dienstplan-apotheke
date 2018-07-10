@@ -74,8 +74,8 @@ abstract class build_html_navigation_elements {
     public static function build_button_day_backward($date_unix) {
         $yesterday_date_string = general_calculations::yesterday_date_string($date_unix);
         $backward_button_img = "
-            <form class='inline_form'>
-		<button type='submit' class='btn-primary no_print' value='$yesterday_date_string' name='datum'>
+            <form class='inline_form' id='button_day_backward_form'>
+		<button type='submit' class='btn-primary no_print' value='$yesterday_date_string' name='datum' id='button_day_backward' title='" . gettext('Ctrl + &#8678;') . "'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("1 day backward") . "'>
 			</i>
@@ -89,10 +89,10 @@ abstract class build_html_navigation_elements {
     public static function build_button_day_forward($date_unix) {
         $tomorow_date_string = general_calculations::tomorow_date_string($date_unix);
         $forward_button_img = "
-            <form class='inline_form'>
-		<button type='submit' class='btn-primary no_print' value='$tomorow_date_string' name='datum'>
+            <form class='inline_form' id='button_day_forward_form'>
+		<button type='submit' class='btn-primary no_print' value='$tomorow_date_string' name='datum' id='button_day_forward' title='" . gettext('Ctrl + &#8680;') . "'>
 			<i class='icon-black'>
-				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/foreward.png' class='button-image' alt='" . gettext("1 day forward") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/forward.png' class='button-image' alt='" . gettext("1 day forward") . "'>
 			</i>
 			<br>
 			" . gettext("1 day forward") . "
@@ -105,7 +105,7 @@ abstract class build_html_navigation_elements {
         $date_last_week_sql = general_calculations::get_first_day_of_week(date('Y-m-d', strtotime('last week', strtotime($date_sql))));
         $backward_button_week_img = "
             <form class='inline_form'>
-		<button type='submit' class='btn-primary no_print' value='$date_last_week_sql' name='datum'>
+		<button type='submit' class='btn-primary no_print' value='$date_last_week_sql' name='datum' id='button_week_backward' title='" . gettext('Ctrl + &larr;') . "'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("1 week backward") . "'>
 			</i>
@@ -120,9 +120,9 @@ abstract class build_html_navigation_elements {
         $date_next_week_sql = general_calculations::get_first_day_of_week(date('Y-m-d', strtotime('next week', strtotime($date_sql))));
         $forward_button_week_img = "
             <form class='inline_form'>
-		<button type='submit' class='btn-primary no_print' value='$date_next_week_sql' name='datum'>
+		<button type='submit' class='btn-primary no_print' value='$date_next_week_sql' name='datum' id='button_week_forward' title='" . gettext('Ctrl + &rarr;') . "'>
 			<i class='icon-black'>
-				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/foreward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/forward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
 			</i>
 			<br>
 			" . gettext("1 week forward") . "
@@ -142,17 +142,16 @@ abstract class build_html_navigation_elements {
         return $button_html;
     }
 
-    public static function build_button_submit(
-    $form_id) {
-        $submit_button_img = "
-        <button type='submit' id='submit_button_img' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id'>
+    public static function build_button_submit($form_id) {
+        $submit_button = "
+        <button type='submit' id='submit_button' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id'>
                 <i class='icon-white'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' class='button-image' alt='" . gettext("Save") . "' >
                 </i>
                 <br>
                 " . gettext("Save") . "
                 </button>";
-        return $submit_button_img;
+        return $submit_button;
     }
 
     public static function build_button_approval($approval) {

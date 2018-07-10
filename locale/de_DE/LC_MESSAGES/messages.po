@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-07-08 22:27+0100\n"
-"PO-Revision-Date: 2018-07-08 22:27+0100\n"
+"POT-Creation-Date: 2018-07-10 22:40+0100\n"
+"PO-Revision-Date: 2018-07-10 22:42+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -132,20 +132,36 @@ msgstr "Lesen"
 msgid "Edit"
 msgstr "Bearbeiten"
 
+#: src/php/classes/class.build_html_navigation_elements.php:78
+msgid "Ctrl + &#8678;"
+msgstr "Strg + &#8678;"
+
 #: src/php/classes/class.build_html_navigation_elements.php:80
 #: src/php/classes/class.build_html_navigation_elements.php:83
 msgid "1 day backward"
 msgstr "1 Tag rückwärts"
+
+#: src/php/classes/class.build_html_navigation_elements.php:93
+msgid "Ctrl + &#8680;"
+msgstr "Strg + &#8680;"
 
 #: src/php/classes/class.build_html_navigation_elements.php:95
 #: src/php/classes/class.build_html_navigation_elements.php:98
 msgid "1 day forward"
 msgstr "1 Tag vorwärts"
 
+#: src/php/classes/class.build_html_navigation_elements.php:108
+msgid "Ctrl + &larr;"
+msgstr "Strg + &larr;"
+
 #: src/php/classes/class.build_html_navigation_elements.php:110
 #: src/php/classes/class.build_html_navigation_elements.php:113
 msgid "1 week backward"
 msgstr "1 Woche rückwärts"
+
+#: src/php/classes/class.build_html_navigation_elements.php:123
+msgid "Ctrl + &rarr;"
+msgstr "Strg + &rarr;"
 
 #: src/php/classes/class.build_html_navigation_elements.php:125
 #: src/php/classes/class.build_html_navigation_elements.php:128
@@ -160,21 +176,21 @@ msgstr "iCalendar Datei herunterladen"
 msgid "iCalendar File"
 msgstr "iCalendar Datei"
 
-#: src/php/classes/class.build_html_navigation_elements.php:150
-#: src/php/classes/class.build_html_navigation_elements.php:153
+#: src/php/classes/class.build_html_navigation_elements.php:149
+#: src/php/classes/class.build_html_navigation_elements.php:152
 #: src/php/pages/absence-edit.php:131 src/php/pages/branch-management.php:158
 #: src/php/pages/collaborative-vacation-input-box.php:116
 msgid "Save"
 msgstr "Speichern"
 
-#: src/php/classes/class.build_html_navigation_elements.php:168
-#: src/php/classes/class.build_html_navigation_elements.php:171
+#: src/php/classes/class.build_html_navigation_elements.php:167
+#: src/php/classes/class.build_html_navigation_elements.php:170
 #: src/php/pages/collaborative-vacation-input-box.php:102
 msgid "Approve"
 msgstr "Genehmigen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:188
-#: src/php/classes/class.build_html_navigation_elements.php:191
+#: src/php/classes/class.build_html_navigation_elements.php:187
+#: src/php/classes/class.build_html_navigation_elements.php:190
 msgid "Disapprove"
 msgstr "Ablehnen"
 
@@ -234,7 +250,7 @@ msgstr ""
 "Konflikt bei Mitarbeiter %1s <br>%2s bis %3s (%4s) <br>mit <br>%5s bis %6s "
 "(%7s)"
 
-#: src/php/classes/class.examine_roster.php:69
+#: src/php/classes/class.examine_roster.php:70
 #, php-format
 msgid "At %1s there are less than %2s employees present."
 msgstr "Um %1s Uhr sind weniger als %2s Mitarbeiter anwesend."
@@ -355,6 +371,30 @@ msgstr "An diesem Datum existiert bereits ein Eintrag."
 #: src/php/classes/class.overtime.php:67
 msgid "The data was therefore not inserted in the database."
 msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
+
+#: src/php/classes/class.overtime.php:157
+#: src/php/pages/collaborative-vacation-input-box.php:64
+#: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:42
+msgid "Employee"
+msgstr "Mitarbeiter"
+
+#: src/php/classes/class.overtime.php:158
+msgid "Balance"
+msgstr "Saldo"
+
+#: src/php/classes/class.overtime.php:159
+msgid "Date"
+msgstr "Datum"
+
+#: src/php/classes/class.roster_headcount.php:115
+msgid "The are no opening times stored inside the database for this weekday."
+msgstr ""
+"Es sind für diesen Wochentag keine Öffnungszeiten in der Datenbank "
+"hinterlegt."
+
+#: src/php/classes/class.roster_headcount.php:117
+msgid "Please configure the opening times!"
+msgstr "Bitte konfigurieren Sie die Öffnungszeiten!"
 
 #: src/php/classes/class.sessions.php:45
 msgid "administration"
@@ -506,12 +546,6 @@ msgstr ""
 #: src/php/pages/collaborative-vacation-input-box.php:54
 msgid "Vacation"
 msgstr "Urlaub"
-
-#: src/php/pages/collaborative-vacation-input-box.php:64
-#: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:42
-#: src/php/pages/overtime-overview.php:27
-msgid "Employee"
-msgstr "Mitarbeiter"
 
 #: src/php/pages/collaborative-vacation-input-box.php:103
 msgid "Pending"
@@ -808,14 +842,6 @@ msgstr "Mandantenverwaltung"
 #: src/php/pages/menu.php:100
 msgid "User management"
 msgstr "Benutzerverwaltung"
-
-#: src/php/pages/overtime-overview.php:28
-msgid "Balance"
-msgstr "Saldo"
-
-#: src/php/pages/overtime-overview.php:29
-msgid "Date"
-msgstr "Datum"
 
 #: src/php/pages/reset_lost_password.php:32
 #: src/php/pages/reset_lost_password.php:57
