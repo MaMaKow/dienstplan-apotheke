@@ -227,7 +227,7 @@ abstract class build_html_roster_views {
 
             $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
             if (FALSE !== $having_emergency_service) {
-                $head_table_html .= "<br><em>NOTDIENST</em><br>";
+                $head_table_html .= "<br><em>" . gettext("EMERGENCY SERVICE") . "</em><br>";
                 if (in_array(self::OPTION_SHOW_EMERGENCY_SERVICE_NAME, $Options)) {
                     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
                         $head_table_html .= $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name;
@@ -346,11 +346,6 @@ abstract class build_html_roster_views {
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
-            /*
-             * if (isset($feiertag) && !isset($notdienst)) {
-             * break 1;
-             * }
-             */
             $table_html .= "<tr>\n";
             foreach (array_keys($Roster) as $date_unix) {
                 $date_sql = date('Y-m-d', $date_unix);

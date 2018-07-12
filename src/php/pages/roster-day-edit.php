@@ -17,13 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
+/*
+ * This page is meant to show the whole roster of one day for one branch.
+ */
 require '../../../default.php';
-$tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
-$tag = 0;
 
-//$employee_id = user_input::get_variable_from_any_input("employee_id", FILTER_SANITIZE_NUMBER_INT);
-//$year = user_input::get_variable_from_any_input("year", FILTER_SANITIZE_NUMBER_INT);
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
@@ -122,7 +120,9 @@ $html_text .= "<td>";
 $html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
 $html_text .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
 $html_text .= strftime('%d.%m. ', $date_unix);
-//Wochentag
+/*
+ * Weekday:
+ */
 $html_text .= strftime('%A ', $date_unix);
 if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
@@ -132,9 +132,9 @@ $html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix);
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
-        $html_text .= "<br>NOTDIENST<br>" . $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     } else {
-        $html_text .= "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     }
 }
 $html_text .= "</td>\n";
@@ -165,9 +165,9 @@ $html_text .= build_html_roster_views::build_roster_input_row_add_row($day_itera
 $html_text .= "<tr><td></td></tr>\n";
 $html_text .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
 $html_text .= "<tr><td></td></tr>\n";
-
-
-//Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
+/*
+ * Make a list of absent people:
+ */
 $html_text .= build_html_roster_views::build_absentees_row($Abwesende);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";

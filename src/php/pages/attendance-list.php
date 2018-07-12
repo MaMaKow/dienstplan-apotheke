@@ -71,25 +71,7 @@ echo absence::build_html_select_year($year);
             //TODO: The following part is not localized. It will not wrk in any other language:
             foreach (array_keys($workforce->List_of_employees) as $employee_id) {
                 if (isset($Absentees[$employee_id])) {
-                    /*
-                     * TODO: Once, that the database only accepts a SET of absences, find some akronyms to put here!
-                     * if (preg_match('/Krank/i', $Absentees[$employee_id])) {
-                      $reason_short_string = 'K';
-                      } elseif (preg_match('/Kur/i', $Absentees[$employee_id])) {
-                      $reason_short_string = 'K';
-                      } elseif (preg_match('/Urlaub/i', $Absentees[$employee_id])) {
-                      $reason_short_string = 'U';
-                      } elseif (preg_match('/Elternzeit/i', $Absentees[$employee_id])) {
-                      $reason_short_string = 'E';
-                      } elseif (preg_match('/Nicht angestellt/i', $Absentees[$employee_id])) {
-                      $reason_short_string = 'N/A';
-                      } elseif (preg_match('/Notdienst/i', $Absentees[$employee_id])) {
-                      $reason_short_string = 'NA';
-                      } else {
-                      $reason_short_string = mb_substr($Absentees[$employee_id], 0, 4);
-                      }
-                     */
-                    $reason_short_string = mb_substr(gettext($Absentees[$employee_id]), 0, 4);
+                    $reason_short_string = mb_substr(pdr_gettext($Absentees[$employee_id]), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . $Absentees[$employee_id] . "'>" . $reason_short_string . "</TD>";
                 } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_id'] == $employee_id) {
                     $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);
@@ -105,13 +87,6 @@ echo absence::build_html_select_year($year);
 
 </TD>
 </TABLE>
-<!--
-Legende
-<TABLE>
-    <TR><TD>K</TD><TD>Krank</TD><TD>U</TD><TD>Urlaub</TD><TD>E</TD><TD>Elternzeit</TD>
-        <TD>N/A</TD><TD>Nicht angestellt</TD><TD>N</TD><TD>Notdienst</TD><TD>NA</TD><TD>Ausgleich nach Notdienst</TD></TR>
-</TABLE>
--->
 <?php require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php'; ?>
 </BODY>
 </HTML>

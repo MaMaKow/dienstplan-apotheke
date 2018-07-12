@@ -29,9 +29,9 @@ $workforce = new workforce();
 $sql_query = "SELECT * FROM Notdienst WHERE YEAR(Datum) = :year AND Mandant = :branch_id";
 $result = database_wrapper::instance()->run($sql_query, array('year' => $year, 'branch_id' => $branch_id));
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $Notdienste['VK'][] = $row->VK;
-    $Notdienste['Datum'][] = $row->Datum;
-    $Notdienste['Mandant'][] = $row->Mandant;
+    $Emergency_services['VK'][] = $row->VK;
+    $Emergency_services['Datum'][] = $row->Datum;
+    $Emergency_services['Mandant'][] = $row->Mandant;
 }
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql)
@@ -39,10 +39,10 @@ echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql)
 <table class="table_with_border">
     <tr><td>Datum</td><td>Name</td><td>Ersatz</td></tr>
     <?php
-    foreach ($Notdienste['Datum'] as $key => $date_sql) {
+    foreach ($Emergency_services['Datum'] as $key => $date_sql) {
         echo "\n<tr><td>" . date('D d.m.Y', strtotime($date_sql)) . '</td>';
         echo '<td>';
-        echo (isset($workforce->List_of_employees[$Notdienste['VK'][$key]])) ? $workforce->List_of_employees[$Notdienste['VK'][$key]]->last_name : "?";
+        echo (isset($workforce->List_of_employees[$Emergency_services['VK'][$key]])) ? $workforce->List_of_employees[$Emergency_services['VK'][$key]]->last_name : "?";
         echo '</td>';
         echo "<td style=width:40%></td></tr>";
     }
