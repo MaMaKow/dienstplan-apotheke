@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-07-10 22:40+0100\n"
-"PO-Revision-Date: 2018-07-10 22:42+0100\n"
+"POT-Creation-Date: 2018-07-12 15:48+0100\n"
+"PO-Revision-Date: 2018-07-12 15:49+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -472,13 +472,21 @@ msgstr "diese Adresse"
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
+#: src/php/classes/class.sessions.php:274
+msgid "The mail was successfully sent. Thank you!"
+msgstr "Die Mail wurde erfolgreich versendet. Vielen Dank!"
+
+#: src/php/classes/class.sessions.php:277
+msgid "An error occured while sending the mail. I am sorry."
+msgstr "Beim Versender der Mail trat ein Fehler auf. Es tut mir leid."
+
 #: src/php/collaborative-vacation.php:252
 #: src/php/collaborative-vacation.php:384
 msgid "from"
 msgstr "von"
 
-#: src/php/collaborative-vacation.php:438 src/php/pages/attendance-list.php:95
-#: src/php/pages/attendance-list.php:96
+#: src/php/collaborative-vacation.php:438 src/php/pages/attendance-list.php:77
+#: src/php/pages/attendance-list.php:78
 msgid "emergency service"
 msgstr "Notdienst"
 
@@ -884,6 +892,10 @@ msgstr "Dies ist ein Vorschlag."
 #: src/php/pages/roster-day-edit.php:84
 msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
+
+#: src/php/pages/roster-day-edit.php:135 src/php/pages/roster-day-edit.php:137
+msgid "EMERGENCY SERVICE"
+msgstr "NOTDIENST"
 
 #: src/php/pages/roster-day-read.php:48
 msgid "The roster has not been approved by the administration!"
