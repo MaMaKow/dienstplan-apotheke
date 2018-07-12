@@ -165,7 +165,6 @@ function update_pep() {
     console.log('update_pep');
     var filename = document.getElementById("filename").value;
     var targetfilename = document.getElementById("targetfilename").value;
-//    document.getElementById("xmlhttpresult").innerHTML = "<div class=warningmsg><p>working on: " + filename+"</p></div>";
     document.getElementById("xmlhttpresult").innerHTML = "<p>working on: " + filename + "</p>";
     var xml_http_request = new XMLHttpRequest();
     xml_http_request.onreadystatechange = function () {

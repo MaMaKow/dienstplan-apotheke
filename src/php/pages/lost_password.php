@@ -22,10 +22,10 @@ if (filter_has_var(INPUT_GET, 'request_new_password')) {
     $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_STRING);
     if (!empty($identifier)) {
         $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id OR `email` = :email OR `user_name` = :user_name";
-        database_wrapper::instance()->run($sql_query, array('employee_id' => $identifier, 'email' => $identifier, 'user_name' => $identifier));
-        $user_data = $statement->fetch();
-        $session->write_lost_password_token_to_database($user_data['employee_id'], $token);
-        $session->send_mail_about_lost_password($user_data['employee_id'], $user_data['user_name'], $user_data['email'], $token);
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $identifier, 'email' => $identifier, 'user_name' => $identifier));
+        $user_data = $result->fetch(PDO::FETCH_OBJ);
+        $session->write_lost_password_token_to_database($user_data->employee_id, $token);
+        $session->send_mail_about_lost_password($user_data->employee_id, $user_data->user_name, $user_data->email, $token);
     }
 }
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
@@ -48,6 +48,7 @@ echo "<H1>" . $application_name . "</H1>\n";
     if (!empty($error_message)) {
         build_error_message($error_message);
     }
+    user_dialog::build_messages();
     ?>
 </form>
 </div>
