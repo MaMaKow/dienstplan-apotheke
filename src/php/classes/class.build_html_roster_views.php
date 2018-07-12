@@ -110,8 +110,26 @@ abstract class build_html_roster_views {
         return $roster_input_row;
     }
 
+    public static function build_roster_input_row_add_row($day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id) {
+        $id = "roster_input_row_add_row_target_" . $day_iterator . "_" . $roster_row_iterator;
+
+        $roster_input_row_add_row = "<tr id='$id' data-id=$id data-day_iterator=$day_iterator data-roster_row_iterator=$roster_row_iterator data-maximum_number_of_rows=$maximum_number_of_rows data-branch_id=$branch_id><td></td></tr>\n";
+        $roster_input_row_add_row .= "<tr>\n";
+        $roster_input_row_add_row .= "<td>";
+
+        $roster_input_row_add_row .= "<button type='button' onclick='roster_input_row_add($id);'>";
+        $roster_input_row_add_row .= "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/add.svg' class='roster_input_row_add_row_image' alt='Add one row'>";
+        $roster_input_row_add_row .= "</button>\n";
+        $roster_input_row_add_row .= "</td>\n";
+        $roster_input_row_add_row .= "</tr>\n";
+        return $roster_input_row_add_row;
+    }
+
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
         global $workforce;
+        if (NULL === $workforce) {
+            $workforce = new workforce(date('Y-m-d', $date_unix));
+        }
         $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
         /*
          * The emplty option is necessary to enable the deletion of employees from the roster:
@@ -149,10 +167,10 @@ abstract class build_html_roster_views {
             $roster_comment_visibility_style_display = "none";
             $roster_uncomment_visibility_style_display = "inline";
         }
-        $roster_input_row_comment_html .= "<div class='no-print' style=display:$roster_comment_visibility_style_display id='$roster_input_row_comment_input_link_div_show_id'>"
+        $roster_input_row_comment_html .= "<div class='no_print' style=display:$roster_comment_visibility_style_display id='$roster_input_row_comment_input_link_div_show_id'>"
                 . "<a onclick='roster_input_row_comment_show($roster_input_row_comment_input_id, $roster_input_row_comment_input_link_div_show_id, $roster_input_row_comment_input_link_div_hide_id)' title='Kommentar anzeigen'>"
                 . "K+</a></div>\n";
-        $roster_input_row_comment_html .= "<div class='no-print' style=display:$roster_uncomment_visibility_style_display id=$roster_input_row_comment_input_link_div_hide_id>"
+        $roster_input_row_comment_html .= "<div class='no_print' style=display:$roster_uncomment_visibility_style_display id=$roster_input_row_comment_input_link_div_hide_id>"
                 . "<a onclick='roster_input_row_comment_hide($roster_input_row_comment_input_id, $roster_input_row_comment_input_link_div_show_id, $roster_input_row_comment_input_link_div_hide_id)' title='Kommentar ausblenden'>"
                 . "K-</a></div>\n";
         $roster_input_row_comment_html .= "<br>"
@@ -404,12 +422,12 @@ abstract class build_html_roster_views {
         global $workforce, $List_of_employee_working_week_hours;
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
         $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
-        $week_hours_table_html .= "<p>\n";
+        $week_hours_table_html .= "<p>";
         foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
                 continue; /* Only the specified employees is shown. */
             }
-            $week_hours_table_html .= "<span>";
+            //$week_hours_table_html .= "<br>";
             if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
                 $week_hours_table_html .= $workforce->List_of_employees[$employee_id]->last_name;
             } else {
@@ -428,7 +446,7 @@ abstract class build_html_roster_views {
                 $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
             }
 
-            $week_hours_table_html .= "</span>\n";
+            $week_hours_table_html .= "<br>\n";
         }
         $week_hours_table_html .= "</p>\n";
         $week_hours_table_html .= "</div>"; // id=week_hours_table_div

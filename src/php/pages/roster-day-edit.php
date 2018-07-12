@@ -41,6 +41,12 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
 $Abwesende = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
+    /*
+     * The $Branch_roster contanins all the rosters from all branches, including the current branch.
+     */
+    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql, $date_sql);
+}
 if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
     user_input::old_write_approval_to_database($branch_id, $Roster);
 }
@@ -89,8 +95,6 @@ $html_text = "";
 //Hier beginnt die Normale Ausgabe.
 $html_text .= "<div id=main-area>\n";
 
-$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
-$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 
 $html_text .= "<div id=navigation_elements>";
@@ -104,7 +108,8 @@ if ($session->user_has_privilege('approve_roster')) {
     $html_text .= build_html_navigation_elements::build_button_disapproval($approval);
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
-$html_text .= "</div>\n";
+$html_text .= "</div><!--id=navigation_elements-->\n";
+$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 /*
  * Here we put the output of errors and warnings.
@@ -122,6 +127,8 @@ $html_text .= strftime('%A ', $date_unix);
 if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
+$html_text .= "<br>";
+$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix);
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
@@ -133,6 +140,7 @@ if (isset($having_emergency_service['branch_id'])) {
 $html_text .= "</td>\n";
 $html_text .= "</tr>\n";
 $max_employee_count = roster::calculate_max_employee_count($Roster);
+$day_iterator = $date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 if (array() !== $Roster) {
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
         $html_text .= "<tr>\n";
@@ -152,6 +160,11 @@ if (array() !== $Roster) {
     $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $branch_id);
     $html_text .= "</tr>\n";
 }
+$html_text .= build_html_roster_views::build_roster_input_row_add_row($day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
+
+$html_text .= "<tr><td></td></tr>\n";
+$html_text .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
+$html_text .= "<tr><td></td></tr>\n";
 
 
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.

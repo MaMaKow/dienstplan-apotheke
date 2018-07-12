@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-06-18 22:37+0100\n"
-"PO-Revision-Date: 2018-06-18 22:40+0100\n"
+"POT-Creation-Date: 2018-07-10 22:40+0100\n"
+"PO-Revision-Date: 2018-07-10 22:42+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -30,6 +30,18 @@ msgstr "hat einen Kommentar"
 #: contact-form.php:69
 msgid "Report a bug"
 msgstr "Einen Programmfehler melden"
+
+#: get-database-structure.php:57
+msgid "Error while writing the file to disk."
+msgstr "Fehler beim Schreiben der Datei auf die Festplatte."
+
+#: get-database-structure.php:81
+msgid "Error while writing the trigger file to disk."
+msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
+
+#: pep.php:35
+msgid "Working on input file."
+msgstr "Die Datei wird verarbeitet."
 
 #: src/php/classes/class.absence.php:52
 msgid "vacation"
@@ -79,7 +91,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:220
+#: src/php/classes/class.absence.php:216
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -87,26 +99,26 @@ msgstr ""
 "An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
 "in die Datenbank eingefügt."
 
-#: src/php/classes/class.absence.php:224
+#: src/php/classes/class.absence.php:220
 #: src/php/classes/class.database_wrapper.php:238
 #: src/php/classes/class.database_wrapper.php:288
-#: src/php/pages/overtime-edit.php:70
+#: src/php/classes/class.overtime.php:70
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/php/classes/class.absence.php:225
+#: src/php/classes/class.absence.php:221
 #: src/php/classes/class.database_wrapper.php:239
 #: src/php/classes/class.database_wrapper.php:289
-#: src/php/pages/overtime-edit.php:71
+#: src/php/classes/class.overtime.php:71
 #: src/php/pages/reset_lost_password.php:105
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
-#: src/php/classes/class.absence.php:253
+#: src/php/classes/class.absence.php:249
 msgid "is a holiday"
 msgstr "ist ein Feiertag"
 
-#: src/php/classes/class.absence.php:253
+#: src/php/classes/class.absence.php:249
 msgid "and will not be counted."
 msgstr "und wird nicht berechnet."
 
@@ -120,20 +132,36 @@ msgstr "Lesen"
 msgid "Edit"
 msgstr "Bearbeiten"
 
+#: src/php/classes/class.build_html_navigation_elements.php:78
+msgid "Ctrl + &#8678;"
+msgstr "Strg + &#8678;"
+
 #: src/php/classes/class.build_html_navigation_elements.php:80
 #: src/php/classes/class.build_html_navigation_elements.php:83
 msgid "1 day backward"
 msgstr "1 Tag rückwärts"
+
+#: src/php/classes/class.build_html_navigation_elements.php:93
+msgid "Ctrl + &#8680;"
+msgstr "Strg + &#8680;"
 
 #: src/php/classes/class.build_html_navigation_elements.php:95
 #: src/php/classes/class.build_html_navigation_elements.php:98
 msgid "1 day forward"
 msgstr "1 Tag vorwärts"
 
+#: src/php/classes/class.build_html_navigation_elements.php:108
+msgid "Ctrl + &larr;"
+msgstr "Strg + &larr;"
+
 #: src/php/classes/class.build_html_navigation_elements.php:110
 #: src/php/classes/class.build_html_navigation_elements.php:113
 msgid "1 week backward"
 msgstr "1 Woche rückwärts"
+
+#: src/php/classes/class.build_html_navigation_elements.php:123
+msgid "Ctrl + &rarr;"
+msgstr "Strg + &rarr;"
 
 #: src/php/classes/class.build_html_navigation_elements.php:125
 #: src/php/classes/class.build_html_navigation_elements.php:128
@@ -148,21 +176,21 @@ msgstr "iCalendar Datei herunterladen"
 msgid "iCalendar File"
 msgstr "iCalendar Datei"
 
-#: src/php/classes/class.build_html_navigation_elements.php:150
-#: src/php/classes/class.build_html_navigation_elements.php:153
-#: src/php/pages/absence-edit.php:126 src/php/pages/branch-management.php:158
+#: src/php/classes/class.build_html_navigation_elements.php:149
+#: src/php/classes/class.build_html_navigation_elements.php:152
+#: src/php/pages/absence-edit.php:131 src/php/pages/branch-management.php:158
 #: src/php/pages/collaborative-vacation-input-box.php:116
 msgid "Save"
 msgstr "Speichern"
 
-#: src/php/classes/class.build_html_navigation_elements.php:168
-#: src/php/classes/class.build_html_navigation_elements.php:171
+#: src/php/classes/class.build_html_navigation_elements.php:167
+#: src/php/classes/class.build_html_navigation_elements.php:170
 #: src/php/pages/collaborative-vacation-input-box.php:102
 msgid "Approve"
 msgstr "Genehmigen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:188
-#: src/php/classes/class.build_html_navigation_elements.php:191
+#: src/php/classes/class.build_html_navigation_elements.php:187
+#: src/php/classes/class.build_html_navigation_elements.php:190
 msgid "Disapprove"
 msgstr "Ablehnen"
 
@@ -178,26 +206,26 @@ msgid "to"
 msgstr "bis"
 
 #: src/php/classes/class.build_html_roster_views.php:97
-#: src/php/classes/class.build_html_roster_views.php:290
-#: src/php/classes/class.build_html_roster_views.php:372
+#: src/php/classes/class.build_html_roster_views.php:308
+#: src/php/classes/class.build_html_roster_views.php:390
 msgid "break"
 msgstr "Pause"
 
-#: src/php/classes/class.build_html_roster_views.php:160
-#: src/php/classes/class.build_html_roster_views.php:283
-#: src/php/pages/absence-edit.php:108
+#: src/php/classes/class.build_html_roster_views.php:178
+#: src/php/classes/class.build_html_roster_views.php:301
+#: src/php/pages/absence-edit.php:113
 #: src/php/pages/collaborative-vacation-input-box.php:97
 msgid "Comment"
 msgstr "Kommentar"
 
-#: src/php/classes/class.build_html_roster_views.php:207
-#: src/php/pages/roster-day-edit.php:92
+#: src/php/classes/class.build_html_roster_views.php:225
+#: src/php/pages/roster-day-edit.php:131
 #: src/php/pages/roster-employee-table.php:56
-#: src/php/pages/roster-week-table.php:58
+#: src/php/pages/roster-week-table.php:66
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
-#: src/php/classes/class.build_html_roster_views.php:406
+#: src/php/classes/class.build_html_roster_views.php:424
 msgid "Hours per week"
 msgstr "Wochenstunden"
 
@@ -210,17 +238,19 @@ msgstr "Die Passwörter stimmen nicht überein."
 msgid "%1s is absent (%2s) and should not be in the roster."
 msgstr "%1s ist abwesend (%2s) und sollte nicht im Dienstplan stehen"
 
-#: src/php/classes/class.examine_attendance.php:72
+#: src/php/classes/class.examine_attendance.php:103
 msgid "The following employees are not scheduled:"
 msgstr "Es sind folgende Mitarbeiter nicht eingesetzt:"
 
 #: src/php/classes/class.examine_roster.php:54
 #, php-format
-msgid "Conflict at employee %1s <br> %2s to %3s (%4s) with %5s to %6s (%7s)"
+msgid ""
+"Conflict at employee %1s <br>%2s to %3s (%4s) <br>with<br>%5s to %6s (%7s)"
 msgstr ""
-"Konflikt bei Mitarbeiter %1s <br> %2s bis %3s (%4s) mit %5s bis %6s (%7s)"
+"Konflikt bei Mitarbeiter %1s <br>%2s bis %3s (%4s) <br>mit <br>%5s bis %6s "
+"(%7s)"
 
-#: src/php/classes/class.examine_roster.php:69
+#: src/php/classes/class.examine_roster.php:70
 #, php-format
 msgid "At %1s there are less than %2s employees present."
 msgstr "Um %1s Uhr sind weniger als %2s Mitarbeiter anwesend."
@@ -247,17 +277,38 @@ msgstr "Filiale"
 msgid "None"
 msgstr "Kein"
 
-#: src/php/classes/class.iCalendar.php:123
+#: src/php/classes/class.iCalendar.php:135
 msgid "Calendar file for employee "
 msgstr "Kalenderdatei für Mitarbeiter"
 
-#: src/php/classes/class.iCalendar.php:124
+#: src/php/classes/class.iCalendar.php:136
 msgid "contains the roster for"
 msgstr "enthält den Dienstplan für"
 
-#: src/php/classes/class.iCalendar.php:125
+#: src/php/classes/class.iCalendar.php:137
 msgid "Weekday"
 msgstr "Wochentag"
+
+#: src/php/classes/class.iCalendar.php:139
+#, php-format
+msgid "Lunch from %1s to %2s"
+msgstr "Mittagspause von %1s bis %2s"
+
+#: src/php/classes/class.iCalendar.php:162
+msgid "Time to go to work"
+msgstr "Zeit zur Arbeit zu gehen"
+
+#: src/php/classes/class.iCalendar.php:168
+msgid "Time to leave"
+msgstr "Es ist Zeit zu gehen"
+
+#: src/php/classes/class.iCalendar.php:174
+msgid "Time for lunch break"
+msgstr "Es ist Zeit für eine Pause"
+
+#: src/php/classes/class.iCalendar.php:180
+msgid "Lunch break ends now"
+msgstr "Die Pause endet jetzt."
 
 #: src/php/classes/class.install.php:46
 msgid "There already is a configuration file."
@@ -299,6 +350,51 @@ msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 #: src/php/classes/class.install.php:515
 msgid "and"
 msgstr "und"
+
+#: src/php/classes/class.overtime.php:40
+msgid "An error has occured while inserting the overtime data."
+msgstr "Beim Speichern der Überstunden trat ein Fehler auf."
+
+#: src/php/classes/class.overtime.php:42 src/js/overtime.js:80
+msgid "The input date lies before the last existent date."
+msgstr "Das Datum des Eintrages liegt vor dem letzten vorhandenen Datum."
+
+#: src/php/classes/class.overtime.php:44
+msgid "Please enable JavaScript in order to allow PDR to handle this case."
+msgstr ""
+"Bitte aktivieren Sie JavaScript um PDR zu erlauben, diesen Fall zu handhaben."
+
+#: src/php/classes/class.overtime.php:66
+msgid "There is already an entry on this date."
+msgstr "An diesem Datum existiert bereits ein Eintrag."
+
+#: src/php/classes/class.overtime.php:67
+msgid "The data was therefore not inserted in the database."
+msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
+
+#: src/php/classes/class.overtime.php:157
+#: src/php/pages/collaborative-vacation-input-box.php:64
+#: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:42
+msgid "Employee"
+msgstr "Mitarbeiter"
+
+#: src/php/classes/class.overtime.php:158
+msgid "Balance"
+msgstr "Saldo"
+
+#: src/php/classes/class.overtime.php:159
+msgid "Date"
+msgstr "Datum"
+
+#: src/php/classes/class.roster_headcount.php:115
+msgid "The are no opening times stored inside the database for this weekday."
+msgstr ""
+"Es sind für diesen Wochentag keine Öffnungszeiten in der Datenbank "
+"hinterlegt."
+
+#: src/php/classes/class.roster_headcount.php:117
+msgid "Please configure the opening times!"
+msgstr "Bitte konfigurieren Sie die Öffnungszeiten!"
 
 #: src/php/classes/class.sessions.php:45
 msgid "administration"
@@ -394,26 +490,26 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:46
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:46
 #: src/php/pages/collaborative-vacation-input-box.php:94
 msgid "Start"
 msgstr "Beginn"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:47
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:47
 #: src/php/pages/collaborative-vacation-input-box.php:95
 msgid "End"
 msgstr "Ende"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:48
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:48
 #: src/php/pages/collaborative-vacation-input-box.php:96
 msgid "Reason"
 msgstr "Grund"
 
-#: src/php/pages/absence-edit.php:108 src/php/pages/absence-read.php:49
+#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:49
 msgid "Days"
 msgstr "Tage"
 
-#: src/php/pages/absence-edit.php:108
+#: src/php/pages/absence-edit.php:113
 msgid "Approval"
 msgstr "Genehmigung"
 
@@ -450,11 +546,6 @@ msgstr ""
 #: src/php/pages/collaborative-vacation-input-box.php:54
 msgid "Vacation"
 msgstr "Urlaub"
-
-#: src/php/pages/collaborative-vacation-input-box.php:64
-#: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:42
-msgid "Employee"
-msgstr "Mitarbeiter"
 
 #: src/php/pages/collaborative-vacation-input-box.php:103
 msgid "Pending"
@@ -752,14 +843,6 @@ msgstr "Mandantenverwaltung"
 msgid "User management"
 msgstr "Benutzerverwaltung"
 
-#: src/php/pages/overtime-edit.php:66
-msgid "There is already an entry on this date."
-msgstr "An diesem Datum existiert bereits ein Eintrag."
-
-#: src/php/pages/overtime-edit.php:67
-msgid "The data was therefore not inserted in the database."
-msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
-
 #: src/php/pages/reset_lost_password.php:32
 #: src/php/pages/reset_lost_password.php:57
 msgid "Invalid token"
@@ -790,15 +873,15 @@ msgstr "Beim Speichern der Daten trat ein Fehler auf."
 msgid "Missing input token"
 msgstr "Es wurde kein Token übergeben."
 
-#: src/php/pages/roster-day-edit.php:52
+#: src/php/pages/roster-day-edit.php:58
 msgid "There is no roster in the database."
 msgstr "In der Datenbank befindet sich kein Dienstplan."
 
-#: src/php/pages/roster-day-edit.php:52
+#: src/php/pages/roster-day-edit.php:58
 msgid "This is a proposal."
 msgstr "Dies ist ein Vorschlag."
 
-#: src/php/pages/roster-day-edit.php:78
+#: src/php/pages/roster-day-edit.php:84
 msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
 
@@ -814,26 +897,106 @@ msgstr "Der Dienstplan wird noch überarbeitet."
 msgid "Missing data in table `approval`"
 msgstr "Fehlende Daten in der Tabelle `approval`"
 
-#: src/php/pages/upload-pep.php:34
+#: src/php/pages/roster-week-table.php:133
+#, php-format
+msgid "Time of print: %1s"
+msgstr "Druckdatum: %1s"
+
+#: src/php/pages/upload-pep.php:36
+msgid "There was an error while trying to upload the file."
+msgstr "Beim Hochladen der Datei trat ein Fehler auf."
+
+#: src/php/pages/upload-pep.php:47
+msgid ""
+"UPLOAD_ERR_INI_SIZE: The uploaded file exceeds the upload_max_filesize "
+"directive in php.ini:"
+msgstr ""
+"UPLOAD_ERR_INI_SIZE: Die hochgeladene Datei übersteigt die "
+"upload_max_filesize Regel in der php.ini:"
+
+#: src/php/pages/upload-pep.php:50
+msgid ""
+"Make sure, that your webserver allows overwriting of settings and reads ."
+"htaccess files!"
+msgstr ""
+"Stellen Sie sicher, dass der Webserver das Überschreiben von Richtlinien "
+"per .htaccess Datei erlaubt!"
+
+#: src/php/pages/upload-pep.php:52
+msgid ""
+"For apache2 locate the apache configuration file e.g. /etc/apache2/apache2."
+"conf"
+msgstr ""
+"Für apache2 finden Sie die Konfigurationsdatei z.B. /etc/apache2/apache2.conf"
+
+#: src/php/pages/upload-pep.php:54
+msgid "Insert the following ruleset:"
+msgstr "Fügen Sie folgende Regel ein:"
+
+#: src/php/pages/upload-pep.php:60
+msgid ""
+"UPLOAD_ERR_FORM_SIZE: The uploaded file exceeds the MAX_FILE_SIZE directive "
+"that was specified in the HTML form."
+msgstr ""
+"UPLOAD_ERR_FORM_SIZE: Die hochgeladene Datei übersteigt die MAX_FILE_SIZE "
+"Regel, welche im HTML Formular vorgegeben wurde."
+
+#: src/php/pages/upload-pep.php:64
+msgid "UPLOAD_ERR_PARTIAL: The uploaded file was only partially uploaded."
+msgstr "UPLOAD_ERR_PARTIAL: Die Datei wurde nur teilweise hochgeladen."
+
+#: src/php/pages/upload-pep.php:68
+msgid "UPLOAD_ERR_NO_FILE: No file was uploaded."
+msgstr "UPLOAD_ERR_NO_FILE: Es wurde keine Datei hochgeladen."
+
+#: src/php/pages/upload-pep.php:72
+msgid "UPLOAD_ERR_NO_TMP_DIR: Missing a temporary folder."
+msgstr "UPLOAD_ERR_NO_TMP_DIR: Ein temporärer Ordner fehlt."
+
+#: src/php/pages/upload-pep.php:76
+msgid "UPLOAD_ERR_CANT_WRITE: Failed to write file to disk"
+msgstr ""
+"UPLOAD_ERR_CANT_WRITE: Fehler beim Schreiben der Datei auf die Festplatte."
+
+#: src/php/pages/upload-pep.php:80
+msgid "UPLOAD_ERR_EXTENSION: A PHP extension stopped the file upload."
+msgstr ""
+"UPLOAD_ERR_EXTENSION: Eine PHP Erweiterung hat das Hochladen der Datei "
+"gestoppt."
+
+#: src/php/pages/upload-pep.php:84
+msgid "Unknown upload error."
+msgstr "Unbekannter Fehler beim Hochladen."
+
+#: src/php/pages/upload-pep.php:96
 msgid "Sorry, only ASYS PEP files are allowed."
 msgstr "Leider sind nur ASYS PEP-Dateien erlaubt."
 
-#: src/php/pages/upload-pep.php:40
+#: src/php/pages/upload-pep.php:97
+#, php-format
+msgid "You tried to upload: %1s"
+msgstr "Sie haben versucht %1s hochzuladen."
+
+#: src/php/pages/upload-pep.php:98
+msgid "Please upload a valid ASYS PEP file!"
+msgstr "Bitte eine korrekt formatierte ASYS PEP Datei hochladen."
+
+#: src/php/pages/upload-pep.php:106
 msgid "Sorry, your file was not uploaded."
 msgstr "Entschuldigung, Ihre Datei wurde nicht hochgeladen."
 
-#: src/php/pages/upload-pep.php:44
+#: src/php/pages/upload-pep.php:110
+msgid "Sorry, there was an error uploading your file"
+msgstr "Beim Hochladen Ihrer Datei ist ein Fehler aufgetreten."
+
+#: src/php/pages/upload-pep.php:114
 #, php-format
 msgid "The file %1s has been uploaded."
 msgstr "Die Datei %1s wurde hochgeladen."
 
-#: src/php/pages/upload-pep.php:45
+#: src/php/pages/upload-pep.php:115
 msgid "It will be processed in the background."
-msgstr "Es wird im Hintergrund verarbeitet."
-
-#: src/php/pages/upload-pep.php:50
-msgid "Sorry, there was an error uploading your file"
-msgstr "Beim Hochladen Ihrer Datei ist ein Fehler aufgetreten."
+msgstr "Sie wird im Hintergrund verarbeitet."
 
 #: src/php/register.php:46
 msgid "This username is already taken."
@@ -861,11 +1024,17 @@ msgstr ""
 "Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
 "Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
 
-#~ msgid "Really delete this data set?"
-#~ msgstr "Dieses Datum tatsächlich löschen?"
+#: src/js/javascript.js:80
+msgid "Really delete this data set?"
+msgstr "Dieses Datum tatsächlich löschen?"
 
-#~ msgid "The end date is before the start date."
-#~ msgstr "Das End-Datum ist vor dem Start-Datum."
+#: src/js/javascript.js:120
+msgid "The end date is before the start date."
+msgstr "Das End-Datum liegt vor dem Start-Datum."
+
+#: src/js/overtime.js:82
+msgid "Are you sure, that the data is correct?"
+msgstr "Sind Sie sicher, dass die Daten korrekt sind?"
 
 #~ msgid "The permission to create a roster is missing."
 #~ msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."

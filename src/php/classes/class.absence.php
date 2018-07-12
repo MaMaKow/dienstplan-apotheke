@@ -105,11 +105,8 @@ class absence {
         if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
             throw new Exception("\$date_sql has to be a string! $date_sql given.");
         }
-
         /*
          * We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
-         * TODO: Build an option to delete future vacations of people when leaving.
-         * DELETE `absence` FROM `absence` LEFT JOIN `employees` ON `employees`.`id`= `absence`.`employee_id` WHERE `employees`.`end_of_employment` < `absence`.`start`
          */
         if (!isset($workforce)) {
             throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
@@ -272,14 +269,14 @@ class absence {
         $Months = array();
         for ($i = 1; $i <= 12; $i++) {
             $timestamp = mktime(0, 0, 0, $i, 1);
-            $Months[date('n', $timestamp)] = date('F', $timestamp);
+            $Months[date('n', $timestamp)] = strftime('%B', $timestamp);
         }
         return $Months;
     }
 
     private static function get_rostering_years() {
         $Years = array();
-        $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+        $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan` ORDER BY `Datum`";
         $result = database_wrapper::instance()->run($sql_query);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Years[] = $row->year;
@@ -291,8 +288,8 @@ class absence {
     public static function build_html_select_year($current_year) {
         $Years = self::get_rostering_years();
         $html_select_year = "";
-        $html_select_year .= "<form id='select_year' method=post>";
-        $html_select_year .= "<select name=year onchange=this.form.submit()>";
+        $html_select_year .= "<form id='select_year' class='inline_form' method=post>";
+        $html_select_year .= "<select name=year class='large' onchange=this.form.submit()>";
         foreach ($Years as $year_number) {
             $html_select_year .= "<option value='$year_number'";
             if ($year_number == $current_year) {
@@ -308,8 +305,8 @@ class absence {
     public static function build_html_select_month($current_month) {
         $Months = self::get_rostering_month_names();
         $html_select_month = "";
-        $html_select_month .= "<form id='select_month' method=post>";
-        $html_select_month .= "<select name=month_number onchange=this.form.submit()>";
+        $html_select_month .= "<form id='select_month' class='inline_form' method=post>";
+        $html_select_month .= "<select name=month_number class='large' onchange=this.form.submit()>";
         foreach ($Months as $month_number => $month_name) {
             $html_select_month .= "<option value='$month_number'";
             if ($month_number == $current_month) {

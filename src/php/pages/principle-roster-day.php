@@ -61,6 +61,7 @@ $html_text = '';
 $html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
 $html_text .= "<table>\n";
 $max_employee_count = roster::calculate_max_employee_count($Principle_roster);
+$day_iterator = $pseudo_date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
     foreach (array_keys($Principle_roster) as $day_iterator) {
@@ -68,6 +69,7 @@ for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_co
     }
     $html_text .= "</tr>\n";
 }
+$html_text .= build_html_roster_views::build_roster_input_row_add_row($day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
 
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";

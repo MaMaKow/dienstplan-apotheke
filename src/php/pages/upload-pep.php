@@ -36,33 +36,56 @@ function handle_user_input() {
         user_dialog::add_message(gettext('There was an error while trying to upload the file.'));
         switch ($_FILES['file_to_upload']['error']) {
             case 1:
+                $path = PDR_FILE_SYSTEM_APPLICATION_PATH;
+                $apache_conf_example = <<<EOT
+&lt;Directory $path&gt;
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+&lt;/Directory&gt;
+EOT;
                 $message = gettext('UPLOAD_ERR_INI_SIZE: The uploaded file exceeds the upload_max_filesize directive in php.ini:');
                 $message .= ' ' . ini_get('upload_max_filesize');
+                user_dialog::add_message($message, E_USER_WARNING);
+                $message = gettext('Make sure, that your webserver allows overwriting of settings and reads .htaccess files!');
+                user_dialog::add_message($message, E_USER_NOTICE);
+                $message = gettext('For apache2 locate the apache configuration file e.g. /etc/apache2/apache2.conf');
+                $message .= ' ';
+                $message .= gettext('Insert the following ruleset:');
+                user_dialog::add_message($message, E_USER_NOTICE);
+                $message = gettext($apache_conf_example);
+                user_dialog::add_message($message, E_USER_NOTICE, TRUE);
                 break;
             case 2:
                 $message = gettext('UPLOAD_ERR_FORM_SIZE: The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.');
+                user_dialog::add_message($message, E_USER_NOTICE);
                 break;
             case 3:
                 $message = gettext('UPLOAD_ERR_PARTIAL: The uploaded file was only partially uploaded.');
+                user_dialog::add_message($message, E_USER_NOTICE);
                 break;
             case 4:
                 $message = gettext('UPLOAD_ERR_NO_FILE: No file was uploaded.');
+                user_dialog::add_message($message, E_USER_NOTICE);
                 break;
             case 6:
                 $message = gettext('UPLOAD_ERR_NO_TMP_DIR: Missing a temporary folder.');
+                user_dialog::add_message($message, E_USER_NOTICE);
                 break;
             case 7:
                 $message = gettext('UPLOAD_ERR_CANT_WRITE: Failed to write file to disk');
+                user_dialog::add_message($message, E_USER_NOTICE);
                 break;
             case 8:
                 $message = gettext('UPLOAD_ERR_EXTENSION: A PHP extension stopped the file upload.');
+                user_dialog::add_message($message, E_USER_NOTICE);
                 break;
             default:
                 $message = gettext('Unknown upload error.');
                 print_debug_variable('Unknown upload error.');
+                user_dialog::add_message($message, E_USER_NOTICE);
                 break;
         }
-        user_dialog::add_message($message, E_USER_NOTICE);
         return FALSE;
     }
 
