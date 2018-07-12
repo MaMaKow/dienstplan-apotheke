@@ -271,9 +271,11 @@ class sessions {
 
         $sent_result = mail($recipient, $message_subject, $message_text, $headers);
         if ($sent_result) {
-            echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
+            $message = gettext("The mail was successfully sent. Thank you!");
+            user_dialog::add_message($message, E_USER_NOTICE);
         } else {
-            echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.<br>\n";
+            $message = gettext("An error occured while sending the mail. I am sorry.");
+            user_dialog::add_message($message, E_USER_NOTICE);
         }
     }
 
