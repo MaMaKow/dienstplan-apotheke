@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require '../../../default.php';
+require_once '../../../default.php';
 $tage = 7;
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $mandant = $branch_id;
@@ -39,7 +39,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo "<div class='main-area'>\n";
-echo "<div id=navigation_elements class='no-print'>";
+echo "<div id=navigation_elements class='no_print'>";
 echo build_html_navigation_elements::build_select_branch($mandant, $date_sql);
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
@@ -57,7 +57,7 @@ for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += 
     echo "</div>\n";
 }
 echo "</div><!--id=roster_image_div-->\n";
-echo "</div><!--class='main-area no-print'-->\n";
+echo "</div><!--class='main-area no_print'-->\n";
 
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';

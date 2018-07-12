@@ -121,7 +121,7 @@ function build_checkbox_permission($privilege, $checked) {
         ?>
     </p><p>
 
-        <input type=submit id=save_new class='no-print' name=submit_user_data value='Eintragen' form='user_management'>
+        <input type=submit id=save_new class='no_print' name=submit_user_data value='Eintragen' form='user_management'>
     </p>
 
 </form>

@@ -22,7 +22,7 @@ abstract class task_rotation {
     public static function task_rotation_main($Dates_unix, $task, $branch_id) {
         global $workforce;
         $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
-        $weekly_rotation_div_html .= $task . ":<br>\n";
+        $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
         foreach ($Dates_unix as $date_unix) {
             unset($rotation_employee_id);
             $rotation_employee_id = self::task_rotation_get_worker($date_unix, $task, $branch_id);
@@ -145,7 +145,7 @@ abstract class task_rotation {
                          * This value is only stored in the database, if it is in the past.
                          * This is to make sure, that fresh absences can be regarded.
                          */
-                        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id´, :branch_id)";
+                        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id, :branch_id)";
                         database_wrapper::instance()->run($sql_query, array(
                             'task' => $task,
                             'date' => $temp_date_sql,
@@ -159,7 +159,7 @@ abstract class task_rotation {
         } else {
             //If there is noone anywhere in the past we just take the first person in the array.
             $rotation_employee_id = min($Rezeptur_Mitarbeiter);
-            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id´, :branch_id)";
+            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id, :branch_id)";
             database_wrapper::instance()->run($sql_query, array(
                 'task' => $task,
                 'date' => $date_sql,

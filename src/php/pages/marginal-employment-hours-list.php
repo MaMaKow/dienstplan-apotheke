@@ -76,7 +76,7 @@ $table_body_html .= "</tbody>";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
-<FORM method=post class="no-print">
+<FORM method=post class="no_print">
     <SELECT name=month onchange=this.form.submit()>
         <?php
         /*

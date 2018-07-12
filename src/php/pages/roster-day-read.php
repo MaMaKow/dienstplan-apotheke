@@ -88,7 +88,7 @@ echo "<div id=main-area>\n";
 
 echo user_dialog::build_messages();
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
-echo "<div id=navigation_form_div class=no-print>\n";
+echo "<div id=navigation_form_div class=no_print>\n";
 echo build_html_navigation_elements::build_button_day_backward($date_unix);
 echo build_html_navigation_elements::build_button_day_forward($date_unix);
 echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/roster-day-edit.php', array('datum' => $date_sql));
@@ -103,7 +103,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
     echo "<tr><td></td></tr>\n";
     echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
-    echo "<tr><td><br></td></tr>";
+    echo "<tr><td></td></tr>\n";
     $Abwesende = absence::read_absentees_from_database($date_sql);
     if (isset($Abwesende)) {
         echo build_html_roster_views::build_absentees_row($Abwesende);

@@ -367,8 +367,8 @@ abstract class roster {
             $Employee_count[] = (count($Roster_day_array));
         }
         $roster_employee_count = max($Employee_count); //The number of rows is defined by the column (=day) with the most lines
-        $max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
-        return $max_employee_count;
+        //$max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
+        return $roster_employee_count;
     }
 
     /*
