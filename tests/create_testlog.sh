@@ -16,7 +16,7 @@ then
     then
         echo "Create $target_file_name, please use it to document tests as passed or failed.";
         cp "$source_file" "$target_file_name";
-        git add "$target_file_name";
+        git add -f "$target_file_name";
     else
         echo "$target_file_name already exists.";
         :
