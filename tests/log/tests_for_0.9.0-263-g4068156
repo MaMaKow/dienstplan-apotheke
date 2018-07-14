@@ -1,0 +1,22 @@
+These things should be done before merging changes into master:
+
+# Login
+# Create a roster from scratch
+# Edit the roster:
+## Exchange an employee with another one.
+## Provoke some errors:
+# View the roster in edit mode day.
+# View the roster in edit mode weekly table.
+# View the roster in edit mode weekly images.
+
+# Check the site on the following browsers:
+## Internet Explorer, Firefox, Safari, Chrome, and the iPhone.
+
+# Click all the links
+# Validate all the pages
+## https://validator.w3.org/#validate_by_input
+# http://webdevchecklist.com/
+# https://www.sk89q.com/content/2010/04/phpsec_cheatsheet.pdf
+
+#Change password with
+##lost_password.php
