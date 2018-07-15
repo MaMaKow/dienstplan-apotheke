@@ -11,7 +11,7 @@ if [ "testing" == "$branch_name" ]
 then
     echo "We are on the testing branch. A test log file will be created.";
     source_file="$root_folder/tests/List of Tests";
-    target_file_name="$root_folder/tests/log/tests_for_$commit_name";
+    target_file_name="$root_folder/tests/log/tests_for_$commit_name"".md";
     if [ ! -f $target_file_name ]
     then
         echo "Create $target_file_name, please use it to document tests as passed or failed.";
