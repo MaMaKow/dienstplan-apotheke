@@ -1,4 +1,33 @@
 This is a TODO list.
+  * lost_password.php							**FAILED**
+    - No reaction to the input at all
+    - Actually there was an email. But no message about it.
+    - And the link did not work.
+--
+  * Write a mail using the contact form					**FAILED**
+    - The from header is malformed. Some of the linebreaks do not work. Probably they are in '' instead of ""
+--
+    * use the datepicker in/for old browsers				**FAILED**
+      - RangeError: invalid language tag: de_DE
+--
+  * View the roster in read mode weekly table.				**FAILED**
+    - the layout is broken. "Hours per week" are inside the table.
+    * Task rotation							**FAILED**
+      - It is always PTA_6 that is no rotation.
+--
+    * Change roster							**FAILED**
+      - The changes were not saved into the database
+* Overtime								**FAILED**
+  * Read								__passed__
+  * Write								**FAILED**
+    - The balance is out of control. It rises with every view!
+--
+    * Delete the absence						**FAILED**
+      - TypeError: pdr_translations[locale] is undefined[Weitere Informationen]  javascript.js:5:9
+--
+    * Upload a PEP file to upload-pep.php				**FAILED**
+      - Sorry, there was an error uploading your file
+
 * Notdienst Eingabe- und Ausgabe-Maske
   * Ausgabemaske mit Feld für Eintragung von Ersatz zum Aushang
 

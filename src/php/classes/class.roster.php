@@ -323,6 +323,11 @@ abstract class roster {
                 $Changing_times[] = $roster_item_object->break_end_int;
             }
         }
+        $Clean_changing_times = roster::cleanup_changing_times($Changing_times);
+        return $Clean_changing_times;
+    }
+
+    public static function cleanup_changing_times($Changing_times) {
         sort($Changing_times);
         $Unique_changing_times = array_unique($Changing_times);
         /*
