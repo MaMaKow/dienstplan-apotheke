@@ -28,11 +28,20 @@ class examine_roster {
         $this->Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster);
         $this->Roster_of_goods_receipt_employees = roster_headcount::get_roster_of_goods_receipt_employees($Roster);
 
-        $this->Changing_times = roster::calculate_changing_times($Roster);
+        $this->Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
+        $Changing_times = roster::calculate_changing_times($Roster);
+        /*
+         * Add the opening and closing time to the changing times:
+         * This is necessary to allow examine_roster->check_for_sufficient_qualified_pharmacist_count()
+         *   to look at the start of the day.
+         */
+        $Changing_times[] = $this->Opening_times['day_opening_start'];
+        $Changing_times[] = $this->Opening_times['day_opening_end'];
+        $this->Changing_times = roster::cleanup_changing_times($Changing_times);
+
         $this->Anwesende = roster_headcount::headcount_roster($this->Roster_of_all_employees, $this->Changing_times);
         $this->Wareneingang_Anwesende = roster_headcount::headcount_roster($this->Roster_of_goods_receipt_employees, $this->Changing_times);
         $this->Approbierten_anwesende = roster_headcount::headcount_roster($this->Roster_of_qualified_pharmacist_employees, $this->Changing_times);
-        $this->Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
     }
 
     public function check_for_overlap($date_sql) {
