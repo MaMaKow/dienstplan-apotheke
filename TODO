@@ -1,9 +1,4 @@
 This is a TODO list.
-  * lost_password.php							**FAILED**
-    - No reaction to the input at all
-    - Actually there was an email. But no message about it.
-    - And the link did not work.
---
   * Write a mail using the contact form					**FAILED**
     - The from header is malformed. Some of the linebreaks do not work. Probably they are in '' instead of ""
 --
@@ -30,7 +25,8 @@ This is a TODO list.
 
 * Notdienst Eingabe- und Ausgabe-Maske
   * Ausgabemaske mit Feld für Eintragung von Ersatz zum Aushang
-
+* Add verbosity to the reset_lost_password.php
+  * Tell the user what to do there!
 * Installation
 * Konfiguration
 * Dokumentation
