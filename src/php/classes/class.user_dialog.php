@@ -103,24 +103,25 @@ abstract class user_dialog {
     }
 
     public static function contact_form_send_mail() {
-        if (filter_has_var(INPUT_POST, 'submit_contact_form')) {
-            global $config;
-            $application_name = $config['application_name'];
-            $recipient = $config['contact_email'];
-            $subject = $application_name . " " . gettext('has a comment');
+        if (!filter_has_var(INPUT_POST, 'submit_contact_form')) {
+            return FALSE;
+        }
+        global $config;
+        $application_name = $config['application_name'];
+        $recipient = $config['contact_email'];
+        $subject = $application_name . " " . gettext('has a comment');
 
-            $message = self::contact_form_send_mail_build_message();
-            $header = self::contact_form_send_mail_build_header();
+        $message = self::contact_form_send_mail_build_message();
+        $header = self::contact_form_send_mail_build_header();
 
-            $mail_result = mail($recipient, $subject, $message, $header);
-            if ($mail_result) {
-                $message = gettext("The mail was successfully sent. Thank you!");
-                user_dialog::add_message($message, E_USER_NOTICE);
-            } else {
-                error_log(var_export(error_get_last(), TRUE));
-                $message = gettext("Error while sending the mail. I am sorry.");
-                user_dialog::add_message($message, E_USER_ERROR);
-            }
+        $mail_result = mail($recipient, $subject, $message, $header);
+        if ($mail_result) {
+            $message = gettext("The mail was successfully sent. Thank you!");
+            user_dialog::add_message($message, E_USER_NOTICE);
+        } else {
+            error_log(var_export(error_get_last(), TRUE));
+            $message = gettext("Error while sending the mail. I am sorry.");
+            user_dialog::add_message($message, E_USER_ERROR);
         }
     }
 

@@ -28,7 +28,7 @@ $session->exit_on_missing_privilege('request_own_absence');
 echo "<div id='input_box_data_div'></div>";
 echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";
 echo build_absence_month($year, $month_number);
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </BODY>
 </HTML>

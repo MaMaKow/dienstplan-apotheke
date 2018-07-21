@@ -60,7 +60,7 @@ echo "</div><!--id=roster_image_div-->\n";
 echo "</div><!--class='main-area no_print'-->\n";
 
 
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 
 echo "</body>\n";
 echo "</html>";

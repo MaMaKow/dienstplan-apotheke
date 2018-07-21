@@ -96,7 +96,7 @@ $Working_hours_week_should = build_html_roster_views::calculate_working_hours_we
 echo build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, array('employee_id' => $employee_id));
 echo "</div>\n";
 
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </BODY>
 </HTML>

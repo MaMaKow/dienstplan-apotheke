@@ -130,7 +130,7 @@ echo user_dialog::build_messages();
 
 echo "<p id=xmlhttpresult></p>\n";
 echo "<p id=javascriptmessage></p>\n";
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 <script type="text/javascript">
     update_pep();
