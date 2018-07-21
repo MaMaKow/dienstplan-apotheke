@@ -110,7 +110,7 @@ $roster_image_bar_plot = new roster_image_bar_plot($Principle_employee_roster);
 echo $roster_image_bar_plot->svg_string;
 
 
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </body>
 </html>

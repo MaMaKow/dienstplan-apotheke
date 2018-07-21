@@ -56,7 +56,7 @@ echo "$tablebody";
 echo "</table>\n";
 echo "</form>\n";
 echo "</div>\n";
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </body>
 </html>
