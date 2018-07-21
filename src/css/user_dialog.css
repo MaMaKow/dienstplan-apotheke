@@ -1,0 +1,65 @@
+/*
+Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/*
+    Created on : 17.07.2018, 20:38:27
+    Author     : Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+*/
+
+div#user_dialog_contact_form_div {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 171, 231, 0.9);
+    white-space: normal;
+    padding: 1em;
+    margin: auto;
+}
+
+div#user_dialog_contact_form_div form#contact_form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+div#user_dialog_contact_form_div form#contact_form textarea {
+    /*width: 320px;*/
+    width: 50vw;
+    height: 50vh;
+}
+div#user_dialog_contact_form_div form#contact_form p {
+    margin: auto;
+}
+
+div#user_dialog_contact_form_div #remove_form_div_span {
+    font-size: xx-large;
+    color: black;
+    background-color: white;
+    padding: 1em;
+    margin-right: 1em;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+div#user_dialog_contact_form_div #remove_form_div_span:hover {
+    color: white;
+    background-color: red;
+}

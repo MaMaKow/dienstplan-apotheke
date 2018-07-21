@@ -1,69 +1,7 @@
 <div class="foot no_print">
-    <script>
-        /**
-         * Displays the element "contactForm".
-         *
-         * @returns void
-         */
-        function unhideContactForm()
-        {
-            document.getElementById("contactForm").style.display = "inline";
-        }
-    </script>
-    <p><a href=#bottom onclick=unhideContactForm()><?= gettext("Wishes, criticism, suggestions") ?>&nbsp;+</a></p>
-    <form accept-charset='utf-8' id=contactForm style=display:none method=POST>
-        <table>
-            <tr><td><?= gettext("Message") ?></td><td><textarea style=width:320px name=message rows=5></textarea></td></tr>
-        </table>
-        <input type="hidden" name=Roster value="<?php var_export($Roster) ?>">
-        <input type="submit" name=submitContactForm value="Absenden">
-        <p><!--Nur damit der Submit-Button nicht ganz am unteren Seitenrand klebt.-->
-    </form>
-    <?php
-    if (!isset($workforce)) {
-        $workforce = new workforce();
-    }
-    if (isset($config['application_name'])) {
-        $application_name = $config['application_name'];
-    } else {
-        $application_name = 'PDR';
-    }
-
-    $recipient = $config['contact_email'];
-    $subject = $application_name . " " . gettext('has a comment');
-    $message = "";
-    $trace = debug_backtrace();
-    $message .= $trace[0]['file'];
-    $message .= "\n\n";
-    $message .= "Die Nachricht stammt von:";
-    $message .= $workforce->List_of_employees[$_SESSION['user_employee_id']]->full_name;
-    $message .= "\n\n";
-    if (filter_has_var(INPUT_POST, 'message')) {
-        $message .= "<<<Nachricht<<<\n";
-        $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
-        $message .= "\n";
-        $message .= ">>>   >>>\n";
-        $message .= "\n\n";
-    }
-    $message .= "<<<Trace<<<\n";
-    $message .= htmlentities(var_export($trace, TRUE));
-    $message .= "\n";
-    $message .= ">>>   >>>";
-    $message .= "\n\n";
-    $header = 'From: ' . $_SESSION['user_email'] . '\r\n';
-    $header .= 'Reply-To: ' . $_SESSION['user_email'] . '\r\n';
-    $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-    $header .= 'Content-type: text/plain; charset=UTF-8;\r\n';
-    if (filter_has_var(INPUT_POST, 'submitContactForm')) {
-        $versendet = mail($recipient, $subject, $message, $header);
-        if ($versendet) {
-            echo "Die Nachricht wurde versendet. Vielen Dank!";
-        } else {
-            error_log(var_export(error_get_last(), TRUE));
-            echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.";
-        }
-    }
-    ?>
+    <p><a href=#bottom onclick=unhide_contact_form()><?= gettext("Wishes, criticism, suggestions") ?>&nbsp;+</a></p>
+    <?= user_dialog::build_contact_form(); ?>
+    <?php user_dialog::contact_form_send_mail($workforce); ?>
     <a target="_blank" href="https://github.com/MaMaKow/dienstplan-apotheke/issues/new">
         <p>
             <?= gettext("Report a bug") ?>
