@@ -1,7 +1,4 @@
 This is a TODO list.
-  * Write a mail using the contact form					**FAILED**
-    - The from header is malformed. Some of the linebreaks do not work. Probably they are in '' instead of ""
---
     * use the datepicker in/for old browsers				**FAILED**
       - RangeError: invalid language tag: de_DE
 --
