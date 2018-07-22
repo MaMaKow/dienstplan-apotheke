@@ -30,6 +30,7 @@ div#user_dialog_contact_form_div {
     white-space: normal;
     padding: 1em;
     margin: auto;
+    z-index: 99;
 }
 
 div#user_dialog_contact_form_div form#contact_form {
