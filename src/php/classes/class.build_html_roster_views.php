@@ -417,19 +417,21 @@ abstract class build_html_roster_views {
         global $workforce, $List_of_employee_working_week_hours;
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
         $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
-        $week_hours_table_html .= "<p>";
+        $week_hours_table_html .= "<table class='tight'>";
         foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
                 continue; /* Only the specified employees is shown. */
             }
-            //$week_hours_table_html .= "<br>";
+            $week_hours_table_html .= "<tr>";
+            $week_hours_table_html .= "<td>";
             if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
                 $week_hours_table_html .= $workforce->List_of_employees[$employee_id]->last_name;
             } else {
                 $week_hours_table_html .= "Unknown employee: " . $employee_id;
             }
-            $week_hours_table_html .= " " . round($working_hours_have, 2);
-            $week_hours_table_html .= " / ";
+            $week_hours_table_html .= "</td>";
+            $week_hours_table_html .= "<td>" . round($working_hours_have, 2);
+            $week_hours_table_html .= " </td><td> ";
             if (isset($Working_hours_week_should[$employee_id])) {
                 $week_hours_table_html .= round($Working_hours_week_should[$employee_id], 1) . "\n";
                 $differenz = $working_hours_have - $Working_hours_week_should[$employee_id];
@@ -437,13 +439,16 @@ abstract class build_html_roster_views {
                 $week_hours_table_html .= $List_of_employee_working_week_hours[$employee_id] . "\n";
                 $differenz = $working_hours_have - $List_of_employee_working_week_hours[$employee_id];
             }
+            $week_hours_table_html .= "</td>\n";
+            $week_hours_table_html .= "<td>\n";
             if (abs($differenz) >= 0.25) {
-                $week_hours_table_html .= " <b>( " . $differenz . " )</b>\n";
+                $week_hours_table_html .= "<b>" . sprintf("%+.1f", $differenz) . "</b>\n";
             }
-
-            $week_hours_table_html .= "<br>\n";
+            $week_hours_table_html .= "</td>\n";
+            $week_hours_table_html .= "</tr>\n";
         }
-        $week_hours_table_html .= "</p>\n";
+        $week_hours_table_html .= "</table>";
+
         $week_hours_table_html .= "</div>"; // id=week_hours_table_div
         return $week_hours_table_html;
     }
