@@ -39,9 +39,9 @@ tr.wochenende {
 }
 #main-area {
     width: 29.7cm;
+    /*
     height: available;
     height: 19.0cm;
-    /*
     */
 }
 div#table_overlay_area {
@@ -50,20 +50,30 @@ div#table_overlay_area {
     padding-left: 0px;
     margin-left: 0px;
     transform: translateX(-10mm) translateY(-10mm) scale(.9) ;
+    width: 23.7cm;
     /*
+    height: 19.0cm;
     */
-    height: 12.0cm;
-    width: 21.7cm;
 }
 div#weekly_rotation {
     position: absolute;
     top: 0cm;
-    left: 21.7cm;
+    right: 0cm;
+    /*
+    left: 23.7cm;
+    */
+    width: 4cm;
+    font-size: xx-small;
 }
 div#week_hours_table_div {
     position: absolute;
     top: 5cm;
-    left: 21.7cm;
+    right: 0cm;
+    /*
+    left: 23.7cm;
+    */
+    width: 4cm;
+    font-size: xx-small;
 }
 #duty-rooster-table {
     /*
