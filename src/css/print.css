@@ -96,6 +96,9 @@ table#duty-rooster-table {
 strong {
     font-style: italic;
 }
+svg foreignObject p {
+    border: 1px solid black;
+}
 /*
  * The following styles are for:
  * marginal-employment-hours-list.php
