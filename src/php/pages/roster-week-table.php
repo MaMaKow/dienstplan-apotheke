@@ -67,7 +67,9 @@ $date_info_line_html = "<div id=date_info_line class='no_print'>" . gettext("cal
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
+$main_div_html .= "<div class='no_print'>";
 $main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+$main_div_html .= "</div>";
 
 $duty_roster_form_html = "";
 $buttons_div_html = "";
@@ -125,14 +127,13 @@ $table_div_html .= $table_html;
 $duty_roster_form_html .= $table_div_html;
 
 $main_div_html .= $duty_roster_form_html;
-
+$main_div_html .= $duty_roster_working_hours_div;
 $main_div_html .= "</div>\n";
 
 echo user_dialog::build_messages();
 
 echo '<div id="print_time_info" class="only_print"><p class="tiny">' . sprintf(gettext('Time of print: %1s'), date('d.m.Y H:i:s')) . '</p></div>';
 echo $main_div_html;
-echo $duty_roster_working_hours_div;
 /* echo <<<EOF
   <p style="page-break-after: always;">&nbsp;</p>
   <p style="page-break-before: always;">&nbsp;</p>\n
@@ -146,9 +147,9 @@ for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += 
     echo "<div class=image_part>\n";
     echo "<p>" . strftime('%A %x', $date_unix) . "</p>";
     echo $roster_image_bar_plot->svg_string;
-    echo "</div>\n";
+    echo "</div><!--div class=image_part-->\n";
 }
-echo "</div><!--id=roster_image_div-->\n";
+echo "</div><!--id=roster_week_image_div-->\n";
 echo "</div><!--class='main-area no_print'-->\n";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>

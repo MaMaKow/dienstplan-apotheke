@@ -11,9 +11,9 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
 @media screen {
     div
     {
-        /*
         margin: 3px;
         border: 1px solid #FF0000;
+        /*
         */
     }
 }
@@ -93,16 +93,21 @@ div#main-area
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 8px;
-
+    overflow: auto;
 }
 table#duty-rooster-table
 {
+    /*
     width: 85%;
+
     font-size: 1.18vw;
+    */
 }
 div#table_overlay_area
 {
+    /*
     width: 100%;
+    */
     position: relative;
 }
 div.roster_plot_div
@@ -426,9 +431,8 @@ button:disabled, .btn-secondary:disabled {
 div#weekly_rotation {
     font-family: monospace;
     font-size: smaller;
-    position: absolute;
-    right: 0px;
-    top: 0px;
+    position: relative;
+    float: right;
 }
 div#print_time_info {
     position:  absolute;
@@ -441,9 +445,11 @@ div#roster_week_image_div {
 div#week_hours_table_div {
     font-family: monospace;
     font-size: smaller;
-    position: absolute;
-    right: 0px;
-    bottom: 10em;
+    position: relative;
+    float:     right;
+}
+table.tight tr td {
+    padding-bottom: 0em;
 }
 #branch_form {
     margin-right: 1em;
