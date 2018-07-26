@@ -106,7 +106,7 @@ if ($session->user_has_privilege('approve_roster')) {
     $html_text .= build_html_navigation_elements::build_button_disapproval($approval);
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
-$html_text .= "</div><!--id=navigation_elements-->\n";
+$html_text .= "</div><!-- id=navigation_elements -->\n";
 $html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 /*
@@ -182,9 +182,10 @@ if (!empty($Roster)) {
     $html_text .= $roster_image_bar_plot->svg_string;
     $html_text .= "<br>\n";
     $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);
-    $html_text .= "</div>\n";
+    $html_text .= "</div><!-- class=image -->\n";
 }
-$html_text .= "</div>";
+$html_text .= task_rotation::build_html_task_rotation_select('Rezeptur', $date_sql, $branch_id);
+$html_text .= "</div><!-- id=main-area -->";
 echo "$html_text";
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';

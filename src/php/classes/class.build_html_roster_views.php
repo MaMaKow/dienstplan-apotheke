@@ -132,7 +132,7 @@ abstract class build_html_roster_views {
         }
         $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
         /*
-         * The emplty option is necessary to enable the deletion of employees from the roster:
+         * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
         if (isset($workforce->List_of_employees[$roster_employee_id]->last_name) or ! isset($roster_employee_id)) {

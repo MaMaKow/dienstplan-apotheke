@@ -11,9 +11,9 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
 @media screen {
     div
     {
+        /*
         margin: 3px;
         border: 1px solid #FF0000;
-        /*
         */
     }
 }
@@ -751,3 +751,4 @@ body div#week_hours_table_div p span {
 select[id^='reason_in_'], select[id^='absence_in_']{
     display: none;
 }
+
