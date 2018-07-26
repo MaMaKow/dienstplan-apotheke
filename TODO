@@ -1,6 +1,5 @@
 This is a TODO list.
   * View the roster in read mode weekly table.				**FAILED**
-    - the layout is broken. "Hours per week" are inside the table.
     * Task rotation							**FAILED**
       - It is always PTA_6 that is no rotation.
 --

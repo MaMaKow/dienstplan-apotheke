@@ -38,10 +38,11 @@ abstract class task_rotation {
 
     private static function task_rotation_get_worker($date_unix, $task, $branch_id) {
         $date_sql = date("Y-m-d", $date_unix);
-        global $workforce;
-        //We want the PTAs to take turns in the lab at a weekly basis.
-        //We sort them by VK number and check for the last one to take his turn.
-        //TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?
+        /*
+         * We want the PTAs to take turns in the lab at a weekly basis.
+         * We sort them by VK number and check for the last one to take his turn.
+         * TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?
+         */
 
         database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` > NOW()");
         //Was this day already planned?
@@ -168,6 +169,76 @@ abstract class task_rotation {
             ));
         }
         return $rotation_employee_id;
+    }
+
+    public static function build_html_task_rotation_select($task, $date_sql, $branch_id) {
+        self::task_handle_user_input();
+        $task_employee_id = self::read_task_employee_from_database($task, $date_sql, $branch_id);
+        global $workforce;
+        if (NULL === $workforce) {
+            $workforce = new workforce($date_sql);
+        }
+        print_debug_variable($workforce->List_of_compounding_employees);
+        $task_rotation_select_html = "";
+        $task_rotation_select_html .= "<div id='task_rotation_select_div'>";
+        $task_rotation_select_html .= "<p>" . pdr_gettext($task) . "</p>";
+        $task_rotation_select_html .= "<form>";
+        $task_rotation_select_html .= "<input  name='task_rotation_task' type='hidden' value='$task'>";
+        $task_rotation_select_html .= "<input  name='task_rotation_date' type='hidden' value='$date_sql'>";
+        $task_rotation_select_html .= "<input  name='task_rotation_branch' type='hidden' value='$branch_id'>";
+        $task_rotation_select_html .= "<select name='task_rotation_employee' onchange='this.form.submit()'>";
+        /*
+         * The empty option is necessary to enable the deletion of employees:
+         */
+        $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
+        if (isset($workforce->List_of_employees[$task_employee_id]->last_name) or ! isset($task_employee_id)) {
+            foreach ($workforce->List_of_compounding_employees as $employee_id) {
+                $employee_object = $workforce->List_of_employees[$employee_id];
+                if ($task_employee_id == $employee_id and NULL !== $task_employee_id) {
+                    $task_rotation_select_html .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                } else {
+                    $task_rotation_select_html .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                }
+            }
+        } else {
+            /*
+             * Unknown employee, probably someone from the past.
+             */
+            $task_rotation_select_html .= "<option value=$task_employee_id selected>" . $task_employee_id . " Unknown employee" . "</option>";
+        }
+
+        $task_rotation_select_html .= "</select>\n";
+        return $task_rotation_select_html;
+        $task_rotation_select_html .= "</form>";
+        return $task_rotation_select_html;
+    }
+
+    private static function read_task_employee_from_database($task, $date_sql, $branch_id) {
+        $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = :task and `date` = :date and `branch_id` = :branch_id";
+        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id));
+        $row = $result->fetch(PDO::FETCH_OBJ);
+        if (empty($row->task)) {
+            return NULL;
+        }
+        $employee_id = $row->VK;
+        return $employee_id;
+    }
+
+    public static function task_handle_user_input() {
+        $task = user_input::get_variable_from_any_input('task_rotation_task', FILTER_SANITIZE_STRING);
+        $date_sql = user_input::get_variable_from_any_input('task_rotation_date', FILTER_SANITIZE_STRING);
+        $branch_id = user_input::get_variable_from_any_input('task_rotation_branch', FILTER_SANITIZE_NUMBER_INT);
+        $employee_id = user_input::get_variable_from_any_input('task_rotation_employee', FILTER_SANITIZE_NUMBER_INT);
+        if (is_null($task) or is_null($date_sql) or is_null($branch_id) or is_null($employee_id)) {
+            return FALSE;
+        }
+        self::write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id);
+    }
+
+    private static function write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id) {
+        $sql_query = "INSERT INTO `task_rotation` SET `task` = :task, `date` = :date, `branch_id` = :branch_id, `VK` = :employee_id ON DUPLICATE KEY UPDATE `task` = :task2, `date` = :date2, `branch_id` = :branch_id2, `VK` = :employee_id2";
+        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id, 'employee_id' => $employee_id, 'task2' => $task, 'date2' => $date_sql, 'branch_id2' => $branch_id, 'employee_id2' => $employee_id));
+        return $result;
     }
 
 }
