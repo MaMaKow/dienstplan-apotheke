@@ -25,6 +25,9 @@ body
     background-color: #FEFEFF;
     font-family: sans-serif;
 }
+footer {
+    clear: left;
+}
 table, th, td
 {
     white-space: nowrap;

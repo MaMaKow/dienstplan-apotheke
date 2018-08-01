@@ -145,7 +145,7 @@ if (array() !== $Roster) {
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
         $html_text .= "<tr>\n";
         foreach (array_keys($Roster) as $day_iterator) {
-            $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
+            $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_employee'));
         }
         $html_text .= "</tr>\n";
     }
@@ -154,10 +154,10 @@ if (array() !== $Roster) {
      * Write an empty line in case the roster is empty:
      */
     $html_text .= "<tr>\n";
-    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $branch_id);
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
     $html_text .= "<tr>\n";
-    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $branch_id);
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
 }
 $html_text .= build_html_roster_views::build_roster_input_row_add_row($day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);

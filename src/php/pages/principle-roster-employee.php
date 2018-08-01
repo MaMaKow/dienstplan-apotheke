@@ -26,6 +26,9 @@ $pseudo_date_sql_end = date('Y-m-d', $pseudo_date_unix + ($number_of_days - 1) *
 
 $workforce = new workforce($pseudo_date_sql_start);
 $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
+if (filter_has_var(INPUT_POST, 'submit_roster')) {
+    user_input::principle_employee_roster_write_user_input_to_database($employee_id);
+}
 
 $Principle_employee_roster = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
@@ -38,15 +41,14 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 <?php
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
-echo "<div id=main-area>\n";
-//TODO: find out how to respect the lunch breaks!
-echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
-
-echo "<form method='POST' id='change_principle_roster_employee'>";
-echo build_html_navigation_elements::build_button_submit('change_principle_roster_employee');
-echo "</form>";
-
 $html_text = '';
+$html_text .= "<div id=main-area>\n";
+//TODO: find out how to respect the lunch breaks!
+$html_text .= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
+
+$html_text .= "<form method='POST' id='change_principle_roster_employee'>";
+$html_text .= build_html_navigation_elements::build_button_submit('change_principle_roster_employee');
+
 $html_text .= "<table>\n";
 $html_text .= "<thead>\n";
 $html_text .= "<tr>\n";
@@ -58,15 +60,15 @@ foreach ($Weekday_names as $weekday_name) {
     $html_text .= "</td>\n";
 }
 $max_employee_count = roster::calculate_max_employee_count($Principle_employee_roster);
+$html_text .= "<tbody>\n";
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
     foreach (array_keys($Principle_employee_roster) as $day_iterator) {
-        $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
+        $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_branch'));
     }
     $html_text .= "</tr>\n";
 }
-echo $html_text;
-echo "</tr>\n";
+$html_text .= "</tr>\n";
 /*
  * TODO: Write JavaScript Code to allow adding more rows to the form
   echo "<tr>";
@@ -77,10 +79,10 @@ echo "</tr>\n";
   echo "</tr>";
  *
  */
-echo "</tbody>\n";
-echo "<tfoot>\n";
-echo "<tr>\n";
-echo "<td colspan=$number_of_days>\n";
+$html_text .= "</tbody>\n";
+$html_text .= "<tfoot>\n";
+$html_text .= "<tr>\n";
+$html_text .= "<td colspan=$number_of_days>\n";
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.
@@ -89,25 +91,27 @@ foreach ($Principle_employee_roster as $Principle_employee_roster_day_array) {
         $Stunden[$employee_id][] = $roster_object->working_hours;
     }
 }
-echo "Wochenstunden ";
+$html_text .= gettext("Hours per week") . "&nbsp";
 ksort($Stunden);
 foreach ($Stunden as $mitarbeiter => $stunden) {
-    echo array_sum($stunden);
-    echo ' / ';
-    echo $workforce->List_of_employees[$mitarbeiter]->working_week_hours;
+    $html_text .= array_sum($stunden);
+    $html_text .= ' / ';
+    $html_text .= $workforce->List_of_employees[$mitarbeiter]->working_week_hours;
     if ($workforce->List_of_employees[$mitarbeiter]->working_week_hours != array_sum($stunden)) {
-        $differenz = array_sum($stunden) - $workforce->List_of_employees[$mitarbeiter]->working_week_hours;
-        echo " <b>( " . $differenz . " )</b>";
+        $differenz = round(array_sum($stunden) - $workforce->List_of_employees[$mitarbeiter]->working_week_hours, 2);
+        $html_text .= " <b>( " . $differenz . " )</b>";
     }
 }
-echo "</td>\n";
-echo "</tr>\n";
-echo "</tfoot>\n";
-echo "</table>\n";
-echo "</div>\n";
+$html_text .= "</td>\n";
+$html_text .= "</tr>\n";
+$html_text .= "</tfoot>\n";
+$html_text .= "</table>\n";
+$html_text .= "</form>";
 
 $roster_image_bar_plot = new roster_image_bar_plot($Principle_employee_roster);
-echo $roster_image_bar_plot->svg_string;
+$html_text .= $roster_image_bar_plot->svg_string;
+$html_text .= "</div><!-- id=main-area -->\n";
+echo $html_text;
 
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
