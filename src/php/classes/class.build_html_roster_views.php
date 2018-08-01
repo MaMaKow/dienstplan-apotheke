@@ -57,7 +57,7 @@ abstract class build_html_roster_views {
         return $text;
     }
 
-    public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id) {
+    public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id, $Options = array()) {
         if (!isset($Roster[$day_iterator]) or ! isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
@@ -65,14 +65,23 @@ abstract class build_html_roster_views {
              */
             $Roster[$day_iterator][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $day_iterator), $branch_id);
         }
-        $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
+        $roster_input_row = "<td>\n";
+        $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
+
         /*
          * employee input:
          */
-        $roster_input_row = "<td>\n";
-        $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
-        $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][branch_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->branch_id . ">\n";
-        $roster_input_row .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
+        $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
+        $roster_input_row_employee = "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][employee_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->employee_id . ">\n";
+        if (in_array('add_select_employee', $Options)) {
+            /*
+             * Change $roster_input_row_branch from the above hidden input into a visible select element:
+             */
+            $roster_input_row_employee = "<span>";
+            $roster_input_row_employee .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
+            $roster_input_row_employee .= "</span>";
+        }
+        $roster_input_row .= $roster_input_row_employee;
         /*
          * start of duty:
          */
@@ -88,7 +97,6 @@ abstract class build_html_roster_views {
         $roster_input_row .= " <input type=time size=5 class=Dienstplan_Dienstende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_end_sql] id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 ) . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n";
-
         $roster_input_row .= "<br>\n";
 
         /*
@@ -96,15 +104,34 @@ abstract class build_html_roster_views {
          */
         $roster_input_row .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_start_sql] id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 ) . " value='";
         $roster_input_row .= roster::get_break_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
-
         $roster_input_row .= "'> ";
         $roster_input_row .= gettext("to");
+
         /*
          * end of break:
          */
         $roster_input_row .= " <input type=time size=5 class=Dienstplan_Mittagsende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_end_sql] id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 ) . " value='";
         $roster_input_row .= roster::get_break_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>";
+
+        /*
+         * branch input:
+         */
+        $roster_input_row_branch_name = "Roster[$day_iterator][$roster_row_iterator][branch_id]";
+        $roster_input_row_branch_id = $Roster[$day_iterator][$roster_row_iterator]->branch_id;
+        $roster_input_row_branch = "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][branch_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->branch_id . ">\n";
+        if (in_array('add_select_branch', $Options)) {
+            /*
+             * Change $roster_input_row_branch from the above hidden input into a visible select element:
+             */
+            $roster_input_row_branch = "<br>";
+            $roster_input_row_branch .= self::build_roster_input_row_branch_select($roster_input_row_branch_id, $roster_input_row_branch_name);
+        }
+        $roster_input_row .= $roster_input_row_branch;
+
+        /*
+         * comments:
+         */
         $roster_input_row .= build_html_roster_views::build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "</td>\n";
         return $roster_input_row;
@@ -123,6 +150,25 @@ abstract class build_html_roster_views {
         $roster_input_row_add_row .= "</td>\n";
         $roster_input_row_add_row .= "</tr>\n";
         return $roster_input_row_add_row;
+    }
+
+    private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name) {
+        global $List_of_branch_objects;
+        /*
+         * TODO: Build a select for branch.
+         * Use it in the principle roster.
+         */
+        $branch_select = "";
+        $branch_select .= "<select name='$form_input_name' >\n";
+        foreach ($List_of_branch_objects as $branch_id => $branch_object) {
+            if ($branch_id != $current_branch_id) {
+                $branch_select .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
+            } else {
+                $branch_select .= "<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
+            }
+        }
+        $branch_select .= "</select>\n";
+        return $branch_select;
     }
 
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
