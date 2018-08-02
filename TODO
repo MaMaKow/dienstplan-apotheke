@@ -1,11 +1,4 @@
 This is a TODO list.
-    * Change roster							**FAILED**
-      - The changes were not saved into the database
-* Overtime								**FAILED**
-  * Read								__passed__
-  * Write								**FAILED**
-    - The balance is out of control. It rises with every view!
---
     * Delete the absence						**FAILED**
       - TypeError: pdr_translations[locale] is undefined[Weitere Informationen]  javascript.js:5:9
 --

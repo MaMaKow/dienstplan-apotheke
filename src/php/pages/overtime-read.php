@@ -20,7 +20,7 @@ $workforce = new workforce();
 $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen die höchste VK-Nummer.
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 create_cookie('employee_id', $employee_id, 1);
-$sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC";
+$sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` DESC";
 $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
 $tablebody = "<tbody>\n";
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
