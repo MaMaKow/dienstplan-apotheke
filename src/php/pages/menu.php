@@ -60,6 +60,7 @@
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
                     </a>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-read.php><?= gettext("Overtime output") ?></a>
+                    <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-overview.php><?= gettext("Overtime overview") ?></a>
                 </li>
             </ul>
         </li>
