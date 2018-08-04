@@ -64,13 +64,11 @@ td.absentees_column{
     white-space: normal;
     font-size: smaller;
 }
-a
-{
+a {
     text-decoration: none;
     color: #73AC22;
 }
-a:hover
-{
+a:hover {
     text-decoration: underline;
 }
 .only_print
@@ -85,6 +83,27 @@ div.foot
     clear: both;
     /*	background-color: #BDE682;*/
     width: 95%;
+}
+@media screen and (min-width: 931px) {
+    div#main_area_centered {
+        text-align: center;
+        padding: 10px;
+        border: 3px solid #73AC22;
+        max-width: 50%;
+        margin: auto;
+    }
+    div#main_area_centered * {
+        margin: auto;
+    }
+}
+@media screen and (max-width: 930px) {
+    div#main_area_centered {
+        text-align: center;
+        padding: 10px;
+        border: 3px solid #73AC22;
+        max-width: 465px;
+        margin: auto;
+    }
 }
 div#main-area
 {
@@ -329,6 +348,12 @@ img.worker-img:hover {
     font-size: xx-large;
     margin-bottom: 1em;
 }
+.size_medium, .size_medium * {
+    font-size: medium;
+}
+.smaller, .smaller * {
+    font-size: smaller;
+}
 .tiny {
     font-size: xx-small;
     font-weight: lighter;
@@ -454,10 +479,17 @@ div#week_hours_table_div {
 table.tight tr td {
     padding-bottom: 0em;
 }
+.left_float_pool * {
+    float: left;
+    margin-right: 1em;
+}
+
 #branch_form {
     margin-right: 1em;
     float: left;
+    /*
     clear: left;
+    */
 }
 div#bottom
 {
@@ -724,7 +756,10 @@ div#navigation_elements{
     float: left;
     clear: both;
 }
-.inline_form{
+.inline_form {
+    display: inline;
+}
+.inline_element {
     display: inline;
 }
 /*
