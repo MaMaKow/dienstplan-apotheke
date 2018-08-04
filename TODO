@@ -1,9 +1,11 @@
 This is a TODO list.
     * Delete the absence						**FAILED**
       - TypeError: pdr_translations[locale] is undefined[Weitere Informationen]  javascript.js:5:9
+      + Error not reproducible
 --
     * Upload a PEP file to upload-pep.php				**FAILED**
       - Sorry, there was an error uploading your file
+      + Error not reproducible
 
 * Notdienst Eingabe- und Ausgabe-Maske
   * Ausgabemaske mit Feld für Eintragung von Ersatz zum Aushang

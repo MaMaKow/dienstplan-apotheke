@@ -234,7 +234,7 @@ abstract class build_html_navigation_elements {
         $current_branch_id = (int) $current_branch_id;
         global $List_of_branch_objects;
         $text = "<!-- branch select form-->\n";
-        $text .= "<div id=branch_form_div>\n";
+        $text .= "<div id='branch_form_div' class='inline_element'>\n";
         $text .= "<form id=branch_form method=post>\n";
         $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
         $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
