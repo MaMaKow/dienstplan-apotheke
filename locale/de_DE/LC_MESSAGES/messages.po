@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-08-04 23:12+0100\n"
-"PO-Revision-Date: 2018-08-04 23:12+0100\n"
+"POT-Creation-Date: 2018-08-05 13:23+0100\n"
+"PO-Revision-Date: 2018-08-05 13:24+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -23,20 +23,20 @@ msgstr "Fehler beim Schreiben der Datei auf die Festplatte."
 msgid "Error while writing the trigger file to disk."
 msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 
-#: notdienst-out.php:55 src/php/collaborative-vacation.php:438
+#: notdienst-out.php:63 src/php/collaborative-vacation.php:438
 #: src/php/pages/attendance-list.php:77 src/php/pages/attendance-list.php:78
 msgid "emergency service"
 msgstr "Notdienst"
 
-#: notdienst-out.php:61 src/php/classes/class.overtime.php:159
+#: notdienst-out.php:69 src/php/classes/class.overtime.php:159
 msgid "Date"
 msgstr "Datum"
 
-#: notdienst-out.php:61
+#: notdienst-out.php:69
 msgid "Name"
 msgstr "Name"
 
-#: notdienst-out.php:61
+#: notdienst-out.php:69
 msgid "Replacement"
 msgstr "Ersatz"
 
@@ -111,7 +111,7 @@ msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 #: src/php/classes/class.database_wrapper.php:239
 #: src/php/classes/class.database_wrapper.php:289
 #: src/php/classes/class.overtime.php:71
-#: src/php/pages/reset_lost_password.php:105
+#: src/php/pages/reset_lost_password.php:106
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
@@ -885,32 +885,40 @@ msgid "User management"
 msgstr "Benutzerverwaltung"
 
 #: src/php/pages/reset_lost_password.php:32
-#: src/php/pages/reset_lost_password.php:57
+#: src/php/pages/reset_lost_password.php:58
 msgid "Invalid token"
 msgstr "Ungültiger Token"
 
-#: src/php/pages/reset_lost_password.php:82 src/php/register.php:31
+#: src/php/pages/reset_lost_password.php:47
+msgid ""
+"You can change your password here. Please enter your new password twice "
+"below."
+msgstr ""
+"Sie können hier Ihr Passwort ändern. Bitte geben Sie unten Ihr neues "
+"Passwort zwei mal ein."
+
+#: src/php/pages/reset_lost_password.php:83 src/php/register.php:31
 msgid "Please enter a password!"
 msgstr "Bitte geben Sie ein Passwort ein!"
 
-#: src/php/pages/reset_lost_password.php:86 src/php/register.php:35
+#: src/php/pages/reset_lost_password.php:87 src/php/register.php:35
 msgid "The passwords must match!"
 msgstr "Die Passwörter müssen übereinstimmen!"
 
-#: src/php/pages/reset_lost_password.php:101
+#: src/php/pages/reset_lost_password.php:102
 msgid "Your password has successfully been changed."
 msgstr "Ihr Passwort wurde erfolgreich geändert."
 
-#: src/php/pages/reset_lost_password.php:101
+#: src/php/pages/reset_lost_password.php:102
 msgid "Login"
 msgstr "Einloggen"
 
-#: src/php/pages/reset_lost_password.php:103
 #: src/php/pages/reset_lost_password.php:104
+#: src/php/pages/reset_lost_password.php:105
 msgid "There was an error while saving the data."
 msgstr "Beim Speichern der Daten trat ein Fehler auf."
 
-#: src/php/pages/reset_lost_password.php:110
+#: src/php/pages/reset_lost_password.php:111
 msgid "Missing input token"
 msgstr "Es wurde kein Token übergeben."
 

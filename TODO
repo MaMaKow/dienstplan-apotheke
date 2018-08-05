@@ -7,10 +7,8 @@ This is a TODO list.
       - Sorry, there was an error uploading your file
       + Error not reproducible
 
-* Notdienst Eingabe- und Ausgabe-Maske
-  * Ausgabemaske mit Feld für Eintragung von Ersatz zum Aushang
-* Add verbosity to the reset_lost_password.php
-  * Tell the user what to do there!
+* Notdienst Eingabe-Maske
+  * use an API to get the data for the emergency services
 * Installation
 * Konfiguration
 * Dokumentation
