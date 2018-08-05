@@ -43,7 +43,8 @@ function build_lost_password_form($employee_id, $user_name, $token) {
         <div class=centered_form_div>
             <H1><?= $config['application_name'] ?> </H1>
             <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
-                <H2><?= $user_name ?></H2>
+                <p><strong><?= $user_name ?></strong>></p>
+                <p><?= gettext('You can change your password here. Please enter your new password twice below.') ?></p>
                 <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>
                 <input type="password" size="40" name="password" required placeholder="Passwort"><br>
