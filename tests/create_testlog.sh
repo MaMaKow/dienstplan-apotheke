@@ -10,7 +10,7 @@ mkdir -p "$root_folder/tests/log";
 if [ "testing" == "$branch_name" ]
 then
     echo "We are on the testing branch. A test log file will be created.";
-    source_file="$root_folder/tests/List of Tests";
+    source_file="$root_folder/tests/List_of_tests.md";
     target_file_name="$root_folder/tests/log/tests_for_$commit_name"".md";
     if [ ! -f $target_file_name ]
     then
