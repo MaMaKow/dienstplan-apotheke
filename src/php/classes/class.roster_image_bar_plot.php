@@ -44,6 +44,9 @@ class roster_image_bar_plot {
         /*
          * color of the employee bars:
          */
+        /*
+         * TODO: Put this in the CSS file and use classes!
+         */
         $this->Employee_style_array[1] = "#73AC22"; /* Apotheker, PI (qualified pharmacists) */
         $this->Employee_style_array[2] = "#BDE682"; /* PTA */
         $this->Employee_style_array[3] = "#B4B4B4"; /* non pharmaceutical employees */
@@ -198,6 +201,9 @@ class roster_image_bar_plot {
      */
 
     private function get_employee_style($employee_id) {
+        /*
+         * TODO: Use classes! Use CSS!
+         */
         global $workforce;
         if (isset($workforce->List_of_employees[$employee_id]->profession)) {
 
