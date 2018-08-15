@@ -9,13 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-//The locale of the browser is used to localize the date we are asking different language definitions as fallback mechanism.
-//The language is read from HTTP_ACCEPT_LANGUAGE by default.php and stored inside the HEAD by head.php
-var navigator_language = document.getElementsByTagName("HEAD")[0].lang;
+/*
+ * The locale of the browser is used to localize the date we are asking different language definitions as fallback mechanism.
+ * The language is read from HTTP_ACCEPT_LANGUAGE by default.php and stored inside the HEAD by head.php
+ */
+var navigator_language = document.getElementsByTagName("HTML")[0].lang;
 if (!navigator_language) {
     navigator_language = navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage;
 }
-//console.log(navigator_language);
 
 /*
  * Adds leading zeros to numbers.

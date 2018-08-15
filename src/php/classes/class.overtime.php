@@ -112,7 +112,7 @@ class overtime {
 
     public static function recalculate_balances($employee_id) {
         $Overtime_list = array();
-        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` ASC";
+        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` ASC";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
         $first_loop = TRUE;
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -133,14 +133,14 @@ class overtime {
     }
 
     public static function get_current_balance($employee_id) {
-        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Aktualisierung` DESC LIMIT 1";
+        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` DESC LIMIT 1";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
         $row = $result->fetch(PDO::FETCH_OBJ);
         /*
-         * We cast the result to integer,
+         * We cast the result to float,
          * so in case there is no balance yet, we just set it to 0.
          */
-        $balance = (int) $row->Saldo;
+        $balance = (float) $row->Saldo;
         $date = $row->Datum;
         return [$balance, $date];
     }

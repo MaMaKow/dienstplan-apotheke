@@ -23,7 +23,8 @@
  * @author Mandelkow
  */
 abstract class pharmacy_emergency_service {
-    /*
+
+    /**
      * Do we have emergency service at the given date?
      *
      * The preparation for emergency services involves all branches. Therefore the function does not primarily discriminate between branches.
@@ -31,7 +32,6 @@ abstract class pharmacy_emergency_service {
      * @param $date_sql string date in the form 'Y-m-d'
      * @return bool|array FALSE if none of the branches are having emergency service. An array('vk' => employee_id, mandant => branch_id) if one of the branches has emergency service
      */
-
     public static function having_emergency_service($date_sql) {
         $sql_query = "SELECT *
 		FROM `Notdienst`

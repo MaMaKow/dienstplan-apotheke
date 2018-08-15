@@ -20,6 +20,22 @@ document.onkeydown = function (evt) {
 
 function keyboard_navigation_main(evt) {
     evt = evt || window.event;
+
+    if (evt.keyCode === 27) {
+        /*
+         * The escape key is pressed.
+         */
+        /*
+         * Hide the contact form if present:
+         */
+        hide_contact_form();
+        /*
+         * Remove the form in collaborative-vacation
+         */
+        remove_form_div();
+
+    }
+
     if (evt.ctrlKey && evt.keyCode == 37) {
         /*
          * The control key and the left arrow key are pressed.

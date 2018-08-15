@@ -1,86 +1,109 @@
 @charset "utf-8";
-@page
-{
+@page {
+    size: A4;
     margin: 0.5cm;
     size: landscape;
     /*
-    height: 210mm;
-    width: 297mm;
     */
 }
-a, body
-{
+div {
+    /*
+    margin: 3px;
+    border: 1px solid #FF0000;
+    */
+}
+a, body {
     /*
     zoom: 70%;
     */
     color: #000000; /*!important;*/
 }
-select{
-color: #000000;
--webkit-appearance: none; 
-border: none;
+select {
+    color: #000000;
+    -webkit-appearance: none;
+    border: none;
 }
-.no_print, .no_print *
-{
+.no_print, .no_print * {
     /*Elemente die nicht gedruckt werden sollen.*/
     display: none !important;
 }
-.only_print
-{
+.only_print {
     display: block;
 }
-.page-break
-{
+.page-break {
     display: block;
     page-break-before: always;
 }
 tr.wochenende {
     -webkit-print-color-adjust: exact;
 }
-#main-area
-{
+#main-area {
+    width: 29.7cm;
     /*
-    height: 210mm;
-    width: 297mm;
+    height: available;
+    height: 19.0cm;
     */
-    width: 100%;
 }
-#table_overlay_area
-{
+div#table_overlay_area {
+    top: 0.5cm; /*equals margin-top on @page*/
+    float: left;
+    padding-left: 0px;
+    margin-left: 0px;
+    transform: translateX(-10mm) translateY(-10mm) scale(.9) ;
+    width: 23.7cm;
     /*
-    height: 210mm;
-    width: 297mm;
+    height: 19.0cm;
     */
-    width: 100%;
 }
-#duty-rooster-table
-{
+div#weekly_rotation {
+    position: absolute;
+    top: 0cm;
+    right: 0cm;
+    /*
+    left: 23.7cm;
+    */
+    width: 4cm;
+    font-size: xx-small;
+}
+div#week_hours_table_div {
+    position: absolute;
+    top: 5cm;
+    right: 0cm;
+    /*
+    left: 23.7cm;
+    */
+    width: 4cm;
+    font-size: xx-small;
+}
+#duty-rooster-table {
     /*
     width: 334mm;
     */
     width: 85%;
 }
-table#duty-rooster-table
-{
+table#duty-rooster-table {
     width: 85%;
     font-size: 3.5mm;
 }
-#roster_image_div{
+#roster_image_div {
     width: 50%;
     height: 100%;
 }
-#roster_image_div svg, #roster_image_div canvas{
+#roster_image_div svg, #roster_image_div canvas {
     width: 99%;
     height: 48%;
 }
-strong{
+strong {
     font-style: italic;
+}
+svg foreignObject p {
+    border: 1px solid black;
 }
 /*
  * The following styles are for:
  * marginal-employment-hours-list.php
  */
-table#marginal_employment_hours_list_table tr td{
+table#marginal_employment_hours_list_table tr td {
     min-width: 8em;
 }
 /*

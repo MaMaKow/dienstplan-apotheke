@@ -164,6 +164,12 @@ class sessions {
     public function login($user_name = NULL, $user_password = NULL, $redirect = TRUE) {
         global $pdo;
         /*
+         * TODO: Use user_dialog for the error messages
+         * user_dialog::add_message($text);
+         * user_dialog::build_messages();
+         */
+        $errorMessage = "";
+        /*
          * Interpret POST data:
          */
         if (NULL === $user_name) {

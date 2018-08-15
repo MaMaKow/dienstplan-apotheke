@@ -193,6 +193,9 @@ abstract class roster {
                     continue 1;
                 }
                 if (isset($workforce->List_of_employees) AND array_search($row->VK, array_keys($workforce->List_of_employees)) === false) {
+                    /*
+                     * Exclude non-existent employees from the principle roster:
+                     */
                     continue 1;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
@@ -225,6 +228,14 @@ abstract class roster {
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
                 $roster_row_iterator++;
+            }
+            if (0 === $roster_row_iterator) {
+                /*
+                 * If there is no roster on a given day, we insert one empty roster_item.
+                 * This is important for weekly views. Non existent rosters would misalign the tables.
+                 */
+                $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
         return $Roster;
@@ -323,6 +334,11 @@ abstract class roster {
                 $Changing_times[] = $roster_item_object->break_end_int;
             }
         }
+        $Clean_changing_times = roster::cleanup_changing_times($Changing_times);
+        return $Clean_changing_times;
+    }
+
+    public static function cleanup_changing_times($Changing_times) {
         sort($Changing_times);
         $Unique_changing_times = array_unique($Changing_times);
         /*
