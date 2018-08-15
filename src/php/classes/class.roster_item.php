@@ -75,7 +75,7 @@ class roster_item {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;
-        $this->branch_id = $branch_id;
+        $this->branch_id = (int) $branch_id;
         $this->duty_start_sql = $this->format_time_string_correct($duty_start);
         $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
         $this->duty_end_sql = $this->format_time_string_correct($duty_end);

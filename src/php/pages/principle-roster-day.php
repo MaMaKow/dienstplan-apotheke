@@ -65,7 +65,7 @@ $day_iterator = $pseudo_date_unix; //Just in case the loop does not define it fo
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
     foreach (array_keys($Principle_roster) as $day_iterator) {
-        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
+        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_employee'));
     }
     $html_text .= "</tr>\n";
 }
@@ -88,7 +88,7 @@ if (!empty($Principle_roster)) {
 }
 echo '</div>';
 
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 
 echo "</body>\n";
 echo '</html>';

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `absence` (
   `employee_id` tinyint(4) NOT NULL,
-  `reason` varchar(64) CHARACTER SET latin1 NOT NULL,
+  `reason` enum('maternity leave','paid leave of absence','parental leave','remaining holiday','sickness','sickness of child','unpaid leave of absence','vacation') COLLATE latin1_german1_ci NOT NULL,
   `start` date NOT NULL,
   `end` date NOT NULL,
   `days` int(11) NOT NULL,

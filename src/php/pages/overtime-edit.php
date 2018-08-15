@@ -122,7 +122,7 @@ echo "<form accept-charset='utf-8' method=POST id=insert_new_overtime onsubmit='
  . "<input hidden id='user_sequence_warning' name=user_has_been_warned_about_date_sequence value='0' form=insert_new_overtime>\n"
  . "<input hidden id='date_of_last_entry' name='date_of_last_entry' value='$date_old' form=insert_new_overtime>\n"
  . "</form>\n";
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </body>
 </html>

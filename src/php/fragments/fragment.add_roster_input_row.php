@@ -24,5 +24,5 @@ $maximum_number_of_rows = user_input::get_variable_from_any_input('maximum_numbe
 $branch_id = user_input::get_variable_from_any_input('branch_id', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 
 
-$html_string = build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id);
+$html_string = build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id, array('add_select_employee'));
 echo $html_string;
