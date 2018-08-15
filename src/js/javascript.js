@@ -2,8 +2,8 @@
 var http_server_application_path = get_http_server_application_path();
 function gettext(string_to_translate) {
     var locale = document.getElementsByTagName("head")[0].lang;
-    var translated_string = pdr_translations[locale][string_to_translate];
-    if (translated_string) {
+    if (pdr_translations && pdr_translations[locale] && pdr_translations[locale][string_to_translate]) {
+        var translated_string = pdr_translations[locale][string_to_translate];
         console.log('"' + string_to_translate + '" found in "' + locale + '": ' + translated_string);
         return translated_string;
     } else {

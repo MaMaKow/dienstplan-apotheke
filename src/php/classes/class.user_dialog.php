@@ -135,21 +135,21 @@ abstract class user_dialog {
             $workforce = new workforce();
         }
         $trace = debug_backtrace();
-        $paragraph_separator = "\n____ ____ ____ ____ ____ ____ ____ ____ \n\n\n";
+        $paragraph_separator = "\n\n\n\n";
         $message = "";
-        $message .= "____ " . gettext('Message') . " ____\n";
+        $message .= "________ " . gettext('Message') . " ________\n";
         $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
         $message .= $paragraph_separator;
 
-        $message .= "____ " . gettext('Sender') . " ____\n";
+        $message .= "________ " . gettext('Sender') . " ________\n";
         $message .= $workforce->List_of_employees[$_SESSION['user_employee_id']]->full_name;
         $message .= $paragraph_separator;
 
-        $message .= "____ " . gettext('File') . " ____\n";
+        $message .= "________ " . gettext('File') . " ________\n";
         $message .= $trace[0]['file'];
         $message .= $paragraph_separator;
 
-        /* $message .= "____ " . gettext('Trace') . " ____\n";
+        /* $message .= "________ " . gettext('Trace') . " ________\n";
          * $message .= "TRACE DEACTIVATED";
          * //$message .= htmlentities(var_export($trace, TRUE));
          * $message .= $paragraph_separator;

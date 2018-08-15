@@ -770,7 +770,10 @@ div#navigation_elements{
 svg#svgimg {
     cursor: default;
 }
-svg#svgimg foreignObject p.selected{
+svg#svgimg foreignObject p {
+    box-shadow: inset 0 0 0 1000px gold;
+}
+svg#svgimg foreignObject p.selected {
     color: white;
 }
 
