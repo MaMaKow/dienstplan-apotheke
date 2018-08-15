@@ -1,22 +1,21 @@
 These things should be done before merging changes into master:
 
-* Login									__PASSED__	
+* Login									__PASSED__
 * Change password with							--FAILED--
   * lost_password.php							--FAILED--
     - The mail could be a bit more personal. Use Dear $username instead of Dear User.
     - No mail seems to be sent. No message about any mail is visible. Perhaps just remove that form on success and only display success?
-* Roster input								--FAILED--	
+* Roster input								--FAILED--
   * Create a roster from scratch					__PASSED__
   * Edit the roster							__PASSED__
     * Exchange an employee with another one.				__PASSED__
     * Drag and drop							__PASSED__
       *	drag the duty times						__PASSED__
       * drag the break times						__PASSED__
-  * Provoke some errors:						--FAILED--
-    - When nobody is scheduled at 8:00 (starting time) and everybody starts at 9:00, then there is no error thrown. But there must be an error!
-    * Not enough employees at starting time				--FAILED--
-    * No pharmacist at starting time					--FAILED--
-    * No goods reciept employee at starting time			--FAILED--
+  * Provoke some errors:						__PASSED__
+    * Not enough employees at starting time				__PASSED__
+    * No pharmacist at starting time					__PASSED__
+    * No goods reciept employee at starting time			__PASSED__
     * One employee not scheduled					__PASSED__
     * One employee scheduled although absent				__PASSED__
   * Add an entry at the end of the roster				__PASSED__
@@ -31,13 +30,13 @@ These things should be done before merging changes into master:
     * Navigation with keyboard						__PASSED__
     * View the print version						--FAILED--
       - use css: box-shadow: inset 0 0 0 1000px gold; makes the color appear in the print.
-    * use the datepicker in/for old browsers				__PASSED__	
-  * View the roster in read mode weekly table.				__PASSED__	
+    * use the datepicker in/for old browsers				__PASSED__
+  * View the roster in read mode weekly table.				__PASSED__
     * Task rotation							__PASSED__
     * Keyboard navigation						__PASSED__
   * View the roster in read mode weekly images.				__PASSED__
   * View the roster in employee table					__PASSED__
-    * download ICS file							__PASSED__	
+    * download ICS file							__PASSED__
     * validate ICS file (https://icalendar.org/validator.html)		__PASSED__
 
 * Principle roster							__PASSED__
@@ -72,7 +71,7 @@ These things should be done before merging changes into master:
     * Upload a wrong file						__PASSED__
   * Alter the values in 						__PASSED__
     * human-resource-management.php					__PASSED__
-    * branch-management.php (incl. create and delete) 			__PASSED__	
+    * branch-management.php (incl. create and delete) 			__PASSED__
     * user-management.php						__PASSED__
 
 * Check the site on the following browsers:
