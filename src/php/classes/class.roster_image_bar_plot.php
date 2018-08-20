@@ -126,6 +126,7 @@ class roster_image_bar_plot {
                 $break_width_in_hours = $break_end - $break_start;
 
                 $employee_style = $this->get_employee_style($employee_id);
+                $employee_style_class = $workforce->List_of_employees[$employee_id]->profession;
 
                 $x_pos_box = $this->outer_margin_x + $this->inner_margin_x + ($dienst_beginn - floor($this->first_start)) * $this->bar_width_factor;
                 $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $this->bar_width_factor);
@@ -134,7 +135,7 @@ class roster_image_bar_plot {
                 $width = $width_in_hours * $this->bar_width_factor;
                 $break_width = $break_width_in_hours * $this->bar_width_factor;
                 $svg_box_text .= "<foreignObject id=work_box_$this->line transform='matrix(1 0 0 1 0 0)' onmousedown='selectElement(evt, \"group\")' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' style='cursor: $this->cursor_style_box;'>";
-                $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' style='background-color: $employee_style; margin-top: 0px;'>";
+                $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' class='$employee_style_class' style='background-color: $employee_style;'>";
                 if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
                     $svg_box_text .= $workforce->List_of_employees[$employee_id]->last_name;
                 } else {
