@@ -60,6 +60,8 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
         try {
             $saturday_rotation = new saturday_rotation($date_sql, $branch_id);
             $Roster = $saturday_rotation->fill_roster();
+            $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
+            user_dialog::add_message($message);
         } catch (Exception $exception) {
             error_log($exception->getMessage());
         }
