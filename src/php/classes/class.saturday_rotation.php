@@ -51,9 +51,9 @@ class saturday_rotation {
         $this->team_id = $this->read_participation_from_database();
         if (NULL === $this->team_id) {
             $this->team_id = $this->set_new_participation();
-        }
-        if (NULL !== $this->team_id) {
-            $this->write_participation_to_database();
+            if (NULL !== $this->team_id) {
+                $this->write_participation_to_database();
+            }
         }
     }
 
@@ -117,16 +117,15 @@ class saturday_rotation {
         $this->cleanup_database_table_saturday_rotation();
     }
 
-    /*
+    /**
      * This function cleans up old entries in the table saturday_rotation.
      *
      * It also does not allow entries in the too distant future, as these might change.
      *
      * @return void
      */
-
     protected function cleanup_database_table_saturday_rotation() {
-        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 3 month";
+        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 12 month";
         database_wrapper::instance()->run($sql_query);
         $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` >= now()+interval 3 month";
         database_wrapper::instance()->run($sql_query);
