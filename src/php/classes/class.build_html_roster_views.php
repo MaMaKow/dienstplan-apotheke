@@ -229,7 +229,7 @@ abstract class build_html_roster_views {
         global $List_of_branch_objects;
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
-        $number_of_days = ($date_unix_end - $date_unix_start) / PDR_ONE_DAY_IN_SECONDS;
+        $number_of_days = ($date_unix_end - $date_unix_start) / PDR_ONE_DAY_IN_SECONDS + 1;
 
         $table_html = "";
 
@@ -240,12 +240,11 @@ abstract class build_html_roster_views {
             if (array() === $Branch_roster[$other_branch_id]) {
                 continue;
             }
-            $table_html .= "<tbody><tr class='branch_roster_title_tr'><th colspan=";
+            $table_html .= "<tr class='branch_roster_title_tr'><th colspan=";
             $table_html .= htmlentities($number_of_days) . ">";
             $table_html .= $List_of_branch_objects[$branch_id]->short_name;
             $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->short_name . "</th></tr>";
             $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id);
-            $table_html .= "</tbody>\n";
         }
         return $table_html;
     }

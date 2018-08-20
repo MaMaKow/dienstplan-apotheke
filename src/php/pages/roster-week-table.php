@@ -94,6 +94,7 @@ if (isset($Overlay_message)) {
 }
 $table_html .= $table_body_html;
 $table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end);
+$table_html .= "";
 
 //echo "</div>\n";
 $table_foot_html = "<tfoot>"
@@ -117,18 +118,18 @@ $table_foot_html .= "</tfoot>\n";
 
 $table_html .= $table_foot_html;
 $table_html .= "</table><!--id=duty-rooster-table-->\n";
-$table_html .= "</div><!--id='main-area'-->\n";
-$table_html .= "$weekly_rotation_div_html";
 
 $table_div_html = "<div id=table_overlay_area>";
 $table_div_html .= $overlay_message_html;
 $table_div_html .= $table_html;
+$table_div_html .= "</div><!--id='main-area'-->\n";
+$table_div_html .= "$weekly_rotation_div_html";
 
 $duty_roster_form_html .= $table_div_html;
 
 $main_div_html .= $duty_roster_form_html;
 $main_div_html .= $duty_roster_working_hours_div;
-$main_div_html .= "</div>\n";
+//$main_div_html .= "</div>\n";
 
 echo user_dialog::build_messages();
 
