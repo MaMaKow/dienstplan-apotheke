@@ -229,8 +229,8 @@ abstract class task_rotation {
         }
 
         $task_rotation_select_html .= "</select>\n";
-        return $task_rotation_select_html;
         $task_rotation_select_html .= "</form>";
+        $task_rotation_select_html .= "</div><!-- id='task_rotation_select_div'-->";
         return $task_rotation_select_html;
     }
 
