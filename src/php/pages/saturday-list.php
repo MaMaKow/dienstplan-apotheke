@@ -35,13 +35,15 @@ $saturday_rotation = new saturday_rotation($branch_id);
 $html_select_year = absence::build_html_select_year($year);
 $html_select_branch = build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
-$table_head = "<thead>";
+$table_head = "<thead>\n";
+$table_head .= "<tr>";
 $table_head .= "<th>" . gettext("Date") . "</th>";
 $table_head .= "<th>" . gettext("Team") . "</th>";
 $table_head .= "<th>" . gettext("Team members") . "</th>";
-$table_head .= "<th>" . gettext("Scheduled in roster") . "</th>";
-$table_head .= "</thead>";
-$table_body = "<tbody>";
+$table_head .= "<th>" . gettext("Scheduled in roster") . "</th>\n";
+$table_head .= "</tr>\n";
+$table_head .= "</thead>\n";
+$table_body = "<tbody>\n";
 for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += PDR_ONE_DAY_IN_SECONDS * 7) {
     $date_string = strftime('%a %x', $date_unix);
     $date_sql = date('Y-m-d', $date_unix);
@@ -56,9 +58,16 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
     $Saturday_rotation_team_member_names = array();
     foreach ($Saturday_rotation_team_member_ids as $employee_id) {
         if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
-            $Saturday_rotation_team_member_names[] = $workforce->List_of_employees[$employee_id]->last_name;
+            $prefix = '<span>';
+            $suffix = '</span>';
+            if (in_array($employee_id, array_keys($Absentees))) {
+                $prefix = '<span class="absent">';
+                $suffix = "&nbsp(" . substr($Absentees[$employee_id], 0, 4) . ')</span>';
+            }
+
+            $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_id]->last_name . $suffix;
         } else {
-            $Saturday_rotation_team_member_names[] = "???";
+            $Saturday_rotation_team_member_names[] = "$employee_id???";
         }
     }
 
@@ -66,7 +75,13 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
     foreach ($Roster as $Roster_day_array) {
         foreach ($Roster_day_array as $roster_item) {
             if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
-                $Rostered_employees[$roster_item->employee_id] = $workforce->List_of_employees[$roster_item->employee_id]->last_name;
+                $prefix = '<span>';
+                $suffix = '</span>';
+                if (in_array($roster_item->employee_id, array_keys($Absentees))) {
+                    $prefix = '<span class="absent">';
+                    $suffix = "&nbsp(" . substr($Absentees[$roster_item->employee_id], 0, 4) . ')</span>';
+                }
+                $Rostered_employees[$roster_item->employee_id] = $prefix . $workforce->List_of_employees[$roster_item->employee_id]->last_name . $suffix;
             }
         }
     }
@@ -81,15 +96,15 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
     $table_row .= "<td>" . $saturday_rotation->team_id . "</td>";
     $table_row .= "<td>" . $saturday_rotation_team_member_names_string . "</td>";
     $table_row .= "<td>" . $rostered_employees_names_string . "</td>";
-    $table_row .= "</tr>";
+    $table_row .= "</tr>\n";
     $table_body .= $table_row;
 }
-$table_body .= "</tbody>";
+$table_body .= "</tbody>\n";
 
-$table = "<table>";
+$table = "<table id=saturday_list>\n";
 $table .= $table_head;
 $table .= $table_body;
-$table .= "</table>";
+$table .= "</table>\n";
 
 $html = '';
 $html .= $html_select_year;
