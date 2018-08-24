@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-08-05 13:23+0100\n"
-"PO-Revision-Date: 2018-08-05 13:24+0100\n"
+"POT-Creation-Date: 2018-08-24 22:52+0100\n"
+"PO-Revision-Date: 2018-08-24 22:52+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -24,11 +24,12 @@ msgid "Error while writing the trigger file to disk."
 msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 
 #: notdienst-out.php:63 src/php/collaborative-vacation.php:438
-#: src/php/pages/attendance-list.php:77 src/php/pages/attendance-list.php:78
+#: src/php/pages/attendance-list.php:67 src/php/pages/attendance-list.php:68
 msgid "emergency service"
 msgstr "Notdienst"
 
 #: notdienst-out.php:69 src/php/classes/class.overtime.php:159
+#: src/php/pages/saturday-list.php:40
 msgid "Date"
 msgstr "Datum"
 
@@ -92,7 +93,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:216
+#: src/php/classes/class.absence.php:224
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -100,14 +101,14 @@ msgstr ""
 "An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
 "in die Datenbank eingefügt."
 
-#: src/php/classes/class.absence.php:220
+#: src/php/classes/class.absence.php:228
 #: src/php/classes/class.database_wrapper.php:238
 #: src/php/classes/class.database_wrapper.php:288
 #: src/php/classes/class.overtime.php:70
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/php/classes/class.absence.php:221
+#: src/php/classes/class.absence.php:229
 #: src/php/classes/class.database_wrapper.php:239
 #: src/php/classes/class.database_wrapper.php:289
 #: src/php/classes/class.overtime.php:71
@@ -115,11 +116,11 @@ msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
-#: src/php/classes/class.absence.php:249
+#: src/php/classes/class.absence.php:257
 msgid "is a holiday"
 msgstr "ist ein Feiertag"
 
-#: src/php/classes/class.absence.php:249
+#: src/php/classes/class.absence.php:257
 msgid "and will not be counted."
 msgstr "und wird nicht berechnet."
 
@@ -207,31 +208,31 @@ msgid "to"
 msgstr "bis"
 
 #: src/php/classes/class.build_html_roster_views.php:105
-#: src/php/classes/class.build_html_roster_views.php:354
-#: src/php/classes/class.build_html_roster_views.php:431
+#: src/php/classes/class.build_html_roster_views.php:353
+#: src/php/classes/class.build_html_roster_views.php:430
 msgid "break"
 msgstr "Pause"
 
 #: src/php/classes/class.build_html_roster_views.php:224
-#: src/php/classes/class.build_html_roster_views.php:347
+#: src/php/classes/class.build_html_roster_views.php:346
 #: src/php/pages/absence-edit.php:113
 #: src/php/pages/collaborative-vacation-input-box.php:97
 msgid "Comment"
 msgstr "Kommentar"
 
-#: src/php/classes/class.build_html_roster_views.php:271
-#: src/php/pages/roster-day-edit.php:131
+#: src/php/classes/class.build_html_roster_views.php:270
+#: src/php/pages/roster-day-edit.php:134
 #: src/php/pages/roster-employee-table.php:56
 #: src/php/pages/roster-week-table.php:66
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
-#: src/php/classes/class.build_html_roster_views.php:276
-#: src/php/pages/roster-day-edit.php:135 src/php/pages/roster-day-edit.php:137
+#: src/php/classes/class.build_html_roster_views.php:275
+#: src/php/pages/roster-day-edit.php:138 src/php/pages/roster-day-edit.php:140
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
-#: src/php/classes/class.build_html_roster_views.php:465
+#: src/php/classes/class.build_html_roster_views.php:464
 #: src/php/pages/principle-roster-employee.php:94
 msgid "Hours per week"
 msgstr "Wochenstunden"
@@ -865,22 +866,26 @@ msgid "Attendance list"
 msgstr "Anwesenheitsliste"
 
 #: src/php/pages/menu.php:93
+msgid "Saturday list"
+msgstr "Samstagsliste"
+
+#: src/php/pages/menu.php:94
 msgid "Marginal employment hours list"
 msgstr "Stundenzettel geringfügig Beschäftigte"
 
-#: src/php/pages/menu.php:97
+#: src/php/pages/menu.php:98
 msgid "Upload deployment planning"
 msgstr "PEP-Upload"
 
-#: src/php/pages/menu.php:99
+#: src/php/pages/menu.php:100
 msgid "Human resource management"
 msgstr "Mitarbeiterverwaltung"
 
-#: src/php/pages/menu.php:100
+#: src/php/pages/menu.php:101
 msgid "Branch management"
 msgstr "Mandantenverwaltung"
 
-#: src/php/pages/menu.php:101
+#: src/php/pages/menu.php:102
 msgid "User management"
 msgstr "Benutzerverwaltung"
 
@@ -922,15 +927,15 @@ msgstr "Beim Speichern der Daten trat ein Fehler auf."
 msgid "Missing input token"
 msgstr "Es wurde kein Token übergeben."
 
-#: src/php/pages/roster-day-edit.php:56
+#: src/php/pages/roster-day-edit.php:56 src/php/pages/roster-day-edit.php:64
 msgid "There is no roster in the database."
 msgstr "In der Datenbank befindet sich kein Dienstplan."
 
-#: src/php/pages/roster-day-edit.php:56
+#: src/php/pages/roster-day-edit.php:56 src/php/pages/roster-day-edit.php:64
 msgid "This is a proposal."
 msgstr "Dies ist ein Vorschlag."
 
-#: src/php/pages/roster-day-edit.php:82
+#: src/php/pages/roster-day-edit.php:85
 msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
 
@@ -946,10 +951,22 @@ msgstr "Der Dienstplan wird noch überarbeitet."
 msgid "Missing data in table `approval`"
 msgstr "Fehlende Daten in der Tabelle `approval`"
 
-#: src/php/pages/roster-week-table.php:135
+#: src/php/pages/roster-week-table.php:136
 #, php-format
 msgid "Time of print: %1s"
 msgstr "Druckdatum: %1s"
+
+#: src/php/pages/saturday-list.php:41
+msgid "Team"
+msgstr "Team"
+
+#: src/php/pages/saturday-list.php:42
+msgid "Team members"
+msgstr "Team Mitglieder"
+
+#: src/php/pages/saturday-list.php:43
+msgid "Scheduled in roster"
+msgstr "Im Dienstplan eingetragen"
 
 #: src/php/pages/upload-pep.php:36
 msgid "There was an error while trying to upload the file."
