@@ -32,16 +32,6 @@ $date_sql = date('Y-m-d', $date_unix);
 //The employee list needs a $date_unix, because nobody is working with us forever.
 $workforce = new workforce($date_sql);
 
-$Months = array();
-for ($i = 1; $i <= 12; $i++) {
-    $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
-}
-$Years = array();
-$sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-$result = database_wrapper::instance()->run($sql_query);
-while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $Years[] = $row->year;
-}
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo absence::build_html_select_month($month_number);

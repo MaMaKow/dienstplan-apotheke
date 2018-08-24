@@ -58,8 +58,9 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
         $Roster = $Principle_roster;
     } elseif (6 == strftime('%u', $date_unix)) {
         try {
-            $saturday_rotation = new saturday_rotation($date_sql, $branch_id);
-            $Roster = $saturday_rotation->fill_roster();
+            $saturday_rotation = new saturday_rotation($branch_id);
+            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
+            $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
             $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
             user_dialog::add_message($message);
         } catch (Exception $exception) {

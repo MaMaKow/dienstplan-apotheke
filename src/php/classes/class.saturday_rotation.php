@@ -35,19 +35,22 @@ class saturday_rotation {
 
     protected $target_date_sql;
     protected $branch_id;
-    protected $List_of_teams;
+    public $List_of_teams;
     public $team_id;
 
-    public function __construct($date_sql, $branch_id) {
-        if (6 != strftime('%u', strtotime($date_sql))) {
+    public function __construct($branch_id) {
+        $this->branch_id = $branch_id;
+        $this->List_of_teams = $this->read_teams_from_database();
+    }
+
+    public function get_participation_team_id($target_date_sql) {
+        if (6 != strftime('%u', strtotime($target_date_sql))) {
             /*
              * Until now, this function is specified to only handle saturdays.
              */
             throw new Exception("saturday_rotation->__construct only accepts saturdays as input.");
         }
-        $this->target_date_sql = $date_sql;
-        $this->branch_id = $branch_id;
-        $this->List_of_teams = $this->read_teams_from_database();
+        $this->target_date_sql = $target_date_sql;
         $this->team_id = $this->read_participation_from_database();
         if (NULL === $this->team_id) {
             $this->team_id = $this->set_new_participation();
@@ -55,6 +58,7 @@ class saturday_rotation {
                 $this->write_participation_to_database();
             }
         }
+        return $this->team_id;
     }
 
     protected function read_participation_from_database() {
@@ -80,12 +84,15 @@ class saturday_rotation {
     }
 
     protected function set_new_participation() {
-        $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `branch_id` = :branch_id ORDER BY `date` DESC LIMIT 1';
-        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id));
+        $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `branch_id` = :branch_id and `date` <= :date ORDER BY `date` DESC LIMIT 1';
+        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id, 'date' => $this->target_date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $last_team_id = (int) $row->team_id;
             $last_date_sql = $row->date;
         }
+        /*
+         * move the pointer for the array $this->List_of_teams to the position given by $last_team_id:
+         */
         reset($this->List_of_teams);
         while (key($this->List_of_teams) !== $last_team_id) {
             if (FALSE === next($this->List_of_teams)) {
@@ -95,10 +102,16 @@ class saturday_rotation {
                  * Prevent an infinite loop:
                  * TODO: Choose, which team to send in that case
                  */
+                error_log('Could not find $last_team_id ' . $last_team_id . ' in $this->List_of_teams');
+                print_debug_variable($this);
                 return FALSE;
             }
         }
-        for ($date_unix = strtotime($last_date_sql) + PDR_ONE_DAY_IN_SECONDS * 7; $date_unix <= strtotime($this->target_date_sql); $date_unix += PDR_ONE_DAY_IN_SECONDS * 7) {
+        for ($date_unix = strtotime('+ 7 days', strtotime($last_date_sql)); $date_unix <= strtotime($this->target_date_sql); $date_unix = strtotime('+ 7 days', $date_unix)) {
+            /*
+             * move the pointer in $this->List_of_teams to next()
+             * In case, we meet the end, just start at the first item again.
+             */
             if (FALSE === next($this->List_of_teams)) {
                 reset($this->List_of_teams);
             }
@@ -107,7 +120,6 @@ class saturday_rotation {
     }
 
     protected function write_participation_to_database() {
-        global $pdo;
         $sql_query = "INSERT INTO `saturday_rotation` (`date`, `team_id`, `branch_id`) VALUES (:date, :team_id, :branch_id)";
         database_wrapper::instance()->run($sql_query, array(
             'date' => $this->target_date_sql,
@@ -131,9 +143,12 @@ class saturday_rotation {
         database_wrapper::instance()->run($sql_query);
     }
 
-    public function fill_roster() {
+    public function fill_roster($team_id = NULL) {
         $Roster = array();
         $date_unix = strtotime($this->target_date_sql);
+        if (NULL === $team_id) {
+            $team_id = $this->team_id;
+        }
         $comment = "algorithmic rotation by " . __METHOD__ . ". Chosen rotation team: " . $this->team_id;
 
         /*
@@ -145,7 +160,7 @@ class saturday_rotation {
         $break_end = NULL;
 
 
-        foreach ($this->List_of_teams[$this->team_id] as $employee_id) {
+        foreach ($this->List_of_teams[$team_id] as $employee_id) {
             $Roster[$date_unix][] = new roster_item($this->target_date_sql, $employee_id, $this->branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
         }
         return $Roster;

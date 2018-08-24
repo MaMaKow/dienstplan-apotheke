@@ -98,6 +98,14 @@ class absence {
         return $html_text;
     }
 
+    /**
+     *
+     * @global object $workforce
+     * @param string $date_sql
+     * @return array $Absentees[$employee_id] = $reason;
+     * @throws Exception
+     * @throws UnexpectedValueException
+     */
     public static function read_absentees_from_database($date_sql) {
 
         $Absentees = array();
