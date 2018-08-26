@@ -153,13 +153,14 @@ function insert_form_div(edit_create) {
     div.className = 'input_box_div';
     fill_input_box_from_prototype(element_mouse_is_over);
 
-    //Add a handler to BODY to catch [Esc] for closing the div.
-    if (document.body.addEventListener) { // For all major browsers, except IE 8 and earlier
-        document.body.addEventListener("keyup", remove_form_div_on_escape);
-    } else if (x.attachEvent) { // For IE 8 and earlier versions
-        document.body.attachEvent("keyup", remove_form_div_on_escape);
-    }
-
+    /*
+     //Add a handler to BODY to catch [Esc] for closing the div.
+     if (document.body.addEventListener) { // For all major browsers, except IE 8 and earlier
+     document.body.addEventListener("keyup", remove_form_div_on_escape);
+     } else if (x.attachEvent) { // For IE 8 and earlier versions
+     document.body.attachEvent("keyup", remove_form_div_on_escape);
+     }
+     */
 }
 
 function is_descendant(parent, child) {

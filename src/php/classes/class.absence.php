@@ -98,6 +98,14 @@ class absence {
         return $html_text;
     }
 
+    /**
+     *
+     * @global object $workforce
+     * @param string $date_sql
+     * @return array $Absentees[$employee_id] = $reason;
+     * @throws Exception
+     * @throws UnexpectedValueException
+     */
     public static function read_absentees_from_database($date_sql) {
 
         $Absentees = array();
@@ -105,10 +113,8 @@ class absence {
         if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
             throw new Exception("\$date_sql has to be a string! $date_sql given.");
         }
-
         /*
          * We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
-         * TODO: Build an option to delete future vacations of people when leaving.
          */
         if (!isset($workforce)) {
             throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
@@ -119,9 +125,6 @@ class absence {
                 . "WHERE `start` <= :start "
                 . "AND `end` >= :end "
                 . "AND `employee_id` IN ($in_placeholder)"; //Employees, whose absence has started but not ended yet.
-        /*
-         * TODO: The above query does not discriminate between approved an non-approved vacations.
-         */
         $result = database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array('start' => $date_sql, 'end' => $date_sql)));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Absentees[$row->employee_id] = $row->reason;
@@ -181,9 +184,13 @@ class absence {
                 and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)
                 and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
                 and $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING)
-                and $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING)
                 and $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING)
         ) {
+            /*
+             * $comment is allowed to be empty.
+             * Therefore it is not part of the if():
+             */
+            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
             self::write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $comment, $approval);
         }
     }
@@ -202,7 +209,7 @@ class absence {
                 . "(employee_id, start, end, days, reason, comment, user, approval) "
                 . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :user, :approval)";
         try {
-            $result = database_wrapper::instance()->run($sql_query, array(
+            database_wrapper::instance()->run($sql_query, array(
                 'employee_id' => $employee_id,
                 'start' => $beginn,
                 'end' => $ende,
@@ -213,10 +220,9 @@ class absence {
                 'approval' => $approval
             ));
         } catch (Exception $exception) {
-            $error_string = $exception->getMessage();
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
-                global $Fehlermeldung;
-                $Fehlermeldung[] = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+                user_dialog::add_message($message, E_USER_ERROR);
             } else {
                 print_debug_variable($exception);
                 $message = gettext('There was an error while querying the database.')
@@ -247,9 +253,9 @@ class absence {
                      * Holidays are not counted
                      * Also we inform the user about not counting those days.
                      */
-                    global $Feiertagsmeldung; //TODO: This might better be handled by a class for user information.
                     $date_string = strftime('%x', $date_unix);
-                    $Feiertagsmeldung[] = htmlentities("$holiday ($date_string)\n");
+                    $message = $date_string . " " . gettext('is a holiday') . " (" . $holiday . ") " . gettext('and will not be counted.');
+                    user_dialog::add_message($message, E_USER_NOTICE);
                 } else {
                     /*
                      * Only days which are neither a holiday nor a weekend are counted
@@ -271,14 +277,14 @@ class absence {
         $Months = array();
         for ($i = 1; $i <= 12; $i++) {
             $timestamp = mktime(0, 0, 0, $i, 1);
-            $Months[date('n', $timestamp)] = date('F', $timestamp);
+            $Months[date('n', $timestamp)] = strftime('%B', $timestamp);
         }
         return $Months;
     }
 
     private static function get_rostering_years() {
         $Years = array();
-        $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
+        $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan` ORDER BY `Datum`";
         $result = database_wrapper::instance()->run($sql_query);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Years[] = $row->year;
@@ -290,10 +296,10 @@ class absence {
     public static function build_html_select_year($current_year) {
         $Years = self::get_rostering_years();
         $html_select_year = "";
-        $html_select_year .= "<form id='select_year' method=post>";
-        $html_select_year .= "<select name=year onchange=this.form.submit()>";
+        $html_select_year .= "<form id='select_year' class='inline_form' method=post>";
+        $html_select_year .= "<select name=year class='large' onchange=this.form.submit()>";
         foreach ($Years as $year_number) {
-            $html_select_year .= "<option value=$year_number";
+            $html_select_year .= "<option value='$year_number'";
             if ($year_number == $current_year) {
                 $html_select_year .= " SELECTED ";
             }
@@ -307,10 +313,10 @@ class absence {
     public static function build_html_select_month($current_month) {
         $Months = self::get_rostering_month_names();
         $html_select_month = "";
-        $html_select_month .= "<form id='select_month' method=post>";
-        $html_select_month .= "<select name=month_number onchange=this.form.submit()>";
+        $html_select_month .= "<form id='select_month' class='inline_form' method=post>";
+        $html_select_month .= "<select name=month_number class='large' onchange=this.form.submit()>";
         foreach ($Months as $month_number => $month_name) {
-            $html_select_month .= "<option value=$month_number";
+            $html_select_month .= "<option value='$month_number'";
             if ($month_number == $current_month) {
                 $html_select_month .= " SELECTED ";
             }

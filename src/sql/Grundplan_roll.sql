@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS `Grundplan_bak` (
+CREATE TABLE IF NOT EXISTS `Grundplan_roll` (
+  `rotation_id` int(11) NOT NULL,
   `VK` tinyint(11) NOT NULL,
   `Wochentag` tinyint(4) NOT NULL,
   `Dienstbeginn` time DEFAULT NULL,

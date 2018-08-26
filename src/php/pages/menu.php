@@ -5,7 +5,7 @@
  * It is not part and should not be part of e.g. install.php
  */
 ?>
-<nav id="nav" class="no-print">
+<nav id="nav" class="no_print">
     <ul id="navigation">
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php><?= gettext("Weekly view") ?>
@@ -60,6 +60,7 @@
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
                     </a>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-read.php><?= gettext("Overtime output") ?></a>
+                    <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-overview.php><?= gettext("Overtime overview") ?></a>
                 </li>
             </ul>
         </li>
@@ -89,6 +90,7 @@
             </a>
             <ul>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/attendance-list.php><?= gettext("Attendance list") ?></a></li>
+                <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/saturday-list.php><?= gettext("Saturday list") ?></a></li>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/marginal-employment-hours-list.php><?= gettext("Marginal employment hours list") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/employee_2.svg class="inline-image" alt="employee-button" title="Show employee">
                     </a></li>

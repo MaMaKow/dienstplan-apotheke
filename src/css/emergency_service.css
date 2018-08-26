@@ -1,0 +1,58 @@
+/*
+Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/*
+    Created on : 02.08.2018, 22:46:40
+    Author     : Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+*/
+
+table#emergency_service_table {
+    clear: left;
+}
+table#emergency_service_table tr th {
+    border-bottom: solid black 3px;
+}
+table#emergency_service_table tr td {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+}
+
+table#emergency_service_table td.saturday {
+    font-style: italic;
+}
+table#emergency_service_table td.sunday {
+    font-weight: bold;
+}
+table#emergency_service_table td.holiday {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/**
+ * Make the third column invisible on the screen:
+ */
+@media screen {
+    table#emergency_service_table th.replacement_td {
+        display: none;
+    }
+    table#emergency_service_table td.replacement_td {
+        border: none;
+    }
+    @media print {
+        table#emergency_service_table td.replacement_td {
+            width: 10em;
+        }

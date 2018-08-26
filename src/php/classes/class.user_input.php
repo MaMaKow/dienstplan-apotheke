@@ -55,16 +55,58 @@ abstract class user_input {
         }
     }
 
+    public static function principle_employee_roster_write_user_input_to_database($employee_id) {
+        $Principle_employee_roster_new = user_input::get_Roster_from_POST_secure();
+        database_wrapper::instance()->beginTransaction();
+        $sql_query = "DELETE FROM `Grundplan` WHERE `VK` = :employee_id";
+        database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        foreach ($Principle_employee_roster_new as $Principle_employee_roster_new_day_array) {
+            foreach ($Principle_employee_roster_new_day_array as $principle_employee_roster_new_object) {
+                if (NULL === $principle_employee_roster_new_object->employee_id) {
+                    /*
+                     * Just an empty row.
+                     */
+                    continue;
+                }
+                if ($employee_id != $principle_employee_roster_new_object->employee_id) {
+                    /*
+                     * The input must not contain any other employee.
+                     * We roll back the transaction here.
+                     */
+                    database_wrapper::instance()->rollBack();
+                    error_log('$employee_id is not equal to $principle_employee_roster_new_object->employee_id ' . "in " . __METHOD__ . " " . $employee_id . "!=" . $principle_employee_roster_new_object->employee_id);
+                    return FALSE;
+                }
+                //$pseudo_date_sql_start = $principle_employee_roster_new_object->date_sql;
+                //$pseudo_date_sql_end = $principle_employee_roster_new_object->date_sql;
+                //$Principle_employee_roster_old = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+                $sql_query = "INSERT INTO `Grundplan` "
+                        . "(VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar) "
+                        . "VALUES (:employee_id, :weekday, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment)";
+                database_wrapper::instance()->run($sql_query, array(
+                    'employee_id' => $principle_employee_roster_new_object->employee_id,
+                    'weekday' => date('w', $principle_employee_roster_new_object->date_unix),
+                    'duty_start_sql' => $principle_employee_roster_new_object->duty_start_sql,
+                    'duty_end_sql' => $principle_employee_roster_new_object->duty_end_sql,
+                    'break_start_sql' => $principle_employee_roster_new_object->break_start_sql,
+                    'break_end_sql' => $principle_employee_roster_new_object->break_end_sql,
+                    'working_hours' => $principle_employee_roster_new_object->working_hours,
+                    'branch_id' => $principle_employee_roster_new_object->branch_id,
+                    'comment' => $principle_employee_roster_new_object->comment,
+                ));
+            }
+        }
+        database_wrapper::instance()->commit();
+    }
+
     public static function principle_roster_write_user_input_to_database($branch_id) {
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
-
         $pseudo_date_sql_start = date('Y-m-d', min(array_keys($Principle_roster_new)));
         $pseudo_date_sql_end = date('Y-m-d', max(array_keys($Principle_roster_new)));
         $Principle_roster_old = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
         $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
         $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
-
         database_wrapper::instance()->beginTransaction();
         user_input::remove_changed_entries_from_database_principle_roster($branch_id, $Deleted_roster_employee_id_list);
         user_input::remove_changed_entries_from_database_principle_roster($branch_id, $Changed_roster_employee_id_list);
@@ -353,6 +395,12 @@ abstract class user_input {
             user_input::insert_changed_entries_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
         }
+        /*
+         * This might be a good place to do some maintenance tasks.
+         * The function is not called on every view.
+         * But it has to be called on a regular basis when editing the roster.
+         */
+        new maintenance();
     }
 
 }

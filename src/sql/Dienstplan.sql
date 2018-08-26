@@ -10,5 +10,6 @@ CREATE TABLE IF NOT EXISTS `Dienstplan` (
   `Mandant` int(11) NOT NULL DEFAULT '1',
   `user` varchar(64) CHARACTER SET latin1 NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`VK`,`Datum`,`Dienstbeginn`)
+  PRIMARY KEY (`VK`,`Datum`,`Dienstbeginn`),
+  CONSTRAINT `Dienstplan_ibfk_1` FOREIGN KEY (`VK`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci

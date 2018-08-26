@@ -17,13 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#Diese Seite wird den kompletten Dienstplan eines einzelnen Tages anzeigen.
+/*
+ * This page is meant to show the whole roster of one day for one branch.
+ */
 require '../../../default.php';
-$tage = 1; //Dies ist eine Tagesansicht für einen einzelnen Tag.
-$tag = 0;
 
-//$employee_id = user_input::get_variable_from_any_input("employee_id", FILTER_SANITIZE_NUMBER_INT);
-//$year = user_input::get_variable_from_any_input("year", FILTER_SANITIZE_NUMBER_INT);
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
@@ -41,6 +39,12 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
 $Abwesende = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
+    /*
+     * The $Branch_roster contanins all the rosters from all branches, including the current branch.
+     */
+    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql, $date_sql);
+}
 if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
     user_input::old_write_approval_to_database($branch_id, $Roster);
 }
@@ -49,12 +53,16 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     if (!empty($Principle_roster)) {
         //Wir wollen eine automatische Dienstplanfindung beginnen.
         //Mal sehen, wie viel die Maschine selbst gestalten kann.
-        $Fehlermeldung[] = "Kein Plan in der Datenbank, dies ist ein Vorschlag!";
+        $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
+        user_dialog::add_message($message);
         $Roster = $Principle_roster;
     } elseif (6 == strftime('%u', $date_unix)) {
         try {
-            $saturday_rotation = new saturday_rotation($date_sql, $branch_id);
-            $Roster = $saturday_rotation->fill_roster();
+            $saturday_rotation = new saturday_rotation($branch_id);
+            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
+            $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
+            $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
+            user_dialog::add_message($message);
         } catch (Exception $exception) {
             error_log($exception->getMessage());
         }
@@ -62,27 +70,23 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
 }
 if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
-    $examine_roster->check_for_overlap($date_sql, $Fehlermeldung);
-    $examine_roster->check_for_sufficient_employee_count($Fehlermeldung, 2);
-    $examine_roster->check_for_sufficient_goods_receipt_count($Warnmeldung);
-    $examine_roster->check_for_sufficient_qualified_pharmacist_count($Fehlermeldung);
+    $examine_roster->check_for_overlap($date_sql);
+    $examine_roster->check_for_sufficient_employee_count();
+    $examine_roster->check_for_sufficient_goods_receipt_count();
+    $examine_roster->check_for_sufficient_qualified_pharmacist_count();
+    examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix);
 }
+/*
+ * examine_attendance::check_for_attendant_absentees() should be done regardless of weekday and holiday:
+ */
+examine_attendance::check_for_attendant_absentees($Roster, $Abwesende);
 
 if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
-    $Warnmeldung[] = "An den Notdienst denken!";
+    $message = gettext('Beware the emergency service!');
+    user_dialog::add_message($message, E_USER_WARNING);
 }
 
-
-
-
-$VKmax = max(array_keys($workforce->List_of_employees));
-
-//Wir schauen, on alle Anwesenden anwesend sind und alle Kranken und Siechenden im Urlaub.
-examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix, $Warnmeldung);
-examine_attendance::check_for_attendant_absentees($Roster, $date_sql, $Abwesende, $Fehlermeldung);
-
-
-
+//$VKmax = max(array_keys($workforce->List_of_employees));
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -92,12 +96,6 @@ $html_text = "";
 //Hier beginnt die Normale Ausgabe.
 $html_text .= "<div id=main-area>\n";
 
-//Here we put the output of errors and warnings. We display the errors, which we collected in $Fehlermeldung and $Warnmeldung:
-$html_text .= build_warning_messages($Fehlermeldung, $Warnmeldung);
-$html_text .= user_dialog::build_messages();
-$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix) . "<br>";
-$html_text .= "<div class=only-print><b>" . $List_of_branch_objects[$branch_id]->name . "</b></div><br>\n";
-$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 
 $html_text .= "<div id=navigation_elements>";
@@ -105,12 +103,19 @@ $html_text .= build_html_navigation_elements::build_button_day_backward($date_un
 $html_text .= build_html_navigation_elements::build_button_day_forward($date_unix);
 $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 if ($session->user_has_privilege('approve_roster')) {
-    $html_text .= build_html_navigation_elements::build_button_approval();
-    $html_text .= build_html_navigation_elements::build_button_disapproval();
+    $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+
+    $html_text .= build_html_navigation_elements::build_button_approval($approval);
+    $html_text .= build_html_navigation_elements::build_button_disapproval($approval);
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
-$html_text .= "</div>\n";
+$html_text .= "</div><!-- id=navigation_elements -->\n";
+$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
+/*
+ * Here we put the output of errors and warnings.
+ */
+$html_text .= user_dialog::build_messages();
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
@@ -118,27 +123,32 @@ $html_text .= "<td>";
 $html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
 $html_text .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
 $html_text .= strftime('%d.%m. ', $date_unix);
-//Wochentag
+/*
+ * Weekday:
+ */
 $html_text .= strftime('%A ', $date_unix);
 if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
+$html_text .= "<br>";
+$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix);
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
-        $html_text .= "<br>NOTDIENST<br>" . $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     } else {
-        $html_text .= "<br>NOTDIENST<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     }
 }
 $html_text .= "</td>\n";
 $html_text .= "</tr>\n";
 $max_employee_count = roster::calculate_max_employee_count($Roster);
+$day_iterator = $date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 if (array() !== $Roster) {
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
         $html_text .= "<tr>\n";
         foreach (array_keys($Roster) as $day_iterator) {
-            $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $date_unix, $branch_id);
+            $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_employee'));
         }
         $html_text .= "</tr>\n";
     }
@@ -147,32 +157,41 @@ if (array() !== $Roster) {
      * Write an empty line in case the roster is empty:
      */
     $html_text .= "<tr>\n";
-    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $date_unix, $branch_id);
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
     $html_text .= "<tr>\n";
-    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $date_unix, $branch_id);
+    $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
 }
+$html_text .= build_html_roster_views::build_roster_input_row_add_row($day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
 
-
-//Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
+$html_text .= "<tr><td></td></tr>\n";
+$html_text .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
+$html_text .= "<tr><td></td></tr>\n";
+/*
+ * Make a list of absent people:
+ */
 $html_text .= build_html_roster_views::build_absentees_row($Abwesende);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 
 
 if (!empty($Roster)) {
+    if (!isset($examine_roster)) {
+        $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
+    }
     $html_text .= "<div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Roster);
     $html_text .= $roster_image_bar_plot->svg_string;
     $html_text .= "<br>\n";
     $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);
-    $html_text .= "</div>\n";
+    $html_text .= "</div><!-- class=image -->\n";
 }
-$html_text .= "</div>";
+$html_text .= task_rotation::build_html_task_rotation_select('Rezeptur', $date_sql, $branch_id);
+$html_text .= "</div><!-- id=main-area -->";
 echo "$html_text";
 
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 
 echo "</body>\n";
 echo "</html>";

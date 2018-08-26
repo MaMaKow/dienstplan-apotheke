@@ -28,8 +28,6 @@ create_cookie('mandant', $branch_id, 30);
  * This page will show the roster of one single day.
  */
 $number_of_days = 1;
-$Fehlermeldung = array();
-$Warnmeldung = array();
 
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_unix = strtotime($date_sql);
@@ -38,28 +36,36 @@ create_cookie("datum", $date_sql, 0.5);
 //The following lines check for the state of approval.
 //Duty rosters have to be approved by the leader, before the staff can view them.
 unset($approval);
-$sql_query = "SELECT state FROM `approval` WHERE date='$date_sql' AND branch='$branch_id'";
-$result = database_wrapper::instance()->run($sql_query);
+$sql_query = "SELECT state FROM `approval` WHERE date=:date AND branch=:branch_id";
+$result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id));
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $approval = $row->state;
 }
 if (isset($approval)) {
-    if ($approval == "approved") {
+    if ($approval == 'approved') {
         //Everything is fine.
-    } elseif ($approval == "not_yet_approved") {
-        $Warnmeldung[] = gettext("The roster has not been approved by the administration!");
-    } elseif ($approval == "disapproved") {
-        $Warnmeldung[] = gettext("The roster is still beeing revised!");
+    } elseif ($approval == 'not_yet_approved') {
+        $message = gettext('The roster has not been approved by the administration!');
+        user_dialog::add_message($message, E_USER_NOTICE);
+    } elseif ($approval == 'disapproved') {
+        $message = gettext('The roster is still beeing revised!');
+        user_dialog::add_message($message, E_USER_WARNING);
     }
 } else {
     $approval = "not_yet_approved";
-    $Warnmeldung[] = gettext("Missing data in table `approval`");
-    // TODO: This is an Exception. It will occur when There is no approval, disapproval or other connected information in the approval table of the database.
-    //That might espacially occur during the development stage of this feature.
+    $message = gettext('Missing data in table `approval`');
+    user_dialog::add_message($message, E_USER_NOTICE);
+    /*
+     * TODO: This is an Exception.
+     * It will occur when there is no approval, disapproval or other connected information in the approval table of the database.
+     * That might espacially occur during the development stage of this feature.
+     */
 }
 
 
-//Get a list of all employees:
+/*
+ * Get a list of all employees:
+ */
 $workforce = new workforce($date_sql);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
@@ -80,11 +86,9 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo "<div id=main-area>\n";
 
-
-echo build_warning_messages($Fehlermeldung, $Warnmeldung);
 echo user_dialog::build_messages();
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
-echo "<div id=navigation_form_div class=no-print>\n";
+echo "<div id=navigation_form_div class=no_print>\n";
 echo build_html_navigation_elements::build_button_day_backward($date_unix);
 echo build_html_navigation_elements::build_button_day_forward($date_unix);
 echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/roster-day-edit.php', array('datum' => $date_sql));
@@ -99,7 +103,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
     echo "<tr><td></td></tr>\n";
     echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
-    echo "<tr><td><br></td></tr>";
+    echo "<tr><td></td></tr>\n";
     $Abwesende = absence::read_absentees_from_database($date_sql);
     if (isset($Abwesende)) {
         echo build_html_roster_views::build_absentees_row($Abwesende);
@@ -121,7 +125,7 @@ if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE)) {
 
 echo "</div>\n";
 
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </body>
 </html>

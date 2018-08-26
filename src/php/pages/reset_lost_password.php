@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
 
 function clean_up_after_password_change($employee_id) {
@@ -27,10 +26,10 @@ function lost_password_token_is_valid($employee_id, $token) {
     $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = :employee_id and `token` = UNHEX(:token)";
     $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
     $row = $result->fetch(PDO::FETCH_OBJ);
-    if (!empty($row->employee_id) and $employee_id === $row->employee_id) {
+    if (!empty($row->employee_id) and $employee_id == $row->employee_id) {
         return TRUE; //The form is shown
     } else {
-        user_dialog::add_message(gettext('Invalid token'), user_dialog::TYPE_ERROR);
+        user_dialog::add_message(gettext('Invalid token'), E_USER_ERROR);
         echo user_dialog::build_messages();
         return FALSE;
     }
@@ -44,7 +43,8 @@ function build_lost_password_form($employee_id, $user_name, $token) {
         <div class=centered_form_div>
             <H1><?= $config['application_name'] ?> </H1>
             <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
-                <H2><?= $user_name ?></H2>
+                <p><strong><?= $user_name ?></strong></p>
+                <p><?= gettext('You can change your password here. Please enter your new password twice below.') ?></p>
                 <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>
                 <input type="password" size="40" name="password" required placeholder="Passwort"><br>
@@ -64,8 +64,8 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
     $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id";
     $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
-    $User_data = $result->fetch();
-    $user_name = $User_data['user_name'];
+    $User_data = $result->fetch(PDO::FETCH_OBJ);
+    $user_name = $User_data->user_name;
 
     /*
      * Remove expired tokens:
