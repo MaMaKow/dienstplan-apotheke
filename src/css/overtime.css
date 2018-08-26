@@ -1,0 +1,47 @@
+/*
+Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/*
+    Created on : 08.07.2018, 23:34:55
+    Author     : Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+*/
+
+table#overtime_overview_table tr.negative {
+    color: #E6828B;
+    font-style: normal;
+    font-weight: normal;
+}
+table#overtime_overview_table tr.positive {
+    color: #73AC22;
+    font-style: italic;
+    font-weight: normal;
+}
+table#overtime_overview_table tr.positive_high {
+    color: #73AC22;
+    font-style: normal;
+    font-weight: bold;
+}
+table#overtime_overview_table tr.positive_very_high {
+    color: #73AC22;
+    font-style: oblique;
+    font-weight: bold;
+    font-size: larger;
+}
+table#overtime_overview_table tr.zero {
+    color: #000000;
+    font-style: normal;
+    font-weight: normal;
+}

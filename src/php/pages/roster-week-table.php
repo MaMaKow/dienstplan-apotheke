@@ -23,18 +23,16 @@ $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_
 $mandant = $branch_id;
 create_cookie('mandant', $branch_id, 30);
 
-$error_message_html = "";
 $overlay_message_html = "";
-$Fehlermeldung = array();
-$Warnmeldung = array();
 
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
 $date_unix = strtotime($date_sql);
-$datum = $date_sql;
 $date_sql_start = $date_sql;
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
-create_cookie('datum', $date_sql, 1);
+create_cookie('datum', $date_sql, 0.5);
+$date_unix_start = $date_unix;
+$date_unix_end = $date_unix_start + ($tage - 1) * PDR_ONE_DAY_IN_SECONDS;
 
 for ($i = 0; $i < $tage; $i++) {
     $Week_dates_unix[] = strtotime(' +' . $i . ' days', $date_unix);
@@ -54,20 +52,28 @@ $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen nach der h
 //Build a div containing assignment of tasks:
 //TODO: Works only for "Rezeptur" right now!
 $weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id);
+$Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
+$duty_roster_working_hours_div = "";
+if (array() !== $Roster and isset($Working_hours_week_have)) {
+    $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster);
+    $duty_roster_working_hours_div = build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should);
+}
 
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $main_div_html = "<div id='main-area'>\n";
-$date_info_line_html = "<div id=date_info_line class='no-print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
+$date_info_line_html = "<div id=date_info_line class='no_print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
+$main_div_html .= "<div class='no_print'>";
 $main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+$main_div_html .= "</div>";
 
 $duty_roster_form_html = "";
 $buttons_div_html = "";
-$buttons_div_html .= "<div id=buttons_div class=no-print>";
+$buttons_div_html .= "<div id=buttons_div class=no_print>";
 $buttons_div_html .= build_html_navigation_elements::build_button_week_backward($date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_button_week_forward($date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_input_date($date_sql);
@@ -79,7 +85,7 @@ $table_html .= build_html_roster_views::build_roster_read_only_table_head($Roste
 
 $table_body_html = build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
 if (isset($Overlay_message)) {
-    $overlay_message_html .= "<div class='overlay no-print'>\n";
+    $overlay_message_html .= "<div class='overlay no_print'>\n";
     $Overlay_message = array_unique($Overlay_message);
     foreach ($Overlay_message as $message) {
         $overlay_message_html .= "<H1>" . $message . "</H1>\n";
@@ -88,6 +94,7 @@ if (isset($Overlay_message)) {
 }
 $table_html .= $table_body_html;
 $table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end);
+$table_html .= "";
 
 //echo "</div>\n";
 $table_foot_html = "<tfoot>"
@@ -110,35 +117,42 @@ $table_foot_html .= "</tr>\n";
 $table_foot_html .= "</tfoot>\n";
 
 $table_html .= $table_foot_html;
-$table_html .= "</table>\n"
-        . "$weekly_rotation_div_html"
-        . "</div>";
+$table_html .= "</table><!--id=duty-rooster-table-->\n";
 
 $table_div_html = "<div id=table_overlay_area>";
 $table_div_html .= $overlay_message_html;
 $table_div_html .= $table_html;
+$table_div_html .= "</div><!--id='main-area'-->\n";
+$table_div_html .= "$weekly_rotation_div_html";
 
 $duty_roster_form_html .= $table_div_html;
 
-$Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
-//An leeren Wochen soll nicht gerechnet werden.
-if (array() !== $Roster and isset($Working_hours_week_have)) {
-    $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster);
-    $duty_roster_form_html .= build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should);
-}
-// echo $submit_button;
 $main_div_html .= $duty_roster_form_html;
+$main_div_html .= $duty_roster_working_hours_div;
+//$main_div_html .= "</div>\n";
 
-$main_div_html .= "</div>\n";
-
-$warning_message_html = build_warning_messages($Fehlermeldung, $Warnmeldung);
-
-echo $warning_message_html;
 echo user_dialog::build_messages();
 
+echo '<div id="print_time_info" class="only_print"><p class="tiny">' . sprintf(gettext('Time of print: %1s'), date('d.m.Y H:i:s')) . '</p></div>';
 echo $main_div_html;
-
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+/* echo <<<EOF
+  <p style="page-break-after: always;">&nbsp;</p>
+  <p style="page-break-before: always;">&nbsp;</p>\n
+  EOF;
+ */
+echo "<div id=roster_week_image_div class=image>\n";
+for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
+    $date_sql = date('Y-m-d', $date_unix);
+    $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster, 300, 200);
+    echo "<div class=image_part>\n";
+    echo "<p>" . strftime('%A %x', $date_unix) . "</p>";
+    echo $roster_image_bar_plot->svg_string;
+    echo "</div><!--div class=image_part-->\n";
+}
+echo "</div><!--id=roster_week_image_div-->\n";
+echo "</div><!--class='main-area no_print'-->\n";
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </BODY>
 </HTML>

@@ -235,7 +235,9 @@ class database_wrapper {
         print_debug_variable($exception);
         if (TRUE === $this->pdo->inTransaction()) {
             $this->pdo->rollBack();
-            die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+            $message = gettext('There was an error while querying the database.')
+                    . " " . gettext('Please see the error log for more details!');
+            die("<p>$message</p>");
         } elseif ('42S02' == $exception->getCode() and 1146 === $exception->errorInfo[1]) {
             /*
              * Base table or view not found: 1146 Table doesn't exist
@@ -283,7 +285,9 @@ class database_wrapper {
              * If that ever changes, then here is the last chance to do so for anything that we did not think of.
              * print_debug_variable($exception);
              */
-            die("<p>There was an error while querying the database. Please see the error log for more details!</p>");
+            $message = gettext('There was an error while querying the database.')
+                    . " " . gettext('Please see the error log for more details!');
+            die("<p>$message</p>");
         }
     }
 

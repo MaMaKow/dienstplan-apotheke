@@ -25,6 +25,9 @@ body
     background-color: #FEFEFF;
     font-family: sans-serif;
 }
+footer {
+    clear: left;
+}
 table, th, td
 {
     white-space: nowrap;
@@ -61,16 +64,14 @@ td.absentees_column{
     white-space: normal;
     font-size: smaller;
 }
-a
-{
+a {
     text-decoration: none;
     color: #73AC22;
 }
-a:hover
-{
+a:hover {
     text-decoration: underline;
 }
-.only-print
+.only_print
 {
     display: none;
 }
@@ -83,6 +84,27 @@ div.foot
     /*	background-color: #BDE682;*/
     width: 95%;
 }
+@media screen and (min-width: 931px) {
+    div#main_area_centered {
+        text-align: center;
+        padding: 10px;
+        border: 3px solid #73AC22;
+        max-width: 50%;
+        margin: auto;
+    }
+    div#main_area_centered * {
+        margin: auto;
+    }
+}
+@media screen and (max-width: 930px) {
+    div#main_area_centered {
+        text-align: center;
+        padding: 10px;
+        border: 3px solid #73AC22;
+        max-width: 465px;
+        margin: auto;
+    }
+}
 div#main-area
 {
     width: 95%;
@@ -93,16 +115,21 @@ div#main-area
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 8px;
-
+    overflow: auto;
 }
 table#duty-rooster-table
 {
+    /*
     width: 85%;
+
     font-size: 1.18vw;
+    */
 }
 div#table_overlay_area
 {
+    /*
     width: 100%;
+    */
     position: relative;
 }
 div.roster_plot_div
@@ -138,14 +165,17 @@ select
     color: #73AC22;
     background-color: #FEFEFF;
 
-    border-top: 3px dotted #B4B4B4;
-    border-left: 3px dotted #B4B4B4;
-    border-right: 3px dotted #B4B4B4;
-    border-bottom: 3px dotted #B4B4B4;
+    border-top: 1px dashed #B4B4B4;
+    border-left: 1px dashed #B4B4B4;
+    border-right: 1px dashed #B4B4B4 ;
+    border-bottom: 1px dashed #B4B4B4;
 }
 select:hover
 {
-    border: 3px dotted #BDE682;
+    border: 1px double #BDE682;
+}
+img.roster_input_row_add_row_image {
+    width: 2em;
 }
 label
 {
@@ -318,6 +348,16 @@ img.worker-img:hover {
     font-size: xx-large;
     margin-bottom: 1em;
 }
+.size_medium, .size_medium * {
+    font-size: medium;
+}
+.smaller, .smaller * {
+    font-size: smaller;
+}
+.tiny {
+    font-size: xx-small;
+    font-weight: lighter;
+}
 .unobtrusive{
     font-size: smaller;
     font-weight: lighter;
@@ -402,6 +442,10 @@ button:hover{
     margin-bottom: 0.5em;
     background-color: #B4B4B4;
 }
+button:disabled, .btn-secondary:disabled {
+    filter: opacity(0.5);
+    box-shadow:  none;
+}
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Chrome/Safari/Opera */
@@ -412,21 +456,40 @@ button:hover{
                           not supported by any browser */
 }
 
-#weekly_rotation
-{
+div#weekly_rotation {
     font-family: monospace;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    margin: auto;
-    width: 10%;
-    padding: 5px;
+    font-size: smaller;
+    position: relative;
+    float: right;
 }
-#mandantenformular
-{
+div#print_time_info {
+    position:  absolute;
+    bottom: 0em;
+    right: 0em;
+}
+div#roster_week_image_div {
+    page-break-inside: avoid;
+}
+div#week_hours_table_div {
+    font-family: monospace;
+    font-size: smaller;
+    position: relative;
+    float:     right;
+}
+table.tight tr td {
+    padding-bottom: 0em;
+}
+.left_float_pool * {
+    float: left;
+    margin-right: 1em;
+}
+
+#branch_form {
     margin-right: 1em;
     float: left;
+    /*
     clear: left;
+    */
 }
 div#bottom
 {
@@ -559,7 +622,6 @@ nav ul#navigation_tiles li:hover a img.image_tiles{
     -ms-filter: brightness(0) invert(100%);
     -o-filter: brightness(0) invert(100%);
     filter: brightness(0) invert(100%);
-
 }
 nav ul li a img.image_tiles{
     height: 128px;
@@ -634,7 +696,7 @@ div.overlay_top
  */
 
 /*
- * The following lines are added for abwesenheit-in.php
+ * The following lines are added for absence-edit.php
  * -->
  */
 
@@ -643,7 +705,7 @@ tr.absence_row[data-approval='approved'] {
 }
 /*
  * <--
- * The above lines are added for abwesenheit-in.php
+ * The above lines are added for absence-edit.php
  */
 
 /*
@@ -675,6 +737,13 @@ span.form_input_unit{
 .nowrap{
     white-space: nowrap;
 }
+input[type=number] {
+    /*
+     * We are dealing with numbers only up to 60 in our input boxes.
+     * 2em are for the numbers, 1em is for the broswer styles and 1em is free space left.
+     */
+    width: 4em;
+}
 /*
  * <--
  * The above lines are added for human-resource-management
@@ -685,9 +754,12 @@ span.form_input_unit{
  */
 div#navigation_elements{
     float: left;
-    clear: left;
+    clear: both;
 }
-.inline_button_form{
+.inline_form {
+    display: inline;
+}
+.inline_element {
     display: inline;
 }
 /*
@@ -695,10 +767,26 @@ div#navigation_elements{
  * The above lines are added added for all sites containing build_html_navigation_elements
  */
 
-svg#svgimg {
+svg.svg_img {
     cursor: default;
 }
-svg#svgimg foreignObject p.selected{
+svg.svg_img foreignObject p {
+    margin-top: 0px;
+    box-shadow: inset 0 0 0 1000px #B4B4B4;
+}
+svg.svg_img foreignObject p.Apotheker, svg.svg_img foreignObject p.PI {
+    margin-top: 0px;
+    box-shadow: inset 0 0 0 1000px #73AC22;
+}
+svg.svg_img foreignObject p.PTA {
+    margin-top: 0px;
+    box-shadow: inset 0 0 0 1000px #BDE682;
+}
+svg.svg_img foreignObject p.PKA {
+    margin-top: 0px;
+    box-shadow: inset 0 0 0 1000px #B4B4B4;
+}
+svg.svg_img foreignObject p.selected {
     color: white;
 }
 
@@ -712,8 +800,9 @@ body div#week_hours_table_div p span {
     white-space: nowrap;
 }
 /*
- * abwesenheit-in.php
+ * absence-edit.php
  */
 select[id^='reason_in_'], select[id^='absence_in_']{
     display: none;
 }
+

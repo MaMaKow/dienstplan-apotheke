@@ -17,14 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * task_rotation allows to appoint tasks to employees on a regular rotating basis.
+ *
+ * <p>
+ * The absence of employees is regarded.
+ * Also the abilities of the employees and their principle branch are considered.
+ * Until now, only compounding can be used as a task.
+ * </p>
+ */
 abstract class task_rotation {
+
+    /**
+     * @var MAX_FUTURE_WEEKS <p>The maximum number of weeks to be planned into the future.</p>
+     */
+    const MAX_FUTURE_WEEKS = 4;
 
     public static function task_rotation_main($Dates_unix, $task, $branch_id) {
         global $workforce;
         $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
-        $weekly_rotation_div_html .= $task . ":<br>\n";
+        $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
         foreach ($Dates_unix as $date_unix) {
-            unset($rotation_employee_id);
+            //unset($rotation_employee_id);
             $rotation_employee_id = self::task_rotation_get_worker($date_unix, $task, $branch_id);
             $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
             if (NULL !== $rotation_employee_id) {
@@ -38,35 +52,43 @@ abstract class task_rotation {
 
     private static function task_rotation_get_worker($date_unix, $task, $branch_id) {
         $date_sql = date("Y-m-d", $date_unix);
-        global $workforce;
-        //We want the PTAs to take turns in the lab at a weekly basis.
-        //We sort them by VK number and check for the last one to take his turn.
-        //TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?
+        /*
+         * We want the PTAs to take turns in the lab at a weekly basis.
+         * We sort them by VK number and check for the last one to take his turn.
+         * TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?
+         */
 
-        database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` > NOW()");
-        //Was this day already planned?
-        $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = :task and `date` = :date";
-        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql));
-        $row = $result->fetch(PDO::FETCH_OBJ);
-        if (!empty($row->task)) {
-            $rotation_employee_id = $row->VK;
-            return $rotation_employee_id;
-        } else {
-            $rotation_employee_id = self::task_rotation_set_worker($date_unix, $task, $branch_id);
-            if (!empty($rotation_employee_id)) {
+        //database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` > DATE_ADD(NOW(), INTERVAL " . task_rotation::MAX_FUTURE_WEEKS . " WEEK)");
+        /*
+         * Was this day already planned?
+         */
+        $rotation_employee_id = self::read_task_employee_from_database($task, $date_sql, $branch_id);
+        if (NULL !== $rotation_employee_id) {
+            $Abwesende = absence::read_absentees_from_database($date_sql);
+            if (FALSE === array_search($rotation_employee_id, array_keys($Abwesende))) {
                 return $rotation_employee_id;
             }
+            /*
+             * If an employee is absent, then he/she can obviously not take the task:
+             */
+            database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` = :date", array('date' => $date_sql));
+        }
+        $rotation_employee_id = self::task_rotation_set_worker($date_unix, $task, $branch_id);
+        if (!empty($rotation_employee_id)) {
+            return $rotation_employee_id;
         }
         return NULL;
     }
 
-    /*
+    /**
      * @param int $date_unix The date as a unix time stamp.
      * @param string $task The task that is to be rotated.
      * @return int $rotation_employee_id A worker for a given day and task.
      */
-
     private static function task_rotation_set_worker($date_unix, $task, $branch_id) {
+        /*
+         * If nobody is stored to do a task. Then we have to decide, whos is up to do it.
+         */
         if ($date_unix < time()) {
             /*
              * We will not change the past anymore.
@@ -74,98 +96,170 @@ abstract class task_rotation {
             return FALSE;
         }
         global $workforce;
+        $date_sql = date("Y-m-d", $date_unix);
+        $rotation_employee_id = NULL;
+        /*
+         * Make a list of people who can do the task:
+         * Currently only compounding is a task.
+         */
         foreach ($workforce->List_of_compounding_employees as $employee_id) {
             if ($workforce->List_of_employees[$employee_id]->principle_branch_id == $branch_id) {
-                $Rezeptur_Mitarbeiter[$employee_id] = $employee_id;
+                $List_of_compounding_rotation_employees[$employee_id] = $employee_id;
             }
         }
-        reset($Rezeptur_Mitarbeiter);
-        $date_sql = date("Y-m-d", $date_unix);
-        $task_workers_count = count($Rezeptur_Mitarbeiter);
+        $task_workers_count = count($List_of_compounding_rotation_employees);
 
-        $sql_query = "SELECT * FROM `task_rotation` WHERE `date` <= :date and `task` = :task ORDER BY `date` DESC LIMIT 1";
-        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'task' => $task));
+        /*
+         * Get the last date when someone was assigned to this task:
+         * From that point onwards, we will assign people to the task.
+         * The assigning will take place on multiple days until the $date_sql.
+         */
+        $sql_query = "SELECT * FROM `task_rotation` WHERE `date` <= :date and `task` = :task and `branch_id` = :branch_id ORDER BY `date` DESC LIMIT 1";
+        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'task' => $task, 'branch_id' => $branch_id));
         $row = $result->fetch(PDO::FETCH_OBJ);
-        if (!empty($row->date)) {
-            $last_date = $row->date;
-            //If nobody is stored to do a task. Then we have to decide, whos is up to do it.
-            $last_date_unix = strtotime($last_date);
-            for ($temp_date = strtotime(' +1 day', $last_date_unix); $temp_date <= $date_unix; $temp_date = strtotime(' +1 day', $temp_date)) {
-                $from_date_sql = date("Y-m-d", strtotime("- $task_workers_count WEEKS SUNDAY", $temp_date));
-                $to_date_sql = date("Y-m-d", strtotime("- 1 WEEKS SUNDAY", $temp_date));
-                $temp_date_sql = date("Y-m-d", $temp_date);
-                foreach ($Rezeptur_Mitarbeiter as $vk) {
-                    $sql_query = "SELECT `VK`, COUNT(`date`) as `count`"
-                            . "FROM `task_rotation` "
-                            . "WHERE `VK` = :employee_id "
-                            . "AND `date` > :date_from "
-                            . "AND `date` < :date_to "
-                            . "GROUP BY `VK` "
-                            . "ORDER BY COUNT(`date`) ASC, `VK` ASC ";
-                    $result = database_wrapper::instance()->run($sql_query, array(
-                        'employee_id' => $vk,
-                        'date_from' => $from_date_sql,
-                        'date_to' => $to_date_sql
-                    ));
-                    $row = $result->fetch(PDO::FETCH_OBJ);
-                    if (!empty($row->count)) {
-                        $Rezeptur_Count[$vk] = $row->count;
-                    } else {
-                        $Rezeptur_Count[$vk] = 0;
-                    }
-                }
-                reset($Rezeptur_Mitarbeiter);
-                $next_VK = current(array_keys($Rezeptur_Count, min($Rezeptur_Count)));
-                if (!empty($next_VK)) {
-                    $run_iterator = 0;
-                    while (current($Rezeptur_Mitarbeiter) != $next_VK and $run_iterator++ < count($Rezeptur_Mitarbeiter)) {
-                        next($Rezeptur_Mitarbeiter);
-                    }
-                    $rotation_employee_id = current($Rezeptur_Mitarbeiter); //will be overwritten if not present on thet day because of illnes or holidays
-
-                    $Abwesende = absence::read_absentees_from_database($temp_date_sql);
-
-                    //In case the person is ill or on holidays, someone else has to take the turn:
-                    if (isset($Abwesende[$rotation_employee_id])) {
-                        //$Standard_rotation_vk = $rotation_employee_id;
-                        if (empty(array_diff(array_keys($Rezeptur_Mitarbeiter), array_keys($Abwesende)))) {
-                            //There is nobody working:
-                            $rotation_employee_id = NULL;
-                            continue;
-                        }
-                        while (isset($Abwesende[$rotation_employee_id])) {
-                            if (FALSE === next($Rezeptur_Mitarbeiter)) {
-                                reset($Rezeptur_Mitarbeiter);
-                            }
-                            $rotation_employee_id = current($Rezeptur_Mitarbeiter); //overwrites previously defined value
-                        }
-                    }
-                    if (time() > $temp_date) {
-                        /*
-                         * This value is only stored in the database, if it is in the past.
-                         * This is to make sure, that fresh absences can be regarded.
-                         */
-                        $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES (:task, :date, :employee_id)";
-                        database_wrapper::instance()->run($sql_query, array(
-                            'task' => $task,
-                            'date' => $temp_date_sql,
-                            'employee_id' => $rotation_employee_id
-                        ));
-                    }
-                }
-            }
-            return $rotation_employee_id;
-        } else {
-            //If there is noone anywhere in the past we just take the first person in the array.
-            $rotation_employee_id = min($Rezeptur_Mitarbeiter);
-            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`) VALUES (:task, :date, :employee_id)";
+        if (empty($row->date)) {
+            /*
+             * If there is noone anywhere in the past we just take the first person in the array.
+             */
+            $rotation_employee_id = min($List_of_compounding_rotation_employees);
+            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id, :branch_id)";
             database_wrapper::instance()->run($sql_query, array(
                 'task' => $task,
                 'date' => $date_sql,
+                'branch_id' => $branch_id,
                 'employee_id' => $rotation_employee_id
             ));
+            return $rotation_employee_id;
+        }
+
+        $last_date_unix = strtotime($row->date);
+        for ($temp_date = $last_date_unix + PDR_ONE_DAY_IN_SECONDS; $temp_date <= $date_unix; $temp_date += PDR_ONE_DAY_IN_SECONDS) {
+            if ($temp_date > time() + PDR_ONE_DAY_IN_SECONDS * 7 * task_rotation::MAX_FUTURE_WEEKS) {
+                /*
+                 * This value is only calculated and stored in the database,
+                 *  if it is in the past or in the near future.
+                 * This is to make sure, that fresh absences and new employees can be regarded.
+                 * In the case of far future. An empty value is returned.
+                 */
+                return NULL;
+            }
+
+            $from_date_sql = date("Y-m-d", strtotime("- $task_workers_count WEEKS SUNDAY", $temp_date));
+            $to_date_sql = date("Y-m-d", strtotime("- 1 WEEKS SUNDAY", $temp_date));
+            $temp_date_sql = date("Y-m-d", $temp_date);
+            /*
+             * Remove absent employees for this day from the list of current available rotation employees:
+             */
+            $Abwesende = absence::read_absentees_from_database($temp_date_sql);
+            $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, array_keys($Abwesende));
+            $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_sql, $to_date_sql);
+
+            /**
+             * Take the employee, who did the task the least in the last weeks:
+             * min($Done_rotation_count) is the minimum number someone did the task.
+             * array_keys($Done_rotation_count, min($Done_rotation_count) is the employee_id(s) as an array of all the employees, who worked the least.
+             * current() just takes one of those least task-working employees.
+             */
+            $next_rotation_employee_id = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
+
+            if (!empty($next_rotation_employee_id)) {
+                $rotation_employee_id = $next_rotation_employee_id;
+            }
+            self::write_task_employee_to_database($task, $temp_date_sql, $branch_id, $rotation_employee_id);
         }
         return $rotation_employee_id;
+    }
+
+    private static function read_done_rotation_count_from_database($List_of_compounding_rotation_employees, $from_date_sql, $to_date_sql) {
+        foreach ($List_of_compounding_rotation_employees as $employee_id) {
+            $Done_rotation_count[$employee_id] = 0;
+            $sql_query = "SELECT `VK`, COUNT(`date`) as `count`"
+                    . "FROM `task_rotation` "
+                    . "WHERE "
+                    . "`VK` = :employee_id "
+                    . "AND `date` > :date_from "
+                    . "AND `date` < :date_to ";
+            $result = database_wrapper::instance()->run($sql_query, array(
+                'employee_id' => $employee_id,
+                'date_from' => $from_date_sql,
+                'date_to' => $to_date_sql
+            ));
+            $row = $result->fetch(PDO::FETCH_OBJ);
+            if (!empty($row->count)) {
+                $Done_rotation_count[$row->VK] = $row->count;
+            }
+        }
+        asort($Done_rotation_count);
+        return $Done_rotation_count;
+    }
+
+    public static function build_html_task_rotation_select($task, $date_sql, $branch_id) {
+        self::task_handle_user_input();
+        $task_employee_id = self::read_task_employee_from_database($task, $date_sql, $branch_id);
+        global $workforce;
+        if (NULL === $workforce) {
+            $workforce = new workforce($date_sql);
+        }
+        $task_rotation_select_html = "";
+        $task_rotation_select_html .= "<div id='task_rotation_select_div'>";
+        $task_rotation_select_html .= "<p>" . pdr_gettext($task) . "</p>";
+        $task_rotation_select_html .= "<form>";
+        $task_rotation_select_html .= "<input  name='task_rotation_task' type='hidden' value='$task'>";
+        $task_rotation_select_html .= "<input  name='task_rotation_date' type='hidden' value='$date_sql'>";
+        $task_rotation_select_html .= "<input  name='task_rotation_branch' type='hidden' value='$branch_id'>";
+        $task_rotation_select_html .= "<select name='task_rotation_employee' onchange='this.form.submit()'>";
+        /*
+         * The empty option is necessary to enable the deletion of employees:
+         */
+        $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
+        if (isset($workforce->List_of_employees[$task_employee_id]->last_name) or ! isset($task_employee_id)) {
+            foreach ($workforce->List_of_compounding_employees as $employee_id) {
+                $employee_object = $workforce->List_of_employees[$employee_id];
+                if ($task_employee_id == $employee_id and NULL !== $task_employee_id) {
+                    $task_rotation_select_html .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                } else {
+                    $task_rotation_select_html .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                }
+            }
+        } else {
+            /*
+             * Unknown employee, probably someone from the past.
+             */
+            $task_rotation_select_html .= "<option value=$task_employee_id selected>" . $task_employee_id . " Unknown employee" . "</option>";
+        }
+
+        $task_rotation_select_html .= "</select>\n";
+        $task_rotation_select_html .= "</form>";
+        $task_rotation_select_html .= "</div><!-- id='task_rotation_select_div'-->";
+        return $task_rotation_select_html;
+    }
+
+    private static function read_task_employee_from_database($task, $date_sql, $branch_id) {
+        $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = :task and `date` = :date and `branch_id` = :branch_id";
+        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id));
+        $row = $result->fetch(PDO::FETCH_OBJ);
+        if (empty($row->VK)) {
+            return NULL;
+        }
+        $employee_id = $row->VK;
+        return $employee_id;
+    }
+
+    public static function task_handle_user_input() {
+        $task = user_input::get_variable_from_any_input('task_rotation_task', FILTER_SANITIZE_STRING);
+        $date_sql = user_input::get_variable_from_any_input('task_rotation_date', FILTER_SANITIZE_STRING);
+        $branch_id = user_input::get_variable_from_any_input('task_rotation_branch', FILTER_SANITIZE_NUMBER_INT);
+        $employee_id = user_input::get_variable_from_any_input('task_rotation_employee', FILTER_SANITIZE_NUMBER_INT);
+        if (is_null($task) or is_null($date_sql) or is_null($branch_id) or is_null($employee_id)) {
+            return FALSE;
+        }
+        self::write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id);
+    }
+
+    private static function write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id) {
+        $sql_query = "INSERT INTO `task_rotation` SET `task` = :task, `date` = :date, `branch_id` = :branch_id, `VK` = :employee_id ON DUPLICATE KEY UPDATE `task` = :task2, `date` = :date2, `branch_id` = :branch_id2, `VK` = :employee_id2";
+        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id, 'employee_id' => $employee_id, 'task2' => $task, 'date2' => $date_sql, 'branch_id2' => $branch_id, 'employee_id2' => $employee_id));
+        return $result;
     }
 
 }

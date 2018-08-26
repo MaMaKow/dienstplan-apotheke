@@ -21,10 +21,8 @@ require "default.php";
 //We delete the old files:
 function delete_old_table_data() {
     // This is to make sure, that any deleted tables in the database do not reappear.
-    global $New_table_files;
-    $Old_table_files = glob('src/sql/*.sql'); // get all file names
-    $files_to_be_deleted = array_diff($Old_table_files, $New_table_files);
-    foreach ($files_to_be_deleted as $file) { // iterate files
+    $Files_to_be_deleted = glob('src/sql/*.sql'); // get all file names
+    foreach ($Files_to_be_deleted as $file) { // iterate files
         if (is_file($file)) {
             if (!unlink($file)) { // delete file
                 return FALSE;
@@ -39,8 +37,7 @@ function write_new_table_data() {
     global $New_table_files;
     $sql_query = "SHOW TABLES";
     $sql_result_with_tables = database_wrapper::instance()->run($sql_query);
-    while ($table_row = $sql_result_with_tables->fetch(PDO::FETCH_ASSOC)) {
-        $table_name = $table_row[0];
+    while ($table_name = $sql_result_with_tables->fetch(PDO::FETCH_COLUMN)) {
         $sql_query = "SHOW CREATE TABLE " . $table_name;
         $sql_result = database_wrapper::instance()->run($sql_query);
         while ($row = $sql_result->fetch(PDO::FETCH_ASSOC)) {
@@ -57,6 +54,7 @@ function write_new_table_data() {
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
             $New_table_files[] = $file_name;
             if (!file_put_contents($file_name, $table_structure_create)) {
+                user_dialog::add_message(gettext('Error while writing the file to disk.'));
                 return FALSE;
             }
         }
@@ -80,6 +78,7 @@ function write_new_trigger_data() {
             $file_name = PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/trigger.' . $file_name . '.sql';
             $New_table_files[] = $file_name;
             if (!file_put_contents($file_name, $trigger_structure_create)) {
+                user_dialog::add_message(gettext('Error while writing the trigger file to disk.'));
                 return FALSE;
             }
         }
@@ -87,9 +86,10 @@ function write_new_trigger_data() {
     return TRUE;
 }
 
-if (write_new_trigger_data() and write_new_table_data() and delete_old_table_data()) {
+if (delete_old_table_data() and write_new_trigger_data() and write_new_table_data()) {
     echo "<p>New sql table structure files have been written.</p>";
 } else {
     echo "<p>Error while writing sql table structure files.</p>";
 }
 //Have another look into: https://www.slideshare.net/jonoxer/selfhealing-databases-managing-schema-updates-in-the-field/18-Missing_column_Record_schema_changes
+echo user_dialog::build_messages();

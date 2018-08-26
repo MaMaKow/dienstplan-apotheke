@@ -57,11 +57,13 @@ if (isset($_GET['register'])) {
 
         if ($result) {
             send_mail_about_registration();
-            echo 'Sie wurden erfolgreich registriert. Sobald Ihr Benutzer freigeschaltet ist, können Sie sich <a href="login.php">einloggen.</a>';
+            echo gettext('You have been successfully registered.')
+            . " "
+            . sprintf(gettext('Once your user is unlocked, you can %1s log in.%2s'), '<a href="login.php">', '</a>');
             $showFormular = false;
         } else {
-            error_log('Beim Abspeichern ist leider ein Fehler aufgetreten' . var_export($statement->errorInfo(), TRUE));
-            $Error_message[] = 'Beim Abspeichern ist leider ein Fehler aufgetreten<br>';
+            error_log('Unfortunately, an error occurred while saving.' . var_export($statement->errorInfo(), TRUE));
+            user_dialog::add_message(gettext('Unfortunately, an error occurred while saving.'), E_USER_ERROR);
         }
     }
 }
@@ -84,8 +86,6 @@ if ($showFormular) {
         <input type="password" size="40" name="password" required placeholder="Passwort"><br>
         <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
         <?php
-        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/build-warning-messages.php';
-        echo build_warning_messages($Error_message, array());
         echo user_dialog::build_messages();
         ?>
         <input type="submit" value="Abschicken">

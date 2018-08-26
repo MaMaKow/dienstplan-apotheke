@@ -33,7 +33,6 @@ $pseudo_date_sql = date('Y-m-d', $pseudo_date_unix);
 $workforce = new workforce($pseudo_date_sql);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    //TODO: Test if this works:
     user_input::principle_roster_write_user_input_to_database($branch_id);
 }
 
@@ -62,19 +61,20 @@ $html_text = '';
 $html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
 $html_text .= "<table>\n";
 $max_employee_count = roster::calculate_max_employee_count($Principle_roster);
+$day_iterator = $pseudo_date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
     foreach (array_keys($Principle_roster) as $day_iterator) {
-        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $pseudo_date_unix, $branch_id);
+        $html_text .= build_html_roster_views::build_roster_input_row($Principle_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_employee'));
     }
     $html_text .= "</tr>\n";
 }
+$html_text .= build_html_roster_views::build_roster_input_row_add_row($day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
 
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 echo $html_text;
 if (!empty($Principle_roster)) {
-    //TODO: This does not work yet. PLease check Dienstplan equals Grundplan?
     echo "<div class=above-image>\n";
     echo "<div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);
@@ -88,7 +88,7 @@ if (!empty($Principle_roster)) {
 }
 echo '</div>';
 
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 
 echo "</body>\n";
 echo '</html>';

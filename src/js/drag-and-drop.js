@@ -75,9 +75,8 @@ function deselectElement(evt) {
         var diff_hour = (Math.round(currentMatrix[4] / bar_width_factor * 2) / 2).valueOf();
         newMatrix = "matrix(" + currentMatrix.join(' ') + ")";
         selectedElement.setAttributeNS(null, "transform", newMatrix);
-        var rect_id = selectedElement.id;
-        var line = rect_id.substring(rect_id.lastIndexOf('_') + 1);
-        var column = rect_id.substring(0, rect_id.lastIndexOf('_'));
+        var line = selectedElement.dataset.line;
+        var column = selectedElement.dataset.column;
         if (column === "break_box") {
             syncToTable(line, 'Dienstplan_Mittagbeginn', diff_hour);
             syncToTable(line, 'Dienstplan_Mittagsende', diff_hour);

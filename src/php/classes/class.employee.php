@@ -31,6 +31,7 @@ class employee {
     public $principle_branch_id;
     public $working_week_hours;
     public $lunch_break_minutes;
+    public $Principle_roster;
 
     public function __construct($employee_id, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch) {
         $this->employee_id = $employee_id;
@@ -49,15 +50,9 @@ class employee {
                 . "WHERE `VK` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            /*
-             * The primary key of the table `Grundplan` is VK + Wochentag + Mandant.
-             * This is reflected by the keys in this array:
-             */
-            $this->Principle_roster[$row->Wochentag][$row->Mandant]['duty_start'] = $row->Dienstbeginn;
-            $this->Principle_roster[$row->Wochentag][$row->Mandant]['duty_end'] = $row->Dienstende;
-            $this->Principle_roster[$row->Wochentag][$row->Mandant]['break_start'] = $row->Mittagsbeginn;
-            $this->Principle_roster[$row->Wochentag][$row->Mandant]['break_end'] = $row->Mittagsende;
-            $this->Principle_roster[$row->Wochentag][$row->Mandant]['comment'] = $row->Kommentar;
+            $pseudo_date_unix = time() + ($row->Wochentag - date('w')) * PDR_ONE_DAY_IN_SECONDS;
+            $pseudo_date_sql = date('Y-m-d', $pseudo_date_unix);
+            $this->Principle_roster[$row->Wochentag][] = new roster_item($pseudo_date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
         }
     }
 

@@ -26,18 +26,14 @@ abstract class user_dialog {
 
     static $Messages = array();
 
-    const TYPE_ERROR = 'error';
-    const TYPE_WARNING = 'warning';
-    const TYPE_NOTIFICATION = 'notification';
-
     public function __construct() {
         $this->Messages = array(
             1 => array(
-                'type' => self::TYPE_ERROR,
+                'type' => E_USER_ERROR,
                 'text' => '__construct will never be called'
             ),
             2 => array(
-                'type' => self::TYPE_NOTIFICATION,
+                'type' => E_USER_NOTICE,
                 'text' => 'This is just an example of the array structure.'
             ),
         );
@@ -46,18 +42,14 @@ abstract class user_dialog {
     /**
      * Build the output of errors and warnings.
      *
-     * We display the errors, which we collected in $Fehlermeldung and $Warnmeldung
      * The errors are assembled in a div "error_container".
-     *
-     * @param array $Fehlermeldung An array of strings of errors.
-     * @param array $Warnmeldung An array of strings of warnings.
      *
      * @return string HTML code with error containers.
      */
     public static function build_messages() {
         $html_messages = "<div class='user_dialog_container'>\n";
         foreach (self::$Messages as $message_array) {
-            $html_messages .= "<div class=" . $message_array['type'] . ">\n";
+            $html_messages .= "<div class=" . htmlentities($message_array['type']) . ">\n";
             $html_messages .= "<p>" . $message_array['text'] . "</p>\n";
             $html_messages .= "</div>\n";
         }
@@ -65,17 +57,113 @@ abstract class user_dialog {
         return $html_messages;
     }
 
-    public static function add_message($text, $type = self::TYPE_ERROR) {
-        $allowed_types = array(self::TYPE_ERROR, self::TYPE_NOTIFICATION, self::TYPE_WARNING);
-        if (!in_array($type, $allowed_types)) {
-            /*
-             * Only allow specific constants as message type:
-             */
-            throw new Exception('$type must be any of ' . var_export($allowed_types, TRUE) . ' but was: ' . $type);
-            //return FALSE;
+    public static function add_message($text, $type = E_USER_ERROR, $formated_input = FALSE) {
+        switch ($type) {
+            case E_USER_ERROR:
+                $type_string = 'error';
+                break;
+            case E_USER_WARNING:
+                $type_string = 'warning';
+                break;
+            case E_USER_NOTICE:
+                $type_string = 'notification';
+                break;
+            default :
+                throw new Exception('$type must be E_USER_ERROR, E_USER_NOTICE or E_USER_WARNING but was: ' . $type);
         }
-        self::$Messages[] = array('text' => $text, 'type' => $type);
+        if ($formated_input) {
+            self::$Messages[] = array('text' => '<pre>' . $text . '</pre>', 'type' => $type_string);
+            return TRUE;
+        }
+        self::$Messages[] = array('text' => htmlentities($text), 'type' => $type_string);
         return TRUE;
+    }
+
+    public static function build_contact_form() {
+        $form_html = "
+        <div id='user_dialog_contact_form_div'>
+            <a title='" . gettext("Close") . "' href='#' onclick='hide_contact_form()'>
+            <span id='remove_form_div_span'>
+                x
+            </span>
+            </a>
+            <form accept-charset='utf-8' id='contact_form' method=POST>
+                <p>
+                    " . gettext('Message') . "<br>
+                    <textarea name=message rows=15></textarea>
+                </p>
+                <p>
+                <input type='submit' name=submit_contact_form>
+                </p>
+            </form>
+        </div>
+
+";
+        return $form_html;
+    }
+
+    public static function contact_form_send_mail() {
+        if (!filter_has_var(INPUT_POST, 'submit_contact_form')) {
+            return FALSE;
+        }
+        global $config;
+        $application_name = $config['application_name'];
+        $recipient = $config['contact_email'];
+        $subject = $application_name . " " . gettext('has a comment');
+
+        $message = self::contact_form_send_mail_build_message();
+        $header = self::contact_form_send_mail_build_header();
+
+        $mail_result = mail($recipient, $subject, $message, $header);
+        if ($mail_result) {
+            $message = gettext("The mail was successfully sent. Thank you!");
+            user_dialog::add_message($message, E_USER_NOTICE);
+        } else {
+            error_log(var_export(error_get_last(), TRUE));
+            $message = gettext("Error while sending the mail. I am sorry.");
+            user_dialog::add_message($message, E_USER_ERROR);
+        }
+    }
+
+    public static function contact_form_send_mail_build_message() {
+        if (!filter_has_var(INPUT_POST, 'message')) {
+            return FALSE;
+        }
+
+        global $workforce;
+        if (!isset($workforce)) {
+            $workforce = new workforce();
+        }
+        $trace = debug_backtrace();
+        $paragraph_separator = "\n\n\n\n";
+        $message = "";
+        $message .= "________ " . gettext('Message') . " ________\n";
+        $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
+        $message .= $paragraph_separator;
+
+        $message .= "________ " . gettext('Sender') . " ________\n";
+        $message .= $workforce->List_of_employees[$_SESSION['user_employee_id']]->full_name;
+        $message .= $paragraph_separator;
+
+        $message .= "________ " . gettext('File') . " ________\n";
+        $message .= $trace[0]['file'];
+        $message .= $paragraph_separator;
+
+        /* $message .= "________ " . gettext('Trace') . " ________\n";
+         * $message .= "TRACE DEACTIVATED";
+         * //$message .= htmlentities(var_export($trace, TRUE));
+         * $message .= $paragraph_separator;
+         */
+        return $message;
+    }
+
+    public static function contact_form_send_mail_build_header() {
+        $header = "";
+        $header .= 'From: ' . $_SESSION['user_email'] . "\r\n";
+        $header .= 'Reply-To: ' . $_SESSION['user_email'] . "\r\n";
+        $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+        $header .= "Content-type: text/plain; charset=UTF-8;\r\n";
+        return $header;
     }
 
 }

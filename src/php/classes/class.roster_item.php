@@ -42,6 +42,7 @@ class roster_item {
     public $break_duration;
     public $duty_duration;
     public $working_seconds;
+    public $weekday;
     protected static $List_of_allowed_variables = array(
         'duty_start_int',
         'duty_start_sql',
@@ -74,7 +75,7 @@ class roster_item {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;
-        $this->branch_id = $branch_id;
+        $this->branch_id = (int) $branch_id;
         $this->duty_start_sql = $this->format_time_string_correct($duty_start);
         $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
         $this->duty_end_sql = $this->format_time_string_correct($duty_end);
@@ -84,6 +85,8 @@ class roster_item {
         $this->break_end_sql = $this->format_time_string_correct($break_end);
         $this->break_end_int = $this->convert_time_to_seconds($break_end);
         $this->comment = $comment;
+        $this->weekday = date("N", $this->date_unix);
+
         /*
          * TODO: This might be a good place to issue an error, if the break times are not within the working times.
          * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?

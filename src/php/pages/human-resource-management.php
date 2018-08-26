@@ -85,12 +85,16 @@ $session->exit_on_missing_privilege('create_employee');
             </p>
         </fieldset>
 
-        <input type=submit id=save_new class='no-print' name=submitStunden value='<?= gettext("Register") ?>' form='human_resource_management'>
+        <input type=submit id=save_new class='no_print' name=submitStunden value='<?= gettext("Register") ?>' form='human_resource_management'>
 
     </form>
 </div>
 <?php
-require PDR_FILE_SYSTEM_APPLICATION_PATH . 'contact-form.php';
+/*
+ * TODO: Add a delete employee button.
+ * The deletion of employees is cascading to delete also the associated user.
+ */
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </body>
 </html>

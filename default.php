@@ -70,7 +70,6 @@ error_reporting($config['error_reporting']); //Which errors should be reported?
  * We want some functions to be accessible in all scripts.
  */
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "funktionen.php";
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/build-warning-messages.php';
 
 /*
  * Setup the presentation of time values:
