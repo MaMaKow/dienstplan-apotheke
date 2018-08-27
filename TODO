@@ -1,8 +1,79 @@
-This is a TODO list.
-    * Delete the absence						**FAILED**
-      - TypeError: pdr_translations[locale] is undefined[Weitere Informationen]  javascript.js:5:9
-      + Error not reproducible
+Allow roster_form top be either tight or loose.
+Day-view loose so break can be in the same row.
+Week view tight, so that it fits for print.
 --
+<<<Nachricht<<<
+Urlaubs-Tage-Rechner für Urlaub und Resturlaub
+>>>   >>>
+<<<Nachricht<<<
+edit option for overtime
+>>>   >>>
+<<<Nachricht<<<
+Absentees row can be omitted (invisible)
+if there are no absentees at all
+>>>   >>>
+
+<<<Nachricht<<<
+saturday rotation must add a warning, if the data is not saved into the database yet.
+>>>   >>>
+<<<Nachricht<<<
+Input field for task rotation
+>>>   >>>
+
+<<<Nachricht<<<
+rewrite contact form
+perhaps just like the overlay from absence
+>>>   >>>
+<<<Nachricht<<<
+add a border to the roster SVG
+make it visible in print
+>>>   >>>
+
+<<<Nachricht<<<
+Mitarbeiter selbst tauschen -> Modul bauen
+>>>   >>>
+<<<Nachricht<<<
+employee warning module
+
+Wenn ein Dienstplan geändert wird, geht eine Email an alle beteiligten Mitarbeiter, die einen User hinterlegt haben.
+
++ Text mit organisatorischen Informationen
+>>>   >>>
+
+<<<Nachricht<<<
+Es sind folgende Mitarbeiter nicht eingesetzt:
+
+aussschalten, wenn der Mitarbeiter in einem anderen Mandanten eingeteilt ist.
+>>>   >>>
+<<<Nachricht<<<
+Alle Stunden und Abwesenheiten mit aktuellstem Datum zuerst.
+
+Abwesenheit mit Filter für Jahr und Reason (Checkbox zur Multi-Auswahl (Javascript?))
+>>>   >>>
+<<<Nachricht<<<
+filter for absence
+
+filter option for years and for specific reasons e.g. Vacation
+>>>   >>>
+
+<<<Nachricht<<<
+&#34; . gettext(&#34;break&#34;) . &#34;:
+
+on grundplan-vk-in.php
+when the break actually exists
+>>>   >>>
+
+<<<Nachricht<<<
+/var/www/html/apotheke/dienstplan/stunden-in.php
+fokus auf dem eingabe-feld
+>>>   >>>
+
+
+<<<Nachricht<<<
+/var/www/html/apotheke/dienstplan/tag-in.php
+Kommentare müssen angezeigt werden, wenn vorhanden
+>>>   >>>
+
     * Upload a PEP file to upload-pep.php				**FAILED**
       - Sorry, there was an error uploading your file
       + Error not reproducible
