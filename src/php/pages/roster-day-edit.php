@@ -29,30 +29,44 @@ $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STR
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 $workforce = new workforce($date_sql);
+/*
+ * User input:
+ * Get new/changed rosters from user input and put them into the database.
+ */
 if (filter_has_var(INPUT_POST, 'Roster')) {
     $Roster = user_input::get_Roster_from_POST_secure();
     if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
         user_input::roster_write_user_input_to_database($Roster, $branch_id);
     }
 }
+/*
+ * User input:
+ * Approve or disapprove rosters
+ */
+if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
+    user_input::old_write_approval_to_database($branch_id, $Roster);
+}
 
-$Abwesende = absence::read_absentees_from_database($date_sql);
+$Absentees = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
+     * But it only contains the employees, who are normally in this $branch_id.
      */
-    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql, $date_sql);
+    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql);
 }
-if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
-    user_input::old_write_approval_to_database($branch_id, $Roster);
-}
+
 $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql, NULL, array(roster::OPTION_CONTINUE_ON_ABSENCE));
+/*
+ * In case there is no roster scheduled yet, create a suggestion:
+ */
 if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     if (!empty($Principle_roster)) {
-        //Wir wollen eine automatische Dienstplanfindung beginnen.
-        //Mal sehen, wie viel die Maschine selbst gestalten kann.
+        /*
+         * Create roster from principle roster:
+         */
         $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
         user_dialog::add_message($message);
         $Roster = $Principle_roster;
@@ -68,40 +82,41 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
         }
     }
 }
+/*
+ * Examine roster for errors and irregularities:
+ */
 if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
     $examine_roster->check_for_overlap($date_sql);
     $examine_roster->check_for_sufficient_employee_count();
     $examine_roster->check_for_sufficient_goods_receipt_count();
     $examine_roster->check_for_sufficient_qualified_pharmacist_count();
-    examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix);
+    examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Absentees, $date_unix);
 }
 /*
  * examine_attendance::check_for_attendant_absentees() should be done regardless of weekday and holiday:
  */
-examine_attendance::check_for_attendant_absentees($Roster, $Abwesende);
+examine_attendance::check_for_attendant_absentees($Roster, $Absentees);
 
 if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
     $message = gettext('Beware the emergency service!');
     user_dialog::add_message($message, E_USER_WARNING);
 }
 
-//$VKmax = max(array_keys($workforce->List_of_employees));
-//Produziere die Ausgabe
+/*
+ * Output:
+ */
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
-
-//Hier beginnt die Normale Ausgabe.
 $html_text .= "<div id=main-area>\n";
-
-
-
 $html_text .= "<div id=navigation_elements>";
 $html_text .= build_html_navigation_elements::build_button_day_backward($date_unix);
 $html_text .= build_html_navigation_elements::build_button_day_forward($date_unix);
-$html_text .= build_html_navigation_elements::build_button_submit('roster_form');
+if ($session->user_has_privilege('create_roster')) {
+    $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
+}
 if ($session->user_has_privilege('approve_roster')) {
     $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
 
@@ -171,7 +186,7 @@ $html_text .= "<tr><td></td></tr>\n";
 /*
  * Make a list of absent people:
  */
-$html_text .= build_html_roster_views::build_absentees_row($Abwesende);
+$html_text .= build_html_roster_views::build_absentees_row($Absentees);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 

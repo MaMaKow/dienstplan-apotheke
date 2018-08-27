@@ -752,7 +752,8 @@ input[type=number] {
  * The below lines are added for all sites containing build_html_navigation_elements
  * -->
  */
-div#navigation_elements{
+div#navigation_elements {
+    width: 100%; /*make sure, that there is nothing right of the navigation bar*/
     float: left;
     clear: both;
 }
@@ -764,7 +765,7 @@ div#navigation_elements{
 }
 /*
  * <--
- * The above lines are added added for all sites containing build_html_navigation_elements
+ * The above lines are added for all sites containing build_html_navigation_elements
  */
 
 svg.svg_img {

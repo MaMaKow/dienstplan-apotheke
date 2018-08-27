@@ -288,7 +288,7 @@ abstract class build_html_navigation_elements {
         $text = "";
         $text .= "<div id=date_chooser_div>\n";
         $text .= "<form id=date_chooser_form method=post>\n";
-        $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onblur='this.form.submit()'>\n";
+        $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onChange='this.form.submit()' onblur='this.form.submit()'>\n";
         $text .= "<input type=submit name=tagesAuswahl value=Anzeigen>\n";
         $text .= "</form>\n";
         $text .= "</div>\n";
