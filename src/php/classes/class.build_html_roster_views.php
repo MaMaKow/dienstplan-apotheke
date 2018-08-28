@@ -225,7 +225,7 @@ abstract class build_html_roster_views {
         return $roster_input_row_comment_html;
     }
 
-    public static function build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end) {
+    public static function build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end, $Options = NULL) {
         global $List_of_branch_objects;
         $date_unix_start = strtotime($date_sql_start);
         $date_unix_end = strtotime($date_sql_end);
@@ -244,7 +244,7 @@ abstract class build_html_roster_views {
             $table_html .= htmlentities($number_of_days) . ">";
             $table_html .= $List_of_branch_objects[$branch_id]->short_name;
             $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->short_name . "</th></tr>";
-            $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id);
+            $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id, $Options);
         }
         return $table_html;
     }
@@ -288,7 +288,7 @@ abstract class build_html_roster_views {
         return $head_table_html;
     }
 
-    public static function build_roster_readonly_table($Roster, $branch_id) {
+    public static function build_roster_readonly_table($Roster, $branch_id, $Options = NULL) {
         if (array() === $Roster) {
             return FALSE;
         }
@@ -320,7 +320,7 @@ abstract class build_html_roster_views {
                 $table_html .= "<td>";
                 $zeile = "";
 
-                $zeile .= "<b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
+                $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlentities($roster_object->date_sql)
                         . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
                 if (isset($workforce->List_of_employees[$roster_object->employee_id]->last_name)) {
@@ -328,13 +328,18 @@ abstract class build_html_roster_views {
                 } else {
                     $zeile .= "Unknown employee: " . $roster_object->employee_id;
                 }
-                $zeile .= "</a></b> / ";
+                $zeile .= "</a></b> / <span class='roster_working_hours'>";
                 $zeile .= htmlentities($roster_object->working_hours);
-                $zeile .= " ";
-                $zeile .= " <br> ";
+                $zeile .= "&nbsp;h</span><!-- roster_working_hours --></span><!-- employee_and_hours --> ";
+                if (isset($Options['space_constraints']) and 'narrow' === $Options['space_constraints']) {
+                    $zeile .= " <br> ";
+                } else {
+                    $zeile .= "<span class='vertical_spacer'></span>";
+                }
                 /*
                  * start and end of duty
                  */
+                $zeile .= "<span class='duty_time'>";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_object, 'duty_start_sql');
                 $zeile .= " - ";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_object, 'duty_end_sql');
@@ -345,15 +350,22 @@ abstract class build_html_roster_views {
                      */
                     $zeile .= '&nbsp;' . '<sup>' . mb_substr(gettext('Comment'), 0, 1) . '</sup>';
                 }
+                $zeile .= "</span><!-- class='duty_time'--></span><!-- employee_and_hours_and_duty_time -->";
                 /*
                  * start and end of break
                  */
-                $zeile .= "<br>\n";
+                if (isset($Options['space_constraints']) and 'narrow' === $Options['space_constraints']) {
+                    $zeile .= "<br>\n";
+                } else {
+                    $zeile .= "<span class='vertical_spacer'></span>";
+                }
                 if ($roster_object->break_start_int > 0) {
+                    $zeile .= "<span class='break_time'>";
                     $zeile .= " " . gettext("break") . ": ";
-                    $zeile .= htmlentities($roster_object->break_start_sql);
+                    $zeile .= "<span class='time'>" . htmlentities($roster_object->break_start_sql) . "</span>";
                     $zeile .= " - ";
-                    $zeile .= htmlentities($roster_object->break_end_sql);
+                    $zeile .= "<span class='time'>" . htmlentities($roster_object->break_end_sql) . "</span>";
+                    $zeile .= "</span><!-- class='break_time' -->";
                 }
                 $table_html .= $zeile;
                 $table_html .= "</td>\n";
@@ -367,9 +379,9 @@ abstract class build_html_roster_views {
 
     private static function build_roster_readonly_table_add_time($roster_object, $parameter) {
         if (self::equals_principle_roster($roster_object, $parameter)) {
-            $html = htmlentities($roster_object->$parameter);
+            $html = "<span class='time'>" . htmlentities($roster_object->$parameter) . "</span>";
         } else {
-            $html = "<strong>" . htmlentities($roster_object->$parameter) . "</strong>";
+            $html = "<span class='time'><strong>" . htmlentities($roster_object->$parameter) . "</strong></span>";
         }
         return $html;
     }

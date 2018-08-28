@@ -61,7 +61,7 @@ class update_database {
         }
     }
 
-    private function refactor_roster_table() {
+    private function refactor_duty_roster_table() {
         if (database_wrapper::database_table_exists('Dienstplan') and ! database_wrapper::database_table_exists('roster')) {
             $sql_query = "ALTER TABLE `Dienstplan` "
                     . "CHANGE `VK` `employee_id` TINYINT UNSIGNED NOT NULL, "

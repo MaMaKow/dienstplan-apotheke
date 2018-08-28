@@ -75,9 +75,9 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql, $date_sql);
 }
 
-$max_vk_count_in_rooster_days = 0;
+$max_vk_count_in_roster_days = 0;
 foreach ($Roster as $Roster_day_array) {
-    $max_vk_count_in_rooster_days = max($max_vk_count_in_rooster_days, count($Roster_day_array));
+    $max_vk_count_in_roster_days = max($max_vk_count_in_roster_days, count($Roster_day_array));
 }
 $VKmax = max(array_keys($workforce->List_of_employees)); //The highest given employee_id
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
@@ -95,14 +95,14 @@ echo build_html_navigation_elements::build_button_open_edit_version('src/php/pag
 echo "<br><br>\n";
 echo build_html_navigation_elements::build_input_date($date_sql);
 echo "</div>\n";
-echo "<div id=roster_table_div>\n";
-echo "<table id=roster_table>\n";
+echo "<div id=duty_roster_table_div>\n";
+echo "<table id=duty_roster_table>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME, build_html_roster_views::OPTION_SHOW_CALENDAR_WEEK));
 if ($approval == "approved" OR $config['hide_disapproved'] == false) {
 
-    echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
+    echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id, array('space_constraints' => 'wide'));
     echo "<tr><td></td></tr>\n";
-    echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
+    echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql, array('space_constraints' => 'wide'));
     echo "<tr><td></td></tr>\n";
     $Abwesende = absence::read_absentees_from_database($date_sql);
     if (isset($Abwesende)) {

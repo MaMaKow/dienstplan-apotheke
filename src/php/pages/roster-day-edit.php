@@ -181,7 +181,7 @@ if (array() !== $Roster) {
 $html_text .= build_html_roster_views::build_roster_input_row_add_row($day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id);
 
 $html_text .= "<tr><td></td></tr>\n";
-$html_text .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql);
+$html_text .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql, array('space_constraints' => 'wide'));
 $html_text .= "<tr><td></td></tr>\n";
 /*
  * Make a list of absent people:

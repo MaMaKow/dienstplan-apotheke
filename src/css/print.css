@@ -75,13 +75,7 @@ div#week_hours_table_div {
     width: 4cm;
     font-size: xx-small;
 }
-#duty-rooster-table {
-    /*
-    width: 334mm;
-    */
-    width: 85%;
-}
-table#duty-rooster-table {
+table#duty_roster_table {
     width: 85%;
     font-size: 3.5mm;
 }

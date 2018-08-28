@@ -80,10 +80,10 @@ $buttons_div_html .= build_html_navigation_elements::build_input_date($date_sql)
 $buttons_div_html .= "</div>";
 $duty_roster_form_html .= $buttons_div_html;
 
-$table_html = "<table id=duty-rooster-table>\n";
+$table_html = "<table id=duty_roster_table>\n";
 $table_html .= build_html_roster_views::build_roster_read_only_table_head($Roster);
 
-$table_body_html = build_html_roster_views::build_roster_readonly_table($Roster, $branch_id);
+$table_body_html = build_html_roster_views::build_roster_readonly_table($Roster, $branch_id, array('space_constraints' => 'narrow'));
 if (isset($Overlay_message)) {
     $overlay_message_html .= "<div class='overlay no_print'>\n";
     $Overlay_message = array_unique($Overlay_message);
@@ -93,7 +93,7 @@ if (isset($Overlay_message)) {
     $overlay_message_html .= "</div>\n";
 }
 $table_html .= $table_body_html;
-$table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end);
+$table_html .= build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end, array('space_constraints' => 'narrow'));
 $table_html .= "";
 
 //echo "</div>\n";
@@ -117,7 +117,7 @@ $table_foot_html .= "</tr>\n";
 $table_foot_html .= "</tfoot>\n";
 
 $table_html .= $table_foot_html;
-$table_html .= "</table><!--id=duty-rooster-table-->\n";
+$table_html .= "</table><!--id=duty_roster_table-->\n";
 
 $table_div_html = "<div id=table_overlay_area>";
 $table_div_html .= $overlay_message_html;

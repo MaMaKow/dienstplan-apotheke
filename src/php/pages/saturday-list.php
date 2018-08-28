@@ -62,7 +62,7 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
             $suffix = '</span>';
             if (in_array($employee_id, array_keys($Absentees))) {
                 $prefix = '<span class="absent">';
-                $suffix = "&nbsp(" . substr($Absentees[$employee_id], 0, 4) . ')</span>';
+                $suffix = "&nbsp;(" . substr($Absentees[$employee_id], 0, 4) . ')</span>';
             }
 
             $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_id]->last_name . $suffix;
@@ -79,7 +79,7 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
                 $suffix = '</span>';
                 if (in_array($roster_item->employee_id, array_keys($Absentees))) {
                     $prefix = '<span class="absent">';
-                    $suffix = "&nbsp(" . substr($Absentees[$roster_item->employee_id], 0, 4) . ')</span>';
+                    $suffix = "&nbsp;(" . substr($Absentees[$roster_item->employee_id], 0, 4) . ')</span>';
                 }
                 $Rostered_employees[$roster_item->employee_id] = $prefix . $workforce->List_of_employees[$roster_item->employee_id]->last_name . $suffix;
             }
