@@ -91,7 +91,7 @@ foreach ($Principle_employee_roster as $Principle_employee_roster_day_array) {
         $Stunden[$employee_id][] = $roster_object->working_hours;
     }
 }
-$html_text .= gettext("Hours per week") . "&nbsp";
+$html_text .= gettext("Hours per week") . "&nbsp;";
 ksort($Stunden);
 foreach ($Stunden as $mitarbeiter => $stunden) {
     $html_text .= array_sum($stunden);
