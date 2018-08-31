@@ -826,3 +826,9 @@ table#duty_roster_table tr td span.employee_and_hours {
      */
     display: inline-block;
 }
+div.remaining_holidays {
+    clear: left;
+}
+div.remaining_holidays p span {
+
+}

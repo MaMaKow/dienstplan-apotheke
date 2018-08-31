@@ -46,7 +46,7 @@ class workforce {
             $result = database_wrapper::instance()->run($sql_query, array('date1' => $date_sql, 'date2' => $date_sql));
         }
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $this->List_of_employees[$row->id] = new employee((int) $row->id, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, (int) $row->branch);
+            $this->List_of_employees[$row->id] = new employee((int) $row->id, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
             $this->List_of_branch_employees[$row->branch][] = $row->id;
             if (in_array($row->profession, array('Apotheker', 'PI'))) {
                 $this->List_of_qualified_pharmacist_employees[] = $row->id;

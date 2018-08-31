@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-08-24 22:52+0100\n"
-"PO-Revision-Date: 2018-08-24 22:52+0100\n"
+"POT-Creation-Date: 2018-08-29 11:11+0100\n"
+"PO-Revision-Date: 2018-08-29 11:12+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -116,11 +116,11 @@ msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
-#: src/php/classes/class.absence.php:257
+#: src/php/classes/class.absence.php:261
 msgid "is a holiday"
 msgstr "ist ein Feiertag"
 
-#: src/php/classes/class.absence.php:257
+#: src/php/classes/class.absence.php:261
 msgid "and will not be counted."
 msgstr "und wird nicht berechnet."
 
@@ -180,7 +180,7 @@ msgstr "iCalendar Datei"
 
 #: src/php/classes/class.build_html_navigation_elements.php:149
 #: src/php/classes/class.build_html_navigation_elements.php:152
-#: src/php/pages/absence-edit.php:131 src/php/pages/branch-management.php:158
+#: src/php/pages/absence-edit.php:148 src/php/pages/branch-management.php:158
 #: src/php/pages/collaborative-vacation-input-box.php:116
 msgid "Save"
 msgstr "Speichern"
@@ -208,31 +208,31 @@ msgid "to"
 msgstr "bis"
 
 #: src/php/classes/class.build_html_roster_views.php:105
-#: src/php/classes/class.build_html_roster_views.php:353
-#: src/php/classes/class.build_html_roster_views.php:430
+#: src/php/classes/class.build_html_roster_views.php:364
+#: src/php/classes/class.build_html_roster_views.php:442
 msgid "break"
 msgstr "Pause"
 
 #: src/php/classes/class.build_html_roster_views.php:224
-#: src/php/classes/class.build_html_roster_views.php:346
-#: src/php/pages/absence-edit.php:113
+#: src/php/classes/class.build_html_roster_views.php:351
+#: src/php/pages/absence-edit.php:130
 #: src/php/pages/collaborative-vacation-input-box.php:97
 msgid "Comment"
 msgstr "Kommentar"
 
 #: src/php/classes/class.build_html_roster_views.php:270
-#: src/php/pages/roster-day-edit.php:134
+#: src/php/pages/roster-day-edit.php:149
 #: src/php/pages/roster-employee-table.php:56
 #: src/php/pages/roster-week-table.php:66
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
 #: src/php/classes/class.build_html_roster_views.php:275
-#: src/php/pages/roster-day-edit.php:138 src/php/pages/roster-day-edit.php:140
+#: src/php/pages/roster-day-edit.php:153 src/php/pages/roster-day-edit.php:155
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
-#: src/php/classes/class.build_html_roster_views.php:464
+#: src/php/classes/class.build_html_roster_views.php:476
 #: src/php/pages/principle-roster-employee.php:94
 msgid "Hours per week"
 msgstr "Wochenstunden"
@@ -532,26 +532,47 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:46
+#: src/php/pages/absence-edit.php:38
+#, php-format
+msgid ""
+"The employee is entitled to %2$s of %3$s vacation days in the year %1$s."
+msgstr "Dem Mitarbeiter stehen %2$s von %3$s Urlaubstagen im Jahr %1$s zu."
+
+#: src/php/pages/absence-edit.php:39
+#, php-format
+msgid "There have so far been taken %1$s holidays."
+msgstr "Es wurden bisher %1$s Urlaubstage genommen."
+
+#: src/php/pages/absence-edit.php:40
+#, php-format
+msgid "%1$s remaining vacation days in %2$s have already been applied for."
+msgstr "Es wurden bereits %1$s Resturlaubstage im Jahr %2$s beantragt."
+
+#: src/php/pages/absence-edit.php:41
+#, php-format
+msgid "There are still %1$s vacation days available."
+msgstr "Es stehen noch %1$s Urlaubstage zur Verfügung."
+
+#: src/php/pages/absence-edit.php:130 src/php/pages/absence-read.php:46
 #: src/php/pages/collaborative-vacation-input-box.php:94
 msgid "Start"
 msgstr "Beginn"
 
-#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:47
+#: src/php/pages/absence-edit.php:130 src/php/pages/absence-read.php:47
 #: src/php/pages/collaborative-vacation-input-box.php:95
 msgid "End"
 msgstr "Ende"
 
-#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:48
+#: src/php/pages/absence-edit.php:130 src/php/pages/absence-read.php:48
 #: src/php/pages/collaborative-vacation-input-box.php:96
 msgid "Reason"
 msgstr "Grund"
 
-#: src/php/pages/absence-edit.php:113 src/php/pages/absence-read.php:49
+#: src/php/pages/absence-edit.php:130 src/php/pages/absence-read.php:49
 msgid "Days"
 msgstr "Tage"
 
-#: src/php/pages/absence-edit.php:113
+#: src/php/pages/absence-edit.php:130
 msgid "Approval"
 msgstr "Genehmigung"
 
@@ -927,15 +948,15 @@ msgstr "Beim Speichern der Daten trat ein Fehler auf."
 msgid "Missing input token"
 msgstr "Es wurde kein Token übergeben."
 
-#: src/php/pages/roster-day-edit.php:56 src/php/pages/roster-day-edit.php:64
+#: src/php/pages/roster-day-edit.php:70 src/php/pages/roster-day-edit.php:78
 msgid "There is no roster in the database."
 msgstr "In der Datenbank befindet sich kein Dienstplan."
 
-#: src/php/pages/roster-day-edit.php:56 src/php/pages/roster-day-edit.php:64
+#: src/php/pages/roster-day-edit.php:70 src/php/pages/roster-day-edit.php:78
 msgid "This is a proposal."
 msgstr "Dies ist ein Vorschlag."
 
-#: src/php/pages/roster-day-edit.php:85
+#: src/php/pages/roster-day-edit.php:102
 msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
 

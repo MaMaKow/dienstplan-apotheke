@@ -27,43 +27,60 @@ absence::handle_user_input();
 /*
  * TODO: Find overlapping absences.
  */
+$number_of_holidays_due = absence::get_number_of_holidays_due($employee_id, $workforce, $year);
+$number_of_holidays_principle = $workforce->List_of_employees[$employee_id]->holidays;
+$number_of_holidays_taken = absence::get_number_of_holidays_taken($employee_id, $year);
+$number_of_remaining_holidays_submitted = absence::get_number_of_remaining_holidays_submitted($employee_id, $year);
+$number_of_remaining_holidays_left = $number_of_holidays_due - ($number_of_holidays_taken + $number_of_remaining_holidays_submitted);
+
+$remaining_holidays_div = "<div class='remaining_holidays'>";
+$remaining_holidays_div .= "<p>";
+$remaining_holidays_div .= "<span>" . sprintf(gettext('The employee is entitled to %2$s of %3$s vacation days in the year %1$s.'), $year, $number_of_holidays_due, $number_of_holidays_principle) . " </span> ";
+$remaining_holidays_div .= "<span>" . sprintf(gettext('There have so far been taken %1$s holidays.'), $number_of_holidays_taken) . " </span> ";
+$remaining_holidays_div .= "<span>" . sprintf(gettext('%1$s remaining vacation days in %2$s have already been applied for.'), $number_of_remaining_holidays_submitted, ($year + 1)) . " </span> ";
+$remaining_holidays_div .= "<span>" . sprintf(gettext('There are still %1$s vacation days available.'), $number_of_remaining_holidays_left) . " </span> ";
+$remaining_holidays_div .= "</p>";
+$remaining_holidays_div .= "</div>";
+/*
+ * TODO: An option to automatically mark vacation days as 'remaining holidays'.
+ */
 
 $sql_query = 'SELECT * FROM `absence` WHERE `employee_id` = :employee_id and (Year(`start`) = :year or Year(`end`) =:year2) ORDER BY `start` DESC';
 $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year, 'year2' => $year));
 $tablebody = '';
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $html_form = "change_absence_entry_" . $row->start;
+    $html_form_id = "change_absence_entry_" . $row->start;
     $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
-            . "<form accept-charset='utf-8' method=POST id='$html_form'>"
+            . "<form accept-charset='utf-8' method=POST id='$html_form_id'>"
             . "\n";
     /*
      * start
      */
     $tablebody .= "<td><div id=start_out_$row->start>";
     $tablebody .= date('d.m.Y', strtotime($row->start)) . "</div>";
-    $tablebody .= "<input id=start_in_$row->start style='display: none;' type=date name='beginn' value=" . date('Y-m-d', strtotime($row->start)) . " form='$html_form'> ";
-    $tablebody .= "<input style='display: none;' type=date name='start_old' value=" . date('Y-m-d', strtotime($row->start)) . " form='$html_form'> ";
+    $tablebody .= "<input id=start_in_$row->start style='display: none;' type=date name='beginn' value=" . date('Y-m-d', strtotime($row->start)) . " form='$html_form_id'> ";
+    $tablebody .= "<input style='display: none;' type=date name='start_old' value=" . date('Y-m-d', strtotime($row->start)) . " form='$html_form_id'> ";
     $tablebody .= "</td>\n";
     /*
      * end
      */
-    $tablebody .= "<td><div id=end_out_$row->start form='$html_form'>";
+    $tablebody .= "<td><div id=end_out_$row->start form='$html_form_id'>";
     $tablebody .= date('d.m.Y', strtotime($row->end)) . "</div>";
-    $tablebody .= "<input id=end_in_$row->start style='display: none;' type=date name='ende' value=" . date('Y-m-d', strtotime($row->end)) . " form='$html_form'> ";
+    $tablebody .= "<input id=end_in_$row->start style='display: none;' type=date name='ende' value=" . date('Y-m-d', strtotime($row->end)) . " form='$html_form_id'> ";
     $tablebody .= "</td>\n";
     /*
      * reason
      */
     $tablebody .= "<td><div id=reason_out_$row->start>" . pdr_gettext($row->reason) . "</div>";
     $html_id = "reason_in_$row->start";
-    $tablebody .= absence::build_reason_input_select($row->reason, $html_id, $html_form);
+    $tablebody .= absence::build_reason_input_select($row->reason, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
     /*
      * comment
      */
     $tablebody .= "<td><div id=comment_out_$row->start>$row->comment</div>";
     $html_id = "comment_in_$row->start";
-    $tablebody .= "<input id=comment_in_$row->start style='display: none;' type=text name='comment' value='$row->comment' form='$html_form'> ";
+    $tablebody .= "<input id=comment_in_$row->start style='display: none;' type=text name='comment' value='$row->comment' form='$html_form_id'> ";
     $tablebody .= "</td>\n";
     /*
      * days
@@ -71,10 +88,10 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<td>$row->days</td>\n";
     $tablebody .= "<td><span id=absence_out_$row->start>" . pdr_gettext($row->approval) . "</span>";
     $html_id = "absence_in_$row->start";
-    $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form);
+    $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
     $tablebody .= "<td style='font-size: 1em; height: 1em'>\n"
-            . "<input hidden name='employee_id' value='$employee_id' form='$html_form'>\n"
+            . "<input hidden name='employee_id' value='$employee_id' form='$html_form_id'>\n"
             . "<button type=submit id=delete_$row->start class='button_small delete_button no_print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Diese Zeile löschen'>\n"
             . "</button>\n"
@@ -144,6 +161,7 @@ echo "<tbody>\n"
  . "</tbody>\n";
 echo "</table>\n";
 echo "</div>\n";
+echo "$remaining_holidays_div";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </body>

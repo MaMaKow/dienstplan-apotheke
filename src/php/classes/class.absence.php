@@ -246,6 +246,10 @@ class absence {
             if (date('w', $date_unix) != 6 and date('w', $date_unix) != 0) {
                 /*
                  * Saturday and Sunday are not counted
+                 * TODO: Instead we should look into the principle roster!
+                 * If there is no entry there, then we will not count the day.
+                 * This is espacially relevent to the 450 € workers.
+                 * The are only there for two days a week.
                  */
                 $holiday = holidays::is_holiday($date_unix);
                 if (FALSE !== $holiday) {
@@ -325,6 +329,109 @@ class absence {
         $html_select_month .= "</select>";
         $html_select_month .= "</form>";
         return $html_select_month;
+    }
+
+    public static function get_number_of_holidays_due($employee_id, $workforce, $year) {
+        $months_worked_in_this_year = 0;
+
+        $employee_object = $workforce->List_of_employees[$employee_id];
+        $number_of_holidays_principle = $employee_object->holidays;
+        $number_of_working_week_days = $employee_object->working_week_days;
+        $number_of_holidays_due = $number_of_holidays_principle;
+        $start_of_employment = new DateTime($employee_object->start_of_employment);
+        if (NULL !== $employee_object->end_of_employment) {
+            $end_of_employment = new DateTime($employee_object->end_of_employment);
+        } else {
+            $end_of_employment = NULL;
+        }
+
+        $first_day_of_this_year = new DateTime("01.01." . $year);
+        $last_day_of_this_year = new DateTime("31.12." . $year);
+        $interval = new DateInterval('P1M');
+        for ($start_of_month = $first_day_of_this_year; $start_of_month <= $last_day_of_this_year; $start_of_month->add($interval)) {
+            $end_of_month = (new DateTime($start_of_month->format('Y-m-d')))->modify('last day of');
+            /*
+             * Bundesrahmentarifvertrag für Apothekenmitarbeiter
+             * gültig ab 1. Januar 2015
+             * § 11 Erholungsurlaub
+             * Für jeden vollen Monat der Betriebszugehörigkeit hat der Mitarbeiter Anspruch auf 1/12 des tariflichen Jahresurlaubs.
+             * Besteht das Arbeitsverhältnis länger als sechs Monate, darf der gesetzliche Mindesturlaub von 24 Werktagen nicht unterschritten werden.
+             */
+            if ($start_of_employment > $start_of_month or ( NULL !== $end_of_employment and $end_of_employment < $end_of_month)) {
+                $number_of_holidays_due -= $number_of_holidays_principle / 12;
+            } else {
+                $months_worked_in_this_year++;
+            }
+            if ($months_worked_in_this_year >= 6) {
+                /*
+                 * Mindesturlaubsgesetz für Arbeitnehmer (Bundesurlaubsgesetz)
+                 * § 3 Dauer des Urlaubs
+                 * (1) Der Urlaub beträgt jährlich mindestens 24 Werktage.
+                 * This seems to be the definite minimum whenever at least 6 months have passed in the year
+                 *
+                 * § 4 Wartezeit
+                 * Der volle Urlaubsanspruch wird erstmalig nach sechsmonatigem Bestehen des Arbeitsverhältnisses erworben.
+                 *
+                 * § 5 Teilurlaub
+                 * (1) Anspruch auf ein Zwölftel des Jahresurlaubs für jeden vollen Monat des Bestehens des Arbeitsverhältnisses hat der Arbeitnehmer
+                 * c) wenn er nach erfüllter Wartezeit in der ersten Hälfte eines Kalenderjahrs aus dem Arbeitsverhältnis ausscheidet.
+                 */
+                $legal_minimum_holidays = 24 * ($number_of_working_week_days / 6);
+                $number_of_holidays_due = max($legal_minimum_holidays, $number_of_holidays_due);
+            }
+            /*
+             * TODO:
+             * It is possible to also reduce on Elternzeit:
+             * Gesetz zum Elterngeld und zur Elternzeit (Bundeselterngeld- und Elternzeitgesetz - BEEG)
+             * § 17 Abs. 1
+             * Der Arbeitgeber kann den Erholungsurlaub, der dem Arbeitnehmer oder der Arbeitnehmerin für das Urlaubsjahr zusteht,
+             * für jeden vollen Kalendermonat der Elternzeit um ein Zwölftel kürzen.
+             * Dies gilt nicht, wenn der Arbeitnehmer oder die Arbeitnehmerin während der Elternzeit bei seinem oder ihrem Arbeitgeber Teilzeitarbeit leistet.
+             *
+             * This is facultative and to be decided by the employer.
+             */
+        }
+        /*
+         * Mindesturlaubsgesetz für Arbeitnehmer (Bundesurlaubsgesetz)
+         * § 5 Teilurlaub
+         * (2) Bruchteile von Urlaubstagen, die mindestens einen halben Tag ergeben, sind auf volle Urlaubstage aufzurunden.
+         */
+        return round($number_of_holidays_due, 0);
+    }
+
+    /**
+     * Read the number of remaining holidays, which have been submitted already in the following year from the database.
+     *
+     * @param int $employee_id
+     * @param int $year <p>
+     * The actual year to which the holidays belong.
+     * The query looks for 'remaining holiday' in the following year.</p>
+     * @return int number of remaining holidays
+     */
+    public static function get_number_of_remaining_holidays_submitted($employee_id, $year) {
+        $sql_query = "SELECT sum(`days`) FROM `absence` "
+                . "WHERE `employee_id` = :employee_id AND "
+                . "'remaining holiday' = `reason` and :year = YEAR(`start`)-1";
+
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year));
+        $number_of_remaining_holidays_submitted = (int) $result->fetch(PDO::FETCH_COLUMN);
+        return $number_of_remaining_holidays_submitted;
+    }
+
+    /**
+     *
+     * @param type $employee_id
+     * @param type $year
+     * @return int
+     */
+    public static function get_number_of_holidays_taken($employee_id, $year) {
+        $sql_query = "SELECT sum(`days`) FROM `absence` "
+                . "WHERE `employee_id` = :employee_id AND "
+                . "`reason` = 'vacation' and :year = YEAR(`start`)";
+
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year));
+        $number_of_holidays_taken = (int) $result->fetch(PDO::FETCH_COLUMN);
+        return $number_of_holidays_taken;
     }
 
 }

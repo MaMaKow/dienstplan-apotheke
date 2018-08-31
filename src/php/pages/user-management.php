@@ -84,7 +84,7 @@ function read_user_list_from_database() {
     $result = database_wrapper::instance()->run($sql_query);
     while ($row = $result->fetch(PDO::FETCH_OBJ)) {
         $User_list[$row->employee_id] = $row->user_name;
-        $User_list[$row->employee_id] = new employee((int) $row->employee_id, $row->user_name, NULL, NULL, NULL, NULL, NULL);
+        $User_list[$row->employee_id] = new employee((int) $row->employee_id, $row->user_name, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     }
     return $User_list;
 }
