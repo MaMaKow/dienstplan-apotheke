@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-08-29 11:11+0100\n"
-"PO-Revision-Date: 2018-08-29 11:12+0100\n"
+"POT-Creation-Date: 2018-09-08 22:45+0100\n"
+"PO-Revision-Date: 2018-09-08 22:47+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -318,44 +318,44 @@ msgstr "Es ist Zeit für eine Pause"
 msgid "Lunch break ends now"
 msgstr "Die Pause endet jetzt."
 
-#: src/php/classes/class.install.php:46
+#: src/php/classes/class.install.php:48
 msgid "There already is a configuration file."
 msgstr "Es existiert bereits eine Konfigurationsdatei."
 
-#: src/php/classes/class.install.php:228
+#: src/php/classes/class.install.php:233
 msgid "The passwords aren't the same."
 msgstr "Die Passwörter sind nicht identisch."
 
-#: src/php/classes/class.install.php:261
+#: src/php/classes/class.install.php:278
 msgid "Error while trying to create administrative user."
 msgstr "Fehler beim Erstellen des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:269
+#: src/php/classes/class.install.php:286
 msgid "Administrative user already exists."
 msgstr "Der administrative Benutzer existiert bereits."
 
-#: src/php/classes/class.install.php:287
+#: src/php/classes/class.install.php:316
 msgid "Error while trying to create administrative user privileges."
 msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:403
+#: src/php/classes/class.install.php:429
 msgid "Make sure that the directories are writable by pdr!"
 msgstr "Stellen Sie sicher, dass die Verzeichnisse durch pdr schreibbar sind!"
 
-#: src/php/classes/class.install.php:437
+#: src/php/classes/class.install.php:463
 msgid "Error while trying to create the database."
 msgstr "Fehler beim Erstellen der Datenbank."
 
-#: src/php/classes/class.install.php:444
+#: src/php/classes/class.install.php:470
 msgid "Error while trying to create the database tables."
 msgstr "Fehler beim Erstellen der Datenbank-Tabellen."
 
-#: src/php/classes/class.install.php:475
+#: src/php/classes/class.install.php:515
 msgid "Error while writing the configuration to the filesystem."
 msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 
 # Listing elements one two AND three
-#: src/php/classes/class.install.php:515
+#: src/php/classes/class.install.php:558
 msgid "and"
 msgstr "und"
 
@@ -584,6 +584,18 @@ msgstr ""
 "Es wurde keine Apotheke und keine Filiale angelegt. Bitte konfigurieren Sie "
 "mindestens eine Apotheke!"
 
+#: src/php/pages/branch-management.php:127
+msgid "Branch Id"
+msgstr "Filialnummer"
+
+#: src/php/pages/branch-management.php:131
+msgid "Branch name"
+msgstr "Name der Filiale"
+
+#: src/php/pages/branch-management.php:135
+msgid "Branch short name"
+msgstr "Kurzname der Filiale"
+
 #: src/php/pages/branch-management.php:138
 msgid ""
 "This is a short unofficial nickname for your pharmacy. It is used in pages "
@@ -591,6 +603,18 @@ msgid ""
 msgstr ""
 "Dies ist ein kurzer Spitzname für Ihre Apotheke. Er wird auf Seiten mit eng "
 "begrenztem Platz verwendet. Bitte verwenden Sie nicht mehr als 12 Buchstaben."
+
+#: src/php/pages/branch-management.php:142
+msgid "Branch address"
+msgstr "Adresse"
+
+#: src/php/pages/branch-management.php:146
+msgid "Branch manager"
+msgstr "Filialleiter"
+
+#: src/php/pages/branch-management.php:150
+msgid "Branch pep id"
+msgstr "PEP Id der Filiale"
 
 #: src/php/pages/branch-management.php:162
 msgid "Clear form data"
@@ -622,15 +646,15 @@ msgstr "Ablehnen"
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/php/pages/configuration.php:70
+#: src/php/pages/configuration.php:71
 msgid "Configuration"
 msgstr "Konfiguration"
 
-#: src/php/pages/configuration.php:77
+#: src/php/pages/configuration.php:78
 msgid "The installation script will create a new MySQL database."
 msgstr "Das Installations-Script wird eine neue MySQL Datenbank erstellen."
 
-#: src/php/pages/configuration.php:79
+#: src/php/pages/configuration.php:80
 msgid ""
 "All the information about the duty rosters will be stored password protected "
 "in this database."
@@ -638,31 +662,31 @@ msgstr ""
 "Alle Informationen zum Dienstplan werden Passwort-gesichert in dieser  "
 "Datenbank gespeichert."
 
-#: src/php/pages/configuration.php:84
+#: src/php/pages/configuration.php:85
 msgid "Application name"
 msgstr "Programm-Name"
 
-#: src/php/pages/configuration.php:89
+#: src/php/pages/configuration.php:90
 msgid "Database name"
 msgstr "Datenbank Name"
 
-#: src/php/pages/configuration.php:94
+#: src/php/pages/configuration.php:95
 msgid "Database user"
 msgstr "Datenbank Benutzer"
 
-#: src/php/pages/configuration.php:99
+#: src/php/pages/configuration.php:100
 msgid "Database user password"
 msgstr "Datenbank Benutzer Passwort"
 
-#: src/php/pages/configuration.php:115
+#: src/php/pages/configuration.php:116
 msgid "Repeat password"
 msgstr "Passwort wiederholen"
 
-#: src/php/pages/configuration.php:129
+#: src/php/pages/configuration.php:130
 msgid "Contact information"
 msgstr "Kontakt-Information"
 
-#: src/php/pages/configuration.php:131
+#: src/php/pages/configuration.php:132
 msgid ""
 "Viewing users will be invited to address wishes and suggestions to the "
 "editor of the duty rosters."
@@ -670,53 +694,53 @@ msgstr ""
 "Lesende Benutzer werden eingeladen, Wünsche und Vorschläge an den Ersteller "
 "des Dienstplanes zu richten."
 
-#: src/php/pages/configuration.php:136
+#: src/php/pages/configuration.php:137
 msgid "Email"
 msgstr "Email"
 
-#: src/php/pages/configuration.php:143
+#: src/php/pages/configuration.php:144
 msgid "Technical details"
 msgstr "Technische Details"
 
-#: src/php/pages/configuration.php:145
+#: src/php/pages/configuration.php:146
 msgid "Time values can be adapted to various local user's environments."
 msgstr ""
 "Darstellungen der Zeit können an verschiedene Benutzerumgebungen angepasst "
 "werden."
 
-#: src/php/pages/configuration.php:147
+#: src/php/pages/configuration.php:148
 msgid "They depend on language and cultural conventions."
 msgstr "Sie hängen von der Sprache und von kulturellen Konventionen ab."
 
-#: src/php/pages/configuration.php:152
+#: src/php/pages/configuration.php:153
 msgid "Locale"
 msgstr "Gebietsschema"
 
-#: src/php/pages/configuration.php:159
+#: src/php/pages/configuration.php:160
 msgid "Charset"
 msgstr "Zeichensatz"
 
-#: src/php/pages/configuration.php:166
+#: src/php/pages/configuration.php:167
 msgid "Debugging"
 msgstr "Fehlersuche"
 
-#: src/php/pages/configuration.php:167
+#: src/php/pages/configuration.php:168
 msgid "Which types of errors should be reported to the user?"
 msgstr "Welche Sorten von Fehlern sollen gemeldet werden?"
 
-#: src/php/pages/configuration.php:172
+#: src/php/pages/configuration.php:173
 msgid "Only fatal errors"
 msgstr "Nur fatale Fehler"
 
-#: src/php/pages/configuration.php:175
+#: src/php/pages/configuration.php:176
 msgid "Also warnings"
 msgstr "Auch Warnungen"
 
-#: src/php/pages/configuration.php:178
+#: src/php/pages/configuration.php:179
 msgid "And notices"
 msgstr "Und Hinweise"
 
-#: src/php/pages/configuration.php:181
+#: src/php/pages/configuration.php:182
 msgid "Everything"
 msgstr "Alle Fehler"
 
@@ -773,12 +797,12 @@ msgstr "Ende der Beschäftigung"
 msgid "Register"
 msgstr "Registrieren"
 
-#: src/php/pages/install_page_admin.php:31
+#: src/php/pages/install_page_admin.php:34
 msgid "Every user in the roster will be identified by a unique id."
 msgstr ""
 "Jeder Nutzer im Dienstplan wird durch eine eindeutige ID identifiziert."
 
-#: src/php/pages/install_page_admin.php:43
+#: src/php/pages/install_page_admin.php:49
 msgid "Please enter a password with a minimum length of 8 characters."
 msgstr "Bitte wählen Sie ein Passwort mit mindestens 8 Zeichen."
 
@@ -787,6 +811,10 @@ msgstr "Bitte wählen Sie ein Passwort mit mindestens 8 Zeichen."
 #: src/php/pages/install_page_welcome.php:42
 msgid "Next"
 msgstr "Weiter"
+
+#: src/php/pages/install_page_check_requirements.php:86
+msgid "Retry"
+msgstr "Wiederholen"
 
 #: src/php/pages/lost_password.php:44
 msgid "Please enter your email address, user name or user id!"

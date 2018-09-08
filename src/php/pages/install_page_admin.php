@@ -28,6 +28,9 @@ require_once 'install_head.php'
     <p>User name:<br>
         <input type="text" name="user_name" placeholder="Administrator username" required value="<?= $_SESSION["Config"]["user_name"] ? $_SESSION["Config"]["user_name"] : "" ?>" />
     </p>
+    <p>Last name:<br>
+        <input type="text" name="last_name" placeholder="Last name" required value="<?= $_SESSION["Config"]["user_name"] ? $_SESSION["Config"]["last_name"] : "" ?>" />
+    </p>
     <p title="<?= gettext("Every user in the roster will be identified by a unique id.") ?>">
         Employee id:<br>
         <input type="text" name="employee_id" placeholder="Employee id" required value="<?= $_SESSION["Config"]["employee_id"] ? $_SESSION["Config"]["employee_id"] : "" ?>" />
@@ -40,6 +43,9 @@ require_once 'install_head.php'
         Administrator password:<br>
         <input type="password" name="password" minlength="8" placeholder="Administrator password:" required />
         <br>
+        <?php
+        //TODO: Build a visible sign for evaluating if the passwords match!
+        ?>
         <?= gettext("Please enter a password with a minimum length of 8 characters.") ?>
     </p>
     <p>

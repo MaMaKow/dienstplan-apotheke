@@ -39,7 +39,9 @@ class install {
     function __construct() {
         $this->pdr_supported_database_management_systems = array("mysql");
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
+        ini_set('log_errors', 1);
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
+        error_reporting(E_ALL);
         session_start();
         session_regenerate_id();
         if ($this->config_exists_in_file()) {
@@ -99,6 +101,8 @@ class install {
                 /*
                  * That is too bad. We have to go back to the given user.
                  * TODO: We should DROP USER the created user. If we do not use it, we should delete it.
+                 * But before we have to be sure, that the user did not exist in the first place.
+                 * It would be a bad idea to delete some pre-existing user.
                  */
                 unset($this->Config["database_user_self"]);
                 unset($this->Config["database_password_self"]);
@@ -220,17 +224,19 @@ class install {
     public function handle_user_input_administration() {
 
         $this->Config["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_STRING, $options = null);
+        $this->Config["admin"]["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["admin"]["employee_id"] = filter_input(INPUT_POST, "employee_id", FILTER_SANITIZE_NUMBER_INT, $options = null);
         $this->Config["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, $options = null);
         $this->Config["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_STRING, $options = null);
         if ($this->Config["admin"]["password"] !== $this->Config["admin"]["password2"]) {
             $this->Error_message[] = gettext("The passwords aren't the same.");
-            unset($this->Config["admin"]["password"], $this->Config["admin"]["password2"]); //We only need the hash from here on.
+            unset($this->Config["admin"]["password"], $this->Config["admin"]["password2"]); //We get rid of this values as fast as possible.
             return FALSE;
         } else {
             $password_hash = password_hash($this->Config["admin"]["password"], PASSWORD_DEFAULT);
-            unset($this->Config["admin"]["password"], $this->Config["admin"]["password2"]); //We only need the hash from here on.
+            unset($this->Config["admin"]["password"]);
+            unset($this->Config["admin"]["password2"]);
         }
 
 
@@ -240,8 +246,20 @@ class install {
         }
         $this->connect_to_database();
 
+        /*
+         * The table users has a constraint:
+         * CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+         * This means, that only existing employes can have an account to login.
+         * It follows, that we have to create an employee first, before we can create a user:
+         */
+        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`) VALUES (:employee_id, :last_name);");
+        $statement->execute(array(
+            'employee_id' => $this->Config["admin"]["employee_id"],
+            'last_name' => $this->Config["admin"]["last_name"]
+        ));
+
         $statement = $this->pdo->prepare("SELECT user_name FROM `users` WHERE user_name = :user_name");
-        $result = $statement->execute(array('user_name' => $this->Config["admin"]["user_name"]));
+        $statement->execute(array('user_name' => $this->Config["admin"]["user_name"]));
         $result = $statement->fetchAll();
         if (empty($result[0]["user_name"])) {
             $statement = $this->pdo->prepare("INSERT INTO"
@@ -252,7 +270,6 @@ class install {
                 'employee_id' => $this->Config["admin"]["employee_id"],
                 'password' => $password_hash,
                 'email' => $this->Config["admin"]["email"],
-                'status' => 'active',
             ));
             if (!$result) {
                 /*
@@ -268,12 +285,24 @@ class install {
              */
             $this->Error_message[] = gettext("Administrative user already exists.");
         }
-
         /*
          * Grant all privileges to the administrative user:
          */
         $statement = $this->pdo->prepare("INSERT IGNORE INTO `users_privileges` (`employee_id`, `privilege`) VALUES (:employee_id, :privilege)");
         require_once $this->pdr_file_system_application_path . 'src/php/classes/class.sessions.php';
+        /*
+         * The __construct method already calls session_regenerate_id();
+         * As long as that stays this way, we do not have to repeat that here.
+         * session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id right before setting up login details.
+         */
+        /*
+         * Brute force method of login:
+         */
+        $_SESSION['user_name'] = $this->Config["admin"]["user_name"];
+        $_SESSION['user_employee_id'] = $this->Config["admin"]["employee_id"];
+        $_SESSION['user_email'] = $this->Config["admin"]["email"];
+
+
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
             $result = $statement->execute(array(
                 "employee_id" => $this->Config["admin"]["employee_id"],
@@ -295,8 +324,8 @@ class install {
         if (FALSE === $this->write_config_to_file()) {
             echo $this->build_error_message_div();
         } else {
-            header("Location: ../../../user-management-in.php");
-            die("Please move on to the <a href=../../user-management-in.php>user management</a>");
+            header("Location: ../../../src/php/pages/user-management.php");
+            die("Please move on to the <a href=../../../src/php/pages/user-management.php>user management</a>");
             return TRUE;
         }
     }
@@ -390,9 +419,6 @@ class install {
                 $List_of_non_writable_directories[] = $directory_name;
             }
         }
-        foreach ($List_of_non_writable_directories as $non_writable_directory_name) {
-
-        }
         if (!empty($List_of_non_writable_directories)) {
             if (1 === count($List_of_non_writable_directories)) {
                 //TODO: get a good ngettext for the following lines!
@@ -459,21 +485,38 @@ class install {
 
     private function write_config_to_session() {
         $_SESSION["Config"] = $this->Config;
+        /*
+         * Just in case we are interrupted and/or the session is lost, we write the values to a temporary installation file:
+         */
+        file_put_contents($this->pdr_file_system_application_path . 'config/config_temp_install.php', '<?php' . PHP_EOL . '$config =' . var_export($this->Config, true) . ';');
     }
 
     private function read_config_from_session() {
         $this->Config = $_SESSION["Config"];
+        /*
+         * Just in case we are interrupted and/or the session is lost, we read the values from a temporary installation file:
+         */
+        include_once $this->pdr_file_system_application_path . 'config/config_temp_install.php';
+        foreach ($config as $key => $value) {
+            if (!isset($this->Config[$key])) {
+                $this->Config[$key] = $value;
+            }
+        }
+        unset($config);
     }
 
     private function write_config_to_file() {
         $this->Config["contact_email"] = $this->Config["admin"]["email"];
-        $this->Config["session_secret"] = random_bytes(8); //In case there are several instances of the program on the same machine
+        $this->Config["session_secret"] = bin2hex(random_bytes(8)); //In case there are several instances of the program on the same machine
         unset($this->Config["admin"]);
         $dirname = $this->pdr_file_system_application_path . 'config';
-        $result = file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php  $config =' . var_export($this->Config, true) . ';');
+        $result = file_put_contents($this->pdr_file_system_application_path . 'config/config.php', '<?php' . PHP_EOL . '$config =' . var_export($this->Config, true) . ';');
         if (FALSE === $result) {
             $this->Error_message[] = gettext("Error while writing the configuration to the filesystem.");
             return FALSE;
+        }
+        if (file_exists($this->pdr_file_system_application_path . 'config/config_temp_install.php')) {
+            unlink($this->pdr_file_system_application_path . 'config/config_temp_install.php');
         }
         return TRUE;
     }
