@@ -124,30 +124,30 @@ if (empty($List_of_branch_objects)) {
 
 <div id="branch_management_form_div">
     <p>
-        <label for="branch_id">Branch Id: </label>
+        <label for="branch_id"><?= gettext('Branch Id') ?>: </label>
         <br>
         <input form="branch_management_form" type='text' name='branch_id' id="branch_id" value="<?= $current_branch_id ?>">
     </p><p>
-        <label for="branch_name">Branch name: </label>
+        <label for="branch_name"><?= gettext('Branch name') ?>: </label>
         <br>
         <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $List_of_branch_objects[$current_branch_id]->name ?>">
     </p><p>
-        <label for="branch_short_name">Branch short name: </label>
+        <label for="branch_short_name"><?= gettext('Branch short name') ?>: </label>
         <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
              class="inline-image"
              title="<?= gettext("This is a short unofficial nickname for your pharmacy. It is used in pages with limited space. Please choose no more than 12 letters.") ?>">
         <br>
         <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $List_of_branch_objects[$current_branch_id]->short_name ?>">
     </p><p>
-        <label for="branch_address">Branch address: </label>
+        <label for="branch_address"><?= gettext('Branch address') ?>: </label>
         <br>
         <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" ><?= $List_of_branch_objects[$current_branch_id]->address ?></textarea>
     </p><p>
-        <label for="branch_manager">Branch manager: </label>
+        <label for="branch_manager"><?= gettext('Branch manager') ?>: </label>
         <br>
         <input form="branch_management_form" type='text' name='branch_manager' id="branch_manager" value="<?= $List_of_branch_objects[$current_branch_id]->manager ?>">
     </p><p>
-        <label for="branch_pep_id">Branch pep id: </label>
+        <label for="branch_pep_id"><?= gettext('Branch pep id') ?>: </label>
     </p><p>
         <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $List_of_branch_objects[$current_branch_id]->PEP ?>">
     </p>

@@ -82,10 +82,14 @@ class branch {
      */
 
     private static function redirect_to_input_form_on_missing_setup() {
-
+        if (!isset($_SESSION['user_employee_id'])) {
+            /*
+             * If we are not logged in yet, then there is no sense in redirecting.
+             */
+            return FALSE;
+        }
+        $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
         if (!in_array(basename($script_name), array('branch-management.php'))) {
-            $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
-            $request_uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
             header('Location:' . $location);
             die('<p><a href="' . $location . '>Please configure at least one branch first!</a></p>');

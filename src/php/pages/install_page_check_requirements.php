@@ -81,5 +81,10 @@ if ($install->database_driver_is_installed() and $install->pdr_directories_are_w
     <form action="install_page_database.php" method="post">
         <input type="submit" value="<?= gettext("Next") ?>">
     </form>
+<?php } else { ?>
+    <form action="install_page_check_requirements.php" method="post">
+        <input type="submit" value="<?= gettext("Retry") ?>">
+    </form>
+
 <?php } ?>
 
