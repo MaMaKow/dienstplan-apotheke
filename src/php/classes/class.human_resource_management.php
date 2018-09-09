@@ -132,7 +132,7 @@ ON DUPLICATE KEY UPDATE
             //$text .= "<label for='profession'>Ausbildung: </label>\n";
 
             foreach ($Professions as $profession) {
-                $text .= "<input type='radio' name='profession' ";
+                $text .= "<input type='radio' name='profession' required ";
                 $text .= "value='$profession'";
                 if ($checked == $profession) {
                     $text .= " checked=checked";

@@ -35,6 +35,7 @@ abstract class task_rotation {
 
     public static function task_rotation_main($Dates_unix, $task, $branch_id) {
         global $workforce;
+        $number_of_filled_days = 0;
         $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
         $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
         foreach ($Dates_unix as $date_unix) {
@@ -42,11 +43,15 @@ abstract class task_rotation {
             $rotation_employee_id = self::task_rotation_get_worker($date_unix, $task, $branch_id);
             $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
             if (NULL !== $rotation_employee_id) {
+                $number_of_filled_days++;
                 $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_employee_id]->last_name;
             }
             $weekly_rotation_div_html .= "<br>\n";
         }
         $weekly_rotation_div_html .= "</div>\n";
+        if (0 === $number_of_filled_days) {
+            return FALSE;
+        }
         return $weekly_rotation_div_html;
     }
 
@@ -257,6 +262,9 @@ abstract class task_rotation {
     }
 
     private static function write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id) {
+        if (NULL === $employee_id) {
+            return FALSE;
+        }
         $sql_query = "INSERT INTO `task_rotation` SET `task` = :task, `date` = :date, `branch_id` = :branch_id, `VK` = :employee_id ON DUPLICATE KEY UPDATE `task` = :task2, `date` = :date2, `branch_id` = :branch_id2, `VK` = :employee_id2";
         $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id, 'employee_id' => $employee_id, 'task2' => $task, 'date2' => $date_sql, 'branch_id2' => $branch_id, 'employee_id2' => $employee_id));
         return $result;

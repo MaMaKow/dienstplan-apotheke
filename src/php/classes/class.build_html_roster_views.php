@@ -471,6 +471,9 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $Options = NULL) {
+        if (array() === $Working_hours_week_have) {
+            return FALSE;
+        }
         global $workforce, $List_of_employee_working_week_hours;
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
         $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
