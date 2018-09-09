@@ -200,8 +200,11 @@ class install {
         }
     }
 
-    public function setup_mysql_database_tables() {
-//  private function setup_mysql_database_tables() {
+    private function setup_mysql_database_tables() {
+        /*
+         * TODO: Do we need a specific order of table creation?
+         * Some tables have contraints. Do we have to create the referenced tables first?
+         */
         $this->connect_to_database();
         $sql_files = glob($this->pdr_file_system_application_path . "src/sql/*.sql");
         foreach ($sql_files as $sql_file_name) {
@@ -413,22 +416,16 @@ class install {
             "config",
         );
         foreach ($List_of_directories as $directory_name) {
-            if (is_writable($this->pdr_file_system_application_path . $directory_name)) {
-                //$List_of_writable_directories[] = $directory_name;
-            } else {
+            if (!is_writable($this->pdr_file_system_application_path . $directory_name)) {
                 $List_of_non_writable_directories[] = $directory_name;
             }
         }
         if (!empty($List_of_non_writable_directories)) {
-            if (1 === count($List_of_non_writable_directories)) {
-                //TODO: get a good ngettext for the following lines!
-                $this->Error_message[] = "The directory " . $List_of_non_writable_directories[0] . " is not writable.";
-            } else {
-                $this->Error_message[] = "The directories " . $this->fancy_implode($List_of_non_writable_directories, ", ") . " are not writable.";
-            }
+            $this->Error_message[] = sprintf(ngettext("The directory %1s is not writable.", "The directories %1s are not writable.", count($List_of_non_writable_directories)), $this->fancy_implode($List_of_non_writable_directories, ", "));
+
             $this->Error_message[] = gettext("Make sure that the directories are writable by pdr!");
             $current_www_user = posix_getpwuid(posix_geteuid())["name"];
-            $this->Error_message[] = "<pre class='install_cli'>chown -R " . $current_www_user . ":" . $current_www_user . " " . $this->pdr_file_system_application_path . "</pre>\n";
+            $this->Error_message[] = "<pre class='install_cli'>sudo chown -R " . $current_www_user . ":" . $current_www_user . " " . $this->pdr_file_system_application_path . "</pre>\n";
             //$this->Error_message[] = gettext("Adapt the above code to the user and folder of your webserver!");
             return FALSE;
         } else {
@@ -554,6 +551,9 @@ class install {
     }
 
     private function fancy_implode($input_array, $delimiter = ", ") {
+        /*
+         * This also works for just one element in the array:
+         */
         $last = array_pop($input_array);
         return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
     }

@@ -233,6 +233,14 @@ abstract class build_html_navigation_elements {
     public static function build_select_branch($current_branch_id, $date_sql) {
         $current_branch_id = (int) $current_branch_id;
         global $List_of_branch_objects;
+        if (1 === count($List_of_branch_objects)) {
+            return FALSE;
+            /*
+              return "<p class=large>\n" .
+              $List_of_branch_objects[$current_branch_id]->name .
+              "</p>\n";
+             */
+        }
         $text = "<!-- branch select form-->\n";
         $text .= "<div id='branch_form_div' class='inline_element'>\n";
         $text .= "<form id=branch_form method=post>\n";
