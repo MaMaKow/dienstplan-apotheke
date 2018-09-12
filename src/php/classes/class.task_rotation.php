@@ -123,6 +123,9 @@ abstract class task_rotation {
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'task' => $task, 'branch_id' => $branch_id));
         $row = $result->fetch(PDO::FETCH_OBJ);
         if (empty($row->date)) {
+            if (NULL === $List_of_compounding_rotation_employees) {
+                return FALSE;
+            }
             /*
              * If there is noone anywhere in the past we just take the first person in the array.
              */
@@ -142,7 +145,7 @@ abstract class task_rotation {
             if ($temp_date > time() + PDR_ONE_DAY_IN_SECONDS * 7 * task_rotation::MAX_FUTURE_WEEKS) {
                 /*
                  * This value is only calculated and stored in the database,
-                 *  if it is in the past or in the near future.
+                 * if it is in the past or in the near future.
                  * This is to make sure, that fresh absences and new employees can be regarded.
                  * In the case of far future. An empty value is returned.
                  */

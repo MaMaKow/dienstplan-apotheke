@@ -33,6 +33,8 @@ $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUM
 $date_unix = strtotime($date_sql);
 create_cookie("datum", $date_sql, 0.5);
 
+$Roster = roster::read_roster_from_database($branch_id, $date_sql);
+
 //The following lines check for the state of approval.
 //Duty rosters have to be approved by the leader, before the staff can view them.
 unset($approval);
@@ -53,13 +55,15 @@ if (isset($approval)) {
     }
 } else {
     $approval = "not_yet_approved";
-    $message = gettext('Missing data in table `approval`');
-    user_dialog::add_message($message, E_USER_NOTICE);
-    /*
-     * TODO: This is an Exception.
-     * It will occur when there is no approval, disapproval or other connected information in the approval table of the database.
-     * That might espacially occur during the development stage of this feature.
-     */
+    if (!roster::is_empty($Roster)) {
+        $message = gettext('Missing data in table `approval`');
+        user_dialog::add_message($message, E_USER_NOTICE);
+        /*
+         * TODO: This is an Exception.
+         * It will occur when there is no approval, disapproval or other connected information in the approval table of the database.
+         * That might espacially occur during the development stage of this feature.
+         */
+    }
 }
 
 
@@ -67,7 +71,6 @@ if (isset($approval)) {
  * Get a list of all employees:
  */
 $workforce = new workforce($date_sql);
-$Roster = roster::read_roster_from_database($branch_id, $date_sql);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
