@@ -17,8 +17,12 @@
  */
 
 
-div.year_container{
+div.year_container {
+    display: block;
+    overflow: auto;
+    /*
     width: 120em;
+    */
     /*Disable selection of elements to allow drag-and.drop functions:*/
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Chrome/Safari/Opera */
@@ -28,7 +32,12 @@ div.year_container{
     user-select: none; /* Non-prefixed version, currently
                           not supported by any browser */
 }
-div.year_quarter_container{
+div.year_quarter_container {
+    display: block;
+    overflow: auto;
+
+    min-width: 2em;
+    min-height: 2em;
     page-break-after: always;
 }
 div.month_container{
