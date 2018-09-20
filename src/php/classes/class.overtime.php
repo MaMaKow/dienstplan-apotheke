@@ -30,6 +30,8 @@ class overtime {
         $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
         $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         list($balance_old, $date_old) = overtime::get_current_balance($employee_id);
+        //list($balance_first, $date_first) = overtime::get_first_balance($employee_id);
+        $first_balance_row = overtime::get_first_balance($employee_id);
         /*
          * In case the user inserts a date, that is before the last inserted date, a warning is shown.
          * If the user still wishes to enter the data, the flag user_has_been_warned_about_date_sequence is set to 1.
@@ -37,7 +39,7 @@ class overtime {
          */
         $user_has_been_warned_about_date_sequence = filter_input(INPUT_POST, 'user_has_been_warned_about_date_sequence', FILTER_SANITIZE_STRING);
         if (strtotime($date) < strtotime($date_old) and 'true' !== $user_has_been_warned_about_date_sequence) {
-            $message = gettext('An error has occured while inserting the overtime data.');
+            $message = gettext('An error has occurred while inserting the overtime data.');
             user_dialog::add_message($message, E_USER_ERROR);
             $message = gettext('The input date lies before the last existent date.');
             user_dialog::add_message($message, E_USER_WARNING);
@@ -45,12 +47,17 @@ class overtime {
             user_dialog::add_message($message, E_USER_WARNING);
             return FALSE;
         }
-        /*
-         * TODO: Recalculate the whole branch if that is necessary.
-         * The user must be warned if a new result is inserted before the last one!
-         * It should be impossible to submit before-data if JavaScript (=Client-side warning) does not work (check on server side).
-         */
         $balance_new = $balance_old + $overtime_hours_new;
+
+        if ($first_balance_row->Datum > $date) {
+            /*
+             * The new entry lies before the very first entry.
+             * This is a special case.
+             * In this case we calculate the balance given on a date that lies in the future, in regard to the new data.
+             */
+            $balance_new = $first_balance_row->Saldo - $first_balance_row->Stunden;
+        }
+
         $sql_query = "INSERT INTO `Stunden` (VK, Datum, Stunden, Saldo, Grund)
         VALUES (:employee_id, :date, :overtime_hours, :balance, :reason)";
         try {
@@ -132,23 +139,49 @@ class overtime {
         return TRUE;
     }
 
+    /**
+     * <p>The last balance stored in the database for a given employee. Current means, that the date (`Datum`) of the entry is the highest.</p>
+     *
+     * @param int $employee_id
+     * @return array [$balance, $date]
+     */
     public static function get_current_balance($employee_id) {
         $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` DESC LIMIT 1";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
-        $row = $result->fetch(PDO::FETCH_OBJ);
-        /*
-         * We cast the result to float,
-         * so in case there is no balance yet, we just set it to 0.
-         */
-        $balance = (float) $row->Saldo;
-        $date = $row->Datum;
-        return [$balance, $date];
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            /*
+             * We cast the result to float,
+             * so in case there is no balance yet, we just set it to 0.
+             */
+            $balance = (float) $row->Saldo;
+            $date = $row->Datum;
+            return [$balance, $date];
+        }
+        return [0, (new DateTime())->format('Y-m-d')];
+    }
+
+    /**
+     * <p>
+     * The first balance stored in the database for a given employee.
+     * First means, that the date (`Datum`) of the entry is the lowest.
+     * </p>
+     *
+     * @param int $employee_id
+     * @return object <p>A standard PHP object representing a single row of data.</p>
+     */
+    public static function get_first_balance($employee_id) {
+        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` ASC LIMIT 1";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            return $row;
+        }
+        return FALSE;
     }
 
     public static function build_overview_table() {
         $table_head = overtime::build_overview_table_head();
         $table_body = overtime::build_overview_table_body();
-        $table = "<table id='overtime_overview_table'>" . $table_head . $table_body . "</table>";
+        $table = "<table id='overtime_overview_table'>" . $table_head . $table_body . "</table>\n";
         return $table;
     }
 

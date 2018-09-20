@@ -293,11 +293,22 @@ class absence {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Years[] = $row->year;
         }
+        $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Stunden` ORDER BY `Datum`";
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Years[] = $row->year;
+        }
+        $sql_query = "SELECT DISTINCT YEAR(`start`) AS `year` FROM `absence` ORDER BY `start`";
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Years[] = $row->year;
+        }
         if (array() === $Years) {
             $Years = array(0 => (int) (new DateTime())->format('Y'));
         }
         $Years[] = max($Years) + 1;
-        return $Years;
+        sort($Years);
+        return array_unique($Years);
     }
 
     public static function build_html_select_year($current_year) {
