@@ -22,49 +22,7 @@
 \tableofcontents
 
 
-\chapter{Introduction}
-Pharmacy Duty Roster (PDR) is a web application that allows to operate a duty roster for pharmacies.
-PDR started in 2015 as an alternative to a really simple excel sheet without formulas.
-PDR aims to be user-friendly but at the same time cover all necessary features.
-PDR continuously strives to improve. It is open to your requests and wishes.
-I hope it will fulfil your expectations.
-\section{Getting PDR}
-The latest release of PDR is available on \href{https://github.com/MaMaKow/dienstplan-apotheke/releases/latest}{GitHub}. GitHub provides the source code as *.zip file or *.tar.gz ball. Extract the files into a folder.
-
-Make sure to unpack PDR to a directory, that your webserver has access to. PHP and the webserver must have read access to all the files and folders. It also needs write access to the subdirectories upload, tmp and config. You might want to change the owner of the directory to the webservers user with e.g.:
-
-You can also clone the repository with git:
-\begin{verse}
-git clone https://github.com/MaMaKow/dienstplan-apotheke.git
-\end{verse}
-See the Administrator manual for details!
-
-\section{License}
-PDR is open source software under the AGPL license.
-\begin{quote}
-	Copyright (C) 2018  Dr. Martin Mandelkow
-	
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Affero General Public License as
-	published by the Free Software Foundation, either version 3 of the
-	License, or (at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Affero General Public License for more details.
-	
-	You should have received a copy of the GNU Affero General Public License
-	along with this program.  If not, see <https://www.gnu.org/licenses/>.
-	
-\end{quote}
- Please see the \href{https://github.com/MaMaKow/dienstplan-apotheke/blob/master/LICENSE.md}{license file} for details!
-\section{Reporting bugs}
-The issue tracker is currently located at GitHub.
-GitHub requires an account in order to report bugs or feature requests. If you do not want to create one, you might send a mail to pdr-issues@martin-mandelkow.de
-\section{How to contribute}
-Pull requests are desired. If you made changes to PDR and want to contribute them to the public, you are welcome to open a pull-request on GitHub or send your changes in any other way.
-
+\include{documentation_introduction}
 \include{documentation_user}
 \include{documentation_administrator}
 \include{documentation_developer}
