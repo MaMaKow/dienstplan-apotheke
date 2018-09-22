@@ -47,5 +47,5 @@ foreach ($Localization_folders as $localization_folder) {
 }
 if (!empty($Translations)) {
     $json_string = 'var pdr_translations = ' . json_encode($Translations);
-    $result = file_put_contents(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/js/translations.json', $json_string);
+    $result = file_put_contents(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/js/translations.js', $json_string);
 }
