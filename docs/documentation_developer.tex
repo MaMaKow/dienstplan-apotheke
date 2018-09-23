@@ -1,0 +1,53 @@
+
+\chapter{Developer manual}
+\section{Core development}
+All PHP scripts have a common file \texttt{default.php}, which handles the default settings. It is placed at ./, which is the \texttt{PDR\_FILE\_SYSTEM\_APPLICATION\_PATH}.
+See the file below:
+\lstinputlisting[language=PHP]{../default.php}
+
+\subsection{Directory structure}
+\begin{itemize}
+\item \texttt{config/} Contains the configuration file config.php
+\item \texttt{css/} \emph{obsolete}, use \texttt{src/css/} instead
+\item \texttt{docs/} This documentation and tools to build it
+\item \texttt{img/} Images used by the program
+\item \texttt{js/}  \emph{obsolete}, use \texttt{src/js/} instead
+\item \texttt{locale/} translation files for gettext, currently only german (de\_DE)
+\item \texttt{src/} Most of the actual source code
+    \begin{itemize}
+    \item \texttt{src/css} Style Sheets
+    \item \texttt{src/js} JavasScript
+    \item \texttt{src/php/} PHP: Hypertext Preprocessor
+    \item \texttt{src/php/classes/} Contains all the class files class.class\_name.php
+    \item \texttt{src/php/fragments/} parts of bigger pages, may be included via php require/include or loaded with JavaScript
+    \item \texttt{\textbf{src/php/pages/}} This is the place for the single views, which the human user will use to look at the roster etc.
+    \item \texttt{src/sql/} SQL Database Tables and Triggers
+    \end{itemize}
+\item \texttt{tests/} Tests to find errors in the source code; This folder is listed in .gitignore. Only some files are part of the visible source.
+\item \texttt{tmp/} A directy for temporary files. There is no automatic cleanup yet.
+\item \texttt{upload/} The destination for uploaded content. Currently only specific *.PEP files produced by Awinta ASYS Smart are understood. Those files contain information about the amount of customers that have been served in the past.
+\end{itemize}
+\subsection{Coding standards}
+This project aims to follow some coding style guide.
+\begin{itemize}
+\item Please avoid StudlyCaps and camelCase.
+\item Class constants MUST be declared in all upper case with underscore separators.
+\item Property names MUST be written in under{\_}score.
+\item Plain variables and objects are written in all lowercase.
+\item Array names start with a singe Uppercase letter followed by lowercase characters.
+\item Method names MUST be written in under{\_}score.
+
+\item Code MUST use 4 spaces for indenting, not tabs.
+\item Opening braces for classes and functions MUST go on the same line, and closing braces MUST go on the next line after the body.
+\item Opening braces for control structures SHOULD go on the same line, and closing
+braces MUST go on the next line after the body.
+\end{itemize}
+
+\section{Documentation}
+This documentation about a programm, app or script is a stub. You can help this project by expanding it.
+
+\section{Testing}
+\section{Bug tracker}
+\section{Translation}
+\subsection{Internationalization}
+Different counties have different laws regarding pharmacies and employment. They also have different holidays.

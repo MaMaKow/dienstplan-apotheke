@@ -22,6 +22,7 @@ tmp/
 
 # Dateien, die von Latex erzeugt werden. #
 ##########################################
+*.dvi
 *.aux
 *.log
 *.bak
