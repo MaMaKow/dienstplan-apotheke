@@ -293,8 +293,22 @@ class absence {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Years[] = $row->year;
         }
+        $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Stunden` ORDER BY `Datum`";
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Years[] = $row->year;
+        }
+        $sql_query = "SELECT DISTINCT YEAR(`start`) AS `year` FROM `absence` ORDER BY `start`";
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Years[] = $row->year;
+        }
+        if (array() === $Years) {
+            $Years = array(0 => (int) (new DateTime())->format('Y'));
+        }
         $Years[] = max($Years) + 1;
-        return $Years;
+        sort($Years);
+        return array_unique($Years);
     }
 
     public static function build_html_select_year($current_year) {
@@ -338,7 +352,11 @@ class absence {
         $number_of_holidays_principle = $employee_object->holidays;
         $number_of_working_week_days = $employee_object->working_week_days;
         $number_of_holidays_due = $number_of_holidays_principle;
-        $start_of_employment = new DateTime($employee_object->start_of_employment);
+        if (NULL !== $employee_object->start_of_employment) {
+            $start_of_employment = new DateTime($employee_object->start_of_employment);
+        } else {
+            $start_of_employment = NULL;
+        }
         if (NULL !== $employee_object->end_of_employment) {
             $end_of_employment = new DateTime($employee_object->end_of_employment);
         } else {
