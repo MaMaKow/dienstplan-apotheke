@@ -1,5 +1,26 @@
 \chapter{Administrator manual}
 \section{Installation}\label{sec:installation}
+\subsection{Getting PDR}
+\subsection{The installer}
+\subsubsection{Introduction}
+The first page shows some non-technical information about this program. Click \menu{Next} to move on!
+\subsubsection{Welcome}
+On the second page some technical background information is given. You are informed about the necessary input information, required for continuing the installation. Available database management systems (currently only MySQL) are listed. Finally, you are informed about the user and password strategy for the database access. Click \menu{Next} again, to continue.
+\subsubsection{Requirements}
+On the next page the application checks, if all requirements are met. The requirements include a minimum PHP version, some PHP extensions and support for database connections. Also the program needs write access to some of its directories.
+If problems are found, then a descriptive error message will be shown. It is not possible to continue, until all problems are solved.
+Click \menu{Next} again, to continue.
+\subsubsection{Database configuration}
+The application now starts to collect configuration data.
+\begin{itemize}
+\item Database type
+\item hostname
+\item port (optional)
+\item username \\An existing database user. The user MUST have the privilege to create a database. The user SHOULD have the privilege to create a less privileged user.
+\item password \\The database password of the user. If a new user could be created, then a new secure random password will be given to the new user.
+\item database name
+\end{itemize}
+\subsection{First steps}
 \section{Upgrading}
 \section{Configuration}
 \section{Maintenance}
