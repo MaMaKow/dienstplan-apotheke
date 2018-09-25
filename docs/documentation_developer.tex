@@ -7,25 +7,25 @@ See the file below:
 
 \subsection{Directory structure}
 \begin{itemize}
-\item \texttt{config/} Contains the configuration file config.php
-\item \texttt{css/} \emph{obsolete}, use \texttt{src/css/} instead
-\item \texttt{docs/} This documentation and tools to build it
-\item \texttt{img/} Images used by the program
-\item \texttt{js/}  \emph{obsolete}, use \texttt{src/js/} instead
-\item \texttt{locale/} translation files for gettext, currently only german (de\_DE)
-\item \texttt{src/} Most of the actual source code
+\item \directory{config/} Contains the configuration file config.php
+\item \directory{css/} \emph{obsolete}, use \directory{src/css/} instead
+\item \directory{docs/} This documentation and tools to build it
+\item \directory{img/} Images used by the program
+\item \directory{js/}  \emph{obsolete}, use \directory{src/js/} instead
+\item \directory{locale/} translation files for gettext, currently only german (de\_DE)
+\item \directory{src/} Most of the actual source code
     \begin{itemize}
-    \item \texttt{src/css} Style Sheets
-    \item \texttt{src/js} JavasScript
-    \item \texttt{src/php/} PHP: Hypertext Preprocessor
-    \item \texttt{src/php/classes/} Contains all the class files class.class\_name.php
-    \item \texttt{src/php/fragments/} parts of bigger pages, may be included via php require/include or loaded with JavaScript
-    \item \texttt{\textbf{src/php/pages/}} This is the place for the single views, which the human user will use to look at the roster etc.
-    \item \texttt{src/sql/} SQL Database Tables and Triggers
+    \item \directory{src/css} Style Sheets
+    \item \directory{src/js} JavasScript
+    \item \directory{src/php/} PHP: Hypertext Preprocessor
+    \item \directory{src/php/classes/} Contains all the class files class.class\_name.php
+    \item \directory{src/php/fragments/} parts of bigger pages, may be included via php require/include or loaded with JavaScript
+    \item \directory{\textbf{src/php/pages/}} This is the place for the single views, which the human user will use to look at the roster etc.
+    \item \directory{src/sql/} SQL Database Tables and Triggers
     \end{itemize}
-\item \texttt{tests/} Tests to find errors in the source code; This folder is listed in .gitignore. Only some files are part of the visible source.
-\item \texttt{tmp/} A directy for temporary files. There is no automatic cleanup yet.
-\item \texttt{upload/} The destination for uploaded content. Currently only specific *.PEP files produced by Awinta ASYS Smart are understood. Those files contain information about the amount of customers that have been served in the past.
+\item \directory{tests/} Tests to find errors in the source code; This folder is listed in .gitignore. Only some files are part of the visible source.
+\item \directory{tmp/} A directy for temporary files. There is no automatic cleanup yet.
+\item \directory{upload/} The destination for uploaded content. Currently only specific *.PEP files produced by Awinta ASYS Smart are understood. Those files contain information about the amount of customers that have been served in the past.
 \end{itemize}
 \subsection{Coding standards}
 This project aims to follow some coding style guide.
