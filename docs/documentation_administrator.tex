@@ -20,8 +20,37 @@ The application now starts to collect configuration data.
 \item password \\The database password of the user. If a new user could be created, then a new secure random password will be given to the new user.
 \item database name
 \end{itemize}
+Enter the required data and \menu{Submit} it.
+\subsubsection{Administrator configuration}
+After the database values are set, some information about the administrator is collected:
+\begin{itemize}
+\item User name\\ the name used by the administrator to login into the program in the future. 
+\item Last name\\ this name is connected to the employee id.
+\item Employee id\\ this is used to create an employee, who is connected to the administrative user.
+\item Contact email address\\ is used for questions and comments from the users. Also this email will receive some internal information from the roster.
+\item Administrator password\\ the password used by the administrator to login into the program in the future. 
+\end{itemize}
+Please register the administrator and click \menu{Submit}.
+The data will be written to the file \directory{config/config.php}.
+For every user, that uses the program, there has be be exactly one employee. 
 \subsection{First steps}
+After submitting the administrator configuration, you will be forwarded to the login page.
+Login with your administrator credentials.
+
+On your first login you will be prompted with the branch management. 
+Please create at least one branch. You can reach this page at all times in the menu \menu{Administration > Branch Management}.
+
+The next logical step is to setup some more employees in the \menu{Administration > Human resource management}.
+
+After all the employees are inserted, you can just start to write rosters (\menu{Daily View > Daily input}) or you might create principle rosters for specific weekdays (\menu{Daily view > principle roster daily}) or for distinct employees (\menu{Employee > Principle roster employee}).
+
 \section{Upgrading}
+Until now, there is no automatic update mechanism established.
+You can regularly download release packages from GitHub. Or you can stay in touch via git:
+\begin{lstlisting}
+git pull origin master
+\end{lstlisting}
+\emph{CAVE:} Make sure, that you keep your \directory{config/config.php}! It should not be changed by git, because it is listed in the .gitignore file of this project.
 \section{Configuration}
 \section{Maintenance}
 \section{Issues and Troubleshooting}
