@@ -8,7 +8,9 @@ I hope it will fulfill your expectations.
 
 ## Getting PDR
 The latest release of PDR is available on GitHub:
-[PDR](https://github.com/MaMaKow/dienstplan-apotheke/releases/latest)
+```
+git clone https://github.com/MaMaKow/dienstplan-apotheke.git
+```
 
 ## Installing PDR
 Make sure to unpack PDR to a directory, that your webserver has access to.
