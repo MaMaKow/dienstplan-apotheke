@@ -1,60 +1,69 @@
-\documentclass[12pt,a4paper,titlepage]{book}
+\documentclass[12pt,a4paper,titlepage]{report}
 \usepackage[utf8]{inputenc}
 \usepackage[german,english]{babel}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
-\author{MaMaKow}
-\title{Documentation \\pharmacy duty roster}
+\usepackage[]{hyperref}
+\hypersetup{
+	colorlinks,
+	linkcolor = blue
+}
+\usepackage{graphicx}
+\usepackage{svg}
+\usepackage{float}
+%%Source code listings:
+\usepackage{listingsutf8}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=PHP,                    % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=4,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+%% Drawing Keyboard keys:
+\usepackage[os=win]{menukeys}
+\renewmenumacro{\directory}{pathswithfolder} % default: paths
+\renewmenumacro{\keys}{shadowedangularkeys} % default: roundedkeys
+
+
+\author{Martin Mandelkow}
+\title{pharmacy duty roster\\Documentation}
 
 \begin{document}
 \maketitle
 \tableofcontents
 
 
-\chapter{Introduction}
-Pharmacy Duty Roster (PDR) is a web application that allows to operate a duty roster for pharmacies.
-PDR started in 2015 as an alternative to a really simple excel sheet without formulas.
-PDR aims to be user-friendly but at the same time cover all necessary features.
-PDR continuously strives to improve. It is open to your requests and wishes.
-I hope it will fulfill your expectations.
-\section{Getting PDR}
-\section{Reporting bugs}
-\section{How to contribute}
-
-
-\chapter{User manual}
-\section{The web interface}
-You can connect to your PDR instance using any web browser. Just navigate to your server and enter your username and password.
-\subsection{Navigation}
-By default, the PDR web interface opens to your a menu containing 5 tiles.
-You can navigate to:
-\begin{itemize}
-\item Roster week table view
-\item Roster daily view
-\item Roster employee view
-\item Overtime 
-\item Absence
-\end{itemize}
-\subsubsection{The navigation bar}
-In the top there is a navigation bar containing hyperlinks to nearly all the pages of PDR.
-
-\chapter{Administrator manual}
-\section{Installation}
-\section{Upgrading}
-\section{Configuration}
-\section{Maintenance}
-\section{Issues and Troubleshooting}
-
-
-\chapter{Developer manual}
-\section{Core development}
-\section{Documentation}
-\section{Testing}
-\section{Bug tracker}
-\section{Translation}
-\subsection{Internationalization}
-Different counties have different laws regarding pharmacies and employment. They also have different holidays.
+\include{documentation_introduction}
+\include{documentation_user}
+\include{documentation_administrator}
+\include{documentation_developer}
 \end{document}
