@@ -6,6 +6,14 @@ PDR aims to be user-friendly but at the same time cover all necessary features.
 PDR continuously strives to improve. It is open to your requests and wishes.
 I hope it will fulfill your expectations.
 
+## Testing PDR
+There is a public instance of PDR:
+https://martin-mandelkow.de/apotheke/dienstplan-public/  
+Username: Besucher  
+Password: 1234  
+The user Besucher has enough privileges to look around. If you want to test more features, just write a mail to public_pdr@martin-mandelkow.de
+
+
 ## Getting PDR
 The latest release of PDR is available on GitHub:
 ```
