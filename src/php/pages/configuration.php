@@ -64,6 +64,7 @@ $error_error = configuration::ERROR_ERROR;
 
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo user_dialog::build_messages();
 ?>
 <div style=font-size:larger>
