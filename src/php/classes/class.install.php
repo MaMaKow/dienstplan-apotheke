@@ -50,6 +50,27 @@ class install {
             header("Location: ../pages/configuration.php");
             die();
         }
+
+        if (!is_callable('random_bytes')) {
+            /*
+             * Before PHP 7.0 this function did not exist.
+             * PDR does not work with PHP below 7.0 anyways.
+             * But at least the installer should be able to run as far as needed to inform the user about that.
+             * This installer requires PHP 5.5.0 to compile (password_hash() and PASSWORD_DEFAULT were not known before).
+             */
+
+            function random_bytes($number) {
+                $random_digits = rand(1, 9);
+                for ($index = 0; $index < $number; $index++) {
+                    $random_digits .= rand(0, 9);
+                }
+                $random_number = intval("0" . $random_digits);
+                return pack('C', $random_number);
+            }
+
+        }
+
+
         $this->read_config_from_session();
     }
 
@@ -130,7 +151,11 @@ class install {
          */
         $result = $this->pdo->exec("CREATE DATABASE " . $this->Config["database_name"]);
         if (FALSE === $result) {
-            error_log($this->pdo->errorInfo()[3] . " on line " . __LINE__ . " in method " . __METHOD__ . ".");
+            /*
+             * CAVE: Avoid $this->pdo->errorInfo()[3] in order to allow PHP below 5.4 to at least see, that the minimum version of PHP required is above 7.0.
+             */
+            $Error_array = $this->pdo->errorInfo();
+            error_log($Error_array[3] . " on line " . __LINE__ . " in method " . __METHOD__ . ".");
             return FALSE;
         } else {
             return TRUE;
