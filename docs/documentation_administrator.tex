@@ -1,14 +1,21 @@
 \chapter{Administrator manual}
 \section{Installation}\label{sec:installation}
 \subsection{Getting PDR}
+The latest release of PDR is available on \href{https://github.com/MaMaKow/dienstplan-apotheke/releases}{GitHub}
+
+You can also get the latest stable version via git:
+\begin{verbatim}
+git clone https://github.com/MaMaKow/dienstplan-apotheke.git
+\end{verbatim}
+The master branch is tested to be stable.
 \subsection{The installer}
 \subsubsection{Introduction}
-The first page shows some non-technical information about this program. Click \menu{Next} to move on!
+The first page shows some non-technical information about this program. Click \menu{Next} to move on.
 \subsubsection{Welcome}
-On the second page some technical background information is given. You are informed about the necessary input information, required for continuing the installation. Available database management systems (currently only MySQL) are listed. Finally, you are informed about the user and password strategy for the database access. Click \menu{Next} again, to continue.
+On the second page some technical background information is given. You are informed about the necessary input data, required for continuing the installation. Available database management systems (currently only MySQL) are listed. Finally, you are informed about the user and password strategy for the database access. Click \menu{Next} again, to continue.
 \subsubsection{Requirements}
-On the next page the application checks, if all requirements are met. The requirements include a minimum PHP version, some PHP extensions and support for database connections. Also the program needs write access to some of its directories.
-If problems are found, then a descriptive error message will be shown. It is not possible to continue, until all problems are solved.
+On the next page the application checks, if all requirements are met. These include a minimum PHP version, some PHP extensions and support for database connections. Also the program needs write access to some of its directories.
+If problems are found, then a descriptive error message will be shown. It is not possible to continue, until all issues are solved.
 Click \menu{Next} again, to continue.
 \subsubsection{Database configuration}
 The application now starts to collect configuration data.
@@ -52,6 +59,32 @@ git pull origin master
 \end{lstlisting}
 \emph{CAVE:} Make sure, that you keep your \directory{config/config.php}! It should not be changed by git, because it is listed in the .gitignore file of this project.
 \section{Configuration}
+You can manually edit the file \directory{config/config.php}.
+The default values are:
+\begin{verbatim}
+'application_name' => 'PDR',
+'database_management_system' => 'mysql',
+'database_host' => 'localhost',
+'database_name' => '',
+'database_port' => 3306,
+'database_user' => '',
+'database_password' => '',
+'session_secret' => '',
+'error_reporting' => E_ALL,
+'display_errors' => 0,
+'log_errors' => 1,
+'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
+'LC_TIME' => 'C',
+'timezone' => 'Europe/Berlin',
+'language' => 'de_DE',
+'mb_internal_encoding' => 'UTF-8',
+'contact_email' => '',
+'hide_disapproved' => FALSE
+\end{verbatim}
+
+
+Never delete the first two lines! If the file does not start with "<?php" then PHP will not handle it, meaning that anyone can read its content. 
+\menu{Administration > Human resource management}
 \section{Maintenance}
 \section{Issues and Troubleshooting}
 
