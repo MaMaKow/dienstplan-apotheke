@@ -87,7 +87,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
  */
 if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
-    $examine_roster->check_for_overlap($date_sql);
+    $examine_roster->check_for_overlap($date_sql, $List_of_branch_objects, $workforce);
     $examine_roster->check_for_sufficient_employee_count();
     $examine_roster->check_for_sufficient_goods_receipt_count();
     $examine_roster->check_for_sufficient_qualified_pharmacist_count();

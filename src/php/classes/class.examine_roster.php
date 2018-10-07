@@ -44,8 +44,17 @@ class examine_roster {
         $this->Approbierten_anwesende = roster_headcount::headcount_roster($this->Roster_of_qualified_pharmacist_employees, $this->Changing_times);
     }
 
-    public function check_for_overlap($date_sql) {
-        global $List_of_branch_objects, $workforce;
+    /**
+     * Test for overlaps of scheduling for all the employees on a given date.
+     *
+     * <p>For example an employee might be scheduled from 08:00 to 16:30 in one branch and from 10:00 to 18:30 in an other branch.
+     * Without bilocation this is impossible.</p>
+     *
+     * @param string $date_sql
+     * @param array $List_of_branch_objects
+     * @param object $workforce
+     */
+    public function check_for_overlap($date_sql, $List_of_branch_objects, $workforce) {
         $sql_query = "SELECT `first`.`VK`,"
                 . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
                 . " `first`.`Mandant` as first_branch,"
@@ -53,8 +62,8 @@ class examine_roster {
                 . " `second`.`Mandant` as second_branch"
                 . " FROM `Dienstplan` AS first"
                 . " 	INNER JOIN `Dienstplan` as second"
-                . " 		ON first.VK = second.VK AND first.datum = second.datum" //compare multiple different rows together
-                . " WHERE `first`.`Datum` = :date " //some real date here
+                . " 		ON first.VK = second.VK AND first.datum = second.datum"
+                . " WHERE `first`.`Datum` = :date "
                 . " 	AND ((`first`.`Dienstbeginn` != `second`.`Dienstbeginn` ) OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates, primary key is VK+start+mandant
                 . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
 
@@ -66,6 +75,17 @@ class examine_roster {
         }
     }
 
+    /**
+     * Check if there are enough employees at the whole day in the chosen branch.
+     *
+     * <p>
+     * The array $this->Anwesende holds the number of present employees.
+     * $this->Anwesende is provided by roster_headcount::headcount_roster()
+     * The $minimum_number_of_employees is hardcoded to 2. This might change in the future.
+     * </p>
+     *
+     * @return boolean
+     */
     public function check_for_sufficient_employee_count() {
         if (FALSE === $this->Anwesende) {
             return FALSE;
@@ -86,6 +106,17 @@ class examine_roster {
         }
     }
 
+    /**
+     * Check if there is at least one employee capable of goods reciept present the whole day.
+     *
+     * <p>
+     * The applications warns for the full scheduled day.
+     * Until now there is no knowledge about the times of goods reciept in the application.
+     * This might change.
+     * </p>
+     *
+     * @return boolean
+     */
     public function check_for_sufficient_goods_receipt_count() {
         if (FALSE === $this->Wareneingang_Anwesende) {
             return FALSE;
@@ -104,6 +135,18 @@ class examine_roster {
         }
     }
 
+    /**
+     * Check if there is at least one qualified pharmacist employee present the whole day.
+     *
+     * <p>
+     * The applications warns for the full scheduled day.
+     * This application sees "Apotheker" and "PI" (=Pharmazieingenieur) as qualified pharmacist.
+     * It does not discriminate between the two.
+     * However the ApBetrO in Germany does discriminate between them in several ways.
+     * </p>
+     *
+     * @return boolean
+     */
     public function check_for_sufficient_qualified_pharmacist_count() {
         if (FALSE === $this->Approbierten_anwesende) {
             return FALSE;
