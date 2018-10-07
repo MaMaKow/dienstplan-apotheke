@@ -1,0 +1,215 @@
+% This file was generated with po4a. Translate the source file.
+%
+\chapter{Benutzerhandbuch}
+
+
+\section{Das Web-Interface}
+Sie können sich mit einem beliebigen Webbrowser mit Ihrer PDR-Instanz
+verbinden. Navigieren Sie einfach zu Ihrem Server und geben Sie Ihren
+Benutzernamen und Ihr Passwort ein.
+
+\subsection{Login}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=.3\linewidth]{{images/en_GB/login.php}.png}
+	\caption{Login Seite}
+\end{figure}
+Die Anmeldeseite zeigt den Namen der Anwendung an. Sie werden aufgefordert,
+Ihren Benutzernamen und Ihr Passwort einzugeben. Wenn Sie noch keinen
+Account haben, können Sie \menu{Create a new account} erstellen. Wenn Sie
+ein Konto haben, aber Ihr Passwort vergessen haben oder es ändern möchten,
+können Sie auf \menu{Passwort vergessen?} Klicken.
+
+
+\subsection{Neuen Benutzer-Account erstellen}
+\begin{figure}[ph]
+	\centering
+\includegraphics[width=0.4\linewidth]{{images/en_GB/register.php}.png}
+	\caption{Registrierungsseite}
+\end{figure}
+Wählen Sie einen Benutzernamen, geben Sie Ihre Mitarbeiter-ID und Ihre
+E-Mail-Adresse ein. Wählen Sie ein sicheres Passwort.
+
+Das Konto ist inaktiv, bis ein Administrator es aktiviert. Der
+Hauptadministrator wird per E-Mail über die Registrierung informiert.
+
+Neue Benutzer können nur für vorhandene Mitarbeiter erstellt werden. Neue
+Mitarbeiter werden von einem Administrator erstellt. 
+
+\subsection{Passwort vergessen}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.3\linewidth]{{images/en_GB/lost_password.php}.png}
+    \caption{Passwort vergessen Seite}
+\end{figure}
+Auf der Seite "Passwort vergessen" wird der Name der Anwendung
+angezeigt. Sie werden aufgefordert, entweder Ihren Benutzernamen, Ihre ID
+oder Ihre E-Mail-Adresse einzugeben. Nachdem Sie das Formular abgeschickt
+haben, wird eine E-Mail an Ihre gespeicherte E-Mail-Adresse gesendet. In
+dieser E-Mail finden Sie einen Link, der Sie zur Seite zum Ändern des
+Passworts führt.
+\subsubsection{Wiederherstellung des Passwortes}
+\begin{figure}[ph]
+    \centering
+    \includegraphics[width=0.3\linewidth]{{images/en_GB/reset-lost-password.php}.png}
+    \caption{Wiederherstellungs-Seite für Passwörter}
+\end{figure}
+Auf der Seite zur Wiederherstellung des verlorenen Passworts werden der Name
+der Anwendung und Ihr Benutzername angezeigt. Sie werden aufgefordert, ein
+neues Passwort zweimal einzugeben.
+
+
+\subsection{Navigation}
+\begin{figure}[ph]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/navigation}.png}
+	\caption{Navigationsleiste}
+	\label{img_navigation_bar}
+\end{figure}
+Standardmäßig öffnet die PDR-Weboberfläche ein Menü mit 5 Kacheln. Sie
+können navigieren zu:
+\begin{itemize}
+\item Dienstplan Wochenansicht \includegraphics[height=2em]{../img/week_2}
+\item Dienstplan Tagesansicht \includegraphics[height=2em]{../img/day}
+\item Dienstplan Mitarbeiteransicht \includegraphics[height=2em]{../img/employee_2}
+\item Überstunden  \includegraphics[height=2em]{../img/watch_overtime}
+\item Abwesenheit \includegraphics[height=2em]{../img/absence}
+\end{itemize}
+
+\subsubsection{Die Navigationsleiste}
+Im oberen Bereich befindet sich eine Navigationsleiste mit Hyperlinks zu
+fast allen PDR-Seiten. Bewegen Sie die Maus über einen Eintrag, um die
+Untermenüs zu öffnen (Abbildung \ref{img_navigation_bar}).
+\begin{multicols}{3}
+\begin{description}
+    \item \menu{Wochenansicht > .. }
+    \begin{description}
+        \item \menu{.. > Wochen-Tabelle}
+        \item \menu{.. > Wochen-Bilder}
+    \end{description}
+    \item \menu{Tagesansicht > .. }
+    \begin{description}
+    \item \menu{.. > Tagesansicht Eingabe}
+    \item \menu{.. > Tagesansicht Ausgabe}
+    \item \menu{.. > Grundplan Tagesansicht}
+    \end{description}
+    \columnbreak
+    \item \menu{Mitarbeiter > .. }
+    \begin{description}
+    \item \menu{.. > Mitarbeiteransicht}
+    \item \menu{.. > Grundplan Mitarbeiter}
+    \end{description}
+    \item \menu{Überstunden > ..}
+    \begin{description}
+    \item \menu{.. > Überstunden Eingabe}
+    \item \menu{.. > Überstunden Ausgabe}
+    \item \menu{.. > Überstunden Übersicht}
+    \end{description}
+    \item \menu{Abwesenheit > ..}
+    \begin{description}
+    \item \menu{.. > Abwesenheit Eingabe}
+    \item \menu{.. > Abwesenheit Jahresplan}
+    \item \menu{.. > Abwesenheit Monatsplan}
+    \end{description}
+    \columnbreak
+    \item \menu{Administration > ..}
+    \begin{description}
+    \item \menu{.. > Anwesenheitsliste}
+    \item \menu{.. > Samstagsliste}
+    \item \menu{.. > Stundenzettel geringfügig Beschäftigte}
+    \item \menu{.. > PEP-Upload}
+    \item \menu{.. > Mitarbeiterverwaltung}
+    \item \menu{.. > Mandantenverwaltung}
+    \item \menu{.. > Benutzerverwaltung}
+    \item \menu{.. > Konfiguration}
+    \item \menu{.. > phpMyAdmin}
+    \end{description}
+\end{description}
+\end{multicols}
+\subsection{Dienstplan Wochenansicht}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/roster-week-table.php}.png}
+	\caption{Dienstplan Wochenansicht, Auszug ohne Aufgabenrotation und wöchentliche
+Arbeitszeit}
+	\label{img_roster_week_table_view}
+\end{figure}
+
+Die Dienstplan-Wochenansicht zeigt die Liste einer ausgewählten Woche und
+Zweigstelle (Abbildung~\ref{img_roster_week_table_view}). Wenn Mitarbeiter
+der Zweigstelle in einer anderen Zweigstelle arbeiten, werden diese unten
+angezeigt. Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter
+und deren Abwesenheitsgründe.
+
+Das Datum kann durch direkte Eingabe ausgewählt werden. Es kann auch um eine
+Woche vor oder zurück verschoben werden, indem man \keys{\ctrl + \shift +
+\arrowkeyright} oder \keys {\ctrl + \shift + \arrowkeyleft} drückt.
+
+\subsection{Dienstplan Tagesansicht}
+\subsubsection{Schreibgeschützt}
+In der täglichen Dienstplanansicht gibt es eine Tabelle, ein Balkendiagramm
+und ein Histogramm, welche den Dienstplan widerspiegeln. Die
+Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten Zweig
+an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und den
+Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des
+Dienstes und die Zeit der Mittagspause, falls vorhanden.
+
+Wenn ein Mitarbeiter, der in erster Linie in der ausgewählten Filiale
+eingeplant ist, in einer anderen Filiale arbeitet, wird dieser Eintrag in
+der Tabelle unten angezeigt. Ein Mitarbeiter kann mehr als einen Eintrag pro
+Tag haben. Dadurch kann eine geteilte Arbeitszeit gespeichert werden. Wenn
+Mitarbeiter abwesend sind, werden diese Abwesenheiten in der
+Tabellenfußzeile angezeigt.
+
+
+Das Dienstplan-Balken-Diagramm zeigt das Kommen und Gehen von
+Mitarbeitern. Jeder Balken repräsentiert einen Eintrag. Er reicht vom Beginn
+des Dienstes bis zu seinem Ende. Ein weißes Rechteck auf dem Balken zeigt
+die Zeit der Mittagspause an. Die Farbe der Balken hängt vom Beruf des
+Mitarbeiters ab. Apotheker und Pharmazieingenieure sind in dunkelgrün
+gefärbt, während PTA in hellgrün gefärbt sind. Andere Mitarbeiter
+(nichtpharmazeutisches Personal) sind grau hinterlegt.
+
+Das Histogramm zeigt einen roten Bereich und eine grüne Linie. Der rote
+Bereich zeigt den erwarteten Arbeitsaufwand (gemessen in Packungen pro 15
+Minuten), während die grüne Linie die Anzahl der arbeitenden Mitarbeiter zu
+einem bestimmten Zeitpunkt darstellt.
+
+
+\subsubsection{Bearbeiten}
+Die Bearbeitungsseite ähnelt der schreibgeschützten Ansicht. Der Dienstplan
+wird auf Fehler überprüft. Wenn Probleme auftreten, werden Fehler, Warnungen
+oder Informationen im oberen rechten Bereich angezeigt. Die Prüfung
+beinhaltet:
+\begin{itemize}
+    \item Überlappung von Schichten für denselben Mitarbeiter (Fehler)
+    \item ausreichende Mitarbeiterzahl (Warnung, fest codiert mindestens zwei
+Mitarbeiter)
+    \item attendance of at least one pharmacist at any time (Error).
+    \item Anwesenheit von mindestens einer Person, die den Wareneingang durchführen
+kann (Warnung).
+    \item Einsatz abwesender Mitarbeiter (Fehler)
+    \item Nichteinplanung von nicht abwesenden Mitarbeitern (Warnung)
+\end{itemize}
+
+Pro Eintrag kann nur eine Pause eingefügt werden. Wenn mehr Pausen
+zugewiesen werden müssen, können mehrere Einträge für denselben Mitarbeiter
+eingegeben werden. \subsection{Mitarbeiterliste des Dienstplans}
+\subsection{Überstunden} \subsection{Abwesenheit} Es gibt vier Ansichten für
+die Abwesenheitsdaten.
+\begin{itemize}
+\item Mitarbeiteransicht schreibgeschützt
+\item Mitarbeiteransicht Eingabe
+\item Monatstabelle
+\item Jahrestabelle
+\end{itemize}
+In der \emph{schreibgeschützten Mitarbeitersicht} gibt es ein
+Select-Element, um den anzuzeigenden Mitarbeiter auszuwählen. Es gibt eine
+Schaltfläche, um zur Bearbeitungsansicht zu wechseln. Und es gibt eine
+Tabelle mit den Abwesenheitsdaten. Die Spalten sind Beginn und Ende der
+Abwesenheit, Abwesenheitsgrund und Anzahl der Tage. Es gibt eine eindeutige
+Liste möglicher Gründe (Urlaub, Resturlaub, Krankheit, Krankheit des Kindes,
+unbezahlte Freistellung, bezahlte Freistellung, Elternzeit und
+Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche
+berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber
+nicht gezählt. Das Gleiche gilt für Feiertage.

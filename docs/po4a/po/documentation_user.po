@@ -1,0 +1,563 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dienstplan documentation\n"
+"POT-Creation-Date: 2018-10-06 21:14+0200\n"
+"PO-Revision-Date: 2018-10-07 13:15+0100\n"
+"Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. type: chapter{#2}
+#: documentation_user.tex:2
+msgid "User manual"
+msgstr "Benutzerhandbuch"
+
+#. type: section{#2}
+#: documentation_user.tex:6
+msgid "The web interface"
+msgstr "Das Web-Interface"
+
+#. type: Plain text
+#: documentation_user.tex:6
+msgid ""
+"You can connect to your PDR instance using any web browser. Just navigate to "
+"your server and enter your username and password."
+msgstr ""
+"Sie können sich mit einem beliebigen Webbrowser mit Ihrer PDR-Instanz "
+"verbinden. Navigieren Sie einfach zu Ihrem Server und geben Sie Ihren "
+"Benutzernamen und Ihr Passwort ein."
+
+#. type: subsection{#2}
+#: documentation_user.tex:16
+msgid "Login"
+msgstr "Login"
+
+#. type: caption{#2}
+#: documentation_user.tex:16
+msgid "Login page"
+msgstr "Login Seite"
+
+#. type: Plain text
+#: documentation_user.tex:16
+msgid ""
+"The login page shows the name of the application. You are prompted to enter "
+"your username and password.  If you do not have an account yet, you can "
+"\\menu{Create a new user account}.  If you have an account, but forgot about "
+"your password, or want to change it, you can click on \\menu{Forgot "
+"password?}."
+msgstr ""
+"Die Anmeldeseite zeigt den Namen der Anwendung an. Sie werden aufgefordert, "
+"Ihren Benutzernamen und Ihr Passwort einzugeben. Wenn Sie noch keinen "
+"Account haben, können Sie \\menu{Create a new account} erstellen. Wenn Sie "
+"ein Konto haben, aber Ihr Passwort vergessen haben oder es ändern möchten, "
+"können Sie auf \\menu{Passwort vergessen?} Klicken."
+
+#. type: subsection{#2}
+#: documentation_user.tex:25
+msgid "Create new user account"
+msgstr "Neuen Benutzer-Account erstellen"
+
+#. type: caption{#2}
+#: documentation_user.tex:25
+msgid "Register new user page"
+msgstr "Registrierungsseite"
+
+#. type: Plain text
+#: documentation_user.tex:25
+msgid ""
+"Choose a user name, enter your employee id and your email. Pick a secure "
+"password."
+msgstr ""
+"Wählen Sie einen Benutzernamen, geben Sie Ihre Mitarbeiter-ID und Ihre E-"
+"Mail-Adresse ein. Wählen Sie ein sicheres Passwort."
+
+#. type: Plain text
+#: documentation_user.tex:27
+msgid ""
+"The account will be inactive until an administrator activates it. The main "
+"administrator is informed via email regarding the registration."
+msgstr ""
+"Das Konto ist inaktiv, bis ein Administrator es aktiviert. Der "
+"Hauptadministrator wird per E-Mail über die Registrierung informiert."
+
+#. type: Plain text
+#: documentation_user.tex:29
+msgid ""
+"New users can only be created for existing employees. New employees are "
+"created by an administrator."
+msgstr ""
+"Neue Benutzer können nur für vorhandene Mitarbeiter erstellt werden. Neue "
+"Mitarbeiter werden von einem Administrator erstellt."
+
+#. type: subsection{#2}
+#: documentation_user.tex:46
+msgid "Lost password"
+msgstr "Passwort vergessen"
+
+#. type: caption{#2}
+#: documentation_user.tex:46
+msgid "Lost password page"
+msgstr "Passwort vergessen Seite"
+
+#. type: Plain text
+#: documentation_user.tex:46
+msgid ""
+"The lost password page shows the name of the application. You are prompted "
+"to enter either your username, id or your email-address at your option.  "
+"After you submit the form, an email is sent to your stored email address.  "
+"In that email you will find a link, which will lead you to the password "
+"change page."
+msgstr ""
+"Auf der Seite \"Passwort vergessen\" wird der Name der Anwendung angezeigt. "
+"Sie werden aufgefordert, entweder Ihren Benutzernamen, Ihre ID oder Ihre E-"
+"Mail-Adresse einzugeben. Nachdem Sie das Formular abgeschickt haben, wird "
+"eine E-Mail an Ihre gespeicherte E-Mail-Adresse gesendet. In dieser E-Mail "
+"finden Sie einen Link, der Sie zur Seite zum Ändern des Passworts führt."
+
+#. type: subsubsection{#2}
+#: documentation_user.tex:46
+msgid "Lost password recovery"
+msgstr "Wiederherstellung des Passwortes"
+
+#. type: caption{#2}
+#: documentation_user.tex:46
+msgid "Lost password recovery page"
+msgstr "Wiederherstellungs-Seite für Passwörter"
+
+#. type: Plain text
+#: documentation_user.tex:46
+msgid ""
+"The lost password recovery page shows the name of the application and your "
+"user name. You are prompted to enter a new password twice."
+msgstr ""
+"Auf der Seite zur Wiederherstellung des verlorenen Passworts werden der Name "
+"der Anwendung und Ihr Benutzername angezeigt. Sie werden aufgefordert, ein "
+"neues Passwort zweimal einzugeben."
+
+#. type: subsection{#2}
+#: documentation_user.tex:64
+msgid "Navigation"
+msgstr "Navigation"
+
+#. type: caption{#2}
+#: documentation_user.tex:64
+msgid "Navigation bar"
+msgstr "Navigationsleiste"
+
+#. type: Plain text
+#: documentation_user.tex:64
+msgid ""
+"By default, the PDR web interface opens a menu containing 5 tiles.  You can "
+"navigate to:"
+msgstr ""
+"Standardmäßig öffnet die PDR-Weboberfläche ein Menü mit 5 Kacheln. Sie "
+"können navigieren zu:"
+
+#. type: subsection{#2}
+#: documentation_user.tex:64 documentation_user.tex:120
+msgid "Roster week table view"
+msgstr "Dienstplan Wochenansicht"
+
+#. type: subsection{#2}
+#: documentation_user.tex:64 documentation_user.tex:130
+msgid "Roster daily view"
+msgstr "Dienstplan Tagesansicht"
+
+#. type: itemize
+#: documentation_user.tex:64
+msgid "Roster employee view"
+msgstr "Dienstplan Mitarbeiteransicht"
+
+#. type: itemize
+#: documentation_user.tex:64
+msgid "Overtime"
+msgstr "Überstunden"
+
+#. type: itemize
+#: documentation_user.tex:64
+msgid "Absence"
+msgstr "Abwesenheit"
+
+#. type: subsubsection{#2}
+#: documentation_user.tex:120
+msgid "The navigation bar"
+msgstr "Die Navigationsleiste"
+
+#. type: Plain text
+#: documentation_user.tex:120
+msgid ""
+"In the top there is a navigation bar containing hyperlinks to nearly all the "
+"pages of PDR. Hover the mouse over an entry to open the submenus (Figure "
+"\\ref{img_navigation_bar})."
+msgstr ""
+"Im oberen Bereich befindet sich eine Navigationsleiste mit Hyperlinks zu "
+"fast allen PDR-Seiten. Bewegen Sie die Maus über einen Eintrag, um die "
+"Untermenüs zu öffnen (Abbildung \\ref{img_navigation_bar})."
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{Weekly view > .. }"
+msgstr "\\menu{Wochenansicht > .. }"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Weekly table}"
+msgstr "\\menu{.. > Wochen-Tabelle}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Weekly images}"
+msgstr "\\menu{.. > Wochen-Bilder}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{Daily view > .. }"
+msgstr "\\menu{Tagesansicht > .. }"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Daily input}"
+msgstr "\\menu{.. > Tagesansicht Eingabe}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Daily output}"
+msgstr "\\menu{.. > Tagesansicht Ausgabe}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Principle roster daily}"
+msgstr "\\menu{.. > Grundplan Tagesansicht}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\columnbreak"
+msgstr "\\columnbreak"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{Employee > .. }"
+msgstr "\\menu{Mitarbeiter > .. }"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Roster employee}"
+msgstr "\\menu{.. > Mitarbeiteransicht}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Principle roster employee}"
+msgstr "\\menu{.. > Grundplan Mitarbeiter}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{Overtime > ..}"
+msgstr "\\menu{Überstunden > ..}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Overtime input}"
+msgstr "\\menu{.. > Überstunden Eingabe}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Overtime output}"
+msgstr "\\menu{.. > Überstunden Ausgabe}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Overtime overview}"
+msgstr "\\menu{.. > Überstunden Übersicht}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{Absence > ..}"
+msgstr "\\menu{Abwesenheit > ..}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Absence input}"
+msgstr "\\menu{.. > Abwesenheit Eingabe}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Absence annual plan}"
+msgstr "\\menu{.. > Abwesenheit Jahresplan}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Absence monthly plan}"
+msgstr "\\menu{.. > Abwesenheit Monatsplan}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{Administration > ..}"
+msgstr "\\menu{Administration > ..}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Attendance list}"
+msgstr "\\menu{.. > Anwesenheitsliste}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Saturday list}"
+msgstr "\\menu{.. > Samstagsliste}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Marginal employment hours list}"
+msgstr "\\menu{.. > Stundenzettel geringfügig Beschäftigte}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Upload deployment planning}"
+msgstr "\\menu{.. > PEP-Upload}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Human resource managament}"
+msgstr "\\menu{.. > Mitarbeiterverwaltung}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Branch managament}"
+msgstr "\\menu{.. > Mandantenverwaltung}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > User managament}"
+msgstr "\\menu{.. > Benutzerverwaltung}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > Configuration}"
+msgstr "\\menu{.. > Konfiguration}"
+
+#. type: description
+#: documentation_user.tex:120
+msgid "\\menu{.. > phpMyAdmin}"
+msgstr "\\menu{.. > phpMyAdmin}"
+
+#. type: caption{#2}
+#: documentation_user.tex:120
+msgid ""
+"Roster week table view, excerpt without task rotation and weekly working "
+"hours"
+msgstr ""
+"Dienstplan Wochenansicht, Auszug ohne Aufgabenrotation und wöchentliche "
+"Arbeitszeit"
+
+#. type: Plain text
+#: documentation_user.tex:123
+msgid ""
+"The roster week table view shows the roster of a chosen week and branch "
+"(Figure~\\ref{img_roster_week_table_view}). If employees of the branch are "
+"working in an other branch, then those are shown below.  The table foot "
+"contains the information about absent employees and their reason of absence."
+msgstr ""
+"Die Dienstplan-Wochenansicht zeigt die Liste einer ausgewählten Woche und "
+"Zweigstelle (Abbildung~\\ref{img_roster_week_table_view}). Wenn Mitarbeiter "
+"der Zweigstelle in einer anderen Zweigstelle arbeiten, werden diese unten "
+"angezeigt. Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter "
+"und deren Abwesenheitsgründe."
+
+#. type: Plain text
+#: documentation_user.tex:125
+msgid ""
+"The date can be chosen by direct input. It can also be shifted by one week "
+"backwards or forwards by pressing \\keys{\\ctrl + \\shift + $\\rightarrow$} "
+"or \\keys{\\ctrl + \\shift + $\\leftarrow$} respectively."
+msgstr ""
+"Das Datum kann durch direkte Eingabe ausgewählt werden. Es kann auch um eine "
+"Woche vor oder zurück verschoben werden, indem man \\keys{\\ctrl + \\shift + "
+"\\$rightarrow$} oder \\keys {\\ctrl + \\shift + \\$leftarrow$} drückt."
+
+#. type: subsubsection{#2}
+#: documentation_user.tex:130
+msgid "Read only"
+msgstr "Schreibgeschützt"
+
+#. type: Plain text
+#: documentation_user.tex:130
+msgid ""
+"In the daily roster view there is a table, a bar plot and a histogram "
+"reflecting the roster.  The roster table lists all the employees scheduled "
+"in the chosen branch on the one chosen day. For every entry there is the "
+"employee id and last name, the working hours, the start and end of duty and "
+"the time of the lunch break, if any."
+msgstr ""
+"In der täglichen Dienstplanansicht gibt es eine Tabelle, ein Balkendiagramm "
+"und ein Histogramm, welche den Dienstplan widerspiegeln. Die "
+"Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten Zweig "
+"an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und den "
+"Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des "
+"Dienstes und die Zeit der Mittagspause, falls vorhanden."
+
+#. type: Plain text
+#: documentation_user.tex:134
+msgid ""
+"If an employee, that is primarily scheduled in the chosen branch, works in "
+"an other branch, then this entry is shown in the table at the bottom.  An "
+"employee may have more than one entrie per day. This allows divided working "
+"time to be stored.  If employees are absent, these absences are displayed in "
+"the table footer."
+msgstr ""
+"Wenn ein Mitarbeiter, der in erster Linie in der ausgewählten Filiale "
+"eingeplant ist, in einer anderen Filiale arbeitet, wird dieser Eintrag in "
+"der Tabelle unten angezeigt. Ein Mitarbeiter kann mehr als einen Eintrag pro "
+"Tag haben. Dadurch kann eine geteilte Arbeitszeit gespeichert werden. Wenn "
+"Mitarbeiter abwesend sind, werden diese Abwesenheiten in der "
+"Tabellenfußzeile angezeigt."
+
+#. type: Plain text
+#: documentation_user.tex:137
+msgid ""
+"The roster bar plot shows the flow of employees coming and going. Each bar "
+"represents one entry. It reaches from the start of duty to its end. A white "
+"rectangle on the bar shows the time of the lunch break. The color of the "
+"bars is dependent on the profession of the employee. Pharmacists and "
+"Pharmazieingenieure \\footnote{specific eastern german profession, see "
+"\\url{https://de.wikipedia.org/wiki/Pharmazieingenieur}} are colored in dark "
+"green, while Pharmacy technicians are colored in light green. Other "
+"employees (non-pharmaceutical personnel) are colored in grey."
+msgstr ""
+"Das Dienstplan-Balken-Diagramm zeigt das Kommen und Gehen von Mitarbeitern. "
+"Jeder Balken repräsentiert einen Eintrag. Er reicht vom Beginn des Dienstes "
+"bis zu seinem Ende. Ein weißes Rechteck auf dem Balken zeigt die Zeit der "
+"Mittagspause an. Die Farbe der Balken hängt vom Beruf des Mitarbeiters ab. "
+"Apotheker und Pharmazieingenieure sind in dunkelgrün gefärbt, während PTA in "
+"hellgrün gefärbt sind. Andere Mitarbeiter (nichtpharmazeutisches Personal) "
+"sind grau hinterlegt."
+
+#. type: Plain text
+#: documentation_user.tex:139
+msgid ""
+"The histogram plot shows a red area and a green line. The red area shows the "
+"expected amount of work (measured in packages per 15 minutes), while the "
+"green line represents the amount of working employees to any given time."
+msgstr ""
+"Das Histogramm zeigt einen roten Bereich und eine grüne Linie. Der rote "
+"Bereich zeigt den erwarteten Arbeitsaufwand (gemessen in Packungen pro 15 "
+"Minuten), während die grüne Linie die Anzahl der arbeitenden Mitarbeiter zu "
+"einem bestimmten Zeitpunkt darstellt."
+
+#. type: subsubsection{#2}
+#: documentation_user.tex:153
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#. type: Plain text
+#: documentation_user.tex:153
+msgid ""
+"The edit page looks quite similar to the read only view.  The roster is "
+"examined for errors. If any issues occur, then errors, warnings or "
+"information will be shown in the top right area.  The examination includes:"
+msgstr ""
+"Die Bearbeitungsseite ähnelt der schreibgeschützten Ansicht. Der Dienstplan "
+"wird auf Fehler überprüft. Wenn Probleme auftreten, werden Fehler, Warnungen "
+"oder Informationen im oberen rechten Bereich angezeigt. Die Prüfung "
+"beinhaltet:"
+
+#. type: itemize
+#: documentation_user.tex:153
+msgid "overlap of shifts for the same employee (Error)"
+msgstr "Überlappung von Schichten für denselben Mitarbeiter (Fehler)"
+
+#. type: itemize
+#: documentation_user.tex:153
+msgid "sufficient employee count (Warning, hardcoded at least two employees)"
+msgstr ""
+"ausreichende Mitarbeiterzahl (Warnung, fest codiert mindestens zwei "
+"Mitarbeiter)"
+
+#. type: itemize
+#: documentation_user.tex:153
+msgid "attendence of at least one pharmacist at any time (Error)."
+msgstr "Anwesenheit von mindestens einem Apotheker zu jeder Zeit (Fehler)."
+
+#. type: itemize
+#: documentation_user.tex:153
+msgid ""
+"attendance of at least one person able to carry out goods receipt (Warning)."
+msgstr ""
+"Anwesenheit von mindestens einer Person, die den Wareneingang durchführen "
+"kann (Warnung)."
+
+#. type: itemize
+#: documentation_user.tex:153
+msgid "scheduling of absent employees (Error)"
+msgstr "Einsatz abwesender Mitarbeiter (Fehler)"
+
+#. type: itemize
+#: documentation_user.tex:153
+msgid "non-scheduling of non-absent employees (Warning)"
+msgstr "Nichteinplanung von nicht abwesenden Mitarbeitern (Warnung)"
+
+#. type: Plain text
+#: documentation_user.tex:175
+msgid ""
+"Only one break can be inserted per entry. If more breaks have to be "
+"assigned, then it is possible to enter multiple entries for the same "
+"employee.  \\subsection{Roster employee view} \\subsection{Overtime} "
+"\\subsection{Absence} There are four views to the absence data."
+msgstr ""
+"Pro Eintrag kann nur eine Pause eingefügt werden. Wenn mehr Pausen "
+"zugewiesen werden müssen, können mehrere Einträge für denselben Mitarbeiter "
+"eingegeben werden. \\subsection{Mitarbeiterliste des Dienstplans} "
+"\\subsection{Überstunden} \\subsection{Abwesenheit} Es gibt vier Ansichten "
+"für die Abwesenheitsdaten."
+
+#. type: itemize
+#: documentation_user.tex:175
+msgid "Employee view readonly"
+msgstr "Mitarbeiteransicht schreibgeschützt"
+
+#. type: itemize
+#: documentation_user.tex:175
+msgid "Employee view edit"
+msgstr "Mitarbeiteransicht Eingabe"
+
+#. type: itemize
+#: documentation_user.tex:175
+msgid "Monthly table"
+msgstr "Monatstabelle"
+
+#. type: itemize
+#: documentation_user.tex:175
+msgid "Year overview"
+msgstr "Jahrestabelle"
+
+#. type: Plain text
+#: documentation_user.tex:175
+msgid ""
+"In the \\emph{Employee view readonly} there is a select element to choose "
+"the employee to view. There is a button to switch to the edit view.  And "
+"there is a table containing the absence data. The columns are start and end "
+"of the absence, reason of absence and number of days.  There is a distinct "
+"list of possible reasons ( vacation, remaining holiday, sickness, sickness "
+"of child, unpaid leave of absence, paid leave of absence, parental leave and "
+"maternity leave).  The number of days of absence is calculated for a 5 day "
+"week. Absences on saturdays and sundays are registered but not counted. The "
+"same applys for holidays."
+msgstr ""
+"In der \\emph{schreibgeschützten Mitarbeitersicht} gibt es ein Select-"
+"Element, um den anzuzeigenden Mitarbeiter auszuwählen. Es gibt eine "
+"Schaltfläche, um zur Bearbeitungsansicht zu wechseln. Und es gibt eine "
+"Tabelle mit den Abwesenheitsdaten. Die Spalten sind Beginn und Ende der "
+"Abwesenheit, Abwesenheitsgrund und Anzahl der Tage. Es gibt eine eindeutige "
+"Liste möglicher Gründe (Urlaub, Resturlaub, Krankheit, Krankheit des Kindes, "
+"unbezahlte Freistellung, bezahlte Freistellung, Elternzeit und "
+"Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche "
+"berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber "
+"nicht gezählt. Das Gleiche gilt für Feiertage."
