@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-10-07 13:14+0100\n"
-"PO-Revision-Date: 2018-10-07 13:14+0100\n"
+"POT-Creation-Date: 2018-10-13 14:00+0100\n"
+"PO-Revision-Date: 2018-10-13 14:01+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -28,7 +28,7 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 msgid "emergency service"
 msgstr "Notdienst"
 
-#: notdienst-out.php:69 src/php/classes/class.overtime.php:159
+#: notdienst-out.php:69 src/php/classes/class.overtime.php:192
 #: src/php/pages/saturday-list.php:40
 msgid "Date"
 msgstr "Datum"
@@ -104,14 +104,14 @@ msgstr ""
 #: src/php/classes/class.absence.php:228
 #: src/php/classes/class.database_wrapper.php:238
 #: src/php/classes/class.database_wrapper.php:288
-#: src/php/classes/class.overtime.php:70
+#: src/php/classes/class.overtime.php:77
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
 #: src/php/classes/class.absence.php:229
 #: src/php/classes/class.database_wrapper.php:239
 #: src/php/classes/class.database_wrapper.php:289
-#: src/php/classes/class.overtime.php:71
+#: src/php/classes/class.overtime.php:78
 #: src/php/pages/reset_lost_password.php:106
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
@@ -250,7 +250,7 @@ msgstr "%1s ist abwesend (%2s) und sollte nicht im Dienstplan stehen"
 msgid "The following employees are not scheduled:"
 msgstr "Es sind folgende Mitarbeiter nicht eingesetzt:"
 
-#: src/php/classes/class.examine_roster.php:63
+#: src/php/classes/class.examine_roster.php:72
 #, php-format
 msgid ""
 "Conflict at employee %1s <br>%2s to %3s (%4s) <br>with<br>%5s to %6s (%7s)"
@@ -258,17 +258,17 @@ msgstr ""
 "Konflikt bei Mitarbeiter %1s <br>%2s bis %3s (%4s) <br>mit <br>%5s bis %6s "
 "(%7s)"
 
-#: src/php/classes/class.examine_roster.php:79
+#: src/php/classes/class.examine_roster.php:99
 #, php-format
 msgid "At %1s there are less than %2s employees present."
 msgstr "Um %1s Uhr sind weniger als %2s Mitarbeiter anwesend."
 
-#: src/php/classes/class.examine_roster.php:97
+#: src/php/classes/class.examine_roster.php:128
 #, php-format
 msgid "At %1s there is no goods receipt employee present."
 msgstr "Um %1s Uhr ist niemand für den Wareneingang anwesend."
 
-#: src/php/classes/class.examine_roster.php:114
+#: src/php/classes/class.examine_roster.php:157
 #, php-format
 msgid "At %1s there is no authorized person present."
 msgstr "Um %1s Uhr ist kein Approbierter anwesend."
@@ -322,78 +322,79 @@ msgstr "Die Pause endet jetzt."
 msgid "There already is a configuration file."
 msgstr "Es existiert bereits eine Konfigurationsdatei."
 
-#: src/php/classes/class.install.php:261
+#: src/php/classes/class.install.php:263
 msgid "The passwords aren't the same."
 msgstr "Die Passwörter sind nicht identisch."
 
-#: src/php/classes/class.install.php:306
+#: src/php/classes/class.install.php:308
 msgid "Error while trying to create administrative user."
 msgstr "Fehler beim Erstellen des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:314
+#: src/php/classes/class.install.php:316
 msgid "Administrative user already exists."
 msgstr "Der administrative Benutzer existiert bereits."
 
-#: src/php/classes/class.install.php:344
+#: src/php/classes/class.install.php:346
 msgid "Error while trying to create administrative user privileges."
 msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:449
+#: src/php/classes/class.install.php:451
 #, php-format
 msgid "The directory %1s is not writable."
 msgid_plural "The directories %1s are not writable."
 msgstr[0] "Das Verzeichnis %1s ist nicht beschreibbar."
 msgstr[1] "Die Verzeichnisse %1s sind nicht beschreibbar."
 
-#: src/php/classes/class.install.php:451
+#: src/php/classes/class.install.php:453
 msgid "Make sure that the directories are writable by pdr!"
 msgstr "Stellen Sie sicher, dass die Verzeichnisse durch pdr schreibbar sind!"
 
-#: src/php/classes/class.install.php:485
+#: src/php/classes/class.install.php:487
 msgid "Error while trying to create the database."
 msgstr "Fehler beim Erstellen der Datenbank."
 
-#: src/php/classes/class.install.php:492
+#: src/php/classes/class.install.php:494
 msgid "Error while trying to create the database tables."
 msgstr "Fehler beim Erstellen der Datenbank-Tabellen."
 
-#: src/php/classes/class.install.php:537
+#: src/php/classes/class.install.php:539
 msgid "Error while writing the configuration to the filesystem."
 msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 
 # Listing elements one two AND three
-#: src/php/classes/class.install.php:583
+#: src/php/classes/class.install.php:585
 msgid "and"
 msgstr "und"
 
-#: src/php/classes/class.overtime.php:40
-msgid "An error has occured while inserting the overtime data."
+#: src/php/classes/class.overtime.php:42
+#, fuzzy
+msgid "An error has occurred while inserting the overtime data."
 msgstr "Beim Speichern der Überstunden trat ein Fehler auf."
 
-#: src/php/classes/class.overtime.php:42 src/js/overtime.js:80
+#: src/php/classes/class.overtime.php:44 src/js/overtime.js:80
 msgid "The input date lies before the last existent date."
 msgstr "Das Datum des Eintrages liegt vor dem letzten vorhandenen Datum."
 
-#: src/php/classes/class.overtime.php:44
+#: src/php/classes/class.overtime.php:46
 msgid "Please enable JavaScript in order to allow PDR to handle this case."
 msgstr ""
 "Bitte aktivieren Sie JavaScript um PDR zu erlauben, diesen Fall zu handhaben."
 
-#: src/php/classes/class.overtime.php:66
+#: src/php/classes/class.overtime.php:73
 msgid "There is already an entry on this date."
 msgstr "An diesem Datum existiert bereits ein Eintrag."
 
-#: src/php/classes/class.overtime.php:67
+#: src/php/classes/class.overtime.php:74
 msgid "The data was therefore not inserted in the database."
 msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
 
-#: src/php/classes/class.overtime.php:157
+#: src/php/classes/class.overtime.php:190
 #: src/php/pages/collaborative-vacation-input-box.php:64
 #: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:42
 msgid "Employee"
 msgstr "Mitarbeiter"
 
-#: src/php/classes/class.overtime.php:158
+#: src/php/classes/class.overtime.php:191
 msgid "Balance"
 msgstr "Saldo"
 
