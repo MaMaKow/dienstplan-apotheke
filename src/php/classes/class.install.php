@@ -113,6 +113,8 @@ class install {
              * We could not create our own user. So we just keep the old one.
              * TODO: We might give a warning to the administrator?
              */
+            unset($this->Config["database_user_self"]);
+            unset($this->Config["database_password_self"]);
         } else {
             /*
              * We created our own user.
