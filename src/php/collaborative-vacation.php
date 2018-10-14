@@ -143,11 +143,9 @@ function write_user_input_to_database() {
      * Insert new entry data into the table absence.
      */
     if ("save" === $command) {
-        /*
-         * The function calculate_absence_days() currenty is defined within "db-lesen-abwesenheit.php".
-         * TODO: Maybe there should be a common library/class for all the (common) absence functions.
-         */
-        $days = absence::calculate_absence_days($start_date_string, $end_date_string);
+        $workforce = new workforce();
+        $employee_object = $workforce->List_of_employees[$employee_id];
+        $days = absence::calculate_employee_absence_days($start_date_string, $end_date_string, $employee_object);
         $query = "INSERT INTO absence (`employee_id`, `start`, `end`, `days`, `reason`, `comment`, `approval`, `user`) "
                 . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :approval, :user)";
         $result = database_wrapper::instance()->run($query, array(
