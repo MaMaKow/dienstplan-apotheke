@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-10-13 14:00+0100\n"
-"PO-Revision-Date: 2018-10-13 14:01+0100\n"
+"POT-Creation-Date: 2018-10-14 13:49+0100\n"
+"PO-Revision-Date: 2018-10-14 13:50+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -23,7 +23,7 @@ msgstr "Fehler beim Schreiben der Datei auf die Festplatte."
 msgid "Error while writing the trigger file to disk."
 msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 
-#: notdienst-out.php:63 src/php/collaborative-vacation.php:438
+#: notdienst-out.php:63 src/php/collaborative-vacation.php:436
 #: src/php/pages/attendance-list.php:67 src/php/pages/attendance-list.php:68
 msgid "emergency service"
 msgstr "Notdienst"
@@ -93,7 +93,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:224
+#: src/php/classes/class.absence.php:235
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -101,14 +101,14 @@ msgstr ""
 "An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
 "in die Datenbank eingefügt."
 
-#: src/php/classes/class.absence.php:228
+#: src/php/classes/class.absence.php:239
 #: src/php/classes/class.database_wrapper.php:238
 #: src/php/classes/class.database_wrapper.php:288
 #: src/php/classes/class.overtime.php:77
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/php/classes/class.absence.php:229
+#: src/php/classes/class.absence.php:240
 #: src/php/classes/class.database_wrapper.php:239
 #: src/php/classes/class.database_wrapper.php:289
 #: src/php/classes/class.overtime.php:78
@@ -116,13 +116,18 @@ msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
-#: src/php/classes/class.absence.php:261
+#: src/php/classes/class.absence.php:272
 msgid "is a holiday"
 msgstr "ist ein Feiertag"
 
-#: src/php/classes/class.absence.php:261
+#: src/php/classes/class.absence.php:272
 msgid "and will not be counted."
 msgstr "und wird nicht berechnet."
+
+#: src/php/classes/class.absence.php:282
+#, php-format
+msgid "%1s is not a working day for %2s and will not be counted."
+msgstr "%1s ist kein Arbeitstag für %2s und wird nicht gezählt."
 
 #: src/php/classes/class.build_html_navigation_elements.php:50
 #: src/php/classes/class.build_html_navigation_elements.php:53
@@ -202,8 +207,8 @@ msgstr "Abwesende"
 
 #: src/php/classes/class.build_html_roster_views.php:92
 #: src/php/classes/class.build_html_roster_views.php:108
-#: src/php/collaborative-vacation.php:253
-#: src/php/collaborative-vacation.php:385
+#: src/php/collaborative-vacation.php:251
+#: src/php/collaborative-vacation.php:383
 msgid "to"
 msgstr "bis"
 
@@ -367,7 +372,6 @@ msgid "and"
 msgstr "und"
 
 #: src/php/classes/class.overtime.php:42
-#, fuzzy
 msgid "An error has occurred while inserting the overtime data."
 msgstr "Beim Speichern der Überstunden trat ein Fehler auf."
 
@@ -519,8 +523,8 @@ msgstr "Absender"
 msgid "File"
 msgstr "Datei"
 
-#: src/php/collaborative-vacation.php:252
-#: src/php/collaborative-vacation.php:384
+#: src/php/collaborative-vacation.php:250
+#: src/php/collaborative-vacation.php:382
 msgid "from"
 msgstr "von"
 

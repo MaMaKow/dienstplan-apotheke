@@ -179,27 +179,47 @@ class absence {
         /*
          * We create new entries or edit old entries. (Empty values are not accepted.)
          */
-        if (('insert_new' === $command or 'replace' === $command)
-                and $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT)
-                and $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING)
-                and $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING)
-                and $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING)
-                and $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING)
-        ) {
-            /*
-             * $comment is allowed to be empty.
-             * Therefore it is not part of the if():
-             */
+        if (('insert_new' === $command or 'replace' === $command)) {
+            $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+            $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
+            $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING);
+            $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
+            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING);
             $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
-            self::write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $comment, $approval);
+            if (NULL === $employee_id or FALSE === $employee_id) {
+                return FALSE;
+            }
+            if (empty($beginn)) {
+                return FALSE;
+            }
+            if (empty($ende)) {
+                return FALSE;
+            }
+            if (!in_array($reason, self::$List_of_absence_reasons)) {
+                return FALSE;
+            }
+            if (!in_array($approval, self::$List_of_approval_states)) {
+                return FALSE;
+            }
+            $workforce = new workforce();
+            $employee_object = $workforce->List_of_employees[$employee_id];
+            self::write_absence_data_to_database($employee_object, $beginn, $ende, $reason, $comment, $approval);
         }
     }
 
-    private static function write_absence_data_to_database($employee_id, $beginn, $ende, $reason, $comment = NULL, $approval = 'approved') {
+    private static function write_absence_data_to_database($employee_object, $beginn, $ende, $reason, $comment = NULL, $approval = 'approved') {
+        $employee_id = $employee_object->employee_id;
+        /*
+         * TODO: Check why the next lines are needed:
+         *         if ($employee_id === FALSE) {
+          return FALSE;
+          }
+
+         */
         if ($employee_id === FALSE) {
             return FALSE;
         }
-        $days = self::calculate_absence_days($beginn, $ende);
+        $days = self::calculate_employee_absence_days($beginn, $ende, $employee_object);
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
             $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
             $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
@@ -240,16 +260,18 @@ class absence {
         return $result;
     }
 
-    public static function calculate_absence_days($start_date_string, $end_date_string) {
+    public static function calculate_employee_absence_days($start_date_string, $end_date_string, $employee_object) {
         $days = 0;
-        for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-            if (date('w', $date_unix) != 6 and date('w', $date_unix) != 0) {
+        for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix = strtotime('+ 1 day', $date_unix)) {
+            $current_week_day_number = date("N", $date_unix);
+            if (!empty($employee_object->Principle_roster[$current_week_day_number])
+                    or ( 0 === $employee_object->working_week_days and $current_week_day_number < 6)) {
                 /*
-                 * Saturday and Sunday are not counted
-                 * TODO: Instead we should look into the principle roster!
-                 * If there is no entry there, then we will not count the day.
-                 * This is espacially relevent to the 450 € workers.
-                 * The are only there for two days a week.
+                 * The employee normally does not work on this day.
+                 * This might be saturdays and sundays.
+                 * But it might as well be normal for the employee to just work on Tuesday and Thursday.
+                 *
+                 * Or if no principle roster is existent (0 === $employee_object->working_week_days) then Saturday and Sunday are excluded.
                  */
                 $holiday = holidays::is_holiday($date_unix);
                 if (FALSE !== $holiday) {
@@ -262,10 +284,14 @@ class absence {
                     user_dialog::add_message($message, E_USER_NOTICE);
                 } else {
                     /*
-                     * Only days which are neither a holiday nor a weekend are counted
+                     * Only days which are neither a holiday nor a weekend/non-working-days are counted
                      */
                     $days++;
                 }
+            } else {
+                $date_string = strftime('%a %x', $date_unix);
+                $message = sprintf(gettext('%1s is not a working day for %2s and will not be counted.'), $date_string, $employee_object->full_name);
+                user_dialog::add_message($message, E_USER_NOTICE);
             }
         }
         return $days;
