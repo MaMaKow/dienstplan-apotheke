@@ -1,0 +1,120 @@
+% This file was generated with po4a. Translate the source file.
+%
+\chapter{Administratorhandbuch}
+\section{Installation}\label{sec:installation}
+\subsection{PDR finden}
+Die neueste Version von PDR ist verfügbar unter
+\href{https://github.com/MaMaKow/dienstplan-apotheke/releases}{GitHub}
+
+Sie können auch die neueste stabile Version über Git erhalten:
+\begin{verbatim}
+git clone https://github.com/MaMaKow/dienstplan-apotheke.git
+\end{verbatim}
+Der Master-Zweig ist auf Stabilität getestet. \subsection{Das
+Installationsprogramm} \subsubsection{Einführung} Die erste Seite zeigt
+einige nicht-technische Informationen über dieses Programm. Klicken Sie auf
+\menu{Weiter}, um fortzufahren. \subsubsection{Willkommen} Auf der zweiten
+Seite sind einige technische Hintergrundinformationen angegeben. Sie werden
+über die notwendigen Eingabedaten informiert, die für die Fortsetzung der
+Installation benötigt werden. Verfügbare Datenbank-Management-Systeme
+(derzeit nur MySQL) sind aufgelistet. Abschließend werden Sie über die
+Benutzer- und Passwortstrategie für den Datenbankzugriff informiert. Klicken
+Sie erneut auf \menu{Weiter}, um fortzufahren. \subsubsection{Anforderungen}
+Auf der nächsten Seite prüft die Anwendung, ob alle Voraussetzungen erfüllt
+sind. Dazu gehören eine PHP-Mindestversion, einige PHP-Erweiterungen und
+Unterstützung für Datenbankverbindungen. Außerdem benötigt das Programm
+Schreibzugriff auf einige seiner Verzeichnisse. Wenn Probleme gefunden
+werden, wird eine beschreibende Fehlermeldung angezeigt. Es ist nicht
+möglich fortzufahren, bis alle Probleme gelöst sind. Klicken Sie erneut auf
+\menu{Weiter}, um fortzufahren. \subsubsection{Datenbankkonfiguration} Die
+Anwendung beginnt nun, Konfigurationsdaten zu sammeln.
+\begin{itemize}
+\item Datenbanktyp
+\item Hostname
+\item Port (optional)
+\item username \\Ein bestehender Datenbankbenutzer. Der Benutzer MUSS die
+Berechtigung haben, eine Datenbank zu erstellen. Der Benutzer SOLLTE das
+Privileg haben, einen weniger privilegierten Benutzer zu erstellen.
+\item password \\Das Datenbankpasswort des Benutzers. Wenn ein neuer Benutzer
+erstellt werden konnte, wird dem neuen Benutzer ein neues sicheres
+zufälliges Passwort gegeben.
+\item Name der Datenbank
+\end{itemize}
+Geben Sie die erforderlichen Daten ein und \menu{Senden} sie. \subsubsection
+{Administratorkonfiguration} Nachdem die Datenbankwerte festgelegt wurden,
+werden einige Informationen zum Administrator gesammelt:
+\begin{itemize}
+\item Benutzername \\ Der Name, mit dem der Administrator sich in Zukunft im
+Programm anmeldet. 
+\item Nachname \\ Dieser Name ist mit der Mitarbeiter-ID verbunden.
+\item Mitarbeiter-ID \\ Diese wird verwendet, um einen Mitarbeiter zu erstellen,
+der mit dem Benutzer mit Administratorrechten verbunden ist.
+\item Die Kontakt-E-Mail-Adresse \\ wird für Fragen und Kommentare von Benutzern
+verwendet. Diese E-Mail erhält auch einige interne Informationen aus dem
+Dienstplan.
+\item Administrator-Passwort \\ das Passwort, das der Administrator verwendet, um
+sich in Zukunft am Programm anzumelden. 
+\end{itemize}
+Bitte registrieren Sie den Administrator und klicken Sie auf
+\menu{Senden}. Die Daten werden in die Datei \directory{config/config.php}
+geschrieben. Für jeden Benutzer, der das Programm benutzt, muss es genau
+einen Mitarbeiter geben. \subsection {Erste Schritte} Nach dem Absenden der
+Administratorkonfiguration werden Sie auf die Anmeldeseite
+weitergeleitet. Melden Sie sich mit Ihren Administrator-Anmeldeinformationen
+an.
+
+Bei Ihrer ersten Anmeldung werden Sie mit der Filialverwaltung
+konfrontiert. Bitte erstellen Sie mindestens eine Filiale. Sie erreichen
+diese Seite jederzeit über das Menü \menu{Administration >
+Filialverwaltung}.
+
+Der nächste logische Schritt ist die Einrichtung einiger weiterer
+Mitarbeiter in \menu{Administration > Personalverwaltung}.
+
+Nachdem alle Mitarbeiter eingefügt sind, können Sie mit dem Schreiben von
+Dienstpläne beginnen (\menu{Tagesansicht > Tagesansicht Eingabe}) oder Sie
+können Grundpläne erstellen für bestimmte Wochentage (\menu{ Tagesansicht >
+Grundplan Tagesansicht}) oder für unterschiedliche Mitarbeiter
+(\menu{Mitarbeiter > Grundplan Mitarbeiter}).
+
+\section{Aktualisierung}
+Bis jetzt gibt es keinen automatischen Update-Mechanismus. Sie können
+regelmäßig Release-Pakete von GitHub herunterladen. Oder Sie können über Git
+in Kontakt bleiben:
+\begin{lstlisting}
+git pull origin master
+\end{lstlisting}
+\emph{CAVE:} Stellen Sie sicher, dass Sie Ihr \directory{config/config.php}
+behalten! Es sollte nicht von Git geändert werden, da es in der
+.gitigore-Datei dieses Projekts aufgeführt ist. \section{Konfiguration} Sie
+können die Datei \directory{config / config.php} manuell bearbeiten. Die
+Standardwerte sind:
+\begin{verbatim}
+'application_name' => 'PDR',
+'database_management_system' => 'mysql',
+'database_host' => 'localhost',
+'database_name' => '',
+'database_port' => 3306,
+'database_user' => '',
+'database_password' => '',
+'session_secret' => '',
+'error_reporting' => E_ALL,
+'display_errors' => 0,
+'log_errors' => 1,
+'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
+'LC_TIME' => 'C',
+'timezone' => 'Europe/Berlin',
+'language' => 'de_DE',
+'mb_internal_encoding' => 'UTF-8',
+'contact_email' => '',
+'hide_disapproved' => FALSE
+\end{verbatim}
+
+
+Löschen Sie niemals die ersten zwei Zeilen! Wenn die Datei nicht mit "<?php"
+beginnt, wird PHP sie nicht verarbeiten, was bedeutet, dass jeder ihren
+Inhalt lesen kann. \menu{Administration > Personalverwaltung}
+\section{Wartung}
+\section{Probleme und Fehlerbehebung}
+
+

@@ -1,0 +1,78 @@
+% This file was generated with po4a. Translate the source file.
+%
+
+\chapter{Entwicklerhandbuch}
+\section{Kernentwicklung}
+Alle PHP-Skripte laden eine gemeinsame Datei \texttt{default.php}, die die
+Standardeinstellungen vornimmt. Sie befindet sich in ./, welches der
+\texttt{PDR\_FILE\_SYSTEM\_APPLICATION\_PATH} ist. Siehe folgende Datei:
+\lstinputlisting[language=PHP]{../default.php}
+
+\subsection{Ordnerstruktur}
+\begin{itemize}
+\item \directory{config/} Enthält die Konfigurationsdatei config.php
+\item \directory{css/} \emph{veraltet}, verwenden Sie stattdessen
+\directory{src/css/}
+\item \directory{docs/} Diese Dokumentation und Werkzeuge, um sie zu bauen
+\item \directory{img/} Bilder, die vom Programm verwendet werden
+\item \directory{js/} \emph{obsolet}, benutzen Sie stattdessen \directory{src/js/}
+\item \directory{locale/} Übersetzungsdateien für gettext, derzeit nur Deutsch
+(de\_DE)
+\item \directory{src/} Der Hauptteil des eigentlichen Quellcodes
+    \begin{itemize}
+    \item \directory{src/css} Cascading Style Sheets
+    \item \directory{src/js} JavasScript
+    \item \directory{src/php/} PHP: Hypertext Preprocessor
+    \item \directory{src/php/classes/} Enthält alle Klassendateien
+class.class\_name.php
+    \item \directory{src/php/fragments/} Teile von größeren Seiten, können über PHP
+require/include oder mit JavaScript geladen werden
+    \item \directory{\textbf{src/php/pages/}} Dies ist der Ort für die einzelnen
+Ansichten, welche der menschliche Benutzer verwenden wird, um den Dienstplan
+usw. zu sehen.
+    \item \directory{src/sql/} SQL-Datenbank Tabellen und Trigger
+    \end{itemize}
+\item \directory{tests/} Tests, um Fehler im Quellcode zu finden; Dieser Ordner
+ist in .gitignore aufgeführt. Nur einige Dateien sind Teil der sichtbaren
+Quelle.
+\item \directory{tmp/} Ein Verzeichnis für temporäre Dateien. Es gibt noch keine
+automatische Bereinigung.
+\item \directory{upload/} Das Ziel für hochgeladene Inhalte. Momentan werden nur
+spezifische *.PEP-Dateien verstanden, die von Awta ASYS Smart erstellt
+wurden. Diese Dateien enthalten Informationen über die Anzahl der Kunden,
+die in der Vergangenheit bedient wurden.
+\end{itemize}
+\subsection{Programmierstil}
+Dieses Projekt versucht, einem Programmierstil zu folgen.
+\begin{itemize}
+\item Bitte vermeiden Sie StudlyCaps und camelCase (Binnenmajuskel).
+\item Klassenkonstanten MÜSSEN in Großbuchstaben mit Unterstrichtrennzeichen
+deklariert werden.
+\item Eigenschaftsnamen MÜSSEN in Unter_strichen geschrieben werden.
+\item Einfache Variablen und Objekte werden in Kleinbuchstaben geschrieben.
+\item Array-Namen beginnen mit einem einzelnen Großbuchstaben, gefolgt von
+Kleinbuchstaben.
+\item Methodennamen müssen Unter_strichen geschrieben werden.
+
+\item Der Code MUSS 4 Leerzeichen zum Einrücken verwenden, keine Tabulatoren.
+\item Öffnende geschweifte Klammern für Klassen und Funktionen MÜSSEN in derselben
+Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
+Zeile nach dem Text beginnen.
+\item Öffnende geschweifte Klammern für Kontrollstrukturen SOLLTEN in derselben
+Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
+Zeile nach dem Text beginnen.
+\end{itemize}
+
+\section{Dokumentation}
+Diese Dokumentation über ein Programm, eine App oder ein Skript ist
+unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie
+erweitern.
+
+\section{Testen}
+\section{Bug Tracker}
+\section{Übersetzung}
+Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments:
+\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
+\subsection{Internationalisierung} Verschiedene Länder haben
+unterschiedliche Gesetze bezüglich Apotheken und Beschäftigung. Sie haben
+auch unterschiedliche Feiertage.
