@@ -3,29 +3,28 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: dienstplan documentation\n"
-"POT-Creation-Date: 2018-10-06 21:14+0200\n"
-"PO-Revision-Date: 2018-10-07 13:04+0100\n"
-"Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
-"Language-Team: \n"
-"Language: de_DE\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-10-14 14:40+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.6.10\n"
 
 #. type: chapter{#2}
 #: documentation_user.tex:2
 msgid "User manual"
-msgstr "Benutzerhandbuch"
+msgstr ""
 
 #. type: section{#2}
 #: documentation_user.tex:6
 msgid "The web interface"
-msgstr "Das Web-Interface"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:6
@@ -33,19 +32,16 @@ msgid ""
 "You can connect to your PDR instance using any web browser. Just navigate to "
 "your server and enter your username and password."
 msgstr ""
-"Sie können sich mit einem beliebigen Webbrowser mit Ihrer PDR-Instanz "
-"verbinden. Navigieren Sie einfach zu Ihrem Server und geben Sie Ihren "
-"Benutzernamen und Ihr Passwort ein."
 
 #. type: subsection{#2}
 #: documentation_user.tex:16
 msgid "Login"
-msgstr "Login"
+msgstr ""
 
 #. type: caption{#2}
 #: documentation_user.tex:16
 msgid "Login page"
-msgstr "Login Seite"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:16
@@ -56,21 +52,16 @@ msgid ""
 "your password, or want to change it, you can click on \\menu{Forgot "
 "password?}."
 msgstr ""
-"Die Anmeldeseite zeigt den Namen der Anwendung an. Sie werden aufgefordert, "
-"Ihren Benutzernamen und Ihr Passwort einzugeben. Wenn Sie noch keinen "
-"Account haben, können Sie \\menu{Create a new account} erstellen. Wenn Sie "
-"ein Konto haben, aber Ihr Passwort vergessen haben oder es ändern möchten, "
-"können Sie auf \\menu{Passwort vergessen?} Klicken."
 
 #. type: subsection{#2}
 #: documentation_user.tex:25
 msgid "Create new user account"
-msgstr "Neuen Benutzer-Account erstellen"
+msgstr ""
 
 #. type: caption{#2}
 #: documentation_user.tex:25
 msgid "Register new user page"
-msgstr "Registrierungsseite"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:25
@@ -78,8 +69,6 @@ msgid ""
 "Choose a user name, enter your employee id and your email. Pick a secure "
 "password."
 msgstr ""
-"Wählen Sie einen Benutzernamen, geben Sie Ihre Mitarbeiter-ID und Ihre E-"
-"Mail-Adresse ein. Wählen Sie ein sicheres Passwort."
 
 #. type: Plain text
 #: documentation_user.tex:27
@@ -87,8 +76,6 @@ msgid ""
 "The account will be inactive until an administrator activates it. The main "
 "administrator is informed via email regarding the registration."
 msgstr ""
-"Das Konto ist inaktiv, bis ein Administrator es aktiviert. Der "
-"Hauptadministrator wird per E-Mail über die Registrierung informiert."
 
 #. type: Plain text
 #: documentation_user.tex:29
@@ -96,18 +83,16 @@ msgid ""
 "New users can only be created for existing employees. New employees are "
 "created by an administrator."
 msgstr ""
-"Neue Benutzer können nur für vorhandene Mitarbeiter erstellt werden. Neue "
-"Mitarbeiter werden von einem Administrator erstellt."
 
 #. type: subsection{#2}
 #: documentation_user.tex:46
 msgid "Lost password"
-msgstr "Passwort vergessen"
+msgstr ""
 
 #. type: caption{#2}
 #: documentation_user.tex:46
 msgid "Lost password page"
-msgstr "Passwort vergessen Seite"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:46
@@ -118,21 +103,16 @@ msgid ""
 "In that email you will find a link, which will lead you to the password "
 "change page."
 msgstr ""
-"Auf der Seite \"Passwort vergessen\" wird der Name der Anwendung angezeigt. "
-"Sie werden aufgefordert, entweder Ihren Benutzernamen, Ihre ID oder Ihre E-"
-"Mail-Adresse einzugeben. Nachdem Sie das Formular abgeschickt haben, wird "
-"eine E-Mail an Ihre gespeicherte E-Mail-Adresse gesendet. In dieser E-Mail "
-"finden Sie einen Link, der Sie zur Seite zum Ändern des Passworts führt."
 
 #. type: subsubsection{#2}
 #: documentation_user.tex:46
 msgid "Lost password recovery"
-msgstr "Wiederherstellung des Passwortes"
+msgstr ""
 
 #. type: caption{#2}
 #: documentation_user.tex:46
 msgid "Lost password recovery page"
-msgstr "Wiederherstellungs-Seite für Passwörter"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:46
@@ -140,19 +120,16 @@ msgid ""
 "The lost password recovery page shows the name of the application and your "
 "user name. You are prompted to enter a new password twice."
 msgstr ""
-"Auf der Seite zur Wiederherstellung des verlorenen Passworts werden der Name "
-"der Anwendung und Ihr Benutzername angezeigt. Sie werden aufgefordert, ein "
-"neues Passwort zweimal einzugeben."
 
 #. type: subsection{#2}
 #: documentation_user.tex:64
 msgid "Navigation"
-msgstr "Navigation"
+msgstr ""
 
 #. type: caption{#2}
 #: documentation_user.tex:64
 msgid "Navigation bar"
-msgstr "Navigationsleiste"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:64
@@ -160,38 +137,36 @@ msgid ""
 "By default, the PDR web interface opens a menu containing 5 tiles.  You can "
 "navigate to:"
 msgstr ""
-"Standardmäßig öffnet die PDR-Weboberfläche ein Menü mit 5 Kacheln. Sie "
-"können navigieren zu:"
 
 #. type: subsection{#2}
 #: documentation_user.tex:64 documentation_user.tex:120
 msgid "Roster week table view"
-msgstr "Dienstplan Wochenansicht"
+msgstr ""
 
 #. type: subsection{#2}
 #: documentation_user.tex:64 documentation_user.tex:130
 msgid "Roster daily view"
-msgstr "Dienstplan Tagesansicht"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:64
 msgid "Roster employee view"
-msgstr "Dienstplan Mitarbeiteransicht"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:64
 msgid "Overtime"
-msgstr "Überstunden"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:64
 msgid "Absence"
-msgstr "Abwesenheit"
+msgstr ""
 
 #. type: subsubsection{#2}
 #: documentation_user.tex:120
 msgid "The navigation bar"
-msgstr "Die Navigationsleiste"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:120
@@ -200,154 +175,151 @@ msgid ""
 "pages of PDR. Hover the mouse over an entry to open the submenus (Figure "
 "\\ref{img_navigation_bar})."
 msgstr ""
-"Im oberen Bereich befindet sich eine Navigationsleiste mit Hyperlinks zu "
-"fast allen PDR-Seiten. Bewegen Sie die Maus über einen Eintrag, um die "
-"Untermenüs zu öffnen (Abbildung \\ref{img_navigation_bar})."
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{Weekly view > .. }"
-msgstr "\\menu{Wochenansicht > .. }"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Weekly table}"
-msgstr "\\menu{.. > Wochen-Tabelle}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Weekly images}"
-msgstr "\\menu{.. > Wochen-Bilder}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{Daily view > .. }"
-msgstr "\\menu{Tagesansicht > .. }"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Daily input}"
-msgstr "\\menu{.. > Tagesansicht Eingabe}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Daily output}"
-msgstr "\\menu{.. > Tagesansicht Ausgabe}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Principle roster daily}"
-msgstr "\\menu{.. > Grundplan Tagesansicht}"
+msgstr ""
 
 #. type: description
-#: documentation_user.tex:120
+#: documentation_user.tex:120 documentation_user.tex:120
 msgid "\\columnbreak"
-msgstr "\\columnbreak"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{Employee > .. }"
-msgstr "\\menu{Mitarbeiter > .. }"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Roster employee}"
-msgstr "\\menu{.. > Mitarbeiteransicht}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Principle roster employee}"
-msgstr "\\menu{.. > Grundplan Mitarbeiter}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{Overtime > ..}"
-msgstr "\\menu{Überstunden > ..}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Overtime input}"
-msgstr "\\menu{.. > Überstunden Eingabe}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Overtime output}"
-msgstr "\\menu{.. > Überstunden Ausgabe}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Overtime overview}"
-msgstr "\\menu{.. > Überstunden Übersicht}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{Absence > ..}"
-msgstr "\\menu{Abwesenheit > ..}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Absence input}"
-msgstr "\\menu{.. > Abwesenheit Eingabe}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Absence annual plan}"
-msgstr "\\menu{.. > Abwesenheit Jahresplan}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Absence monthly plan}"
-msgstr "\\menu{.. > Abwesenheit Monatsplan}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{Administration > ..}"
-msgstr "\\menu{Administration > ..}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Attendance list}"
-msgstr "\\menu{.. > Anwesenheitsliste}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Saturday list}"
-msgstr "\\menu{.. > Samstagsliste}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Marginal employment hours list}"
-msgstr "\\menu{.. > Stundenzettel geringfügig Beschäftigte}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Upload deployment planning}"
-msgstr "\\menu{.. > PEP-Upload}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Human resource managament}"
-msgstr "\\menu{.. > Mitarbeiterverwaltung}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Branch managament}"
-msgstr "\\menu{.. > Mandantenverwaltung}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > User managament}"
-msgstr "\\menu{.. > Benutzerverwaltung}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > Configuration}"
-msgstr "\\menu{.. > Konfiguration}"
+msgstr ""
 
 #. type: description
 #: documentation_user.tex:120
 msgid "\\menu{.. > phpMyAdmin}"
-msgstr "\\menu{.. > phpMyAdmin}"
+msgstr ""
 
 #. type: caption{#2}
 #: documentation_user.tex:120
@@ -355,8 +327,6 @@ msgid ""
 "Roster week table view, excerpt without task rotation and weekly working "
 "hours"
 msgstr ""
-"Dienstplan Wochenansicht, Auszug ohne Aufgabenrotation und wöchentliche "
-"Arbeitszeit"
 
 #. type: Plain text
 #: documentation_user.tex:123
@@ -366,27 +336,19 @@ msgid ""
 "working in an other branch, then those are shown below.  The table foot "
 "contains the information about absent employees and their reason of absence."
 msgstr ""
-"Die Dienstplan-Wochenansicht zeigt die Liste einer ausgewählten Woche und "
-"Zweigstelle (Abbildung~\\ref{img_roster_week_table_view}). Wenn Mitarbeiter "
-"der Zweigstelle in einer anderen Zweigstelle arbeiten, werden diese unten "
-"angezeigt. Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter "
-"und deren Abwesenheitsgründe."
 
 #. type: Plain text
 #: documentation_user.tex:125
 msgid ""
 "The date can be chosen by direct input. It can also be shifted by one week "
-"backwards or forwards by pressing \\keys{\\ctrl + \\shift + $\\rightarrow$} "
-"or \\keys{\\ctrl + \\shift + $\\leftarrow$} respectively."
+"backwards or forwards by pressing \\keys{\\ctrl + \\shift + \\arrowkeyright} "
+"or \\keys{\\ctrl + \\shift + \\arrowkeyleft} respectively."
 msgstr ""
-"Das Datum kann durch direkte Eingabe ausgewählt werden. Es kann auch um eine "
-"Woche vor oder zurück verschoben werden, indem man \\keys{\\ctrl + \\shift + "
-"\\$rightarrow$} oder \\keys {\\ctrl + \\shift + \\$leftarrow$} drückt."
 
 #. type: subsubsection{#2}
 #: documentation_user.tex:130
 msgid "Read only"
-msgstr "Schreibgeschützt"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:130
@@ -397,12 +359,6 @@ msgid ""
 "employee id and last name, the working hours, the start and end of duty and "
 "the time of the lunch break, if any."
 msgstr ""
-"In der täglichen Dienstplanansicht gibt es eine Tabelle, ein Balkendiagramm "
-"und ein Histogramm, welche den Dienstplan widerspiegeln. Die "
-"Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten Zweig "
-"an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und den "
-"Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des "
-"Dienstes und die Zeit der Mittagspause, falls vorhanden."
 
 #. type: Plain text
 #: documentation_user.tex:134
@@ -413,12 +369,6 @@ msgid ""
 "time to be stored.  If employees are absent, these absences are displayed in "
 "the table footer."
 msgstr ""
-"Wenn ein Mitarbeiter, der in erster Linie in der ausgewählten Filiale "
-"eingeplant ist, in einer anderen Filiale arbeitet, wird dieser Eintrag in "
-"der Tabelle unten angezeigt. Ein Mitarbeiter kann mehr als einen Eintrag pro "
-"Tag haben. Dadurch kann eine geteilte Arbeitszeit gespeichert werden. Wenn "
-"Mitarbeiter abwesend sind, werden diese Abwesenheiten in der "
-"Tabellenfußzeile angezeigt."
 
 #. type: Plain text
 #: documentation_user.tex:137
@@ -432,13 +382,6 @@ msgid ""
 "green, while Pharmacy technicians are colored in light green. Other "
 "employees (non-pharmaceutical personnel) are colored in grey."
 msgstr ""
-"Das Dienstplan-Balken-Diagramm zeigt das Kommen und Gehen von Mitarbeitern. "
-"Jeder Balken repräsentiert einen Eintrag. Er reicht vom Beginn des Dienstes "
-"bis zu seinem Ende. Ein weißes Rechteck auf dem Balken zeigt die Zeit der "
-"Mittagspause an. Die Farbe der Balken hängt vom Beruf des Mitarbeiters ab. "
-"Apotheker und Pharmazieingenieure sind in dunkelgrün gefärbt, während PTA in "
-"hellgrün gefärbt sind. Andere Mitarbeiter (nichtpharmazeutisches Personal) "
-"sind grau hinterlegt."
 
 #. type: Plain text
 #: documentation_user.tex:139
@@ -447,15 +390,11 @@ msgid ""
 "expected amount of work (measured in packages per 15 minutes), while the "
 "green line represents the amount of working employees to any given time."
 msgstr ""
-"Das Histogramm zeigt einen roten Bereich und eine grüne Linie. Der rote "
-"Bereich zeigt den erwarteten Arbeitsaufwand (gemessen in Packungen pro 15 "
-"Minuten), während die grüne Linie die Anzahl der arbeitenden Mitarbeiter zu "
-"einem bestimmten Zeitpunkt darstellt."
 
 #. type: subsubsection{#2}
 #: documentation_user.tex:153
 msgid "Edit"
-msgstr "Bearbeiten"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:153
@@ -464,45 +403,36 @@ msgid ""
 "examined for errors. If any issues occur, then errors, warnings or "
 "information will be shown in the top right area.  The examination includes:"
 msgstr ""
-"Die Bearbeitungsseite ähnelt der schreibgeschützten Ansicht. Der Dienstplan "
-"wird auf Fehler überprüft. Wenn Probleme auftreten, werden Fehler, Warnungen "
-"oder Informationen im oberen rechten Bereich angezeigt. Die Prüfung "
-"beinhaltet:"
 
 #. type: itemize
 #: documentation_user.tex:153
 msgid "overlap of shifts for the same employee (Error)"
-msgstr "Überlappung von Schichten für denselben Mitarbeiter (Fehler)"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:153
 msgid "sufficient employee count (Warning, hardcoded at least two employees)"
 msgstr ""
-"ausreichende Mitarbeiterzahl (Warnung, fest codiert mindestens zwei "
-"Mitarbeiter)"
 
 #. type: itemize
 #: documentation_user.tex:153
-msgid "attendence of at least one pharmacist at any time (Error)."
-msgstr "Anwesenheit von mindestens einem Apotheker zu jeder Zeit (Fehler)."
-
-#. type: itemize
-#: documentation_user.tex:153
-msgid ""
-"attendance of at least one person able to carry out goods receipt (Warning)."
+msgid "attendance of at least one pharmacist at any time (Error)."
 msgstr ""
-"Anwesenheit von mindestens einer Person, die den Wareneingang durchführen "
-"kann (Warnung)."
+
+#. type: itemize
+#: documentation_user.tex:153
+msgid "attendance of at least one person able to carry out goods receipt (Warning)."
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:153
 msgid "scheduling of absent employees (Error)"
-msgstr "Einsatz abwesender Mitarbeiter (Fehler)"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:153
 msgid "non-scheduling of non-absent employees (Warning)"
-msgstr "Nichteinplanung von nicht abwesenden Mitarbeitern (Warnung)"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:175
@@ -512,31 +442,26 @@ msgid ""
 "employee.  \\subsection{Roster employee view} \\subsection{Overtime} "
 "\\subsection{Absence} There are four views to the absence data."
 msgstr ""
-"Pro Eintrag kann nur eine Pause eingefügt werden. Wenn mehr Pausen "
-"zugewiesen werden müssen, können mehrere Einträge für denselben Mitarbeiter "
-"eingegeben werden. \\subsection{Mitarbeiterliste des Dienstplans} "
-"\\subsection{Überstunden} \\subsection{Abwesenheit} Es gibt vier Ansichten "
-"für die Abwesenheitsdaten."
 
 #. type: itemize
 #: documentation_user.tex:175
 msgid "Employee view readonly"
-msgstr "Mitarbeiteransicht schreibgeschützt"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:175
 msgid "Employee view edit"
-msgstr "Mitarbeiteransicht Eingabe"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:175
 msgid "Monthly table"
-msgstr "Monatstabelle"
+msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:175
 msgid "Year overview"
-msgstr "Jahrestabelle"
+msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:175
@@ -551,13 +476,555 @@ msgid ""
 "week. Absences on saturdays and sundays are registered but not counted. The "
 "same applys for holidays."
 msgstr ""
-"In der \\emph{schreibgeschützten Mitarbeitersicht} gibt es ein Select-"
-"Element, um den anzuzeigenden Mitarbeiter auszuwählen. Es gibt eine "
-"Schaltfläche, um zur Bearbeitungsansicht zu wechseln. Und es gibt eine "
-"Tabelle mit den Abwesenheitsdaten. Die Spalten sind Beginn und Ende der "
-"Abwesenheit, Abwesenheitsgrund und Anzahl der Tage. Es gibt eine eindeutige "
-"Liste möglicher Gründe (Urlaub, Resturlaub, Krankheit, Krankheit des Kindes, "
-"unbezahlte Freistellung, bezahlte Freistellung, Elternzeit und "
-"Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche "
-"berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber "
-"nicht gezählt. Das Gleiche gilt für Feiertage."
+
+#. type: chapter{#2}
+#: documentation_introduction.tex:9
+msgid "Introduction"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:9
+msgid ""
+"Pharmacy Duty Roster (PDR) is a web application that allows to operate a "
+"duty roster for pharmacies.  PDR started in 2015 as an alternative to a "
+"really simple excel sheet without formulas.  PDR aims to be user-friendly "
+"but at the same time cover all necessary features.  PDR continuously strives "
+"to improve. It is open to your requests and wishes.  I hope it will fulfil "
+"your expectations.  \\section{Getting PDR} The latest release of PDR is "
+"available on "
+"\\href{https://github.com/MaMaKow/dienstplan-apotheke/releases/latest}{GitHub}. "
+"GitHub provides the source code as *.zip file or *.tar.gz ball. Extract the "
+"files into a folder."
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:11
+msgid ""
+"Make sure to unpack PDR to a directory, that your webserver has access "
+"to. PHP and the webserver must have read access to all the files and "
+"folders. It also needs write access to the subdirectories upload, tmp and "
+"config. You might want to change the owner of the directory to the "
+"webservers user with e.g.:"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:17
+msgid "You can also clone the repository with git:"
+msgstr ""
+
+#. type: verbatim
+#: documentation_introduction.tex:17 documentation_administrator.tex:9
+#, no-wrap
+msgid "git clone https://github.com/MaMaKow/dienstplan-apotheke.git"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:17
+msgid "See the Administrator manual for details!"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_introduction.tex:22
+msgid "License"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:22
+msgid "PDR is open source software under the AGPL license."
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:22
+msgid "Copyright (C) 2018 Dr. Martin Mandelkow"
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:27
+msgid ""
+"This program is free software: you can redistribute it and/or modify it "
+"under the terms of the GNU Affero General Public License as published by the "
+"Free Software Foundation, either version 3 of the License, or (at your "
+"option) any later version."
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:32
+msgid ""
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License "
+"for more details."
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:35
+msgid ""
+"You should have received a copy of the GNU Affero General Public License "
+"along with this program.  If not, see <https://www.gnu.org/licenses/>."
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:43
+msgid ""
+"Please see the "
+"\\href{https://github.com/MaMaKow/dienstplan-apotheke/blob/master/LICENSE.md}{license "
+"file} for details! \\section{Reporting bugs} The issue tracker is currently "
+"located at GitHub.  GitHub requires an account in order to report bugs or "
+"feature requests. If you do not want to create one, you might send a mail to "
+"pdr-issues@martin-mandelkow.de \\section{How to contribute} Pull requests "
+"are desired. If you made changes to PDR and want to contribute them to the "
+"public, you are welcome to open a pull-request on GitHub or send your "
+"changes in any other way."
+msgstr ""
+
+#. type: chapter{#2}
+#: documentation_administrator.tex:5
+msgid "Administrator manual"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:5
+msgid "Installation"
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_administrator.tex:5
+msgid "Getting PDR"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:5
+msgid ""
+"The latest release of PDR is available on "
+"\\href{https://github.com/MaMaKow/dienstplan-apotheke/releases}{GitHub}"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:7
+msgid "You can also get the latest stable version via git:"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:46
+msgid ""
+"The master branch is tested to be stable.  \\subsection{The installer} "
+"\\subsubsection{Introduction} The first page shows some non-technical "
+"information about this program. Click \\menu{Next} to move on.  "
+"\\subsubsection{Welcome} On the second page some technical background "
+"information is given. You are informed about the necessary input data, "
+"required for continuing the installation. Available database management "
+"systems (currently only MySQL) are listed. Finally, you are informed about "
+"the user and password strategy for the database access. Click \\menu{Next} "
+"again, to continue.  \\subsubsection{Requirements} On the next page the "
+"application checks, if all requirements are met. These include a minimum PHP "
+"version, some PHP extensions and support for database connections. Also the "
+"program needs write access to some of its directories.  If problems are "
+"found, then a descriptive error message will be shown. It is not possible to "
+"continue, until all issues are solved.  Click \\menu{Next} again, to "
+"continue.  \\subsubsection{Database configuration} The application now "
+"starts to collect configuration data."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "Database type"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "hostname"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "port (optional)"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"username \\\\An existing database user. The user MUST have the privilege to "
+"create a database. The user SHOULD have the privilege to create a less "
+"privileged user."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"password \\\\The database password of the user. If a new user could be "
+"created, then a new secure random password will be given to the new user."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "database name"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:46
+msgid ""
+"Enter the required data and \\menu{Submit} it.  "
+"\\subsubsection{Administrator configuration} After the database values are "
+"set, some information about the administrator is collected:"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"User name\\\\ the name used by the administrator to login into the program "
+"in the future."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "Last name\\\\ this name is connected to the employee id."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"Employee id\\\\ this is used to create an employee, who is connected to the "
+"administrative user."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"Contact email address\\\\ is used for questions and comments from the "
+"users. Also this email will receive some internal information from the "
+"roster."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"Administrator password\\\\ the password used by the administrator to login "
+"into the program in the future."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:46
+msgid ""
+"Please register the administrator and click \\menu{Submit}.  The data will "
+"be written to the file \\directory{config/config.php}.  For every user, that "
+"uses the program, there has be be exactly one employee.  \\subsection{First "
+"steps} After submitting the administrator configuration, you will be "
+"forwarded to the login page.  Login with your administrator credentials."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:49
+msgid ""
+"On your first login you will be prompted with the branch management.  Please "
+"create at least one branch. You can reach this page at all times in the menu "
+"\\menu{Administration > Branch Management}."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:51
+msgid ""
+"The next logical step is to setup some more employees in the "
+"\\menu{Administration > Human resource management}."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:53
+msgid ""
+"After all the employees are inserted, you can just start to write rosters "
+"(\\menu{Daily View > Daily input}) or you might create principle rosters for "
+"specific weekdays (\\menu{Daily view > principle roster daily}) or for "
+"distinct employees (\\menu{Employee > Principle roster employee})."
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:64
+msgid "Upgrading"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:64
+msgid ""
+"Until now, there is no automatic update mechanism established.  You can "
+"regularly download release packages from GitHub. Or you can stay in touch "
+"via git:"
+msgstr ""
+
+#. type: lstlisting
+#: documentation_administrator.tex:64
+msgid "git pull origin master"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:64
+msgid ""
+"\\emph{CAVE:} Make sure, that you keep your \\directory{config/config.php}! "
+"It should not be changed by git, because it is listed in the .gitignore file "
+"of this project.  \\section{Configuration} You can manually edit the file "
+"\\directory{config/config.php}.  The default values are:"
+msgstr ""
+
+#. type: verbatim
+#: documentation_administrator.tex:83
+#, no-wrap
+msgid ""
+"'application_name' => 'PDR',\n"
+"'database_management_system' => 'mysql',\n"
+"'database_host' => 'localhost',\n"
+"'database_name' => '',\n"
+"'database_port' => 3306,\n"
+"'database_user' => '',\n"
+"'database_password' => '',\n"
+"'session_secret' => '',\n"
+"'error_reporting' => E_ALL,\n"
+"'display_errors' => 0,\n"
+"'log_errors' => 1,\n"
+"'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',\n"
+"'LC_TIME' => 'C',\n"
+"'timezone' => 'Europe/Berlin',\n"
+"'language' => 'de_DE',\n"
+"'mb_internal_encoding' => 'UTF-8',\n"
+"'contact_email' => '',\n"
+"'hide_disapproved' => FALSE"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:90
+msgid ""
+"Never delete the first two lines! If the file does not start with \"<?php\" "
+"then PHP will not handle it, meaning that anyone can read its content.  "
+"\\menu{Administration > Human resource management}"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:90
+msgid "Maintenance"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:90
+msgid "Issues and Troubleshooting"
+msgstr ""
+
+#. type: chapter{#2}
+#: documentation_developer.tex:7
+msgid "Developer manual"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:7
+msgid "Core development"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:7
+msgid ""
+"All PHP scripts have a common file \\texttt{default.php}, which handles the "
+"default settings. It is placed at ./, which is the "
+"\\texttt{PDR\\_FILE\\_SYSTEM\\_APPLICATION\\_PATH}.  See the file below: "
+"\\lstinputlisting[language=PHP]{../default.php}"
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_developer.tex:39
+msgid "Directory structure"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{config/} Contains the configuration file config.php"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{css/} \\emph{obsolete}, use \\directory{src/css/} instead"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{docs/} This documentation and tools to build it"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{img/} Images used by the program"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{js/} \\emph{obsolete}, use \\directory{src/js/} instead"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{locale/} translation files for gettext, currently only german "
+"(de\\_DE)"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/} Most of the actual source code"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/css} Style Sheets"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/js} JavasScript"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/php/} PHP: Hypertext Preprocessor"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{src/php/classes/} Contains all the class files "
+"class.class\\_name.php"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{src/php/fragments/} parts of bigger pages, may be included via "
+"php require/include or loaded with JavaScript"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{\\textbf{src/php/pages/}} This is the place for the single "
+"views, which the human user will use to look at the roster etc."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/sql/} SQL Database Tables and Triggers"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{tests/} Tests to find errors in the source code; This folder is "
+"listed in .gitignore. Only some files are part of the visible source."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{tmp/} A directy for temporary files. There is no automatic "
+"cleanup yet."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{upload/} The destination for uploaded content. Currently only "
+"specific *.PEP files produced by Awinta ASYS Smart are understood. Those "
+"files contain information about the amount of customers that have been "
+"served in the past."
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_developer.tex:39
+msgid "Coding standards"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:39
+msgid "This project aims to follow some coding style guide."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Please avoid StudlyCaps and camelCase."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"Class constants MUST be declared in all upper case with underscore "
+"separators."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Property names MUST be written in under{\\_}score."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Plain variables and objects are written in all lowercase."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"Array names start with a singe Uppercase letter followed by lowercase "
+"characters."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Method names MUST be written in under{\\_}score."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:45
+msgid "Code MUST use 4 spaces for indenting, not tabs."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:45
+msgid ""
+"Opening braces for classes and functions MUST go on the same line, and "
+"closing braces MUST go on the next line after the body."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:45
+msgid ""
+"Opening braces for control structures SHOULD go on the same line, and "
+"closing braces MUST go on the next line after the body."
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:48
+msgid "Documentation"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:48
+msgid ""
+"This documentation about a programm, app or script is a stub. You can help "
+"this project by expanding it."
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:55
+msgid "Testing"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:55
+msgid "Bug tracker"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:55
+msgid "Translation"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:55
+msgid ""
+"See this article about po4a about the translation of this document: "
+"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html} "
+"\\subsection{Internationalization} Different counties have different laws "
+"regarding pharmacies and employment. They also have different holidays."
+msgstr ""

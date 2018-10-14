@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dienstplan documentation\n"
-"POT-Creation-Date: 2018-10-06 21:14+0200\n"
+"POT-Creation-Date: 2018-10-14 14:40+0200\n"
 "PO-Revision-Date: 2018-10-07 13:15+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: \n"
@@ -374,10 +374,15 @@ msgstr ""
 
 #. type: Plain text
 #: documentation_user.tex:125
+#, fuzzy
+#| msgid ""
+#| "The date can be chosen by direct input. It can also be shifted by one "
+#| "week backwards or forwards by pressing \\keys{\\ctrl + \\shift + $"
+#| "\\rightarrow$} or \\keys{\\ctrl + \\shift + $\\leftarrow$} respectively."
 msgid ""
 "The date can be chosen by direct input. It can also be shifted by one week "
-"backwards or forwards by pressing \\keys{\\ctrl + \\shift + $\\rightarrow$} "
-"or \\keys{\\ctrl + \\shift + $\\leftarrow$} respectively."
+"backwards or forwards by pressing \\keys{\\ctrl + \\shift + \\arrowkeyright} "
+"or \\keys{\\ctrl + \\shift + \\arrowkeyleft} respectively."
 msgstr ""
 "Das Datum kann durch direkte Eingabe ausgewählt werden. Es kann auch um eine "
 "Woche vor oder zurück verschoben werden, indem man \\keys{\\ctrl + \\shift + "
@@ -483,7 +488,9 @@ msgstr ""
 
 #. type: itemize
 #: documentation_user.tex:153
-msgid "attendence of at least one pharmacist at any time (Error)."
+#, fuzzy
+#| msgid "attendence of at least one pharmacist at any time (Error)."
+msgid "attendance of at least one pharmacist at any time (Error)."
 msgstr "Anwesenheit von mindestens einem Apotheker zu jeder Zeit (Fehler)."
 
 #. type: itemize
@@ -561,3 +568,554 @@ msgstr ""
 "Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche "
 "berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber "
 "nicht gezählt. Das Gleiche gilt für Feiertage."
+
+#. type: chapter{#2}
+#: documentation_introduction.tex:9
+msgid "Introduction"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:9
+msgid ""
+"Pharmacy Duty Roster (PDR) is a web application that allows to operate a "
+"duty roster for pharmacies.  PDR started in 2015 as an alternative to a "
+"really simple excel sheet without formulas.  PDR aims to be user-friendly "
+"but at the same time cover all necessary features.  PDR continuously strives "
+"to improve. It is open to your requests and wishes.  I hope it will fulfil "
+"your expectations.  \\section{Getting PDR} The latest release of PDR is "
+"available on \\href{https://github.com/MaMaKow/dienstplan-apotheke/releases/"
+"latest}{GitHub}. GitHub provides the source code as *.zip file or *.tar.gz "
+"ball. Extract the files into a folder."
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:11
+msgid ""
+"Make sure to unpack PDR to a directory, that your webserver has access to. "
+"PHP and the webserver must have read access to all the files and folders. It "
+"also needs write access to the subdirectories upload, tmp and config. You "
+"might want to change the owner of the directory to the webservers user with "
+"e.g.:"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:17
+msgid "You can also clone the repository with git:"
+msgstr ""
+
+#. type: verbatim
+#: documentation_introduction.tex:17 documentation_administrator.tex:9
+#, no-wrap
+msgid "git clone https://github.com/MaMaKow/dienstplan-apotheke.git"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:17
+msgid "See the Administrator manual for details!"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_introduction.tex:22
+msgid "License"
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:22
+msgid "PDR is open source software under the AGPL license."
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:22
+msgid "Copyright (C) 2018 Dr. Martin Mandelkow"
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:27
+msgid ""
+"This program is free software: you can redistribute it and/or modify it "
+"under the terms of the GNU Affero General Public License as published by the "
+"Free Software Foundation, either version 3 of the License, or (at your "
+"option) any later version."
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:32
+msgid ""
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License "
+"for more details."
+msgstr ""
+
+#. type: quote
+#: documentation_introduction.tex:35
+msgid ""
+"You should have received a copy of the GNU Affero General Public License "
+"along with this program.  If not, see <https://www.gnu.org/licenses/>."
+msgstr ""
+
+#. type: Plain text
+#: documentation_introduction.tex:43
+msgid ""
+"Please see the \\href{https://github.com/MaMaKow/dienstplan-apotheke/blob/"
+"master/LICENSE.md}{license file} for details! \\section{Reporting bugs} The "
+"issue tracker is currently located at GitHub.  GitHub requires an account in "
+"order to report bugs or feature requests. If you do not want to create one, "
+"you might send a mail to pdr-issues@martin-mandelkow.de \\section{How to "
+"contribute} Pull requests are desired. If you made changes to PDR and want "
+"to contribute them to the public, you are welcome to open a pull-request on "
+"GitHub or send your changes in any other way."
+msgstr ""
+
+#. type: chapter{#2}
+#: documentation_administrator.tex:5
+msgid "Administrator manual"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:5
+msgid "Installation"
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_administrator.tex:5
+msgid "Getting PDR"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:5
+msgid ""
+"The latest release of PDR is available on \\href{https://github.com/MaMaKow/"
+"dienstplan-apotheke/releases}{GitHub}"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:7
+msgid "You can also get the latest stable version via git:"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:46
+msgid ""
+"The master branch is tested to be stable.  \\subsection{The installer} "
+"\\subsubsection{Introduction} The first page shows some non-technical "
+"information about this program. Click \\menu{Next} to move on.  "
+"\\subsubsection{Welcome} On the second page some technical background "
+"information is given. You are informed about the necessary input data, "
+"required for continuing the installation. Available database management "
+"systems (currently only MySQL) are listed. Finally, you are informed about "
+"the user and password strategy for the database access. Click \\menu{Next} "
+"again, to continue.  \\subsubsection{Requirements} On the next page the "
+"application checks, if all requirements are met. These include a minimum PHP "
+"version, some PHP extensions and support for database connections. Also the "
+"program needs write access to some of its directories.  If problems are "
+"found, then a descriptive error message will be shown. It is not possible to "
+"continue, until all issues are solved.  Click \\menu{Next} again, to "
+"continue.  \\subsubsection{Database configuration} The application now "
+"starts to collect configuration data."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "Database type"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "hostname"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "port (optional)"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"username \\\\An existing database user. The user MUST have the privilege to "
+"create a database. The user SHOULD have the privilege to create a less "
+"privileged user."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"password \\\\The database password of the user. If a new user could be "
+"created, then a new secure random password will be given to the new user."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "database name"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:46
+msgid ""
+"Enter the required data and \\menu{Submit} it.  "
+"\\subsubsection{Administrator configuration} After the database values are "
+"set, some information about the administrator is collected:"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"User name\\\\ the name used by the administrator to login into the program "
+"in the future."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid "Last name\\\\ this name is connected to the employee id."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"Employee id\\\\ this is used to create an employee, who is connected to the "
+"administrative user."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"Contact email address\\\\ is used for questions and comments from the users. "
+"Also this email will receive some internal information from the roster."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:46
+msgid ""
+"Administrator password\\\\ the password used by the administrator to login "
+"into the program in the future."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:46
+msgid ""
+"Please register the administrator and click \\menu{Submit}.  The data will "
+"be written to the file \\directory{config/config.php}.  For every user, that "
+"uses the program, there has be be exactly one employee.  \\subsection{First "
+"steps} After submitting the administrator configuration, you will be "
+"forwarded to the login page.  Login with your administrator credentials."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:49
+msgid ""
+"On your first login you will be prompted with the branch management.  Please "
+"create at least one branch. You can reach this page at all times in the menu "
+"\\menu{Administration > Branch Management}."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:51
+msgid ""
+"The next logical step is to setup some more employees in the "
+"\\menu{Administration > Human resource management}."
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:53
+msgid ""
+"After all the employees are inserted, you can just start to write rosters "
+"(\\menu{Daily View > Daily input}) or you might create principle rosters for "
+"specific weekdays (\\menu{Daily view > principle roster daily}) or for "
+"distinct employees (\\menu{Employee > Principle roster employee})."
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:64
+msgid "Upgrading"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:64
+msgid ""
+"Until now, there is no automatic update mechanism established.  You can "
+"regularly download release packages from GitHub. Or you can stay in touch "
+"via git:"
+msgstr ""
+
+#. type: lstlisting
+#: documentation_administrator.tex:64
+msgid "git pull origin master"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:64
+msgid ""
+"\\emph{CAVE:} Make sure, that you keep your \\directory{config/config.php}! "
+"It should not be changed by git, because it is listed in the .gitignore file "
+"of this project.  \\section{Configuration} You can manually edit the file "
+"\\directory{config/config.php}.  The default values are:"
+msgstr ""
+
+#. type: verbatim
+#: documentation_administrator.tex:83
+#, no-wrap
+msgid ""
+"'application_name' => 'PDR',\n"
+"'database_management_system' => 'mysql',\n"
+"'database_host' => 'localhost',\n"
+"'database_name' => '',\n"
+"'database_port' => 3306,\n"
+"'database_user' => '',\n"
+"'database_password' => '',\n"
+"'session_secret' => '',\n"
+"'error_reporting' => E_ALL,\n"
+"'display_errors' => 0,\n"
+"'log_errors' => 1,\n"
+"'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',\n"
+"'LC_TIME' => 'C',\n"
+"'timezone' => 'Europe/Berlin',\n"
+"'language' => 'de_DE',\n"
+"'mb_internal_encoding' => 'UTF-8',\n"
+"'contact_email' => '',\n"
+"'hide_disapproved' => FALSE"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:90
+msgid ""
+"Never delete the first two lines! If the file does not start with \"<?php\" "
+"then PHP will not handle it, meaning that anyone can read its content.  "
+"\\menu{Administration > Human resource management}"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:90
+msgid "Maintenance"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_administrator.tex:90
+msgid "Issues and Troubleshooting"
+msgstr ""
+
+#. type: chapter{#2}
+#: documentation_developer.tex:7
+#, fuzzy
+#| msgid "User manual"
+msgid "Developer manual"
+msgstr "Benutzerhandbuch"
+
+#. type: section{#2}
+#: documentation_developer.tex:7
+msgid "Core development"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:7
+msgid ""
+"All PHP scripts have a common file \\texttt{default.php}, which handles the "
+"default settings. It is placed at ./, which is the \\texttt{PDR\\_FILE"
+"\\_SYSTEM\\_APPLICATION\\_PATH}.  See the file below: "
+"\\lstinputlisting[language=PHP]{../default.php}"
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_developer.tex:39
+msgid "Directory structure"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{config/} Contains the configuration file config.php"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{css/} \\emph{obsolete}, use \\directory{src/css/} instead"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{docs/} This documentation and tools to build it"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{img/} Images used by the program"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{js/} \\emph{obsolete}, use \\directory{src/js/} instead"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{locale/} translation files for gettext, currently only german (de"
+"\\_DE)"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/} Most of the actual source code"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/css} Style Sheets"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/js} JavasScript"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/php/} PHP: Hypertext Preprocessor"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{src/php/classes/} Contains all the class files class.class"
+"\\_name.php"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{src/php/fragments/} parts of bigger pages, may be included via "
+"php require/include or loaded with JavaScript"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{\\textbf{src/php/pages/}} This is the place for the single "
+"views, which the human user will use to look at the roster etc."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "\\directory{src/sql/} SQL Database Tables and Triggers"
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{tests/} Tests to find errors in the source code; This folder is "
+"listed in .gitignore. Only some files are part of the visible source."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{tmp/} A directy for temporary files. There is no automatic "
+"cleanup yet."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"\\directory{upload/} The destination for uploaded content. Currently only "
+"specific *.PEP files produced by Awinta ASYS Smart are understood. Those "
+"files contain information about the amount of customers that have been "
+"served in the past."
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_developer.tex:39
+msgid "Coding standards"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:39
+msgid "This project aims to follow some coding style guide."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Please avoid StudlyCaps and camelCase."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"Class constants MUST be declared in all upper case with underscore "
+"separators."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Property names MUST be written in under{\\_}score."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Plain variables and objects are written in all lowercase."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid ""
+"Array names start with a singe Uppercase letter followed by lowercase "
+"characters."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:39
+msgid "Method names MUST be written in under{\\_}score."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:45
+msgid "Code MUST use 4 spaces for indenting, not tabs."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:45
+msgid ""
+"Opening braces for classes and functions MUST go on the same line, and "
+"closing braces MUST go on the next line after the body."
+msgstr ""
+
+#. type: itemize
+#: documentation_developer.tex:45
+msgid ""
+"Opening braces for control structures SHOULD go on the same line, and "
+"closing braces MUST go on the next line after the body."
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:48
+msgid "Documentation"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:48
+msgid ""
+"This documentation about a programm, app or script is a stub. You can help "
+"this project by expanding it."
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:55
+msgid "Testing"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:55
+msgid "Bug tracker"
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:55
+msgid "Translation"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:55
+msgid ""
+"See this article about po4a about the translation of this document: "
+"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html} "
+"\\subsection{Internationalization} Different counties have different laws "
+"regarding pharmacies and employment. They also have different holidays."
+msgstr ""
