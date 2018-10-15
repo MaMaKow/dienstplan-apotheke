@@ -107,10 +107,10 @@ foreach (array_keys($Roster) as $date_unix) {
     $Abwesende = absence::read_absentees_from_database($date_sql);
 
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
-    if (isset($Abwesende)) {
+    if (!empty($Abwesende)) {
         $table_foot_html .= build_html_roster_views::build_absentees_column($Abwesende);
     } else {
-        $table_foot_html .= "</td><td>";
+        $table_foot_html .= "<td><!-- Nobody is absent --></td>";
     }
 }
 $table_foot_html .= "</tr>\n";
@@ -140,17 +140,19 @@ echo $main_div_html;
   <p style="page-break-before: always;">&nbsp;</p>\n
   EOF;
  */
-echo "<div id=roster_week_image_div class=image>\n";
-for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-    $date_sql = date('Y-m-d', $date_unix);
-    $Roster = roster::read_roster_from_database($branch_id, $date_sql);
-    $roster_image_bar_plot = new roster_image_bar_plot($Roster, 300, 200);
-    echo "<div class=image_part>\n";
-    echo "<p>" . strftime('%A %x', $date_unix) . "</p>";
-    echo $roster_image_bar_plot->svg_string;
-    echo "</div><!--div class=image_part-->\n";
+if (FALSE === roster::is_empty($Roster)) {
+    echo "<div id=roster_week_image_div class=image>\n";
+    for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
+        $date_sql = date('Y-m-d', $date_unix);
+        $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+        $roster_image_bar_plot = new roster_image_bar_plot($Roster, 300, 200);
+        echo "<div class=image_part>\n";
+        echo "<p>" . strftime('%A %x', $date_unix) . "</p>";
+        echo $roster_image_bar_plot->svg_string;
+        echo "</div><!--div class=image_part-->\n";
+    }
+    echo "</div><!--id=roster_week_image_div-->\n";
 }
-echo "</div><!--id=roster_week_image_div-->\n";
 echo "</div><!--class='main-area no_print'-->\n";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
