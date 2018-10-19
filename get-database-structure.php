@@ -41,7 +41,8 @@ function write_new_table_data() {
         $sql_query = "SHOW CREATE TABLE " . $table_name;
         $sql_result = database_wrapper::instance()->run($sql_query);
         while ($row = $sql_result->fetch(PDO::FETCH_ASSOC)) {
-            $table_structure_create = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
+            $table_structure_create_with_increment = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
+            $table_structure_create = preg_replace('/AUTO_INCREMENT=[0-9]*/', '', $table_structure_create_with_increment);
             if (TRUE === running_on_windows()) {
                 $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
             } else {

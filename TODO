@@ -5,26 +5,6 @@ collaborative-vacation-year.php weird style
 <<<Nachricht<<<
 edit option for overtime
 >>>   >>>
-<<<Nachricht<<<
-Absentees row can be omitted (invisible)
-if there are no absentees at all
->>>   >>>
-
-<<<Nachricht<<<
-saturday rotation must add a warning, if the data is not saved into the database yet.
->>>   >>>
-<<<Nachricht<<<
-Input field for task rotation
->>>   >>>
-
-<<<Nachricht<<<
-rewrite contact form
-perhaps just like the overlay from absence
->>>   >>>
-<<<Nachricht<<<
-add a border to the roster SVG
-make it visible in print
->>>   >>>
 
 <<<Nachricht<<<
 Mitarbeiter selbst tauschen -> Modul bauen
@@ -37,11 +17,6 @@ Wenn ein Dienstplan geändert wird, geht eine Email an alle beteiligten Mitarbei
 + Text mit organisatorischen Informationen
 >>>   >>>
 
-<<<Nachricht<<<
-Es sind folgende Mitarbeiter nicht eingesetzt:
-
-aussschalten, wenn der Mitarbeiter in einem anderen Mandanten eingeteilt ist.
->>>   >>>
 <<<Nachricht<<<
 Alle Stunden und Abwesenheiten mit aktuellstem Datum zuerst.
 
