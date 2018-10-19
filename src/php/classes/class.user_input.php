@@ -394,6 +394,7 @@ abstract class user_input {
             user_input::insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list);
             user_input::insert_changed_entries_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
+            self::send_email_about_changed_roster_to_employees();
         }
         /*
          * This might be a good place to do some maintenance tasks.
@@ -401,6 +402,33 @@ abstract class user_input {
          * But it has to be called on a regular basis when editing the roster.
          */
         new maintenance();
+    }
+
+    /**
+     * Send an email to an employee about a changed roster.
+     *
+     * <p> The email should be send if:
+     *     - A change is less than 14 days ahead
+     *     - The change is not in the past/today
+     *     - No other email has been sent within 24 hours
+     *         - Maybe we should aggregate changes in that case.
+     * </p>
+     * <p> The email should contain:
+     *     - the old roster
+     *     - the new roster
+     *     - one ICS file?
+     *     - a specific comment?
+     * </p>
+     * @todo Notifications can also be directly printed to the user upon login.
+     * @todo Enable an opt-in and an opt-out for this feature!
+     *           - build a real user page for this.
+     * @return boolean
+     */
+    private static function send_email_about_changed_roster_to_employees() {
+        return FALSE;
+        $application_name = $config['application_name'];
+        $recipient = $config['contact_email'];
+        $subject = $application_name . ": " . gettext('Your roster has changed.');
     }
 
 }
