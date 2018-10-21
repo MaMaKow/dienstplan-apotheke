@@ -16,11 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once '../../../default.php';
-
 /*
  * Get a list of all employees:
  */
 $workforce = new workforce();
+
+$sql_query = "SELECT `receive_emails_on_changed_roster` FROM `users` WHERE employee_id = :employee_id";
+//$receive_emails_setting = $result->fetch(PDO::FETCH_OBJ)->receive_emails_on_changed_roster;
+$receive_emails_setting = FALSE;
+
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
@@ -28,32 +32,30 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     <h1><?= sprintf(gettext('User page for user %1s'), $_SESSION['user_name']); ?></h1>
     <form action='' method='POST' id='user_form'></form>
     <fieldset id='email_consent'>
-        <legend>Emails erhalten bei Änderungen des Dienstplanes</legend>
-        <!-- Rectangular switch -->
-        <label class="switch">
-            <input type="checkbox">
-            <span class="slider"></span>
-            <span class="text"></span>
-        </label>
+        <legend><?= gettext('Receive emails when the roster is changed') ?></legend>
+        <?= form_element_builder::build_checkbox_switch('receive_emails_opt_in', $receive_emails_setting); ?>
         <img width="16px" height="16px" src="../../../img/information.svg"
-             title="Bei Änderungen im Dienstplan, die weniger als 2 Wochen in der Zukunft liegen, kann eine Benachrichtigung versandt werden.&#10; Es wird maximal eine Mail pro Tag versandt."
+             title="<?= gettext('Upon changes in the roster that are less than 2 weeks in the future a notification may be sent. A maximum of one mail per day will be sent.'); ?>"
              >
     </fieldset>
     <fieldset id='change_password'>
-        <legend>Passwort ändern</legend>
-        <label>Altes Passwort:<br>
+        <legend><?= gettext('Change password'); ?></legend>
+        <label><?= gettext('Old password'); ?><br>
             <input type="password" name="user_password_old"/>
         </label><br>
-        <label>Neues Passwort:<br>
+        <label><?= gettext('New password'); ?><br>
             <input type="password" minlength="8" name="user_password_new"/>
             <img width="16px" height="16px" src="../../../img/information.svg"
-                 title="Ein sicheres Passwort sollte mindestens 8 Zeichen lang sein und in keinem Wörterbuch stehen."
+                 title="<?= gettext('A secure password should be at least 8 characters long and not listed in any dictionary.') ?>"
                  >
         </label><br>
-        <label>Neues Passwort wiederholen:<br>
+        <label><?= gettext('Repeat new password'); ?><br>
             <input type="password" minlength="8" name="user_password_repetition"/>
         </label><br>
         <input type="password" name="user_id" value="" hidden/>
+    </fieldset>
+    <fieldset>
+        <legend><?= gettext('Privileges'); ?></legend>
     </fieldset>
 </main>
 <?php
