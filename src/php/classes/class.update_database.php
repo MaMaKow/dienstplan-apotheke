@@ -79,4 +79,12 @@ class update_database {
         }
     }
 
+    private function refactor_receive_emails_on_changed_roster() {
+        $database_name = database_wrapper::get_database_name();
+        if (database_wrapper::database_table_exists('users') and ! database_wrapper::database_table_column_exists($database_name, 'users', 'receive_emails_on_changed_roster')) {
+            $sql_query = "ALTER TABLE `users`  ADD `receive_emails_on_changed_roster` BOOLEAN NOT NULL DEFAULT FALSE  AFTER `failed_login_attempt_time`;";
+            database_wrapper::instance()->run($sql_query);
+        }
+    }
+
 }

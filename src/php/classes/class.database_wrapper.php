@@ -31,7 +31,7 @@ class database_wrapper {
     protected $pdo;
     private $database_host;
     private $database_port;
-    private $database_name;
+    private static $database_name;
     private $database_user_name;
     private $database_password;
 
@@ -76,6 +76,17 @@ class database_wrapper {
             self::$instance = new self;
         }
         return self::$instance;
+    }
+
+    /**
+     *  Get the database name
+     *  @return string database_name
+     */
+    public static function get_database_name() {
+        if (self::$instance === null) {
+            return FALSE;
+        }
+        return self::$database_name;
     }
 
     /**
