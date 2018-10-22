@@ -57,6 +57,27 @@ abstract class user_dialog {
         return $html_messages;
     }
 
+    /**
+     * Build the output of errors and warnings.
+     *
+     * The errors are assembled in a text.
+     * Oriented on markdown style
+     *
+     * @return string text with errors.
+     */
+    public static function build_messages_for_cli() {
+        if (empty(self::$Messages)) {
+            return '';
+        }
+        $text_messages = "# Messages" . PHP_EOL;
+        foreach (self::$Messages as $message_array) {
+            $text_messages .= "## " . htmlentities($message_array['type']) . PHP_EOL;
+            $text_messages .= "- " . $message_array['text'] . PHP_EOL;
+            $text_messages .= PHP_EOL;
+        }
+        return $text_messages;
+    }
+
     public static function add_message($text, $type = E_USER_ERROR, $formated_input = FALSE) {
         switch ($type) {
             case E_USER_ERROR:

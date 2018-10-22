@@ -31,7 +31,26 @@ class update_database {
         'Dienstplan' => 'roster',
     );
 
-    public function rename_database_table($table_name_old, $table_name_new) {
+    public function __construct() {
+        /*
+         * Check if update is necessary
+         */
+        $sql_query = 'SELECT `pdr_database_version_hash` FROM pdr_self;';
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $pdr_database_version_hash = $row->pdr_database_version_hash;
+        }
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/database_version_hash.php';
+        if (PDR_DATABASE_VERSION_HASH === $pdr_database_version_hash) {
+            return NULL;
+        }
+        $this->refactor_opening_times_special_table();
+        $this->refactor_absence_table();
+        //$this->refactor_duty_roster_table();
+        $this->refactor_receive_emails_on_changed_roster();
+    }
+
+    private function rename_database_table($table_name_old, $table_name_new) {
         /*
          * The table will be automatically locked during the command.
          *
