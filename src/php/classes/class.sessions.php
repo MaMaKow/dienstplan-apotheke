@@ -96,7 +96,7 @@ class sessions {
         if (!isset($_SESSION['user_employee_id']) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location . "?referrer=" . $request_uri);
-            die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>');
+            die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>' . PHP_EOL);
         }
         $this->keep_alive();
     }
@@ -210,6 +210,12 @@ class sessions {
                     . " failed_login_attempts = 0 "
                     . " WHERE `user_name` = :user_name";
             $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user['user_name']));
+
+            /*
+             * Start another PHP process to do maintenance tasks:
+             */
+            $command = PHP_BINARY . ' background_maintenance.php ' . ' > /dev/null 2>&1 &';
+            exec($command);
 
             if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);

@@ -31,7 +31,7 @@ class database_wrapper {
     protected $pdo;
     private $database_host;
     private $database_port;
-    private static $database_name;
+    private $database_name;
     private $database_user_name;
     private $database_password;
 
@@ -86,7 +86,12 @@ class database_wrapper {
         if (self::$instance === null) {
             return FALSE;
         }
-        return self::$database_name;
+        $sql_query = "SELECT DATABASE() as `database_name` FROM DUAL;"; //On all databases except Oracle FROM DUAL can be omitted.
+        $result = self::$instance->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $database_name = $row->database_name;
+        }
+        return $database_name;
     }
 
     /**
