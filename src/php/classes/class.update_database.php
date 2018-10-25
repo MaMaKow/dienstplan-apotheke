@@ -48,6 +48,13 @@ class update_database {
         $this->refactor_absence_table();
         //$this->refactor_duty_roster_table();
         $this->refactor_receive_emails_on_changed_roster();
+        /*
+         * Write new pdr_database_version_hash into the database:
+         */
+        $sql_query = 'REPLACE INTO `pdr_self` (`pdr_database_version_hash`) VALUES (:pdr_database_version_hash);';
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'pdr_database_version_hash' => PDR_DATABASE_VERSION_HASH
+        ));
     }
 
     private function rename_database_table($table_name_old, $table_name_new) {
