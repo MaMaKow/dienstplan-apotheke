@@ -51,26 +51,26 @@ Currently there is only MySQL supported as a database management system (DBMS).
 The tables are:
 \begin{itemize}
 \item absence (illness, vacation and other kinds of absence)
-\item approval (stores for every day, if the leader officially authorized the roster)
+\item approval (saves for each day if the leader has officially authorized the roster)
 \item branch (information about the main pharmacy and possible branches)
 \item Dienstplan (the actual roster data; start, end, break)
 \item employees (employee data; employee\_id, name, profession, abilities)
 \item employees\_backup (a copy of the employees table with historical data archived)
 \item Feiertage (obsolete)
 \item Grundplan\_roll (not used yet)
-\item Grundplan (the principle roster; start, end, break; used to propose new rosters)
+\item Grundplan (the basic plan; Beginning, end, pause; is used to suggest new rosters)
 \item maintenance (obsolete)
 \item Mandant (obsolete)
 \item Notdienst (dates of emergency services and the employees scheduled to them)
 \item opening\_times\_special (not used yet)
 \item opening\_times (the opening and closing times of the branches, no GUI yet for editing)
-\item pdr\_self (reflecting the state of the application itself)
-\item pep\_month\_day (the relative amount of work between different days in the month)
+\item pdr\_self (reflects the state of the application itself)
+\item pep\_month\_day (the relative amount of work on different days in the month)
 \item pep (the raw amount of work data, hashed to reduce the amount of deleted/ignored entries)
 \item pep\_weekday\_time (the amount of work at different times on different weekdays)
 \item pep\_year\_month (the relative amount of work on different months in the year)
 \item saturday\_rotation (whose turn is it to work on which saturday?)
-\item saturday\_rotation\_teams (who belongs to which team for saturdays rotation?)
+\item saturday\_rotation\_teams (who belongs to which team for saturday's rotation?)
 \item Schulferien (not used yet)
 \item Stunden (overtime archive and balance)
 \item task\_rotation (rotating assignment of employees to a task, e.g. compounding)
@@ -109,4 +109,4 @@ See this article about po4a about the translation of this document:
 \href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}
 
 \subsection{Internationalization}
-Different counties have different laws regarding pharmacies and employment. They also have different holidays.
+Different countries have different laws regarding pharmacies and employment. They also have different holidays.

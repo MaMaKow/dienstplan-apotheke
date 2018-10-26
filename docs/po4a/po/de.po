@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dienstplan documentation\n"
-"POT-Creation-Date: 2018-10-14 14:40+0200\n"
-"PO-Revision-Date: 2018-10-14 23:41+0100\n"
+"POT-Creation-Date: 2018-10-27 00:23+0200\n"
+"PO-Revision-Date: 2018-10-27 00:25+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -1007,17 +1007,17 @@ msgid "Issues and Troubleshooting"
 msgstr "Probleme und Fehlerbehebung"
 
 #. type: chapter{#2}
-#: documentation_developer.tex:7
+#: documentation_developer.tex:3
 msgid "Developer manual"
 msgstr "Entwicklerhandbuch"
 
 #. type: section{#2}
-#: documentation_developer.tex:7
+#: documentation_developer.tex:9
 msgid "Core development"
 msgstr "Kernentwicklung"
 
 #. type: Plain text
-#: documentation_developer.tex:7
+#: documentation_developer.tex:9
 msgid ""
 "All PHP scripts have a common file \\texttt{default.php}, which handles the "
 "default settings. It is placed at ./, which is the \\texttt{PDR\\_FILE"
@@ -1030,41 +1030,41 @@ msgstr ""
 "Datei: \\lstinputlisting[language=PHP]{../default.php}"
 
 #. type: subsection{#2}
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "Directory structure"
 msgstr "Ordnerstruktur"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{config/} Contains the configuration file config.php"
 msgstr "\\directory{config/} Enthält die Konfigurationsdatei config.php"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{css/} \\emph{obsolete}, use \\directory{src/css/} instead"
 msgstr ""
 "\\directory{css/} \\emph{veraltet}, verwenden Sie stattdessen "
 "\\directory{src/css/}"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{docs/} This documentation and tools to build it"
 msgstr "\\directory{docs/} Diese Dokumentation und Werkzeuge, um sie zu bauen"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{img/} Images used by the program"
 msgstr "\\directory{img/} Bilder, die vom Programm verwendet werden"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{js/} \\emph{obsolete}, use \\directory{src/js/} instead"
 msgstr ""
 "\\directory{js/} \\emph{obsolet}, benutzen Sie stattdessen \\directory{src/"
 "js/}"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid ""
 "\\directory{locale/} translation files for gettext, currently only german (de"
 "\\_DE)"
@@ -1073,27 +1073,27 @@ msgstr ""
 "\\_DE)"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{src/} Most of the actual source code"
 msgstr "\\directory{src/} Der Hauptteil des eigentlichen Quellcodes"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{src/css} Style Sheets"
 msgstr "\\directory{src/css} Cascading Style Sheets"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{src/js} JavasScript"
 msgstr "\\directory{src/js} JavasScript"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{src/php/} PHP: Hypertext Preprocessor"
 msgstr "\\directory{src/php/} PHP: Hypertext Preprocessor"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid ""
 "\\directory{src/php/classes/} Contains all the class files class.class"
 "\\_name.php"
@@ -1102,7 +1102,7 @@ msgstr ""
 "php"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid ""
 "\\directory{src/php/fragments/} parts of bigger pages, may be included via "
 "php require/include or loaded with JavaScript"
@@ -1111,7 +1111,7 @@ msgstr ""
 "require/include oder mit JavaScript geladen werden"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid ""
 "\\directory{\\textbf{src/php/pages/}} This is the place for the single "
 "views, which the human user will use to look at the roster etc."
@@ -1121,12 +1121,12 @@ msgstr ""
 "usw. zu sehen."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid "\\directory{src/sql/} SQL Database Tables and Triggers"
 msgstr "\\directory{src/sql/} SQL-Datenbank Tabellen und Trigger"
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid ""
 "\\directory{tests/} Tests to find errors in the source code; This folder is "
 "listed in .gitignore. Only some files are part of the visible source."
@@ -1136,7 +1136,7 @@ msgstr ""
 "Quelle."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid ""
 "\\directory{tmp/} A directy for temporary files. There is no automatic "
 "cleanup yet."
@@ -1145,7 +1145,7 @@ msgstr ""
 "automatische Bereinigung."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:32
 msgid ""
 "\\directory{upload/} The destination for uploaded content. Currently only "
 "specific *.PEP files produced by Awinta ASYS Smart are understood. Those "
@@ -1158,22 +1158,22 @@ msgstr ""
 "die in der Vergangenheit bedient wurden."
 
 #. type: subsection{#2}
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid "Coding standards"
 msgstr "Programmierstil"
 
 #. type: Plain text
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid "This project aims to follow some coding style guide."
 msgstr "Dieses Projekt versucht, einem Programmierstil zu folgen."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid "Please avoid StudlyCaps and camelCase."
 msgstr "Bitte vermeiden Sie StudlyCaps und camelCase (Binnenmajuskel)."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid ""
 "Class constants MUST be declared in all upper case with underscore "
 "separators."
@@ -1182,17 +1182,17 @@ msgstr ""
 "deklariert werden."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid "Property names MUST be written in under{\\_}score."
 msgstr "Eigenschaftsnamen MÜSSEN in Unter_strichen geschrieben werden."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid "Plain variables and objects are written in all lowercase."
 msgstr "Einfache Variablen und Objekte werden in Kleinbuchstaben geschrieben."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid ""
 "Array names start with a singe Uppercase letter followed by lowercase "
 "characters."
@@ -1201,18 +1201,18 @@ msgstr ""
 "Kleinbuchstaben."
 
 #. type: itemize
-#: documentation_developer.tex:39
+#: documentation_developer.tex:42
 msgid "Method names MUST be written in under{\\_}score."
 msgstr "Methodennamen müssen Unter_strichen geschrieben werden."
 
 #. type: itemize
-#: documentation_developer.tex:45
+#: documentation_developer.tex:48
 msgid "Code MUST use 4 spaces for indenting, not tabs."
 msgstr ""
 "Der Code MUSS 4 Leerzeichen zum Einrücken verwenden, keine Tabulatoren."
 
 #. type: itemize
-#: documentation_developer.tex:45
+#: documentation_developer.tex:48
 msgid ""
 "Opening braces for classes and functions MUST go on the same line, and "
 "closing braces MUST go on the next line after the body."
@@ -1222,7 +1222,7 @@ msgstr ""
 "Zeile nach dem Text beginnen."
 
 #. type: itemize
-#: documentation_developer.tex:45
+#: documentation_developer.tex:48
 msgid ""
 "Opening braces for control structures SHOULD go on the same line, and "
 "closing braces MUST go on the next line after the body."
@@ -1231,46 +1231,334 @@ msgstr ""
 "Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten "
 "Zeile nach dem Text beginnen."
 
-#. type: section{#2}
-#: documentation_developer.tex:48
-msgid "Documentation"
-msgstr "Dokumentation"
+#. type: subsection{#2}
+#: documentation_developer.tex:83
+msgid "The database"
+msgstr "Die Datenbank"
 
 #. type: Plain text
-#: documentation_developer.tex:48
+#: documentation_developer.tex:83
 msgid ""
-"This documentation about a programm, app or script is a stub. You can help "
-"this project by expanding it."
+"Currently there is only MySQL supported as a database management system "
+"(DBMS).  The tables are:"
 msgstr ""
-"Diese Dokumentation über ein Programm, eine App oder ein Skript ist "
-"unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie "
-"erweitern."
+"Derzeit wird nur MySQL als Datenbankverwaltungssystem (DBMS) unterstützt. "
+"Die Tabellen sind:"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "absence (illness, vacation and other kinds of absence)"
+msgstr "Abwesenheit (Krankheit, Urlaub und andere Arten von Abwesenheit)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"approval (saves for each day if the leader has officially authorized the "
+"roster)"
+msgstr ""
+"approval (speichert für jeden Tag, ob der Leiter offiziell den Dienstplan "
+"autorisiert hat)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "branch (information about the main pharmacy and possible branches)"
+msgstr "branch (Informationen über die Hauptapotheke und mögliche Filialen)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "Dienstplan (the actual roster data; start, end, break)"
+msgstr "Dienstplan (die tatsächlichen Dienstplandaten; Anfang, Ende, Pause)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "employees (employee data; employee\\_id, name, profession, abilities)"
+msgstr ""
+"employees (Mitarbeiterdaten; Mitarbeiter\\_id, Name, Beruf, Fähigkeiten)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"employees\\_backup (a copy of the employees table with historical data "
+"archived)"
+msgstr ""
+"employees\\_backup (eine Kopie der Mitarbeitertabelle mit archivierten "
+"historischen Daten)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "Feiertage (obsolete)"
+msgstr "Feiertage (obsolet)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "Grundplan\\_roll (not used yet)"
+msgstr "Grundplan\\_roll (noch nicht benutzt)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"Grundplan (the basic plan; Beginning, end, pause; is used to suggest new "
+"rosters)"
+msgstr ""
+"Grundplan (der Grundsatzplan; Anfang, Ende, Pause; wird verwendet, um neue "
+"Dienstpläne vorzuschlagen)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "maintenance (obsolete)"
+msgstr "Wartung (obsolet)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "Mandant (obsolete)"
+msgstr "Mandant (obsolet)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"Notdienst (dates of emergency services and the employees scheduled to them)"
+msgstr ""
+"Notdienst (Daten der Notdienste und der ihnen zugewiesenen Mitarbeiter)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "opening\\_times\\_special (not used yet)"
+msgstr "opening\\_times\\_special (noch nicht benutzt)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"opening\\_times (the opening and closing times of the branches, no GUI yet "
+"for editing)"
+msgstr ""
+"opening\\_times (die Öffnungs- und Schließzeiten der Filialen, noch keine "
+"GUI zur Bearbeitung)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "pdr\\_self (reflects the state of the application itself)"
+msgstr "pdr\\_self (spiegelt den Zustand der Anwendung selbst wider)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"pep\\_month\\_day (the relative amount of work on different days in the "
+"month)"
+msgstr ""
+"pep\\_month\\_day (die relative Menge an Arbeit an verschiedenen Tagen im "
+"Monat)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"pep (the raw amount of work data, hashed to reduce the amount of deleted/"
+"ignored entries)"
+msgstr ""
+"pep (die rohen Daten zur Arbeitsmenge, gehashed, um die Anzahl der "
+"gelöschten / ignorierten Einträge zu reduzieren)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"pep\\_weekday\\_time (the amount of work at different times on different "
+"weekdays)"
+msgstr ""
+"pep\\_weekday\\_time (die Menge der Arbeit zu verschiedenen Zeiten an "
+"verschiedenen Wochentagen)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"pep\\_year\\_month (the relative amount of work on different months in the "
+"year)"
+msgstr ""
+"pep\\_year\\_month (die relative Menge an Arbeit in verschiedenen Monaten im "
+"Jahr)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "saturday\\_rotation (whose turn is it to work on which saturday?)"
+msgstr "saturday\\_rotation (Wer soll an welchem Samstag arbeiten?)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"saturday\\_rotation\\_teams (who belongs to which team for saturday's "
+"rotation?)"
+msgstr ""
+"saturday\\_rotation\\_teams (Wer gehört zu welcher Mannschaft für die "
+"Rotation am Samstag?)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "Schulferien (not used yet)"
+msgstr "Schulferien (noch nicht benutzt)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "Stunden (overtime archive and balance)"
+msgstr "Stunden (Überstundenarchiv und Saldo)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"task\\_rotation (rotating assignment of employees to a task, e.g. "
+"compounding)"
+msgstr ""
+"task\\_rotation (rotierende Zuordnung von Mitarbeitern zu einer Aufgabe, z."
+"B. Rezeptur)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "user\\_email\\_notification\\_cache (not used yet)"
+msgstr "user\\_email\\_notification\\_cache (noch nicht benutzt)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"users\\_lost\\_password\\_token (tokens provided to change a forgotten "
+"password)"
+msgstr ""
+"users\\_lost\\_password\\_token (Token zur Verfügung gestellt, um ein "
+"vergessenes Passwort zu ändern)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "users\\_privileges (the privileges of the user accounts)"
+msgstr "users\\_privileges (die Berechtigungen der Benutzerkonten)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid ""
+"users (the user accounts; there has to be exacly one employee for every user "
+"account; there may be employees without user accounts)"
+msgstr ""
+"users (die Benutzerkonten; Für jeden Benutzeraccount muss genau ein "
+"Mitarbeiter vorhanden sein. Es können Mitarbeiter ohne Benutzerkonten "
+"existieren)"
+
+#. type: itemize
+#: documentation_developer.tex:83
+msgid "Wunschplan (obsolete)"
+msgstr "Wunschplan (obsolet)"
+
+#. type: Plain text
+#: documentation_developer.tex:89
+msgid ""
+"A copy of all the table structures is stored in \\directory{src/sql/}.  The "
+"directory also contains the file \\directory{src/sql/database\\_version"
+"\\_hash.php} which holds a SHA1 hash of all the structures returned by "
+"\\verb|SHOW CREATE TABLE| and \\verb|SHOW CREATE TRIGGER| after some "
+"modification.  The hash is written by \\directory{tests/get-database-"
+"structure.php}, see the details in that file."
+msgstr ""
+"Eine Kopie aller Tabellenstrukturen wird in \\directory{src/sql/} "
+"gespeichert. Das Verzeichnis enthält auch die Datei \\directory{src/sql/"
+"database\\_version\\_hash.php}, die einen SHA1-Hash aller Strukturen "
+"enthält, die von \\verb|SHOW CREATE TABLE|  und \\verb|SHOW CREATE TRIGGER| "
+"nach einigen Änderungen zurückgegeben werden. Der Hash wird von "
+"\\directory{tests/get-database-structure.php} geschrieben, siehe die Details "
+"in jener Datei."
+
+#. type: subsubsection{#2}
+#: documentation_developer.tex:93
+msgid "Maintenance of the database"
+msgstr "Pflege der Datenbank"
+
+#. type: Plain text
+#: documentation_developer.tex:93
+msgid ""
+"There is a class \\emph{update\\_database}.  This class holds a defined set "
+"of MySQL statements that alter the database structure from a known state in "
+"the past to the current state."
+msgstr ""
+"Es gibt eine Klasse \\emph{update\\_database}. Diese Klasse enthält eine "
+"definierte Menge von MySQL-Anweisungen, die die Datenbankstruktur von einem "
+"bekannten Zustand in der Vergangenheit in den aktuellen Zustand versetzen."
+
+#. type: Plain text
+#: documentation_developer.tex:95
+msgid ""
+"This class is not well tested. It might work. It might as well destroy the "
+"whole database."
+msgstr ""
+"Diese Klasse ist nicht gut getestet. Sie könnte funktionieren. Sie könnte "
+"auch die gesamte Datenbank zerstören."
+
+#. type: Plain text
+#: documentation_developer.tex:102
+msgid ""
+"The class \\emph{update\\_database} is called on every login of a user. It "
+"then decides on its own, if any actions have to be taken.  In order to "
+"decide, the hash stored in the file \\directory{database\\_version\\_hash."
+"php} is compared to the hash stored in the database table \\menu{pdr\\_self "
+"> pdr\\_database\\_version\\_hash}.  \\paragraph{Auto healing tables} The "
+"class \\emph{database\\_wrapper} has a function \\emph{create\\_table\\_from"
+"\\_template()} that is able to create missing tables from the structure "
+"information given in \\directory{src/sql/}. It is called if any PDO database "
+"query throws an exception with the code 42S02 and the MySQL error 1146.  "
+"\\section{Documentation} This documentation about a programm, app or script "
+"is a stub. You can help this project by expanding it."
+msgstr ""
+"Die Klasse \\emph{update\\_database} wird bei jeder Anmeldung eines "
+"Benutzers aufgerufen. Sie entscheidet dann selbständig, ob irgendwelche "
+"Maßnahmen ergriffen werden müssen. Um zu entscheiden, wird der in der Datei "
+"\\directory{database\\_version\\_hash.php} gespeicherte Hash mit dem in der "
+"Datenbanktabelle gespeicherten Hash verglichen. \\menu{pdr\\_self > pdr"
+"\\_database\\_version\\_hash}. \\paragraph{Selbstheilende Tabellen} Die "
+"Klasse \\emph{database\\_wrapper} hat eine Funktion \\emph{create\\_table"
+"\\_from\\_template()}, die fehlende Tabellen aus den Strukturinformationen  "
+"in \\directory{src/sql/} erstellen kann. Sie wird aufgerufen, wenn eine PDO-"
+"Datenbankabfrage eine Ausnahme mit dem Code 42S02 und dem MySQL-Fehler 1146 "
+"auslöst. \\section{Dokumentation} Diese Dokumentation über ein Programm, "
+"eine App oder ein Skript ist unvollständig. Sie können dieses Projekt "
+"unterstützen, indem Sie sie erweitern."
 
 #. type: section{#2}
-#: documentation_developer.tex:55
+#: documentation_developer.tex:104
 msgid "Testing"
 msgstr "Testen"
 
 #. type: section{#2}
-#: documentation_developer.tex:55
+#: documentation_developer.tex:106
 msgid "Bug tracker"
 msgstr "Bug Tracker"
 
 #. type: section{#2}
-#: documentation_developer.tex:55
+#: documentation_developer.tex:110
 msgid "Translation"
 msgstr "Übersetzung"
 
 #. type: Plain text
-#: documentation_developer.tex:55
+#: documentation_developer.tex:110
 msgid ""
 "See this article about po4a about the translation of this document: "
-"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html} "
-"\\subsection{Internationalization} Different counties have different laws "
-"regarding pharmacies and employment. They also have different holidays."
+"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}"
 msgstr ""
 "Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments: "
-"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html} "
-"\\subsection{Internationalisierung} Verschiedene Länder haben "
-"unterschiedliche Gesetze bezüglich Apotheken und Beschäftigung. Sie haben "
-"auch unterschiedliche Feiertage."
+"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}"
+
+#. type: subsection{#2}
+#: documentation_developer.tex:112
+msgid "Internationalization"
+msgstr "Internationalisierung"
+
+#. type: Plain text
+#: documentation_developer.tex:112
+msgid ""
+"Different countries have different laws regarding pharmacies and employment. "
+"They also have different holidays."
+msgstr ""
+"Verschiedene Länder haben unterschiedliche Gesetze in Bezug auf Apotheken "
+"und Beschäftigung. Sie haben auch unterschiedliche Feiertage."
+
+#~ msgid "Documentation"
+#~ msgstr "Dokumentation"
+
+#~ msgid ""
+#~ "This documentation about a programm, app or script is a stub. You can "
+#~ "help this project by expanding it."
+#~ msgstr ""
+#~ "Diese Dokumentation über ein Programm, eine App oder ein Skript ist "
+#~ "unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie "
+#~ "erweitern."
