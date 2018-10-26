@@ -2,6 +2,8 @@
 %
 
 \chapter{Entwicklerhandbuch}
+
+
 \section{Kernentwicklung}
 Alle PHP-Skripte laden eine gemeinsame Datei \texttt{default.php}, die die
 Standardeinstellungen vornimmt. Sie befindet sich in ./, welches der
@@ -42,6 +44,7 @@ spezifische *.PEP-Dateien verstanden, die von Awta ASYS Smart erstellt
 wurden. Diese Dateien enthalten Informationen über die Anzahl der Kunden,
 die in der Vergangenheit bedient wurden.
 \end{itemize}
+
 \subsection{Programmierstil}
 Dieses Projekt versucht, einem Programmierstil zu folgen.
 \begin{itemize}
@@ -63,16 +66,93 @@ Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
 Zeile nach dem Text beginnen.
 \end{itemize}
 
-\section{Dokumentation}
-Diese Dokumentation über ein Programm, eine App oder ein Skript ist
+\subsection{Die Datenbank}
+Derzeit wird nur MySQL als Datenbankverwaltungssystem (DBMS)
+unterstützt. Die Tabellen sind:
+\begin{itemize}
+\item Abwesenheit (Krankheit, Urlaub und andere Arten von Abwesenheit)
+\item approval (saves for each day if the leader has officially authorized the
+roster)
+\item branch (Informationen über die Hauptapotheke und mögliche Filialen)
+\item Dienstplan (die tatsächlichen Dienstplandaten; Anfang, Ende, Pause)
+\item employees (Mitarbeiterdaten; Mitarbeiter\_id, Name, Beruf, Fähigkeiten)
+\item employees\_backup (eine Kopie der Mitarbeitertabelle mit archivierten
+historischen Daten)
+\item Feiertage (obsolet)
+\item Grundplan\_roll (noch nicht benutzt)
+\item Grundplan (the basic plan; Beginning, end, pause; is used to suggest new
+rosters)
+\item Wartung (obsolet)
+\item Mandant (obsolet)
+\item Notdienst (Daten der Notdienste und der ihnen zugewiesenen Mitarbeiter)
+\item opening\_times\_special (noch nicht benutzt)
+\item opening\_times (die Öffnungs- und Schließzeiten der Filialen, noch keine GUI
+zur Bearbeitung)
+\item pdr\_self (reflects the state of the application itself)
+\item pep\_month\_day (the relative amount of work on different days in the month)
+\item pep (die rohen Daten zur Arbeitsmenge, gehashed, um die Anzahl der
+gelöschten / ignorierten Einträge zu reduzieren)
+\item pep\_weekday\_time (die Menge der Arbeit zu verschiedenen Zeiten an
+verschiedenen Wochentagen)
+\item pep\_year\_month (die relative Menge an Arbeit in verschiedenen Monaten im
+Jahr)
+\item saturday\_rotation (Wer soll an welchem Samstag arbeiten?)
+\item saturday\_rotation\_teams (who belongs to which team for saturday's
+rotation?)
+\item Schulferien (noch nicht benutzt)
+\item Stunden (Überstundenarchiv und Saldo)
+\item task\_rotation (rotierende Zuordnung von Mitarbeitern zu einer Aufgabe,
+z.B. Rezeptur)
+\item user\_email\_notification\_cache (noch nicht benutzt)
+\item users\_lost\_password\_token (Token zur Verfügung gestellt, um ein
+vergessenes Passwort zu ändern)
+\item users\_privileges (die Berechtigungen der Benutzerkonten)
+\item users (die Benutzerkonten; Für jeden Benutzeraccount muss genau ein
+Mitarbeiter vorhanden sein. Es können Mitarbeiter ohne Benutzerkonten
+existieren)
+\item Wunschplan (obsolet)
+\end{itemize}
+
+
+Eine Kopie aller Tabellenstrukturen wird in \directory{src/sql/}
+gespeichert. Das Verzeichnis enthält auch die Datei
+\directory{src/sql/database\_version\_hash.php}, die einen SHA1-Hash aller
+Strukturen enthält, die von \verb|SHOW CREATE TABLE|  und \verb|SHOW CREATE
+TRIGGER| nach einigen Änderungen zurückgegeben werden. Der Hash wird von
+\directory{tests/get-database-structure.php} geschrieben, siehe die Details
+in jener Datei.
+
+\subsubsection{Pflege der Datenbank}
+Es gibt eine Klasse \emph{update\_database}. Diese Klasse enthält eine
+definierte Menge von MySQL-Anweisungen, die die Datenbankstruktur von einem
+bekannten Zustand in der Vergangenheit in den aktuellen Zustand versetzen.
+
+Diese Klasse ist nicht gut getestet. Sie könnte funktionieren. Sie könnte
+auch die gesamte Datenbank zerstören.
+
+Die Klasse \emph{update\_database} wird bei jeder Anmeldung eines Benutzers
+aufgerufen. Sie entscheidet dann selbständig, ob irgendwelche Maßnahmen
+ergriffen werden müssen. Um zu entscheiden, wird der in der Datei
+\directory{database\_version\_hash.php} gespeicherte Hash mit dem in der
+Datenbanktabelle gespeicherten Hash verglichen. \menu{pdr\_self >
+pdr\_database\_version\_hash}. \paragraph{Selbstheilende Tabellen} Die
+Klasse \emph{database\_wrapper} hat eine Funktion
+\emph{create\_table\_from\_template()}, die fehlende Tabellen aus den
+Strukturinformationen  in \directory{src/sql/} erstellen kann. Sie wird
+aufgerufen, wenn eine PDO-Datenbankabfrage eine Ausnahme mit dem Code 42S02
+und dem MySQL-Fehler 1146 auslöst. \section{Dokumentation} Diese
+Dokumentation über ein Programm, eine App oder ein Skript ist
 unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie
 erweitern.
 
 \section{Testen}
+
 \section{Bug Tracker}
+
 \section{Übersetzung}
 Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments:
-\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
-\subsection{Internationalisierung} Verschiedene Länder haben
-unterschiedliche Gesetze bezüglich Apotheken und Beschäftigung. Sie haben
-auch unterschiedliche Feiertage.
+\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}
+
+\subsection{Internationalisierung}
+Different countries have different laws regarding pharmacies and
+employment. They also have different holidays.
