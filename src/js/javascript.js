@@ -1,5 +1,6 @@
 "use strict";
 var http_server_application_path = get_http_server_application_path();
+
 function gettext(string_to_translate) {
     var locale = document.getElementsByTagName("head")[0].lang;
     if (pdr_translations && pdr_translations[locale] && pdr_translations[locale][string_to_translate]) {
@@ -13,6 +14,7 @@ function gettext(string_to_translate) {
         return string_to_translate;
     }
 }
+
 function get_http_server_application_path() {
     var javascript_folder_path_depth = -3;
     /*
@@ -28,6 +30,7 @@ function get_http_server_application_path() {
     test_http_server_application_path(http_server_application_path);
     return http_server_application_path;
 }
+
 function test_http_server_application_path(http_server_application_path) {
     var xml_http_request = new XMLHttpRequest();
     xml_http_request.onreadystatechange = function () {
@@ -46,6 +49,54 @@ function query_webserver_without_response(url) {
     var xml_http_request = new XMLHttpRequest();
     xml_http_request.open("GET", url, true);
     xml_http_request.send();
+}
+
+function auto_submit_form(form) {
+    var form_element = null;
+    var form_elements = null;
+    form_elements = form.elements;
+    var xml_http_request = new XMLHttpRequest();
+    var parameter_string = 'form=' + form.id;
+
+    xml_http_request.open("POST", http_server_application_path + "src/php/fragments/ajax.php", true);
+    xml_http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    for (var i = 0; i < form_elements.length; i++) {
+        form_element = form_elements[i];
+        if (!form_element.classList.contains('auto_submit')) {
+            continue;
+        }
+        if ("checkbox" === form_element.type) {
+            parameter_string += '&' + form_element.name + '=' + form_element.checked;
+        } else {
+            parameter_string += '&' + form_element.name + '=' + form_element.value;
+        }
+    }
+    xml_http_request.send(parameter_string);
+    xml_http_request.form_element = form_element;
+    xml_http_request.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            if ("success" !== xml_http_request.responseText) {
+                /*
+                 * If a warning_element already exists, we remove it to only show the new information:
+                 */
+                var existing_warning_element = document.getElementById("warning_about_failure");
+                if (existing_warning_element) {
+                    existing_warning_element.parentElement.removeChild(existing_warning_element);
+                }
+                /*
+                 * Create a warning if an error occurs:
+                 */
+                var message = gettext('There was an error while querying the database.') + ' '
+                        + gettext('Please see the error log for more details!');
+
+                var warning_element = document.createElement('p');
+                warning_element.setAttribute("id", "warning_about_failure");
+                warning_element.innerHTML = message;
+                form_element.parentNode.parentNode.insertBefore(warning_element, form_element.parentNode.nextSibling);
+            }
+            return false;
+        }
+    };
 }
 
 //This function is called by grundplan-vk-in.php
