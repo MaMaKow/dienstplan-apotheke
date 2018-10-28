@@ -42,8 +42,12 @@ class update_database {
         }
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/database_version_hash.php';
         if (PDR_DATABASE_VERSION_HASH === $pdr_database_version_hash) {
+            /*
+             * No need to update the database
+             */
             return NULL;
         }
+        error_log('Performing update of the database.' . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         $this->refactor_opening_times_special_table();
         $this->refactor_absence_table();
         //$this->refactor_duty_roster_table();
