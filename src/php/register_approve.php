@@ -29,8 +29,8 @@ if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT
     //Get information about the user:
     $sql_query = "SELECT * FROM users WHERE `employee_id` = :employee_id";
     $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $approve_id));
-    $User = $statement->fetch();
-    send_mail_about_registration_approval($User["user_name"], $User["email"]);
+    $user = $statement->fetch(PDO::FETCH_OBJ);
+    send_mail_about_registration_approval($user->user_name, $user->email);
 } elseif ($disapprove_id = filter_input(INPUT_POST, 'disapprove', FILTER_SANITIZE_NUMBER_INT)) {
     $sql_query = "UPDATE `users` SET `status` = 'blocked' WHERE `employee_id` = :employee_id";
     $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $disapprove_id));
@@ -41,10 +41,10 @@ $result = database_wrapper::instance()->run($sql_query);
 if ($result->rowCount() > 0) {
     echo "<H1>Inaktive Benutzer</H1>";
     echo "<form method='POST' id='register_approve'>";
-    while ($User = $result->fetch()) {
-        echo "<p>" . $User["user_name"] . ", VK " . $User["employee_id"] . ", " . $User["email"] . ", erstellt: " . $User["created_at"]
-        . " <button type='submit' form='register_approve' name=approve value='" . $User["employee_id"] . "' title='Benutzer bestätigen'>Bestätigen</button>"
-        . " <button type='submit' form='register_approve' name=disapprove value=" . $User["employee_id"] . " title='Benutzer löschen'>Löschen</button>"
+    while ($user = $result->fetch(PDO::FETCH_OBJ)) {
+        echo "<p>" . $user->user_name . ", VK " . $user->employee_id . ", " . $user->email . ", erstellt: " . $user->created_at
+        . " <button type='submit' form='register_approve' name=approve value='" . $user->employee_id . "' title='Benutzer bestätigen'>Bestätigen</button>"
+        . " <button type='submit' form='register_approve' name=disapprove value=" . $user->employee_id . " title='Benutzer löschen'>Löschen</button>"
         . "</p>";
     }
     echo "</form>";
