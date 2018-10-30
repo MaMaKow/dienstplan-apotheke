@@ -56,7 +56,9 @@ class iCalendar {
             $same_employee_count = array();
             foreach ($Roster_day_array as $roster_object) {
                 if (!isset($roster_object->employee_id)) {
-                    //Ignore fields without data.
+                    /*
+                     * Ignore fields without data:
+                     */
                     continue;
                 }
                 /*
@@ -104,8 +106,10 @@ class iCalendar {
         $text_ics .= "DTSTAMP:" . gmdate('Ymd\THis\Z') . "\r\n";
         $text_ics .= "LAST-MODIFIED:" . gmdate('Ymd\THis\Z') . "\r\n";
         $text_ics .= "ORGANIZER;CN=$branch_manager:MAILTO:$administrator_email\r\n";
-        //$text_ics .= "DTSTART;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstbeginn . "\r\n";
-        //$text_ics .= "DTEND;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstende . "\r\n";
+        /*
+          $text_ics .= "DTSTART;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstbeginn . "\r\n";
+          $text_ics .= "DTEND;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstende . "\r\n";
+         */
         $text_ics .= "DTSTART:" . date('Ymd', $date_unix) . 'T' . $duty_start_string . "\r\n";
         $text_ics .= "DTEND:" . date('Ymd', $date_unix) . 'T' . $duty_end_string . "\r\n";
         $text_ics .= "SUMMARY:$branch_name\n";
@@ -200,6 +204,29 @@ class iCalendar {
         $time_int_utc = $time_int - $timezone_offset_in_seconds;
         $time_string_utc = gmdate('His\Z', $time_int_utc);
         return $time_string_utc;
+    }
+
+    public static function build_ics_roster_cancelled($roster_item_object) {
+        /**
+         * @var int $same_employee_count is part of the UID of each VEVENT.
+         * @todo <p>
+         * If we really want to work with iCalendar, then a real unique identifier might be a totally good thing to have.
+         * Perhaps it could be a new primary key on the roster table.
+         * Also entries would not be deleted, but rather marked as CANCELLED.
+          </p>
+         */
+        $same_employee_count = 0;
+        $text_ics = "";
+        $text_ics .= "BEGIN:VCALENDAR\r\n";
+        $text_ics .= "VERSION:2.0\r\n";
+        $text_ics .= "PRODID:-//MaMaKow/martin-mandelkow.de//PDR//DE\r\n";
+        $text_ics .= "BEGIN:VEVENT\r\n";
+        $text_ics .= "STATUS:CANCELLED\r\n";
+        $text_ics .= iCalendar::build_ics_roster_employee_head($roster_item_object, $same_employee_count);
+        $text_ics .= iCalendar::build_ics_roster_employee_description($roster_item_object);
+        $text_ics .= "END:VEVENT\r\n";
+        $text_ics .= "END:VCALENDAR\r\n";
+        return $text_ics;
     }
 
 }

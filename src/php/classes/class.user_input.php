@@ -27,6 +27,8 @@ abstract class user_input {
      * TODO: all methods in this class which start with "old_" have to be reviewed.
      */
 
+    public static $mail_array;
+
     public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_STRING, $default_value = null) {
         $List_of_input_sources = array(INPUT_POST, INPUT_GET, INPUT_COOKIE);
         foreach ($List_of_input_sources as $input_source) {
@@ -394,7 +396,7 @@ abstract class user_input {
             user_input::insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list);
             user_input::insert_changed_entries_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
-            self::send_email_about_changed_roster_to_employees();
+            self::write_email_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);
         }
         /*
          * This might be a good place to do some maintenance tasks.
@@ -422,13 +424,102 @@ abstract class user_input {
      * @todo Notifications can also be directly printed to the user upon login.
      * @todo Enable an opt-in and an opt-out for this feature!
      *           - build a real user page for this.
+     * @todo Make this email thing a new class. It is big enough.
      * @return boolean
      */
-    private static function send_email_about_changed_roster_to_employees() {
-        return FALSE;
-        $application_name = $config['application_name'];
-        $recipient = $config['contact_email'];
-        $subject = $application_name . ": " . gettext('Your roster has changed.');
+    private static function write_email_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list) {
+        global $workforce;
+        foreach ($Roster as $date_unix => $Roster_day_array) {
+            foreach ($Roster_day_array as $roster_item_object) {
+                if (!empty($Inserted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Inserted_roster_employee_id_list[$date_unix])) {
+                    $context_string = gettext("You have been added to the roster.");
+                    $message = $roster_item_object->to_email_message_string($context_string);
+                    $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
+                    $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
+                    self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                }
+                if (!empty($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                    $context_string = gettext("Your roster has changed.");
+                    $message .= $roster_item_object->to_email_message_string($context_string);
+                    $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
+                    $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
+                    self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                }
+            }
+        }
+        foreach ($Roster_old as $date_unix => $Roster_day_array) {
+            foreach ($Roster_day_array as $roster_item_object) {
+                if (in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
+                    $message = sprintf(gettext('Dear %1s,'), $workforce->List_of_employees[$roster_item_object->employee_id]->full_name) . PHP_EOL . PHP_EOL;
+                    $message .= sprintf(gettext('You are not in the roster anymore on %1s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
+                    $message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
+                    $ics_file = iCalendar::build_ics_roster_cancelled($roster_item_object);
+                    self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                }
+            }
+        }
+    }
+
+    private static function save_email_about_changed_roster_to_database($employee_id, $date_sql, $message, $ics_file) {
+        /*
+         * TODO: Do not send mail directly.
+         *     Save it to the database, aggregate it, check it for plausibility, send it later.
+         */
+        $sql_query = "INSERT INTO `user_email_notification_cache` SET "
+                . " `employee_id` = :employee_id, "
+                . " `date` = :date, "
+                . " `notification_text` = :notification_text, "
+                . " `notification_ics_file` = :notification_ics_file "
+        ;
+        database_wrapper::instance()->run($sql_query, array(
+            'employee_id' => $employee_id,
+            'date' => $date_sql,
+            'notification_text' => $message,
+            'notification_ics_file' => $ics_file,
+        ));
+        /*
+         * Testing the email sending:
+         */
+        self::send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file);
+    }
+
+    private static function send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file) {
+        global $config;
+        /*
+         * Define header:
+         */
+        $header = "";
+        $header .= 'From: ' . $config['contact_email'] . "\r\n";
+        $header .= 'Reply-To: ' . $config['contact_email'] . "\r\n";
+        $header .= "MIME-Version: 1.0" . "\r\n";
+        $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+        //$header .= "Content-type: text/plain; charset=UTF-8;" . "\r\n";
+        $random_hash = md5(time());
+        $attachment_filename = "calendar.ics";
+        $attachment_content = chunk_split(base64_encode($ics_file));
+        $header .= "Content-Type: multipart/mixed; boundary=\"" . $random_hash . "\"\r\n\r\n";
+
+        $nmessage = "--" . $random_hash . "\r\n";
+        $nmessage .= "Content-type:text/plain; charset=iso-8859-1\r\n";
+        $nmessage .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+        $nmessage .= $message . "\r\n\r\n";
+        $nmessage .= "--" . $random_hash . "\r\n";
+        $nmessage .= "Content-Type: application/octet-stream; name=\"" . $attachment_filename . "\"\r\n";
+        $nmessage .= "Content-Transfer-Encoding: base64\r\n";
+        $nmessage .= "Content-Disposition: attachment; filename=\"" . $attachment_filename . "\"\r\n\r\n";
+        $nmessage .= $attachment_content . "\r\n\r\n";
+        $nmessage .= "--" . $random_hash . "--";
+
+        $recipient = $config['contact_email']; //TODO: This will be the users mail address.
+        $subject = $config['application_name'] . ": " . gettext('Your roster has changed.');
+        /*
+         * error_log(PHP_EOL . $message);
+         */
+        $mail_result = mail($recipient, $subject, $nmessage, $header);
+        return $mail_result;
+        /*
+         * https://stackoverflow.com/questions/12301358/send-attachments-with-php-mail
+         */
     }
 
 }
