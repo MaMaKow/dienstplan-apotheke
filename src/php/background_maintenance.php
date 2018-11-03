@@ -22,6 +22,18 @@
  * It might be called only upon login() of a random user for example.
  * It is the responsibility of the classes to check if there is work to do and how much.
  */
+chdir(dirname(__DIR__, 2));
+if ('cli' !== PHP_SAPI) {
+    /*
+     * see https://stackoverflow.com/a/25967493/2323627 for more options to test this.
+     */
+    die('This file may only be run from the command line. You tried to run from: ' . PHP_SAPI . '.');
+}
+session_start();
+$_SESSION['user_employee_id'] = 999;
+$_SESSION['user_name'] = 'internal_non_user';
+require_once 'default.php';
+session_destroy();
 new update_database();
 new maintenance();
 //new auto_upgrader();

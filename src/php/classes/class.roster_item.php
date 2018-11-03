@@ -181,7 +181,10 @@ class roster_item {
 
     public function to_email_message_string($context_string) {
         global $List_of_branch_objects, $workforce;
-        $message = sprintf(gettext("Dear %1s,"), $workforce->List_of_employees[$this->employee_id]->full_name) . PHP_EOL . PHP_EOL;
+        /*
+         * The following part is added upon aggregation:
+         * $message = sprintf(gettext("Dear %1s,"), $workforce->List_of_employees[$this->employee_id]->full_name) . PHP_EOL . PHP_EOL;
+         */
         $message .= gettext('Date');
         $message .= ":";
         $message .= PHP_EOL;
@@ -194,12 +197,17 @@ class roster_item {
         $message .= PHP_EOL;
         $message .= sprintf(gettext("From %1s to %2s"), $this->duty_start_sql, $this->duty_end_sql);
         $message .= PHP_EOL;
-        $message .= gettext('Start and end of lunch break');
-        $message .= ":";
-        $message .= PHP_EOL;
-        $message .= sprintf(gettext("From %1s to %2s"), $this->break_start_sql, $this->break_end_sql);
-        $message .= PHP_EOL;
-        $message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
+        if (!empty($this->break_start_sql) and ! empty($this->break_end_sql)) {
+            $message .= gettext('Start and end of lunch break');
+            $message .= ":";
+            $message .= PHP_EOL;
+            $message .= sprintf(gettext("From %1s to %2s"), $this->break_start_sql, $this->break_end_sql);
+            $message .= PHP_EOL;
+        }
+        /*
+         * The following part is added upon aggregation:
+         * $message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
+         */
 
         return $message;
     }

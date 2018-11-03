@@ -25,12 +25,19 @@
 class maintenance {
 
     /**
-     *
+     * @var int MAINTENANCE_PERIOD_IN_SECONDS the minimum time between two maintenance executions
+     */
+    const MAINTENANCE_PERIOD_IN_SECONDS = PDR_ONE_DAY_IN_SECONDS;
+
+    /**
      * @var int <p>unix time stamp of the last execution time of the maintenance functions</p>
      */
     private $last_execution = 0;
 
     public function __construct() {
+        /*
+         * Check, if it is necessary to do any maintenance:
+         */
         $sql_query = "SELECT UNIX_TIMESTAMP(`last_execution`) as `last_execution_unix` from `maintenance`";
         $result = database_wrapper::instance()->run($sql_query);
         $row = $result->fetch(PDO::FETCH_OBJ);
@@ -40,12 +47,44 @@ class maintenance {
             $sql_query = "INSERT INTO `maintenance` SET `last_execution` =  FROM_UNIXTIME(:time)";
             database_wrapper::instance()->run($sql_query, array('time' => time()));
         }
-        if ($this->last_execution < time() - PDR_ONE_DAY_IN_SECONDS) {
-            error_log('Performing general maintenance.' . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
+        if ($this->last_execution < time() - self::MAINTENANCE_PERIOD_IN_SECONDS) {
+            $message = date('Y-m-d') . ': ' . 'Performing general maintenance.' . PHP_EOL;
+            error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
+            /*
+             * TODO: build a rotation for the log file.
+             * Check agains a maximum size.
+             * If the size is big, or the file is old, rotate it.
+             * Keep some of the older versions.
+             * Delete the others.
+             */
+            /*
+             * user_dialog_email:
+             */
+            $workforce = new workforce();
+            $user_dialog_email = new user_dialog_email();
+            $user_dialog_email->clean_up_user_email_notification_cache();
+            $user_dialog_email->aggregate_messages_about_changed_roster_to_employees($workforce);
+            /*
+             * Cleanup of database tables:
+             */
             $this->cleanup_absence();
             $this->cleanup_overtime();
+            /*
+             * __destruct():
+             */
+            /*
+             * TODO: Can we delete the ", array('time' => time())" and change the SQL to:
+             *     "UPDATE `maintenance` SET `last_execution` = NOW()"
+             *     ? We do not actually need prepared statements then.
+             */
             $sql_query = "UPDATE `maintenance` SET `last_execution` = FROM_UNIXTIME(:time)";
             database_wrapper::instance()->run($sql_query, array('time' => time()));
+            $message = date('Y-m-d') . ': ' . 'Done with general maintenance.' . PHP_EOL;
+            error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
+        } else {
+            $message = date('Y-m-d') . ': ' . 'Nothing to do for general maintenance.' . PHP_EOL;
+            $message .= $this->last_execution . ' < ' . time() - self::MAINTENANCE_PERIOD_IN_SECONDS . PHP_EOL;
+            error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         }
     }
 

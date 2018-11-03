@@ -214,8 +214,9 @@ class sessions {
             /*
              * Start another PHP process to do maintenance tasks:
              */
-            $command = PHP_BINARY . ' background_maintenance.php ' . ' > /dev/null 2>&1 &';
+            $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php' . ' > ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log 2>&1 &';
             exec($command);
+
 
             if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
@@ -240,7 +241,7 @@ class sessions {
         return FALSE;
     }
 
-    public function logout() {
+    public static function logout() {
         if (session_start() and session_destroy()) {
             echo "Logout erfolgreich";
         }

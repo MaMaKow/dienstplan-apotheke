@@ -47,7 +47,8 @@ class update_database {
              */
             return NULL;
         }
-        error_log('Performing update of the database.' . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
+        $message = date('Y-m-d') . ': ' . 'Performing update of the database.' . PHP_EOL;
+        error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         $this->refactor_opening_times_special_table();
         $this->refactor_absence_table();
         //$this->refactor_duty_roster_table();

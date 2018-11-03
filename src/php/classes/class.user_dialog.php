@@ -78,7 +78,18 @@ abstract class user_dialog {
         return $text_messages;
     }
 
-    public static function add_message($text, $type = E_USER_ERROR, $formated_input = FALSE) {
+    /**
+     * Add a message to the static array user_dialog::$Messages
+     *
+     * @param string $text The error/warning/information text to display.
+     * @param int $type <p>A predefined constant:
+     * 256 = E_USER_ERROR
+     * 512 = E_USER_WARNING
+     * 1024 = E_USER_NOTICE
+     * </p>
+     * @param bool $allow_formatted_input If set to TRUE, the $text is not parsed by htmlentities($text), which allows it to contain HTML text formatting.
+     */
+    public static function add_message($text, $type = E_USER_ERROR, $allow_formatted_input = FALSE) {
         switch ($type) {
             case E_USER_ERROR:
                 $type_string = 'error';
@@ -92,7 +103,7 @@ abstract class user_dialog {
             default :
                 throw new Exception('$type must be E_USER_ERROR, E_USER_NOTICE or E_USER_WARNING but was: ' . $type);
         }
-        if ($formated_input) {
+        if ($allow_formatted_input) {
             self::$Messages[] = array('text' => '<pre>' . $text . '</pre>', 'type' => $type_string);
             return TRUE;
         }
@@ -167,7 +178,7 @@ abstract class user_dialog {
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('File') . " ________\n";
-        $message .= $trace[0]['file'];
+        $message .= $trace[1]['file'];
         $message .= $paragraph_separator;
 
         /* $message .= "________ " . gettext('Trace') . " ________\n";
