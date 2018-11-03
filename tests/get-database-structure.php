@@ -26,6 +26,7 @@ session_start();
 $_SESSION['user_employee_id'] = 999;
 $_SESSION['user_name'] = 'internal_non_user';
 require "default.php";
+session_destroy();
 /**
  * In order to follow updates to the database structure, a hash on all the tables and triggers is made and stored.
  *
