@@ -1,4 +1,3 @@
-
 \chapter{Developer manual}
 
 
@@ -26,7 +25,7 @@ See the file below:
     \item \directory{src/sql/} SQL Database Tables and Triggers
     \end{itemize}
 \item \directory{tests/} Tests to find errors in the source code; This folder is listed in .gitignore. Only some files are part of the visible source.
-\item \directory{tmp/} A directy for temporary files. There is no automatic cleanup yet.
+\item \directory{tmp/} A directory for temporary files. There is no automatic cleanup yet.
 \item \directory{upload/} The destination for uploaded content. Currently only specific *.PEP files produced by Awinta ASYS Smart are understood. Those files contain information about the amount of customers that have been served in the past.
 \end{itemize}
 
@@ -45,6 +44,7 @@ This project aims to follow some coding style guide.
 \item Opening braces for control structures SHOULD go on the same line, and closing
 braces MUST go on the next line after the body.
 \end{itemize}
+Disk space is not rare anymore. IDEs are helping with autocomplete. There is no need to abbreviate stuff. Please use long terms like \lstinline|user_email_notification_cache| instead of \lstinline|usr_ml_ntfcn_ca| or \lstinline|u_e_n_c|. 
 
 \subsection{The database}
 Currently there is only MySQL supported as a database management system (DBMS).
@@ -95,18 +95,27 @@ This class is not well tested. It might work. It might as well destroy the whole
 
 The class \emph{update\_database} is called on every login of a user. It then decides on its own, if any actions have to be taken.
 In order to decide, the hash stored in the file \directory{database\_version\_hash.php} is compared to the hash stored in the database table \menu{pdr\_self > pdr\_database\_version\_hash}.
+
 \paragraph{Auto healing tables}
 The class \emph{database\_wrapper} has a function \emph{create\_table\_from\_template()} that is able to create missing tables from the structure information given in \directory{src/sql/}. It is called if any PDO database query throws an exception with the code 42S02 and the MySQL error 1146.
+
+
 \section{Documentation}
 This documentation about a programm, app or script is a stub. You can help this project by expanding it.
 
+
 \section{Testing}
 
+
 \section{Bug tracker}
+Bugs and Issues are tracked at GitHub \url{https://github.com/MaMaKow/dienstplan-apotheke/issues}
+
 
 \section{Translation}
+Translations are handled with gettext().
+
 See this article about po4a about the translation of this document:
-\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}
+\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
 
 \subsection{Internationalization}
 Different countries have different laws regarding pharmacies and employment. They also have different holidays.

@@ -1,33 +1,45 @@
 % This file was generated with po4a. Translate the source file.
 %
 \chapter{Administratorhandbuch}
+
 \section{Installation}\label{sec:installation}
+
 \subsection{PDR finden}
 Die neueste Version von PDR ist verfügbar unter
 \href{https://github.com/MaMaKow/dienstplan-apotheke/releases}{GitHub}
 
 Sie können auch die neueste stabile Version über Git erhalten:
-\begin{verbatim}
+\begin{lstlisting}
 git clone https://github.com/MaMaKow/dienstplan-apotheke.git
-\end{verbatim}
-Der Master-Zweig ist auf Stabilität getestet. \subsection{Das
-Installationsprogramm} \subsubsection{Einführung} Die erste Seite zeigt
-einige nicht-technische Informationen über dieses Programm. Klicken Sie auf
-\menu{Weiter}, um fortzufahren. \subsubsection{Willkommen} Auf der zweiten
-Seite sind einige technische Hintergrundinformationen angegeben. Sie werden
-über die notwendigen Eingabedaten informiert, die für die Fortsetzung der
-Installation benötigt werden. Verfügbare Datenbank-Management-Systeme
-(derzeit nur MySQL) sind aufgelistet. Abschließend werden Sie über die
-Benutzer- und Passwortstrategie für den Datenbankzugriff informiert. Klicken
-Sie erneut auf \menu{Weiter}, um fortzufahren. \subsubsection{Anforderungen}
+\end{lstlisting}
+Der master Zweig ist auf Stabilität geprüft.
+
+\subsection{Die Installationsroutine}
+
+\subsubsection{Einführung}
+Auf der ersten Seite finden Sie einige nicht-technische Informationen zu
+diesem Programm. Klicken Sie auf \menu{Next}, um weiterzugehen.
+
+\subsubsection{Willkommen}
+Auf der zweiten Seite sind einige technische Hintergrundinformationen
+gegeben. Sie werden über die für die Fortführung der Installation
+erforderlichen Eingangsdaten informiert. Die verfügbaren
+Datenbankverwaltungssysteme (derzeit nur MySQL) werden
+aufgelistet. Schließlich werden Sie über die Nutzer-und Passwortstrategie
+für den Datenbankzugriff informiert. Klicken Sie erneut auf \menu{Next}, um
+fortzufahren.
+
+\subsubsection{Anforderungen}
 Auf der nächsten Seite prüft die Anwendung, ob alle Voraussetzungen erfüllt
-sind. Dazu gehören eine PHP-Mindestversion, einige PHP-Erweiterungen und
-Unterstützung für Datenbankverbindungen. Außerdem benötigt das Programm
-Schreibzugriff auf einige seiner Verzeichnisse. Wenn Probleme gefunden
+sind. Dazu gehören eine minimale PHP-Version, einige PHP-Erweiterungen und
+die Unterstützung für Datenbankverbindungen. Das Programm benötigt
+Schreibzugriff auf einige seiner Verzeichnisse.  Wenn Probleme gefunden
 werden, wird eine beschreibende Fehlermeldung angezeigt. Es ist nicht
-möglich fortzufahren, bis alle Probleme gelöst sind. Klicken Sie erneut auf
-\menu{Weiter}, um fortzufahren. \subsubsection{Datenbankkonfiguration} Die
-Anwendung beginnt nun, Konfigurationsdaten zu sammeln.
+möglich, weiterzumachen, bis alle Probleme gelöst sind.  Klicken Sie auf
+\menu{Next}, um fortzufahren.
+
+\subsubsection{Datenbankkonfiguration}
+Die Anwendung beginnt nun mit der Erhebung von Konfigurationsdaten.
 \begin{itemize}
 \item Datenbanktyp
 \item Hostname
@@ -40,19 +52,21 @@ erstellt werden konnte, wird dem neuen Benutzer ein neues sicheres
 zufälliges Passwort gegeben.
 \item Name der Datenbank
 \end{itemize}
-Geben Sie die erforderlichen Daten ein und \menu{Senden} sie. \subsubsection
-{Administratorkonfiguration} Nachdem die Datenbankwerte festgelegt wurden,
-werden einige Informationen zum Administrator gesammelt:
+Geben Sie die erforderlichen Daten ein und klicken Sie \menu{Absenden}.
+
+\subsubsection{Administrative Konfiguration}
+Nachdem die Datenbankwerte festgelegt wurden, werden einige Informationen
+zum Administrator gesammelt:
 \begin{itemize}
-\item Benutzername \\ Der Name, mit dem der Administrator sich in Zukunft im
+    \item Benutzername \\ Der Name, mit dem der Administrator sich in Zukunft im
 Programm anmeldet. 
-\item Nachname \\ Dieser Name ist mit der Mitarbeiter-ID verbunden.
-\item Mitarbeiter-ID \\ Diese wird verwendet, um einen Mitarbeiter zu erstellen,
+    \item Nachname \\ Dieser Name ist mit der Mitarbeiter-ID verbunden.
+    \item Mitarbeiter-ID \\ Diese wird verwendet, um einen Mitarbeiter zu erstellen,
 der mit dem Benutzer mit Administratorrechten verbunden ist.
-\item Die Kontakt-E-Mail-Adresse \\ wird für Fragen und Kommentare von Benutzern
+    \item Die Kontakt-E-Mail-Adresse \\ wird für Fragen und Kommentare von Benutzern
 verwendet. Diese E-Mail erhält auch einige interne Informationen aus dem
 Dienstplan.
-\item Administrator-Passwort \\ das Passwort, das der Administrator verwendet, um
+    \item Administrator-Passwort \\ das Passwort, das der Administrator verwendet, um
 sich in Zukunft am Programm anzumelden. 
 \end{itemize}
 Bitte registrieren Sie den Administrator und klicken Sie auf
@@ -77,6 +91,7 @@ können Grundpläne erstellen für bestimmte Wochentage (\menu{ Tagesansicht >
 Grundplan Tagesansicht}) oder für unterschiedliche Mitarbeiter
 (\menu{Mitarbeiter > Grundplan Mitarbeiter}).
 
+
 \section{Aktualisierung}
 Bis jetzt gibt es keinen automatischen Update-Mechanismus. Sie können
 regelmäßig Release-Pakete von GitHub herunterladen. Oder Sie können über Git
@@ -86,35 +101,75 @@ git pull origin master
 \end{lstlisting}
 \emph{CAVE:} Stellen Sie sicher, dass Sie Ihr \directory{config/config.php}
 behalten! Es sollte nicht von Git geändert werden, da es in der
-.gitigore-Datei dieses Projekts aufgeführt ist. \section{Konfiguration} Sie
-können die Datei \directory{config / config.php} manuell bearbeiten. Die
+.gitigore-Datei dieses Projekts aufgeführt ist.
+
+
+\section{Konfiguration}
+Sie können die Datei \directory{config/config.php} manuell bearbeiten.  Die
 Standardwerte sind:
-\begin{verbatim}
-'application_name' => 'PDR',
-'database_management_system' => 'mysql',
-'database_host' => 'localhost',
-'database_name' => '',
-'database_port' => 3306,
-'database_user' => '',
-'database_password' => '',
-'session_secret' => '',
-'error_reporting' => E_ALL,
-'display_errors' => 0,
-'log_errors' => 1,
-'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
-'LC_TIME' => 'C',
-'timezone' => 'Europe/Berlin',
-'language' => 'de_DE',
-'mb_internal_encoding' => 'UTF-8',
-'contact_email' => '',
-'hide_disapproved' => FALSE
-\end{verbatim}
+\begin{lstlisting}
+<?php
+
+$config = array( 'application_name' => 'PDR', 'database_management_system'
+=> 'mysql', 'database_host' => 'localhost', 'database_name' => '',
+'database_port' => 3306, 'database_user' => '', 'database_password' => '',
+'session_secret' => '', 'error_reporting' => E_ALL, 'display_errors' => 0,
+'log_errors' => 1, 'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH
+. 'error.log', 'LC_TIME' => 'C', 'timezone' => 'Europe/Berlin', 'language'
+=> 'de_DE', 'mb_internal_encoding' => 'UTF-8', 'contact_email' => '',
+'hide_disapproved' => FALSE, );
+\end{lstlisting}
 
 
-Löschen Sie niemals die ersten zwei Zeilen! Wenn die Datei nicht mit "<?php"
-beginnt, wird PHP sie nicht verarbeiten, was bedeutet, dass jeder ihren
-Inhalt lesen kann. \menu{Administration > Personalverwaltung}
+Löschen Sie niemals die ersten zwei Zeilen! Wenn die Datei nicht mit
+\lstinline|<?php| beginnt, wird PHP sie nicht verarbeiten, was bedeutet,
+dass jeder ihren Inhalt lesen kann. 
+
+
 \section{Wartung}
+Die Datei  \directory{src/php/background\_maintenance.php} wird bei jedem
+Login eines beliebigen Benutzers aufgerufen.  Es wird eine Instanz der
+folgenden Klassen erzeugen:
+\begin{itemize}
+    \item Wartung
+    \item update\_database
+    \end{itemize}
+
+\subsection{Klasse maintenance}
+Die Methoden, die in der Klassen maintenance enthalten sind, werden nur dann
+aufgerufen, wenn die letzte Ausführung mindestens
+\lstinline|MAINTENANCE_PERIOD_IN_SECONDS| her ist.
+\lstinline|MAINTENANCE_PERIOD_IN_SECONDS| ist auf einmal am Tag eingestellt.
+
+Die Methode
+\lstinline|user_dialog_email->aggregate_messages_about_changed_roster_to_employees()|
+wird dazu aufgerufen, E-Mails an Mitarbeiter zu senden, deren Dienstplan
+geändert wurde.
+
+Die Methode  \lstinline|maintenance->cleanup_overtime()| tut noch
+nichts. Sie soll zum Säubern von Überstunden bestehender Mitarbeiter
+eingesetzt werden, welche vor dem Eintritt in das Unternehmen eingetragen
+wurden.
+
+Die Methode  \lstinline|maintenance->cleanup_absence()| tut noch nichts. Sie
+soll zur Säuberung von Abwesenheiten bestehender Mitarbeiter eingesetzt
+werden, welche vor dem Eintritt in das Unternehmen eingetragen wurden.
+
+
+\subsection{Klasse update\_database}
+Bevor die Klasse update\_database eine ihrer Methoden ausführt, prüft sie,
+ob sich die offizielle Datenbankstruktur seit der letzten Aktualisierung
+geändert hat.  Sie vergleicht den pdr\_database\_version\_hash aus der
+Tabelle pdr\_self in der Datenbank mit dem Wert
+\lstinline|PDR_DATABASE_VERSION_HASH| In der Datei
+\directory{src/php/database\_version\_hash.php}
+
+Die Klasse sollte jede SQL-Abfrage enthalten, die notwendig ist, um eine
+bestehende Datenbank in die neue Struktur zu überführen, ohne Daten zu
+verlieren.
+
+
 \section{Probleme und Fehlerbehebung}
-
-
+Fragen werden bei GitHub
+\url{https:/github.com/MaKow/dienstplan-apotheke/issues} bearbeitet. Ich
+versuche, jede Frage innerhalb von 3 Tagen zu beantworten.
