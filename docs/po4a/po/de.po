@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dienstplan documentation\n"
-"POT-Creation-Date: 2018-10-27 00:23+0200\n"
-"PO-Revision-Date: 2018-10-27 00:25+0100\n"
+"POT-Creation-Date: 2018-11-04 22:18+0100\n"
+"PO-Revision-Date: 2018-11-04 22:04+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -562,37 +562,47 @@ msgstr ""
 "berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber "
 "nicht gezählt. Das Gleiche gilt für Feiertage."
 
-#. type: chapter{#2}
-#: documentation_introduction.tex:9
+#. type: subsubsection{#2}
+#: documentation_introduction.tex:7 documentation_administrator.tex:18
 msgid "Introduction"
 msgstr "Einführung"
 
 #. type: Plain text
-#: documentation_introduction.tex:9
+#: documentation_introduction.tex:7
 msgid ""
 "Pharmacy Duty Roster (PDR) is a web application that allows to operate a "
 "duty roster for pharmacies.  PDR started in 2015 as an alternative to a "
 "really simple excel sheet without formulas.  PDR aims to be user-friendly "
 "but at the same time cover all necessary features.  PDR continuously strives "
 "to improve. It is open to your requests and wishes.  I hope it will fulfil "
-"your expectations.  \\section{Getting PDR} The latest release of PDR is "
-"available on \\href{https://github.com/MaMaKow/dienstplan-apotheke/releases/"
-"latest}{GitHub}. GitHub provides the source code as *.zip file or *.tar.gz "
-"ball. Extract the files into a folder."
+"your expectations."
 msgstr ""
 "Pharmacy Duty Roster (PDR) ist eine Webanwendung, die es ermöglicht, einen "
 "Dienstplan für Apotheken zu führen. PDR startete 2015 als Alternative zu "
 "einer wirklich einfachen Excel-Tabelle ohne Formeln. PDR möchte "
 "benutzerfreundlich sein und gleichzeitig alle notwendigen Funktionen "
 "abdecken. PDR ist ständig bestrebt, sich zu verbessern. Es ist offen für "
-"Ihre Anfragen und Wünsche. Ich hoffe, es wird Ihre Erwartungen erfüllen. "
-"\\section{PDR abrufen} Die neueste Version von PDR ist unter \\href{https://"
-"github.com/MaMaKow/dienstplan-apotheke/releases/latest}{GitHub} verfügbar. "
-"GitHub stellt den Quellcode als *.zip Datei oder *.tar.gz Datei zur "
-"Verfügung. Extrahieren Sie die Dateien in einen Ordner."
+"Ihre Anfragen und Wünsche. Ich hoffe, es wird Ihre Erwartungen erfüllen."
+
+#. type: subsection{#2}
+#: documentation_introduction.tex:10 documentation_administrator.tex:7
+msgid "Getting PDR"
+msgstr "PDR finden"
 
 #. type: Plain text
-#: documentation_introduction.tex:11
+#: documentation_introduction.tex:10
+msgid ""
+"The latest release of PDR is available on \\href{https://github.com/MaMaKow/"
+"dienstplan-apotheke/releases/latest}{GitHub}. GitHub provides the source "
+"code as *.zip file or *.tar.gz ball. Extract the files into a folder."
+msgstr ""
+"Die neueste Version von PDR ist verfügbar unter \\href{https://github.com/"
+"MaMaKow/dienstplan-apotheke/releases}{GitHub}. GitHub stellt den Quellcode "
+"als *.zip-Datei oder *.tar.gz Ball zur Verfügung. Extrahieren Sie die "
+"Dateien in einen Ordner."
+
+#. type: Plain text
+#: documentation_introduction.tex:12
 msgid ""
 "Make sure to unpack PDR to a directory, that your webserver has access to. "
 "PHP and the webserver must have read access to all the files and folders. It "
@@ -603,42 +613,46 @@ msgstr ""
 "Stellen Sie sicher, dass Sie PDR in ein Verzeichnis entpacken, auf das Ihr "
 "Webserver zugreifen kann. PHP und der Webserver müssen Lesezugriff auf alle "
 "Dateien und Ordner haben. Es benötigt auch Schreibzugriff auf die "
-"Unterverzeichnisse upload, tmp und config. Möglicherweise möchten Sie "
+"Unterverzeichnisse upload, tmp und config. Möglicherweise möchten Sie den "
 "Webserver-Benutzer zum Besitzer des Verzeichnisses machen mit z. B .:"
 
+#. type: lstlisting
+#: documentation_introduction.tex:16
+msgid "sudo chown -R www-data:www-data /var/www/html/pdr/"
+msgstr ""
+
 #. type: Plain text
-#: documentation_introduction.tex:17
+#: documentation_introduction.tex:22
 msgid "You can also clone the repository with git:"
 msgstr "Sie können das Repository auch mit git klonen:"
 
-#. type: verbatim
-#: documentation_introduction.tex:17 documentation_administrator.tex:9
-#, no-wrap
+#. type: lstlisting
+#: documentation_introduction.tex:22 documentation_administrator.tex:13
 msgid "git clone https://github.com/MaMaKow/dienstplan-apotheke.git"
 msgstr "git clone https://github.com/MaMaKow/dienstplan-apotheke.git"
 
 #. type: Plain text
-#: documentation_introduction.tex:17
+#: documentation_introduction.tex:22
 msgid "See the Administrator manual for details!"
 msgstr "Details finden Sie im Administratorhandbuch!"
 
 #. type: section{#2}
-#: documentation_introduction.tex:22
+#: documentation_introduction.tex:27
 msgid "License"
 msgstr "Lizenz"
 
 #. type: Plain text
-#: documentation_introduction.tex:22
+#: documentation_introduction.tex:27
 msgid "PDR is open source software under the AGPL license."
 msgstr "PDR ist Open-Source-Software unter der AGPL-Lizenz."
 
 #. type: quote
-#: documentation_introduction.tex:22
+#: documentation_introduction.tex:27
 msgid "Copyright (C) 2018 Dr. Martin Mandelkow"
 msgstr "Copyright (C) 2018 Dr. Martin Mandelkow"
 
 #. type: quote
-#: documentation_introduction.tex:27
+#: documentation_introduction.tex:32
 msgid ""
 "This program is free software: you can redistribute it and/or modify it "
 "under the terms of the GNU Affero General Public License as published by the "
@@ -651,7 +665,7 @@ msgstr ""
 "späteren Version, weitergeben und / oder modifizieren."
 
 #. type: quote
-#: documentation_introduction.tex:32
+#: documentation_introduction.tex:37
 msgid ""
 "This program is distributed in the hope that it will be useful, but WITHOUT "
 "ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
@@ -664,7 +678,7 @@ msgstr ""
 "Weitere Informationen finden Sie in der GNU Affero General Public License."
 
 #. type: quote
-#: documentation_introduction.tex:35
+#: documentation_introduction.tex:40
 msgid ""
 "You should have received a copy of the GNU Affero General Public License "
 "along with this program.  If not, see <https://www.gnu.org/licenses/>."
@@ -677,41 +691,69 @@ msgstr ""
 #: documentation_introduction.tex:43
 msgid ""
 "Please see the \\href{https://github.com/MaMaKow/dienstplan-apotheke/blob/"
-"master/LICENSE.md}{license file} for details! \\section{Reporting bugs} The "
-"issue tracker is currently located at GitHub.  GitHub requires an account in "
-"order to report bugs or feature requests. If you do not want to create one, "
-"you might send a mail to pdr-issues@martin-mandelkow.de \\section{How to "
-"contribute} Pull requests are desired. If you made changes to PDR and want "
-"to contribute them to the public, you are welcome to open a pull-request on "
-"GitHub or send your changes in any other way."
+"master/LICENSE.md}{license file} for details!"
 msgstr ""
-"Details finden Sie in der \\href{https://github.com/MaMaKow/dienstplan-"
-"apotheke/blob/master/LICENSE.md}{Lizenzdatei}. \\section{Fehler melden} Der "
-"Issue Tracker befindet sich derzeit auf GitHub. GitHub verlangt einen "
-"Account, um Fehler oder Feature Requests zu melden. Wenn Sie keines "
-"erstellen möchten, senden Sie eine E-Mail an pdr-issues@martin-mandelkow.de "
-"\\section{Wie kann ich dazu beitragen?} Pull-Requests sind erwünscht. Wenn "
-"Sie Änderungen an PDR vorgenommen haben und diese für die Öffentlichkeit "
-"bereitstellen möchten, können Sie gerne einen Pull-Request auf GitHub öffnen "
-"oder Ihre Änderungen auf andere Weise senden."
+"Weitere Informationen finden Sie in der \\href{https://github.com/MaMaKow/"
+"dienstplan-apotheke/releases}{Lizenzdatei}."
+
+#. type: section{#2}
+#: documentation_introduction.tex:47
+msgid "Reporting bugs"
+msgstr "Fehler melden"
+
+#. type: Plain text
+#: documentation_introduction.tex:47
+msgid ""
+"The issue tracker is currently located at GitHub \\url{https://github.com/"
+"MaMaKow/dienstplan-apotheke/issues}.  GitHub requires an account in order to "
+"report bugs or feature requests. If you do not want to create one, you might "
+"send a mail to \\href{mailto:pdr-issues@martin-mandelkow.de}{pdr-"
+"issues@martin-mandelkow.de}"
+msgstr ""
+"Der Bugtracker befindet sich derzeit bei GitHub \\url{https://github.com/"
+"MaMaKow/dienstplan-apotheke/issues}.  GitHub benötigt ein Konto, um Fehler "
+"oder Feature-Anfragen zu melden. Wenn Sie keinen Account erstellen wollen, "
+"können Sie eine E-Mail an \\href{mailto:pdr-issues@martin-mandelkow.de}{pdr-"
+"issues@martin-mandelkow.de} senden."
+
+#. type: section{#2}
+#: documentation_introduction.tex:50
+msgid "How to contribute"
+msgstr "Wie Sie einen Beitrag leisten können"
+
+#. type: Plain text
+#: documentation_introduction.tex:50
+msgid ""
+"Pull requests are desired. If you made changes to PDR and want to contribute "
+"them to the public, you are welcome to open a pull-request on GitHub or send "
+"your changes in any other way."
+msgstr ""
+"Pull requests sind erwünscht. Wenn Sie Änderungen an PDR vorgenommen haben "
+"und diese der Öffentlichkeit beisteuern möchten, können Sie einen Pull "
+"requests auf GitHub öffnen oder Ihre Änderungen auf andere Weise senden."
+
+#. type: Plain text
+#: documentation_introduction.tex:51
+msgid ""
+"You might as well use \\lstinline|git send-email| and send patches to "
+"\\href{mailto:pdr-discuss@martin-mandelkow.de}{pdr-discuss@martin-mandelkow."
+"de}"
+msgstr ""
+"Sie könnten auch  \\lstinline |git send-email| Und Patches an \\href{mailto:"
+"pdr-discuss@martin-mandelkow.de}{pdr-discuss@martin-mandelkow.de} senden"
 
 #. type: chapter{#2}
-#: documentation_administrator.tex:5
+#: documentation_administrator.tex:2
 msgid "Administrator manual"
 msgstr "Administratorhandbuch"
 
 #. type: section{#2}
-#: documentation_administrator.tex:5
+#: documentation_administrator.tex:4
 msgid "Installation"
 msgstr "Installation"
 
-#. type: subsection{#2}
-#: documentation_administrator.tex:5
-msgid "Getting PDR"
-msgstr "PDR finden"
-
 #. type: Plain text
-#: documentation_administrator.tex:5
+#: documentation_administrator.tex:7
 msgid ""
 "The latest release of PDR is available on \\href{https://github.com/MaMaKow/"
 "dienstplan-apotheke/releases}{GitHub}"
@@ -720,67 +762,101 @@ msgstr ""
 "MaMaKow/dienstplan-apotheke/releases}{GitHub}"
 
 #. type: Plain text
-#: documentation_administrator.tex:7
+#: documentation_administrator.tex:13
 msgid "You can also get the latest stable version via git:"
 msgstr "Sie können auch die neueste stabile Version über Git erhalten:"
 
 #. type: Plain text
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:13
+msgid "The master branch is tested to be stable."
+msgstr "Der master Zweig ist auf Stabilität geprüft."
+
+#. type: subsection{#2}
+#: documentation_administrator.tex:15
+msgid "The installer"
+msgstr "Die Installationsroutine"
+
+#. type: Plain text
+#: documentation_administrator.tex:18
 msgid ""
-"The master branch is tested to be stable.  \\subsection{The installer} "
-"\\subsubsection{Introduction} The first page shows some non-technical "
-"information about this program. Click \\menu{Next} to move on.  "
-"\\subsubsection{Welcome} On the second page some technical background "
-"information is given. You are informed about the necessary input data, "
-"required for continuing the installation. Available database management "
-"systems (currently only MySQL) are listed. Finally, you are informed about "
-"the user and password strategy for the database access. Click \\menu{Next} "
-"again, to continue.  \\subsubsection{Requirements} On the next page the "
-"application checks, if all requirements are met. These include a minimum PHP "
-"version, some PHP extensions and support for database connections. Also the "
-"program needs write access to some of its directories.  If problems are "
-"found, then a descriptive error message will be shown. It is not possible to "
-"continue, until all issues are solved.  Click \\menu{Next} again, to "
-"continue.  \\subsubsection{Database configuration} The application now "
-"starts to collect configuration data."
+"The first page shows some non-technical information about this program. "
+"Click \\menu{Next} to move on."
 msgstr ""
-"Der Master-Zweig ist auf Stabilität getestet. \\subsection{Das "
-"Installationsprogramm} \\subsubsection{Einführung} Die erste Seite zeigt "
-"einige nicht-technische Informationen über dieses Programm. Klicken Sie auf "
-"\\menu{Weiter}, um fortzufahren. \\subsubsection{Willkommen} Auf der zweiten "
-"Seite sind einige technische Hintergrundinformationen angegeben. Sie werden "
-"über die notwendigen Eingabedaten informiert, die für die Fortsetzung der "
-"Installation benötigt werden. Verfügbare Datenbank-Management-Systeme "
-"(derzeit nur MySQL) sind aufgelistet. Abschließend werden Sie über die "
-"Benutzer- und Passwortstrategie für den Datenbankzugriff informiert. Klicken "
-"Sie erneut auf \\menu{Weiter}, um fortzufahren. "
-"\\subsubsection{Anforderungen} Auf der nächsten Seite prüft die Anwendung, "
-"ob alle Voraussetzungen erfüllt sind. Dazu gehören eine PHP-Mindestversion, "
-"einige PHP-Erweiterungen und Unterstützung für Datenbankverbindungen. "
-"Außerdem benötigt das Programm Schreibzugriff auf einige seiner "
-"Verzeichnisse. Wenn Probleme gefunden werden, wird eine beschreibende "
-"Fehlermeldung angezeigt. Es ist nicht möglich fortzufahren, bis alle "
-"Probleme gelöst sind. Klicken Sie erneut auf \\menu{Weiter}, um "
-"fortzufahren. \\subsubsection{Datenbankkonfiguration} Die Anwendung beginnt "
-"nun, Konfigurationsdaten zu sammeln."
+"Auf der ersten Seite finden Sie einige nicht-technische Informationen zu "
+"diesem Programm. Klicken Sie auf \\menu{Next}, um weiterzugehen."
+
+#. type: subsubsection{#2}
+#: documentation_administrator.tex:21
+msgid "Welcome"
+msgstr "Willkommen"
+
+#. type: Plain text
+#: documentation_administrator.tex:21
+msgid ""
+"On the second page some technical background information is given. You are "
+"informed about the necessary input data, required for continuing the "
+"installation. Available database management systems (currently only MySQL) "
+"are listed. Finally, you are informed about the user and password strategy "
+"for the database access. Click \\menu{Next} again, to continue."
+msgstr ""
+"Auf der zweiten Seite sind einige technische Hintergrundinformationen "
+"gegeben. Sie werden über die für die Fortführung der Installation "
+"erforderlichen Eingangsdaten informiert. Die verfügbaren "
+"Datenbankverwaltungssysteme (derzeit nur MySQL) werden aufgelistet. "
+"Schließlich werden Sie über die Nutzer-und Passwortstrategie für den "
+"Datenbankzugriff informiert. Klicken Sie erneut auf \\menu{Next}, um "
+"fortzufahren."
+
+#. type: subsubsection{#2}
+#: documentation_administrator.tex:26
+msgid "Requirements"
+msgstr "Anforderungen"
+
+#. type: Plain text
+#: documentation_administrator.tex:26
+msgid ""
+"On the next page the application checks, if all requirements are met. These "
+"include a minimum PHP version, some PHP extensions and support for database "
+"connections. Also the program needs write access to some of its "
+"directories.  If problems are found, then a descriptive error message will "
+"be shown. It is not possible to continue, until all issues are solved.  "
+"Click \\menu{Next} again, to continue."
+msgstr ""
+"Auf der nächsten Seite prüft die Anwendung, ob alle Voraussetzungen erfüllt "
+"sind. Dazu gehören eine minimale PHP-Version, einige PHP-Erweiterungen und "
+"die Unterstützung für Datenbankverbindungen. Das Programm benötigt "
+"Schreibzugriff auf einige seiner Verzeichnisse.  Wenn Probleme gefunden "
+"werden, wird eine beschreibende Fehlermeldung angezeigt. Es ist nicht "
+"möglich, weiterzumachen, bis alle Probleme gelöst sind.  Klicken Sie auf "
+"\\menu{Next}, um fortzufahren."
+
+#. type: subsubsection{#2}
+#: documentation_administrator.tex:38
+msgid "Database configuration"
+msgstr "Datenbankkonfiguration"
+
+#. type: Plain text
+#: documentation_administrator.tex:38
+msgid "The application now starts to collect configuration data."
+msgstr "Die Anwendung beginnt nun mit der Erhebung von Konfigurationsdaten."
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:38
 msgid "Database type"
 msgstr "Datenbanktyp"
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:38
 msgid "hostname"
 msgstr "Hostname"
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:38
 msgid "port (optional)"
 msgstr "Port (optional)"
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:38
 msgid ""
 "username \\\\An existing database user. The user MUST have the privilege to "
 "create a database. The user SHOULD have the privilege to create a less "
@@ -791,7 +867,7 @@ msgstr ""
 "Privileg haben, einen weniger privilegierten Benutzer zu erstellen."
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:38
 msgid ""
 "password \\\\The database password of the user. If a new user could be "
 "created, then a new secure random password will be given to the new user."
@@ -801,23 +877,32 @@ msgstr ""
 "zufälliges Passwort gegeben."
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:38
 msgid "database name"
 msgstr "Name der Datenbank"
 
 #. type: Plain text
-#: documentation_administrator.tex:46
-msgid ""
-"Enter the required data and \\menu{Submit} it.  "
-"\\subsubsection{Administrator configuration} After the database values are "
-"set, some information about the administrator is collected:"
+#: documentation_administrator.tex:38
+msgid "Enter the required data and \\menu{Submit} it."
 msgstr ""
-"Geben Sie die erforderlichen Daten ein und \\menu{Senden} sie. "
-"\\subsubsection {Administratorkonfiguration} Nachdem die Datenbankwerte "
-"festgelegt wurden, werden einige Informationen zum Administrator gesammelt:"
+"Geben Sie die erforderlichen Daten ein und klicken Sie \\menu{Absenden}."
+
+#. type: subsubsection{#2}
+#: documentation_administrator.tex:54
+msgid "Administrator configuration"
+msgstr "Administrative Konfiguration"
+
+#. type: Plain text
+#: documentation_administrator.tex:54
+msgid ""
+"After the database values are set, some information about the administrator "
+"is collected:"
+msgstr ""
+"Nachdem die Datenbankwerte festgelegt wurden, werden einige Informationen "
+"zum Administrator gesammelt:"
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:54
 msgid ""
 "User name\\\\ the name used by the administrator to login into the program "
 "in the future."
@@ -826,12 +911,12 @@ msgstr ""
 "Programm anmeldet."
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:54
 msgid "Last name\\\\ this name is connected to the employee id."
 msgstr "Nachname \\\\ Dieser Name ist mit der Mitarbeiter-ID verbunden."
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:54
 msgid ""
 "Employee id\\\\ this is used to create an employee, who is connected to the "
 "administrative user."
@@ -840,7 +925,7 @@ msgstr ""
 "der mit dem Benutzer mit Administratorrechten verbunden ist."
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:54
 msgid ""
 "Contact email address\\\\ is used for questions and comments from the users. "
 "Also this email will receive some internal information from the roster."
@@ -850,7 +935,7 @@ msgstr ""
 "Dienstplan."
 
 #. type: itemize
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:54
 msgid ""
 "Administrator password\\\\ the password used by the administrator to login "
 "into the program in the future."
@@ -859,7 +944,7 @@ msgstr ""
 "um sich in Zukunft am Programm anzumelden."
 
 #. type: Plain text
-#: documentation_administrator.tex:46
+#: documentation_administrator.tex:54
 msgid ""
 "Please register the administrator and click \\menu{Submit}.  The data will "
 "be written to the file \\directory{config/config.php}.  For every user, that "
@@ -875,7 +960,7 @@ msgstr ""
 "Melden Sie sich mit Ihren Administrator-Anmeldeinformationen an."
 
 #. type: Plain text
-#: documentation_administrator.tex:49
+#: documentation_administrator.tex:57
 msgid ""
 "On your first login you will be prompted with the branch management.  Please "
 "create at least one branch. You can reach this page at all times in the menu "
@@ -886,7 +971,7 @@ msgstr ""
 "jederzeit über das Menü \\menu{Administration > Filialverwaltung}."
 
 #. type: Plain text
-#: documentation_administrator.tex:51
+#: documentation_administrator.tex:59
 msgid ""
 "The next logical step is to setup some more employees in the "
 "\\menu{Administration > Human resource management}."
@@ -895,7 +980,7 @@ msgstr ""
 "Mitarbeiter in \\menu{Administration > Personalverwaltung}."
 
 #. type: Plain text
-#: documentation_administrator.tex:53
+#: documentation_administrator.tex:61
 msgid ""
 "After all the employees are inserted, you can just start to write rosters "
 "(\\menu{Daily View > Daily input}) or you might create principle rosters for "
@@ -909,12 +994,12 @@ msgstr ""
 "(\\menu{Mitarbeiter > Grundplan Mitarbeiter})."
 
 #. type: section{#2}
-#: documentation_administrator.tex:64
+#: documentation_administrator.tex:70
 msgid "Upgrading"
 msgstr "Aktualisierung"
 
 #. type: Plain text
-#: documentation_administrator.tex:64
+#: documentation_administrator.tex:70
 msgid ""
 "Until now, there is no automatic update mechanism established.  You can "
 "regularly download release packages from GitHub. Or you can stay in touch "
@@ -925,99 +1010,210 @@ msgstr ""
 "in Kontakt bleiben:"
 
 #. type: lstlisting
-#: documentation_administrator.tex:64
+#: documentation_administrator.tex:70
 msgid "git pull origin master"
 msgstr "git pull origin master"
 
 #. type: Plain text
-#: documentation_administrator.tex:64
+#: documentation_administrator.tex:70
 msgid ""
 "\\emph{CAVE:} Make sure, that you keep your \\directory{config/config.php}! "
 "It should not be changed by git, because it is listed in the .gitignore file "
-"of this project.  \\section{Configuration} You can manually edit the file "
-"\\directory{config/config.php}.  The default values are:"
+"of this project."
 msgstr ""
 "\\emph{CAVE:} Stellen Sie sicher, dass Sie Ihr \\directory{config/config."
 "php} behalten! Es sollte nicht von Git geändert werden, da es in der ."
-"gitigore-Datei dieses Projekts aufgeführt ist. \\section{Konfiguration} Sie "
-"können die Datei \\directory{config / config.php} manuell bearbeiten. Die "
-"Standardwerte sind:"
-
-#. type: verbatim
-#: documentation_administrator.tex:83
-#, no-wrap
-msgid ""
-"'application_name' => 'PDR',\n"
-"'database_management_system' => 'mysql',\n"
-"'database_host' => 'localhost',\n"
-"'database_name' => '',\n"
-"'database_port' => 3306,\n"
-"'database_user' => '',\n"
-"'database_password' => '',\n"
-"'session_secret' => '',\n"
-"'error_reporting' => E_ALL,\n"
-"'display_errors' => 0,\n"
-"'log_errors' => 1,\n"
-"'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',\n"
-"'LC_TIME' => 'C',\n"
-"'timezone' => 'Europe/Berlin',\n"
-"'language' => 'de_DE',\n"
-"'mb_internal_encoding' => 'UTF-8',\n"
-"'contact_email' => '',\n"
-"'hide_disapproved' => FALSE"
-msgstr ""
-"'application_name' => 'PDR',\n"
-"'database_management_system' => 'mysql',\n"
-"'database_host' => 'localhost',\n"
-"'database_name' => '',\n"
-"'database_port' => 3306,\n"
-"'database_user' => '',\n"
-"'database_password' => '',\n"
-"'session_secret' => '',\n"
-"'error_reporting' => E_ALL,\n"
-"'display_errors' => 0,\n"
-"'log_errors' => 1,\n"
-"'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',\n"
-"'LC_TIME' => 'C',\n"
-"'timezone' => 'Europe/Berlin',\n"
-"'language' => 'de_DE',\n"
-"'mb_internal_encoding' => 'UTF-8',\n"
-"'contact_email' => '',\n"
-"'hide_disapproved' => FALSE"
-
-#. type: Plain text
-#: documentation_administrator.tex:90
-msgid ""
-"Never delete the first two lines! If the file does not start with \"<?php\" "
-"then PHP will not handle it, meaning that anyone can read its content.  "
-"\\menu{Administration > Human resource management}"
-msgstr ""
-"Löschen Sie niemals die ersten zwei Zeilen! Wenn die Datei nicht mit \"<?php"
-"\" beginnt, wird PHP sie nicht verarbeiten, was bedeutet, dass jeder ihren "
-"Inhalt lesen kann. \\menu{Administration > Personalverwaltung}"
+"gitigore-Datei dieses Projekts aufgeführt ist."
 
 #. type: section{#2}
-#: documentation_administrator.tex:90
+#: documentation_administrator.tex:77
+msgid "Configuration"
+msgstr "Konfiguration"
+
+#. type: Plain text
+#: documentation_administrator.tex:77
+msgid ""
+"You can manually edit the file \\directory{config/config.php}.  The default "
+"values are:"
+msgstr ""
+"Sie können die Datei \\directory{config/config.php} manuell bearbeiten.  Die "
+"Standardwerte sind:"
+
+#. type: lstlisting
+#: documentation_administrator.tex:77
+msgid "<?php"
+msgstr "<?php"
+
+#. type: lstlisting
+#: documentation_administrator.tex:99
+msgid ""
+"$config = array( 'application_name' => 'PDR', 'database_management_system' "
+"=> 'mysql', 'database_host' => 'localhost', 'database_name' => '', "
+"'database_port' => 3306, 'database_user' => '', 'database_password' => '', "
+"'session_secret' => '', 'error_reporting' => E_ALL, 'display_errors' => 0, "
+"'log_errors' => 1, 'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error."
+"log', 'LC_TIME' => 'C', 'timezone' => 'Europe/Berlin', 'language' => "
+"'de_DE', 'mb_internal_encoding' => 'UTF-8', 'contact_email' => '', "
+"'hide_disapproved' => FALSE, );"
+msgstr ""
+"$config = array( 'application_name' => 'PDR', 'database_management_system' "
+"=> 'mysql', 'database_host' => 'localhost', 'database_name' => '', "
+"'database_port' => 3306, 'database_user' => '', 'database_password' => '', "
+"'session_secret' => '', 'error_reporting' => E_ALL, 'display_errors' => 0, "
+"'log_errors' => 1, 'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error."
+"log', 'LC_TIME' => 'C', 'timezone' => 'Europe/Berlin', 'language' => "
+"'de_DE', 'mb_internal_encoding' => 'UTF-8', 'contact_email' => '', "
+"'hide_disapproved' => FALSE, );"
+
+#. \menu{Administration > Human resource management}
+#. type: Plain text
+#: documentation_administrator.tex:103
+msgid ""
+"Never delete the first two lines! If the file does not start with "
+"\\lstinline|<?php| then PHP will not handle it, meaning that anyone can read "
+"its content."
+msgstr ""
+"Löschen Sie niemals die ersten zwei Zeilen! Wenn die Datei nicht mit "
+"\\lstinline|<?php| beginnt, wird PHP sie nicht verarbeiten, was bedeutet, "
+"dass jeder ihren Inhalt lesen kann."
+
+#. type: section{#2}
+#: documentation_administrator.tex:112
 msgid "Maintenance"
 msgstr "Wartung"
 
+#. type: Plain text
+#: documentation_administrator.tex:112
+msgid ""
+"The file \\directory{src/php/background\\_maintenance.php} will be called on "
+"every login of any user.  It will create an instance of the following "
+"classes:"
+msgstr ""
+"Die Datei  \\directory{src/php/background\\_maintenance.php} wird bei jedem "
+"Login eines beliebigen Benutzers aufgerufen.  Es wird eine Instanz der "
+"folgenden Klassen erzeugen:"
+
+#. \item auto_upgrader
+#. type: itemize
+#: documentation_administrator.tex:112
+msgid "maintenance"
+msgstr "Wartung"
+
+#. type: itemize
+#: documentation_administrator.tex:112
+msgid "update\\_database"
+msgstr "update\\_database"
+
+#. type: subsection{#2}
+#: documentation_administrator.tex:116
+msgid "class maintenance"
+msgstr "Klasse maintenance"
+
+#. type: Plain text
+#: documentation_administrator.tex:116
+msgid ""
+"The methods contained in the class maintenance are only called, if the last "
+"execution is at least \\lstinline|MAINTENANCE_PERIOD_IN_SECONDS| ago.  "
+"\\lstinline|MAINTENANCE_PERIOD_IN_SECONDS| is set to once a day."
+msgstr ""
+"Die Methoden, die in der Klassen maintenance enthalten sind, werden nur dann "
+"aufgerufen, wenn die letzte Ausführung mindestens \\lstinline|"
+"MAINTENANCE_PERIOD_IN_SECONDS| her ist.  \\lstinline|"
+"MAINTENANCE_PERIOD_IN_SECONDS| ist auf einmal am Tag eingestellt."
+
+#. type: Plain text
+#: documentation_administrator.tex:118
+msgid ""
+"The method \\lstinline|user_dialog_email-"
+">aggregate_messages_about_changed_roster_to_employees()| is called to send "
+"out emails to employees, whose roster has been changed."
+msgstr ""
+"Die Methode  \\lstinline|user_dialog_email-"
+">aggregate_messages_about_changed_roster_to_employees()|  wird dazu "
+"aufgerufen, E-Mails an Mitarbeiter zu senden, deren Dienstplan geändert "
+"wurde."
+
+#. type: Plain text
+#: documentation_administrator.tex:120
+msgid ""
+"The method \\lstinline|maintenance->cleanup_overtime()| does not do anything "
+"yet. It is meant to be used to clean up overtime of existing employees, that "
+"happened before they entered the company."
+msgstr ""
+"Die Methode  \\lstinline|maintenance->cleanup_overtime()| tut noch nichts. "
+"Sie soll zum Säubern von Überstunden bestehender Mitarbeiter eingesetzt "
+"werden, welche vor dem Eintritt in das Unternehmen eingetragen wurden."
+
+#. type: Plain text
+#: documentation_administrator.tex:122
+msgid ""
+"The method \\lstinline|maintenance->cleanup_absence()| does not do anything "
+"yet. It is meant to be used to clean up absences of existing employees, that "
+"happened before they entered the company."
+msgstr ""
+"Die Methode  \\lstinline|maintenance->cleanup_absence()| tut noch nichts. "
+"Sie soll zur Säuberung von Abwesenheiten bestehender Mitarbeiter eingesetzt "
+"werden, welche vor dem Eintritt in das Unternehmen eingetragen wurden."
+
+#. type: subsection{#2}
+#: documentation_administrator.tex:127
+msgid "class update\\_database"
+msgstr "Klasse update\\_database"
+
+#. type: Plain text
+#: documentation_administrator.tex:127
+msgid ""
+"Before the class update\\_database executes any of its methods, it checks if "
+"there is any change in the official database structure since the last "
+"update.  It compares the pdr\\_database\\_version\\_hash from the table pdr"
+"\\_self in the database with the value \\lstinline|"
+"PDR_DATABASE_VERSION_HASH| stored in the file \\directory{src/php/database"
+"\\_version\\_hash.php}"
+msgstr ""
+"Bevor die Klasse update\\_database eine ihrer Methoden ausführt, prüft sie, "
+"ob sich die offizielle Datenbankstruktur seit der letzten Aktualisierung "
+"geändert hat.  Sie vergleicht den pdr\\_database\\_version\\_hash aus der "
+"Tabelle pdr\\_self in der Datenbank mit dem Wert  \\lstinline|"
+"PDR_DATABASE_VERSION_HASH| In der Datei  \\directory{src/php/database"
+"\\_version\\_hash.php}"
+
+#. type: Plain text
+#: documentation_administrator.tex:129
+msgid ""
+"The class should contain every SQL Query necessary to change an existing "
+"database into the new structure without loosing any data."
+msgstr ""
+"Die Klasse sollte jede SQL-Abfrage enthalten, die notwendig ist, um eine "
+"bestehende Datenbank in die neue Struktur zu überführen, ohne Daten zu "
+"verlieren."
+
 #. type: section{#2}
-#: documentation_administrator.tex:90
+#: documentation_administrator.tex:133
 msgid "Issues and Troubleshooting"
 msgstr "Probleme und Fehlerbehebung"
 
+#. type: Plain text
+#: documentation_administrator.tex:133
+msgid ""
+"Issues are tracked at GitHub \\url{https://github.com/MaMaKow/dienstplan-"
+"apotheke/issues} I am trying to answer any question within 3 days."
+msgstr ""
+"Fragen werden bei GitHub  \\url{https:/github.com/MaKow/dienstplan-apotheke/"
+"issues} bearbeitet. Ich versuche, jede Frage innerhalb von 3 Tagen zu "
+"beantworten."
+
 #. type: chapter{#2}
-#: documentation_developer.tex:3
+#: documentation_developer.tex:2
 msgid "Developer manual"
 msgstr "Entwicklerhandbuch"
 
 #. type: section{#2}
-#: documentation_developer.tex:9
+#: documentation_developer.tex:8
 msgid "Core development"
 msgstr "Kernentwicklung"
 
 #. type: Plain text
-#: documentation_developer.tex:9
+#: documentation_developer.tex:8
 msgid ""
 "All PHP scripts have a common file \\texttt{default.php}, which handles the "
 "default settings. It is placed at ./, which is the \\texttt{PDR\\_FILE"
@@ -1030,41 +1226,41 @@ msgstr ""
 "Datei: \\lstinputlisting[language=PHP]{../default.php}"
 
 #. type: subsection{#2}
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "Directory structure"
 msgstr "Ordnerstruktur"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{config/} Contains the configuration file config.php"
 msgstr "\\directory{config/} Enthält die Konfigurationsdatei config.php"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{css/} \\emph{obsolete}, use \\directory{src/css/} instead"
 msgstr ""
 "\\directory{css/} \\emph{veraltet}, verwenden Sie stattdessen "
 "\\directory{src/css/}"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{docs/} This documentation and tools to build it"
 msgstr "\\directory{docs/} Diese Dokumentation und Werkzeuge, um sie zu bauen"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{img/} Images used by the program"
 msgstr "\\directory{img/} Bilder, die vom Programm verwendet werden"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{js/} \\emph{obsolete}, use \\directory{src/js/} instead"
 msgstr ""
 "\\directory{js/} \\emph{obsolet}, benutzen Sie stattdessen \\directory{src/"
 "js/}"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid ""
 "\\directory{locale/} translation files for gettext, currently only german (de"
 "\\_DE)"
@@ -1073,27 +1269,27 @@ msgstr ""
 "\\_DE)"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{src/} Most of the actual source code"
 msgstr "\\directory{src/} Der Hauptteil des eigentlichen Quellcodes"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{src/css} Style Sheets"
 msgstr "\\directory{src/css} Cascading Style Sheets"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{src/js} JavasScript"
 msgstr "\\directory{src/js} JavasScript"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{src/php/} PHP: Hypertext Preprocessor"
 msgstr "\\directory{src/php/} PHP: Hypertext Preprocessor"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid ""
 "\\directory{src/php/classes/} Contains all the class files class.class"
 "\\_name.php"
@@ -1102,7 +1298,7 @@ msgstr ""
 "php"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid ""
 "\\directory{src/php/fragments/} parts of bigger pages, may be included via "
 "php require/include or loaded with JavaScript"
@@ -1111,7 +1307,7 @@ msgstr ""
 "require/include oder mit JavaScript geladen werden"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid ""
 "\\directory{\\textbf{src/php/pages/}} This is the place for the single "
 "views, which the human user will use to look at the roster etc."
@@ -1121,12 +1317,12 @@ msgstr ""
 "usw. zu sehen."
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid "\\directory{src/sql/} SQL Database Tables and Triggers"
 msgstr "\\directory{src/sql/} SQL-Datenbank Tabellen und Trigger"
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid ""
 "\\directory{tests/} Tests to find errors in the source code; This folder is "
 "listed in .gitignore. Only some files are part of the visible source."
@@ -1136,16 +1332,16 @@ msgstr ""
 "Quelle."
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid ""
-"\\directory{tmp/} A directy for temporary files. There is no automatic "
+"\\directory{tmp/} A directory for temporary files. There is no automatic "
 "cleanup yet."
 msgstr ""
 "\\directory{tmp/} Ein Verzeichnis für temporäre Dateien. Es gibt noch keine "
 "automatische Bereinigung."
 
 #. type: itemize
-#: documentation_developer.tex:32
+#: documentation_developer.tex:31
 msgid ""
 "\\directory{upload/} The destination for uploaded content. Currently only "
 "specific *.PEP files produced by Awinta ASYS Smart are understood. Those "
@@ -1158,22 +1354,22 @@ msgstr ""
 "die in der Vergangenheit bedient wurden."
 
 #. type: subsection{#2}
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid "Coding standards"
 msgstr "Programmierstil"
 
 #. type: Plain text
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid "This project aims to follow some coding style guide."
 msgstr "Dieses Projekt versucht, einem Programmierstil zu folgen."
 
 #. type: itemize
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid "Please avoid StudlyCaps and camelCase."
 msgstr "Bitte vermeiden Sie StudlyCaps und camelCase (Binnenmajuskel)."
 
 #. type: itemize
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid ""
 "Class constants MUST be declared in all upper case with underscore "
 "separators."
@@ -1182,17 +1378,17 @@ msgstr ""
 "deklariert werden."
 
 #. type: itemize
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid "Property names MUST be written in under{\\_}score."
-msgstr "Eigenschaftsnamen MÜSSEN in Unter_strichen geschrieben werden."
+msgstr "Eigenschaftsnamen MÜSSEN in Unter\\_strichen geschrieben werden."
 
 #. type: itemize
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid "Plain variables and objects are written in all lowercase."
 msgstr "Einfache Variablen und Objekte werden in Kleinbuchstaben geschrieben."
 
 #. type: itemize
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid ""
 "Array names start with a singe Uppercase letter followed by lowercase "
 "characters."
@@ -1201,9 +1397,9 @@ msgstr ""
 "Kleinbuchstaben."
 
 #. type: itemize
-#: documentation_developer.tex:42
+#: documentation_developer.tex:41
 msgid "Method names MUST be written in under{\\_}score."
-msgstr "Methodennamen müssen Unter_strichen geschrieben werden."
+msgstr "Methodennamen müssen mit Unter\\_strichen geschrieben werden."
 
 #. type: itemize
 #: documentation_developer.tex:48
@@ -1230,6 +1426,19 @@ msgstr ""
 "Öffnende geschweifte Klammern für Kontrollstrukturen SOLLTEN in derselben "
 "Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten "
 "Zeile nach dem Text beginnen."
+
+#. type: Plain text
+#: documentation_developer.tex:48
+msgid ""
+"Disk space is not rare anymore. IDEs are helping with autocomplete. There is "
+"no need to abbreviate stuff. Please use long terms like \\lstinline|"
+"user_email_notification_cache| instead of \\lstinline|usr_ml_ntfcn_ca| or "
+"\\lstinline|u_e_n_c|."
+msgstr ""
+"Festplattenplatz ist nicht mehr knapp. IDEs helfen mit Autoverfollständung. "
+"Es ist nicht nötig, Dinge abzukürzen. Bitte verwenden Sie lange Begriffe "
+"wie  \\lstinline|user_email_notification_cach|  statt  \\lstinline|"
+"usr_ml_ntfcn_ca| oder \\lstinline|u_e_n_c|."
 
 #. type: subsection{#2}
 #: documentation_developer.tex:83
@@ -1455,10 +1664,10 @@ msgstr ""
 "Eine Kopie aller Tabellenstrukturen wird in \\directory{src/sql/} "
 "gespeichert. Das Verzeichnis enthält auch die Datei \\directory{src/sql/"
 "database\\_version\\_hash.php}, die einen SHA1-Hash aller Strukturen "
-"enthält, die von \\verb|SHOW CREATE TABLE|  und \\verb|SHOW CREATE TRIGGER| "
-"nach einigen Änderungen zurückgegeben werden. Der Hash wird von "
-"\\directory{tests/get-database-structure.php} geschrieben, siehe die Details "
-"in jener Datei."
+"enthält, die von \\begin{verbatim}SHOW CREATE TABLE\\end{verbatim}  und "
+"\\begin{verbatim}SHOW CREATE TRIGGER\\end{verbatim} nach einigen Änderungen "
+"zurückgegeben werden. Der Hash wird von \\directory{tests/get-database-"
+"structure.php} geschrieben, siehe die Details in jener Datei."
 
 #. type: subsubsection{#2}
 #: documentation_developer.tex:93
@@ -1486,65 +1695,101 @@ msgstr ""
 "auch die gesamte Datenbank zerstören."
 
 #. type: Plain text
-#: documentation_developer.tex:102
+#: documentation_developer.tex:98
 msgid ""
 "The class \\emph{update\\_database} is called on every login of a user. It "
 "then decides on its own, if any actions have to be taken.  In order to "
 "decide, the hash stored in the file \\directory{database\\_version\\_hash."
 "php} is compared to the hash stored in the database table \\menu{pdr\\_self "
-"> pdr\\_database\\_version\\_hash}.  \\paragraph{Auto healing tables} The "
-"class \\emph{database\\_wrapper} has a function \\emph{create\\_table\\_from"
-"\\_template()} that is able to create missing tables from the structure "
-"information given in \\directory{src/sql/}. It is called if any PDO database "
-"query throws an exception with the code 42S02 and the MySQL error 1146.  "
-"\\section{Documentation} This documentation about a programm, app or script "
-"is a stub. You can help this project by expanding it."
+"> pdr\\_database\\_version\\_hash}."
 msgstr ""
-"Die Klasse \\emph{update\\_database} wird bei jeder Anmeldung eines "
-"Benutzers aufgerufen. Sie entscheidet dann selbständig, ob irgendwelche "
-"Maßnahmen ergriffen werden müssen. Um zu entscheiden, wird der in der Datei "
+"Die Klasse \\emph{update\\_database} wird bei jedem Login eines Nutzers "
+"aufgerufen. Sie entscheidet dann selbst, ob irgendwelche Maßnahmen ergriffen "
+"werden müssen.  Um dies zu entscheiden, wird der in der Datei "
 "\\directory{database\\_version\\_hash.php} gespeicherte Hash mit dem in der "
-"Datenbanktabelle gespeicherten Hash verglichen. \\menu{pdr\\_self > pdr"
-"\\_database\\_version\\_hash}. \\paragraph{Selbstheilende Tabellen} Die "
-"Klasse \\emph{database\\_wrapper} hat eine Funktion \\emph{create\\_table"
-"\\_from\\_template()}, die fehlende Tabellen aus den Strukturinformationen  "
-"in \\directory{src/sql/} erstellen kann. Sie wird aufgerufen, wenn eine PDO-"
-"Datenbankabfrage eine Ausnahme mit dem Code 42S02 und dem MySQL-Fehler 1146 "
-"auslöst. \\section{Dokumentation} Diese Dokumentation über ein Programm, "
-"eine App oder ein Skript ist unvollständig. Sie können dieses Projekt "
-"unterstützen, indem Sie sie erweitern."
+"Datenbanktabelle gespeicherten Hash verglichen \\menu{pdr\\_self>pdr"
+"\\_database\\_version\\_hash}."
+
+#. type: paragraph{#2}
+#: documentation_developer.tex:101
+msgid "Auto healing tables"
+msgstr "Selbstheilende Tabellen"
+
+#. type: Plain text
+#: documentation_developer.tex:101
+msgid ""
+"The class \\emph{database\\_wrapper} has a function \\emph{create\\_table"
+"\\_from\\_template()} that is able to create missing tables from the "
+"structure information given in \\directory{src/sql/}. It is called if any "
+"PDO database query throws an exception with the code 42S02 and the MySQL "
+"error 1146."
+msgstr ""
+"Die Klasse \\emph{database\\_wrapper} hat eine Funktion \\emph{create\\_table"
+"\\_from\\_template()}, die in der Lage ist, fehlende Tabellen aus den "
+"Strukturinformationen zu erstellen, die im Verzeichnis \\directory{src/sql/} "
+"gespeichert sind. Sie wird aufgerufen, wenn eine PDO-Datenbankabfrage eine "
+"Ausnahme mit dem Code 42S02 und dem MySQL-Fehler 1146 wirft."
 
 #. type: section{#2}
-#: documentation_developer.tex:104
+#: documentation_developer.tex:105
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#. type: Plain text
+#: documentation_developer.tex:105
+msgid ""
+"This documentation about a programm, app or script is a stub. You can help "
+"this project by expanding it."
+msgstr ""
+"Diese Dokumentation über ein Programm, eine App oder ein Skript ist "
+"unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie "
+"erweitern."
+
+#. type: section{#2}
+#: documentation_developer.tex:108
 msgid "Testing"
 msgstr "Testen"
 
 #. type: section{#2}
-#: documentation_developer.tex:106
+#: documentation_developer.tex:112
 msgid "Bug tracker"
 msgstr "Bug Tracker"
 
+#. type: Plain text
+#: documentation_developer.tex:112
+msgid ""
+"Bugs and Issues are tracked at GitHub \\url{https://github.com/MaMaKow/"
+"dienstplan-apotheke/issues}"
+msgstr ""
+"Fehler und Probleme werden bei GitHub verfolgt \\url{https://github.com/"
+"MaMaKow/dienstplan-apotheke/issues}"
+
 #. type: section{#2}
-#: documentation_developer.tex:110
+#: documentation_developer.tex:116
 msgid "Translation"
 msgstr "Übersetzung"
 
 #. type: Plain text
-#: documentation_developer.tex:110
+#: documentation_developer.tex:116
+msgid "Translations are handled with gettext()."
+msgstr "Übersetzungen werden mit gettext () verwaltet."
+
+#. type: Plain text
+#: documentation_developer.tex:119
 msgid ""
 "See this article about po4a about the translation of this document: "
-"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}"
+"\\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}"
 msgstr ""
 "Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments: "
-"\\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}"
+"\\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}"
 
 #. type: subsection{#2}
-#: documentation_developer.tex:112
+#: documentation_developer.tex:121
 msgid "Internationalization"
 msgstr "Internationalisierung"
 
 #. type: Plain text
-#: documentation_developer.tex:112
+#: documentation_developer.tex:121
 msgid ""
 "Different countries have different laws regarding pharmacies and employment. "
 "They also have different holidays."
@@ -1552,13 +1797,89 @@ msgstr ""
 "Verschiedene Länder haben unterschiedliche Gesetze in Bezug auf Apotheken "
 "und Beschäftigung. Sie haben auch unterschiedliche Feiertage."
 
-#~ msgid "Documentation"
-#~ msgstr "Dokumentation"
+#~ msgid ""
+#~ "Please see the \\href{https://github.com/MaMaKow/dienstplan-apotheke/blob/"
+#~ "master/LICENSE.md}{license file} for details! \\section{Reporting bugs} "
+#~ "The issue tracker is currently located at GitHub.  GitHub requires an "
+#~ "account in order to report bugs or feature requests. If you do not want "
+#~ "to create one, you might send a mail to pdr-issues@martin-mandelkow.de "
+#~ "\\section{How to contribute} Pull requests are desired. If you made "
+#~ "changes to PDR and want to contribute them to the public, you are welcome "
+#~ "to open a pull-request on GitHub or send your changes in any other way."
+#~ msgstr ""
+#~ "Details finden Sie in der \\href{https://github.com/MaMaKow/dienstplan-"
+#~ "apotheke/blob/master/LICENSE.md}{Lizenzdatei}. \\section{Fehler melden} "
+#~ "Der Issue Tracker befindet sich derzeit auf GitHub. GitHub verlangt einen "
+#~ "Account, um Fehler oder Feature Requests zu melden. Wenn Sie keines "
+#~ "erstellen möchten, senden Sie eine E-Mail an pdr-issues@martin-mandelkow."
+#~ "de \\section{Wie kann ich dazu beitragen?} Pull-Requests sind erwünscht. "
+#~ "Wenn Sie Änderungen an PDR vorgenommen haben und diese für die "
+#~ "Öffentlichkeit bereitstellen möchten, können Sie gerne einen Pull-Request "
+#~ "auf GitHub öffnen oder Ihre Änderungen auf andere Weise senden."
 
 #~ msgid ""
-#~ "This documentation about a programm, app or script is a stub. You can "
-#~ "help this project by expanding it."
+#~ "The master branch is tested to be stable.  \\subsection{The installer} "
+#~ "\\subsubsection{Introduction} The first page shows some non-technical "
+#~ "information about this program. Click \\menu{Next} to move on.  "
+#~ "\\subsubsection{Welcome} On the second page some technical background "
+#~ "information is given. You are informed about the necessary input data, "
+#~ "required for continuing the installation. Available database management "
+#~ "systems (currently only MySQL) are listed. Finally, you are informed "
+#~ "about the user and password strategy for the database access. Click "
+#~ "\\menu{Next} again, to continue.  \\subsubsection{Requirements} On the "
+#~ "next page the application checks, if all requirements are met. These "
+#~ "include a minimum PHP version, some PHP extensions and support for "
+#~ "database connections. Also the program needs write access to some of its "
+#~ "directories.  If problems are found, then a descriptive error message "
+#~ "will be shown. It is not possible to continue, until all issues are "
+#~ "solved.  Click \\menu{Next} again, to continue.  \\subsubsection{Database "
+#~ "configuration} The application now starts to collect configuration data."
 #~ msgstr ""
-#~ "Diese Dokumentation über ein Programm, eine App oder ein Skript ist "
+#~ "Der Master-Zweig ist auf Stabilität getestet. \\subsection{Das "
+#~ "Installationsprogramm} \\subsubsection{Einführung} Die erste Seite zeigt "
+#~ "einige nicht-technische Informationen über dieses Programm. Klicken Sie "
+#~ "auf \\menu{Weiter}, um fortzufahren. \\subsubsection{Willkommen} Auf der "
+#~ "zweiten Seite sind einige technische Hintergrundinformationen angegeben. "
+#~ "Sie werden über die notwendigen Eingabedaten informiert, die für die "
+#~ "Fortsetzung der Installation benötigt werden. Verfügbare Datenbank-"
+#~ "Management-Systeme (derzeit nur MySQL) sind aufgelistet. Abschließend "
+#~ "werden Sie über die Benutzer- und Passwortstrategie für den "
+#~ "Datenbankzugriff informiert. Klicken Sie erneut auf \\menu{Weiter}, um "
+#~ "fortzufahren. \\subsubsection{Anforderungen} Auf der nächsten Seite prüft "
+#~ "die Anwendung, ob alle Voraussetzungen erfüllt sind. Dazu gehören eine "
+#~ "PHP-Mindestversion, einige PHP-Erweiterungen und Unterstützung für "
+#~ "Datenbankverbindungen. Außerdem benötigt das Programm Schreibzugriff auf "
+#~ "einige seiner Verzeichnisse. Wenn Probleme gefunden werden, wird eine "
+#~ "beschreibende Fehlermeldung angezeigt. Es ist nicht möglich fortzufahren, "
+#~ "bis alle Probleme gelöst sind. Klicken Sie erneut auf \\menu{Weiter}, um "
+#~ "fortzufahren. \\subsubsection{Datenbankkonfiguration} Die Anwendung "
+#~ "beginnt nun, Konfigurationsdaten zu sammeln."
+
+#~ msgid ""
+#~ "The class \\emph{update\\_database} is called on every login of a user. "
+#~ "It then decides on its own, if any actions have to be taken.  In order to "
+#~ "decide, the hash stored in the file \\directory{database\\_version\\_hash."
+#~ "php} is compared to the hash stored in the database table \\menu{pdr"
+#~ "\\_self > pdr\\_database\\_version\\_hash}.  \\paragraph{Auto healing "
+#~ "tables} The class \\emph{database\\_wrapper} has a function \\emph{create"
+#~ "\\_table\\_from\\_template()} that is able to create missing tables from "
+#~ "the structure information given in \\directory{src/sql/}. It is called if "
+#~ "any PDO database query throws an exception with the code 42S02 and the "
+#~ "MySQL error 1146.  \\section{Documentation} This documentation about a "
+#~ "programm, app or script is a stub. You can help this project by expanding "
+#~ "it."
+#~ msgstr ""
+#~ "Die Klasse \\emph{update\\_database} wird bei jeder Anmeldung eines "
+#~ "Benutzers aufgerufen. Sie entscheidet dann selbständig, ob irgendwelche "
+#~ "Maßnahmen ergriffen werden müssen. Um zu entscheiden, wird der in der "
+#~ "Datei \\directory{database\\_version\\_hash.php} gespeicherte Hash mit "
+#~ "dem in der Datenbanktabelle gespeicherten Hash verglichen. \\menu{pdr"
+#~ "\\_self > pdr\\_database\\_version\\_hash}. \\paragraph{Selbstheilende "
+#~ "Tabellen} Die Klasse \\emph{database\\_wrapper} hat eine Funktion "
+#~ "\\emph{create\\_table\\_from\\_template()}, die fehlende Tabellen aus den "
+#~ "Strukturinformationen  in \\directory{src/sql/} erstellen kann. Sie wird "
+#~ "aufgerufen, wenn eine PDO-Datenbankabfrage eine Ausnahme mit dem Code "
+#~ "42S02 und dem MySQL-Fehler 1146 auslöst. \\section{Dokumentation} Diese "
+#~ "Dokumentation über ein Programm, eine App oder ein Skript ist "
 #~ "unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie "
 #~ "erweitern."

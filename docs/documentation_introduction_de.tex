@@ -6,22 +6,28 @@ Dienstplan für Apotheken zu führen. PDR startete 2015 als Alternative zu
 einer wirklich einfachen Excel-Tabelle ohne Formeln. PDR möchte
 benutzerfreundlich sein und gleichzeitig alle notwendigen Funktionen
 abdecken. PDR ist ständig bestrebt, sich zu verbessern. Es ist offen für
-Ihre Anfragen und Wünsche. Ich hoffe, es wird Ihre Erwartungen
-erfüllen. \section{PDR abrufen} Die neueste Version von PDR ist unter
-\href{https://github.com/MaMaKow/dienstplan-apotheke/releases/latest}{GitHub}
-verfügbar. GitHub stellt den Quellcode als *.zip Datei oder *.tar.gz Datei
-zur Verfügung. Extrahieren Sie die Dateien in einen Ordner.
+Ihre Anfragen und Wünsche. Ich hoffe, es wird Ihre Erwartungen erfüllen.
+
+\section{PDR finden}
+Die neueste Version von PDR ist verfügbar unter
+\href{https://github.com/MaMaKow/dienstplan-apotheke/releases}{GitHub}.
+GitHub stellt den Quellcode als *.zip-Datei oder *.tar.gz Ball zur
+Verfügung. Extrahieren Sie die Dateien in einen Ordner.
 
 Stellen Sie sicher, dass Sie PDR in ein Verzeichnis entpacken, auf das Ihr
 Webserver zugreifen kann. PHP und der Webserver müssen Lesezugriff auf alle
 Dateien und Ordner haben. Es benötigt auch Schreibzugriff auf die
-Unterverzeichnisse upload, tmp und config. Möglicherweise möchten Sie
+Unterverzeichnisse upload, tmp und config. Möglicherweise möchten Sie den
 Webserver-Benutzer zum Besitzer des Verzeichnisses machen mit z. B .:
 
+\begin{lstlisting}
+sudo chown -R www-data:www-data /var/www/html/pdr/
+\end{lstlisting}
+
 Sie können das Repository auch mit git klonen:
-\begin{verse}
+\begin{lstlisting}
 git clone https://github.com/MaMaKow/dienstplan-apotheke.git
-\end{verse}
+\end{lstlisting}
 Details finden Sie im Administratorhandbuch!
 
 \section{Lizenz}
@@ -45,14 +51,22 @@ diesem Programm erhalten haben. Wenn nicht, siehe
 <https://www.gnu.org/licenses/>.
 	
 \end{quote}
- Details finden Sie in der
-\href{https://github.com/MaMaKow/dienstplan-apotheke/blob/master/LICENSE.md}{Lizenzdatei}.
-\section{Fehler melden} Der Issue Tracker befindet sich derzeit auf
-GitHub. GitHub verlangt einen Account, um Fehler oder Feature Requests zu
-melden. Wenn Sie keines erstellen möchten, senden Sie eine E-Mail an
-pdr-issues@martin-mandelkow.de \section{Wie kann ich dazu beitragen?}
-Pull-Requests sind erwünscht. Wenn Sie Änderungen an PDR vorgenommen haben
-und diese für die Öffentlichkeit bereitstellen möchten, können Sie gerne
-einen Pull-Request auf GitHub öffnen oder Ihre Änderungen auf andere Weise
+ Weitere Informationen finden Sie in der
+\href{https://github.com/MaMaKow/dienstplan-apotheke/releases}{Lizenzdatei}.
+
+\section{Fehler melden}
+Der Bugtracker befindet sich derzeit bei GitHub
+\url{https://github.com/MaMaKow/dienstplan-apotheke/issues}.  GitHub
+benötigt ein Konto, um Fehler oder Feature-Anfragen zu melden. Wenn Sie
+keinen Account erstellen wollen, können Sie eine E-Mail an
+\href{mailto:pdr-issues@martin-mandelkow.de}{pdr-issues@martin-mandelkow.de}
 senden.
 
+\section{Wie Sie einen Beitrag leisten können}
+Pull requests sind erwünscht. Wenn Sie Änderungen an PDR vorgenommen haben
+und diese der Öffentlichkeit beisteuern möchten, können Sie einen Pull
+requests auf GitHub öffnen oder Ihre Änderungen auf andere Weise senden.
+
+Sie könnten auch  \lstinline |git send-email| Und Patches an
+\href{mailto:pdr-discuss@martin-mandelkow.de}{pdr-discuss@martin-mandelkow.de}
+senden

@@ -1,6 +1,5 @@
 % This file was generated with po4a. Translate the source file.
 %
-
 \chapter{Entwicklerhandbuch}
 
 
@@ -51,11 +50,11 @@ Dieses Projekt versucht, einem Programmierstil zu folgen.
 \item Bitte vermeiden Sie StudlyCaps und camelCase (Binnenmajuskel).
 \item Klassenkonstanten MÜSSEN in Großbuchstaben mit Unterstrichtrennzeichen
 deklariert werden.
-\item Eigenschaftsnamen MÜSSEN in Unter_strichen geschrieben werden.
+\item Eigenschaftsnamen MÜSSEN in Unter\_strichen geschrieben werden.
 \item Einfache Variablen und Objekte werden in Kleinbuchstaben geschrieben.
 \item Array-Namen beginnen mit einem einzelnen Großbuchstaben, gefolgt von
 Kleinbuchstaben.
-\item Methodennamen müssen Unter_strichen geschrieben werden.
+\item Methodennamen müssen mit Unter\_strichen geschrieben werden.
 
 \item Der Code MUSS 4 Leerzeichen zum Einrücken verwenden, keine Tabulatoren.
 \item Öffnende geschweifte Klammern für Klassen und Funktionen MÜSSEN in derselben
@@ -65,6 +64,10 @@ Zeile nach dem Text beginnen.
 Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
 Zeile nach dem Text beginnen.
 \end{itemize}
+Festplattenplatz ist nicht mehr knapp. IDEs helfen mit
+Autoverfollständung. Es ist nicht nötig, Dinge abzukürzen. Bitte verwenden
+Sie lange Begriffe wie  \lstinline|user_email_notification_cach|  statt
+\lstinline|usr_ml_ntfcn_ca| oder \lstinline|u_e_n_c|. 
 
 \subsection{Die Datenbank}
 Derzeit wird nur MySQL als Datenbankverwaltungssystem (DBMS)
@@ -118,8 +121,9 @@ existieren)
 Eine Kopie aller Tabellenstrukturen wird in \directory{src/sql/}
 gespeichert. Das Verzeichnis enthält auch die Datei
 \directory{src/sql/database\_version\_hash.php}, die einen SHA1-Hash aller
-Strukturen enthält, die von \verb|SHOW CREATE TABLE|  und \verb|SHOW CREATE
-TRIGGER| nach einigen Änderungen zurückgegeben werden. Der Hash wird von
+Strukturen enthält, die von \begin{verbatim}SHOW CREATE TABLE\end{verbatim}
+und \begin{verbatim}SHOW CREATE TRIGGER\end{verbatim} nach einigen
+Änderungen zurückgegeben werden. Der Hash wird von
 \directory{tests/get-database-structure.php} geschrieben, siehe die Details
 in jener Datei.
 
@@ -131,28 +135,41 @@ bekannten Zustand in der Vergangenheit in den aktuellen Zustand versetzen.
 Diese Klasse ist nicht gut getestet. Sie könnte funktionieren. Sie könnte
 auch die gesamte Datenbank zerstören.
 
-Die Klasse \emph{update\_database} wird bei jeder Anmeldung eines Benutzers
-aufgerufen. Sie entscheidet dann selbständig, ob irgendwelche Maßnahmen
-ergriffen werden müssen. Um zu entscheiden, wird der in der Datei
+Die Klasse \emph{update\_database} wird bei jedem Login eines Nutzers
+aufgerufen. Sie entscheidet dann selbst, ob irgendwelche Maßnahmen ergriffen
+werden müssen.  Um dies zu entscheiden, wird der in der Datei
 \directory{database\_version\_hash.php} gespeicherte Hash mit dem in der
-Datenbanktabelle gespeicherten Hash verglichen. \menu{pdr\_self >
-pdr\_database\_version\_hash}. \paragraph{Selbstheilende Tabellen} Die
-Klasse \emph{database\_wrapper} hat eine Funktion
-\emph{create\_table\_from\_template()}, die fehlende Tabellen aus den
-Strukturinformationen  in \directory{src/sql/} erstellen kann. Sie wird
-aufgerufen, wenn eine PDO-Datenbankabfrage eine Ausnahme mit dem Code 42S02
-und dem MySQL-Fehler 1146 auslöst. \section{Dokumentation} Diese
-Dokumentation über ein Programm, eine App oder ein Skript ist
+Datenbanktabelle gespeicherten Hash verglichen
+\menu{pdr\_self>pdr\_database\_version\_hash}.
+
+\paragraph{Selbstheilende Tabellen}
+Die Klasse \emph{database\_wrapper} hat eine Funktion
+\emph{create\_table\_from\_template()}, die in der Lage ist, fehlende
+Tabellen aus den Strukturinformationen zu erstellen, die im Verzeichnis
+\directory{src/sql/} gespeichert sind. Sie wird aufgerufen, wenn eine
+PDO-Datenbankabfrage eine Ausnahme mit dem Code 42S02 und dem MySQL-Fehler
+1146 wirft.
+
+
+\section{Dokumentation}
+Diese Dokumentation über ein Programm, eine App oder ein Skript ist
 unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie
 erweitern.
 
+
 \section{Testen}
 
+
 \section{Bug Tracker}
+Fehler und Probleme werden bei GitHub verfolgt
+\url{https://github.com/MaMaKow/dienstplan-apotheke/issues}
+
 
 \section{Übersetzung}
+Übersetzungen werden mit gettext () verwaltet.
+
 Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments:
-\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}{}
+\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
 
 \subsection{Internationalisierung}
 Verschiedene Länder haben unterschiedliche Gesetze in Bezug auf Apotheken
