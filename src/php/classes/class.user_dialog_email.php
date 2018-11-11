@@ -18,7 +18,21 @@
  */
 
 /**
- * Description of class
+ *
+ * Send an email to an employee about a changed roster.
+ *
+ * <p> The email should be send if:
+ *     - A change is less than 14 days ahead
+ *     - The change is not in the past/today
+ *     - No other email has been sent within 24 hours
+ * </p>
+ * <p> The email should contain:
+ *     - a specific comment
+ *     - the new roster
+ *     - one ICS file
+ * </p>
+ * @todo Notifications can also be directly printed to the user upon login.
+ * @todo Make this email thing a new class. It is big enough.
  *
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
@@ -34,34 +48,34 @@ class user_dialog_email {
      */
     private $maximum_future_days;
 
-    /**
-     * Send an email to an employee about a changed roster.
-     *
-     * <p> The email should be send if:
-     *     - A change is less than 14 days ahead
-     *     - The change is not in the past/today
-     *     - No other email has been sent within 24 hours
-     *         - Maybe we should aggregate changes in that case.
-     * </p>
-     * <p> The email should contain:
-     *     - the old roster
-     *     - the new roster
-     *     - one ICS file?
-     *     - a specific comment?
-     * </p>
-     * @todo Notifications can also be directly printed to the user upon login.
-     * @todo Enable an opt-in and an opt-out for this feature!
-     *           - build a real user page for this.
-     * @todo Make this email thing a new class. It is big enough.
-     * @return boolean
-     */
     public function __construct() {
         $this->maximum_future_days = 14;
     }
 
-    private static function write_email_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list) {
+    /**
+     *
+     * Create a human readable text about a changed roster together with an iCalendar file
+     *
+     * <p>The class takes the new roster and the information about specific changes (inserted, changed, deleted)
+     *     and composes and stores human readable text about the change
+     *     as well as an iCalendar file with the new roster in the database.
+     *     The texts can then be sent via email to the user.
+     *     This usually happens once a day during the background_maintenance.
+     * </p>
+     *
+     * @param array $Roster the new roster
+     * @param array $Roster_old obsolete
+     * @param array $Inserted_roster_employee_id_list An array of days, each with an array of employee_ids who were inserted into the Roster
+     * @param array $Changed_roster_employee_id_list An array of days, each with an array of employee_ids whose existing Roster was changed
+     * @param array $Deleted_roster_employee_id_list An array of days, each with an array of employee_ids who were deleted from the Roster
+     * @return void
+     */
+    public function create_email_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (strtotime('+' . $this->maximum_future_days . ' days', time()) <= $date_unix) {
+                continue;
+            }
+            if (time() >= $date_unix) {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
@@ -74,29 +88,32 @@ class user_dialog_email {
                 }
                 if (!empty($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
                     $context_string = gettext("Your roster has changed.");
-                    $message .= $roster_item_object->to_email_message_string($context_string);
+                    $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
                     self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
+        /*
+         * TODO: Build the foreach loop only on the $Deleted_roster_employee_id_list.
+         * We do not need the $Roster_old information.
+         */
         foreach ($Roster_old as $date_unix => $Roster_day_array) {
             if (strtotime('+' . $this->maximum_future_days . ' days', time()) <= $date_unix) {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
-                if (in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
+                if (!empty($Deleted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
                     $message .= sprintf(gettext('You are not in the roster anymore on %1s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
                     $ics_file = iCalendar::build_ics_roster_cancelled($roster_item_object);
                     self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
-        self::aggregate_messages_about_changed_roster_to_employees();
     }
 
-    private static function save_email_about_changed_roster_to_database($employee_id, $date_sql, $message, $ics_file) {
+    private static function save_email_about_changed_roster_to_database(int $employee_id, string $date_sql, string $message, string $ics_file) {
         /*
          * TODO: Do not send mail directly.
          *     Save it to the database, aggregate it, check it for plausibility, send it later.
@@ -104,13 +121,13 @@ class user_dialog_email {
         /**
          * Remove old entries about this day if existent for this employee:
          */
-        $sql_query = "DELETE FROM`user_email_notification_cache` WHERE "
-                . " `employee_id` = :employee_id, "
-                . " `date` = :date, "
+        $sql_query = "DELETE FROM `user_email_notification_cache` WHERE "
+                . " `employee_id` = :employee_id and "
+                . " `date` = :date;"
         ;
         database_wrapper::instance()->run($sql_query, array(
             'employee_id' => $employee_id,
-            'date' => $date_sql,
+            'date' => $date_sql
         ));
         /**
          * Insert the new enries:
@@ -170,6 +187,21 @@ class user_dialog_email {
         $sql_query = "DELETE FROM `user_email_notification_cache` "
                 . " WHERE `date` < NOW();";
         database_wrapper::instance()->run($sql_query);
+        /*
+         * TODO: TRUNCATE the table if it is empty. This will reset the AUTO_INCREMENT value of `notification_id`
+         */
+        $sql_query = "SELECT `notification_id` "
+                . " FROM `user_email_notification_cache`;";
+        $result = database_wrapper::instance()->run($sql_query);
+        $table_is_empty = TRUE;
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $table_is_empty = FALSE;
+            break;
+        }
+        if ($table_is_empty) {
+            $sql_query = "TRUNCATE TABLE `user_email_notification_cache`;";
+            database_wrapper::instance()->run($sql_query);
+        }
     }
 
     private static function send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file) {
