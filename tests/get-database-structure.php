@@ -91,13 +91,17 @@ function write_new_trigger_data() {
         $sql_query = "SHOW CREATE TRIGGER " . $trigger_name;
         $sql_result = database_wrapper::instance()->run($sql_query);
         while ($row = $sql_result->fetch(PDO::FETCH_ASSOC)) {
-            $trigger_structure_create = $row['SQL Original Statement'];
-            $GLOBALS['text_to_be_hashed'] .= $trigger_structure_create;
+            /*
+             * get rid of the definer clause e.g. DEFINER=`root`@`localhost`
+             */
+            $trigger_structure_create_without_definer = preg_replace('/DEFINER.*TRIGGER/', 'TRIGGER', $row['SQL Original Statement']);
+
+            $GLOBALS['text_to_be_hashed'] .= $trigger_structure_create_without_definer;
             $file_name = iconv("UTF-8", "ISO-8859-1", $trigger_name); //This is necessary for Microsoft Windows to recognise special chars.
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
             $file_name = PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/trigger.' . $file_name . '.sql';
             $New_table_files[] = $file_name;
-            if (!file_put_contents($file_name, $trigger_structure_create)) {
+            if (!file_put_contents($file_name, $trigger_structure_create_without_definer)) {
                 user_dialog::add_message(gettext('Error while writing the trigger file to disk.'));
                 return FALSE;
             }
