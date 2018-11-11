@@ -205,7 +205,7 @@ class database_wrapper {
      * @param string $field database identifier (i.e. database name, table name, column name)
      * @return string securely quoted identifier
      */
-    protected static function quote_identifier($field) {
+    public static function quote_identifier($field) {
         return "`" . str_replace("`", "``", $field) . "`";
     }
 
