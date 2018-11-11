@@ -394,7 +394,8 @@ abstract class user_input {
             user_input::insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list);
             user_input::insert_changed_entries_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
-            user_dialog_email::write_email_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);
+            $user_dialog_email = new user_dialog_email();
+            $user_dialog_email->create_email_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);
         }
     }
 

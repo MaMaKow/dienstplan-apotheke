@@ -181,6 +181,7 @@ class roster_item {
 
     public function to_email_message_string($context_string) {
         global $List_of_branch_objects, $workforce;
+        $message = "";
         /*
          * The following part is added upon aggregation:
          * $message = sprintf(gettext("Dear %1s,"), $workforce->List_of_employees[$this->employee_id]->full_name) . PHP_EOL . PHP_EOL;

@@ -47,7 +47,7 @@ class maintenance {
             $sql_query = "INSERT INTO `maintenance` SET `last_execution` =  FROM_UNIXTIME(:time)";
             database_wrapper::instance()->run($sql_query, array('time' => time()));
         }
-        if ($this->last_execution < time() - self::MAINTENANCE_PERIOD_IN_SECONDS) {
+        if ($this->last_execution + self::MAINTENANCE_PERIOD_IN_SECONDS < time()) {
             $message = date('Y-m-d') . ': ' . 'Performing general maintenance.' . PHP_EOL;
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             /*
@@ -83,7 +83,9 @@ class maintenance {
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         } else {
             $message = date('Y-m-d') . ': ' . 'Nothing to do for general maintenance.' . PHP_EOL;
-            $message .= $this->last_execution . ' < ' . time() - self::MAINTENANCE_PERIOD_IN_SECONDS . PHP_EOL;
+            $message .= 'Time: ' . strftime('%c', time()) . PHP_EOL;
+            $message .= 'Last execution: ' . strftime('%c', $this->last_execution) . PHP_EOL;
+            $message .= 'Earliest next execution: ' . strftime('%c', $this->last_execution + self::MAINTENANCE_PERIOD_IN_SECONDS) . PHP_EOL;
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         }
     }
