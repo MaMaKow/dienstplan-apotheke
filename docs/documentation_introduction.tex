@@ -4,15 +4,20 @@ PDR started in 2015 as an alternative to a really simple excel sheet without for
 PDR aims to be user-friendly but at the same time cover all necessary features.
 PDR continuously strives to improve. It is open to your requests and wishes.
 I hope it will fulfil your expectations.
+
 \section{Getting PDR}
 The latest release of PDR is available on \href{https://github.com/MaMaKow/dienstplan-apotheke/releases/latest}{GitHub}. GitHub provides the source code as *.zip file or *.tar.gz ball. Extract the files into a folder.
 
 Make sure to unpack PDR to a directory, that your webserver has access to. PHP and the webserver must have read access to all the files and folders. It also needs write access to the subdirectories upload, tmp and config. You might want to change the owner of the directory to the webservers user with e.g.:
 
+\begin{lstlisting}
+sudo chown -R www-data:www-data /var/www/html/pdr/
+\end{lstlisting}
+
 You can also clone the repository with git:
-\begin{verse}
+\begin{lstlisting}
 git clone https://github.com/MaMaKow/dienstplan-apotheke.git
-\end{verse}
+\end{lstlisting}
 See the Administrator manual for details!
 
 \section{License}
@@ -35,9 +40,12 @@ PDR is open source software under the AGPL license.
 	
 \end{quote}
  Please see the \href{https://github.com/MaMaKow/dienstplan-apotheke/blob/master/LICENSE.md}{license file} for details!
+
 \section{Reporting bugs}
-The issue tracker is currently located at GitHub.
-GitHub requires an account in order to report bugs or feature requests. If you do not want to create one, you might send a mail to pdr-issues@martin-mandelkow.de
+The issue tracker is currently located at GitHub \url{https://github.com/MaMaKow/dienstplan-apotheke/issues}.
+GitHub requires an account in order to report bugs or feature requests. If you do not want to create one, you might send a mail to \href{mailto:pdr-issues@martin-mandelkow.de}{pdr-issues@martin-mandelkow.de}
+
 \section{How to contribute}
 Pull requests are desired. If you made changes to PDR and want to contribute them to the public, you are welcome to open a pull-request on GitHub or send your changes in any other way.
 
+You might as well use \lstinline|git send-email| and send patches to \href{mailto:pdr-discuss@martin-mandelkow.de}{pdr-discuss@martin-mandelkow.de}

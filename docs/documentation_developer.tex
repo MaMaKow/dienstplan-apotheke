@@ -1,5 +1,6 @@
-
 \chapter{Developer manual}
+
+
 \section{Core development}
 All PHP scripts have a common file \texttt{default.php}, which handles the default settings. It is placed at ./, which is the \texttt{PDR\_FILE\_SYSTEM\_APPLICATION\_PATH}.
 See the file below:
@@ -24,9 +25,10 @@ See the file below:
     \item \directory{src/sql/} SQL Database Tables and Triggers
     \end{itemize}
 \item \directory{tests/} Tests to find errors in the source code; This folder is listed in .gitignore. Only some files are part of the visible source.
-\item \directory{tmp/} A directy for temporary files. There is no automatic cleanup yet.
+\item \directory{tmp/} A directory for temporary files. There is no automatic cleanup yet.
 \item \directory{upload/} The destination for uploaded content. Currently only specific *.PEP files produced by Awinta ASYS Smart are understood. Those files contain information about the amount of customers that have been served in the past.
 \end{itemize}
+
 \subsection{Coding standards}
 This project aims to follow some coding style guide.
 \begin{itemize}
@@ -42,14 +44,78 @@ This project aims to follow some coding style guide.
 \item Opening braces for control structures SHOULD go on the same line, and closing
 braces MUST go on the next line after the body.
 \end{itemize}
+Disk space is not rare anymore. IDEs are helping with autocomplete. There is no need to abbreviate stuff. Please use long terms like \lstinline|user_email_notification_cache| instead of \lstinline|usr_ml_ntfcn_ca| or \lstinline|u_e_n_c|. 
+
+\subsection{The database}
+Currently there is only MySQL supported as a database management system (DBMS).
+The tables are:
+\begin{itemize}
+\item absence (illness, vacation and other kinds of absence)
+\item approval (saves for each day if the leader has officially authorized the roster)
+\item branch (information about the main pharmacy and possible branches)
+\item Dienstplan (the actual roster data; start, end, break)
+\item employees (employee data; employee\_id, name, profession, abilities)
+\item employees\_backup (a copy of the employees table with historical data archived)
+\item Feiertage (obsolete)
+\item Grundplan\_roll (not used yet)
+\item Grundplan (the basic plan; Beginning, end, pause; is used to suggest new rosters)
+\item maintenance (obsolete)
+\item Mandant (obsolete)
+\item Notdienst (dates of emergency services and the employees scheduled to them)
+\item opening\_times\_special (not used yet)
+\item opening\_times (the opening and closing times of the branches, no GUI yet for editing)
+\item pdr\_self (reflects the state of the application itself)
+\item pep\_month\_day (the relative amount of work on different days in the month)
+\item pep (the raw amount of work data, hashed to reduce the amount of deleted/ignored entries)
+\item pep\_weekday\_time (the amount of work at different times on different weekdays)
+\item pep\_year\_month (the relative amount of work on different months in the year)
+\item saturday\_rotation (whose turn is it to work on which saturday?)
+\item saturday\_rotation\_teams (who belongs to which team for saturday's rotation?)
+\item Schulferien (not used yet)
+\item Stunden (overtime archive and balance)
+\item task\_rotation (rotating assignment of employees to a task, e.g. compounding)
+\item user\_email\_notification\_cache (not used yet)
+\item users\_lost\_password\_token (tokens provided to change a forgotten password)
+\item users\_privileges (the privileges of the user accounts)
+\item users (the user accounts; there has to be exacly one employee for every user account; there may be employees without user accounts)
+\item Wunschplan (obsolete)
+\end{itemize}
+
+
+A copy of all the table structures is stored in \directory{src/sql/}.
+The directory also contains the file \directory{src/sql/database\_version\_hash.php} which holds a SHA1 hash of all 
+the structures returned by \verb|SHOW CREATE TABLE| and \verb|SHOW CREATE TRIGGER| after some modification. 
+The hash is written by \directory{tests/get-database-structure.php}, see the details in that file.
+
+\subsubsection{Maintenance of the database}
+There is a class \emph{update\_database}.
+This class holds a defined set of MySQL statements that alter the database structure from a known state in the past to the current state.
+
+This class is not well tested. It might work. It might as well destroy the whole database.
+
+The class \emph{update\_database} is called on every login of a user. It then decides on its own, if any actions have to be taken.
+In order to decide, the hash stored in the file \directory{database\_version\_hash.php} is compared to the hash stored in the database table \menu{pdr\_self > pdr\_database\_version\_hash}.
+
+\paragraph{Auto healing tables}
+The class \emph{database\_wrapper} has a function \emph{create\_table\_from\_template()} that is able to create missing tables from the structure information given in \directory{src/sql/}. It is called if any PDO database query throws an exception with the code 42S02 and the MySQL error 1146.
+
 
 \section{Documentation}
 This documentation about a programm, app or script is a stub. You can help this project by expanding it.
 
+
 \section{Testing}
+
+
 \section{Bug tracker}
+Bugs and Issues are tracked at GitHub \url{https://github.com/MaMaKow/dienstplan-apotheke/issues}
+
+
 \section{Translation}
+Translations are handled with gettext().
+
 See this article about po4a about the translation of this document:
-\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
+\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
+
 \subsection{Internationalization}
-Different counties have different laws regarding pharmacies and employment. They also have different holidays.
+Different countries have different laws regarding pharmacies and employment. They also have different holidays.

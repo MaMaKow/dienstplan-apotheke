@@ -31,7 +31,39 @@ class update_database {
         'Dienstplan' => 'roster',
     );
 
-    public function rename_database_table($table_name_old, $table_name_new) {
+    public function __construct() {
+        /*
+         * Check if update is necessary
+         */
+        $sql_query = 'SELECT `pdr_database_version_hash` FROM pdr_self;';
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $pdr_database_version_hash = $row->pdr_database_version_hash;
+        }
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/database_version_hash.php';
+        if (PDR_DATABASE_VERSION_HASH === $pdr_database_version_hash) {
+            /*
+             * No need to update the database
+             */
+            return NULL;
+        }
+        $message = date('Y-m-d') . ': ' . 'Performing update of the database.' . PHP_EOL;
+        error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
+        $this->refactor_opening_times_special_table();
+        $this->refactor_absence_table();
+        //$this->refactor_duty_roster_table();
+        $this->refactor_receive_emails_on_changed_roster();
+        $this->refactor_user_email_notification_cache();
+        /*
+         * Write new pdr_database_version_hash into the database:
+         */
+        $sql_query = 'REPLACE INTO `pdr_self` (`pdr_database_version_hash`) VALUES (:pdr_database_version_hash);';
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'pdr_database_version_hash' => PDR_DATABASE_VERSION_HASH
+        ));
+    }
+
+    private function rename_database_table($table_name_old, $table_name_new) {
         /*
          * The table will be automatically locked during the command.
          *
@@ -76,6 +108,26 @@ class update_database {
                     . "CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
             database_wrapper::instance()->run($sql_query);
             database_wrapper::instance()->run("RENAME TABLE `Dienstplan` TO `roster`;");
+        }
+    }
+
+    private function refactor_receive_emails_on_changed_roster() {
+        $database_name = database_wrapper::get_database_name();
+        if (database_wrapper::database_table_exists('users') and ! database_wrapper::database_table_column_exists($database_name, 'users', 'receive_emails_on_changed_roster')) {
+            $sql_query = "ALTER TABLE `users`  ADD `receive_emails_on_changed_roster` BOOLEAN NOT NULL DEFAULT FALSE  AFTER `failed_login_attempt_time`;";
+            database_wrapper::instance()->run($sql_query);
+        }
+    }
+
+    private function refactor_user_email_notification_cache() {
+        if (!database_wrapper::database_table_exists('user_email_notification_cache')) {
+            $sql_query = file_get_contents(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/user_email_notification_cache.sql');
+            database_wrapper::instance()->run($sql_query);
+        }
+        $database_name = database_wrapper::get_database_name();
+        if (database_wrapper::database_table_exists('user_email_notification_cache') and ! database_wrapper::database_table_column_exists($database_name, 'user_email_notification_cache', 'date')) {
+            $sql_query = "ALTER TABLE `user_email_notification_cache` ADD `date` DATE NOT NULL AFTER `employee_id`;";
+            database_wrapper::instance()->run($sql_query);
         }
     }
 
