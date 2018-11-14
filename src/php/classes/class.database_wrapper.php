@@ -79,6 +79,22 @@ class database_wrapper {
     }
 
     /**
+     *  Get the database name
+     *  @return string database_name
+     */
+    public static function get_database_name() {
+        if (self::$instance === null) {
+            return FALSE;
+        }
+        $sql_query = "SELECT DATABASE() as `database_name` FROM DUAL;"; //On all databases except Oracle FROM DUAL can be omitted.
+        $result = self::$instance->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $database_name = $row->database_name;
+        }
+        return $database_name;
+    }
+
+    /**
      *  A proxy to native PDO methods
      *  @param string $method Name of a method of the class PDO
      *  @param misc $arguments Description arguments passed to the PDO method
@@ -189,7 +205,7 @@ class database_wrapper {
      * @param string $field database identifier (i.e. database name, table name, column name)
      * @return string securely quoted identifier
      */
-    protected static function quote_identifier($field) {
+    public static function quote_identifier($field) {
         return "`" . str_replace("`", "``", $field) . "`";
     }
 

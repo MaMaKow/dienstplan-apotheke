@@ -1,22 +1,29 @@
 \chapter{Administrator manual}
+
 \section{Installation}\label{sec:installation}
+
 \subsection{Getting PDR}
 The latest release of PDR is available on \href{https://github.com/MaMaKow/dienstplan-apotheke/releases}{GitHub}
 
 You can also get the latest stable version via git:
-\begin{verbatim}
+\begin{lstlisting}
 git clone https://github.com/MaMaKow/dienstplan-apotheke.git
-\end{verbatim}
+\end{lstlisting}
 The master branch is tested to be stable.
+
 \subsection{The installer}
+
 \subsubsection{Introduction}
 The first page shows some non-technical information about this program. Click \menu{Next} to move on.
+
 \subsubsection{Welcome}
 On the second page some technical background information is given. You are informed about the necessary input data, required for continuing the installation. Available database management systems (currently only MySQL) are listed. Finally, you are informed about the user and password strategy for the database access. Click \menu{Next} again, to continue.
+
 \subsubsection{Requirements}
 On the next page the application checks, if all requirements are met. These include a minimum PHP version, some PHP extensions and support for database connections. Also the program needs write access to some of its directories.
 If problems are found, then a descriptive error message will be shown. It is not possible to continue, until all issues are solved.
 Click \menu{Next} again, to continue.
+
 \subsubsection{Database configuration}
 The application now starts to collect configuration data.
 \begin{itemize}
@@ -28,14 +35,15 @@ The application now starts to collect configuration data.
 \item database name
 \end{itemize}
 Enter the required data and \menu{Submit} it.
+
 \subsubsection{Administrator configuration}
 After the database values are set, some information about the administrator is collected:
 \begin{itemize}
-\item User name\\ the name used by the administrator to login into the program in the future. 
-\item Last name\\ this name is connected to the employee id.
-\item Employee id\\ this is used to create an employee, who is connected to the administrative user.
-\item Contact email address\\ is used for questions and comments from the users. Also this email will receive some internal information from the roster.
-\item Administrator password\\ the password used by the administrator to login into the program in the future. 
+    \item User name\\ the name used by the administrator to login into the program in the future. 
+    \item Last name\\ this name is connected to the employee id.
+    \item Employee id\\ this is used to create an employee, who is connected to the administrative user.
+    \item Contact email address\\ is used for questions and comments from the users. Also this email will receive some internal information from the roster.
+    \item Administrator password\\ the password used by the administrator to login into the program in the future. 
 \end{itemize}
 Please register the administrator and click \menu{Submit}.
 The data will be written to the file \directory{config/config.php}.
@@ -51,6 +59,7 @@ The next logical step is to setup some more employees in the \menu{Administratio
 
 After all the employees are inserted, you can just start to write rosters (\menu{Daily View > Daily input}) or you might create principle rosters for specific weekdays (\menu{Daily view > principle roster daily}) or for distinct employees (\menu{Employee > Principle roster employee}).
 
+
 \section{Upgrading}
 Until now, there is no automatic update mechanism established.
 You can regularly download release packages from GitHub. Or you can stay in touch via git:
@@ -58,10 +67,15 @@ You can regularly download release packages from GitHub. Or you can stay in touc
 git pull origin master
 \end{lstlisting}
 \emph{CAVE:} Make sure, that you keep your \directory{config/config.php}! It should not be changed by git, because it is listed in the .gitignore file of this project.
+
+
 \section{Configuration}
 You can manually edit the file \directory{config/config.php}.
 The default values are:
-\begin{verbatim}
+\begin{lstlisting}
+<?php
+
+$config = array(
 'application_name' => 'PDR',
 'database_management_system' => 'mysql',
 'database_host' => 'localhost',
@@ -79,13 +93,41 @@ The default values are:
 'language' => 'de_DE',
 'mb_internal_encoding' => 'UTF-8',
 'contact_email' => '',
-'hide_disapproved' => FALSE
-\end{verbatim}
+'hide_disapproved' => FALSE,
+);
+\end{lstlisting}
 
 
-Never delete the first two lines! If the file does not start with "<?php" then PHP will not handle it, meaning that anyone can read its content. 
-\menu{Administration > Human resource management}
+Never delete the first two lines! If the file does not start with \lstinline|<?php| then PHP will not handle it, meaning that anyone can read its content. 
+%\menu{Administration > Human resource management}
+
 \section{Maintenance}
+The file \directory{src/php/background\_maintenance.php} will be called on every login of any user.
+It will create an instance of the following classes:
+\begin{itemize}
+    \item maintenance
+    \item update\_database
+    %\item auto_upgrader
+\end{itemize}
+
+\subsection{class maintenance}
+The methods contained in the class maintenance are only called, if the last execution is at least \lstinline|MAINTENANCE_PERIOD_IN_SECONDS| ago.
+\lstinline|MAINTENANCE_PERIOD_IN_SECONDS| is set to once a day.
+
+The method \lstinline|user_dialog_email->aggregate_messages_about_changed_roster_to_employees()| is called to send out emails to employees, whose roster has been changed.
+
+The method \lstinline|maintenance->cleanup_overtime()| does not do anything yet. It is meant to be used to clean up overtime of existing employees, that happened before they entered the company.
+
+The method \lstinline|maintenance->cleanup_absence()| does not do anything yet. It is meant to be used to clean up absences of existing employees, that happened before they entered the company.
+
+
+\subsection{class update\_database}
+Before the class update\_database executes any of its methods, it checks if there is any change in the official database structure since the last update.
+It compares the pdr\_database\_version\_hash from the table pdr\_self in the database with the value \lstinline|PDR_DATABASE_VERSION_HASH| stored in the file \directory{src/php/database\_version\_hash.php}
+
+The class should contain every SQL Query necessary to change an existing database into the new structure without loosing any data.
+
+
 \section{Issues and Troubleshooting}
-
-
+Issues are tracked at GitHub \url{https://github.com/MaMaKow/dienstplan-apotheke/issues}
+I am trying to answer any question within 3 days.

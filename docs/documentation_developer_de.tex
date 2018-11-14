@@ -1,7 +1,8 @@
 % This file was generated with po4a. Translate the source file.
 %
-
 \chapter{Entwicklerhandbuch}
+
+
 \section{Kernentwicklung}
 Alle PHP-Skripte laden eine gemeinsame Datei \texttt{default.php}, die die
 Standardeinstellungen vornimmt. Sie befindet sich in ./, welches der
@@ -42,17 +43,18 @@ spezifische *.PEP-Dateien verstanden, die von Awta ASYS Smart erstellt
 wurden. Diese Dateien enthalten Informationen über die Anzahl der Kunden,
 die in der Vergangenheit bedient wurden.
 \end{itemize}
+
 \subsection{Programmierstil}
 Dieses Projekt versucht, einem Programmierstil zu folgen.
 \begin{itemize}
 \item Bitte vermeiden Sie StudlyCaps und camelCase (Binnenmajuskel).
 \item Klassenkonstanten MÜSSEN in Großbuchstaben mit Unterstrichtrennzeichen
 deklariert werden.
-\item Eigenschaftsnamen MÜSSEN in Unter_strichen geschrieben werden.
+\item Eigenschaftsnamen MÜSSEN in Unter\_strichen geschrieben werden.
 \item Einfache Variablen und Objekte werden in Kleinbuchstaben geschrieben.
 \item Array-Namen beginnen mit einem einzelnen Großbuchstaben, gefolgt von
 Kleinbuchstaben.
-\item Methodennamen müssen Unter_strichen geschrieben werden.
+\item Methodennamen müssen mit Unter\_strichen geschrieben werden.
 
 \item Der Code MUSS 4 Leerzeichen zum Einrücken verwenden, keine Tabulatoren.
 \item Öffnende geschweifte Klammern für Klassen und Funktionen MÜSSEN in derselben
@@ -62,17 +64,113 @@ Zeile nach dem Text beginnen.
 Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
 Zeile nach dem Text beginnen.
 \end{itemize}
+Festplattenplatz ist nicht mehr knapp. IDEs helfen mit
+Autoverfollständung. Es ist nicht nötig, Dinge abzukürzen. Bitte verwenden
+Sie lange Begriffe wie  \lstinline|user_email_notification_cach|  statt
+\lstinline|usr_ml_ntfcn_ca| oder \lstinline|u_e_n_c|. 
+
+\subsection{Die Datenbank}
+Derzeit wird nur MySQL als Datenbankverwaltungssystem (DBMS)
+unterstützt. Die Tabellen sind:
+\begin{itemize}
+\item Abwesenheit (Krankheit, Urlaub und andere Arten von Abwesenheit)
+\item approval (speichert für jeden Tag, ob der Leiter offiziell den Dienstplan
+autorisiert hat)
+\item branch (Informationen über die Hauptapotheke und mögliche Filialen)
+\item Dienstplan (die tatsächlichen Dienstplandaten; Anfang, Ende, Pause)
+\item employees (Mitarbeiterdaten; Mitarbeiter\_id, Name, Beruf, Fähigkeiten)
+\item employees\_backup (eine Kopie der Mitarbeitertabelle mit archivierten
+historischen Daten)
+\item Feiertage (obsolet)
+\item Grundplan\_roll (noch nicht benutzt)
+\item Grundplan (der Grundsatzplan; Anfang, Ende, Pause; wird verwendet, um neue
+Dienstpläne vorzuschlagen)
+\item Wartung (obsolet)
+\item Mandant (obsolet)
+\item Notdienst (Daten der Notdienste und der ihnen zugewiesenen Mitarbeiter)
+\item opening\_times\_special (noch nicht benutzt)
+\item opening\_times (die Öffnungs- und Schließzeiten der Filialen, noch keine GUI
+zur Bearbeitung)
+\item pdr\_self (spiegelt den Zustand der Anwendung selbst wider)
+\item pep\_month\_day (die relative Menge an Arbeit an verschiedenen Tagen im
+Monat)
+\item pep (die rohen Daten zur Arbeitsmenge, gehashed, um die Anzahl der
+gelöschten / ignorierten Einträge zu reduzieren)
+\item pep\_weekday\_time (die Menge der Arbeit zu verschiedenen Zeiten an
+verschiedenen Wochentagen)
+\item pep\_year\_month (die relative Menge an Arbeit in verschiedenen Monaten im
+Jahr)
+\item saturday\_rotation (Wer soll an welchem Samstag arbeiten?)
+\item saturday\_rotation\_teams (Wer gehört zu welcher Mannschaft für die Rotation
+am Samstag?)
+\item Schulferien (noch nicht benutzt)
+\item Stunden (Überstundenarchiv und Saldo)
+\item task\_rotation (rotierende Zuordnung von Mitarbeitern zu einer Aufgabe,
+z.B. Rezeptur)
+\item user\_email\_notification\_cache (noch nicht benutzt)
+\item users\_lost\_password\_token (Token zur Verfügung gestellt, um ein
+vergessenes Passwort zu ändern)
+\item users\_privileges (die Berechtigungen der Benutzerkonten)
+\item users (die Benutzerkonten; Für jeden Benutzeraccount muss genau ein
+Mitarbeiter vorhanden sein. Es können Mitarbeiter ohne Benutzerkonten
+existieren)
+\item Wunschplan (obsolet)
+\end{itemize}
+
+
+Eine Kopie aller Tabellenstrukturen wird in \directory{src/sql/}
+gespeichert. Das Verzeichnis enthält auch die Datei
+\directory{src/sql/database\_version\_hash.php}, die einen SHA1-Hash aller
+Strukturen enthält, die von \begin{verbatim}SHOW CREATE TABLE\end{verbatim}
+und \begin{verbatim}SHOW CREATE TRIGGER\end{verbatim} nach einigen
+Änderungen zurückgegeben werden. Der Hash wird von
+\directory{tests/get-database-structure.php} geschrieben, siehe die Details
+in jener Datei.
+
+\subsubsection{Pflege der Datenbank}
+Es gibt eine Klasse \emph{update\_database}. Diese Klasse enthält eine
+definierte Menge von MySQL-Anweisungen, die die Datenbankstruktur von einem
+bekannten Zustand in der Vergangenheit in den aktuellen Zustand versetzen.
+
+Diese Klasse ist nicht gut getestet. Sie könnte funktionieren. Sie könnte
+auch die gesamte Datenbank zerstören.
+
+Die Klasse \emph{update\_database} wird bei jedem Login eines Nutzers
+aufgerufen. Sie entscheidet dann selbst, ob irgendwelche Maßnahmen ergriffen
+werden müssen.  Um dies zu entscheiden, wird der in der Datei
+\directory{database\_version\_hash.php} gespeicherte Hash mit dem in der
+Datenbanktabelle gespeicherten Hash verglichen
+\menu{pdr\_self>pdr\_database\_version\_hash}.
+
+\paragraph{Selbstheilende Tabellen}
+Die Klasse \emph{database\_wrapper} hat eine Funktion
+\emph{create\_table\_from\_template()}, die in der Lage ist, fehlende
+Tabellen aus den Strukturinformationen zu erstellen, die im Verzeichnis
+\directory{src/sql/} gespeichert sind. Sie wird aufgerufen, wenn eine
+PDO-Datenbankabfrage eine Ausnahme mit dem Code 42S02 und dem MySQL-Fehler
+1146 wirft.
+
 
 \section{Dokumentation}
 Diese Dokumentation über ein Programm, eine App oder ein Skript ist
 unvollständig. Sie können dieses Projekt unterstützen, indem Sie sie
 erweitern.
 
+
 \section{Testen}
+
+
 \section{Bug Tracker}
+Fehler und Probleme werden bei GitHub verfolgt
+\url{https://github.com/MaMaKow/dienstplan-apotheke/issues}
+
+
 \section{Übersetzung}
+Übersetzungen werden mit gettext () verwaltet.
+
 Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments:
-\href{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
-\subsection{Internationalisierung} Verschiedene Länder haben
-unterschiedliche Gesetze bezüglich Apotheken und Beschäftigung. Sie haben
-auch unterschiedliche Feiertage.
+\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
+
+\subsection{Internationalisierung}
+Verschiedene Länder haben unterschiedliche Gesetze in Bezug auf Apotheken
+und Beschäftigung. Sie haben auch unterschiedliche Feiertage.

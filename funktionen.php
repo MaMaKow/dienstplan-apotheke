@@ -114,3 +114,38 @@ function running_on_windows() {
     }
     return false;
 }
+
+/**
+ * The current running PHP binary
+ *
+ * <p>
+ * If PHP_BINARY is set and not empty, then the constant is used.
+ * If the constant is empty, we use the directory PHP_BINARY and append "php" to it.
+ * If that constant also is empty, we resort to simply return "php" and hope, that the shell will handle it.
+ * </p>
+ *
+ * @return string the path of the php binary running this script.
+ */
+function get_php_binary() {
+    if (!empty(PHP_BINARY)) {
+        return PHP_BINARY;
+    } else {
+        if (!empty(PHP_BINDIR)) {
+            return PHP_BINDIR . '/php';
+        } else {
+            return 'php';
+        }
+    }
+}
+
+/**
+ * TODO: Is this a good alternative for background_maintenance?
+ * Does it work reliably?
+ */
+function execute_in_background(string $command, string $logfile = "/dev/null", string $parameters = "") {
+    if (substr(php_uname(), 0, 7) == "Windows") {
+        pclose(popen("start /B " . $command . escapeshellcmd($parameters) . " > $logfile", "r"));
+    } else {
+        exec($cmd . escapeshellcmd($parameters) . " > $logfile &");
+    }
+}
