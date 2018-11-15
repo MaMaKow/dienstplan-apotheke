@@ -121,7 +121,7 @@ if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE)) {
     echo $roster_image_bar_plot->svg_string;
     echo "<br>\n";
     echo "<br>\n";
-    $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
+    $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     echo roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);
     echo "</div>\n";
 }
