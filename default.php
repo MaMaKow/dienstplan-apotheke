@@ -45,6 +45,9 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
     header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php");
     die("The application does not seem to be installed. Please see the <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php'>installation page</a>!");
 } else {
+    $config = array();
+    global $config; //This has to be explicitly declared in order to work with PHPUnit
+
     /*
      * Load configuration parameters from the configuration file:
      */
@@ -96,7 +99,6 @@ date_default_timezone_set($config['timezone']);
  */
 mb_internal_encoding($config['mb_internal_encoding']);
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
-
 
 /*
  * session management

@@ -86,7 +86,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
  * Examine roster for errors and irregularities:
  */
 if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
-    $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
+    $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     $examine_roster->check_for_overlap($date_sql, $List_of_branch_objects, $workforce);
     $examine_roster->check_for_sufficient_employee_count();
     $examine_roster->check_for_sufficient_goods_receipt_count();
@@ -193,7 +193,11 @@ $html_text .= "</form>\n";
 
 if (!empty($Roster)) {
     if (!isset($examine_roster)) {
-        $examine_roster = new examine_roster($Roster, $date_unix, $branch_id);
+        /*
+         * we need $examine_roster->Anwesende for roster_image_histogramm::draw_image_histogramm()
+         * $examine_roster should already be defined. This is just a precaution.
+         */
+        $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     }
     $html_text .= "<div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Roster);

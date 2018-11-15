@@ -23,10 +23,11 @@ class examine_roster {
     private $Approbierten_anwesende;
     private $Wareneingang_Anwesende;
 
-    public function __construct($Roster, $date_unix, $branch_id) {
+    public function __construct($Roster, $date_unix, $branch_id, $workforce) {
+
         $this->Roster_of_all_employees = $Roster;
-        $this->Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster);
-        $this->Roster_of_goods_receipt_employees = roster_headcount::get_roster_of_goods_receipt_employees($Roster);
+        $this->Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster, $workforce);
+        $this->Roster_of_goods_receipt_employees = roster_headcount::get_roster_of_goods_receipt_employees($Roster, $workforce);
 
         $this->Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $branch_id);
         $Changing_times = roster::calculate_changing_times($Roster);
@@ -73,6 +74,7 @@ class examine_roster {
             );
             user_dialog::add_message($message, E_USER_ERROR, TRUE);
         }
+        return TRUE;
     }
 
     /**
