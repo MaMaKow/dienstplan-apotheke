@@ -18,7 +18,7 @@
  */
 
 /**
- * Description of examine_rosterTest
+ * Tests for the class examine_roster
  *
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
@@ -27,47 +27,109 @@ class examine_rosterTest extends PHPUnit_Framework_TestCase {
     private $instance;
 
     public function setUp() {
-        $workforce = new workforce();
-        $List_of_branch_objects = branch::read_branches_from_database();
-        $date_sql = "2018-01-02";
-        $date_unix = strtotime($date_sql);
-        $branch_id = 1;
-        $Roster = roster::read_roster_from_database($branch_id, $date_sql);
+        $this->List_of_branch_objects = branch::read_branches_from_database();
+        $this->branch_id = 1;
+    }
 
-        $this->instance = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
+    /**
+     * Enable testing different days one after the other
+     *
+     * @param string $date_sql Date string in mysql date format
+     */
+    public function date_instantiator($date_sql) {
+        $this->workforce = new workforce($date_sql);
+        $date_unix = strtotime($date_sql);
+        $this->Roster = roster::read_roster_from_database($this->branch_id, $date_sql);
+        $this->instance = new examine_roster($this->Roster, $date_unix, $this->branch_id, $this->workforce);
     }
 
     public function tearDown() {
 
     }
 
-    /*
-      public function testEmpty() {
-      $stack = [];
-      $this->assertEmpty($stack);
-
-      return $stack;
-      }
-     */
-
-    public function check_for_overlap_provider() {
-        $List_of_branch_objects = branch::read_branches_from_database();
+    public function testcheck_for_overlap_date_sql_provider() {
         return array(
-            array("2018-01-02", $List_of_branch_objects, new workforce("2018-01-02")),
-            array("2018-01-03", $List_of_branch_objects, new workforce("2018-01-03")),
+            array("2018-10-01", array()),
+            array("2018-10-04", array(0 => array(
+                        'text' => '<pre>Konflikt bei Mitarbeiter Issel <br>15:00:00 bis 20:00:00 (Außendienst) <br>mit <br>08:00:00 bis 16:00:00 (Hauptapotheke)</pre>',
+                        'type' => 'error',
+                    )))
         );
     }
 
     /**
-     * @dataProvider check_for_overlap_provider
-     * @return boolean
+     * @dataProvider testcheck_for_overlap_date_sql_provider
      */
-    public function testcheck_for_overlap($date_sql, $List_of_branch_objects, $workforce) {
-        $this->assertTrue($this->instance->check_for_overlap($date_sql, $List_of_branch_objects, $workforce));
-        $this->assertTrue(1 !== user_dialog::$Messages);
+    public function testcheck_for_overlap($date_sql, $result) {
+        $this->date_instantiator($date_sql);
+        user_dialog::$Messages = array();
+        $workforce = new workforce($date_sql);
+        $this->assertTrue($this->instance->check_for_overlap($date_sql, $this->List_of_branch_objects, $workforce));
         var_export(user_dialog::$Messages);
-        echo PHP_EOL;
-        return TRUE;
+
+        $this->assertTrue($result === user_dialog::$Messages);
+    }
+
+    public function check_for_sufficient_employee_count_provider() {
+        return array(
+            array("2018-10-01", array()),
+            array("2018-10-02", array(0 => array(
+                        'text' => 'Um 08:00 Uhr sind weniger als  2 Mitarbeiter anwesend.',
+                        'type' => 'warning',
+                    ))),
+        );
+    }
+
+    /**
+     * @dataProvider check_for_sufficient_employee_count_provider
+     */
+    public function testcheck_for_sufficient_employee_count($date_sql, $result) {
+        $this->date_instantiator($date_sql);
+        user_dialog::$Messages = array();
+        $this->assertTrue(FALSE !== $this->instance->check_for_sufficient_employee_count());
+
+        $this->assertTrue($result === user_dialog::$Messages);
+    }
+
+    public function check_for_sufficient_goods_receipt_count_provider() {
+        return array(
+            array("2018-10-01", array()),
+            array("2018-10-02", array(0 => array(
+                        'text' => 'Um 08:00 Uhr ist niemand f&uuml;r den Wareneingang anwesend.',
+                        'type' => 'warning',
+                    ),
+                )),
+        );
+    }
+
+    /**
+     * @dataProvider check_for_sufficient_goods_receipt_count_provider
+     */
+    public function testcheck_for_sufficient_goods_receipt_count($date_sql, $result) {
+        $this->date_instantiator($date_sql);
+        user_dialog::$Messages = array();
+        $this->assertTrue(FALSE !== $this->instance->check_for_sufficient_goods_receipt_count());
+        $this->assertTrue($result === user_dialog::$Messages);
+    }
+
+    public function check_for_sufficient_qualified_pharmacist_count_provider() {
+        return array(
+            array("2018-10-01", array()),
+            array("2018-10-02", array(0 => array(
+                        'text' => 'Um 08:00 Uhr ist kein Approbierter anwesend.',
+                        'type' => 'error'),
+                )),
+        );
+    }
+
+    /**
+     * @dataProvider check_for_sufficient_qualified_pharmacist_count_provider
+     */
+    public function testcheck_for_sufficient_qualified_pharmacist_count($date_sql, $result) {
+        $this->date_instantiator($date_sql);
+        user_dialog::$Messages = array();
+        $this->assertTrue(FALSE !== $this->instance->check_for_sufficient_qualified_pharmacist_count());
+        $this->assertTrue($result === user_dialog::$Messages);
     }
 
 }
