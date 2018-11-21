@@ -65,8 +65,6 @@ class examine_rosterTest extends PHPUnit_Framework_TestCase {
         user_dialog::$Messages = array();
         $workforce = new workforce($date_sql);
         $this->assertTrue($this->instance->check_for_overlap($date_sql, $this->List_of_branch_objects, $workforce));
-        var_export(user_dialog::$Messages);
-
         $this->assertTrue($result === user_dialog::$Messages);
     }
 
