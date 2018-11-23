@@ -2,7 +2,7 @@
 #This script will create a list of tests to be done for the current commit.
 root_folder=$(git rev-parse --show-toplevel);
 branch_name=$(git symbolic-ref --short HEAD);
-commit_name=$(git describe);
+commit_name=$(git describe --tags);
 echo "Changing directory to $root_folder";
 #cd "$root_folder/tests"; #will only cd if we are above tests
 mkdir -p "$root_folder/tests/log";
