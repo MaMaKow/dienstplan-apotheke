@@ -34,8 +34,8 @@ foreach (configuration::$List_of_configuration_parameters as $key => $value) {
 }
 ini_set('display_errors', $config['display_errors']); //Display errors to the end user?
 ini_set('log_errors', $config['log_errors']); //Log errors to file?
-ini_set('zend.assertions', 1); //Assertions will be compiled AND executed.
-ini_set('assert.exception', 1); //An exception will be thrown if an assertion fails.
+//ini_set('zend.assertions', 1); //Assertions will be compiled AND executed.
+//ini_set('assert.exception', 1); //An exception will be thrown if an assertion fails.
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "funktionen.php";
 setlocale(LC_TIME, $config['LC_TIME']);
 date_default_timezone_set($config['timezone']);
@@ -45,6 +45,7 @@ $navigator_language = 'de-de';
 
 
 exec("mysql < " . PDR_FILE_SYSTEM_APPLICATION_PATH . 'tests/pdr_test.sql', $exec_result);
-echo "mysql result: " . var_export($exec_result, TRUE) . PHP_EOL;
-
+if (!empty($exec_result)) {
+    echo "mysql result: " . var_export($exec_result, TRUE) . PHP_EOL;
+}
 

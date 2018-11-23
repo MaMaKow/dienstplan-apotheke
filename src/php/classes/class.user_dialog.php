@@ -21,6 +21,7 @@
  * This class is thought to be used for messages adressed to the end user.
  *
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @todo no static methods
  */
 abstract class user_dialog {
 
