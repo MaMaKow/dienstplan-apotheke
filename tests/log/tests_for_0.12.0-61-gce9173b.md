@@ -1,65 +1,68 @@
 These things should be done before merging changes into master:
 
-* Login
-* Change password with
-  * lost_password.php
-* Create user
+* Login												PASSED
+* Change password with										PASSED
+  * lost_password.php										PASSED
+* Create user											PASSED
+  - There is no error message on failure
+    - If a user with the given employee_id exists, than only a blank nothing is presented.
 
-* Roster input
-  * Create a roster from scratch
-  * Edit the roster
-    * Exchange an employee with another one.
-    * Drag and drop
-      *	drag the duty times
-      * drag the break times
+* Roster input											PASSED
+  * Create a roster from scratch								PASSED
+  * Edit the roster										PASSED
+    * Exchange an employee with another one.							PASSED
+    * Drag and drop										PASSED
+      *	drag the duty times									PASSED
+      * drag the break times									PASSED
   * Provoke some errors:
-    * Not enough employees at starting time
-    * No pharmacist at starting time
-    * No goods reciept employee at starting time
-    * One employee not scheduled
-    * One employee scheduled although absent
-  * Add an entry at the end of the roster
-  * Look at one sunday/empty roster
-  * Saturday rotation
+    * Not enough employees at starting time							PASSED
+    * No pharmacist at starting time								PASSED
+    * No goods reciept employee at starting time						PASSED
+    * One employee not scheduled								PASSED
+    * One employee scheduled although absent							PASSED
+  * Add an entry at the end of the roster							PASSED
+  * Look at one sunday/empty roster								PASSED
+  * Saturday rotation										PASSED
   * Write a mail using the contact form
-  * Disapprove roster
-  * Approve roster
+  * Disapprove roster									FAILED
+  * Approve roster									FAILED
 *Roster output
-  * View roster in read mode
-    * Navigation with keyboard
-    * View the print version
-    * use the datepicker in/for old browsers
-  * View the roster in read mode weekly table.
-    * Task rotation
-    * Keyboard navigation
-  * View the roster in read mode weekly images.
-  * View the roster in employee table
-    * download ICS file
-    * validate ICS file (https://icalendar.org/validator.html)
+  * View roster in read mode									PASSED
+    * Navigation with keyboard									PASSED
+    * View the print version									PASSED
+    * use the datepicker in/for old browsers							PASSED
+  * View the roster in read mode weekly table.							PASSED
+    * Task rotation										PASSED
+    * Keyboard navigation									PASSED
+  * View the roster in read mode weekly images.							PASSED
+  * View the roster in employee table								PASSED
+    * download ICS file										PASSED
+    * validate ICS file (https://icalendar.org/validator.html)					PASSED
 
-* Principle roster
-  * Principle roster day
-    * Change roster by drag and drop
-  * Principle roster employee
-    * Change roster
-* Overtime
-  * Read
-  * Write
-    * Insert new
-    * Delete old
+* Principle roster										PASSED
+  * Principle roster day									PASSED
+    * Change roster by drag and drop								PASSED
+  * Principle roster employee								FAILED
+    * Change roster										PASSED
+    - It is not possible to enter a new day. It is only possible to change existing data.
+* Overtime											PASSED
+  * Read											PASSED
+  * Write											PASSED
+    * Insert new										PASSED
+    * Delete old										PASSED
 
 * Absence
-  * Create an absence in absence-edit.php
-    * Edit the absence
-    * Delete the absence
-  * View the absence in absence-read.php
-  * Create an absence in collaborative-vacation-month.php
-    * Mark it as denied, pending and approved (in that order!)
-  * Create an absence in collaborative-vacation-year.php
-    * Delete the absence
+  * Create an absence in absence-edit.php							PASSED
+    * Edit the absence										PASSED
+    * Delete the absence									PASSED
+  * View the absence in absence-read.php							PASSED
+  * Create an absence in collaborative-vacation-month.php					PASSED
+    * Mark it as denied, pending and approved (in that order!)					PASSED
+  * Create an absence in collaborative-vacation-year.php					PASSED
+    * Delete the absence									PASSED
 * Administration
-  * Have a look at attendance-list.php
-  * Have a look at marginal-employment-hours-list.php
+  * Have a look at attendance-list.php								PASSED
+  * Have a look at marginal-employment-hours-list.php						PASSED
   * PEP
     * Upload a PEP file to upload-pep.php
     * Upload a wrong file
