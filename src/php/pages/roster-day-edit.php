@@ -29,6 +29,8 @@ $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STR
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 $workforce = new workforce($date_sql);
+$user_dialog = new user_dialog();
+
 /*
  * User input:
  * Get new/changed rosters from user input and put them into the database.
@@ -68,7 +70,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
          * Create roster from principle roster:
          */
         $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
-        user_dialog::add_message($message);
+        $user_dialog->add_message($message);
         $Roster = $Principle_roster;
     } elseif (6 == strftime('%u', $date_unix)) {
         try {
@@ -76,7 +78,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
             $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
             $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
             $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
-            user_dialog::add_message($message);
+            $user_dialog->add_message($message);
         } catch (Exception $exception) {
             error_log($exception->getMessage());
         }
@@ -100,7 +102,7 @@ examine_attendance::check_for_attendant_absentees($Roster, $Absentees);
 
 if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
     $message = gettext('Beware the emergency service!');
-    user_dialog::add_message($message, E_USER_WARNING);
+    $user_dialog->add_message($message, E_USER_WARNING);
 }
 
 /*
@@ -130,7 +132,7 @@ $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 /*
  * Here we put the output of errors and warnings.
  */
-$html_text .= user_dialog::build_messages();
+$html_text .= $user_dialog->build_messages();
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";

@@ -50,6 +50,7 @@ function delete_old_table_data() {
 }
 
 function write_new_table_data() {
+    $user_dialog = new user_dialog();
     //Collect the new data and write it to files:
     global $New_table_files;
     $sql_query = "SHOW TABLES";
@@ -73,7 +74,7 @@ function write_new_table_data() {
             //TODO: Is ISO-8859-1 correct for all versions of Windows? Will there be any problems on Linux or Mac?
             $New_table_files[] = $file_name;
             if (!file_put_contents($file_name, $table_structure_create)) {
-                user_dialog::add_message(gettext('Error while writing the file to disk.'));
+                $user_dialog->add_message(gettext('Error while writing the file to disk.'));
                 return FALSE;
             }
         }
@@ -82,6 +83,8 @@ function write_new_table_data() {
 }
 
 function write_new_trigger_data() {
+    $user_dialog = new user_dialog();
+
     //Collect the new data and write it to files:
     global $New_table_files;
     $sql_query = "SHOW TRIGGERS";
@@ -102,7 +105,7 @@ function write_new_trigger_data() {
             $file_name = PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/trigger.' . $file_name . '.sql';
             $New_table_files[] = $file_name;
             if (!file_put_contents($file_name, $trigger_structure_create_without_definer)) {
-                user_dialog::add_message(gettext('Error while writing the trigger file to disk.'));
+                $user_dialog->add_message(gettext('Error while writing the trigger file to disk.'));
                 return FALSE;
             }
         }
@@ -115,10 +118,10 @@ if (delete_old_table_data() and write_new_trigger_data() and write_new_table_dat
     $database_hash = sha1($GLOBALS['text_to_be_hashed']);
     $database_version_hash_text = '<?php ' . PHP_EOL . PHP_EOL . "const PDR_DATABASE_VERSION_HASH = '" . $database_hash . "';" . PHP_EOL;
     if (!file_put_contents(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/database_version_hash.php', $database_version_hash_text)) {
-        user_dialog::add_message(gettext('Error while writing the database hash file to disk.'));
+        $user_dialog->add_message(gettext('Error while writing the database hash file to disk.'));
     }
 } else {
     echo "Error while writing sql table structure files." . PHP_EOL;
 }
 //Have another look into: https://www.slideshare.net/jonoxer/selfhealing-databases-managing-schema-updates-in-the-field/18-Missing_column_Record_schema_changes
-echo user_dialog::build_messages_for_cli();
+echo $user_dialog->build_messages_for_cli();

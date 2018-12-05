@@ -56,6 +56,7 @@ class examine_roster {
      * @param object $workforce
      */
     public function check_for_overlap($date_sql, $List_of_branch_objects, $workforce) {
+        $user_dialog = new user_dialog();
         $sql_query = "SELECT `first`.`VK`,"
                 . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
                 . " `first`.`Mandant` as first_branch,"
@@ -72,7 +73,7 @@ class examine_roster {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $message = sprintf(gettext('Conflict at employee %1s <br>%2s to %3s (%4s) <br>with<br>%5s to %6s (%7s)'), $workforce->List_of_employees[$row->VK]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->short_name, $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->short_name
             );
-            user_dialog::add_message($message, E_USER_ERROR, TRUE);
+            $user_dialog->add_message($message, E_USER_ERROR, TRUE);
         }
         return TRUE;
     }

@@ -149,14 +149,15 @@ class sessions {
     }
 
     public function exit_on_missing_privilege($privilege) {
+        $user_dialog = new user_dialog();
         if (!$this->user_has_privilege($privilege)) {
             $request_uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
             $message = gettext('You are missing the necessary permission to use this page.')
                     . ' ' . gettext('Please contact the administrator if you feel this is an error.')
                     . ' ("' . pdr_gettext(str_replace('_', ' ', $privilege))
                     . '" ' . gettext('is required for') . ' ' . basename($request_uri) . ')';
-            user_dialog::add_message($message, E_USER_ERROR);
-            echo user_dialog::build_messages();
+            $user_dialog->add_message($message, E_USER_ERROR);
+            echo $user_dialog->build_messages();
             exit();
         }
     }
@@ -255,6 +256,7 @@ class sessions {
     }
 
     function send_mail_about_lost_password($employee_id, $user_name, $recipient, $token) {
+        $user_dialog = new user_dialog();
         global $config;
         if (isset($config['application_name'])) {
             $application_name = $config['application_name'];
@@ -285,10 +287,10 @@ class sessions {
         $sent_result = mail($recipient, $message_subject, $message_text, $headers);
         if ($sent_result) {
             $message = gettext("The mail was successfully sent. Thank you!");
-            user_dialog::add_message($message, E_USER_NOTICE);
+            $user_dialog->add_message($message, E_USER_NOTICE);
         } else {
             $message = gettext("An error occured while sending the mail. I am sorry.");
-            user_dialog::add_message($message, E_USER_NOTICE);
+            $user_dialog->add_message($message, E_USER_NOTICE);
         }
     }
 

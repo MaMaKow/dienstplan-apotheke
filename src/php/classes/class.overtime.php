@@ -25,7 +25,7 @@
 class overtime {
 
     public static function handle_user_input_insert() {
-
+        $user_dialog = new user_dialog();
         $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
         $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
         $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
@@ -40,11 +40,11 @@ class overtime {
         $user_has_been_warned_about_date_sequence = filter_input(INPUT_POST, 'user_has_been_warned_about_date_sequence', FILTER_SANITIZE_STRING);
         if (strtotime($date) < strtotime($date_old) and 'true' !== $user_has_been_warned_about_date_sequence) {
             $message = gettext('An error has occurred while inserting the overtime data.');
-            user_dialog::add_message($message, E_USER_ERROR);
+            $user_dialog->add_message($message, E_USER_ERROR);
             $message = gettext('The input date lies before the last existent date.');
-            user_dialog::add_message($message, E_USER_WARNING);
+            $user_dialog->add_message($message, E_USER_WARNING);
             $message = gettext('Please enable JavaScript in order to allow PDR to handle this case.');
-            user_dialog::add_message($message, E_USER_WARNING);
+            $user_dialog->add_message($message, E_USER_WARNING);
             return FALSE;
         }
         $balance_new = $balance_old + $overtime_hours_new;
@@ -70,8 +70,8 @@ class overtime {
             ));
         } catch (Exception $exception) {
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
-                user_dialog::add_message(gettext('There is already an entry on this date.'), E_USER_ERROR);
-                user_dialog::add_message(gettext('The data was therefore not inserted in the database.'), E_USER_WARNING);
+                $user_dialog->add_message(gettext('There is already an entry on this date.'), E_USER_ERROR);
+                $user_dialog->add_message(gettext('The data was therefore not inserted in the database.'), E_USER_WARNING);
             } else {
                 print_debug_variable($exception);
                 $message = gettext('There was an error while querying the database.')

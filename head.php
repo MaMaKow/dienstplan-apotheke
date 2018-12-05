@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </HEAD>
     <BODY>
         <?php
-        echo user_dialog::build_contact_form();
-        user_dialog::contact_form_send_mail();
+        $user_dialog = new user_dialog();
+        echo $user_dialog->build_contact_form();
+        $user_dialog->contact_form_send_mail();
         ?>

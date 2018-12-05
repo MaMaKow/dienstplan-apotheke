@@ -18,6 +18,7 @@
 require '../../default.php';
 require "../../head.php";
 $showFormular = true; //Variable ob das Registrierungsformular anezeigt werden soll
+$user_dialog = new user_dialog();
 
 if (isset($_GET['register'])) {
     $error = false;
@@ -28,11 +29,11 @@ if (isset($_GET['register'])) {
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
     if (strlen($password) == 0) {
-        user_dialog::add_message(gettext('Please enter a password!'));
+        $user_dialog->add_message(gettext('Please enter a password!'));
         $error = true;
     }
     if ($password != $password2) {
-        user_dialog::add_message(gettext('The passwords must match!'));
+        $user_dialog->add_message(gettext('The passwords must match!'));
         $error = true;
     }
 
@@ -43,7 +44,7 @@ if (isset($_GET['register'])) {
         $user = $result->fetch();
 
         if ($user !== false) {
-            user_dialog::add_message(gettext('This username is already taken.'));
+            $user_dialog->add_message(gettext('This username is already taken.'));
             $error = true;
         }
     }
@@ -63,7 +64,7 @@ if (isset($_GET['register'])) {
             $showFormular = false;
         } else {
             error_log('Unfortunately, an error occurred while saving.' . var_export($statement->errorInfo(), TRUE));
-            user_dialog::add_message(gettext('Unfortunately, an error occurred while saving.'), E_USER_ERROR);
+            $user_dialog->add_message(gettext('Unfortunately, an error occurred while saving.'), E_USER_ERROR);
         }
     }
 }
@@ -86,7 +87,7 @@ if ($showFormular) {
         <input type="password" size="40" name="password" required placeholder="Passwort"><br>
         <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
         <?php
-        echo user_dialog::build_messages();
+        echo $user_dialog->build_messages();
         ?>
         <input type="submit" value="Abschicken">
     </form>
