@@ -151,6 +151,7 @@ class examine_roster {
      * @return boolean
      */
     public function check_for_sufficient_qualified_pharmacist_count() {
+        $user_dialog = new user_dialog;
         if (FALSE === $this->Approbierten_anwesende) {
             return FALSE;
         }
@@ -158,7 +159,7 @@ class examine_roster {
             if ($anwesende_approbierte === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $message = sprintf(gettext('At %1s there is no authorized person present.'), roster_item::format_time_integer_to_string($zeit));
-                    user_dialog::add_message($message);
+                    $user_dialog::add_message($message);
                     $attendant_error = true;
                 }
             } else {

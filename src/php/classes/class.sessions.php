@@ -243,7 +243,7 @@ class sessions {
     }
 
     public static function logout() {
-        if (session_start() and session_destroy()) {
+        if (session_destroy()) {
             echo "Logout erfolgreich";
         }
         header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php");
