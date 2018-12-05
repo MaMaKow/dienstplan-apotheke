@@ -161,10 +161,10 @@ class user_dialog_email {
             $sql_query = "SELECT `notification_id`, `employee_id`, `date`, `notification_text`, `notification_ics_file` "
                     . " FROM `user_email_notification_cache` "
                     . " WHERE `employee_id` = :employee_id and `date` >= NOW();";
-            $result = database_wrapper::instance()->run($sql_query, array(
+            $result_notification_employee = database_wrapper::instance()->run($sql_query, array(
                 'employee_id' => $employee_id,
             ));
-            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            while ($row = $result_notification_employee->fetch(PDO::FETCH_OBJ)) {
                 $List_of_deletable_notifications[] = $row->notification_id;
                 $notifications_exist = TRUE;
                 $aggregated_message .= $row->notification_text . PHP_EOL;
@@ -174,7 +174,6 @@ class user_dialog_email {
             if ($notifications_exist) {
                 $aggregated_message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
                 $mail_result = self::send_email_about_changed_roster_to_employees($employee_id, $aggregated_message, $aggregated_ics_file);
-
                 if (TRUE === $mail_result) {
                     list($IN_placeholder, $IN_list_array) = database_wrapper::create_placeholder_for_mysql_IN_function($List_of_deletable_notifications);
                     $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `notification_id` IN ($IN_placeholder)";
@@ -219,6 +218,7 @@ class user_dialog_email {
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $receive_emails_on_changed_roster = $row->receive_emails_on_changed_roster;
+            $user_email_address = $row->email;
         }
         if (FALSE == $receive_emails_on_changed_roster) {
             /*
@@ -241,7 +241,7 @@ class user_dialog_email {
         $header .= "Content-Type: multipart/mixed; boundary=\"" . $random_hash . "\"\r\n\r\n";
 
         $nmessage = "--" . $random_hash . "\r\n";
-        $nmessage .= "Content-type:text/plain; charset=iso-8859-1\r\n";
+        $nmessage .= "Content-type:text/plain; charset=UTF-8\r\n";
         $nmessage .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
         $nmessage .= $message . "\r\n\r\n";
         $nmessage .= "--" . $random_hash . "\r\n";
@@ -251,7 +251,7 @@ class user_dialog_email {
         $nmessage .= $attachment_content . "\r\n\r\n";
         $nmessage .= "--" . $random_hash . "--";
 
-        $recipient = $config['contact_email']; //TODO: This will be the users mail address.
+        $recipient = $user_email_address;
         $subject = $config['application_name'] . ": " . gettext('Your roster has changed.');
         /*
          * error_log(PHP_EOL . $message);
