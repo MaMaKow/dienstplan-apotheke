@@ -22,6 +22,7 @@
  * Send an email to an employee about a changed roster.
  *
  * <p> The email should be send if:
+ *     - The user wishes emails
  *     - A change is less than 14 days ahead
  *     - The change is not in the past/today
  *     - No other email has been sent within 24 hours
@@ -70,7 +71,7 @@ class user_dialog_email {
      * @param array $Deleted_roster_employee_id_list An array of days, each with an array of employee_ids who were deleted from the Roster
      * @return void
      */
-    public function create_email_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list) {
+    public function create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (strtotime('+' . $this->maximum_future_days . ' days', time()) <= $date_unix) {
                 continue;
@@ -84,14 +85,14 @@ class user_dialog_email {
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
-                    self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }
                 if (!empty($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
                     $context_string = gettext("Your roster has changed.");
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
-                    self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
@@ -107,13 +108,13 @@ class user_dialog_email {
                 if (!empty($Deleted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
                     $message .= sprintf(gettext('You are not in the roster anymore on %1s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
                     $ics_file = iCalendar::build_ics_roster_cancelled($roster_item_object);
-                    self::save_email_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
     }
 
-    private static function save_email_about_changed_roster_to_database(int $employee_id, string $date_sql, string $message, string $ics_file) {
+    private static function save_notification_about_changed_roster_to_database(int $employee_id, string $date_sql, string $message, string $ics_file) {
         /*
          * TODO: Do not send mail directly.
          *     Save it to the database, aggregate it, check it for plausibility, send it later.
@@ -188,8 +189,11 @@ class user_dialog_email {
                 . " WHERE `date` < NOW();";
         database_wrapper::instance()->run($sql_query);
         /*
-         * TODO: TRUNCATE the table if it is empty. This will reset the AUTO_INCREMENT value of `notification_id`
+         * We start a transaction in order not to allow the TRUNCATE to delete an entry,
+         * which was created in exactly that moment
+         * between the SELECT search and the TRUNCATE deletion.
          */
+        database_wrapper::instance()->beginTransaction();
         $sql_query = "SELECT `notification_id` "
                 . " FROM `user_email_notification_cache`;";
         $result = database_wrapper::instance()->run($sql_query);
@@ -199,12 +203,29 @@ class user_dialog_email {
             break;
         }
         if ($table_is_empty) {
+            /*
+             * TRUNCATE the table if it is empty.
+             * This will reset the AUTO_INCREMENT value of `notification_id`
+             */
             $sql_query = "TRUNCATE TABLE `user_email_notification_cache`;";
             database_wrapper::instance()->run($sql_query);
         }
+        database_wrapper::instance()->commit();
     }
 
     private static function send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file) {
+        $receive_emails_on_changed_roster = FALSE;
+        $sql_query = "SELECT `receive_emails_on_changed_roster` from `users` WHERE `employee_id` = :employee_id;";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $receive_emails_on_changed_roster = $row->receive_emails_on_changed_roster;
+        }
+        if (FALSE == $receive_emails_on_changed_roster) {
+            /*
+             * The user does not want to be informed about roster changes via email.
+             */
+            return FALSE;
+        }
         global $config;
         /*
          * Define header:
@@ -214,7 +235,6 @@ class user_dialog_email {
         $header .= 'Reply-To: ' . $config['contact_email'] . "\r\n";
         $header .= "MIME-Version: 1.0" . "\r\n";
         $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-        //$header .= "Content-type: text/plain; charset=UTF-8;" . "\r\n";
         $random_hash = md5(time());
         $attachment_filename = "calendar.ics";
         $attachment_content = chunk_split(base64_encode($ics_file));
