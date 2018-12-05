@@ -1,17 +1,11 @@
 <?php
 
-if ('cli' !== PHP_SAPI) {
-    /*
-     * see https://stackoverflow.com/a/25967493/2323627 for more options to test this.
-     */
-    die('This file may only be run from the command line. You tried to run from: ' . PHP_SAPI . '.');
-}
 /*
  * Anyone has access to the test database `pdr_test`
  * CREATE USER ''@'%';GRANT USAGE ON *.* TO ''@'%' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;GRANT ALL PRIVILEGES ON `pdr_test`.* TO ''@'%';
  */
 define('PDR_FILE_SYSTEM_APPLICATION_PATH', dirname(__DIR__) . '/');
-define('PDR_HTTP_SERVER_APPLICATION_PATH', 'FAKE_TEST_PATH_VAR_WWW' . '/');
+define('PDR_HTTP_SERVER_APPLICATION_PATH', 'http://localhost/dienstplan-apotheke/'); //adapt this to your personal server!
 define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
 spl_autoload_register(function ($class_name) {
     include_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.' . $class_name . '.php';

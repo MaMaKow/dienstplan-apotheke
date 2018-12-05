@@ -48,7 +48,8 @@ echo "<H1>" . $application_name . "</H1>\n";
     if (!empty($error_message)) {
         build_error_message($error_message);
     }
-    user_dialog::build_messages();
+    $user_dialog = new user_dialog();
+    echo $user_dialog->build_messages();
     ?>
 </form>
 </div>

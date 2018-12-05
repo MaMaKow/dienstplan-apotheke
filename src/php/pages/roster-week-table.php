@@ -18,6 +18,7 @@
 require_once "../../../default.php";
 
 $tage = 7; //One week
+$user_dialog = new user_dialog();
 
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $mandant = $branch_id;
@@ -131,7 +132,7 @@ $main_div_html .= $duty_roster_form_html;
 $main_div_html .= $duty_roster_working_hours_div;
 //$main_div_html .= "</div>\n";
 
-echo user_dialog::build_messages();
+echo $user_dialog->build_messages();
 
 echo '<div id="print_time_info" class="only_print"><p class="tiny">' . sprintf(gettext('Time of print: %1s'), date('d.m.Y H:i:s')) . '</p></div>';
 echo $main_div_html;

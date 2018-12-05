@@ -17,6 +17,8 @@
  */
 require '../../../default.php';
 $workforce = new workforce();
+$user_dialog = new user_dialog();
+
 $User_list = read_user_list_from_database();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 if (FALSE === in_array($employee_id, array_keys($User_list))) {
@@ -93,7 +95,7 @@ $User = read_user_data_from_database($employee_id);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
-echo user_dialog::build_messages();
+echo $user_dialog->build_messages();
 
 
 

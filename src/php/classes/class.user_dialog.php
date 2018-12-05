@@ -23,21 +23,27 @@
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  * @todo no static methods
  */
-abstract class user_dialog {
+class user_dialog {
 
+    /**
+     *
+     * @var array $Messages <p>static array containing the error messages and their types
+     *   $this->Messages = array(
+     *      1 => array(
+     *          'type' => E_USER_ERROR,
+     *          'text' => 'This is an example error'
+     *      ),
+     *      2 => array(
+     *          'type' => E_USER_NOTICE,
+     *          'text' => 'This is just an example of the array structure.'
+     *      ),
+     *  );
+     *      </p>
+     */
     static $Messages = array();
 
     public function __construct() {
-        $this->Messages = array(
-            1 => array(
-                'type' => E_USER_ERROR,
-                'text' => '__construct will never be called'
-            ),
-            2 => array(
-                'type' => E_USER_NOTICE,
-                'text' => 'This is just an example of the array structure.'
-            ),
-        );
+
     }
 
     /**
@@ -47,7 +53,7 @@ abstract class user_dialog {
      *
      * @return string HTML code with error containers.
      */
-    public static function build_messages() {
+    public function build_messages() {
         $html_messages = "<div class='user_dialog_container'>\n";
         foreach (self::$Messages as $message_array) {
             $html_messages .= "<div class=" . htmlentities($message_array['type']) . ">\n";
@@ -66,7 +72,7 @@ abstract class user_dialog {
      *
      * @return string text with errors.
      */
-    public static function build_messages_for_cli() {
+    public function build_messages_for_cli() {
         if (empty(self::$Messages)) {
             return '';
         }
@@ -90,7 +96,7 @@ abstract class user_dialog {
      * </p>
      * @param bool $allow_formatted_input If set to TRUE, the $text is not parsed by htmlentities($text), which allows it to contain HTML text formatting.
      */
-    public static function add_message($text, $type = E_USER_ERROR, $allow_formatted_input = FALSE) {
+    public function add_message($text, $type = E_USER_ERROR, $allow_formatted_input = FALSE) {
         switch ($type) {
             case E_USER_ERROR:
                 $type_string = 'error';
@@ -112,7 +118,7 @@ abstract class user_dialog {
         return TRUE;
     }
 
-    public static function build_contact_form() {
+    public function build_contact_form() {
         $form_html = "
         <div id='user_dialog_contact_form_div'>
             <a title='" . gettext("Close") . "' href='#' onclick='hide_contact_form()'>
@@ -135,7 +141,7 @@ abstract class user_dialog {
         return $form_html;
     }
 
-    public static function contact_form_send_mail() {
+    public function contact_form_send_mail() {
         if (!filter_has_var(INPUT_POST, 'submit_contact_form')) {
             return FALSE;
         }
@@ -150,15 +156,16 @@ abstract class user_dialog {
         $mail_result = mail($recipient, $subject, $message, $header);
         if ($mail_result) {
             $message = gettext("The mail was successfully sent. Thank you!");
-            user_dialog::add_message($message, E_USER_NOTICE);
+            $this->add_message($message, E_USER_NOTICE);
         } else {
             error_log(var_export(error_get_last(), TRUE));
             $message = gettext("Error while sending the mail. I am sorry.");
-            user_dialog::add_message($message, E_USER_ERROR);
+            $this->add_message($message, E_USER_ERROR);
         }
+        return $mail_result;
     }
 
-    public static function contact_form_send_mail_build_message() {
+    private function contact_form_send_mail_build_message() {
         if (!filter_has_var(INPUT_POST, 'message')) {
             return FALSE;
         }
@@ -190,7 +197,7 @@ abstract class user_dialog {
         return $message;
     }
 
-    public static function contact_form_send_mail_build_header() {
+    private function contact_form_send_mail_build_header() {
         $header = "";
         $header .= 'From: ' . $_SESSION['user_email'] . "\r\n";
         $header .= 'Reply-To: ' . $_SESSION['user_email'] . "\r\n";

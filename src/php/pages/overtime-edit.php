@@ -67,7 +67,8 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_overtime');
 
 echo "<div id=main-area>\n";
-echo user_dialog::build_messages();
+$user_dialog = new user_dialog();
+echo $user_dialog->build_messages();
 
 echo absence::build_html_select_year($year);
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);

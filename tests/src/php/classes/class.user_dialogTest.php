@@ -8,16 +8,14 @@ class user_dialogTest extends PHPUnit_Framework_TestCase {
     /**
      * @var user_dialog
      */
-    protected
-            $object;
+    protected $object;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = $this->getMockForAbstractClass('user_dialog');
-        //$this->object = createMock('user_dialog');
+        $this->object = new user_dialog;
     }
 
     /**
@@ -30,24 +28,36 @@ class user_dialogTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @covers user_dialog::build_messages
-     * @todo   Implement testBuild_messages().
      */
     public function testBuild_messages() {
-// Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->object->add_message('Test');
+        $html_should = <<<EOT
+<div class='user_dialog_container'>
+<div class=error>
+<p>Test</p>
+</div>
+</div>
+
+EOT;
+        $html_is = $this->object->build_messages();
+        $this->assertEquals($html_should, $html_is);
     }
 
     /**
      * @covers user_dialog::build_messages_for_cli
-     * @todo   Implement testBuild_messages_for_cli().
      */
     public function testBuild_messages_for_cli() {
-// Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->object::$Messages = array();
+        $this->object->add_message('Test');
+        $html_should = <<<EOT
+# Messages
+## error
+- Test
+
+
+EOT;
+        $html_is = $this->object->build_messages_for_cli();
+        $this->assertEquals($html_should, $html_is);
     }
 
     /**
@@ -55,10 +65,23 @@ class user_dialogTest extends PHPUnit_Framework_TestCase {
      * @todo   Implement testAdd_message().
      */
     public function testAdd_message() {
-// Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->object::$Messages = array();
+        $this->object->add_message('Test<script>alert(with xss ptotection);</script>', E_USER_WARNING, FALSE);
+        $this->assertEquals(array(0 => array(
+                'text' => 'Test&lt;script&gt;alert(with xss ptotection);&lt;/script&gt;',
+                'type' => 'warning',
+            ),
+                ), $this->object::$Messages);
+        /*
+         * Reset and test without xss protection:
+         */
+        $this->object::$Messages = array();
+        $this->object->add_message('Test<script>alert(without xss ptotection);</script>', E_USER_NOTICE, TRUE);
+        $this->assertEquals(array(0 => array(
+                'text' => '<pre>Test<script>alert(without xss ptotection);</script></pre>',
+                'type' => 'notification',
+            ),
+                ), $this->object::$Messages);
     }
 
     /**
@@ -66,10 +89,26 @@ class user_dialogTest extends PHPUnit_Framework_TestCase {
      * @todo   Implement testBuild_contact_form().
      */
     public function testBuild_contact_form() {
-// Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $contact_form = $this->object->build_contact_form();
+        $this->assertEquals("
+        <div id='user_dialog_contact_form_div'>
+            <a title='Schießen' href='#' onclick='hide_contact_form()'>
+            <span id='remove_form_div_span'>
+                x
+            </span>
+            </a>
+            <form accept-charset='utf-8' id='contact_form' method=POST>
+                <p>
+                    Nachricht<br>
+                    <textarea name=message rows=15></textarea>
+                </p>
+                <p>
+                <input type='submit' name=submit_contact_form>
+                </p>
+            </form>
+        </div>
+
+", $contact_form);
     }
 
     /**
@@ -77,32 +116,24 @@ class user_dialogTest extends PHPUnit_Framework_TestCase {
      * @todo   Implement testContact_form_send_mail().
      */
     public function testContact_form_send_mail() {
-// Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
+        user_dialog::$Messages = array();
 
-    /**
-     * @covers user_dialog::contact_form_send_mail_build_message
-     * @todo   Implement testContact_form_send_mail_build_message().
-     */
-    public function testContact_form_send_mail_build_message() {
-// Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
 
-    /**
-     * @covers user_dialog::contact_form_send_mail_build_header
-     * @todo   Implement testContact_form_send_mail_build_header().
-     */
-    public function testContact_form_send_mail_build_header() {
-// Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
+        $data = array(
+            'submit_contact_form' => 'PHPUnit',
+            'message' => 'Test message',
         );
+
+        $curl_handle = curl_init();
+        curl_setopt($curl_handle, CURLOPT_URL, PDR_HTTP_SERVER_APPLICATION_PATH . "/tests/src/php/classes/class/testContact_form_send_mail.php");
+        curl_setopt($curl_handle, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl_handle);
+        if (curl_errno($curl_handle)) {
+            var_export(curl_error($curl_handle));
+        }
+        curl_close($curl_handle);
+        $this->assertEquals($response, 'passed');
     }
 
 }

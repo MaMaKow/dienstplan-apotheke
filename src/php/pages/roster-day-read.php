@@ -28,6 +28,7 @@ create_cookie('mandant', $branch_id, 30);
  * This page will show the roster of one single day.
  */
 $number_of_days = 1;
+$user_dialog = new user_dialog();
 
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_unix = strtotime($date_sql);
@@ -48,16 +49,16 @@ if (isset($approval)) {
         //Everything is fine.
     } elseif ($approval == 'not_yet_approved') {
         $message = gettext('The roster has not been approved by the administration!');
-        user_dialog::add_message($message, E_USER_NOTICE);
+        $user_dialog->add_message($message, E_USER_NOTICE);
     } elseif ($approval == 'disapproved') {
         $message = gettext('The roster is still beeing revised!');
-        user_dialog::add_message($message, E_USER_WARNING);
+        $user_dialog->add_message($message, E_USER_WARNING);
     }
 } else {
     $approval = "not_yet_approved";
     if (!roster::is_empty($Roster)) {
         $message = gettext('Missing data in table `approval`');
-        user_dialog::add_message($message, E_USER_NOTICE);
+        $user_dialog->add_message($message, E_USER_NOTICE);
         /*
          * TODO: This is an Exception.
          * It will occur when there is no approval, disapproval or other connected information in the approval table of the database.
@@ -89,7 +90,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo "<div id=main-area>\n";
 
-echo user_dialog::build_messages();
+echo $user_dialog->build_messages();
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 echo "<div id=navigation_form_div class=no_print>\n";
 echo build_html_navigation_elements::build_button_day_backward($date_unix);

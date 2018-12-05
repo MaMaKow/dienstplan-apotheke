@@ -1,2 +1,4 @@
-#allow from all
+<Files testContact_form_send_mail.php>
+    allow from all
+</Files>
 deny from all

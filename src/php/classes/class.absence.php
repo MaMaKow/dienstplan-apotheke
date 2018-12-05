@@ -208,6 +208,7 @@ class absence {
     }
 
     private static function write_absence_data_to_database($employee_object, $beginn, $ende, $reason, $comment = NULL, $approval = 'approved') {
+        $user_dialog = new user_dialog();
         $employee_id = $employee_object->employee_id;
         /*
          * TODO: Check why the next lines are needed:
@@ -242,7 +243,7 @@ class absence {
         } catch (Exception $exception) {
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
                 $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
-                user_dialog::add_message($message, E_USER_ERROR);
+                $user_dialog->add_message($message, E_USER_ERROR);
             } else {
                 print_debug_variable($exception);
                 $message = gettext('There was an error while querying the database.')
@@ -261,6 +262,7 @@ class absence {
     }
 
     public static function calculate_employee_absence_days($start_date_string, $end_date_string, $employee_object) {
+        $user_dialog = new user_dialog();
         $days = 0;
         for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix = strtotime('+ 1 day', $date_unix)) {
             $current_week_day_number = date("N", $date_unix);
@@ -281,7 +283,7 @@ class absence {
                      */
                     $date_string = strftime('%x', $date_unix);
                     $message = $date_string . " " . gettext('is a holiday') . " (" . $holiday . ") " . gettext('and will not be counted.');
-                    user_dialog::add_message($message, E_USER_NOTICE);
+                    $user_dialog->add_message($message, E_USER_NOTICE);
                 } else {
                     /*
                      * Only days which are neither a holiday nor a weekend/non-working-days are counted
@@ -291,7 +293,7 @@ class absence {
             } else {
                 $date_string = strftime('%a %x', $date_unix);
                 $message = sprintf(gettext('%1s is not a working day for %2s and will not be counted.'), $date_string, $employee_object->full_name);
-                user_dialog::add_message($message, E_USER_NOTICE);
+                $user_dialog->add_message($message, E_USER_NOTICE);
             }
         }
         return $days;

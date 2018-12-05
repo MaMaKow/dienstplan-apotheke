@@ -23,19 +23,21 @@ function clean_up_after_password_change($employee_id) {
 }
 
 function lost_password_token_is_valid($employee_id, $token) {
+    $user_dialog = new user_dialog();
     $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = :employee_id and `token` = UNHEX(:token)";
     $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
     $row = $result->fetch(PDO::FETCH_OBJ);
     if (!empty($row->employee_id) and $employee_id == $row->employee_id) {
         return TRUE; //The form is shown
     } else {
-        user_dialog::add_message(gettext('Invalid token'), E_USER_ERROR);
-        echo user_dialog::build_messages();
+        $user_dialog->add_message(gettext('Invalid token'), E_USER_ERROR);
+        echo $user_dialog->build_messages();
         return FALSE;
     }
 }
 
 function build_lost_password_form($employee_id, $user_name, $token) {
+    $user_dialog = new user_dialog();
     global $config;
 
     if (lost_password_token_is_valid($employee_id, $token)) {
@@ -55,7 +57,7 @@ function build_lost_password_form($employee_id, $user_name, $token) {
 
         <?php
     } else {
-        user_dialog::add_message(gettext('Invalid token'));
+        $user_dialog->add_message(gettext('Invalid token'));
     } //End of if($show_formular)
 }
 
@@ -80,11 +82,11 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
     if (strlen($password) == 0) {
-        user_dialog::add_message(gettext('Please enter a password!'));
+        $user_dialog->add_message(gettext('Please enter a password!'));
         $error = TRUE;
     }
     if ($password !== $password2) {
-        user_dialog::add_message(gettext('The passwords must match!'));
+        $user_dialog->add_message(gettext('The passwords must match!'));
         $error = TRUE;
     }
 
@@ -102,15 +104,15 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
             echo gettext('Your password has successfully been changed.'), " <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php'>" . gettext("Login") . "</a>";
         } else {
             error_log(gettext('There was an error while saving the data.') . print_r($statement->errorInfo(), TRUE));
-            user_dialog::add_message(gettext('There was an error while saving the data.'));
-            user_dialog::add_message(gettext('Please see the error log for more details!'));
+            $user_dialog->add_message(gettext('There was an error while saving the data.'));
+            $user_dialog->add_message(gettext('Please see the error log for more details!'));
             build_lost_password_form($employee_id, $user_name, $token);
         }
     }
 } else {
-    user_dialog::add_message(gettext('Missing input token'));
+    $user_dialog->add_message(gettext('Missing input token'));
 }
-echo user_dialog::build_messages();
+echo $user_dialog->build_messages();
 ?>
 </BODY>
 </HTML>

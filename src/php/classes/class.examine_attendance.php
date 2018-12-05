@@ -25,6 +25,7 @@
 abstract class examine_attendance {
 
     public static function check_for_attendant_absentees($Roster, $Abwesende) {
+        $user_dialog = new user_dialog();
         if (array() === $Roster) {
             return FALSE;
         }
@@ -45,7 +46,7 @@ abstract class examine_attendance {
         if (isset($Arbeitende_abwesende)) {
             foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
                 $message = sprintf(gettext("%1s is absent (%2s) and should not be in the roster."), $workforce->List_of_employees[$arbeitender_abwesender]->last_name, pdr_gettext($Abwesende[$arbeitender_abwesender]));
-                user_dialog::add_message($message);
+                $user_dialog->add_message($message);
             }
         }
     }
@@ -57,9 +58,10 @@ abstract class examine_attendance {
      * @param array $Abwesende Array of absent employees and the reason of absence
      * @param integer $date_unix Unix timestamp of the current day.
      * @return void <p>This function does not return anything.
-     *  It uses user_dialog::add_message with it's results.</p>
+     *  It uses user_dialog->add_message with it's results.</p>
      */
     public static function check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix) {
+        $user_dialog = new user_dialog();
         $Roster_workers = array();
         $Principle_roster_workers = array();
         global $workforce;
@@ -101,7 +103,7 @@ abstract class examine_attendance {
         }
         if (!empty($Mitarbeiter_differenz)) {
             $message = gettext('The following employees are not scheduled:');
-            user_dialog::add_message($message, E_USER_WARNING);
+            $user_dialog->add_message($message, E_USER_WARNING);
             foreach ($Mitarbeiter_differenz as $arbeiter) {
                 foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
                     if ($arbeiter == $principle_roster_object->employee_id) {
@@ -109,7 +111,7 @@ abstract class examine_attendance {
                         $duty_end = $principle_roster_object->duty_end_sql;
                         $message = $workforce->List_of_employees[$arbeiter]->last_name;
                         $message .= " ($duty_start - $duty_end)";
-                        user_dialog::add_message($message, E_USER_WARNING);
+                        $user_dialog->add_message($message, E_USER_WARNING);
                         break;
                     }
                 }

@@ -100,6 +100,7 @@ abstract class roster_headcount {
     }
 
     public static function read_opening_hours_from_database($date_unix, $branch_id) {
+        $user_dialog = new user_dialog();
         $Opening_times['day_opening_start'] = NULL;
         $Opening_times['day_opening_end'] = NULL;
 
@@ -118,7 +119,7 @@ abstract class roster_headcount {
             /*
              * TODO: Make a page to configure the opening times.
              */
-            user_dialog::add_message($message, E_USER_NOTICE);
+            $user_dialog->add_message($message, E_USER_NOTICE);
             $sql_query = "SELECT min(`Dienstbeginn`) as `day_opening_start`, max(`Dienstende`) as `day_opening_end` FROM `Grundplan` WHERE `Wochentag` = :weekday AND `Mandant` = :branch_id";
             $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {

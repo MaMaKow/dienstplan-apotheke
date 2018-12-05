@@ -154,6 +154,7 @@ class configuration {
      * @return array $new_config
      */
     public static function handle_user_input($config) {
+        $user_dialog = new user_dialog();
         $configuration_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php';
         /*
          * Read the POST values:
@@ -162,7 +163,7 @@ class configuration {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
-                        user_dialog::add_message(gettext('Passwords do not match!'));
+                        $user_dialog->add_message(gettext('Passwords do not match!'));
                         $new_config[$key] = $config[$key];
                         continue;
                     }
