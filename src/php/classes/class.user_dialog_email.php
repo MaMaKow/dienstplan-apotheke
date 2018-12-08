@@ -38,6 +38,8 @@
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class user_dialog_email {
+//    use PHPMailer\PHPMailer\PHPMailer;
+//    use PHPMailer\PHPMailer\Exception;
 
     /**
      *
@@ -173,7 +175,7 @@ class user_dialog_email {
 
             if ($notifications_exist) {
                 $aggregated_message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
-                $mail_result = self::send_email_about_changed_roster_to_employees($employee_id, $aggregated_message, $aggregated_ics_file);
+                $mail_result = $this->send_email_about_changed_roster_to_employees($employee_id, $aggregated_message, $aggregated_ics_file);
                 if (TRUE === $mail_result) {
                     list($IN_placeholder, $IN_list_array) = database_wrapper::create_placeholder_for_mysql_IN_function($List_of_deletable_notifications);
                     $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `notification_id` IN ($IN_placeholder)";
@@ -212,13 +214,14 @@ class user_dialog_email {
         database_wrapper::instance()->commit();
     }
 
-    private static function send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file) {
+    private function send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file_string) {
         $receive_emails_on_changed_roster = FALSE;
-        $sql_query = "SELECT `receive_emails_on_changed_roster` from `users` WHERE `employee_id` = :employee_id;";
+        $sql_query = "SELECT * from `users` WHERE `employee_id` = :employee_id;";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $receive_emails_on_changed_roster = $row->receive_emails_on_changed_roster;
             $user_email_address = $row->email;
+            $user_name = $row->user_name;
         }
         if (FALSE == $receive_emails_on_changed_roster) {
             /*
@@ -227,40 +230,47 @@ class user_dialog_email {
             return FALSE;
         }
         global $config;
-        /*
-         * Define header:
-         */
-        $header = "";
-        $header .= 'From: ' . $config['contact_email'] . "\r\n";
-        $header .= 'Reply-To: ' . $config['contact_email'] . "\r\n";
-        $header .= "MIME-Version: 1.0" . "\r\n";
-        $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-        $random_hash = md5(time());
-        $attachment_filename = "calendar.ics";
-        $attachment_content = chunk_split(base64_encode($ics_file));
-        $header .= "Content-Type: multipart/mixed; boundary=\"" . $random_hash . "\"\r\n\r\n";
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
 
-        $nmessage = "--" . $random_hash . "\r\n";
-        $nmessage .= "Content-type:text/plain; charset=UTF-8\r\n";
-        $nmessage .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-        $nmessage .= $message . "\r\n\r\n";
-        $nmessage .= "--" . $random_hash . "\r\n";
-        $nmessage .= "Content-Type: application/octet-stream; name=\"" . $attachment_filename . "\"\r\n";
-        $nmessage .= "Content-Transfer-Encoding: base64\r\n";
-        $nmessage .= "Content-Disposition: attachment; filename=\"" . $attachment_filename . "\"\r\n\r\n";
-        $nmessage .= $attachment_content . "\r\n\r\n";
-        $nmessage .= "--" . $random_hash . "--";
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        try {
+            /*
+             * Server settings
+             */
+            $mail->isSMTP();
+            $mail->SMTPAuth = true;
+            $mail->Host = $config['SMTP']['host'];
+            $mail->Username = $config['SMTP']['username'];
+            $mail->Password = $config['SMTP']['password'];
+            $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+            $mail->Port = $config['SMTP']['port']; // TCP port to connect to (587 for TLS)
+            /*
+             * Recipients
+             */
+            $mail->setFrom($config['contact_email'], $config['application_name'] . ' Mailer');
+            $mail->addAddress($user_email_address, $user_name);
+            $mail->addBCC($config['contact_email'], $config['application_name'] . ' Mailer');
+            /*
+             * Attachments
+             */
+            $mail->addStringAttachment($ics_file_string, 'iCalendar.ics');
+            /*
+             * Content
+             */
+            $mail->CharSet = 'UTF-8';
+            $mail->Encoding = 'base64';
+            $mail->isHTML(FALSE);
+            $mail->Subject = $config['application_name'] . ": " . gettext('Your roster has changed.');
+            $mail->Body = $message;
+            //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
-        $recipient = $user_email_address;
-        $subject = $config['application_name'] . ": " . gettext('Your roster has changed.');
-        /*
-         * error_log(PHP_EOL . $message);
-         */
-        $mail_result = mail($recipient, $subject, $nmessage, $header);
-        return $mail_result;
-        /*
-         * https://stackoverflow.com/questions/12301358/send-attachments-with-php-mail
-         */
+            $mail_success = $mail->send();
+            return $mail_success;
+        } catch (Exception $e) {
+            print_debug_variable('Email Message could not be sent. Mailer Error: ', $mail->ErrorInfo, $e);
+        }
     }
 
 }

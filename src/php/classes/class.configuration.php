@@ -23,6 +23,10 @@
  * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class configuration {
+    /*
+     * TODO: Documenation for the new array SMTP
+     * Configuration GUI for SMTP
+     */
 
     /**
      * @var array $List_of_configuration_parameters <p>The array contains all available configuration paramaters and their default values.</p>
@@ -46,6 +50,10 @@ class configuration {
         'mb_internal_encoding' => 'UTF-8',
         'contact_email' => '',
         'hide_disapproved' => FALSE, //We set it up to false in order not to disconcert new administrators.
+        'SMTP'['host'] => '',
+        'SMTP'['username'] => '',
+        'SMTP'['password'] => '',
+        'SMTP'['port'] => 587,
     );
     private static $List_of_configuration_parameter_types = array(
         'application_name' => FILTER_SANITIZE_STRING,
@@ -66,6 +74,10 @@ class configuration {
         'mb_internal_encoding' => FILTER_SANITIZE_STRING,
         'contact_email' => FILTER_SANITIZE_EMAIL,
         'hide_disapproved' => FILTER_SANITIZE_NUMBER_INT,
+        'SMTP'['host'] => FILTER_SANITIZE_URL,
+        'SMTP'['username'] => FILTER_SANITIZE_STRING,
+        'SMTP'['password'] => FILTER_UNSAFE_RAW,
+        'SMTP'['port'] => FILTER_SANITIZE_NUMBER_INT,
     );
 
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
