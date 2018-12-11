@@ -62,6 +62,7 @@ $datalist_encodings = configuration::build_supported_encodings_datalist();
 $datalist_locales = configuration::build_supported_locales_datalist();
 $error_error = configuration::ERROR_ERROR;
 
+$email_method = $config['email_method'];
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -70,8 +71,9 @@ echo $user_dialog->build_messages();
 ?>
 <div style=font-size:larger>
     <H1><?= gettext('Configuration') ?></H1>
-    <form accept-charset='utf-8' class="" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <table>
+    <form accept-charset='utf-8' id="configuration_form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <input type="submit" class="configuration_input_button_submit" form="configuration_form">
+        <table id="configuration_input_table">
             <tr>
                 <th colspan="2">
                     Database settings
@@ -98,8 +100,11 @@ echo $user_dialog->build_messages();
                 </td>
             </tr>
             <tr>
-                <td><?= gettext('Database user password') ?></td>
-                <td><input type="password" name="database_password" id="first_pass"
+                <td><?= gettext('Database user password') ?>
+                    <!-- Confuse the browser in order to stop it from auto-inserting the user password in the database password field-->
+                    <input type="password" name="fake_password_input" id="fake_pass" hidden="true" style="display: none;">
+                </td>
+                <td><input type="password" name="database_password" id="first_pass" autocomplete="new-password"
                            onchange="compare_passwords()"
                            onkeyup="compare_passwords()"
                            onkeydown="compare_passwords()"
@@ -202,8 +207,53 @@ echo $user_dialog->build_messages();
                     <input type="radio" name="hide_disapproved" value=0 <?= $hide_disapproved_no ?>>Show
                 </td>
             </tr>
+
+            <!-- Email settings: -->
+            <tr>
+                <th colspan="2"><?= gettext('Email settings') ?>
+                    <div class="hint">
+                        Emails are sent in some cases:
+                        <ul>
+                            <li>When new users are registered</li>
+                            <li>When users want to comment on the roster</li>
+                            <li>When there are acute changes to the roster (optional for the distinct users)</li>
+                        </ul>
+                        How should these emails be sent?
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <fieldset onchange="configuration_toggle_show_smtp_options();">
+                        <input type="radio" name="email_method" value="mail" <?= $email_method === 'mail' ? 'checked="checked"' : '' ?>><?= gettext('Simple mail') ?> <br><span class="hint">(Uses sendmail on Linux/Mac)</span><br>
+                        <input type="radio" name="email_method" value="sendmail" <?= $email_method === 'sendmail' ? 'checked="checked"' : '' ?>><?= gettext('Sendmail') ?><br>
+                        <input type="radio" name="email_method" value="qmail" <?= $email_method === 'qmail' ? 'checked="checked"' : '' ?>><?= gettext('qmail') ?><br>
+                        <input type="radio" name="email_method" value="smtp" <?= $email_method === 'smtp' ? 'checked="checked"' : '' ?>><?= gettext('SMTP') ?>
+                    </fieldset>
+                </td>
+            </tr>
+
+            <!-- SMTP email settings -->
+            <tbody class="configuration_smtp_settings_tbody" style="display: <?= $email_method === 'smtp' ? 'inline' : 'none' ?>">
+                <tr class="configuration_smtp_settings_tr">
+                    <th colspan="2"><?= gettext('SMTP settings') ?>
+                    </th>
+                </tr>
+                <tr class="configuration_smtp_settings_tr"><td>Host</td>
+                    <td><input type="text" name="email_smtp_host" value="<?= $config['email_smtp_host'] ?>"></td>
+                </tr>
+                <tr class="configuration_smtp_settings_tr"><td>Port</td><td>
+                        <input type="text" name="email_smtp_port" value="<?= $config['email_smtp_port'] ?>"></td>
+                </tr class="configuration_smtp_settings_tr">
+                <tr class="configuration_smtp_settings_tr"><td>User name</td>
+                    <td><input type="text" name="email_smtp_username" value="<?= $config['email_smtp_username'] ?>"></td>
+                </tr>
+                <tr class="configuration_smtp_settings_tr"><td>Password</td>
+                    <td><input type="password" name="email_smtp_password" value=""  autocomplete="new-password"></td>
+                </tr>
+            </tbody>
         </table>
-        <input type="submit">
+        <input type="submit" class="configuration_input_button_submit" form="configuration_form">
     </form>
 </div>
 </body>

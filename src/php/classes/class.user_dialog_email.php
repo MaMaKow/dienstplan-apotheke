@@ -239,13 +239,31 @@ class user_dialog_email {
             /*
              * Server settings
              */
-            $mail->isSMTP();
-            $mail->SMTPAuth = true;
-            $mail->Host = $config['SMTP']['host'];
-            $mail->Username = $config['SMTP']['username'];
-            $mail->Password = $config['SMTP']['password'];
-            $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-            $mail->Port = $config['SMTP']['port']; // TCP port to connect to (587 for TLS)
+            switch ($config['email_email_method']) {
+                case 'smtp':
+                    if (!isset($config['email_smtp_host'], $config['email_smtp_port'], $config['email_smtp_username'], $config['email_smtp_password'])) {
+                        print_debug_variable('Error while sending mail: SMTP not correctly configured');
+                        return FALSE;
+                    }
+                    $mail->isSMTP();
+                    $mail->SMTPAuth = true;
+                    $mail->SMTPSecure = 'tls'; // Enable TLS encryption, `ssl` also accepted
+                    $mail->Host = $config['email_smtp_host'];
+                    $mail->Port = $config['email_smtp_port']; // TCP port to connect to (587 for TLS)
+                    $mail->Username = $config['email_smtp_username'];
+                    $mail->Password = $config['email_smtp_password'];
+                    break;
+                case 'sendmail':
+                    $mail->isSendmail();
+                    break;
+                case 'qmail':
+                    $mail->isQmail();
+                    break;
+                case 'mail':
+                default:
+                    $mail->isMail();
+                    break;
+            }
             /*
              * Recipients
              */

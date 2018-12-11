@@ -1,6 +1,5 @@
 "use strict";
 var http_server_application_path = get_http_server_application_path();
-
 function gettext(string_to_translate) {
     var locale = document.getElementsByTagName("head")[0].lang;
     if (pdr_translations && pdr_translations[locale] && pdr_translations[locale][string_to_translate]) {
@@ -57,7 +56,6 @@ function auto_submit_form(form) {
     form_elements = form.elements;
     var xml_http_request = new XMLHttpRequest();
     var parameter_string = 'form=' + form.id;
-
     xml_http_request.open("POST", http_server_application_path + "src/php/fragments/ajax.php", true);
     xml_http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     for (var i = 0; i < form_elements.length; i++) {
@@ -88,7 +86,6 @@ function auto_submit_form(form) {
                  */
                 var message = gettext('There was an error while querying the database.') + ' '
                         + gettext('Please see the error log for more details!');
-
                 var warning_element = document.createElement('p');
                 warning_element.setAttribute("id", "warning_about_failure");
                 warning_element.innerHTML = message;
@@ -350,6 +347,31 @@ function clear_form(form_id) {
                 break;
             default:
                 break;
+        }
+    }
+}
+
+/**
+ * Toggle the visibility of the SMTP settings depending on SMTP being used as email method
+ */
+function configuration_toggle_show_smtp_options() {
+    var email_method_radios = document.getElementsByName('email_method');
+    for (var i = 0; i < email_method_radios.length; i++) {
+        if (email_method_radios[i].checked) {
+            var configuration_smtp_settings_tbody = document.getElementsByClassName('configuration_smtp_settings_tbody');
+            if ('smtp' === email_method_radios[i].value) {
+                for (var j = 0; j < configuration_smtp_settings_tbody.length; j++) {
+                    configuration_smtp_settings_tbody[j].style.display = 'inline';
+                }
+            } else {
+                for (var j = 0; j < configuration_smtp_settings_tbody.length; j++) {
+                    configuration_smtp_settings_tbody[j].style.display = 'none';
+                }
+            }
+            /*
+             * only one radio can be logically checked, don't check the rest
+             */
+            break;
         }
     }
 }
