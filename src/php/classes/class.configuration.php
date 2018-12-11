@@ -50,10 +50,11 @@ class configuration {
         'mb_internal_encoding' => 'UTF-8',
         'contact_email' => '',
         'hide_disapproved' => FALSE, //We set it up to false in order not to disconcert new administrators.
-        'SMTP'['host'] => '',
-        'SMTP'['username'] => '',
-        'SMTP'['password'] => '',
-        'SMTP'['port'] => 587,
+        'email_method' => 'mail',
+        'email_smtp_host' => NULL, /* e.g. smtp.example.com */
+        'email_smtp_port' => 587, /* 587 for ssl */
+        'email_smtp_username' => NULL,
+        'email_smtp_password' => NULL,
     );
     private static $List_of_configuration_parameter_types = array(
         'application_name' => FILTER_SANITIZE_STRING,
@@ -74,10 +75,11 @@ class configuration {
         'mb_internal_encoding' => FILTER_SANITIZE_STRING,
         'contact_email' => FILTER_SANITIZE_EMAIL,
         'hide_disapproved' => FILTER_SANITIZE_NUMBER_INT,
-        'SMTP'['host'] => FILTER_SANITIZE_URL,
-        'SMTP'['username'] => FILTER_SANITIZE_STRING,
-        'SMTP'['password'] => FILTER_UNSAFE_RAW,
-        'SMTP'['port'] => FILTER_SANITIZE_NUMBER_INT,
+        'email_method' => FILTER_SANITIZE_STRING,
+        'email_smtp_host' => FILTER_SANITIZE_URL,
+        'email_smtp_port' => FILTER_SANITIZE_NUMBER_INT,
+        'email_smtp_username' => FILTER_SANITIZE_STRING,
+        'email_smtp_password' => FILTER_UNSAFE_RAW,
     );
 
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
@@ -171,7 +173,7 @@ class configuration {
         /*
          * Read the POST values:
          */
-        foreach (self::$List_of_configuration_parameters as $key => $value) {
+        foreach (self::$List_of_configuration_parameters as $key => $default_value) {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
@@ -180,21 +182,27 @@ class configuration {
                         continue;
                     }
                 }
-                //print_debug_variable($key . ' from POST: ' . $_POST[$key]);
-                $new_config[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_STRING);
+                /*
+                 * $key will be taken from POST:
+                 */
+                $new_config[$key] = filter_input(INPUT_POST, $key, self::$List_of_configuration_parameter_types[$key]);
             } elseif (isset($config[$key]) and '' !== $config[$key]) {
-                //print_debug_variable($key . ' from $config: ' . $config[$key]);
+                /*
+                 * $key will be taken from old $config:
+                 */
                 $new_config[$key] = $config[$key];
             } else {
-                //print_debug_variable($key . ' from default: ' . $value);
-                $new_config[$key] = $value;
+                /*
+                 * $key will be taken from default value:
+                 */
+                $new_config[$key] = $default_value;
             }
         }
         if (file_exists($configuration_file)) {
             rename($configuration_file, $configuration_file . '_' . date(DateTime::ATOM));
         }
         $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($new_config, true) . ';');
-        chmod($configuration_file, 0664);
+        chmod($configuration_file, 0660);
         return $new_config;
     }
 
