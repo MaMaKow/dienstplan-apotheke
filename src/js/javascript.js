@@ -358,14 +358,15 @@ function configuration_toggle_show_smtp_options() {
     var email_method_radios = document.getElementsByName('email_method');
     for (var i = 0; i < email_method_radios.length; i++) {
         if (email_method_radios[i].checked) {
-            var configuration_smtp_settings_tbody = document.getElementsByClassName('configuration_smtp_settings_tbody');
+            var configuration_smtp_settings_fieldset = document.getElementsByClassName('configuration_smtp_settings_fieldset');
             if ('smtp' === email_method_radios[i].value) {
-                for (var j = 0; j < configuration_smtp_settings_tbody.length; j++) {
-                    configuration_smtp_settings_tbody[j].style.display = 'inline';
+                for (var j = 0; j < configuration_smtp_settings_fieldset.length; j++) {
+                    configuration_smtp_settings_fieldset[j].style.display = 'inline';
+                    window.scrollBy(0, 200);
                 }
             } else {
-                for (var j = 0; j < configuration_smtp_settings_tbody.length; j++) {
-                    configuration_smtp_settings_tbody[j].style.display = 'none';
+                for (var j = 0; j < configuration_smtp_settings_fieldset.length; j++) {
+                    configuration_smtp_settings_fieldset[j].style.display = 'none';
                 }
             }
             /*
