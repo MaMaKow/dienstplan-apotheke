@@ -1,0 +1,45 @@
+/*
+Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/*
+    Created on : 11.12.2018, 22:08:20
+    Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
+*/
+
+div#configuration_input_div fieldset {
+    margin-top: 0.5em;
+    border: 1px solid #BDE682;
+    padding: 1em;
+    font: 80%/1 sans-serif;
+    /*
+    */
+}
+
+div#configuration_input_div fieldset legend {
+    padding: 0.2em 0.5em;
+    border: 1px solid #73AC22;
+    color: #73AC22;
+    /*
+    font-size:90%;
+    */
+    text-align: right;
+}
+
+div#configuration_input_div fieldset label {
+    display: inline-block;
+    /*
+    */
+}

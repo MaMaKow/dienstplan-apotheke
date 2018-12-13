@@ -82,6 +82,18 @@ class configuration {
         'email_smtp_password' => FILTER_UNSAFE_RAW,
     );
 
+    /**
+     *
+     * @var array $List_of_supported_languages <p>a list of language that have translations via gettext.
+     * The array has the format language code => language name (e.g. en_GB => English)
+     * </p>
+     *
+     */
+    public static $List_of_supported_languages = array(
+        'en_GB' => 'English',
+        'de_DE' => 'Deutsch',
+    );
+
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
     const ERROR_WARNING = self::ERROR_ERROR | E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;
     const ERROR_NOTICE = self::ERROR_WARNING | E_NOTICE | E_USER_NOTICE | E_DEPRECATED | E_USER_DEPRECATED;
