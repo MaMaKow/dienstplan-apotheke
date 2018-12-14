@@ -19,7 +19,100 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
-div#configuration_input_div fieldset {
+input[type="time"] {
+    width: 6em;
+    /*size: 5em;*/
+    font-family: monospace;
+    border-top: initial;
+    border-left: 3px dotted #FEFEFF;
+    border-right: 3px dotted #FEFEFF;
+    border-bottom: 3px dotted #FEFEFF;
+}
+
+input[type="time"]:hover {
+    border: 3px dotted #BDE682;
+}
+
+input[type=number] {
+    /*
+     * We are dealing with numbers only up to 60 in our input boxes.
+     * 2em are for the numbers, 1em is for the broswer styles and 1em is free space left.
+     */
+    width: 4em;
+}
+
+/*
+ * Toggle Switch
+ */
+/* The switch - the box around the slider */
+label.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #B4B4B4;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+input:checked + .slider {
+    background-color: #73AC22;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+/*
+ * <--Toggle Switch
+ */
+
+span.form_input_unit{
+    /* a piece of text representing a physical unit of an input */
+    margin-left: 1em;
+}
+
+select {
+    color: #73AC22;
+    background-color: #FEFEFF;
+
+    border-top: 1px dashed #B4B4B4;
+    border-left: 1px dashed #B4B4B4;
+    border-right: 1px dashed #B4B4B4 ;
+    border-bottom: 1px dashed #B4B4B4;
+}
+
+select:hover {
+    border: 1px double #BDE682;
+}
+
+fieldset {
     margin-top: 0.5em;
     border: 1px solid #BDE682;
     padding: 1em;
@@ -28,7 +121,7 @@ div#configuration_input_div fieldset {
     */
 }
 
-div#configuration_input_div fieldset legend {
+fieldset legend {
     padding: 0.2em 0.5em;
     border: 1px solid #73AC22;
     color: #73AC22;
@@ -38,7 +131,7 @@ div#configuration_input_div fieldset legend {
     text-align: right;
 }
 
-div#configuration_input_div fieldset label {
+fieldset label {
     display: inline-block;
     /*
     */

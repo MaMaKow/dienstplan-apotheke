@@ -17,73 +17,77 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
         */
     }
 }
+
 html {
     font-size: 16px;
 }
-body
-{
+
+body {
     background-color: #FEFEFF;
     font-family: sans-serif;
 }
+
 footer {
     clear: left;
 }
-table, th, td
-{
+table, th, td {
     white-space: nowrap;
     vertical-align: top;
     font-family : "Myriad Web",Verdana,Helvetica,Arial,sans-serif;
     border-collapse: collapse;
     padding:0 1.0em 0.8em 0;
 }
-thead
-{
+
+thead {
     border-bottom-style: solid;
     border-bottom-color: black;
     border-bottom-width: 1px;
 }
-tfoot
-{
+
+tfoot {
     border-top-style: solid;
     border-top-color: black;
     border-top-width: 1px;
 }
-table.table_with_border td
-{
+
+table.table_with_border td {
     border: solid 1px #000000;
 }
-td
-{
+
+td {
     white-space: nowrap; vertical-align: top;
 }
-th
-{
+
+th {
     text-align: left;
 }
-td.absentees_column{
+
+td.absentees_column {
     white-space: normal;
     font-size: smaller;
 }
+
 a {
     text-decoration: none;
     color: #73AC22;
 }
+
 a:hover {
     text-decoration: underline;
 }
-.only_print
-{
+
+.only_print {
     display: none;
 }
 
-div.foot
-{
+div.foot {
     display: inline-block;
     float: left;
     clear: both;
     /*	background-color: #BDE682;*/
     width: 95%;
 }
+
 @media screen and (min-width: 931px) {
     div#main_area_centered {
         text-align: center;
@@ -96,6 +100,7 @@ div.foot
         margin: auto;
     }
 }
+
 @media screen and (max-width: 930px) {
     div#main_area_centered {
         text-align: center;
@@ -105,11 +110,12 @@ div.foot
         margin: auto;
     }
 }
+
 main {
     border: 2pt solid #BDE682;
 }
-div#main-area
-{
+
+div#main-area {
     width: 95%;
     position: relative;
     float: left;
@@ -120,23 +126,23 @@ div#main-area
     padding-top: 8px;
     overflow: auto;
 }
-table#duty_roster_table
-{
+
+table#duty_roster_table {
     /*
     width: 85%;
 
     font-size: 1.18vw;
     */
 }
-div#table_overlay_area
-{
+
+div#table_overlay_area {
     /*
     width: 100%;
     */
     position: relative;
 }
-div.roster_plot_div
-{
+
+div.roster_plot_div {
     position: relative;
     float: left;
     overflow:auto;
@@ -144,51 +150,22 @@ div.roster_plot_div
     /*	max-height: 60%;*/
 }
 
-img.inline-image
-{
+img.inline-image {
     height: 0.9em;
 }
 
-input[type="time"]
-{
-    width: 6em;
-    /*size: 5em;*/
-    font-family: monospace;
-    border-top: initial;
-    border-left: 3px dotted #FEFEFF;
-    border-right: 3px dotted #FEFEFF;
-    border-bottom: 3px dotted #FEFEFF;
-}
-input[type="time"]:hover
-{
-    border: 3px dotted #BDE682;
-}
-select
-{
-    color: #73AC22;
-    background-color: #FEFEFF;
-
-    border-top: 1px dashed #B4B4B4;
-    border-left: 1px dashed #B4B4B4;
-    border-right: 1px dashed #B4B4B4 ;
-    border-bottom: 1px dashed #B4B4B4;
-}
-select:hover
-{
-    border: 1px double #BDE682;
-}
 img.roster_input_row_add_row_image {
     width: 2em;
 }
-label
-{
+
+label {
     margin-top: 0.5em;
     /*
     display: block;
     */
 }
-div.overlay
-{
+
+div.overlay {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -252,6 +229,7 @@ div.user_dialog_container div.notification {
     font-size: medium;
     font-family: serif;
 }
+
 div.error_container
 {
     position: relative;
@@ -259,6 +237,7 @@ div.error_container
     top:0;
     max-width: 650px;
 }
+
 div.errormsg
 {
     background-color: #73AC22;
@@ -266,6 +245,7 @@ div.errormsg
     margin: 0px 15px 1em 0px;
     z-index: 10;
 }
+
 div.warningmsg
 {
     position: relative;
@@ -282,19 +262,23 @@ nav#nav {
     width: 100%;
     background-color: #BDE682;
 }
+
 nav ul#navigation {
     list-style-type: none;
     display: block;
     margin: 0;
     padding: 0;
 }
+
 nav ul#navigation li {
     height: 2em; /*is equal to {nav ul#navigation li a}[line-height]*/
     float: left;
 }
+
 nav ul#navigation li:last-child a {
     font-style: italic;
 }
+
 nav ul#navigation li a {
     border-left: 1px solid #73AC22;
     display: inline-block;
@@ -305,13 +289,16 @@ nav ul#navigation li a {
     padding-right: 0.5em;
     line-height: 2em; /*is equal to {nav ul#navigation li}[height]*/
 }
+
 ul#navigation li a:hover {
     background-color: #73AC22;
     color: #FFFFFF;
 }
+
 nav ul#navigation li:hover > ul {
     display: block;
 }
+
 ul#navigation ul, ul#navigation ul li ul{
     display: none;
     position: absolute;
@@ -320,10 +307,12 @@ ul#navigation ul, ul#navigation ul li ul{
     margin-left: 2.0em;
     z-index:  20;
 }
+
 ul#navigation ul li {
     clear: both;
     width: 100%;
 }
+
 ul#navigation ul li a {
     font-style: inherit !important;
     display: inline-block;
@@ -336,6 +325,7 @@ ul#navigation ul li a {
 tr.wochenende {
     background-color: #B4B4B4;
 }
+
 img.worker-img {
     border: 5px solid #B4B4B4;
     clear: left;
@@ -343,50 +333,63 @@ img.worker-img {
     float: left;
     height: 64px;
 }
+
 img.worker-img:hover {
     height: auto;
     width: 90%;
 }
+
 .large {
     font-size: xx-large;
     margin-bottom: 1em;
 }
+
 .size_medium, .size_medium * {
     font-size: medium;
 }
+
 .smaller, .smaller * {
     font-size: smaller;
 }
+
 .tiny {
     font-size: xx-small;
     font-weight: lighter;
 }
+
 .unobtrusive{
     font-size: smaller;
     font-weight: lighter;
 }
+
 .hint {
     font-size: small;
     font-weight: lighter;
     text-align: left;
 }
+
 .table {
     display:block;
     border: 5px;
     width: 10%;
 }
+
 .row {
     display:block;
 }
+
 .cell-header {
     font-weight: bold;
 }
+
 .cell {
     display:inline-block;
 }
+
 button.next {
     background-color: #73AC22;
 }
+
 button {
     background-color: #BDE682;
     border: none;
@@ -398,27 +401,33 @@ button {
     display: inline-block;
     font-size: medium;
 }
+
 img.button-image
 {
     height: 2em;
 }
+
 .button_small {
     width: 1em;
     height: 1em;
     margin: 0px;
     padding: 0.15em;
 }
+
 .button_small > img {
     height: 100%;
     vertical-align: top;
 }
+
 button:hover{
     box-shadow: 0px 0px 10px #888888;
 }
+
 .btn-save {
     background-color: #73AC22;
     color: white;
 }
+
 .icon-white {
     -webkit-filter: brightness(0) invert(100%);
     -moz-filter: brightness(0) invert(100%);
@@ -426,6 +435,7 @@ button:hover{
     -o-filter: brightness(0) invert(100%);
     filter: brightness(0) invert(100%);
 }
+
 .icon-black {
     -webkit-filter: brightness(0);
     -moz-filter: brightness(0);
@@ -433,22 +443,26 @@ button:hover{
     -o-filter: brightness(0);
     filter: brightness(0);
 }
+
 .btn-primary {
     width: 10em;
     height: 6em;
     padding: 0.5em;
     margin-bottom: 0.5em;
 }
+
 .btn-secondary {
     width: 10em;
     height: 6em;
     margin-bottom: 0.5em;
     background-color: #B4B4B4;
 }
+
 button:disabled, .btn-secondary:disabled {
     filter: opacity(0.5);
     box-shadow:  none;
 }
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Chrome/Safari/Opera */
@@ -465,23 +479,28 @@ div#weekly_rotation {
     position: relative;
     float: right;
 }
+
 div#print_time_info {
     position:  absolute;
     bottom: 0em;
     right: 0em;
 }
+
 div#roster_week_image_div {
     page-break-inside: avoid;
 }
+
 div#week_hours_table_div {
     font-family: monospace;
     font-size: smaller;
     position: relative;
     float:     right;
 }
+
 table.tight tr td {
     padding-bottom: 0em;
 }
+
 .left_float_pool * {
     float: left;
     margin-right: 1em;
@@ -494,20 +513,23 @@ table.tight tr td {
     clear: left;
     */
 }
+
 div#bottom
 {
     position: absolute;
     bottom: 0;
 }
-#roster_form, #navigation_form, #principle_roster_form
-{
+
+#roster_form, #navigation_form, #principle_roster_form {
     float: left;
     clear: left;
 }
+
 #week_day_form{
     margin-right: 1em;
     float: left;
 }
+
 #navigation_form_div
 {
     float: left;
@@ -734,18 +756,8 @@ tr.absence_row[data-approval='approved'] {
  * The below lines are added for human-resource-management
  * -->
  */
-span.form_input_unit{
-    margin-left: 1em;
-}
 .nowrap{
     white-space: nowrap;
-}
-input[type=number] {
-    /*
-     * We are dealing with numbers only up to 60 in our input boxes.
-     * 2em are for the numbers, 1em is for the broswer styles and 1em is free space left.
-     */
-    width: 4em;
 }
 /*
  * <--
@@ -836,51 +848,3 @@ div.remaining_holidays p span {
 
 }
 
-/*
- * Toggle Switch
- * The switch - the box around the slider
- */
-label.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
-/* Hide default HTML checkbox */
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-/* The slider */
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #B4B4B4;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-input:checked + .slider {
-    background-color: #73AC22;
-}
-
-input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-}
