@@ -21,22 +21,17 @@ require_once '../../../default.php';
  */
 $workforce = new workforce();
 
-$sql_query = "SELECT `receive_emails_on_changed_roster` FROM `users` WHERE employee_id = :employee_id";
-$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $_SESSION['user_employee_id']));
-$receive_emails_setting = FALSE;
-while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $receive_emails_setting = (bool) $row->receive_emails_on_changed_roster;
-}
+$user = $_SESSION['user_object'];
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
 <main>
-    <h1><?= sprintf(gettext('User page for user %1s'), $_SESSION['user_name']); ?></h1>
+    <h1><?= sprintf(gettext('User page for user %1s'), $_SESSION['user_object']->user_name); ?></h1>
     <form action='' method='POST' id='user_form'></form>
     <fieldset id='email_consent'>
         <legend><?= gettext('Receive emails when the roster is changed') ?></legend>
-        <?= form_element_builder::build_checkbox_switch('user_form', 'receive_emails_opt_in', $receive_emails_setting); ?>
+        <?= form_element_builder::build_checkbox_switch('user_form', 'receive_emails_opt_in', $user->receive_emails_on_changed_roster); ?>
         <img width="16px" height="16px" src="../../../img/information.svg"
              title="<?= gettext('Upon changes in the roster that are less than 2 weeks in the future a notification may be sent. A maximum of one mail per day will be sent.'); ?>"
              >

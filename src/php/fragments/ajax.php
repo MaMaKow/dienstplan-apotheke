@@ -24,28 +24,6 @@
 require_once '../../../default.php';
 
 /**
- * Write receive_emails_opt_in into the `users` table of the database
- *
- * @param bool $receive_emails_opt_in If the user wishes to receive emails when the roster is changed.
- * @return bool Success of the database query
- */
-//function toggle_receive_emails_opt_in(bool $receive_emails_opt_in) {
-function toggle_receive_emails_opt_in(int $receive_emails_opt_in) {
-    $sql_query = "UPDATE `users` "
-            . "SET `receive_emails_on_changed_roster` = :receive_emails_opt_in "
-            . "WHERE `employee_id` = :employee_id";
-    $result = database_wrapper::instance()->run($sql_query, array(
-        'receive_emails_opt_in' => $receive_emails_opt_in,
-        'employee_id' => $_SESSION['user_employee_id']
-    ));
-    if ('00000' === $result->errorInfo()[0]) {
-        echo "success";
-        return TRUE;
-    }
-    return FALSE;
-}
-
-/**
  * This function is meant to distribute data to the user_page action functions.
  */
 function form_input_user_page() {
@@ -55,6 +33,22 @@ function form_input_user_page() {
     }
     if ('false' === $receive_emails_opt_in) {
         return toggle_receive_emails_opt_in(0);
+    }
+    return FALSE;
+}
+
+/**
+ * Write receive_emails_opt_in into the `users` table of the database
+ *
+ * @param bool $receive_emails_opt_in If the user wishes to receive emails when the roster is changed.
+ * @return bool Success of the database query
+ */
+//function toggle_receive_emails_opt_in(bool $receive_emails_opt_in) {
+function toggle_receive_emails_opt_in(int $receive_emails_opt_in) {
+    $user = $_SESSION['user_object'];
+    if ($user->set_receive_emails_opt_in($receive_emails_opt_in)) {
+        echo "success";
+        return TRUE;
     }
     return FALSE;
 }

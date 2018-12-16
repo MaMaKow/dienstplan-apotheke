@@ -182,7 +182,7 @@ class user_dialog {
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('Sender') . " ________\n";
-        $message .= $workforce->List_of_employees[$_SESSION['user_employee_id']]->full_name;
+        $message .= $workforce->List_of_employees[$_SESSION['user_object']->employee_id]->full_name;
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('File') . " ________\n";
@@ -199,8 +199,8 @@ class user_dialog {
 
     private function contact_form_send_mail_build_header() {
         $header = "";
-        $header .= 'From: ' . $_SESSION['user_email'] . "\r\n";
-        $header .= 'Reply-To: ' . $_SESSION['user_email'] . "\r\n";
+        $header .= 'From: ' . $_SESSION['user_object']->email . "\r\n";
+        $header .= 'Reply-To: ' . $_SESSION['user_object']->email . "\r\n";
         $header .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
         $header .= "Content-type: text/plain; charset=UTF-8;\r\n";
         return $header;

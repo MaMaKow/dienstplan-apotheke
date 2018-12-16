@@ -17,7 +17,7 @@
  */
 require '../../../default.php';
 human_resource_management::write_employee_data_to_database(); //$success = write_employee_data_to_database();
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 create_cookie('employee_id', $employee_id, 1);
 
 $Worker = human_resource_management::read_employee_data_from_database($employee_id);

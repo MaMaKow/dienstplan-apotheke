@@ -19,10 +19,10 @@
 ini_set('display_errors', TRUE); //Display errors to the end user?
 require_once '../../../../bootstrap.php';
 $user_dialog = new user_dialog();
-$_SESSION['user_employee_id'] = 5;
-$_SESSION['user_email'] = $config['contact_email'];
+$_SESSION['user_object'] = new user(5);
+$_SESSION['user_object']->email = $config['contact_email'];
 $response = $user_dialog->contact_form_send_mail();
-unset($_SESSION['user_employee_id'], $_SESSION['user_email']);
+unset($_SESSION['user_object']);
 if ($response) {
     /*
      * used by PHPUnit test file to check if the test was passed

@@ -24,16 +24,13 @@ $session->exit_on_missing_privilege('administration');
 
 if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT)) {
     //activate the user account:
-    $sql_query = "UPDATE `users` SET `status` = 'active' WHERE `employee_id` = :employee_id";
-    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $approve_id));
-    //Get information about the user:
-    $sql_query = "SELECT * FROM users WHERE `employee_id` = :employee_id";
-    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $approve_id));
-    $user = $statement->fetch(PDO::FETCH_OBJ);
-    send_mail_about_registration_approval($user->user_name, $user->email);
+    $user = new user($approve_id);
+    if ($user->activate()) {
+        send_mail_about_registration_approval($user->user_name, $user->email);
+    }
 } elseif ($disapprove_id = filter_input(INPUT_POST, 'disapprove', FILTER_SANITIZE_NUMBER_INT)) {
-    $sql_query = "UPDATE `users` SET `status` = 'blocked' WHERE `employee_id` = :employee_id";
-    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $disapprove_id));
+    $user = new user($disapprove_id);
+    $user->block();
 }
 
 $sql_query = "SELECT * FROM users WHERE `status` = 'inactive'";

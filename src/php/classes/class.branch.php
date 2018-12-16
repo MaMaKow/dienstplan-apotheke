@@ -82,7 +82,7 @@ class branch {
      */
 
     private static function redirect_to_input_form_on_missing_setup() {
-        if (!isset($_SESSION['user_employee_id'])) {
+        if (!isset($_SESSION['user_object']->employee_id)) {
             /*
              * If we are not logged in yet, then there is no sense in redirecting.
              */

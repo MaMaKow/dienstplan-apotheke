@@ -17,7 +17,7 @@
  */
 require_once "../../../default.php";
 $workforce = new workforce();
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 create_cookie('employee_id', $employee_id, 1);
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/collaborative-vacation.php";
 handle_user_data_input();

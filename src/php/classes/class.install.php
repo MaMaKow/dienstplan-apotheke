@@ -287,21 +287,10 @@ class install {
             'employee_id' => $this->Config["admin"]["employee_id"],
             'last_name' => $this->Config["admin"]["last_name"]
         ));
-
-        $statement = $this->pdo->prepare("SELECT user_name FROM `users` WHERE user_name = :user_name");
-        $statement->execute(array('user_name' => $this->Config["admin"]["user_name"]));
-        $result = $statement->fetchAll();
-        if (empty($result[0]["user_name"])) {
-            $statement = $this->pdo->prepare("INSERT INTO"
-                    . " users (user_name, employee_id, password, email, status)"
-                    . " VALUES (:user_name, :employee_id, :password, :email, 'active')");
-            $result = $statement->execute(array(
-                'user_name' => $this->Config["admin"]["user_name"],
-                'employee_id' => $this->Config["admin"]["employee_id"],
-                'password' => $password_hash,
-                'email' => $this->Config["admin"]["email"],
-            ));
-            if (!$result) {
+        $user = new user($this->Config["admin"]["employee_id"]);
+        if ($user->exists()) {
+            $user_creation_result = $user->create_new($this->Config["admin"]["employee_id"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
+            if (!$user_creation_result) {
                 /*
                  * We were not able to create the administrative user.
                  */
@@ -327,10 +316,12 @@ class install {
          */
         /*
          * Brute force method of login:
+         * TODO: Which parts of the following lines are relevant?
          */
-        $_SESSION['user_name'] = $this->Config["admin"]["user_name"];
-        $_SESSION['user_employee_id'] = $this->Config["admin"]["employee_id"];
-        $_SESSION['user_email'] = $this->Config["admin"]["email"];
+        //$_SESSION['user_name'] = $this->Config["admin"]["user_name"];
+        //$_SESSION['user_employee_id'] = $this->Config["admin"]["employee_id"];
+        //$_SESSION['user_email'] = $this->Config["admin"]["email"];
+        $_SESSION['user_object'] = new user($this->Config["admin"]["employee_id"]);
 
 
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {

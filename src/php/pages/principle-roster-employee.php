@@ -18,7 +18,7 @@
 require '../../../default.php';
 $number_of_days = 7;
 
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 create_cookie('employee_id', $employee_id, 30);
 $pseudo_date_unix = time() - (date('w') - 1) * PDR_ONE_DAY_IN_SECONDS;
 $pseudo_date_sql_start = date('Y-m-d', $pseudo_date_unix);

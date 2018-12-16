@@ -23,37 +23,20 @@
  */
 require '../../../default.php';
 
-if (filter_has_var(INPUT_POST, "month")) {
-    $month = filter_input(INPUT_POST, 'month', FILTER_SANITIZE_NUMBER_INT);
-} else {
-    $month = date("n");
-}
-if (filter_has_var(INPUT_POST, "year")) {
-    $year = filter_input(INPUT_POST, 'year', FILTER_SANITIZE_NUMBER_INT);
-} else {
-    $year = date("Y");
-}
+$month = user_input::get_variable_from_any_input('month', FILTER_SANITIZE_NUMBER_INT, $month = date('n'));
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, $month = date('Y'));
+$year = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+
 $start_datum = mktime(0, 0, 0, $month, 1, $year);
 $date_unix = $start_datum;
 $date_sql = date('Y-m-d', $date_unix);
-
-if (filter_has_var(INPUT_POST, "employee_id")) {
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-} else {
-    $employee_id = $_SESSION['user_employee_id'];
-}
 
 $workforce = new workforce($date_sql);
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {
     $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
 }
-$Years = array();
-$sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan`";
-$result = database_wrapper::instance()->run($sql_query);
-while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $Years[] = $row->year;
-}
+$Years = absence::get_rostering_years();
 $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
         . "FROM `Dienstplan` "
         . "WHERE  `VK` = :employee_id AND MONTH(`Datum`) = :month AND YEAR(`Datum`) = :year "

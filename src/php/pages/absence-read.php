@@ -18,7 +18,7 @@
 require '../../../default.php';
 $workforce = new workforce();
 $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen die höchste VK-Nummer.
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 create_cookie("employee_id", $employee_id, 1);
 $vk = $employee_id;
 $sql_query = "SELECT * FROM `absence` WHERE `employee_id` = :employee_id ORDER BY `start` DESC";
