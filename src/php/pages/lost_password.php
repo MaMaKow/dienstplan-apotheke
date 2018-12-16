@@ -21,11 +21,12 @@ if (filter_has_var(INPUT_GET, 'request_new_password')) {
     $token = sha1(uniqid());
     $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_STRING);
     if (!empty($identifier)) {
-        $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id OR `email` = :email OR `user_name` = :user_name";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $identifier, 'email' => $identifier, 'user_name' => $identifier));
-        $user_data = $result->fetch(PDO::FETCH_OBJ);
-        $session->write_lost_password_token_to_database($user_data->employee_id, $token);
-        $session->send_mail_about_lost_password($user_data->employee_id, $user_data->user_name, $user_data->email, $token);
+        $user = new user(NULL);
+        if (FALSE === $user->guess_user_by_identifier($identifier)) {
+            return FALSE;
+        }
+        $session->write_lost_password_token_to_database($user->employee_id, $token);
+        $session->send_mail_about_lost_password($user->employee_id, $user->user_name, $user->email, $token);
     }
 }
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";

@@ -106,7 +106,7 @@
             </ul>
         </li>
         <li>
-            <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-page.php"><?= $_SESSION['user_name']; ?>&nbsp;
+            <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-page.php"><?= $_SESSION['user_object']->user_name; ?>&nbsp;
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/user_1.svg class="inline-image" alt="user-button" title="Show user">
             </a>
             <ul>

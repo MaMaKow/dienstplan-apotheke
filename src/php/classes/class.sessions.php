@@ -93,7 +93,7 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        if (!isset($_SESSION['user_employee_id']) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
+        if (!isset($_SESSION['user_object']->employee_id) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location . "?referrer=" . $request_uri);
             die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>' . PHP_EOL);
@@ -119,7 +119,7 @@ class sessions {
 
     private function read_Privileges_from_database() {
         $sql_query = "SELECT * FROM users_privileges WHERE `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $_SESSION['user_employee_id']));
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $_SESSION['user_object']->employee_id));
         while ($privilege_data = $result->fetch(PDO::FETCH_ASSOC)) {
             $Privileges[$privilege_data['privilege']] = TRUE;
         }
@@ -185,32 +185,30 @@ class sessions {
         /*
          * Get user data:
          */
-        $result = database_wrapper::instance()->run("SELECT * FROM users WHERE `user_name` = :user_name AND `status` = 'active'", array('user_name' => $user_name));
-        $user = $result->fetch(PDO::FETCH_ASSOC);
+        $result = database_wrapper::instance()->run("SELECT `employee_id` FROM `users` WHERE `user_name` = :user_name AND `status` = 'active'", array('user_name' => $user_name));
+        $user = NULL;
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $user = new user($row->employee_id);
+        }
 
         /*
          * Check for multiple failed login attempts
          * If a user has tried to login 3 times in a row, he is blocked for 5 minutes.
          * The number of failed attempts is reset to 0 on every successfull login.
          */
-        if (3 <= $user['failed_login_attempts'] and strtotime('-5min') <= strtotime($user['failed_login_attempt_time'])) {
+        if (3 <= $user->failed_login_attempts and strtotime('-5min') <= strtotime($user->failed_login_attempt_time)) {
             $errorMessage .= "<p>Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.</p>";
+            user_dialog::add_message($errorMessage, E_USER_ERROR, TRUE);
             return $errorMessage;
         }
 
         //Check the password:
-        if ($user !== false && password_verify($user_password, $user['password'])) {
+        if (NULL !== $user && $user->password_verify($user_password)) {
             //Fill $_SESSION data on success:
             session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id right before setting up login details.
-            $_SESSION['user_name'] = $user['user_name'];
-            $_SESSION['user_employee_id'] = $user['employee_id'];
-            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_object'] = $user;
             //Reset failed_login_attempts
-            $sql_query = "UPDATE users "
-                    . " SET failed_login_attempt_time = NOW(), "
-                    . " failed_login_attempts = 0 "
-                    . " WHERE `user_name` = :user_name";
-            $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user['user_name']));
+            $user->reset_failed_login_attempts();
 
             /*
              * Start another PHP process to do maintenance tasks:
@@ -231,12 +229,9 @@ class sessions {
             }
         } else {
             //Register failed_login_attempts
-            $sql_query = "UPDATE users"
-                    . " SET failed_login_attempt_time = NOW(),"
-                    . " failed_login_attempts = IFNULL(failed_login_attempts, 0)+1"
-                    . " WHERE `user_name` = :user_name";
-            $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user['user_name']));
+            $user->register_failed_login_attempt();
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
+            user_dialog::add_message($errorMessage, E_USER_ERROR, TRUE);
             return $errorMessage;
         }
         return FALSE;

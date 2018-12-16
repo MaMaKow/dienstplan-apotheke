@@ -36,20 +36,21 @@ function lost_password_token_is_valid($employee_id, $token) {
     }
 }
 
-function build_lost_password_form($employee_id, $user_name, $token) {
+function build_lost_password_form($employee_id, $token) {
     $user_dialog = new user_dialog();
     global $config;
+    $user = new user($employee_id);
 
     if (lost_password_token_is_valid($employee_id, $token)) {
         ?>
         <div class=centered_form_div>
             <H1><?= $config['application_name'] ?> </H1>
             <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
-                <p><strong><?= $user_name ?></strong></p>
+                <p><strong><?= $user->user_name ?></strong></p>
                 <p><?= gettext('You can change your password here. Please enter your new password twice below.') ?></p>
                 <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>
-                <input type="password" size="40" name="password" required placeholder="Passwort"><br>
+                <input type="password" size="40" name="password" required placeholder="Passwort" minlength="8"><br>
                 <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
                 <input type="submit" value="Abschicken">
             </form>
@@ -64,16 +65,12 @@ function build_lost_password_form($employee_id, $user_name, $token) {
 if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_id')) {
     $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
-    $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id";
-    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
-    $User_data = $result->fetch(PDO::FETCH_OBJ);
-    $user_name = $User_data->user_name;
 
     /*
      * Remove expired tokens:
      */
     database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
-    build_lost_password_form($employee_id, $user_name, $token);
+    build_lost_password_form($employee_id, $token);
 } elseif (filter_has_var(INPUT_POST, 'employee_id')) {
     $error = FALSE;
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
@@ -106,7 +103,7 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
             error_log(gettext('There was an error while saving the data.') . print_r($statement->errorInfo(), TRUE));
             $user_dialog->add_message(gettext('There was an error while saving the data.'));
             $user_dialog->add_message(gettext('Please see the error log for more details!'));
-            build_lost_password_form($employee_id, $user_name, $token);
+            build_lost_password_form($employee_id, $token);
         }
     }
 } else {

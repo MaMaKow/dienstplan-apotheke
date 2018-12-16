@@ -21,7 +21,7 @@
  * Wir erstellen eine umfassende Icalendar Datei (ICS). Diese kann dann von Kalenderprogrammen aboniert werden.
  */
 require_once 'default.php';
-if (!isset($_SESSION['user_employee_id'])) {
+if (!isset($_SESSION['user_object']->employee_id)) {
     require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/basic_access_authentication.php';
 }
 /*
@@ -33,7 +33,7 @@ $build_lunch_break_alert = user_input::get_variable_from_any_input('build_lunch_
  */
 $days_into_the_future = user_input::get_variable_from_any_input('days_into_the_future', FILTER_SANITIZE_STRING, 30);
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_STRING, date('Y-m-d'));
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 $create_valarm = user_input::get_variable_from_any_input('create_valarm', FILTER_SANITIZE_NUMBER_INT, 0);
 $workforce = new workforce($date_sql);
 $date_sql_start = $date_sql;

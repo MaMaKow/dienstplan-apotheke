@@ -205,7 +205,7 @@ abstract class user_input {
                     'working_hours' => $roster_row_object->working_hours,
                     'branch_id' => $roster_row_object->branch_id,
                     'comment' => $roster_row_object->comment,
-                    'user_name' => $_SESSION['user_name']
+                    'user_name' => $_SESSION['user_object']->user_name,
                 ));
             }
         }
@@ -250,7 +250,7 @@ abstract class user_input {
          */
         $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
 			VALUES (:date, 'not_yet_approved', :branch_id, :user)";
-        database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id, 'user' => $_SESSION['user_name']));
+        database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id, 'user' => $_SESSION['user_object']->user_name));
     }
 
     public static function old_write_approval_to_database($branch_id, $Roster) {
@@ -270,8 +270,8 @@ abstract class user_input {
                     . "ON DUPLICATE KEY "
                     . "UPDATE date = :date2, branch = :branch_id2, state = :state2, user = :user2";
             $result = database_wrapper::instance()->run($sql_query, array(
-                'date' => $date_sql, 'branch_id' => $branch_id, 'state' => $state, 'user' => $_SESSION['user_employee_id'],
-                'date2' => $date_sql, 'branch_id2' => $branch_id, 'state2' => $state, 'user2' => $_SESSION['user_employee_id']
+                'date' => $date_sql, 'branch_id' => $branch_id, 'state' => $state, 'user' => $_SESSION['user_object']->employee_id,
+                'date2' => $date_sql, 'branch_id2' => $branch_id, 'state2' => $state, 'user2' => $_SESSION['user_object']->employee_id,
             ));
             return $result;
         }

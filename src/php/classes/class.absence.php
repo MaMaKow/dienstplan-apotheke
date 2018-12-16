@@ -237,7 +237,7 @@ class absence {
                 'days' => $days,
                 'reason' => $reason,
                 'comment' => $comment,
-                'user' => $_SESSION['user_name'],
+                'user' => $_SESSION['user_object']->user_name,
                 'approval' => $approval
             ));
         } catch (Exception $exception) {
@@ -314,7 +314,7 @@ class absence {
         return $Months;
     }
 
-    private static function get_rostering_years() {
+    public static function get_rostering_years() {
         $Years = array();
         $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan` ORDER BY `Datum`";
         $result = database_wrapper::instance()->run($sql_query);

@@ -215,15 +215,8 @@ class user_dialog_email {
     }
 
     private function send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file_string) {
-        $receive_emails_on_changed_roster = FALSE;
-        $sql_query = "SELECT * from `users` WHERE `employee_id` = :employee_id;";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $receive_emails_on_changed_roster = $row->receive_emails_on_changed_roster;
-            $user_email_address = $row->email;
-            $user_name = $row->user_name;
-        }
-        if (FALSE == $receive_emails_on_changed_roster) {
+        $user = new user($employee_id);
+        if (FALSE == $user->receive_emails_on_changed_roster) {
             /*
              * The user does not want to be informed about roster changes via email.
              */
@@ -268,7 +261,7 @@ class user_dialog_email {
              * Recipients
              */
             $mail->setFrom($config['contact_email'], $config['application_name'] . ' Mailer');
-            $mail->addAddress($user_email_address, $user_name);
+            $mail->addAddress($user->email, $user->user_name);
             $mail->addBCC($config['contact_email'], $config['application_name'] . ' Mailer');
             /*
              * Attachments

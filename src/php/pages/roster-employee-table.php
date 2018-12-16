@@ -26,7 +26,7 @@ $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix
 create_cookie('datum', $date_sql, 1);
 $workforce = new workforce($date_sql);
 
-$employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
+$employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 create_cookie('employee_id', $employee_id, 1);
 
 /*
@@ -38,7 +38,7 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
      * Therefore we might get his/her id in the cookie.
      * Now we just change it to someone, who is actually there:
      */
-    $employee_id = $_SESSION['user_employee_id'];
+    $employee_id = $_SESSION['user_object']->employee_id;
 }
 
 $Roster = roster::read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end);

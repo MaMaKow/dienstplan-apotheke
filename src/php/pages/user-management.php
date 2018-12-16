@@ -19,8 +19,9 @@ require '../../../default.php';
 $workforce = new workforce();
 $user_dialog = new user_dialog();
 
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+$user = new user($employee_id);
 $User_list = read_user_list_from_database();
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_employee_id']);
 if (FALSE === in_array($employee_id, array_keys($User_list))) {
     /* This happens if a coworker does not have a user account (yet).
      * He can still be chosen within other pages.
@@ -33,52 +34,26 @@ create_cookie('employee_id', $employee_id, 30);
 
 function insert_user_data_into_database() {
     global $session;
-    $User["employee_id"] = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-    $User["privilege"] = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-    if ($_SESSION['user_employee_id'] == $User["employee_id"] and $session->user_has_privilege('administration')) {
+    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+    $user = new user($employee_id);
+    $privileges = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+    if ($_SESSION['user_object']->employee_id == $user->employee_id and $session->user_has_privilege('administration')) {
         /*
          * We want to avoid an administrator loosing the administration privilege by accident.
          * The privilege can only be lost, if an other administrator is taking it away.
          * This way we make sure, that there always is at least one user with administrative privileges.
          */
-        if (!in_array('administration', $User["privilege"])) {
-            $User["privilege"][] = 'administration';
+        if (!in_array('administration', $privileges)) {
+            $privileges[] = 'administration';
             global $Error_message;
             $Error_message[] = "An administrative user cannot get rid of the 'administration' privilege himself. Only another administrator can take it away.";
         }
     }
-    database_wrapper::instance()->beginTransaction();
-    $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = :user";
-    database_wrapper::instance()->run($sql_query, array('user' => $User["employee_id"]));
-    foreach ($User["privilege"] as $privilege) {
-        $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES(:user, :privilege)";
-        database_wrapper::instance()->run($sql_query, array('user' => $User["employee_id"], 'privilege' => $privilege));
-    }
-    database_wrapper::instance()->commit();
+    $user->write_new_privileges_to_database($privileges);
 }
 
 if (filter_has_var(INPUT_POST, 'submit_user_data')) {
     insert_user_data_into_database();
-}
-
-function read_user_data_from_database($employee_id) {
-    global $workforce;
-    $sql_query = "SELECT * FROM `users` WHERE `employee_id` = :employee_id";
-    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $User["employee_id"] = $row->employee_id;
-        $User["user_name"] = $row->user_name;
-        $User["email"] = $row->email;
-        $User["status"] = $row->status;
-        $User["last_name"] = $workforce->List_of_employees[$row->employee_id]->last_name;
-    }
-    $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = :employee_id";
-    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
-    $User["privilege"] = array();
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $User["privilege"][] = $row->privilege;
-    }
-    return $User;
 }
 
 function read_user_list_from_database() {
@@ -91,7 +66,6 @@ function read_user_list_from_database() {
     return $User_list;
 }
 
-$User = read_user_data_from_database($employee_id);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
@@ -113,11 +87,11 @@ function build_checkbox_permission($privilege, $checked) {
 }
 ?>
 <form method='POST' id='user_management'>
-    <input type='text' name='employee_id' id="employee_id" value="<?= $User["employee_id"] ?>" hidden='true'>
+    <input type='text' name='employee_id' id="employee_id" value="<?= $user->employee_id ?>" hidden='true'>
     <p>
         <?php
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
-            echo build_checkbox_permission($privilege, in_array($privilege, $User["privilege"]));
+            echo build_checkbox_permission($privilege, in_array($privilege, $user->privileges));
             echo "<br>";
         }
         ?>
