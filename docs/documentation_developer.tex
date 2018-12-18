@@ -99,9 +99,16 @@ In order to decide, the hash stored in the file \directory{database\_version\_ha
 \paragraph{Auto healing tables}
 The class \emph{database\_wrapper} has a function \emph{create\_table\_from\_template()} that is able to create missing tables from the structure information given in \directory{src/sql/}. It is called if any PDO database query throws an exception with the code 42S02 and the MySQL error 1146.
 
+\section{Classes}
+The classes are stored in the folder \directory{src/php/classes/}. 
+
+\subsection{user}
+The user class represents an employee, who has registered a user account in PDR.
+
 
 \section{Documentation}
 This documentation about a programm, app or script is a stub. You can help this project by expanding it.
+Seriously, if there is something that does not explain itself enough, just send me an email or contact me at GitHub!
 
 
 \section{Testing}

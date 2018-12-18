@@ -18,26 +18,100 @@
  */
 
 /**
- * Description of class
+ * A user is an employee, who has registered a user account in PDR.
+ * Users can login into the program and view data.
+ * Some possibilities reading / writing / editing are restricted to users with specific privileges.
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class user {
 
+    /**
+     *
+     * @var int <p>The employee_id is the primary key of the `users` table.
+     *  It refers to the primary key `id` in the `employees` table of the database.</p>
+     */
     public $employee_id;
+
+    /**
+     *
+     * @var string <p>The user_name can be freely chosen by the employee (FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW).
+     * It is a UNIQUE KEY in the `users` table.</p>
+     */
     public $user_name;
+
+    /**
+     *
+     * @var string <p>An email address of the user.
+     * It is a UNIQUE KEY in the `users` table.</p>
+     */
     public $email;
+
+    /**
+     *
+     * @var string a hash of the password created by password_hash($password, PASSWORD_DEFAULT);
+     */
     private $password;
+
+    /**
+     *
+     * @var string <p>A user can be either 'deleted', 'blocked', 'inactive' or 'active'.
+     * Only 'active' users can login into PDR.
+     * </p>
+     * @todo <p>There is no gui for managing the status. 'inactive' (new) users can be activated or blocked.
+     * But no other transitions are possible.</p>
+     */
     public $status;
-    private $failed_login_attempts;
-    private $failed_login_attempt_time;
+
+    /**
+     *
+     * @var int <p>The number of failed login attempts since the last successfull login.
+     * If there are more than 5 failed attempts, then any login to this user will be blocked for 5 minutes</p>
+     */
+    public $failed_login_attempts;
+
+    /**
+     *
+     * @var string <p>A MySQL time string of the last login attempt.
+     *  This value does not disciminate between successfull and failed attempts.</p>
+     */
+    public $failed_login_attempt_time;
+
+    /**
+     *
+     * @var bool <p>A user may choose (opt-in) to receive email notifications when his roster is changed.
+     * Emails will be sent at maximum once a day and only for future rosters up to 2 weeks in advance.</p>
+     */
     public $receive_emails_on_changed_roster;
+
+    /**
+     *
+     * @var string <p>A MySQL time string of the creation of the user.</p>
+     */
     public $created_at;
+
+    /**
+     *
+     * @var string <p>A MySQL time string of the last change to the `user` in the database.</p>
+     */
     public $updated_at;
+
+    /**
+     *
+     * @var array <p>Some possibilities reading / writing / editing are restricted to users with specific privileges.
+     * This array is a list of all the given privileges for the user.
+     * </p>
+     */
     public $privileges;
 
     /* public $employee_object; */
 
+    /**
+     * <p>It is possible to create an empty user.</p>
+     *
+     * @param int $employee_id
+     * @return void
+     */
     public function __construct($employee_id = NULL) {
         if (is_null($employee_id)) {
             /*
@@ -48,6 +122,12 @@ class user {
         $this->read_data_from_database($employee_id);
     }
 
+    /**
+     * Read the user data from the database and store it in the object.
+     *
+     * @param int $employee_id
+     * @return boolean <p>success of the database calls.</p>
+     */
     private function read_data_from_database($employee_id) {
         $sql_query = "SELECT * from `users` WHERE `employee_id` = :employee_id;";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
@@ -68,6 +148,9 @@ class user {
         return FALSE;
     }
 
+    /**
+     * Read the privileges of the user from the database and store them in the object.
+     */
     private function read_privileges_from_database() {
         $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
@@ -77,6 +160,13 @@ class user {
         }
     }
 
+    /**
+     *
+     * <p>All privileges which are inside the array will be added to the users privileges.
+     * All absent privileges will be removed from the user.</p>
+     *
+     * @param array $privileges
+     */
     public function write_new_privileges_to_database($privileges = array()) {
         database_wrapper::instance()->beginTransaction();
         $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = :employee_id";
@@ -88,6 +178,13 @@ class user {
         database_wrapper::instance()->commit();
     }
 
+    /**
+     *
+     * Store a new decision on `receive_emails_on_changed_roster` in the database
+     *
+     * @param bool $receive_emails_opt_in
+     * @return bool success of the database call.
+     */
     public function set_receive_emails_opt_in($receive_emails_opt_in) {
         $sql_query = "UPDATE `users` "
                 . "SET `receive_emails_on_changed_roster` = :receive_emails_opt_in "
@@ -99,6 +196,15 @@ class user {
         return '00000' === $result->errorCode;
     }
 
+    /**
+     *
+     * @param int $employee_id
+     * @param string $user_name
+     * @param string $password_hash
+     * @param string $email
+     * @param string $status
+     * @return boolean
+     */
     public function create_new($employee_id, $user_name, $password_hash, $email, $status) {
         $statement = $this->pdo->prepare("INSERT INTO"
                 . " users (user_name, employee_id, password, email, status)"
@@ -118,10 +224,19 @@ class user {
         }
     }
 
+    /**
+     *
+     * @param type $old_password
+     * @param type $new_password
+     * @todo not implemented yet
+     */
     public function change_password($old_password, $new_password) {
 
     }
 
+    /**
+     * @todo not implemented yet
+     */
     public function wants_emails_on_changed_roster() {
 
     }
@@ -144,6 +259,11 @@ class user {
         return '00000' === $result->errorCode;
     }
 
+    /**
+     * Test if a user exists.
+     * @return boolean
+     * @todo should this be static? Is it working?
+     */
     public function exists() {
         $statement = $this->pdo->prepare("SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id");
         $result = $statement->execute(array('employee_id' => $this->employee_id));
@@ -153,6 +273,11 @@ class user {
         return FALSE;
     }
 
+    /**
+     *
+     * @param string $identifier
+     * @return boolean|int
+     */
     public function guess_user_by_identifier($identifier) {
         $sql_query = "SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id OR `email` = :email OR `user_name` = :user_name";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $identifier, 'email' => $identifier, 'user_name' => $identifier));
@@ -163,6 +288,11 @@ class user {
         return FALSE;
     }
 
+    /**
+     * Verify if the correct password was given without telling the password_hash to the $session.
+     * @param type $user_password
+     * @return boolean
+     */
     public function password_verify($user_password) {
         if (empty($user_password)) {
             return FALSE;
@@ -170,6 +300,9 @@ class user {
         return password_verify($user_password, $this->password);
     }
 
+    /**
+     * Reset the number of failed login attempts to 0.
+     */
     public function reset_failed_login_attempts() {
         $sql_query = "UPDATE users "
                 . " SET failed_login_attempt_time = NOW(), "
@@ -178,6 +311,9 @@ class user {
         database_wrapper::instance()->run($sql_query, array('user_name' => $this->user_name));
     }
 
+    /**
+     * Increase the number of failed login attempts by 1.
+     */
     public function register_failed_login_attempt() {
         $sql_query = "UPDATE users"
                 . " SET failed_login_attempt_time = NOW(),"

@@ -76,30 +76,81 @@ The default values are:
 <?php
 
 $config = array(
-'application_name' => 'PDR',
-'database_management_system' => 'mysql',
-'database_host' => 'localhost',
-'database_name' => '',
-'database_port' => 3306,
-'database_user' => '',
-'database_password' => '',
-'session_secret' => '',
-'error_reporting' => E_ALL,
-'display_errors' => 0,
-'log_errors' => 1,
-'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
-'LC_TIME' => 'C',
-'timezone' => 'Europe/Berlin',
-'language' => 'de_DE',
-'mb_internal_encoding' => 'UTF-8',
-'contact_email' => '',
-'hide_disapproved' => FALSE,
+        'application_name' => 'PDR',
+        'database_management_system' => 'mysql',
+        'database_host' => 'localhost',
+        'database_name' => '',
+        'database_port' => 3306,
+        'database_user' => '',
+        'database_password' => '',
+        'session_secret' => '',
+        'error_reporting' => E_ALL,
+        'display_errors' => 0,
+        'log_errors' => 1,
+        'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
+        'LC_TIME' => 'C',
+        'timezone' => 'Europe/Berlin',
+        'language' => 'de_DE',
+        'mb_internal_encoding' => 'UTF-8',
+        'contact_email' => '',
+        'hide_disapproved' => FALSE,
+        'email_method' => 'mail',
+        'email_smtp_host' => NULL,
+        'email_smtp_port' => 587,
+        'email_smtp_username' => NULL,
+        'email_smtp_password' => NULL,
 );
 \end{lstlisting}
 
 
 Never delete the first two lines! If the file does not start with \lstinline|<?php| then PHP will not handle it, meaning that anyone can read its content. 
 %\menu{Administration > Human resource management}
+
+Most of these options can also be configured in \menu{Administration > Configuration}
+\paragraph{application name}
+This name is used in the login page, the page title in the browser and as a subject line in emails sent from the program.
+\paragraph{database settings}
+\begin{itemize}
+	\item database\_management\_system 	Currently only mysql is supported. 	Other possibilities could be: 	PostgreSQL,	Oracle Database, SQLite, Microsoft Access or MongoDB.
+	\item database\_host The server running the DBMS. Usually 'localhost', if it is on the same server as the application.
+	\item database\_name The name of the database
+	\item database\_port For MySQL the standard port is 3306.
+	\item database\_user During the installation PDR will try to create the user 'pdr' in the database. In the case of success it will choose a random password and grant all privileges on the pdr database. You can choose any other user with access to the database.
+	\item database\_password The database password of the database user.
+\end{itemize}
+\paragraph{session\_secret}
+A secret random string used to define the session name. This is relevant only if multiple instances of PDR are running on the same webserver.
+\paragraph{error\_reporting}
+Which errors should PHP report? 
+\paragraph{display\_errors}
+Should errors be directly displayed to the user?
+\paragraph{log\_errors}
+Should errors be logged in a file?
+\paragraph{error\_log}
+Where should errors be logged?
+\paragraph{LC\_TIME}
+In wich language should time strings, such as Monday or January be written? This setting is independant from the 'language' setting.
+\paragraph{timezone}
+The timezone is necessary to make sense of the raw time data in unix time stamps. (1545038523 = Monday, 17-Dec-18 09:22:03 UTC in RFC~2822)
+\paragraph{language}
+The language of the terms and messages displayed to the user. Only English and German are supported until now.
+\paragraph{mb\_internal\_encoding}
+An encoding is a way to tell the computer how bits and bytes are translated into letters (e.g. in UTF8 01000101 means E, 11000011 10100100 means ä). 
+\paragraph{contact\_email}
+Emails of the users can be sent to the administrator of the pdr instance.
+\paragraph{hide\_disapproved}
+It is possible, to hide scheduled rosters, until they are approved. By default all rosters are immediately visible to any user.
+\paragraph{email settings}
+Emails are sent (partly) with the PHPMailer class.
+\begin{itemize}
+	\item 'email\_method'  PHPMailer supports sending via 'mail', 'sendmail', 'qmail' or 'SMTP'. If SMTP is chosen as the email method, then the SMTP settings will be displayed and have to be filled out:
+	\item 'email\_smtp\_host' The address of the SMTP server (e.g. postfix on localhost, gmail-smtp-in.l.google.com for gmail)	
+	\item 'email\_smtp\_port' Normally one of 25, 465 or 587 (25 = SMTP, 465 = SMTPS, 587 = STARTTLS)
+	\item 'email\_smtp\_username' username of the sending mail account
+	\item 'email\_smtp\_password' password of the sending mail account
+\end{itemize}
+
+
 
 \section{Maintenance}
 The file \directory{src/php/background\_maintenance.php} will be called on every login of any user.

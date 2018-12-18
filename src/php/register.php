@@ -53,7 +53,7 @@ if (isset($_GET['register'])) {
     if (!$error) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql_query = "INSERT INTO users (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')";
+        $sql_query = "INSERT INTO `users` (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')";
         $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
 
         if ($result) {
