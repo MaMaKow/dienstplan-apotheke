@@ -30,7 +30,7 @@ $weekday = user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NU
 create_cookie('weekday', $weekday, 1);
 $pseudo_date_unix = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
 $pseudo_date_sql = date('Y-m-d', $pseudo_date_unix);
-$workforce = new workforce($pseudo_date_sql);
+$workforce = new workforce();
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     user_input::principle_roster_write_user_input_to_database($branch_id);

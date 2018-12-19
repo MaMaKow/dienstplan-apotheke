@@ -36,9 +36,6 @@ class workforce {
                     . 'ORDER BY `id` ASC, ISNULL(`end_of_employment`) ASC, `end_of_employment` ASC;';
             $result = database_wrapper::instance()->run($sql_query);
         } else {
-            /*
-             * TODO: DO NOT USE A VARIABLE HERE!
-             */
             $sql_query = 'SELECT * FROM `employees` '
                     . 'WHERE  (`end_of_employment` >= :date1 OR `end_of_employment` IS NULL) '
                     . 'AND  (`start_of_employment` <= :date2 OR `start_of_employment` IS NULL) '

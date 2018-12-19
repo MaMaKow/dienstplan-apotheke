@@ -90,6 +90,7 @@ class examine_roster {
      * @return boolean
      */
     public function check_for_sufficient_employee_count() {
+        $user_dialog = new user_dialog();
         if (FALSE === $this->Anwesende) {
             return FALSE;
         }
@@ -100,7 +101,7 @@ class examine_roster {
                     and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $message = sprintf(gettext('At %1s there are less than %2s employees present.'), roster_item::format_time_integer_to_string($zeit), $minimum_number_of_employees);
-                    user_dialog::add_message($message, E_USER_WARNING);
+                    $user_dialog->add_message($message, E_USER_WARNING);
                     $attendant_error = true;
                 }
             } else {
@@ -121,6 +122,7 @@ class examine_roster {
      * @return boolean
      */
     public function check_for_sufficient_goods_receipt_count() {
+        $user_dialog = new user_dialog();
         if (FALSE === $this->Wareneingang_Anwesende) {
             return FALSE;
         }
@@ -129,7 +131,7 @@ class examine_roster {
             if ($anwesende_wareneingang === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $message = sprintf(gettext('At %1s there is no goods receipt employee present.'), roster_item::format_time_integer_to_string($zeit));
-                    user_dialog::add_message($message, E_USER_WARNING);
+                    $user_dialog->add_message($message, E_USER_WARNING);
                     $attendant_error = true;
                 }
             } else {
@@ -159,7 +161,7 @@ class examine_roster {
             if ($anwesende_approbierte === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
                     $message = sprintf(gettext('At %1s there is no authorized person present.'), roster_item::format_time_integer_to_string($zeit));
-                    $user_dialog::add_message($message);
+                    $user_dialog->add_message($message);
                     $attendant_error = true;
                 }
             } else {

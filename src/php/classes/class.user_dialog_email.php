@@ -82,6 +82,9 @@ class user_dialog_email {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
+                if (NULL === $roster_item_object->employee_id) {
+                    continue;
+                }
                 if (!empty($Inserted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Inserted_roster_employee_id_list[$date_unix])) {
                     $context_string = gettext("You have been added to the roster.");
                     $message = $roster_item_object->to_email_message_string($context_string);
@@ -107,8 +110,12 @@ class user_dialog_email {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
+                if (NULL === $roster_item_object->employee_id) {
+                    continue;
+                }
+
                 if (!empty($Deleted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
-                    $message .= sprintf(gettext('You are not in the roster anymore on %1s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
+                    $message = sprintf(gettext('You are not in the roster anymore on %1s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
                     $ics_file = iCalendar::build_ics_roster_cancelled($roster_item_object);
                     self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }

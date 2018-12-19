@@ -374,6 +374,8 @@ class absence {
     }
 
     public static function get_number_of_holidays_due($employee_id, $workforce, $year) {
+        $first_day_of_this_year = new DateTime("01.01." . $year);
+        $last_day_of_this_year = new DateTime("31.12." . $year);
         $months_worked_in_this_year = 0;
 
         $employee_object = $workforce->List_of_employees[$employee_id];
@@ -383,16 +385,14 @@ class absence {
         if (NULL !== $employee_object->start_of_employment) {
             $start_of_employment = new DateTime($employee_object->start_of_employment);
         } else {
-            $start_of_employment = NULL;
+            $start_of_employment = $first_day_of_this_year;
         }
         if (NULL !== $employee_object->end_of_employment) {
             $end_of_employment = new DateTime($employee_object->end_of_employment);
         } else {
-            $end_of_employment = NULL;
+            $end_of_employment = $last_day_of_this_year;
         }
 
-        $first_day_of_this_year = new DateTime("01.01." . $year);
-        $last_day_of_this_year = new DateTime("31.12." . $year);
         $interval = new DateInterval('P1M');
         for ($start_of_month = $first_day_of_this_year; $start_of_month <= $last_day_of_this_year; $start_of_month->add($interval)) {
             $end_of_month = (new DateTime($start_of_month->format('Y-m-d')))->modify('last day of');
@@ -403,7 +403,7 @@ class absence {
              * Für jeden vollen Monat der Betriebszugehörigkeit hat der Mitarbeiter Anspruch auf 1/12 des tariflichen Jahresurlaubs.
              * Besteht das Arbeitsverhältnis länger als sechs Monate, darf der gesetzliche Mindesturlaub von 24 Werktagen nicht unterschritten werden.
              */
-            if ($start_of_employment > $start_of_month or ( NULL !== $end_of_employment and $end_of_employment < $end_of_month)) {
+            if ($start_of_employment > $start_of_month or ( $end_of_employment < $end_of_month)) {
                 $number_of_holidays_due -= $number_of_holidays_principle / 12;
             } else {
                 $months_worked_in_this_year++;
