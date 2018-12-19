@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require 'default.php';
-
+require '../../../default.php';
 
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y', strtotime($date_sql)));
-create_cookie('branch_id', $branch_id, 30);
+create_cookie('mandant', $branch_id, 30);
 create_cookie('datum', $date_sql, 0.5);
 create_cookie('year', $year, 0.5);
 $workforce = new workforce();
@@ -32,6 +31,11 @@ handle_user_input();
 
 /** public static */
 function handle_user_input() {
+    global $session;
+    if (!$session->user_has_privilege('create_roster')) {
+        return FALSE;
+    }
+
     $date = user_input::get_variable_from_any_input('emergency_service_date', FILTER_SANITIZE_NUMBER_INT);
     $branch_id = user_input::get_variable_from_any_input('emergency_service_branch', FILTER_SANITIZE_NUMBER_INT);
     $employee_id = user_input::get_variable_from_any_input('emergency_service_employee', FILTER_SANITIZE_NUMBER_INT);

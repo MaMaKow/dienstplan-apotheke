@@ -164,10 +164,11 @@ class sessions {
 
     public function login($user_name = NULL, $user_password = NULL, $redirect = TRUE) {
         global $pdo;
+        $user_dialog = new user_dialog;
         /*
          * TODO: Use user_dialog for the error messages
-         * user_dialog::add_message($text);
-         * user_dialog::build_messages();
+         * user_dialog->add_message($text);
+         * user_dialog->build_messages();
          */
         $errorMessage = "";
         /*
@@ -198,7 +199,7 @@ class sessions {
          */
         if (3 <= $user->failed_login_attempts and strtotime('-5min') <= strtotime($user->failed_login_attempt_time)) {
             $errorMessage .= "<p>Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.</p>";
-            user_dialog::add_message($errorMessage, E_USER_ERROR, TRUE);
+            $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
             return $errorMessage;
         }
 
@@ -231,7 +232,7 @@ class sessions {
             //Register failed_login_attempts
             $user->register_failed_login_attempt();
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
-            user_dialog::add_message($errorMessage, E_USER_ERROR, TRUE);
+            $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
             return $errorMessage;
         }
         return FALSE;

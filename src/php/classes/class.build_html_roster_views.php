@@ -490,7 +490,7 @@ abstract class build_html_roster_views {
                 $week_hours_table_html .= "Unknown employee: " . $employee_id;
             }
             $week_hours_table_html .= "</td>";
-            $week_hours_table_html .= "<td>" . round($working_hours_have, 2);
+            $week_hours_table_html .= "<td>" . round($working_hours_have * 4, 0) / 4;
             $week_hours_table_html .= " </td><td> ";
             if (isset($Working_hours_week_should[$employee_id])) {
                 $week_hours_table_html .= round($Working_hours_week_should[$employee_id], 1) . "\n";
@@ -502,7 +502,7 @@ abstract class build_html_roster_views {
             $week_hours_table_html .= "</td>\n";
             $week_hours_table_html .= "<td>\n";
             if (abs($differenz) >= 0.25) {
-                $week_hours_table_html .= "<b>" . sprintf("%+.1f", $differenz) . "</b>\n";
+                $week_hours_table_html .= "<b>" . (round($differenz * 4, 0) / 4) . "</b>\n";
             }
             $week_hours_table_html .= "</td>\n";
             $week_hours_table_html .= "</tr>\n";
