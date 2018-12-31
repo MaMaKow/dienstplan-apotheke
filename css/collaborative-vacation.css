@@ -40,7 +40,7 @@ div.year_quarter_container {
     min-height: 2em;
     page-break-after: always;
 }
-div.month_container{
+div.month_container {
     font-family: monospace;
     min-width: 12em;
     float: left;
@@ -48,7 +48,7 @@ div.month_container{
     display: inline-block;
     */
 }
-table.month_container{
+table.month_container {
     font-family: monospace;
     margin: auto;
     width: 90%;
@@ -56,7 +56,7 @@ table.month_container{
     height: 90%;
     */
 }
-tr.week_container{
+tr.week_container {
     font-family: monospace;
     /*
     width: 90%;
@@ -64,14 +64,15 @@ tr.week_container{
     display: inline-block;
     */
 }
-p.day_paragraph{
+p.day_paragraph {
     border: solid black thin;
     cursor: pointer;
     margin-bottom: 0em;
     margin-top: 0em;
+    font-family: monospace;
     /*-webkit-margin-before: 0em;*/
 }
-td.day_paragraph{
+td.day_paragraph {
     border: solid black thin;
     cursor: pointer;
     margin-bottom: 0em;
@@ -83,46 +84,52 @@ td.day_paragraph{
     width: 10%;
     */
 }
-td.day_paragraph strong{
+td.day_paragraph strong {
     font-size: large;
 }
-td.day_paragraph.weekday{
+td.day_paragraph.weekday {
     background-color: #ece7e8;
     width: 20%;
 }
-td.day_paragraph.today{
-    border-color: #E6828B;
-    border-width: 0.5em;
-    border-style: solid;
+@media screen {
+    p.day_paragraph.today {
+        border-color: #E6828B;
+        border-width: 0.5em;
+        border-style: solid;
+    }
 }
-td.day_paragraph.adjacent_month, td.day_paragraph.adjacent_month strong{
+p.day_paragraph.adjacent_month, p.day_paragraph.adjacent_month strong {
     background-color: #FFFFFF;
     border: none;
     font-size: xx-small;
 }
-p.weekday, td.weekday{
+p.weekday, td.weekday {
     background-color: #FEFEFF;
 }
-p.weekend, td.weekend{
+p.weekend, td.weekend {
     background-color: rgba(180, 180, 180, 0.9);
 }
-p.highlight, td.highlight{
+p.highlight, td.highlight {
     background: linear-gradient(180deg, #00ABE7 0, #0081AF 100%), rgba(180, 180, 180, 0.9);
 }
 
-span.holiday{
+span.holiday {
     font-size: xx-small;
 }
-p span.absent_employee_container{
+p span.absent_employee_container.month {
     cursor: zoom-in;
-    float: right;
-    width: 2em;
+    margin-right: 1em;
+    /*
+    float: left;
     background-color: rgba(180, 180, 180, 0.9);
+    */
 }
-td span.absent_employee_container{
+p span.absent_employee_container.year {
     cursor: zoom-in;
     width: 2em;
+    /*
     background-color: rgba(180, 180, 180, 0.9);
+    */
 }
 span.absent_employee_container.Apotheker{
     background-color: rgba(115,172,34, 0.9);

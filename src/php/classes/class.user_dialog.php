@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
 /**
  * This class is thought to be used for messages adressed to the end user.
  *
- * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  * @todo no static methods
  */
 class user_dialog {

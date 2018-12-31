@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
 /**
  * Description of class
  *
- * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 abstract class build_html_navigation_elements {
 
@@ -282,10 +282,15 @@ abstract class build_html_navigation_elements {
          * TODO: Move this function to somewhere more general!
          * It should go into the localization class, once that it exists.
          */
-        for ($weekday = 1; $weekday <= 7; ++$weekday) {
-            $pseudo_date = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
-            $Weekday_names[$weekday] = strftime('%A', $pseudo_date);
-        }
+        $Weekday_names = array(
+            1 => gettext('Monday'),
+            2 => gettext('Tuesday'),
+            3 => gettext('Wednesday'),
+            4 => gettext('Thursday'),
+            5 => gettext('Friday'),
+            6 => gettext('Saturday'),
+            7 => gettext('Sunday'),
+        );
         return $Weekday_names;
     }
 

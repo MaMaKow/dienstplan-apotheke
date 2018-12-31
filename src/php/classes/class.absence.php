@@ -143,6 +143,7 @@ class absence {
             $Absence['comment'] = $row->comment;
             $Absence['start'] = $row->start;
             $Absence['end'] = $row->end;
+            $Absence['days'] = $row->days;
             $Absence['approval'] = $row->approval;
         }
         return $Absence;

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
 /**
  * Description of class
  *
- * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 abstract class general_calculations {
     /*
@@ -50,20 +50,32 @@ abstract class general_calculations {
         return $first_day_of_week_sql;
     }
 
+    /**
+     * The date string one day after the input timestamp
+     *
+     * @param int $date_unix
+     * @return string
+     * @todo Move this function into an internal Date class.
+     */
     public static function tomorow_date_string($date_unix) {
-        /*
-         * TODO: CAVE! May work unexpected on daylight saving days.
-         * e.g. returns 2018-03-26 as yesterday of
-         */
-        return date('Y-m-d', $date_unix + PDR_ONE_DAY_IN_SECONDS);
+        $date_object = new DateTime();
+        $date_object->setTimestamp($date_unix);
+        $date_object->add(new DateInterval('P1D'));
+        return $date_object->format('Y-m-d');
     }
 
+    /**
+     * The date string one day before the input timestamp
+     *
+     * @param int $date_unix
+     * @return string
+     * @todo Move this function into an internal Date class.
+     */
     public static function yesterday_date_string($date_unix) {
-        /*
-         * TODO: CAVE! May work unexpected on daylight saving days.
-         * e.g. returns 2018-03-24 as yesterday of 2018-03-26
-         */
-        return date('Y-m-d', $date_unix - PDR_ONE_DAY_IN_SECONDS);
+        $date_object = new DateTime();
+        $date_object->setTimestamp($date_unix);
+        $date_object->sub(new DateInterval('P1D'));
+        return $date_object->format('Y-m-d');
     }
 
 }

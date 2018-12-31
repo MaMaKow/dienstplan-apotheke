@@ -140,9 +140,13 @@ abstract class task_rotation {
             return $rotation_employee_id;
         }
 
-        $last_date_unix = strtotime($row->date);
-        for ($temp_date = $last_date_unix + PDR_ONE_DAY_IN_SECONDS; $temp_date <= $date_unix; $temp_date += PDR_ONE_DAY_IN_SECONDS) {
-            if ($temp_date > time() + PDR_ONE_DAY_IN_SECONDS * 7 * task_rotation::MAX_FUTURE_WEEKS) {
+        $temp_date_object = new DateTime($row->date);
+        $stop_time_object = new DateTime();
+        $stop_time_object->setTimestamp($date_unix);
+        for ($temp_date_object->add(new DateInterval('P1D')); $temp_date_object <= $stop_time_object; $temp_date_object->add(new DateInterval('P1D'))) {
+            $latest_allowed_date_object = new DateTime('today');
+            $latest_allowed_date_object->add(new DateInterval('P' . task_rotation::MAX_FUTURE_WEEKS . 'W'));
+            if ($temp_date_object > $latest_allowed_date_object) {
                 /*
                  * This value is only calculated and stored in the database,
                  * if it is in the past or in the near future.
@@ -152,15 +156,17 @@ abstract class task_rotation {
                 return NULL;
             }
 
-            $from_date_sql = date("Y-m-d", strtotime("- $task_workers_count WEEKS SUNDAY", $temp_date));
-            $to_date_sql = date("Y-m-d", strtotime("- 1 WEEKS SUNDAY", $temp_date));
-            $temp_date_sql = date("Y-m-d", $temp_date);
+            $from_date_object = clone $temp_date_object;
+            $from_date_object->setISODate($from_date_object->format("Y"), $from_date_object->format("W"), 0); //Sunday
+            $from_date_object->sub(new DateInterval('P' . $task_workers_count . 'W')); //Sunday $task_workers_count weeks ago
+            $to_date_object = clone $temp_date_object;
+            $to_date_object->setISODate($to_date_object->format("Y"), $to_date_object->format("W"), 0); //Sunday
             /*
              * Remove absent employees for this day from the list of current available rotation employees:
              */
-            $Abwesende = absence::read_absentees_from_database($temp_date_sql);
+            $Abwesende = absence::read_absentees_from_database($temp_date_object->format('Y-m-d'));
             $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, array_keys($Abwesende));
-            $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_sql, $to_date_sql);
+            $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_object->format('Y-m-d'), $to_date_object->format('Y-m-d'));
 
             /**
              * Take the employee, who did the task the least in the last weeks:
