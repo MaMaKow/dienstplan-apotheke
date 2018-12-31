@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dienstplan documentation\n"
-"POT-Creation-Date: 2018-11-04 22:18+0100\n"
+"POT-Creation-Date: 2018-12-31 07:14+0100\n"
 "PO-Revision-Date: 2018-10-07 13:15+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: \n"
@@ -958,7 +958,7 @@ msgid "<?php"
 msgstr ""
 
 #. type: lstlisting
-#: documentation_administrator.tex:99
+#: documentation_administrator.tex:104
 msgid ""
 "$config = array( 'application_name' => 'PDR', 'database_management_system' "
 "=> 'mysql', 'database_host' => 'localhost', 'database_name' => '', "
@@ -967,25 +967,142 @@ msgid ""
 "'log_errors' => 1, 'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error."
 "log', 'LC_TIME' => 'C', 'timezone' => 'Europe/Berlin', 'language' => "
 "'de_DE', 'mb_internal_encoding' => 'UTF-8', 'contact_email' => '', "
-"'hide_disapproved' => FALSE, );"
+"'hide_disapproved' => FALSE, 'email_method' => 'mail', 'email_smtp_host' => "
+"NULL, 'email_smtp_port' => 587, 'email_smtp_username' => NULL, "
+"'email_smtp_password' => NULL, );"
 msgstr ""
 
 #. \menu{Administration > Human resource management}
 #. type: Plain text
-#: documentation_administrator.tex:103
+#: documentation_administrator.tex:108
 msgid ""
 "Never delete the first two lines! If the file does not start with "
 "\\lstinline|<?php| then PHP will not handle it, meaning that anyone can read "
 "its content."
 msgstr ""
 
+#. type: Plain text
+#: documentation_administrator.tex:152
+msgid ""
+"Most of these options can also be configured in \\menu{Administration > "
+"Configuration} \\paragraph{application name} This name is used in the login "
+"page, the page title in the browser and as a subject line in emails sent "
+"from the program."
+msgstr ""
+
+#. type: paragraph{#2}
+#: documentation_administrator.tex:152
+msgid "database settings"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid ""
+"database\\_management\\_system \tCurrently only mysql is supported. \tOther "
+"possibilities could be: \tPostgreSQL,\tOracle Database, SQLite, Microsoft "
+"Access or MongoDB."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid ""
+"database\\_host The server running the DBMS. Usually 'localhost', if it is "
+"on the same server as the application."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid "database\\_name The name of the database"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid "database\\_port For MySQL the standard port is 3306."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid ""
+"database\\_user During the installation PDR will try to create the user "
+"'pdr' in the database. In the case of success it will choose a random "
+"password and grant all privileges on the pdr database. You can choose any "
+"other user with access to the database."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid "database\\_password The database password of the database user."
+msgstr ""
+
+#. type: paragraph{#2}
+#: documentation_administrator.tex:152
+msgid "session\\_secret"
+msgstr ""
+
+#. type: Plain text
+#: documentation_administrator.tex:152
+msgid ""
+"A secret random string used to define the session name. This is relevant "
+"only if multiple instances of PDR are running on the same webserver.  "
+"\\paragraph{error\\_reporting} Which errors should PHP report? "
+"\\paragraph{display\\_errors} Should errors be directly displayed to the "
+"user? \\paragraph{log\\_errors} Should errors be logged in a file? "
+"\\paragraph{error\\_log} Where should errors be logged? \\paragraph{LC"
+"\\_TIME} In wich language should time strings, such as Monday or January be "
+"written? This setting is independant from the 'language' setting.  "
+"\\paragraph{timezone} The timezone is necessary to make sense of the raw "
+"time data in unix time stamps. (1545038523 = Monday, 17-Dec-18 09:22:03 UTC "
+"in RFC~2822)  \\paragraph{language} The language of the terms and messages "
+"displayed to the user. Only English and German are supported until now.  "
+"\\paragraph{mb\\_internal\\_encoding} An encoding is a way to tell the "
+"computer how bits and bytes are translated into letters (e.g. in UTF8 "
+"01000101 means E, 11000011 10100100 means ä).  \\paragraph{contact\\_email} "
+"Emails of the users can be sent to the administrator of the pdr instance.  "
+"\\paragraph{hide\\_disapproved} It is possible, to hide scheduled rosters, "
+"until they are approved. By default all rosters are immediately visible to "
+"any user.  \\paragraph{email settings} Emails are sent (partly) with the "
+"PHPMailer class."
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid ""
+"'email\\_method' PHPMailer supports sending via 'mail', 'sendmail', 'qmail' "
+"or 'SMTP'. If SMTP is chosen as the email method, then the SMTP settings "
+"will be displayed and have to be filled out:"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid ""
+"'email\\_smtp\\_host' The address of the SMTP server (e.g. postfix on "
+"localhost, gmail-smtp-in.l.google.com for gmail)"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid ""
+"'email\\_smtp\\_port' Normally one of 25, 465 or 587 (25 = SMTP, 465 = "
+"SMTPS, 587 = STARTTLS)"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid "'email\\_smtp\\_username' username of the sending mail account"
+msgstr ""
+
+#. type: itemize
+#: documentation_administrator.tex:152
+msgid "'email\\_smtp\\_password' password of the sending mail account"
+msgstr ""
+
 #. type: section{#2}
-#: documentation_administrator.tex:112
+#: documentation_administrator.tex:163
 msgid "Maintenance"
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:112
+#: documentation_administrator.tex:163
 msgid ""
 "The file \\directory{src/php/background\\_maintenance.php} will be called on "
 "every login of any user.  It will create an instance of the following "
@@ -994,22 +1111,22 @@ msgstr ""
 
 #. \item auto_upgrader
 #. type: itemize
-#: documentation_administrator.tex:112
+#: documentation_administrator.tex:163
 msgid "maintenance"
 msgstr ""
 
 #. type: itemize
-#: documentation_administrator.tex:112
+#: documentation_administrator.tex:163
 msgid "update\\_database"
 msgstr ""
 
 #. type: subsection{#2}
-#: documentation_administrator.tex:116
+#: documentation_administrator.tex:167
 msgid "class maintenance"
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:116
+#: documentation_administrator.tex:167
 msgid ""
 "The methods contained in the class maintenance are only called, if the last "
 "execution is at least \\lstinline|MAINTENANCE_PERIOD_IN_SECONDS| ago.  "
@@ -1017,7 +1134,7 @@ msgid ""
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:118
+#: documentation_administrator.tex:169
 msgid ""
 "The method \\lstinline|user_dialog_email-"
 ">aggregate_messages_about_changed_roster_to_employees()| is called to send "
@@ -1025,7 +1142,7 @@ msgid ""
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:120
+#: documentation_administrator.tex:171
 msgid ""
 "The method \\lstinline|maintenance->cleanup_overtime()| does not do anything "
 "yet. It is meant to be used to clean up overtime of existing employees, that "
@@ -1033,7 +1150,7 @@ msgid ""
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:122
+#: documentation_administrator.tex:173
 msgid ""
 "The method \\lstinline|maintenance->cleanup_absence()| does not do anything "
 "yet. It is meant to be used to clean up absences of existing employees, that "
@@ -1041,12 +1158,12 @@ msgid ""
 msgstr ""
 
 #. type: subsection{#2}
-#: documentation_administrator.tex:127
+#: documentation_administrator.tex:178
 msgid "class update\\_database"
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:127
+#: documentation_administrator.tex:178
 msgid ""
 "Before the class update\\_database executes any of its methods, it checks if "
 "there is any change in the official database structure since the last "
@@ -1057,19 +1174,19 @@ msgid ""
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:129
+#: documentation_administrator.tex:180
 msgid ""
 "The class should contain every SQL Query necessary to change an existing "
 "database into the new structure without loosing any data."
 msgstr ""
 
 #. type: section{#2}
-#: documentation_administrator.tex:133
+#: documentation_administrator.tex:184
 msgid "Issues and Troubleshooting"
 msgstr ""
 
 #. type: Plain text
-#: documentation_administrator.tex:133
+#: documentation_administrator.tex:184
 msgid ""
 "Issues are tracked at GitHub \\url{https://github.com/MaMaKow/dienstplan-"
 "apotheke/issues} I am trying to answer any question within 3 days."
@@ -1513,58 +1630,81 @@ msgid ""
 msgstr ""
 
 #. type: section{#2}
-#: documentation_developer.tex:105
+#: documentation_developer.tex:104
+msgid "Classes"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:104
+msgid "The classes are stored in the folder \\directory{src/php/classes/}."
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_developer.tex:107
+msgid "user"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:107
+msgid ""
+"The user class represents an employee, who has registered a user account in "
+"PDR."
+msgstr ""
+
+#. type: section{#2}
+#: documentation_developer.tex:112
 msgid "Documentation"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:105
+#: documentation_developer.tex:112
 msgid ""
 "This documentation about a programm, app or script is a stub. You can help "
-"this project by expanding it."
+"this project by expanding it.  Seriously, if there is something that does "
+"not explain itself enough, just send me an email or contact me at GitHub!"
 msgstr ""
 
 #. type: section{#2}
-#: documentation_developer.tex:108
+#: documentation_developer.tex:115
 msgid "Testing"
 msgstr ""
 
 #. type: section{#2}
-#: documentation_developer.tex:112
+#: documentation_developer.tex:119
 msgid "Bug tracker"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:112
+#: documentation_developer.tex:119
 msgid ""
 "Bugs and Issues are tracked at GitHub \\url{https://github.com/MaMaKow/"
 "dienstplan-apotheke/issues}"
 msgstr ""
 
 #. type: section{#2}
-#: documentation_developer.tex:116
+#: documentation_developer.tex:123
 msgid "Translation"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:116
+#: documentation_developer.tex:123
 msgid "Translations are handled with gettext()."
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:119
+#: documentation_developer.tex:126
 msgid ""
 "See this article about po4a about the translation of this document: "
 "\\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}"
 msgstr ""
 
 #. type: subsection{#2}
-#: documentation_developer.tex:121
+#: documentation_developer.tex:128
 msgid "Internationalization"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:121
+#: documentation_developer.tex:128
 msgid ""
 "Different countries have different laws regarding pharmacies and employment. "
 "They also have different holidays."

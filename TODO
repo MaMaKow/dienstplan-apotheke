@@ -1,7 +1,8 @@
-build a class user
-build a class email
-build a class send_email_about_changed_roster_to_employees or something like that
+remove class email stub or make it a helper for PHPMailer
+perhaps build a real absence class with real absence objects.
 
+collaborative-vacation.css might contain some rules that do not match anything anymore. Please clean up.
+collaborative-vacation is not colloborative-vacation, correct this in the doc image files.
 
 principle-roster-employee.php input does not work AGAIN!
 

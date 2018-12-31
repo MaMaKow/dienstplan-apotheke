@@ -2503,6 +2503,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `status` set('deleted','blocked','inactive','active') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'inactive',
   `failed_login_attempts` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `failed_login_attempt_time` timestamp NULL DEFAULT NULL,
+  `receive_emails_on_changed_roster` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2516,8 +2517,8 @@ TRUNCATE TABLE `users`;
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`employee_id`, `user_name`, `email`, `password`, `status`, `failed_login_attempts`, `failed_login_attempt_time`, `created_at`, `updated_at`) VALUES
-(5, 'Tester', 'martin', '$2y$10$CuOHXm5WWZM5oxpPjFXtJuG/.NP3nvj9xoAm7Krx234FU6226//ta', 'active', 0, NULL, '2018-11-15 05:00:14', NULL);
+INSERT INTO `users` (`employee_id`, `user_name`, `email`, `password`, `status`, `failed_login_attempts`, `failed_login_attempt_time`, `receive_emails_on_changed_roster`, `created_at`, `updated_at`) VALUES
+(5, 'Tester', 'martin', '$2y$10$CuOHXm5WWZM5oxpPjFXtJuG/.NP3nvj9xoAm7Krx234FU6226//ta', 'active', 0, NULL, 1, '2018-11-15 05:00:14', NULL);
 
 -- --------------------------------------------------------
 

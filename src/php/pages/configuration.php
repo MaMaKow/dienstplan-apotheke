@@ -127,7 +127,7 @@ echo $user_dialog->build_messages();
                 <legend>
                     <?= gettext('Language and encoding') ?></legend>
                 <p class="hint">
-                    <?= gettext("The messages in this application and the documenation exist in different languages.") ?>
+                    <?= gettext("The messages in this application and the documentation exist in different languages.") ?>
                 </p>
                 <label><?= gettext('Language') ?></label><br>
                 <select name="language"><?php

@@ -24,7 +24,7 @@
  */
 class configuration {
     /*
-     * TODO: Documenation for the new array SMTP
+     * TODO: Documentation for the new array SMTP
      * Configuration GUI for SMTP
      */
 
