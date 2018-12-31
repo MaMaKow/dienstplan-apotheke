@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
 /**
  * Description of class
  *
- * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class employee {
 
@@ -59,9 +59,9 @@ class employee {
                 . "WHERE `VK` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $pseudo_date_unix = time() + ($row->Wochentag - date('w')) * PDR_ONE_DAY_IN_SECONDS;
-            $pseudo_date_sql = date('Y-m-d', $pseudo_date_unix);
-            $Principle_roster[$row->Wochentag][] = new roster_item($pseudo_date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+            $pseudo_date_object = new DateTime('last sunday');
+            $pseudo_date_object->add(new DateInterval('P' . $row->Wochentag . 'D'));
+            $Principle_roster[$row->Wochentag][] = new roster_item($pseudo_date_object->format('Y-m-d'), (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
         }
         return $Principle_roster;
     }

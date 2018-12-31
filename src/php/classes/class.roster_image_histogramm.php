@@ -116,8 +116,11 @@ abstract class roster_image_histogramm {
      * @var float $factor_employee The number of drug packages that can be sold per employee within a certain time.
      * @return string The canvas element
      */
-    public static function draw_image_histogramm($Roster, $branch_id, $Anwesende, $date_unix) {
+    public static function draw_image_histogramm(array $Roster, int $branch_id, array $Anwesende, int $date_unix) {
         if (empty($Anwesende)) {
+            return FALSE;
+        }
+        if (Roster::is_empty($Roster)) {
             return FALSE;
         }
         $Expectation = roster_image_histogramm::get_expectation($date_unix, $branch_id);

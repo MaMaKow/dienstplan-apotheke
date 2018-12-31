@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +35,7 @@
  * @todo Notifications can also be directly printed to the user upon login.
  * @todo Make this email thing a new class. It is big enough.
  *
- * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class user_dialog_email {
 //    use PHPMailer\PHPMailer\PHPMailer;

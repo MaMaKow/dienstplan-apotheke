@@ -225,12 +225,13 @@ abstract class build_html_roster_views {
         return $roster_input_row_comment_html;
     }
 
-    public static function build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql_start, $date_sql_end, $Options = NULL) {
+    public static function build_roster_readonly_branch_table_rows(array $Branch_roster, int $branch_id, string $date_sql_start, string $date_sql_end, $Options = NULL) {
         global $List_of_branch_objects;
-        $date_unix_start = strtotime($date_sql_start);
-        $date_unix_end = strtotime($date_sql_end);
-        $number_of_days = ($date_unix_end - $date_unix_start) / PDR_ONE_DAY_IN_SECONDS + 1;
 
+        $date_start_object = new DateTime($date_sql_start);
+        $date_end_object = new DateTime($date_sql_end);
+        $interval_object = $date_end_object->diff($date_start_object, TRUE);
+        $number_of_days = $interval_object->format('%d') + 1;
         $table_html = "";
 
         foreach (array_keys($List_of_branch_objects) as $other_branch_id) {

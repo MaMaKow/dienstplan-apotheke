@@ -113,8 +113,11 @@ class roster_image_bar_plot {
                 $working_hours = $roster_item->working_hours;
                 $width_in_hours = $dienst_ende - $dienst_beginn;
                 $break_width_in_hours = $break_end - $break_start;
-
-                $employee_style_class = $workforce->List_of_employees[$employee_id]->profession;
+                if (isset($workforce->List_of_employees[$employee_id]->profession)) {
+                    $employee_style_class = $workforce->List_of_employees[$employee_id]->profession;
+                } else {
+                    $employee_style_class = '';
+                }
 
                 $x_pos_box = $this->outer_margin_x + $this->inner_margin_x + ($dienst_beginn - floor($this->first_start)) * $this->bar_width_factor;
                 $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $this->bar_width_factor);

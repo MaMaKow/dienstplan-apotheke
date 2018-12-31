@@ -23,6 +23,7 @@ if ('cli' !== PHP_SAPI) {
     die('This file may only be run from the command line. You tried to run from: ' . PHP_SAPI . '.');
 }
 session_start();
+require 'src/php/classes/class.user.php';
 $_SESSION['user_object'] = new user(NULL);
 $_SESSION['user_object']->employee_id = 999;
 require "default.php";

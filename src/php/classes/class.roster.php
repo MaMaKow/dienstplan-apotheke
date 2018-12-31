@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,9 +18,10 @@
  */
 
 /**
- * Description of class
+ * A roster is an array of information about when which employee will start and end to work.
+ * The elements of that array are roster_item objects.
  *
- * @author Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 abstract class roster {
 
@@ -31,7 +32,7 @@ abstract class roster {
      * @param $start_date_sql string A string representation in the form of 'Y-m-d'. The first day, that is to be read.
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
-    public static function read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end = NULL) {
+    public static function read_employee_roster_from_database(int $employee_id, string $date_sql_start, string $date_sql_end = NULL) {
         /*
          * TODO: unify this with read_roster_from_database
          * Make them both one function perhaps.
@@ -39,12 +40,12 @@ abstract class roster {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
-        $date_unix_start = strtotime($date_sql_start);
-        $date_unix_end = strtotime($date_sql_end);
+        $date_object_end = new DateTime($date_sql_end);
         $Roster = array();
         $the_whole_roster_is_empty = TRUE;
-        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-            $date_sql = date('Y-m-d', $date_unix);
+
+        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+            $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
                     . "WHERE `Datum` = :date and `VK` = :employee_id "
@@ -53,7 +54,7 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -62,7 +63,7 @@ abstract class roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, NULL);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, NULL);
             }
         }
         if (TRUE === $the_whole_roster_is_empty) {
@@ -72,12 +73,11 @@ abstract class roster {
         return $Roster;
     }
 
-    /*
+    /**
      * Read the roster data from the database.
      * @param $start_date_sql string A string representation in the form of 'Y-m-d'. The first day, that is to be read.
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
-
     public static function read_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
         /*
          * TODO: unify this with read_branch_roster_from_database
@@ -86,12 +86,11 @@ abstract class roster {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
-        $date_unix_start = strtotime($date_sql_start);
-        $date_unix_end = strtotime($date_sql_end);
+        $date_object_end = new DateTime($date_sql_end);
         $Roster = array();
         $the_whole_roster_is_empty = TRUE;
-        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-            $date_sql = date('Y-m-d', $date_unix);
+        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+            $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
                     . 'WHERE Mandant = :branch_id AND `Datum` = :date '
@@ -99,7 +98,7 @@ abstract class roster {
             $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'date' => $date_sql));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -108,7 +107,7 @@ abstract class roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
         /*
@@ -124,12 +123,11 @@ abstract class roster {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
-        $date_unix_start = strtotime($date_sql_start);
-        $date_unix_end = strtotime($date_sql_end);
+        $date_object_end = new DateTime($date_sql_end);
         $Roster = array();
         $the_whole_roster_is_empty = TRUE;
-        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-            $date_sql = date('Y-m-d', $date_unix);
+        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+            $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT DISTINCT Dienstplan.* '
                     . ' FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id '
                     . ' WHERE Dienstplan.Mandant = :other_branch_id AND `Datum` = :date AND employees.branch = :branch_id '
@@ -138,7 +136,7 @@ abstract class roster {
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -147,7 +145,7 @@ abstract class roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                $Roster[$date_object->format('Y-m-d')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
         if (TRUE === $the_whole_roster_is_empty) {
@@ -170,13 +168,12 @@ abstract class roster {
         if (array() !== $Options and ! is_array($Options)) {
             $Options = (array) $Options;
         }
-        $date_unix_start = strtotime($date_sql_start);
-        $date_unix_end = strtotime($date_sql_end);
+        $date_object_end = new DateTime($date_sql_end);
         $Roster = array();
-        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-            $date_sql = date('Y-m-d', $date_unix);
+        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+            $date_sql = $date_object->format('Y-m-d');
             $Absentees = absence::read_absentees_from_database($date_sql);
-            $weekday = date("N", $date_unix);
+            $weekday = $date_object->format('N');
             $sql_query = "SELECT * FROM `Grundplan` "
                     . "WHERE `Wochentag` = :weekday "
                     . "AND `Mandant` = :branch_id "
@@ -197,7 +194,7 @@ abstract class roster {
                      */
                     continue 1;
                 }
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
                 $roster_row_iterator++;
                 //TODO: Make sure, that real NULL values are inserted into the database! By every php-file that inserts anything into the grundplan!
             }
@@ -211,12 +208,11 @@ abstract class roster {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
-        $date_unix_start = strtotime($date_sql_start);
-        $date_unix_end = strtotime($date_sql_end);
+        $date_object_end = new DateTime($date_sql_end);
         $Roster = array();
-        for ($date_unix = $date_unix_start; $date_unix <= $date_unix_end; $date_unix += PDR_ONE_DAY_IN_SECONDS) {
-            $date_sql = date('Y-m-d', $date_unix);
-            $weekday = date("N", $date_unix);
+        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+            $date_sql = $date_object->format('Y-m-d');
+            $weekday = $date_object->format('N');
             $sql_query = "SELECT * FROM `Grundplan` "
                     . " WHERE `Wochentag` = :weekday "
                     . " AND `VK` = :employee_id "
@@ -225,7 +221,7 @@ abstract class roster {
             $result = database_wrapper::instance()->run($sql_query, array('weekday' => $weekday, 'employee_id' => $employee_id));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($date_sql, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende);
                 $roster_row_iterator++;
             }
             if (0 === $roster_row_iterator) {
@@ -234,7 +230,7 @@ abstract class roster {
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
                 $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
         return $Roster;
