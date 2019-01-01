@@ -176,6 +176,7 @@ class user {
             database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id, 'privilege' => $privilege));
         }
         database_wrapper::instance()->commit();
+        $this->read_privileges_from_database();
     }
 
     /**
@@ -193,7 +194,7 @@ class user {
             'receive_emails_opt_in' => $receive_emails_opt_in,
             'employee_id' => $this->employee_id,
         ));
-        return '00000' === $result->errorCode;
+        return '00000' === $result->errorCode();
     }
 
     /**
@@ -225,13 +226,26 @@ class user {
     }
 
     /**
+     * Change the password hash of the user to a new value.
      *
      * @param type $old_password
      * @param type $new_password
-     * @todo not implemented yet
      */
     public function change_password($old_password, $new_password) {
-
+        $user_dialog = new user_dialog();
+        if (!$this->password_verify($old_password)) {
+            $user_dialog->add_message(gettext('The password was not correct.'));
+            return FALSE;
+        }
+        if (8 > strlen($new_password)) {
+            $user_dialog->add_message(gettext('The password is to short.'));
+            $user_dialog->add_message(gettext('A secure password should be at least 8 characters long and not listed in any dictionary.'), E_USER_NOTICE);
+            return FALSE;
+        }
+        $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+        $sql_query = "UPDATE `users` SET `password` = :password WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id, 'password' => $password_hash));
+        return '00000' === $result->errorCode();
     }
 
     /**
@@ -256,7 +270,7 @@ class user {
     private function set_status($new_status) {
         $sql_query = "UPDATE `users` SET `status` = :status WHERE `employee_id` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id, 'status' => $new_status));
-        return '00000' === $result->errorCode;
+        return '00000' === $result->errorCode();
     }
 
     /**
