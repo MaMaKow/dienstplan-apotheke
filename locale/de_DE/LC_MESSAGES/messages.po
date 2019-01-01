@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2018-12-31 10:17+0100\n"
-"PO-Revision-Date: 2018-12-31 10:46+0100\n"
+"POT-Creation-Date: 2019-01-01 15:31+0100\n"
+"PO-Revision-Date: 2019-01-01 15:32+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -588,6 +588,22 @@ msgstr "Die Mail wurde erfolgreich versendet. Vielen Dank!"
 msgid "An error occured while sending the mail. I am sorry."
 msgstr "Beim Versender der Mail trat ein Fehler auf. Es tut mir leid."
 
+#: src/php/classes/class.user.php:237 src/php/pages/user-page.php:53
+msgid "The password was not correct."
+msgstr "Das Passwort war nicht korrekt."
+
+#: src/php/classes/class.user.php:241
+msgid "The password is to short."
+msgstr "Das Passwort ist zu kurz."
+
+#: src/php/classes/class.user.php:242 src/php/pages/user-page.php:96
+msgid ""
+"A secure password should be at least 8 characters long and not listed in any "
+"dictionary."
+msgstr ""
+"Ein sicheres Passwort sollte mindestens 8 Zeichen lang sein und in keinem "
+"Wörterbuch aufgeführt sein."
+
 #: src/php/classes/class.user_dialog.php:124
 #: src/php/pages/collaborative-vacation-input-box.php:138
 msgid "Close"
@@ -1151,7 +1167,8 @@ msgstr ""
 msgid "Please enter a password!"
 msgstr "Bitte geben Sie ein Passwort ein!"
 
-#: src/php/pages/reset_lost_password.php:86 src/php/register.php:36
+#: src/php/pages/reset_lost_password.php:86 src/php/pages/user-page.php:59
+#: src/php/register.php:36
 msgid "The passwords must match!"
 msgstr "Die Passwörter müssen übereinstimmen!"
 
@@ -1309,16 +1326,20 @@ msgstr "Die Datei %1s wurde hochgeladen."
 msgid "It will be processed in the background."
 msgstr "Sie wird im Hintergrund verarbeitet."
 
-#: src/php/pages/user-page.php:30
+#: src/php/pages/user-page.php:64
+msgid "The password was successfully changed."
+msgstr "Ihr Passwort wurde erfolgreich geändert."
+
+#: src/php/pages/user-page.php:78
 #, php-format
 msgid "User page for user %1s"
 msgstr "Benutzerseite für Benutzer %1s"
 
-#: src/php/pages/user-page.php:33
+#: src/php/pages/user-page.php:82
 msgid "Receive emails when the roster is changed"
 msgstr "Emails empfangen, wenn der Dienstplan geändert wird"
 
-#: src/php/pages/user-page.php:36
+#: src/php/pages/user-page.php:85
 msgid ""
 "Upon changes in the roster that are less than 2 weeks in the future a "
 "notification may be sent. A maximum of one mail per day will be sent."
@@ -1327,31 +1348,23 @@ msgstr ""
 "liegen, kann eine Benachrichtigung gesendet werden. Es wird maximal eine "
 "Mail pro Tag gesendet."
 
-#: src/php/pages/user-page.php:40
+#: src/php/pages/user-page.php:89
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: src/php/pages/user-page.php:41
+#: src/php/pages/user-page.php:90
 msgid "Old password"
 msgstr "Altes Passwort"
 
-#: src/php/pages/user-page.php:44
+#: src/php/pages/user-page.php:93
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: src/php/pages/user-page.php:47
-msgid ""
-"A secure password should be at least 8 characters long and not listed in any "
-"dictionary."
-msgstr ""
-"Ein sicheres Passwort sollte mindestens 8 Zeichen lang sein und in keinem "
-"Wörterbuch aufgeführt sein."
-
-#: src/php/pages/user-page.php:50
+#: src/php/pages/user-page.php:99
 msgid "Repeat new password"
 msgstr "Neues Passwort wiederholen"
 
-#: src/php/pages/user-page.php:56
+#: src/php/pages/user-page.php:106
 msgid "Privileges"
 msgstr "Privilegien"
 
@@ -1381,15 +1394,15 @@ msgstr ""
 "Nach der Anmeldung wird der Benutzer zunächst überprüft. Dies kann eine "
 "Weile dauern. Wir informieren Sie nach Abschluss der Prüfung per Email."
 
-#: tests/get-database-structure.php:78
+#: tests/get-database-structure.php:80
 msgid "Error while writing the file to disk."
 msgstr "Fehler beim Schreiben der Datei auf die Festplatte."
 
-#: tests/get-database-structure.php:109
+#: tests/get-database-structure.php:111
 msgid "Error while writing the trigger file to disk."
 msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 
-#: tests/get-database-structure.php:122
+#: tests/get-database-structure.php:124
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
 

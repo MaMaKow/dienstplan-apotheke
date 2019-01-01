@@ -28,6 +28,8 @@ $_SESSION['user_object'] = new user(NULL);
 $_SESSION['user_object']->employee_id = 999;
 require "default.php";
 session_destroy();
+$user_dialog = new user_dialog();
+
 /**
  * In order to follow updates to the database structure, a hash on all the tables and triggers is made and stored.
  *

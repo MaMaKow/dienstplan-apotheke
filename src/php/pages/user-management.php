@@ -20,7 +20,6 @@ $workforce = new workforce();
 $user_dialog = new user_dialog();
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-$user = new user($employee_id);
 $User_list = read_user_list_from_database();
 if (FALSE === in_array($employee_id, array_keys($User_list))) {
     /* This happens if a coworker does not have a user account (yet).
@@ -30,12 +29,16 @@ if (FALSE === in_array($employee_id, array_keys($User_list))) {
      */
     $employee_id = min(array_keys($User_list));
 }
+$user = new user($employee_id);
 create_cookie('employee_id', $employee_id, 30);
 
-function insert_user_data_into_database() {
+function insert_user_data_into_database(&$user) {
     global $session;
+    if (!$session->user_has_privilege('administration')) {
+        return FALSE;
+    }
+
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-    $user = new user($employee_id);
     $privileges = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
     if ($_SESSION['user_object']->employee_id == $user->employee_id and $session->user_has_privilege('administration')) {
         /*
@@ -53,9 +56,14 @@ function insert_user_data_into_database() {
 }
 
 if (filter_has_var(INPUT_POST, 'submit_user_data')) {
-    insert_user_data_into_database();
+    insert_user_data_into_database($user);
 }
 
+/**
+ * Get a list of users
+ *
+ * @return array of \employee objects
+ */
 function read_user_list_from_database() {
     $sql_query = "SELECT `employee_id`, `user_name` FROM `users` ORDER BY `employee_id` ASC";
     $result = database_wrapper::instance()->run($sql_query);
