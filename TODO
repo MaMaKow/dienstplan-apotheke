@@ -1,3 +1,8 @@
+write documenation about the "webdav" api
+make images as an example with an android app
+also include microsoft outlook or thunderbird lightning?
+
+
 remove class email stub or make it a helper for PHPMailer
 perhaps build a real absence class with real absence objects.
 
