@@ -229,6 +229,9 @@ div.user_dialog_container div.notification {
     font-size: medium;
     font-family: serif;
 }
+div.user_dialog_container div pre * {
+    color: black;
+}
 
 div.error_container
 {

@@ -232,7 +232,7 @@ class user {
      * @param type $new_password
      */
     public function change_password($old_password, $new_password) {
-        $user_dialog = new user_dialog();
+        $user_dialog = new \user_dialog();
         if (!$this->password_verify($old_password)) {
             $user_dialog->add_message(gettext('The password was not correct.'));
             return FALSE;
@@ -242,6 +242,20 @@ class user {
             $user_dialog->add_message(gettext('A secure password should be at least 8 characters long and not listed in any dictionary.'), E_USER_NOTICE);
             return FALSE;
         }
+        try {
+            $have_i_been_pwned = new \have_i_been_pwned();
+            if (!$have_i_been_pwned->password_is_secure($new_password)) {
+                $user_dialog->add_message($have_i_been_pwned->get_user_information_string());
+                return FALSE;
+            }
+        } catch (Exception $exception) {
+            /*
+             * Well I am sad. But we will be fine.
+             * TODO: Perhaps send a mail to pdr@martin-mandelkow.de to make me check if anything is wrong with the api.
+             * No, better: Build a test against the API. The user does not have to be botherd sending messages to the developer.
+             */
+        }
+
         $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
         $sql_query = "UPDATE `users` SET `password` = :password WHERE `employee_id` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id, 'password' => $password_hash));
