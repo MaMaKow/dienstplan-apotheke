@@ -173,3 +173,74 @@ There is a distinct list of possible reasons ( vacation,
         parental leave and
         maternity leave).
 The number of days of absence is calculated for a 5 day week. Absences on saturdays and sundays are registered but not counted. The same applys for holidays.
+
+\section{Calendar API}
+It is possible to read the roster data from PDR in form of iCalendar files.
+These files can be used with all major calendar applications on desktops and smartphones.
+This API is by no means a full implementation of the webdav standard. It is not even an implementation of the CalDAV protocol.
+Just point your browser to the following URL:
+\url{https://YOURHOSTNAME/YOUR/FOLDER/webdav.php}
+
+
+The options are:
+\begin{description}
+	\item \lstinline|employee_id|
+	The employee id of the user from whom the roster should be given.
+	Any user can get the roster of every employee.
+	(default = the logged in user)
+	\item \lstinline|date_string|
+	A date in the format YYYY-MM-DD
+	(default = today)
+	\item \lstinline|days_into_the_future|
+	The number of days that should be in the calendar file.
+	(default = 30)
+	\item \lstinline|create_valarm|
+	Create an alarm (\lstinline|ACTION:DISPLAY|) on your device.
+	(default = 0)
+	\begin{itemize}
+        \item 0 = no alarm
+        \item 1 = alarm 30 minutes before beginning of duty
+        \item 2 = alarm on the end of duty
+        \item 4 = alarm when the lunch break starts
+        \item 8 = alarm when the lunch break ends
+        \item 11 = 1+2+8 = alarm for start and end of duty and for end of lunch, but not for start of lunch
+    \end{itemize}	
+\end{description}	
+
+In order to get the roster of the week starting on 17.12.2018 for the employee number 5 you would use the following url:
+\url{https://YOURHOSTNAME/YOUR/FOLDER/webdav.php?employee_id=5&date_string=2018-12-17&days_into_the_future=6}
+
+\subsection{Automatically import iCalendar files with "iCal Import/Export CalDAV Pro"}
+Automatic import of iCalendar files into Android smartphones has been tested with 
+"iCal Import/Export CalDAV Pro" (3,59 EUR). There are probably other apps, that can do the same.
+
+\begin{figure}[hbtp]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_0.png}}
+	\caption{iCal main menu}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_1.png}}
+	\caption{iCal planned imports}
+    \end{minipage}
+    \vfill
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_2.png}}
+	\caption{iCal adding a new import source}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_3.png}}
+	\caption{iCal setup import intervals}
+    \end{minipage}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_4.png}}
+	\caption{iCal network settings and import settings}
+    \end{minipage}
+\end{figure}

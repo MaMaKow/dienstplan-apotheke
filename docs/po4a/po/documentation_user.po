@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dienstplan documentation\n"
-"POT-Creation-Date: 2018-12-31 07:14+0100\n"
+"POT-Creation-Date: 2019-01-06 14:39+0100\n"
 "PO-Revision-Date: 2018-10-07 13:15+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: \n"
@@ -512,7 +512,7 @@ msgid "non-scheduling of non-absent employees (Warning)"
 msgstr "Nichteinplanung von nicht abwesenden Mitarbeitern (Warnung)"
 
 #. type: Plain text
-#: documentation_user.tex:175
+#: documentation_user.tex:176
 msgid ""
 "Only one break can be inserted per entry. If more breaks have to be "
 "assigned, then it is possible to enter multiple entries for the same "
@@ -526,27 +526,27 @@ msgstr ""
 "für die Abwesenheitsdaten."
 
 #. type: itemize
-#: documentation_user.tex:175
+#: documentation_user.tex:176
 msgid "Employee view readonly"
 msgstr "Mitarbeiteransicht schreibgeschützt"
 
 #. type: itemize
-#: documentation_user.tex:175
+#: documentation_user.tex:176
 msgid "Employee view edit"
 msgstr "Mitarbeiteransicht Eingabe"
 
 #. type: itemize
-#: documentation_user.tex:175
+#: documentation_user.tex:176
 msgid "Monthly table"
 msgstr "Monatstabelle"
 
 #. type: itemize
-#: documentation_user.tex:175
+#: documentation_user.tex:176
 msgid "Year overview"
 msgstr "Jahrestabelle"
 
 #. type: Plain text
-#: documentation_user.tex:175
+#: documentation_user.tex:176
 msgid ""
 "In the \\emph{Employee view readonly} there is a select element to choose "
 "the employee to view. There is a button to switch to the edit view.  And "
@@ -568,6 +568,137 @@ msgstr ""
 "Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche "
 "berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber "
 "nicht gezählt. Das Gleiche gilt für Feiertage."
+
+#. type: subsection{#2}
+#: documentation_user.tex:183 documentation_developer.tex:143
+msgid "Calendar API"
+msgstr ""
+
+#. type: Plain text
+#: documentation_user.tex:183
+msgid ""
+"It is possible to read the roster data from PDR in form of iCalendar files.  "
+"These files can be used with all major calendar applications on desktops and "
+"smartphones.  This API is by no means a full implementation of the webdav "
+"standard. It is not even an implementation of the CalDAV protocol.  Just "
+"point your browser to the following URL: \\url{https://YOURHOSTNAME/YOUR/"
+"FOLDER/webdav.php}"
+msgstr ""
+
+#. type: Plain text
+#: documentation_user.tex:209
+#, fuzzy
+#| msgid "The navigation bar"
+msgid "The options are:"
+msgstr "Die Navigationsleiste"
+
+#. type: description
+#: documentation_user.tex:209
+msgid ""
+"\\lstinline|employee_id| The employee id of the user from whom the roster "
+"should be given.  Any user can get the roster of every employee.  (default = "
+"the logged in user)"
+msgstr ""
+
+#. type: description
+#: documentation_user.tex:209
+msgid ""
+"\\lstinline|date_string| A date in the format YYYY-MM-DD (default = today)"
+msgstr ""
+
+#. type: description
+#: documentation_user.tex:209
+msgid ""
+"\\lstinline|days_into_the_future| The number of days that should be in the "
+"calendar file.  (default = 30)"
+msgstr ""
+
+#. type: description
+#: documentation_user.tex:209
+msgid ""
+"\\lstinline|create_valarm| Create an alarm (\\lstinline|ACTION:DISPLAY|) on "
+"your device.  (default = 0)"
+msgstr ""
+
+#. type: itemize
+#: documentation_user.tex:209
+msgid "0 = no alarm"
+msgstr ""
+
+#. type: itemize
+#: documentation_user.tex:209
+msgid "1 = alarm 30 minutes before beginning of duty"
+msgstr ""
+
+#. type: itemize
+#: documentation_user.tex:209
+msgid "2 = alarm on the end of duty"
+msgstr ""
+
+#. type: itemize
+#: documentation_user.tex:209
+msgid "4 = alarm when the lunch break starts"
+msgstr ""
+
+#. type: itemize
+#: documentation_user.tex:209
+msgid "8 = alarm when the lunch break ends"
+msgstr ""
+
+#. type: itemize
+#: documentation_user.tex:209
+msgid ""
+"11 = 1+2+8 = alarm for start and end of duty and for end of lunch, but not "
+"for start of lunch"
+msgstr ""
+
+#. type: Plain text
+#: documentation_user.tex:212
+msgid ""
+"In order to get the roster of the week starting on 17.12.2018 for the "
+"employee number 5 you would use the following url: \\url{https://"
+"YOURHOSTNAME/YOUR/FOLDER/webdav.php?"
+"employee_id=5&date_string=2018-12-17&days_into_the_future=6}"
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_user.tex:216
+msgid ""
+"Automatically import iCalendar files with \"iCal Import/Export CalDAV Pro\""
+msgstr ""
+
+#. type: Plain text
+#: documentation_user.tex:216
+msgid ""
+"Automatic import of iCalendar files into Android smartphones has been tested "
+"with \"iCal Import/Export CalDAV Pro\" (3,59 EUR). There are probably other "
+"apps, that can do the same."
+msgstr ""
+
+#. type: caption{#2}
+#: documentation_user.tex:246
+msgid "iCal main menu"
+msgstr ""
+
+#. type: caption{#2}
+#: documentation_user.tex:246
+msgid "iCal planned imports"
+msgstr ""
+
+#. type: caption{#2}
+#: documentation_user.tex:246
+msgid "iCal adding a new import source"
+msgstr ""
+
+#. type: caption{#2}
+#: documentation_user.tex:246
+msgid "iCal setup import intervals"
+msgstr ""
+
+#. type: caption{#2}
+#: documentation_user.tex:246
+msgid "iCal network settings and import settings"
+msgstr ""
 
 #. type: subsubsection{#2}
 #: documentation_introduction.tex:7 documentation_administrator.tex:18
@@ -1629,35 +1760,103 @@ msgid ""
 "error 1146."
 msgstr ""
 
-#. type: section{#2}
-#: documentation_developer.tex:104
+#. type: subsection{#2}
+#: documentation_developer.tex:105
 msgid "Classes"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:104
-msgid "The classes are stored in the folder \\directory{src/php/classes/}."
+#: documentation_developer.tex:105
+msgid ""
+"The classes are stored in the folder \\directory{src/php/classes/} or "
+"\\directory{src/php/3rdparty/}.  The autoloader will only load classes from "
+"\\directory{\\lstinline|src/php/classes/class.\\$class_name.php|}, every "
+"other class has to be manually included."
 msgstr ""
 
-#. type: subsection{#2}
-#: documentation_developer.tex:107
+#. type: subsubsection{#2}
+#: documentation_developer.tex:108
 msgid "user"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:107
+#: documentation_developer.tex:108
 msgid ""
 "The user class represents an employee, who has registered a user account in "
 "PDR."
 msgstr ""
 
+#. type: subsubsection{#2}
+#: documentation_developer.tex:115
+msgid "user\\_input"
+msgstr ""
+
+#. type: paragraph{#2}
+#: documentation_developer.tex:115
+msgid "\\lstinline|user_input::get_variable_from_any_input|"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:115
+msgid ""
+"This function reads user input from POST, GET or COOKIE in that order.  If "
+"the requested information is found in one of the sources, then the others "
+"are ignored.  For security reasons all information is filtered. By default "
+"\\lstinline|FILTER_SANITIZE_STRING| is used. Any other filter can be given "
+"as the second parameter.  If no information is found in any of the sources, "
+"then a default value (the third parameter) will be returned."
+msgstr ""
+
+#. type: paragraph{#2}
+#: documentation_developer.tex:130
+msgid "\\lstinline|escape_sql_value|"
+msgstr ""
+
+#. type: Plain text
+#: documentation_developer.tex:130
+msgid ""
+"foo \\paragraph{\\lstinline|convert_post_empty_to_php_null|} foo "
+"\\paragraph{\\lstinline|"
+"principle_employee_roster_write_user_input_to_database|} foo "
+"\\paragraph{\\lstinline|principle_roster_write_user_input_to_database|} foo "
+"\\paragraph{\\lstinline|get_Roster_from_POST_secure|} foo "
+"\\paragraph{\\lstinline|remove_changed_entries_from_database|} foo "
+"\\paragraph{\\lstinline|"
+"remove_changed_entries_from_database_principle_roster|} foo "
+"\\paragraph{\\lstinline|"
+"insert_changed_entries_into_database_principle_roster|} foo "
+"\\paragraph{\\lstinline|insert_new_approval_into_database|} foo "
+"\\paragraph{\\lstinline|old_write_approval_to_database|} foo "
+"\\paragraph{\\lstinline|get_changed_roster_employee_id_list|} foo "
+"\\paragraph{\\lstinline|get_deleted_roster_employee_id_list|} foo "
+"\\paragraph{\\lstinline|get_inserted_roster_employee_id_list|} foo "
+"\\paragraph{\\lstinline|roster_write_user_input_to_database|} foo"
+msgstr ""
+
+#. type: subsection{#2}
+#: documentation_developer.tex:137
+#, fuzzy
+#| msgid "The web interface"
+msgid "Web Interface"
+msgstr "Das Web-Interface"
+
+#. type: Plain text
+#: documentation_developer.tex:143
+msgid ""
+"The script does not discriminate between information sent by POST, GET or "
+"COOKIE.  See \\lstinline|user_input::get_variable_from_any_input| for "
+"details.  The parameter \\lstinline|date_string| acepts any string that can "
+"be interpreted by DateTime See \\url{https://secure.php.net/manual/en/"
+"datetime.formats.date.php} for details."
+msgstr ""
+
 #. type: section{#2}
-#: documentation_developer.tex:112
+#: documentation_developer.tex:148
 msgid "Documentation"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:112
+#: documentation_developer.tex:148
 msgid ""
 "This documentation about a programm, app or script is a stub. You can help "
 "this project by expanding it.  Seriously, if there is something that does "
@@ -1665,46 +1864,46 @@ msgid ""
 msgstr ""
 
 #. type: section{#2}
-#: documentation_developer.tex:115
+#: documentation_developer.tex:151
 msgid "Testing"
 msgstr ""
 
 #. type: section{#2}
-#: documentation_developer.tex:119
+#: documentation_developer.tex:155
 msgid "Bug tracker"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:119
+#: documentation_developer.tex:155
 msgid ""
 "Bugs and Issues are tracked at GitHub \\url{https://github.com/MaMaKow/"
 "dienstplan-apotheke/issues}"
 msgstr ""
 
 #. type: section{#2}
-#: documentation_developer.tex:123
+#: documentation_developer.tex:159
 msgid "Translation"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:123
+#: documentation_developer.tex:159
 msgid "Translations are handled with gettext()."
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:126
+#: documentation_developer.tex:162
 msgid ""
 "See this article about po4a about the translation of this document: "
 "\\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}"
 msgstr ""
 
 #. type: subsection{#2}
-#: documentation_developer.tex:128
+#: documentation_developer.tex:164
 msgid "Internationalization"
 msgstr ""
 
 #. type: Plain text
-#: documentation_developer.tex:128
+#: documentation_developer.tex:164
 msgid ""
 "Different countries have different laws regarding pharmacies and employment. "
 "They also have different holidays."

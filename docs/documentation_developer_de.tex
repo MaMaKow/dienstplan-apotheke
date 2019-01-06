@@ -150,12 +150,56 @@ Tabellen aus den Strukturinformationen zu erstellen, die im Verzeichnis
 PDO-Datenbankabfrage eine Ausnahme mit dem Code 42S02 und dem MySQL-Fehler
 1146 wirft.
 
-\section{Klassen}
-Die Klassen werden im Ordner \directory{src/php/classes/} gespeichert. 
+\subsection{Klassen}
+Die Klassen werden im Ordner \directory{src/php/classes/} oder
+\directory{src/php/3rdparty/} gespeichert. Der Autoloader lädt nur Klassen
+aus \directory{\lstinline|src/php/classes/class.\$class_name.php|}. Jede
+andere Klasse muss manuell geladen werden.
 
-\subsection{Benutzer}
+\subsubsection{Benutzer}
 Die Klasse user stellt einen Mitarbeiter dar, der ein Benutzerkonto in PDR
 registriert hat.
+
+\subsubsection{user\_input}
+\paragraph{\lstinline|user_input::get_variable_from_any_input|}
+Diese Funktion liest die Benutzereingaben von POST, GET oder COOKIE in
+dieser Reihenfolge.Wenn die angeforderten Informationen in einer der Quellen
+gefunden werden, werden die anderen ignoriert.Aus Sicherheitsgründen werden
+alle Informationen gefiltert. Standardmäßig wird
+\lstinline|FILTER_SANITIZE_STRING| eingesetzt. Jeder andere Filter kann als
+zweiter Parameter angegeben werden.Wenn in keiner der Quellen Informationen
+gefunden werden, wird ein Standardwert (der dritte Parameter) zurückgegeben.
+
+\paragraph{\lstinline|escape_sql_value|} foo \paragraph{\lstinline|convert_post_empty_to_php_null|} foo
+\paragraph{\lstinline|principle_employee_roster_write_user_input_to_database|}
+foo \paragraph{\lstinline|principle_roster_write_user_input_to_database|}
+foo \paragraph{\lstinline|get_Roster_from_POST_secure|} foo
+\paragraph{\lstinline|remove_changed_entries_from_database|} foo
+\paragraph{\lstinline|remove_changed_entries_from_database_principle_roster|}
+foo
+\paragraph{\lstinline|insert_changed_entries_into_database_principle_roster|}
+foo \paragraph{\lstinline|insert_new_approval_into_database|} foo
+\paragraph{\lstinline|old_write_approval_to_database|} foo
+\paragraph{\lstinline|get_changed_roster_employee_id_list|} foo
+\paragraph{\lstinline|get_deleted_roster_employee_id_list|} foo
+\paragraph{\lstinline|get_inserted_roster_employee_id_list|} foo
+\paragraph{\lstinline|roster_write_user_input_to_database|} foo
+
+
+
+
+
+
+\subsection{Web-Interface}
+
+\subsection{Kalender API}
+Das Skript unterscheidet nicht zwischen Informationen, die von POST, GET
+oder COOKIE gesendet werden. Siehe
+\lstinline|user_input::get_variable_from_any_input| für Details. Der
+Parameter \lstinline|date_string| akzeptiert jede Zeichenfolge, die von
+DateTime interpretiert werden kann. Siehe
+\url{https://secure.php.net/manual/de/datetime.formats.date.php} für
+Details.
 
 
 \section{Dokumentation}

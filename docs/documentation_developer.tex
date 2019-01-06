@@ -84,7 +84,7 @@ The tables are:
 
 A copy of all the table structures is stored in \directory{src/sql/}.
 The directory also contains the file \directory{src/sql/database\_version\_hash.php} which holds a SHA1 hash of all 
-the structures returned by \verb|SHOW CREATE TABLE| and \verb|SHOW CREATE TRIGGER| after some modification. 
+the structures returned by \lstinline|SHOW CREATE TABLE| and \lstinline|SHOW CREATE TRIGGER| after some modification. 
 The hash is written by \directory{tests/get-database-structure.php}, see the details in that file.
 
 \subsubsection{Maintenance of the database}
@@ -99,11 +99,47 @@ In order to decide, the hash stored in the file \directory{database\_version\_ha
 \paragraph{Auto healing tables}
 The class \emph{database\_wrapper} has a function \emph{create\_table\_from\_template()} that is able to create missing tables from the structure information given in \directory{src/sql/}. It is called if any PDO database query throws an exception with the code 42S02 and the MySQL error 1146.
 
-\section{Classes}
-The classes are stored in the folder \directory{src/php/classes/}. 
+\subsection{Classes}
+The classes are stored in the folder \directory{src/php/classes/} or \directory{src/php/3rdparty/}.
+The autoloader will only load classes from \directory{\lstinline|src/php/classes/class.\$class_name.php|}, every other class has to be manually included.
 
-\subsection{user}
+\subsubsection{user}
 The user class represents an employee, who has registered a user account in PDR.
+
+\subsubsection{user\_input}
+\paragraph{\lstinline|user_input::get_variable_from_any_input|}
+This function reads user input from POST, GET or COOKIE in that order.
+If the requested information is found in one of the sources, then the others are ignored.
+For security reasons all information is filtered. By default \lstinline|FILTER_SANITIZE_STRING| is used. Any other filter can be given as the second parameter.
+If no information is found in any of the sources, then a default value (the third parameter) will be returned.
+
+\paragraph{\lstinline|escape_sql_value|} foo
+\paragraph{\lstinline|convert_post_empty_to_php_null|} foo
+\paragraph{\lstinline|principle_employee_roster_write_user_input_to_database|} foo
+\paragraph{\lstinline|principle_roster_write_user_input_to_database|} foo
+\paragraph{\lstinline|get_Roster_from_POST_secure|} foo
+\paragraph{\lstinline|remove_changed_entries_from_database|} foo
+\paragraph{\lstinline|remove_changed_entries_from_database_principle_roster|} foo
+\paragraph{\lstinline|insert_changed_entries_into_database_principle_roster|} foo
+\paragraph{\lstinline|insert_new_approval_into_database|} foo
+\paragraph{\lstinline|old_write_approval_to_database|} foo
+\paragraph{\lstinline|get_changed_roster_employee_id_list|} foo
+\paragraph{\lstinline|get_deleted_roster_employee_id_list|} foo
+\paragraph{\lstinline|get_inserted_roster_employee_id_list|} foo
+\paragraph{\lstinline|roster_write_user_input_to_database|} foo
+
+
+
+
+
+
+\subsection{Web Interface}
+
+\subsection{Calendar API}
+The script does not discriminate between information sent by POST, GET or COOKIE.
+See \lstinline|user_input::get_variable_from_any_input| for details.
+The parameter \lstinline|date_string| acepts any string that can be interpreted by DateTime
+See \url{https://secure.php.net/manual/en/datetime.formats.date.php} for details.
 
 
 \section{Documentation}

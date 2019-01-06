@@ -132,7 +132,7 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_link_download_ics_file($date_sql, $employee_id) {
-        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php?employee_id=$employee_id&datum=$date_sql' method='get'>"
+        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php?employee_id=$employee_id&date_string=$date_sql' method='get'>"
                 . " <button type='submit' class='btn-primary no_print' "
                 . " title='" . gettext("Download iCalendar file") . "'>"
                 . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"

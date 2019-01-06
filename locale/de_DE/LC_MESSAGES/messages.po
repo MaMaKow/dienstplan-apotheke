@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2019-01-01 15:31+0100\n"
-"PO-Revision-Date: 2019-01-01 15:32+0100\n"
+"POT-Creation-Date: 2019-01-06 18:57+0100\n"
+"PO-Revision-Date: 2019-01-06 18:57+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -343,6 +343,22 @@ msgstr "Um %1s Uhr ist niemand für den Wareneingang anwesend."
 #, php-format
 msgid "At %1s there is no authorized person present."
 msgstr "Um %1s Uhr ist kein Approbierter anwesend."
+
+#: src/php/classes/class.have_i_been_pwned.php:101
+#, php-format
+msgid "This password has been seen %1s time before."
+msgid_plural "This password has been seen %1s times before."
+msgstr[0] "Dieses Passwort wurde %1s zuvor gesehen."
+msgstr[1] "Dieses Passwort wurde %1s Male zuvor gesehen."
+
+#: src/php/classes/class.have_i_been_pwned.php:103
+msgid ""
+"This password has previously appeared in a data breach and should never be "
+"used. If you've ever used it anywhere before, change it!"
+msgstr ""
+"Dieses Passwort wurde in der Vergangenheit bei einem Einbruch bekannt und "
+"sollte niemals verwendet werden. Wenn Sie es jemals zuvor verwendet haben, "
+"ändern Sie es!"
 
 #: src/php/classes/class.human_resource_management.php:131
 msgid "Profession"

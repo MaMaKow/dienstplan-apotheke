@@ -18,27 +18,24 @@
  */
 
 /*
- * Wir erstellen eine umfassende Icalendar Datei (ICS). Diese kann dann von Kalenderprogrammen aboniert werden.
+ * We are creating an iCalendar file (*.ics). This file can be read by calendaring applications.
  */
+
 require_once 'default.php';
 if (!isset($_SESSION['user_object']->employee_id)) {
     require_once PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/basic_access_authentication.php';
 }
 /*
- * @var $build_lunch_break_alert bool This variable is currently not used. In a future implementation, it should enable the user to request additional alerts (VALARM) to remind him on the beginning of the defined lunch break.
- */
-$build_lunch_break_alert = user_input::get_variable_from_any_input('build_lunch_break_alert', FILTER_SANITIZE_NUMBER_INT, FALSE);
-/*
  * @var $days_into_the_future int Number of days into the future. The roster for this number of consecutive days will be added to the iCalendar file.
  */
 $days_into_the_future = user_input::get_variable_from_any_input('days_into_the_future', FILTER_SANITIZE_STRING, 30);
-$date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_STRING, date('Y-m-d'));
+$date_string = user_input::get_variable_from_any_input('date_string', FILTER_SANITIZE_STRING, date('Y-m-d'));
+$date_object_start = new \DateTime($date_string);
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 $create_valarm = user_input::get_variable_from_any_input('create_valarm', FILTER_SANITIZE_NUMBER_INT, 0);
-$workforce = new workforce($date_sql);
-$date_sql_start = $date_sql;
-$date_sql_end = date('Y-m-d', strtotime("+ $days_into_the_future days", strtotime($date_sql)));
-$Roster = roster::read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end);
+$date_object_end = clone $date_object_start;
+$date_object_end->add(new \DateInterval('P' . $days_into_the_future . 'D'));
+$Roster = roster::read_employee_roster_from_database($employee_id, $date_object_start->format('Y-m-d'), $date_object_start->format('Y-m-d'));
 header('Content-type: text/Calendar');
 header('Content-Disposition: attachment; filename="Calendar.ics"');
 
