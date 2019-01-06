@@ -213,3 +213,74 @@ unbezahlte Freistellung, bezahlte Freistellung, Elternzeit und
 Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche
 berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber
 nicht gezählt. Das Gleiche gilt für Feiertage.
+
+\section{Kalender API}
+Es ist möglich, die Dienstplandaten in Form von iCalendar-Dateien von PDR zu
+lesen. Diese Dateien können mit allen wichtigen Kalenderanwendungen auf
+Desktops und Smartphones verwendet werden. Diese API ist keinesfalls eine
+vollständige Implementierung des Webdav-Standards. Es ist nicht einmal eine
+Implementierung des CalDAV-Protokolls. Rufen Sie in Ihrem Browser einfach
+auf die folgende URL auf: \url{https://YOURHOSTNAME/YOUR/FOLDER/webdav.php}
+
+
+Die Optionen sind:
+\begin{description}
+	\item \lstinline|employee_id| Die Mitarbeiter-ID des Benutzers, von dem der
+Dienstplan ausgegeben werden soll. Jeder Benutzer kann die Liste aller
+Mitarbeiter abrufen. (Standard = der angemeldete Benutzer)
+	\item \lstinline|date_string| Ein Datum im Format JJJJ-MM-TT (Standard = heute)
+	\item \lstinline|days_into_the_future| Die Anzahl der Tage, die in der
+Kalenderdatei enthalten sein sollen. (Standard = 30)
+	\item \lstinline|create_valarm| Erstellen Sie einen Alarm
+(\lstinline|ACTION:DISPLAY|) auf Ihrem Gerät. (Standard = 0)
+	\begin{itemize}
+        \item 0 = kein Alarm
+        \item 1 = Alarm 30 Minuten vor Dienstantritt
+        \item 2 = Alarm am Ende des Dienstes
+        \item 4 = Alarm, wenn die Mittagspause beginnt
+        \item 8 = Alarm, wenn die Mittagspause endet
+        \item 11 = 1+2+8 = Alarm für Beginn und Ende des Dienstes sowie für das Ende des
+Mittagessens, jedoch nicht für den Beginn des Mittagessens
+    \end{itemize}	
+\end{description}	
+
+Um den Dienstplan der Woche ab 17.12.2018 für den Angestellten Nummer 5 zu
+erhalten, verwenden Sie die folgende URL:
+\url{https://YOURHOSTNAME/YOUR/FOLDER/webdav.php?employee_id=5&date_string=2018-12-17&days_into_the_future=6}
+
+\subsection{ICalendar-Dateien automatisch mit  "iCal Import/Export CalDAV Pro"
+importieren}
+Der automatische Import von iCalendar-Dateien in Android-Smartphones wurde
+mit "iCal Import/Export CalDAV Pro" (3,59 EUR) getestet. Es gibt
+wahrscheinlich andere Apps, die das Selbe tun können.
+
+\begin{figure}[hbtp]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_0.png}}
+	\caption{iCal Hauptmenü}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_1.png}}
+	\caption{iCal geplante Importe}
+    \end{minipage}
+    \vfill
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_2.png}}
+	\caption{iCal eine neue Importquelle hinzufügen}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_3.png}}
+	\caption{iCal Importintervalle einstellen}
+    \end{minipage}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+	\includegraphics[width=0.9\textwidth, height=0.3\textheight, keepaspectratio=true]{{images/de_DE/iCalendar_import_4.png}}
+	\caption{iCal Netzwerkeinstellungen und Importeinstellungen}
+    \end{minipage}
+\end{figure}

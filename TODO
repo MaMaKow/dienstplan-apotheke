@@ -1,7 +1,9 @@
-write documenation about the "webdav" api
-make images as an example with an android app
+write more documenation about the "webdav" api
 also include microsoft outlook or thunderbird lightning?
 
+Test password strength upon registration
+
+Insert information about emergency service for saturday-list on with emergency service on fridays, saturdays or sundays.
 
 remove class email stub or make it a helper for PHPMailer
 perhaps build a real absence class with real absence objects.
