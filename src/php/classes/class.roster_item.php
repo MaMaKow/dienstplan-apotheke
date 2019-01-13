@@ -106,7 +106,10 @@ class roster_item {
         $this->working_hours = round($this->working_seconds / 3600, 2);
     }
 
-    protected static function format_time_string_correct($time_string, $format = '%H:%M') {
+    public static function format_time_string_correct($time_string, $format = '%H:%M') {
+        /*
+         * TODO: This could be part of a namespaced DateTime class.
+         */
         $time_int = strtotime($time_string);
         if (FALSE === $time_int) {
             return $time_string;
