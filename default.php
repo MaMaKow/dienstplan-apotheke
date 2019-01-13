@@ -105,7 +105,10 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
  */
 $session = new sessions;
 
-$List_of_branch_objects = branch::read_branches_from_database();
+/*
+ * TODO: Get rid of this maybe?
+ */
+$List_of_branch_objects = branch::get_list_of_branch_objects();
 /*
  * Guess the navigator (=browser) language from HTTP_ACCEPT_LANGUAGE:
  * This is used in the head.php

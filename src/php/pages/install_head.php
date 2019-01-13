@@ -20,6 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <META charset=UTF-8>
         <TITLE>Pharmacy Duty Roster</TITLE>
         <!--<SCRIPT type="text/javascript" src="install_javascript.js" ></SCRIPT>-->
-        <LINK rel="stylesheet" type="text/css" href="../../../css/install_style.css" media="all">
+        <LINK rel="stylesheet" type="text/css" href="../../../src/css/install_style.css" media="all">
     </HEAD>
     <BODY>

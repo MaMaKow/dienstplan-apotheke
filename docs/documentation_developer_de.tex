@@ -121,11 +121,10 @@ existieren)
 Eine Kopie aller Tabellenstrukturen wird in \directory{src/sql/}
 gespeichert. Das Verzeichnis enthält auch die Datei
 \directory{src/sql/database\_version\_hash.php}, die einen SHA1-Hash aller
-Strukturen enthält, die von \begin{verbatim}SHOW CREATE TABLE\end{verbatim}
-und \begin{verbatim}SHOW CREATE TRIGGER\end{verbatim} nach einigen
-Änderungen zurückgegeben werden. Der Hash wird von
-\directory{tests/get-database-structure.php} geschrieben, siehe die Details
-in jener Datei.
+Strukturen enthält, die von \lstinline|SHOW CREATE TABLE|  und
+\lstinline|SHOW CREATE TRIGGER| nach einigen Änderungen zurückgegeben
+werden. Der Hash wird von \directory{tests/get-database-structure.php}
+geschrieben, siehe die Details in jener Datei.
 
 \subsubsection{Pflege der Datenbank}
 Es gibt eine Klasse \emph{update\_database}. Diese Klasse enthält eine

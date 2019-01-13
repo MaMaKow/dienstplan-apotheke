@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/overtime.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/datepicker.js"></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/user_dialog.js"></SCRIPT>
-        <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>js/collaborative-vacation.js" ></SCRIPT>
+        <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/collaborative-vacation.js" ></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/style.css" media="all">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/print.css" media="print">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/overtime.css" media="all">
@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/emergency_service.css">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/user_dialog.css">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/form_and_input.css">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>css/collaborative-vacation.css" media="all">
+        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/collaborative-vacation.css" media="all">
     </HEAD>
     <BODY>
         <?php

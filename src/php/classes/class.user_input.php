@@ -37,15 +37,17 @@ abstract class user_input {
         return filter_var($default_value, $filter);
     }
 
-    public static function escape_sql_value($value) {
-        if ('NULL' === $value or 'null' === $value) {
-            return $value;
-        } elseif (NULL === $value) {
-            return 'NULL';
-        } else {
-            return "'" . $value . "'";
-        }
-    }
+    /*
+      public static function escape_sql_value($value) {
+      if ('NULL' === $value or 'null' === $value) {
+      return $value;
+      } elseif (NULL === $value) {
+      return 'NULL';
+      } else {
+      return "'" . $value . "'";
+      }
+      }
+     */
 
     public static function convert_post_empty_to_php_null($value) {
         if ('' === $value) {

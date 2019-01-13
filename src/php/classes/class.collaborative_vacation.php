@@ -312,7 +312,7 @@ class collaborative_vacation {
         if (FALSE === $having_emergency_service) {
             return "";
         }
-        $List_of_branch_objects = \branch::read_branches_from_database();
+        $List_of_branch_objects = \branch::get_list_of_branch_objects();
         $emergency_service_content = "";
         if ('month' === $mode) {
             $emergency_service_content .= "<span class='emergency_service'>"

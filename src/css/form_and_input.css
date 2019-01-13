@@ -131,6 +131,11 @@ fieldset legend {
     text-align: right;
 }
 
+fieldset legend img {
+    max-height: 1em;
+    max-width: 1em;
+}
+
 fieldset label {
     display: inline-block;
     /*

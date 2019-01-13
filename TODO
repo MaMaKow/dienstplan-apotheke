@@ -1,5 +1,10 @@
+register_approve.php
+Make this a list of all the users and their status.
+
 write more documenation about the "webdav" api
 also include microsoft outlook or thunderbird lightning?
+
+Do opening times and principle roster work on single-branch setups?
 
 Test password strength upon registration
 
