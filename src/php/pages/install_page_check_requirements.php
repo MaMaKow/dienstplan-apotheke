@@ -1,4 +1,3 @@
-
 <?php
 /*
  * Copyright (C) 2017 Mandelkow
