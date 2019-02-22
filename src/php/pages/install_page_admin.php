@@ -26,18 +26,18 @@ require_once 'install_head.php'
 
 <form accept-charset='utf-8' method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <p>User name:<br>
-        <input type="text" name="user_name" placeholder="Administrator username" required value="<?= $_SESSION["Config"]["user_name"] ? $_SESSION["Config"]["user_name"] : "" ?>" />
+        <input type="text" name="user_name" placeholder="Administrator username" required value="<?= (!empty($_SESSION["Config"]["user_name"])) ? $_SESSION["Config"]["user_name"] : "" ?>" />
     </p>
     <p>Last name:<br>
-        <input type="text" name="last_name" placeholder="Last name" required value="<?= $_SESSION["Config"]["user_name"] ? $_SESSION["Config"]["last_name"] : "" ?>" />
+        <input type="text" name="last_name" placeholder="Last name" required value="<?= (!empty($_SESSION["Config"]["user_name"])) ? $_SESSION["Config"]["last_name"] : "" ?>" />
     </p>
     <p title="<?= gettext("Every user in the roster will be identified by a unique id.") ?>">
         Employee id:<br>
-        <input type="text" name="employee_id" placeholder="Employee id" required value="<?= $_SESSION["Config"]["employee_id"] ? $_SESSION["Config"]["employee_id"] : "" ?>" />
+        <input type="text" name="employee_id" placeholder="Employee id" required value="<?= (!empty($_SESSION["Config"]["employee_id"])) ? $_SESSION["Config"]["employee_id"] : "" ?>" />
     </p>
     <p>
         Contact email address:<br>
-        <input type="email" name="email" placeholder="Contact email address:" required value="<?= $_SESSION["Config"]["email"] ? $_SESSION["Config"]["email"] : "" ?>" />
+        <input type="email" name="email" placeholder="Contact email address:" required value="<?= (!empty($_SESSION["Config"]["email"])) ? $_SESSION["Config"]["email"] : "" ?>" />
     </p>
     <p>
         Administrator password:<br>

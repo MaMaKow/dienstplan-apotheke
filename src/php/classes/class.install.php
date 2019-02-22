@@ -487,13 +487,13 @@ class install {
                 $this->Error_message[] = gettext("Error while trying to create the database.");
                 return FALSE;
             }
-            if (FALSE === $this->setup_mysql_database_tables()) {
-                /*
-                 * There was a serious error while trying to create the database tables.
-                 */
-                $this->Error_message[] = gettext("Error while trying to create the database tables.");
-                return FALSE;
-            }
+        }
+        if (FALSE === $this->setup_mysql_database_tables()) {
+            /*
+             * There was a serious error while trying to create the database tables.
+             */
+            $this->Error_message[] = gettext("Error while trying to create the database tables.");
+            return FALSE;
         }
         if (empty($this->Error_message)) {
             $this->write_config_to_session();
@@ -521,9 +521,11 @@ class install {
          * Just in case we are interrupted and/or the session is lost, we read the values from a temporary installation file:
          */
         include_once $this->pdr_file_system_application_path . 'config/config_temp_install.php';
-        foreach ($config as $key => $value) {
-            if (!isset($this->Config[$key])) {
-                $this->Config[$key] = $value;
+        if (!empty($config)) {
+            foreach ($config as $key => $value) {
+                if (!isset($this->Config[$key])) {
+                    $this->Config[$key] = $value;
+                }
             }
         }
         unset($config);
