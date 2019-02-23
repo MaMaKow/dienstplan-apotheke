@@ -15,3 +15,6 @@
 # Denote all files that are truly binary and should not be modified.
 *.png binary
 *.jpg binary
+
+#Use pdfdiff to show differences in pdf files:
+*.pdf diff=pdfdiff
