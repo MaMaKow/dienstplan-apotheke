@@ -91,7 +91,9 @@ class branch {
         $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
         if (!in_array(basename($script_name), array('branch-management.php'))) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
-            header('Location:' . $location);
+            if (++$_SESSION['number_of_times_redirected'] < 3) {
+                header('Location:' . $location);
+            }
             die('<p><a href="' . $location . '>Please configure at least one branch first!</a></p>');
         }
     }
