@@ -360,6 +360,36 @@ class install {
         }
     }
 
+    public function webserver_supports_https() {
+        require_once $this->pdr_file_system_application_path . 'src/php/classes/class.sessions.php';
+        $this->try_https();
+        $https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_STRING);
+
+        if (!empty($https) and $https === "on") {
+            return TRUE;
+        } else {
+            $this->Error_message[] = "This webserver does not seem to support HTTPS. Please enable Hypertext Transfer Protocol Secure (HTTPS)!";
+            return FALSE;
+        }
+    }
+
+    private function try_https() {
+        if (!isset($_SESSION['number_of_times_redirected'])) {
+            $_SESSION['number_of_times_redirected'] = 0;
+        }
+        $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+            if (!headers_sent() and ( ++$_SESSION['number_of_times_redirected'] ) < 3) {
+                header("Status: 301 Moved Permanently");
+                header("Location: $https_url");
+            } elseif (( ++$_SESSION['number_of_times_redirected'] ) < 3) {
+                echo '<script type="javascript">document.location.href="' . $https_url . '";</script>';
+            }
+            return FALSE;
+        }
+        return TRUE;
+    }
+
     public function database_driver_is_installed() {
         if (empty(array_intersect(PDO::getAvailableDrivers(), $this->pdr_supported_database_management_systems))) {
             $this->Error_message[] = "No compatible database driver found. Please install one of the following database management systems and the corresponding PHP driver!";
@@ -516,11 +546,16 @@ class install {
     }
 
     private function read_config_from_session() {
-        $this->Config = $_SESSION["Config"];
+        if (!empty($_SESSION["Config"])) {
+            $this->Config = $_SESSION["Config"];
+        }
         /*
          * Just in case we are interrupted and/or the session is lost, we read the values from a temporary installation file:
          */
-        include_once $this->pdr_file_system_application_path . 'config/config_temp_install.php';
+        $config = array();
+        if (file_exists($this->pdr_file_system_application_path . 'config/config_temp_install.php')) {
+            include_once $this->pdr_file_system_application_path . 'config/config_temp_install.php';
+        }
         if (!empty($config)) {
             foreach ($config as $key => $value) {
                 if (!isset($this->Config[$key])) {
