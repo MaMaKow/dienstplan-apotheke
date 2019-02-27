@@ -82,11 +82,8 @@ class sessions {
          * We make an exception for localhost. If data is not sent through the net, there is no absolute need for HTTPS.
          * People are still free to use it on their own. Administrators are able to force it in Apache (or any other web server).
          */
-        if ("localhost" != $http_host AND "" != $http_host AND ( empty($https) OR $https != "on")) {
-            header("Location: https://" . $http_host . $request_uri);
-            die("<p>Dieses Programm erfordert die Nutzung von "
-                    . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
-                    . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
+        if ("localhost" != $http_host AND "" != $http_host) {
+            self::force_https();
         }
 
         /*
@@ -95,7 +92,9 @@ class sessions {
          */
         if (!isset($_SESSION['user_object']->employee_id) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
-            header("Location:" . $location . "?referrer=" . $request_uri);
+            if (++$_SESSION['number_of_times_redirected'] < 3) {
+                header("Location:" . $location . "?referrer=" . $request_uri);
+            }
             die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>' . PHP_EOL);
         }
         $this->keep_alive();
@@ -221,9 +220,13 @@ class sessions {
             if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
                 if (!empty($referrer)) {
-                    header("Location:" . $referrer);
+                    if (++$_SESSION['number_of_times_redirected'] < 3) {
+                        header("Location:" . $referrer);
+                    }
                 } else {
-                    header("Location:" . PDR_HTTP_SERVER_APPLICATION_PATH);
+                    if (++$_SESSION['number_of_times_redirected'] < 3) {
+                        header("Location:" . PDR_HTTP_SERVER_APPLICATION_PATH);
+                    }
                 }
             } else {
                 return TRUE;
@@ -290,7 +293,7 @@ class sessions {
         }
     }
 
-    function write_lost_password_token_to_database($employee_id, $token) {
+    public function write_lost_password_token_to_database($employee_id, $token) {
         if (!is_null($employee_id) and ! is_null($token)) {
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
             $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES (:employee_id, UNHEX(:token))";
@@ -298,6 +301,28 @@ class sessions {
             return TRUE;
         }
         return FALSE;
+    }
+
+    private static function force_https() {
+        if (!isset($_SESSION['number_of_times_redirected'])) {
+            $_SESSION['number_of_times_redirected'] = 0;
+        }
+        $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+            if (!headers_sent() and ( ++$_SESSION['number_of_times_redirected'] ) < 3) {
+                header("Status: 301 Moved Permanently");
+                header("Location: $https_url");
+                die("<p>Dieses Programm erfordert die Nutzung von "
+                        . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
+                        . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
+            } elseif (( ++$_SESSION['number_of_times_redirected'] ) < 3) {
+                die('<script type="javascript">document.location.href="' . $https_url . '";</script>');
+            } else {
+                die("<p>Dieses Programm erfordert die Nutzung von "
+                        . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
+                        . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
+            }
+        }
     }
 
 }
