@@ -310,9 +310,6 @@ class sessions {
             $_SESSION['number_of_times_redirected'] = 0;
         }
         $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        if (count($_POST) > 0) {
-            die('Page should be accessed with HTTPS, but a POST Submission has been sent here. Adjust the form to point to ' . $https_url);
-        }
         if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
             if (!headers_sent() and ( ++$_SESSION['number_of_times_redirected'] ) < 3) {
                 header("Status: 301 Moved Permanently");
