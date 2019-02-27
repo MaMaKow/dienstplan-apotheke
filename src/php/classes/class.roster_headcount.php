@@ -115,11 +115,11 @@ abstract class roster_headcount {
         } else {
             $message = gettext("The are no opening times stored inside the database for this weekday.");
             $message .= " ";
-            $message .= gettext("Please configure the opening times!");
+            $message .= sprintf(gettext("Please %1s configure %2s the opening times!"), '<a href=' . PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php>', '</a>');
             /*
              * TODO: Make a page to configure the opening times.
              */
-            $user_dialog->add_message($message, E_USER_NOTICE);
+            $user_dialog->add_message($message, E_USER_NOTICE, TRUE);
             $sql_query = "SELECT min(`Dienstbeginn`) as `day_opening_start`, max(`Dienstende`) as `day_opening_end` FROM `Grundplan` WHERE `Wochentag` = :weekday AND `Mandant` = :branch_id";
             $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {

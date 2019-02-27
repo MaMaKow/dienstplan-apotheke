@@ -154,12 +154,8 @@ function build_branch_input_opening_times($branch_id) {
     unset($List_of_branch_objects);
 
     $string = "<fieldset>";
-    $string .= "<legend "
-            . "onclick='toggle_visibility_of_element(\"branch_input_opening_times_fieldset_table\");toggle_visibility_of_element(\"branch_input_opening_times_fieldset_flipper_img_off\", \"inline\");toggle_visibility_of_element(\"branch_input_opening_times_fieldset_flipper_img_on\", \"inline\");'"
-            . ">"
+    $string .= "<legend>"
             . gettext('Opening times')
-            . '<img src = "' . PDR_HTTP_SERVER_APPLICATION_PATH . 'img/forward.png" id="branch_input_opening_times_fieldset_flipper_img_on" />'
-            . '<img src = "' . PDR_HTTP_SERVER_APPLICATION_PATH . 'img/backward.png" id="branch_input_opening_times_fieldset_flipper_img_off" style="display: none;" />'
             . "</legend>";
     $string .= "<table id='branch_input_opening_times_fieldset_table'>";
     $Weekday_names = build_html_navigation_elements::get_weekday_names();

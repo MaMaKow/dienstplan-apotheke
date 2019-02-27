@@ -179,7 +179,7 @@ abstract class task_rotation {
             if (!empty($next_rotation_employee_id)) {
                 $rotation_employee_id = $next_rotation_employee_id;
             }
-            self::write_task_employee_to_database($task, $temp_date_sql, $branch_id, $rotation_employee_id);
+            self::write_task_employee_to_database($task, $temp_date_object->format('Y-m-d'), $branch_id, $rotation_employee_id);
         }
         return $rotation_employee_id;
     }
@@ -274,8 +274,20 @@ abstract class task_rotation {
         if (NULL === $employee_id) {
             return FALSE;
         }
-        $sql_query = "INSERT INTO `task_rotation` SET `task` = :task, `date` = :date, `branch_id` = :branch_id, `VK` = :employee_id ON DUPLICATE KEY UPDATE `task` = :task2, `date` = :date2, `branch_id` = :branch_id2, `VK` = :employee_id2";
-        $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id, 'employee_id' => $employee_id, 'task2' => $task, 'date2' => $date_sql, 'branch_id2' => $branch_id, 'employee_id2' => $employee_id));
+        $sql_query = "INSERT INTO `task_rotation` SET "
+                . "`task` = :task, `date` = :date, `branch_id` = :branch_id, `VK` = :employee_id "
+                . "ON DUPLICATE KEY UPDATE "
+                . "`task` = :task2, `date` = :date2, `branch_id` = :branch_id2, `VK` = :employee_id2";
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'task' => $task,
+            'date' => $date_sql,
+            'branch_id' => $branch_id,
+            'employee_id' => $employee_id,
+            'task2' => $task,
+            'date2' => $date_sql,
+            'branch_id2' => $branch_id,
+            'employee_id2' => $employee_id
+        ));
         return $result;
     }
 
