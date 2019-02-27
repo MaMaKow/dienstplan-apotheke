@@ -46,6 +46,8 @@ class branch {
          * Get a list of branches:
          * CAVE! This function is thought to be called from the outside of this class only.
          */
+        $Branches = array();
+
         if (!empty($this)) {
             error_log("CAVE read_branches_from_database() is thought to be called from the outside of this class only.");
             return FALSE;
@@ -91,10 +93,10 @@ class branch {
         $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
         if (!in_array(basename($script_name), array('branch-management.php'))) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
-            if (++$_SESSION['number_of_times_redirected'] < 3) {
+            if (++$_SESSION['number_of_times_redirected'] < 4) {
                 header('Location:' . $location);
             }
-            die('<p><a href="' . $location . '>Please configure at least one branch first!</a></p>');
+            die('<p><a href="' . $location . '">Please configure at least one branch first!</a></p>');
         }
     }
 
