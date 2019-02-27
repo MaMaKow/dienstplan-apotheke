@@ -141,3 +141,13 @@ fieldset label {
     /*
     */
 }
+
+/*
+fieldset.hidden_content_on_load legend {
+cursor: context-menu;
+}
+
+fieldset.hidden_content_on_load :not(legend) * {
+display: none;
+}
+*/

@@ -111,7 +111,7 @@ class user_dialog {
                 throw new Exception('$type must be E_USER_ERROR, E_USER_NOTICE or E_USER_WARNING but was: ' . $type);
         }
         if ($allow_formatted_input) {
-            self::$Messages[] = array('text' => '<pre>' . $text . '</pre>', 'type' => $type_string);
+            self::$Messages[] = array('text' => $text, 'type' => $type_string);
             return TRUE;
         }
         self::$Messages[] = array('text' => htmlentities($text), 'type' => $type_string);
