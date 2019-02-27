@@ -1,4 +1,3 @@
-
 <?php
 /*
  * Copyright (C) 2017 Mandelkow
@@ -18,43 +17,68 @@
  */
 require_once "../classes/class.install.php";
 $install = new install;
-require_once 'install_head.php'
+require_once 'install_head.php';
+
+$webserver_supports_https = $install->webserver_supports_https();
+$database_driver_is_installed = $install->database_driver_is_installed();
+$pdr_directories_are_writable = $install->pdr_directories_are_writable();
+$php_extension_requirements_are_fulfilled = $install->php_extension_requirements_are_fulfilled();
+$php_version_requirement_is_fulfilled = $install->php_version_requirement_is_fulfilled();
+
+$all_requirements_are_satisfied = $webserver_supports_https and
+        $database_driver_is_installed and
+        $pdr_directories_are_writable and
+        $php_extension_requirements_are_fulfilled and
+        $php_version_requirement_is_fulfilled;
 ?>
 <p>This page is meant to check if:</p>
 <ul>
+    <li> the webserver supports HTTPS
+        <?php
+        /*
+         * Check if we are running on https:
+         */
+        if ($webserver_supports_https) {
+            echo "<em class='install_info_postive'>passed</em>";
+        } else {
+            echo "<em class='install_info_negative'>failed</em>";
+            echo $install->build_error_message_div();
+        }
+        ?>
+    </li>
     <li> PHP supports connections to a supported database
         <?php
         /*
          * Check if there is any supported database driver available:
          */
-        if ($install->database_driver_is_installed()) {
-            echo "<em class='install_info_postive'>done</em>";
+        if ($database_driver_is_installed) {
+            echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
             echo $install->build_error_message_div();
         }
         ?>
     </li>
-    <li> Required PHP extensions are loaded
+    <li> required PHP extensions are loaded
         <?php
         /*
          * Check if the PHP version is new enough to support the required features:
          */
-        if ($install->php_extension_requirements_are_fulfilled()) {
-            echo "<em class='install_info_postive'>done</em>";
+        if ($php_extension_requirements_are_fulfilled) {
+            echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
             echo $install->build_error_message_div();
         }
         ?>
     </li>
-    <li> Required PHP version
+    <li> required PHP version is running
         <?php
         /*
          * Check if the PHP version is new enough to support the required features:
          */
-        if ($install->php_version_requirement_is_fulfilled()) {
-            echo "<em class='install_info_postive'>done</em>";
+        if ($php_version_requirement_is_fulfilled) {
+            echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
             echo $install->build_error_message_div();
@@ -66,8 +90,8 @@ require_once 'install_head.php'
         /*
          * Check if there is write access to all write-necessary directories:
          */
-        if ($install->pdr_directories_are_writable()) {
-            echo "<em class='install_info_postive'>done</em>";
+        if ($pdr_directories_are_writable) {
+            echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
             echo $install->build_error_message_div();
@@ -76,7 +100,7 @@ require_once 'install_head.php'
     </li>
 </ul>
 <?php
-if ($install->database_driver_is_installed() and $install->pdr_directories_are_writable()) { //Should the result be cached in a variable in the above code? Would this be a significant difference?
+if ($all_requirements_are_satisfied) {
     ?>
     <form action="install_page_database.php" method="post">
         <input type="submit" value="<?= gettext("Next") ?>">

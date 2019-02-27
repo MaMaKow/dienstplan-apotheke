@@ -55,7 +55,19 @@ class branch {
      * @return array An array ob objects of the class branch
      */
     public static function read_branches_from_database() {
-        $sql_query = 'SELECT * FROM `branch`;';
+        /*
+         * Get a list of branches:
+         * CAVE! This function is thought to be called from the outside of this class only.
+         */
+        $Branches = array();
+
+        if (!empty($this)) {
+            error_log("CAVE read_branches_from_database() is thought to be called from the outside of this class only.");
+            return FALSE;
+        }
+        $sql_query = 'SELECT *
+	FROM `branch`
+	;';
         $result = database_wrapper::instance()->run($sql_query);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             if ($row->short_name != "") {
@@ -140,8 +152,10 @@ class branch {
         $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
         if (!in_array(basename($script_name), array('branch-management.php'))) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
-            header('Location:' . $location);
-            die('<p><a href="' . $location . '>Please configure at least one branch first!</a></p>');
+            if (++$_SESSION['number_of_times_redirected'] < 4) {
+                header('Location:' . $location);
+            }
+            die('<p><a href="' . $location . '">Please configure at least one branch first!</a></p>');
         }
     }
 
