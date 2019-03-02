@@ -53,6 +53,9 @@ class sessions {
 
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
+        if (isset($_SESSION['number_of_times_redirected'])) {
+            $_SESSION['number_of_times_redirected'] = 0;
+        }
         global $config;
         /*
          * In case there are several instances of the program on the same machine,
@@ -92,9 +95,7 @@ class sessions {
          */
         if (!isset($_SESSION['user_object']->employee_id) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
-            if (++$_SESSION['number_of_times_redirected'] < 3) {
-                header("Location:" . $location . "?referrer=" . $request_uri);
-            }
+            header("Location:" . $location . "?referrer=" . $request_uri);
             die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>' . PHP_EOL);
         }
         $this->keep_alive();
@@ -220,11 +221,14 @@ class sessions {
             if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
                 if (!empty($referrer)) {
-                    if (++$_SESSION['number_of_times_redirected'] < 3) {
+                    if ($_SESSION['number_of_times_redirected'] < 3) {
+                        $_SESSION['number_of_times_redirected'] ++;
                         header("Location:" . $referrer);
                     }
                 } else {
-                    if (++$_SESSION['number_of_times_redirected'] < 3) {
+                    if ($_SESSION['number_of_times_redirected'] < 3) {
+                        $_SESSION['number_of_times_redirected'] ++;
+
                         header("Location:" . PDR_HTTP_SERVER_APPLICATION_PATH);
                     }
                 }
@@ -309,13 +313,15 @@ class sessions {
         }
         $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
-            if (!headers_sent() and ( ++$_SESSION['number_of_times_redirected'] ) < 3) {
+            if (!headers_sent() and ( $_SESSION['number_of_times_redirected'] ) < 3) {
+                $_SESSION['number_of_times_redirected'] ++;
                 header("Status: 301 Moved Permanently");
                 header("Location: $https_url");
                 die("<p>Dieses Programm erfordert die Nutzung von "
                         . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
                         . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
-            } elseif (( ++$_SESSION['number_of_times_redirected'] ) < 3) {
+            } elseif (( $_SESSION['number_of_times_redirected'] ) < 3) {
+                $_SESSION['number_of_times_redirected'] ++;
                 die('<script type="javascript">document.location.href="' . $https_url . '";</script>');
             } else {
                 die("<p>Dieses Programm erfordert die Nutzung von "
