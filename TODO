@@ -1,3 +1,14 @@
+* Login								failed - there is a problem with empty referrers
+* Create user							failed - the user is created. but there is no email to the admin
+  * Disapprove roster						failed - nothing happens
+  * Approve roster						failed - nothing happens
+  * View the roster in employee table				failed - ics not working
+    * download ICS file						failed - the file is empty
+    * validate ICS file (https://icalendar.org/validator.html)	failed - no data in file to test
+    * Change roster						failed - it is not possible to add data on days, which have not been filles before, also it is not possible to add a second schedule for another branch
+* Overtime							passed, but the javascript does not work correctly in fresh years. the balance is only correct AFTER submitting
+  * Have a look at marginal-employment-hours-list.php		failed - there seems to be a problem with the input variables
+    * human-resource-management.php				passed - but missing a feature to delete (archive) an employee
 register_approve.php
 Make this a list of all the users and their status.
 
