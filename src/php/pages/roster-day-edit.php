@@ -41,17 +41,17 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
         user_input::roster_write_user_input_to_database($Roster, $branch_id);
     }
 }
+$Roster = roster::read_roster_from_database($branch_id, $date_sql);
 /*
  * User input:
  * Approve or disapprove rosters
  */
 if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
-    user_input::old_write_approval_to_database($branch_id, $Roster);
+    user_input::write_approval_to_database($branch_id, $Roster);
 }
 
 $Absentees = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
-$Roster = roster::read_roster_from_database($branch_id, $date_sql);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.

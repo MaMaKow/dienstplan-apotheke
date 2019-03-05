@@ -255,7 +255,7 @@ abstract class user_input {
         database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id, 'user' => $_SESSION['user_object']->user_name));
     }
 
-    public static function old_write_approval_to_database($branch_id, $Roster) {
+    public static function write_approval_to_database($branch_id, $Roster) {
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
             if (filter_has_var(INPUT_POST, 'submit_approval')) {
@@ -263,9 +263,10 @@ abstract class user_input {
             } elseif (filter_has_var(INPUT_POST, 'submit_disapproval')) {
                 $state = "disapproved";
             } else {
-//no state is given.
-// TODO: This is an Exception. Should we fail fast and loud?
-                die("An Error has occurred during approval!");
+                /*
+                 * no state is given.
+                 */
+                throw new Exception("An Error has occurred during approval!");
             }
             $sql_query = "INSERT INTO `approval` (date, branch, state, user) "
                     . "values (:date, :branch_id, :state, :user) "

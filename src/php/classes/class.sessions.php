@@ -70,18 +70,13 @@ class sessions {
          */
         $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
         $http_host = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
-        $https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_STRING);
         $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_STRING);
 
-        /*
-         * TODO: On a production server the max-age value should probably be set to one year:
-         * header("strict-transport-security: max-age=31536000");
-         * for now we present a value of one minute while writing and debugging the code.
-         */
         if ("localhost" != $http_host AND "" != $http_host) {
             header("strict-transport-security: max-age=31536000");
         }
-        /* Force HTTPS:
+        /**
+         * Force HTTPS:
          * We make an exception for localhost. If data is not sent through the net, there is no absolute need for HTTPS.
          * People are still free to use it on their own. Administrators are able to force it in Apache (or any other web server).
          */
@@ -89,7 +84,7 @@ class sessions {
             self::force_https();
         }
 
-        /*
+        /**
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
@@ -118,6 +113,7 @@ class sessions {
     }
 
     private function read_Privileges_from_database() {
+        $Privileges = array();
         $sql_query = "SELECT * FROM users_privileges WHERE `employee_id` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $_SESSION['user_object']->employee_id));
         while ($privilege_data = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -127,12 +123,11 @@ class sessions {
         return;
     }
 
-    /*
+    /**
      * Check if the logged-in user has a specefied permission
      *
      * @return boolean TRUE for exisiting permission, FALSE for missing permission.
      */
-
     public function user_has_privilege($privilege) {
         if (empty($_SESSION['Privileges'])) {
             /*
@@ -220,6 +215,9 @@ class sessions {
 
             if (TRUE === $redirect) {
                 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
+                if (!isset($_SESSION['number_of_times_redirected'])) {
+                    $_SESSION['number_of_times_redirected'] = 0;
+                }
                 if (!empty($referrer)) {
                     if ($_SESSION['number_of_times_redirected'] < 3) {
                         $_SESSION['number_of_times_redirected'] ++;
@@ -308,11 +306,11 @@ class sessions {
     }
 
     private static function force_https() {
-        if (!isset($_SESSION['number_of_times_redirected'])) {
-            $_SESSION['number_of_times_redirected'] = 0;
-        }
-        $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+            if (!isset($_SESSION['number_of_times_redirected'])) {
+                $_SESSION['number_of_times_redirected'] = 0;
+            }
+            $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             if (!headers_sent() and ( $_SESSION['number_of_times_redirected'] ) < 3) {
                 $_SESSION['number_of_times_redirected'] ++;
                 header("Status: 301 Moved Permanently");
