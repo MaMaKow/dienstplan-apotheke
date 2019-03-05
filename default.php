@@ -70,10 +70,10 @@ if ($config['log_errors'] or $config['display_errors']) {
     /*
      * Debug mode
      */
-    ini_set('zend.assertions', 1); //Assertions will be compiled AND executed.
+    //ini_set('zend.assertions', 1); //Assertions will be compiled AND executed.
     ini_set('assert.exception', 1); //An exception will be thrown if an assertion fails.
 } else {
-    ini_set('zend.assertions', -1); //Assertions are not compiled.
+    //ini_set('zend.assertions', -1); //Assertions are not compiled.
     ini_set('assert.exception', 0); //Only warnings would be shown if assertions were to be executed and failed.
 }
 ini_set('error_log', $config['error_log']); //Which file should errors be logged to?

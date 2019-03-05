@@ -44,11 +44,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<td>\n";
     $tablebody .= htmlentities($row->Stunden);
     $tablebody .= "\n</td>\n";
-    if ($i === 1) { //Get the last row.
-        $tablebody .= "<td id=balance_old>\n";
-    } else {
-        $tablebody .= "<td>\n";
-    }
+    $tablebody .= "<td>\n";
     $tablebody .= htmlentities($row->Saldo);
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
@@ -106,7 +102,7 @@ echo "<td>\n";
 echo "<input type=text onchange=update_overtime_balance() id=stunden name=stunden form=insert_new_overtime>\n";
 echo "</td>\n";
 echo "<td>\n";
-echo "<p id=balance_new>" . htmlentities($balance) . " </p>\n";
+echo "<p><span id=balance_new>" . htmlentities($balance) . " </span><span id='balance_old' data-balance='" . htmlentities($balance) . "'>&nbsp</span></p>\n";
 echo "</td>\n";
 echo "<td>\n";
 echo "<input type=text id=grund name=grund form=insert_new_overtime>\n";

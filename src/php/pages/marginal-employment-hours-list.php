@@ -23,15 +23,72 @@
  */
 require '../../../default.php';
 
-$month = user_input::get_variable_from_any_input('month', FILTER_SANITIZE_NUMBER_INT, $month = date('n'));
-$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, $month = date('Y'));
-$year = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+/**
+ * The numbers are arbitrary.
+ * They must be integers passing FILTER_SANITIZE_NUMBER_INT
+ *   and they must not be between 1 and 12 inclusive
+ *   as those are the real months of the year.
+ */
+const PDR_YEAR_QUARTER_FIRST = 121;
+const PDR_YEAR_QUARTER_SECOND = 122;
+const PDR_YEAR_QUARTER_THIRD = 123;
+const PDR_YEAR_QUARTER_FOURTH = 124;
+const PDR_YEAR_FULL = 1212;
 
-$start_datum = mktime(0, 0, 0, $month, 1, $year);
-$date_unix = $start_datum;
-$date_sql = date('Y-m-d', $date_unix);
+$month_or_part = user_input::get_variable_from_any_input('month_or_part', FILTER_SANITIZE_NUMBER_INT, date('n'));
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
+$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+create_cookie('employee_id', $employee_id, 1);
+create_cookie('month_or_part', $month_or_part, 1);
+create_cookie('year', $year, 1);
+if ($month_or_part <= 12) {
+    $date_start_object = new DateTime($year . '-' . $month_or_part . '-' . 1);
+    $date_end_object = clone $date_start_object;
+    $date_end_object->add(new DateInterval('P1M'));
+    $date_end_object->sub(new DateInterval('P1D'));
+} else {
+    /*
+     * Another range was selected. We show a bigger part of the year:
+     */
+    switch ($month_or_part) {
+        case PDR_YEAR_QUARTER_FIRST:
+            $date_start_object = new DateTime($year . '-' . 1 . '-' . 1);
+            $date_end_object = clone $date_start_object;
+            $date_end_object->add(new DateInterval('P3M'));
+            $date_end_object->sub(new DateInterval('P1D'));
+            break;
+        case PDR_YEAR_QUARTER_SECOND:
+            $date_start_object = new DateTime($year . '-' . 4 . '-' . 1);
+            $date_end_object = clone $date_start_object;
+            $date_end_object->add(new DateInterval('P3M'));
+            $date_end_object->sub(new DateInterval('P1D'));
+            break;
+        case PDR_YEAR_QUARTER_THIRD:
+            $date_start_object = new DateTime($year . '-' . 7 . '-' . 1);
+            $date_end_object = clone $date_start_object;
+            $date_end_object->add(new DateInterval('P3M'));
+            $date_end_object->sub(new DateInterval('P1D'));
+            break;
+        case PDR_YEAR_QUARTER_FOURTH:
+            $date_start_object = new DateTime($year . '-' . 10 . '-' . 1);
+            $date_end_object = clone $date_start_object;
+            $date_end_object->add(new DateInterval('P3M'));
+            $date_end_object->sub(new DateInterval('P1D'));
+            break;
+        case PDR_YEAR_FULL:
+            $date_start_object = new DateTime($year . '-' . 1 . '-' . 1);
+            $date_end_object = clone $date_start_object;
+            $date_end_object->add(new DateInterval('P12M'));
+            $date_end_object->sub(new DateInterval('P1D'));
+            break;
 
-$workforce = new workforce($date_sql);
+        default:
+            throw new Exception('Not implemented, yet!');
+            break;
+    }
+}
+
+$workforce = new workforce($date_start_object->format('Y-m-d'));
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {
     $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
@@ -39,10 +96,10 @@ for ($i = 1; $i <= 12; $i++) {
 $Years = absence::get_rostering_years();
 $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
         . "FROM `Dienstplan` "
-        . "WHERE  `VK` = :employee_id AND MONTH(`Datum`) = :month AND YEAR(`Datum`) = :year "
+        . "WHERE  `VK` = :employee_id AND `Datum` >= :date_start AND `Datum` <= :date_end "
         . "GROUP BY `Datum`";
 
-$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'month' => $month, 'year' => $year));
+$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'date_start' => $date_start_object->format('Y-m-d'), 'date_end' => $date_end_object->format('Y-m-d')));
 $table_body_html = "<tbody>";
 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
     $table_body_html .= "<tr>";
@@ -59,26 +116,55 @@ $table_body_html .= "</tbody>";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
-<FORM method=post class="no_print">
-    <SELECT name=month onchange=this.form.submit()>
+<FORM method='post' class='no_print'>
+    <SELECT name='month_or_part' onchange='this.form.submit()'>
         <?php
         /*
          * TODO: Add more options:
          * e.g. whole year, first/second/third/fourth quarter
          */
         foreach ($Months as $month_number_option => $month_name) {
-            echo "<option value=$month_number_option";
-            if ($month_number_option == $month) {
+            echo "<option value='$month_number_option'";
+            if ($month_number_option == $month_or_part) {
                 echo " SELECTED ";
             }
             echo ">$month_name</option>\n";
         }
+        echo "<option value='" . PDR_YEAR_QUARTER_FIRST . "'";
+        if (PDR_YEAR_QUARTER_FIRST == $month_or_part) {
+            echo " SELECTED ";
+        }
+        echo ">" . gettext('First quarter') . "</option>\n";
+
+        echo "<option value='" . PDR_YEAR_QUARTER_SECOND . "'";
+        if (PDR_YEAR_QUARTER_SECOND == $month_or_part) {
+            echo " SELECTED ";
+        }
+        echo ">" . gettext('Second quarter') . "</option>\n";
+
+        echo "<option value='" . PDR_YEAR_QUARTER_THIRD . "'";
+        if (PDR_YEAR_QUARTER_THIRD == $month_or_part) {
+            echo " SELECTED ";
+        }
+        echo ">" . gettext('Third quarter') . "</option>\n";
+
+        echo "<option value='" . PDR_YEAR_QUARTER_FOURTH . "'";
+        if (PDR_YEAR_QUARTER_FOURTH == $month_or_part) {
+            echo " SELECTED ";
+        }
+        echo ">" . gettext('Fourth quarter') . "</option>\n";
+
+        echo "<option value='" . PDR_YEAR_FULL . "'";
+        if (PDR_YEAR_FULL == $month_or_part) {
+            echo " SELECTED ";
+        }
+        echo ">" . gettext('Full year') . "</option>\n";
         ?>
     </SELECT>
-    <SELECT name=year onchange=this.form.submit()>
+    <SELECT name='year' onchange='this.form.submit()'>
         <?php
         foreach ($Years as $year_option) {
-            echo "<option value=$year_option";
+            echo "<option value='$year_option'";
             if ($year_option == $year) {
                 echo " SELECTED ";
             }
@@ -86,10 +172,10 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
         }
         ?>
     </SELECT>
-    <SELECT name=employee_id onchange=this.form.submit()>
+    <SELECT name='employee_id' onchange='this.form.submit()'>
         <?php
         foreach ($workforce->List_of_employees as $employee_id_option => $employee_object) {
-            echo "<option value=$employee_id_option";
+            echo "<option value='$employee_id_option'";
             if ($employee_id_option == $employee_id) {
                 echo " SELECTED ";
             }

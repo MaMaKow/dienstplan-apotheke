@@ -28,7 +28,7 @@ function update_overtime_balance()
      * Get the existent values:
      */
     if (overtime_balance_old_object !== null) {
-        var overtime_balance_value = Number(overtime_balance_old_object.innerHTML);
+        var overtime_balance_value = Number(overtime_balance_old_object.dataset.balance);
     } else {
         /*
          * For new Coworkers there is no value set. Therefore we start with 0.

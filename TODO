@@ -1,7 +1,4 @@
-* Change roster						failed - it is not possible to add data on days, which have not been filles before, also it is not possible to add a second schedule for another branch
-* Overtime							passed, but the javascript does not work correctly in fresh years. the balance is only correct AFTER submitting
-  * Have a look at marginal-employment-hours-list.php		failed - there seems to be a problem with the input variables
-    * human-resource-management.php				passed - but missing a feature to delete (archive) an employee
+* human-resource-management.php				passed - but missing a feature to delete (archive) an employee
 register_approve.php
 Make this a list of all the users and their status.
 
