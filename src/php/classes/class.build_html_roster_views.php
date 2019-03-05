@@ -65,6 +65,9 @@ abstract class build_html_roster_views {
              */
             $Roster[$day_iterator][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $day_iterator), $branch_id);
         }
+        if (NULL === $Roster[$day_iterator][$roster_row_iterator]->employee_id and isset($Options['add_hidden_employee'])) {
+            $Roster[$day_iterator][$roster_row_iterator]->employee_id = $Options['add_hidden_employee'];
+        }
         $roster_input_row = "<td>\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
 

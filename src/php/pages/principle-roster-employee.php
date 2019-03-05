@@ -23,7 +23,6 @@ create_cookie('employee_id', $employee_id, 30);
 $pseudo_date_unix = time() - (date('w') - 1) * PDR_ONE_DAY_IN_SECONDS;
 $pseudo_date_sql_start = date('Y-m-d', $pseudo_date_unix);
 $pseudo_date_sql_end = date('Y-m-d', $pseudo_date_unix + ($number_of_days - 1) * PDR_ONE_DAY_IN_SECONDS);
-
 $workforce = new workforce($pseudo_date_sql_start);
 $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
@@ -64,7 +63,7 @@ $html_text .= "<tbody>\n";
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
     foreach (array_keys($Principle_employee_roster) as $day_iterator) {
-        $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_branch'));
+        $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_branch', 'add_hidden_employee' => $employee_id));
     }
     $html_text .= "</tr>\n";
 }

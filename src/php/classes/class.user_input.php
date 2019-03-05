@@ -79,9 +79,18 @@ abstract class user_input {
                     error_log('$employee_id is not equal to $principle_employee_roster_new_object->employee_id ' . "in " . __METHOD__ . " " . $employee_id . "!=" . $principle_employee_roster_new_object->employee_id);
                     return FALSE;
                 }
-                //$pseudo_date_sql_start = $principle_employee_roster_new_object->date_sql;
-                //$pseudo_date_sql_end = $principle_employee_roster_new_object->date_sql;
-                //$Principle_employee_roster_old = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+                if (NULL === $principle_employee_roster_new_object->duty_start_sql) {
+                    /*
+                     * The input must contain at least a starting time and and end of duty.
+                     */
+                    continue;
+                }
+                if (NULL === $principle_employee_roster_new_object->duty_end_sql) {
+                    /*
+                     * The input must contain at least a starting time and and end of duty.
+                     */
+                    continue;
+                }
                 $sql_query = "INSERT INTO `Grundplan` "
                         . "(VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar) "
                         . "VALUES (:employee_id, :weekday, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment)";

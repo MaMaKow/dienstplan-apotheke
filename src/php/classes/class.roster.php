@@ -212,7 +212,7 @@ abstract class roster {
         $Roster = array();
         for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
             $date_sql = $date_object->format('Y-m-d');
-            $weekday = $date_object->format('N');
+            $weekday = $date_object->format('w');
             $sql_query = "SELECT * FROM `Grundplan` "
                     . " WHERE `Wochentag` = :weekday "
                     . " AND `VK` = :employee_id "
