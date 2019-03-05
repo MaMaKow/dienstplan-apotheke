@@ -17,10 +17,10 @@
  */
 require '../../default.php';
 require "../../head.php";
-$showFormular = true; //Variable ob das Registrierungsformular anezeigt werden soll
+$show_form = true; //Variable ob das Registrierungsformular anezeigt werden soll
 $user_dialog = new user_dialog();
 
-if (isset($_GET['register'])) {
+if (filter_has_var(INPUT_GET, 'register')) {
     $error = false;
     $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
     $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
@@ -39,7 +39,7 @@ if (isset($_GET['register'])) {
 
     //Überprüfe, dass der Benutzer noch nicht registriert wurde
     if (!$error) {
-        $sql_query = "SELECT * FROM users WHERE user_name = :user_name";
+        $sql_query = "SELECT * FROM users WHERE `user_name` = :user_name";
         $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name));
         $user = $result->fetch();
 
@@ -47,21 +47,31 @@ if (isset($_GET['register'])) {
             $user_dialog->add_message(gettext('This username is already taken.'));
             $error = true;
         }
+        $sql_query = "SELECT * FROM users WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        $user = $result->fetch();
+
+        if ($user !== false) {
+            $user_dialog->add_message(gettext('There is already a user existing for this employee id.'));
+            $error = true;
+        }
     }
 
-    //Keine Fehler, wir können den Nutzer registrieren
     if (!$error) {
+        /**
+         * No errors, we can try to register the user in the database:
+         */
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        unset($password, $password2);
 
         $sql_query = "INSERT INTO `users` (user_name, employee_id, password, email, status) VALUES (:user_name, :employee_id, :password, :email, 'inactive')";
         $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name, 'employee_id' => $employee_id, 'password' => $password_hash, 'email' => $email));
-
         if ($result) {
             send_mail_about_registration();
             echo gettext('You have been successfully registered.')
             . " "
             . sprintf(gettext('Once your user is unlocked, you can %1s log in.%2s'), '<a href="login.php">', '</a>');
-            $showFormular = false;
+            $show_form = false;
         } else {
             error_log('Unfortunately, an error occurred while saving.' . var_export($statement->errorInfo(), TRUE));
             $user_dialog->add_message(gettext('Unfortunately, an error occurred while saving.'), E_USER_ERROR);
@@ -69,7 +79,8 @@ if (isset($_GET['register'])) {
     }
 }
 
-if ($showFormular) {
+if ($show_form) {
+
     if (isset($config['application_name'])) {
         $application_name = $config['application_name'];
     } else {
@@ -95,7 +106,10 @@ if ($showFormular) {
     </div>
 
     <?php
-} //Ende von if($showFormular)
+//Ende von if($show_form)
+} else {
+    echo $user_dialog->build_messages();
+}
 
 function send_mail_about_registration() {
     global $config;
@@ -104,7 +118,7 @@ function send_mail_about_registration() {
             . "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
             . $config["application_name"]
             . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . "https://www." . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"
+            . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"
             . "</BODY></HTML>");
     $headers = 'From: ' . $config['contact_email'] . "\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";

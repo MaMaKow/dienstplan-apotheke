@@ -112,22 +112,21 @@ class iCalendar {
          */
         $text_ics .= "DTSTART:" . date('Ymd', $date_unix) . 'T' . $duty_start_string . "\r\n";
         $text_ics .= "DTEND:" . date('Ymd', $date_unix) . 'T' . $duty_end_string . "\r\n";
-        $text_ics .= "SUMMARY:$branch_name\n";
-        $text_ics .= "LOCATION:$branch_address\n";
+        $text_ics .= "SUMMARY:$branch_name" . "\r\n";
+        $text_ics .= "LOCATION:$branch_address" . "\r\n";
         return $text_ics;
     }
 
     /**
      * @param $roster_object object An object of the class roster_item
-     * @global object $workforce
-     * @global array $List_of_branch_objects
      */
     private static function build_ics_roster_employee_description($roster_object) {
-        global $List_of_branch_objects, $workforce;
         $mittags_beginn = $roster_object->break_start_sql;
         $mittags_ende = $roster_object->break_end_sql;
         $date_unix = $roster_object->date_unix;
+        $workforce = new workforce($roster_object->date_sql);
         $branch_id = $roster_object->branch_id;
+        $List_of_branch_objects = \branch::get_list_of_branch_objects();
         $branch_name = $List_of_branch_objects[$branch_id]->name;
         $date_weekday_name = strftime('%A', $date_unix);
 
@@ -153,7 +152,7 @@ class iCalendar {
          *  when processing the content type.
          */
         $Array_ICS = str_split($text_ics, 70);
-        return implode($Array_ICS, "\r\n ");
+        return implode("\r\n ", $Array_ICS);
     }
 
     private static function build_ics_roster_employee_valarms($roster_object, $create_valarm) {

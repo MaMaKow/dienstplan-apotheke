@@ -1,7 +1,3 @@
-* Login								failed - there is a problem with empty referrers
-* Create user							failed - the user is created. but there is no email to the admin
-  * Disapprove roster						failed - nothing happens
-  * Approve roster						failed - nothing happens
   * View the roster in employee table				failed - ics not working
     * download ICS file						failed - the file is empty
     * validate ICS file (https://icalendar.org/validator.html)	failed - no data in file to test
@@ -11,6 +7,8 @@
     * human-resource-management.php				passed - but missing a feature to delete (archive) an employee
 register_approve.php
 Make this a list of all the users and their status.
+
+register_approve.php; Make it something to work with.
 
 write more documenation about the "webdav" api
 also include microsoft outlook or thunderbird lightning?

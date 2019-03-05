@@ -35,8 +35,7 @@ $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SAN
 $create_valarm = user_input::get_variable_from_any_input('create_valarm', FILTER_SANITIZE_NUMBER_INT, 0);
 $date_object_end = clone $date_object_start;
 $date_object_end->add(new \DateInterval('P' . $days_into_the_future . 'D'));
-$Roster = roster::read_employee_roster_from_database($employee_id, $date_object_start->format('Y-m-d'), $date_object_start->format('Y-m-d'));
+$Roster = roster::read_employee_roster_from_database($employee_id, $date_object_start->format('Y-m-d'), $date_object_end->format('Y-m-d'));
 header('Content-type: text/Calendar');
 header('Content-Disposition: attachment; filename="Calendar.ics"');
-
 echo iCalendar::build_ics_roster_employee($Roster, $create_valarm);
