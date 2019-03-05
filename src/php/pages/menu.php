@@ -45,10 +45,16 @@
             <ul>
                 <li>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-employee-table.php><?= gettext("Roster employee") ?></a>
+                </li>
+                <li>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/principle-roster-employee.php><?= gettext("Principle roster employee") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
                     </a>
                 </li>
+                <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/marginal-employment-hours-list.php><?= gettext("Marginal employment hours list") ?>
+                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/employee_2.svg class="inline-image" alt="employee-button" title="Show employee">
+                    </a></li>
+
             </ul>
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-read.php><?= gettext("Overtime") ?>
