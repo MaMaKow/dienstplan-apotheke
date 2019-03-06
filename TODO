@@ -1,4 +1,5 @@
-* human-resource-management.php				passed - but missing a feature to delete (archive) an employee
+human-resource-management.php is missing a feature to delete (archive) an employee
+
 register_approve.php
 Make this a list of all the users and their status.
 

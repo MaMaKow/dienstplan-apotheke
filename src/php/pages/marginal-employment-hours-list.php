@@ -89,6 +89,10 @@ if ($month_or_part <= 12) {
 }
 
 $workforce = new workforce($date_start_object->format('Y-m-d'));
+if (!isset($workforce->List_of_employees[$employee_id])) {
+    $employee_id = min(array_keys($workforce->List_of_employees));
+}
+
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {
     $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
