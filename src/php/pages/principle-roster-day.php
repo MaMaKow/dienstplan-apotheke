@@ -22,6 +22,7 @@ require '../../../default.php';
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+$alternating_weeks_iterator = user_input::get_variable_from_any_input('alternating_weeks_iterator', FILTER_SANITIZE_NUMBER_INT, 1);
 create_cookie('mandant', $branch_id, 30);
 /*
  * weekday
@@ -53,6 +54,7 @@ echo "<div id=main-area>\n";
 echo build_html_navigation_elements::build_select_branch($branch_id, $pseudo_date_sql);
 //Auswahl des Wochentages
 echo build_html_navigation_elements::build_select_weekday($weekday);
+echo build_html_navigation_elements::build_select_alternating_week($alternating_weeks_iterator);
 
 echo "<div id=navigation_elements>";
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
