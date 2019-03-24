@@ -30,7 +30,7 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
 }
 
 $Principle_employee_roster = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
-$Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
 roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
 unset($Principle_roster);
 

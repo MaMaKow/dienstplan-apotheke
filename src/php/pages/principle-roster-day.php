@@ -22,7 +22,7 @@ require '../../../default.php';
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
-$alternating_weeks_iterator = user_input::get_variable_from_any_input('alternating_weeks_iterator', FILTER_SANITIZE_NUMBER_INT, 1);
+$alternating_week_id = user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT, alternating_week::get_min_alternating_week_id());
 create_cookie('mandant', $branch_id, 30);
 /*
  * weekday
@@ -36,8 +36,12 @@ $workforce = new workforce();
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     user_input::principle_roster_write_user_input_to_database($branch_id);
 }
+if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
+    $principle_roster_copy_from = filter_input(INPUT_POST, 'principle_roster_copy_from', FILTER_SANITIZE_STRING);
+    user_input::principle_roster_copy_from($principle_roster_copy_from);
+}
 
-$Principle_roster = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql);
+$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql);
 
 
 $VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
@@ -46,7 +50,6 @@ $VKmax = max(array_keys($workforce->List_of_employees));
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-$session->exit_on_missing_privilege('create_roster');
 
 //Hier beginnt die Normale Ausgabe.
 echo "<H1>Grundplan Tagesansicht</H1>\n";
@@ -54,7 +57,9 @@ echo "<div id=main-area>\n";
 echo build_html_navigation_elements::build_select_branch($branch_id, $pseudo_date_sql);
 //Auswahl des Wochentages
 echo build_html_navigation_elements::build_select_weekday($weekday);
-echo build_html_navigation_elements::build_select_alternating_week($alternating_weeks_iterator);
+echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday);
+echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
+//echo build_html_navigation_elements::build_button_principle_roster_new($alternating_week_id);
 
 echo "<div id=navigation_elements>";
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
