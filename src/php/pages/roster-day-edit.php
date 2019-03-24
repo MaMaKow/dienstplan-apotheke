@@ -60,7 +60,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql);
 }
 
-$Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql, NULL, array(roster::OPTION_CONTINUE_ON_ABSENCE));
+$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_sql, NULL, array(roster::OPTION_CONTINUE_ON_ABSENCE));
 /*
  * In case there is no roster scheduled yet, create a suggestion:
  */

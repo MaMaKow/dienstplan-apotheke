@@ -19,19 +19,27 @@
 
 /**
  * This class handles the session management, login, logout and permissions of users.
- *
- * @author Mandelkow
+ * TODO: Provide a static variable $instance or save the session object in the $_SESSION array!
+ * @author Martin Mandelkow
  */
 class sessions {
 
+    const PRIVILEGE_ADMINISTRATION = 'administration';
+    const PRIVILEGE_CREATE_EMPLOYEE = 'create_employee';
+    const PRIVILEGE_CREATE_ROSTER = 'create_roster';
+    const PRIVILEGE_APPROVE_ROSTER = 'approve_roster';
+    const PRIVILEGE_CREATE_OVERTIME = 'create_overtime';
+    const PRIVILEGE_CREATE_ABSENCE = 'create_absence';
+    const PRIVILEGE_REQUEST_OWN_ABSENCE = 'request_own_absence';
+
     public static $Pdr_list_of_privileges = array(
-        'administration',
-        'create_employee',
-        'create_roster',
-        'approve_roster',
-        'create_overtime',
-        'create_absence',
-        'request_own_absence',
+        self::PRIVILEGE_ADMINISTRATION,
+        self::PRIVILEGE_CREATE_EMPLOYEE,
+        self::PRIVILEGE_CREATE_ROSTER,
+        self::PRIVILEGE_APPROVE_ROSTER,
+        self::PRIVILEGE_CREATE_OVERTIME,
+        self::PRIVILEGE_CREATE_ABSENCE,
+        self::PRIVILEGE_REQUEST_OWN_ABSENCE,
     );
 
     /**
@@ -198,12 +206,12 @@ class sessions {
             return $errorMessage;
         }
 
-        //Check the password:
+//Check the password:
         if (NULL !== $user && $user->password_verify($user_password)) {
-            //Fill $_SESSION data on success:
+//Fill $_SESSION data on success:
             session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id right before setting up login details.
             $_SESSION['user_object'] = $user;
-            //Reset failed_login_attempts
+//Reset failed_login_attempts
             $user->reset_failed_login_attempts();
 
             /*
@@ -234,7 +242,7 @@ class sessions {
                 return TRUE;
             }
         } else {
-            //Register failed_login_attempts
+//Register failed_login_attempts
             $user->register_failed_login_attempt();
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);

@@ -143,8 +143,14 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_submit($form_id) {
+        global $session;
+        $input_disabled = '';
+        if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+            $input_disabled = 'disabled';
+        }
+
         $submit_button = "
-        <button type='submit' id='submit_button' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id'>
+        <button type='submit' id='submit_button' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id' $input_disabled>
                 <i class='icon-white'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' class='button-image' alt='" . gettext("Save") . "' >
                 </i>
@@ -271,6 +277,53 @@ abstract class build_html_navigation_elements {
                 $html .= "<option value='$weekday_temp'>$weekday_name</option>\n";
             } else {
                 $html .= "<option value='$weekday_temp' selected>$weekday_name</option>\n";
+            }
+        }
+        $html .= "</select></form>\n";
+        return $html;
+    }
+
+    public static function build_button_principle_roster_copy($alternating_week_id) {
+        global $session;
+        $input_disabled = '';
+        if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+            $input_disabled = 'disabled';
+        }
+        $button_img = "<form class='inline_form' action='' method='post' id='principle_roster_copy_form'>
+            <input type='hidden' form='principle_roster_copy_form' name='principle_roster_copy_from' value=$alternating_week_id>
+		<button type='submit' class='btn-primary no_print' $input_disabled>
+			<i>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/copy.svg' class='button-image' alt='" . gettext("Copy") . "'>
+			</i>
+			<br>
+			" . gettext("Copy") . "
+		</button>
+            </form>\n";
+        return $button_img;
+    }
+
+    public static function build_button_principle_roster_new($alternating_week_id) {
+        throw new Exception('Not implemented yet');
+    }
+
+    public static function build_select_alternating_week($alternating_week_id, $weekday) {
+        if (!alternating_week::alternations_exist()) {
+            return NULL;
+        }
+        $html = '';
+        $html .= "<form id='alternating_week_form' method=post>";
+        $html .= "<select class='large' name=alternating_week_id onchange=this.form.submit()>\n";
+        $Alternating_week_ids = alternating_week::get_alternating_week_ids();
+        foreach ($Alternating_week_ids as $alternating_week_id_current) {
+            $alternating_week = new alternating_week($alternating_week_id_current);
+            $example_sunday = $alternating_week->get_sunday_date_for_alternating_week();
+            print_debug_variable($example_sunday);
+            $example_date = $example_sunday->add(new DateInterval('P' . $weekday . 'D'));
+            $alternating_week_id_string = chr(65 + $alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
+            if ($alternating_week_id != $alternating_week_id_current) {
+                $html .= "<option value='$alternating_week_id_current'>$alternating_week_id_string</option>\n";
+            } else {
+                $html .= "<option value='$alternating_week_id_current' selected>$alternating_week_id_string</option>\n";
             }
         }
         $html .= "</select></form>\n";

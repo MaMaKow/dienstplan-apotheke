@@ -37,18 +37,6 @@ abstract class user_input {
         return filter_var($default_value, $filter);
     }
 
-    /*
-      public static function escape_sql_value($value) {
-      if ('NULL' === $value or 'null' === $value) {
-      return $value;
-      } elseif (NULL === $value) {
-      return 'NULL';
-      } else {
-      return "'" . $value . "'";
-      }
-      }
-     */
-
     public static function convert_post_empty_to_php_null($value) {
         if ('' === $value) {
             return NULL;
@@ -110,11 +98,25 @@ abstract class user_input {
         database_wrapper::instance()->commit();
     }
 
+    public static function principle_roster_copy_from($principle_roster_copy_from) {
+        global $session;
+        $session->exit_on_missing_privilege(sessions::PRIVILEGE_CREATE_ROSTER);
+        alternating_week::create_alternation_copy_from_principle_roster($principle_roster_copy_from);
+    }
+
+    public static function principle_roster_create_empty() {
+        global $session;
+        $session->exit_on_missing_privilege(sessions::PRIVILEGE_CREATE_ROSTER);
+        alternating_week::create_alternation_empty();
+    }
+
     public static function principle_roster_write_user_input_to_database($branch_id) {
+        global $session;
+        $session->exit_on_missing_privilege('create_roster');
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
         $pseudo_date_sql_start = date('Y-m-d', min(array_keys($Principle_roster_new)));
         $pseudo_date_sql_end = date('Y-m-d', max(array_keys($Principle_roster_new)));
-        $Principle_roster_old = roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+        $Principle_roster_old = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
         $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
         $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);

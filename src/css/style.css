@@ -408,6 +408,7 @@ button {
 img.button-image
 {
     height: 2em;
+    max-width: 2em;
 }
 
 .button_small {

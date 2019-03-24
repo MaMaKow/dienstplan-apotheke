@@ -403,7 +403,7 @@ abstract class build_html_roster_views {
         $List_of_date_unix_in_roster = array_keys($Roster);
         $date_sql_start = date('Y-m-d', min($List_of_date_unix_in_roster));
         $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
-        $Principle_roster = roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
+        $Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {

@@ -54,6 +54,9 @@ class employee {
     }
 
     protected function read_principle_roster_from_database() {
+        /*
+         * TODO: Move this to the principle_roster class perhaps?
+         */
         $Principle_roster = array();
         $sql_query = "SELECT * FROM `Grundplan`"
                 . "WHERE `VK` = :employee_id";
