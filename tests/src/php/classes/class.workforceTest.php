@@ -34,7 +34,7 @@ class workforceTest extends PHPUnit_Framework_TestCase {
 
         $this->assertCount(18, $this->object->List_of_employees);
         $this->assertSame($this->object->List_of_employees[5]->full_name, "Ma Maier");
-        $this->assertSame(count($this->object->List_of_employees[5]->Principle_roster), 5);
+        $this->assertSame($this->object->List_of_employees[5]->working_week_days, 5);
         $this->assertSame($this->object->List_of_branch_employees[1], array(
             0 => 2,
             1 => 5,

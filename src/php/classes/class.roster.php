@@ -26,34 +26,36 @@
 class roster {
 
     /**
-     *
-     * @var array $instance might become the roster array of the instantiated object.
-     * It is not used anywhere yet.
+     * @var array $array_of_days_of_roster_items is the roster array of the instantiated object.
      */
-    public $instance = array();
+    public $array_of_days_of_roster_items = array();
 
-    function __construct() {
-        ;
+    function __construct(DateTime $date_start_object, DateTime $date_end_object = NULL, int $employee_id = NULL, int $branch_id = NULL, int $other_branch_id = NULL) {
+        if (NULL === $date_start_object) {
+            throw new Exception('A start date must be given for ' . __METHOD__);
+        }
+        if (NULL === $date_end_object) {
+            $date_end_object = clone $date_start_object;
+        }
+        if (NULL !== $employee_id) {
+            $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
+            return TRUE;
+        }
+        throw new Exception('The object of the class ' . __CLASS__ . ' was not correctly constructed. Please check the parameters.');
     }
 
     /**
      * Read the roster data from the database.
-     * @param $start_date_sql string A string representation in the form of 'Y-m-d'. The first day, that is to be read.
-     * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
+     * @param DateTime $date_start_object The first day, that is to be read.
+     * @param DateTime $date_end_object The last day, that is to be read.
      */
-    public static function read_employee_roster_from_database(int $employee_id, string $date_sql_start, string $date_sql_end = NULL) {
+    protected function read_employee_roster_from_database(int $employee_id, DateTime $date_start_object, DateTime $date_end_object) {
         /*
          * TODO: unify this with read_roster_from_database
          * Make them both one function perhaps.
          */
-        if (NULL === $date_sql_end) {
-            $date_sql_end = $date_sql_start;
-        }
-        $date_object_end = new DateTime($date_sql_end);
         $Roster = array();
-        $the_whole_roster_is_empty = TRUE;
-
-        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+        for ($date_object = $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
             $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
@@ -64,7 +66,6 @@ class roster {
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
-                $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
             if (0 === $roster_row_iterator) {
@@ -74,10 +75,6 @@ class roster {
                  */
                 $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, NULL);
             }
-        }
-        if (TRUE === $the_whole_roster_is_empty) {
-            /* reset the roster to be completely empty */
-            //$Roster = array();
         }
         return $Roster;
     }
@@ -95,10 +92,10 @@ class roster {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
-        $date_object_end = new DateTime($date_sql_end);
+        $date_end_object = new DateTime($date_sql_end);
         $Roster = array();
         $the_whole_roster_is_empty = TRUE;
-        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
             $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
@@ -132,10 +129,10 @@ class roster {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
-        $date_object_end = new DateTime($date_sql_end);
+        $date_end_object = new DateTime($date_sql_end);
         $Roster = array();
         $the_whole_roster_is_empty = TRUE;
-        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_object_end; $date_object->add(new DateInterval('P1D'))) {
+        for ($date_object = new DateTime($date_sql_start); $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
             $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT DISTINCT Dienstplan.* '
                     . ' FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id '

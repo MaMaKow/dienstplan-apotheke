@@ -99,13 +99,14 @@ abstract class roster_headcount {
         return $Anwesende;
     }
 
-    public static function read_opening_hours_from_database($date_unix, $branch_id) {
+    public static function read_opening_hours_from_database(int $date_unix, int $branch_id) {
         $user_dialog = new user_dialog();
         $Opening_times['day_opening_start'] = NULL;
         $Opening_times['day_opening_end'] = NULL;
 
         $weekday = date('N', $date_unix);
-
+        $date_object = new DateTime();
+        $date_object->setTimestamp($date_unix);
         $sql_query = "SELECT * FROM `opening_times` WHERE `weekday` = :weekday AND `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
         $row = $result->fetch(PDO::FETCH_OBJ);
@@ -116,16 +117,8 @@ abstract class roster_headcount {
             $message = gettext("The are no opening times stored inside the database for this weekday.");
             $message .= " ";
             $message .= sprintf(gettext("Please %1s configure %2s the opening times!"), '<a href=' . PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php>', '</a>');
-            /*
-             * TODO: Make a page to configure the opening times.
-             */
             $user_dialog->add_message($message, E_USER_NOTICE, TRUE);
-            $sql_query = "SELECT min(`Dienstbeginn`) as `day_opening_start`, max(`Dienstende`) as `day_opening_end` FROM `Grundplan` WHERE `Wochentag` = :weekday AND `Mandant` = :branch_id";
-            $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
-            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Opening_times['day_opening_start'] = $row->day_opening_start;
-                $Opening_times['day_opening_end'] = $row->day_opening_end;
-            }
+            $Opening_times = principle_roster::guess_opening_times($date_object, $branch_id);
         }
         return $Opening_times;
     }

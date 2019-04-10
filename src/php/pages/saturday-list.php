@@ -88,7 +88,6 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
 
     $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
     $rostered_employees_names_string = implode(', ', $Rostered_employees);
-    //print_debug_variable($saturday_rotation);
 
     $table_row = "";
     $table_row .= "<tr>";

@@ -1,1 +1,0 @@
-CREATE TRIGGER `refactor_table_Mandant_to_branch_u` AFTER UPDATE ON `Mandant` FOR EACH ROW INSERT INTO `branch` SELECT * FROM INSERTED

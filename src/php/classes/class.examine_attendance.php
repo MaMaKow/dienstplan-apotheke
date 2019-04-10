@@ -61,6 +61,8 @@ abstract class examine_attendance {
      *  It uses user_dialog->add_message with it's results.</p>
      */
     public static function check_for_absent_employees($Roster, $Principle_roster, $Abwesende, $date_unix) {
+        $date_object = new DateTime();
+        $date_object->setTimestamp($date_unix);
         $user_dialog = new user_dialog();
         $Roster_workers = array();
         $Principle_roster_workers = array();
@@ -84,18 +86,16 @@ abstract class examine_attendance {
              * Check if that worker is scheduled in any of the other branches:
              */
             foreach ($Mitarbeiter_differenz as $key => $employee_id) {
-                $working_hours_should = 0;
                 $working_hours = 0;
                 $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `VK` = :employee_id";
-                $result = database_wrapper::instance()->run($sql_query, array('date' => date('Y-m-d', $date_unix), 'employee_id' => $employee_id));
+                $result = database_wrapper::instance()->run($sql_query, array(
+                    'date' => $date_object->format('Y-m-d'),
+                    'employee_id' => $employee_id,
+                ));
                 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                     $working_hours = $row->working_hours;
                 }
-                $sql_query = "SELECT sum(`Stunden`) as `working_hours_should` FROM `Grundplan` WHERE `Wochentag` = :weekday and `VK` = :employee_id";
-                $result = database_wrapper::instance()->run($sql_query, array('weekday' => date('w', $date_unix), 'employee_id' => $employee_id));
-                while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                    $working_hours_should = $row->working_hours_should;
-                }
+                $working_hours_should = principle_roster::get_working_hours_should($date_object, $employee_id);
                 if ($working_hours >= $working_hours_should) {
                     unset($Mitarbeiter_differenz[$key]);
                 }

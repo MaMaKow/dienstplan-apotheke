@@ -16,21 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-$number_of_days = 7;
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 create_cookie('employee_id', $employee_id, 30);
-$pseudo_date_unix = time() - (date('w') - 1) * PDR_ONE_DAY_IN_SECONDS;
-$pseudo_date_sql_start = date('Y-m-d', $pseudo_date_unix);
-$pseudo_date_sql_end = date('Y-m-d', $pseudo_date_unix + ($number_of_days - 1) * PDR_ONE_DAY_IN_SECONDS);
-$workforce = new workforce($pseudo_date_sql_start);
+$pseudo_date_start_object = new DateTime('this monday');
+$pseudo_date_end_object = clone $pseudo_date_start_object;
+$pseudo_date_end_object->add(new DateInterval('P6D'));
+$workforce = new workforce($pseudo_date_start_object->format('Y-m-d'));
 $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     user_input::principle_employee_roster_write_user_input_to_database($employee_id);
 }
 
-$Principle_employee_roster = roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
-$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+$Principle_employee_roster = principle_roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_start_object, $pseudo_date_end_object);
+$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
 roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
 unset($Principle_roster);
 
@@ -72,7 +71,7 @@ $html_text .= "</tr>\n";
 /*
  * TODO: Write JavaScript Code to allow adding more rows to the form
   echo "<tr>";
-  foreach (array_keys($Grundplan) as $wochentag) {
+  foreach (array_keys($Principle_roster) as $date_unix) {
   //TODO: Write Javascript for adding an entry:
   echo "<td id='add_entry_$wochentag'><p><a href='#' onclick='alert(\"Sorry, this feature is not yet implemented.\");add_entry_to_change_principle_roster_employee_form()'>" . gettext("Add row") . "</a></p></td>";
   }
@@ -82,7 +81,7 @@ $html_text .= "</tr>\n";
 $html_text .= "</tbody>\n";
 $html_text .= "<tfoot>\n";
 $html_text .= "<tr>\n";
-$html_text .= "<td colspan=$number_of_days>\n";
+$html_text .= "<td colspan=7>\n";
 
 //Das folgende wird wohl durch ${spalte} mit $spalte=Stunden ausgelöst, wenn $_POST ausgelesen wird. Dadurch wird $Stunden zum String.
 unset($Stunden); //Aber ohne dieses Löschen versagt die folgende Schleife. Sie wird als String betrachtet.

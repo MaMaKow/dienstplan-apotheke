@@ -52,7 +52,7 @@ class maintenance {
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             /*
              * TODO: build a rotation for the log file.
-             * Check agains a maximum size.
+             * Check against a maximum size.
              * If the size is big, or the file is old, rotate it.
              * Keep some of the older versions.
              * Delete the others.
@@ -69,16 +69,12 @@ class maintenance {
              */
             $this->cleanup_absence();
             $this->cleanup_overtime();
+            alternating_week::reorganize_ids();
             /*
              * __destruct():
              */
-            /*
-             * TODO: Can we delete the ", array('time' => time())" and change the SQL to:
-             *     "UPDATE `maintenance` SET `last_execution` = NOW()"
-             *     ? We do not actually need prepared statements then.
-             */
-            $sql_query = "UPDATE `maintenance` SET `last_execution` = FROM_UNIXTIME(:time)";
-            database_wrapper::instance()->run($sql_query, array('time' => time()));
+            $sql_query = "UPDATE `maintenance` SET `last_execution` = NOW()";
+            database_wrapper::instance()->run($sql_query);
             $message = date('Y-m-d') . ': ' . 'Done with general maintenance.' . PHP_EOL;
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         } else {

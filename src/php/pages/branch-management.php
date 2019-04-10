@@ -18,7 +18,6 @@
 
 require_once '../../../default.php';
 
-//print_debug_variable($_POST);
 $current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys(branch::get_list_of_branch_objects())));
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);

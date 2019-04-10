@@ -79,7 +79,7 @@ können navigieren zu:
 \subsubsection{Die Navigationsleiste}
 Im oberen Bereich befindet sich eine Navigationsleiste mit Hyperlinks zu
 fast allen PDR-Seiten. Bewegen Sie die Maus über einen Eintrag, um die
-Untermenüs zu öffnen (Abbildung \ref{img_navigation_bar}).
+Untermenüs zu öffnen (\autoref{img_navigation_bar}).
 \begin{multicols}{3}
 \begin{description}
     \item \menu{Wochenansicht > .. }
@@ -136,8 +136,8 @@ Arbeitszeit}
 \end{figure}
 
 Die Dienstplan-Wochenansicht zeigt die Liste einer ausgewählten Woche und
-Zweigstelle (Abbildung~\ref{img_roster_week_table_view}). Wenn Mitarbeiter
-der Zweigstelle in einer anderen Zweigstelle arbeiten, werden diese unten
+Filiale (\autoref{img_roster_week_table_view}). Wenn Mitarbeiter der
+Apotheke in einer anderen Filiale arbeiten, werden diese unten
 angezeigt. Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter
 und deren Abwesenheitsgründe.
 
@@ -147,12 +147,20 @@ Woche vor oder zurück verschoben werden, indem man \keys{\ctrl + \shift +
 
 \subsection{Dienstplan Tagesansicht}
 \subsubsection{Schreibgeschützt}
-In der täglichen Dienstplanansicht gibt es eine Tabelle, ein Balkendiagramm
-und ein Histogramm, welche den Dienstplan widerspiegeln. Die
-Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten Zweig
-an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und den
-Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des
-Dienstes und die Zeit der Mittagspause, falls vorhanden.
+In der Tageslistenansicht gibt es eine Tabelle, ein Balkendiagramm und ein
+Histogramm, das den Dienstplan wiedergibt (\autoref{img_roster-day-read}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/roster-day-read.php}.png}
+	\caption{Dienstplan Tagesansicht}
+	\label{img_roster-day-read}
+\end{figure}
+
+Die Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten
+Zweig an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und
+den Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende
+des Dienstes und die Zeit der Mittagspause, falls vorhanden.
 
 Wenn ein Mitarbeiter, der in erster Linie in der ausgewählten Filiale
 eingeplant ist, in einer anderen Filiale arbeitet, wird dieser Eintrag in
@@ -177,10 +185,19 @@ einem bestimmten Zeitpunkt darstellt.
 
 
 \subsubsection{Bearbeiten}
-Die Bearbeitungsseite ähnelt der schreibgeschützten Ansicht. Der Dienstplan
-wird auf Fehler überprüft. Wenn Probleme auftreten, werden Fehler, Warnungen
-oder Informationen im oberen rechten Bereich angezeigt. Die Prüfung
-beinhaltet:
+Die Bearbeitungsseite sieht der schreibgeschützten Ansicht sehr ähnlich
+(\autoref{img_roster-day-edit}). 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/roster-day-edit.php}.png}
+	\caption{Dienstplanansicht mit Bearbeitungsrechten}
+	\label{img_roster-day-edit}
+\end{figure}
+
+Der Dienstplan wird auf Fehler überprüft. Wenn Probleme auftreten, werden
+Fehler, Warnungen oder Informationen im oberen rechten Bereich
+angezeigt. Die Prüfung beinhaltet:
 \begin{itemize}
     \item Überlappung von Schichten für denselben Mitarbeiter (Fehler)
     \item ausreichende Mitarbeiterzahl (Warnung, fest codiert mindestens zwei
@@ -194,9 +211,38 @@ kann (Warnung).
 
 Pro Eintrag kann nur eine Pause eingefügt werden. Wenn mehr Pausen
 zugewiesen werden müssen, können mehrere Einträge für denselben Mitarbeiter
-eingegeben werden. \subsection{Mitarbeiterliste des Dienstplans}
-\subsection{Überstunden} \subsection{Abwesenheit} Es gibt vier Ansichten für
-die Abwesenheitsdaten.
+eingegeben werden.
+
+\subsection{Dienstplan Mitarbeiteransicht}
+Die Mitarbeiteransicht ähnelt der Wochenansicht, es wird jedoch nur ein
+Mitarbeiter angezeigt (\autoref{img_roster-employee-table}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/roster-employee-table.php}.png}
+	\caption{Mitarbeiteransicht}
+	\label{img_roster-employee-table}
+\end{figure}
+
+Eine iCalendar-Datei kann heruntergeladen werden. Siehe
+\autoref{section-calendar-api}~\nameref{section-calendar-api} für weitere
+Informationen.
+
+\subsection{Grundplan Tagesansicht}
+Ein grundsätzlich wiederkehrender Dienstplan kann gespeichert werden. Im
+einfachsten Fall handelt es sich dabei um eine Auflistung von Beginn und
+Ende des Dienstes aller Mitarbeiter. Jeder Wochentag wird separat
+aufgeführt, ebenso die Filialen.
+
+Es ist möglich, abwechselnde Wochen zu erstellen. Beispielsweise kann eine
+Mitarbeiterin in einer A-Woche und einer B-Woche arbeiten. In A-Wochen
+beginnt sie am Montag regelmäßig um 08:00 Uhr, in B-Wochen um 10:00 Uhr.
+
+
+
+\subsection{Überstunden}
+\subsection{Abwesenheit}
+Es gibt vier Ansichten zu den Abwesenheitsdaten.
 \begin{itemize}
 \item Mitarbeiteransicht schreibgeschützt
 \item Mitarbeiteransicht Eingabe
@@ -214,7 +260,9 @@ Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche
 berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber
 nicht gezählt. Das Gleiche gilt für Feiertage.
 
-\section{Kalender API}
+
+
+\section{Kalender API}\label{section-calendar-api}
 Es ist möglich, die Dienstplandaten in Form von iCalendar-Dateien von PDR zu
 lesen. Diese Dateien können mit allen wichtigen Kalenderanwendungen auf
 Desktops und Smartphones verwendet werden. Diese API ist keinesfalls eine

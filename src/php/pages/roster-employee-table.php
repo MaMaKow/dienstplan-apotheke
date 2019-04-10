@@ -22,6 +22,9 @@ $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_S
 $date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
 $date_unix = strtotime($date_sql);
 $date_sql_start = $date_sql;
+$date_start_object = new DateTime($date_sql);
+$date_end_object = clone $date_start_object;
+$date_end_object->add(new DateInterval('P6D'));
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
 create_cookie('datum', $date_sql, 1);
 $workforce = new workforce($date_sql);
@@ -41,7 +44,8 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
     $employee_id = $_SESSION['user_object']->employee_id;
 }
 
-$Roster = roster::read_employee_roster_from_database($employee_id, $date_sql_start, $date_sql_end);
+$roster_object = new roster($date_start_object, $date_end_object, $employee_id, NULL);
+$Roster = $roster_object->array_of_days_of_roster_items;
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
@@ -53,7 +57,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "<a href=" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
+echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 

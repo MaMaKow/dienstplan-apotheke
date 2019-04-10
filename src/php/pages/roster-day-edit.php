@@ -28,6 +28,7 @@ create_cookie("mandant", $branch_id, 30);
 $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
+$date_object = new DateTime($date_sql);
 $workforce = new workforce($date_sql);
 $user_dialog = new user_dialog();
 
@@ -60,7 +61,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql);
 }
 
-$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_sql, NULL, array(roster::OPTION_CONTINUE_ON_ABSENCE));
+$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_object, $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
 /*
  * In case there is no roster scheduled yet, create a suggestion:
  */
