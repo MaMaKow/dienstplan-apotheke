@@ -18,7 +18,8 @@
  */
 
 /**
- * Description of class
+ * An employee is someone, who works on one of the branches. The person can be scheduled into rosters, take vacation and collect overtime hours.
+ *   An employee may register as a \user. The user_id will be the same, as the employee_id.
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
@@ -28,14 +29,47 @@ class employee {
     public $first_name;
     public $last_name;
     public $full_name;
+
+    /**
+     *
+     * @var int The branch_id of the typical branch, on which the most working hours are done.
+     */
     public $principle_branch_id;
+
+    /**
+     *
+     * @var float The working hours per week as contracted in the employment contract.
+     */
     public $working_week_hours;
+
+    /**
+     *
+     * @var float The number of days per week, which the employee normally works on.
+     *   This can be a float if an employee works different days on alternating weeks.
+     */
     public $working_week_days;
     public $lunch_break_minutes;
+
+    /**
+     *
+     * @var string The first day on which the employee did work.
+     *   This might be a day before the start of the actual contract.
+     */
     public $start_of_employment;
     public $end_of_employment;
+
+    /**
+     *
+     * @var int The number of vacation days per year, which the employee is granted.
+     *   This is not a float, at least not in Germany. In Germany the number has to be rounded up [ceil()].
+     */
     public $holidays;
-    public $Principle_roster;
+
+    /**
+     *
+     * @var array  $Principle_roster is a list of unix dates and their associated normal rosters for this single employee.
+     */
+    private $Principle_roster;
 
     public function __construct($employee_id, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch, $start_of_employment, $end_of_employment, $holidays) {
         $this->employee_id = $employee_id;
@@ -49,31 +83,20 @@ class employee {
         $this->end_of_employment = $end_of_employment;
         $this->holidays = $holidays;
         $this->principle_branch_id = $branch;
-        $this->Principle_roster = $this->read_principle_roster_from_database();
-        $this->working_week_days = $this->read_working_week_days_from_database();
+        $this->Principle_roster = array();
+        $this->working_week_days = principle_roster::get_working_week_days($this->employee_id);
     }
 
-    protected function read_principle_roster_from_database() {
-        /*
-         * TODO: Move this to the principle_roster class perhaps?
+    public function get_principle_roster_on_date(DateTime $date_object) {
+        /**
+         * @var int $date_unix is the unix timestamp representing the $date_object.
          */
-        $Principle_roster = array();
-        $sql_query = "SELECT * FROM `Grundplan`"
-                . "WHERE `VK` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $pseudo_date_object = new DateTime('last sunday');
-            $pseudo_date_object->add(new DateInterval('P' . $row->Wochentag . 'D'));
-            $Principle_roster[$row->Wochentag][] = new roster_item($pseudo_date_object->format('Y-m-d'), (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+        $date_unix = $date_object->getTimestamp();
+        if (empty($this->Principle_roster[$date_unix])) {
+            $Principle_roster_on_date = principle_roster::read_principle_employee_roster_from_database($this->employee_id, $date_object, $date_object);
+            $this->Principle_roster[$date_unix] = $Principle_roster_on_date[$date_unix];
         }
-        return $Principle_roster;
-    }
-
-    protected function read_working_week_days_from_database() {
-        $sql_query = "SELECT `VK`, Count(DISTINCT `Wochentag`) as `working_week_days` FROM `Grundplan` WHERE `VK` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
-        $row = $result->fetch(PDO::FETCH_OBJ);
-        return (int) $row->working_week_days;
+        return $this->Principle_roster[$date_unix];
     }
 
 }

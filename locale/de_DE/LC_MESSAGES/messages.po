@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2019-03-07 22:54+0100\n"
-"PO-Revision-Date: 2019-03-07 23:04+0100\n"
+"POT-Creation-Date: 2019-04-10 10:59+0100\n"
+"PO-Revision-Date: 2019-04-10 11:00+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -67,7 +67,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:246
+#: src/php/classes/class.absence.php:248
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -75,14 +75,14 @@ msgstr ""
 "An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
 "in die Datenbank eingefügt."
 
-#: src/php/classes/class.absence.php:250
+#: src/php/classes/class.absence.php:252
 #: src/php/classes/class.database_wrapper.php:254
 #: src/php/classes/class.database_wrapper.php:304
 #: src/php/classes/class.overtime.php:77 src/js/javascript.js:87
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/php/classes/class.absence.php:251
+#: src/php/classes/class.absence.php:253
 #: src/php/classes/class.database_wrapper.php:255
 #: src/php/classes/class.database_wrapper.php:305
 #: src/php/classes/class.overtime.php:78
@@ -90,15 +90,15 @@ msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
-#: src/php/classes/class.absence.php:286
+#: src/php/classes/class.absence.php:288
 msgid "is a holiday"
 msgstr "ist ein Feiertag"
 
-#: src/php/classes/class.absence.php:286
+#: src/php/classes/class.absence.php:288
 msgid "and will not be counted."
 msgstr "und wird nicht berechnet."
 
-#: src/php/classes/class.absence.php:296
+#: src/php/classes/class.absence.php:298
 #, php-format
 msgid "%1s is not a working day for %2s and will not be counted."
 msgstr "%1s ist kein Arbeitstag für %2s und wird nicht gezählt."
@@ -149,57 +149,68 @@ msgstr "Strg + &rarr;"
 msgid "1 week forward"
 msgstr "1 Woche vorwärts"
 
-#: src/php/classes/class.build_html_navigation_elements.php:137
+#: src/php/classes/class.build_html_navigation_elements.php:139
 msgid "Download iCalendar file"
 msgstr "iCalendar Datei herunterladen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:140
+#: src/php/classes/class.build_html_navigation_elements.php:142
 msgid "iCalendar File"
 msgstr "iCalendar Datei"
 
-#: src/php/classes/class.build_html_navigation_elements.php:149
-#: src/php/classes/class.build_html_navigation_elements.php:152
-#: src/php/pages/absence-edit.php:149 src/php/pages/branch-management.php:225
+#: src/php/classes/class.build_html_navigation_elements.php:155
+#: src/php/classes/class.build_html_navigation_elements.php:158
+#: src/php/pages/absence-edit.php:149 src/php/pages/branch-management.php:224
 #: src/php/pages/collaborative-vacation-input-box.php:128
 msgid "Save"
 msgstr "Speichern"
 
-#: src/php/classes/class.build_html_navigation_elements.php:167
-#: src/php/classes/class.build_html_navigation_elements.php:170
+#: src/php/classes/class.build_html_navigation_elements.php:173
+#: src/php/classes/class.build_html_navigation_elements.php:176
 #: src/php/pages/collaborative-vacation-input-box.php:114
 msgid "Approve"
 msgstr "Genehmigen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:187
-#: src/php/classes/class.build_html_navigation_elements.php:190
+#: src/php/classes/class.build_html_navigation_elements.php:193
+#: src/php/classes/class.build_html_navigation_elements.php:196
 msgid "Disapprove"
 msgstr "Ablehnen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:286
+#: src/php/classes/class.build_html_navigation_elements.php:298
+#: src/php/classes/class.build_html_navigation_elements.php:301
+#: src/php/pages/collaborative-vacation-input-box.php:130
+msgid "Delete"
+msgstr "Löschen"
+
+#: src/php/classes/class.build_html_navigation_elements.php:316
+#: src/php/classes/class.build_html_navigation_elements.php:319
+msgid "Copy"
+msgstr "Kopieren"
+
+#: src/php/classes/class.build_html_navigation_elements.php:354
 msgid "Monday"
 msgstr "Montag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:287
+#: src/php/classes/class.build_html_navigation_elements.php:355
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:288
+#: src/php/classes/class.build_html_navigation_elements.php:356
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: src/php/classes/class.build_html_navigation_elements.php:289
+#: src/php/classes/class.build_html_navigation_elements.php:357
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:290
+#: src/php/classes/class.build_html_navigation_elements.php:358
 msgid "Friday"
 msgstr "Freitag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:291
+#: src/php/classes/class.build_html_navigation_elements.php:359
 msgid "Saturday"
 msgstr "Samstag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:292
+#: src/php/classes/class.build_html_navigation_elements.php:360
 msgid "Sunday"
 msgstr "Sonntag"
 
@@ -210,13 +221,13 @@ msgstr "Abwesende"
 #: src/php/classes/class.build_html_roster_views.php:95
 #: src/php/classes/class.build_html_roster_views.php:111
 #: src/php/classes/class.collaborative_vacation.php:396
-#: src/php/pages/branch-management.php:167
+#: src/php/pages/branch-management.php:166
 msgid "to"
 msgstr "bis"
 
 #: src/php/classes/class.build_html_roster_views.php:108
 #: src/php/classes/class.build_html_roster_views.php:368
-#: src/php/classes/class.build_html_roster_views.php:446
+#: src/php/classes/class.build_html_roster_views.php:448
 msgid "break"
 msgstr "Pause"
 
@@ -228,19 +239,19 @@ msgid "Comment"
 msgstr "Kommentar"
 
 #: src/php/classes/class.build_html_roster_views.php:274
-#: src/php/pages/roster-day-edit.php:151
-#: src/php/pages/roster-employee-table.php:56
+#: src/php/pages/roster-day-edit.php:152
+#: src/php/pages/roster-employee-table.php:60
 #: src/php/pages/roster-week-table.php:67
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
 #: src/php/classes/class.build_html_roster_views.php:279
-#: src/php/pages/roster-day-edit.php:155 src/php/pages/roster-day-edit.php:157
+#: src/php/pages/roster-day-edit.php:156 src/php/pages/roster-day-edit.php:158
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
-#: src/php/classes/class.build_html_roster_views.php:483
-#: src/php/pages/principle-roster-employee.php:94
+#: src/php/classes/class.build_html_roster_views.php:485
+#: src/php/pages/principle-roster-employee.php:93
 msgid "Hours per week"
 msgstr "Wochenstunden"
 
@@ -253,7 +264,7 @@ msgid "emergency service"
 msgstr "Notdienst"
 
 #: src/php/classes/class.collaborative_vacation.php:395
-#: src/php/pages/branch-management.php:165
+#: src/php/pages/branch-management.php:164
 msgid "from"
 msgstr "von"
 
@@ -493,13 +504,13 @@ msgstr "Saldo"
 msgid "Date"
 msgstr "Datum"
 
-#: src/php/classes/class.roster_headcount.php:116
+#: src/php/classes/class.roster_headcount.php:117
 msgid "The are no opening times stored inside the database for this weekday."
 msgstr ""
 "Es sind für diesen Wochentag keine Öffnungszeiten in der Datenbank "
 "hinterlegt."
 
-#: src/php/classes/class.roster_headcount.php:118
+#: src/php/classes/class.roster_headcount.php:119
 #, php-format
 msgid "Please %1s configure %2s the opening times!"
 msgstr "Bitte %1s konfigurieren %2s Sie die Öffnungszeiten!"
@@ -522,57 +533,57 @@ msgstr "Von %1s bis %2s"
 msgid "Start and end of lunch break"
 msgstr "Start und Ende der Pause"
 
-#: src/php/classes/class.sessions.php:45
+#: src/php/classes/class.sessions.php:53
 msgid "administration"
 msgstr "Administration"
 
-#: src/php/classes/class.sessions.php:46
+#: src/php/classes/class.sessions.php:54
 msgid "create employee"
 msgstr "Mitarbeiter anlegen"
 
-#: src/php/classes/class.sessions.php:47
+#: src/php/classes/class.sessions.php:55
 msgid "create roster"
 msgstr "Dienstplan anlegen"
 
-#: src/php/classes/class.sessions.php:48
+#: src/php/classes/class.sessions.php:56
 msgid "approve roster"
 msgstr "Dienstplan genehmigen"
 
-#: src/php/classes/class.sessions.php:49
+#: src/php/classes/class.sessions.php:57
 msgid "create overtime"
 msgstr "Überstunden anlegen"
 
-#: src/php/classes/class.sessions.php:50
+#: src/php/classes/class.sessions.php:58
 msgid "create absence"
 msgstr "Abwesenheiten anlegen"
 
-#: src/php/classes/class.sessions.php:51
+#: src/php/classes/class.sessions.php:59
 msgid "request own absence"
 msgstr "Urlaub beantragen"
 
-#: src/php/classes/class.sessions.php:150
+#: src/php/classes/class.sessions.php:158
 msgid "You are missing the necessary permission to use this page."
 msgstr "Ihnen fehlt die notwendige Berechtigung für diese Seite."
 
-#: src/php/classes/class.sessions.php:151
+#: src/php/classes/class.sessions.php:159
 msgid "Please contact the administrator if you feel this is an error."
 msgstr ""
 "Wenden Sie sich an den Administrator, wenn Sie meinen, dass dies ein Fehler "
 "ist."
 
-#: src/php/classes/class.sessions.php:153
+#: src/php/classes/class.sessions.php:161
 msgid "is required for"
 msgstr "wird benötigt für"
 
-#: src/php/classes/class.sessions.php:255
+#: src/php/classes/class.sessions.php:270
 msgid "Logout"
 msgstr "Logout"
 
-#: src/php/classes/class.sessions.php:268
+#: src/php/classes/class.sessions.php:283
 msgid "Lost password"
 msgstr "Passwort vergessen"
 
-#: src/php/classes/class.sessions.php:270
+#: src/php/classes/class.sessions.php:285
 msgid ""
 "Dear User,\n"
 "\n"
@@ -582,28 +593,28 @@ msgstr ""
 "\n"
 "um ein neues Passwort für"
 
-#: src/php/classes/class.sessions.php:274 src/php/register_approve.php:42
+#: src/php/classes/class.sessions.php:289 src/php/register_approve.php:42
 msgid "user name"
 msgstr "Benutzer"
 
-#: src/php/classes/class.sessions.php:275
+#: src/php/classes/class.sessions.php:290
 msgid "please visit"
 msgstr "besuchen Sie bitte"
 
-#: src/php/classes/class.sessions.php:278
+#: src/php/classes/class.sessions.php:293
 msgid "this address"
 msgstr "diese Adresse"
 
-#: src/php/classes/class.sessions.php:280
+#: src/php/classes/class.sessions.php:295
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/classes/class.sessions.php:290
+#: src/php/classes/class.sessions.php:305
 #: src/php/classes/class.user_dialog.php:158
 msgid "The mail was successfully sent. Thank you!"
 msgstr "Die Mail wurde erfolgreich versendet. Vielen Dank!"
 
-#: src/php/classes/class.sessions.php:293
+#: src/php/classes/class.sessions.php:308
 msgid "An error occured while sending the mail. I am sorry."
 msgstr "Beim Versender der Mail trat ein Fehler auf. Es tut mir leid."
 
@@ -736,7 +747,7 @@ msgstr "Tage"
 msgid "Approval"
 msgstr "Genehmigung"
 
-#: src/php/pages/branch-management.php:143
+#: src/php/pages/branch-management.php:142
 msgid ""
 "No pharmacy and no branches have been configured. Please setup at least one "
 "pharmacy!"
@@ -744,23 +755,23 @@ msgstr ""
 "Es wurde keine Apotheke und keine Filiale angelegt. Bitte konfigurieren Sie "
 "mindestens eine Apotheke!"
 
-#: src/php/pages/branch-management.php:158
+#: src/php/pages/branch-management.php:157
 msgid "Opening times"
 msgstr "Öffnungszeiten"
 
-#: src/php/pages/branch-management.php:182
+#: src/php/pages/branch-management.php:181
 msgid "Identifier"
 msgstr "Bezeichner"
 
-#: src/php/pages/branch-management.php:184
+#: src/php/pages/branch-management.php:183
 msgid "Branch Id"
 msgstr "Filialnummer"
 
-#: src/php/pages/branch-management.php:189
+#: src/php/pages/branch-management.php:188
 msgid "Branch pep id"
 msgstr "PEP Id der Filiale"
 
-#: src/php/pages/branch-management.php:192
+#: src/php/pages/branch-management.php:191
 msgid ""
 "Awinta Smart and Awinta One have an option to export PEP data. If you "
 "uploaded such PEP data, enter your PEP Id for this branch here."
@@ -769,19 +780,19 @@ msgstr ""
 "Wenn Sie solche PEP-Daten hochgeladen haben, geben Sie hier Ihre PEP-ID für "
 "diese Filiale ein."
 
-#: src/php/pages/branch-management.php:198
+#: src/php/pages/branch-management.php:197
 msgid "Master data"
 msgstr "Stammdaten"
 
-#: src/php/pages/branch-management.php:200
+#: src/php/pages/branch-management.php:199
 msgid "Branch name"
 msgstr "Name der Filiale"
 
-#: src/php/pages/branch-management.php:204
+#: src/php/pages/branch-management.php:203
 msgid "Branch short name"
 msgstr "Kurzname der Filiale"
 
-#: src/php/pages/branch-management.php:207
+#: src/php/pages/branch-management.php:206
 msgid ""
 "This is a short unofficial nickname for your pharmacy. It is used in pages "
 "with limited space. Please choose no more than 12 letters."
@@ -789,23 +800,23 @@ msgstr ""
 "Dies ist ein kurzer Spitzname für Ihre Apotheke. Er wird auf Seiten mit eng "
 "begrenztem Platz verwendet. Bitte verwenden Sie nicht mehr als 12 Buchstaben."
 
-#: src/php/pages/branch-management.php:211
+#: src/php/pages/branch-management.php:210
 msgid "Branch address"
 msgstr "Adresse"
 
-#: src/php/pages/branch-management.php:215
+#: src/php/pages/branch-management.php:214
 msgid "Branch manager"
 msgstr "Filialleiter"
 
-#: src/php/pages/branch-management.php:229
+#: src/php/pages/branch-management.php:228
 msgid "Clear form data"
 msgstr "Formular zurücksetzen"
 
-#: src/php/pages/branch-management.php:233
+#: src/php/pages/branch-management.php:232
 msgid "Remove branch"
 msgstr "Mandant löschen"
 
-#: src/php/pages/branch-management.php:236
+#: src/php/pages/branch-management.php:235
 msgid "Use \"Clear form data\" to enter data for a new branch"
 msgstr ""
 "Nutzen Sie \"Formular zurücksetzen\" um Daten für einen neuen Mandanten "
@@ -822,10 +833,6 @@ msgstr "Offen"
 #: src/php/pages/collaborative-vacation-input-box.php:116
 msgid "Deny"
 msgstr "Ablehnen"
-
-#: src/php/pages/collaborative-vacation-input-box.php:130
-msgid "Delete"
-msgstr "Löschen"
 
 #: src/php/pages/configuration.php:70 src/php/pages/menu.php:111
 msgid "Configuration"
@@ -1130,7 +1137,7 @@ msgstr "Tagesansicht Eingabe"
 msgid "Daily output"
 msgstr "Tagesansicht Ausgabe"
 
-#: src/php/pages/menu.php:36
+#: src/php/pages/menu.php:36 src/php/pages/principle-roster-day.php:63
 msgid "Principle roster daily"
 msgstr "Grundplan Tagesansicht"
 
@@ -1249,15 +1256,15 @@ msgstr "Beim Speichern der Daten trat ein Fehler auf."
 msgid "Missing input token"
 msgstr "Es wurde kein Token übergeben."
 
-#: src/php/pages/roster-day-edit.php:72 src/php/pages/roster-day-edit.php:80
+#: src/php/pages/roster-day-edit.php:73 src/php/pages/roster-day-edit.php:81
 msgid "There is no roster in the database."
 msgstr "In der Datenbank befindet sich kein Dienstplan."
 
-#: src/php/pages/roster-day-edit.php:72 src/php/pages/roster-day-edit.php:80
+#: src/php/pages/roster-day-edit.php:73 src/php/pages/roster-day-edit.php:81
 msgid "This is a proposal."
 msgstr "Dies ist ein Vorschlag."
 
-#: src/php/pages/roster-day-edit.php:104
+#: src/php/pages/roster-day-edit.php:105
 msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
 

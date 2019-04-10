@@ -54,6 +54,8 @@ class update_database {
         //$this->refactor_duty_roster_table();
         $this->refactor_receive_emails_on_changed_roster();
         $this->refactor_user_email_notification_cache();
+        $this->refactor_pdr_self();
+        $this->refactor_principle_roster();
         /*
          * Write new pdr_database_version_hash into the database:
          */
@@ -128,6 +130,41 @@ class update_database {
         if (database_wrapper::database_table_exists('user_email_notification_cache') and ! database_wrapper::database_table_column_exists($database_name, 'user_email_notification_cache', 'date')) {
             $sql_query = "ALTER TABLE `user_email_notification_cache` ADD `date` DATE NOT NULL AFTER `employee_id`;";
             database_wrapper::instance()->run($sql_query);
+        }
+    }
+
+    private function refactor_pdr_self() {
+        $database_name = database_wrapper::get_database_name();
+        if (database_wrapper::database_table_exists('pdr_self') and ! database_wrapper::database_table_column_exists($database_name, 'pdr_self', 'principle_roster_start_date')) {
+            $sql_query = "ALTER TABLE `pdr_self` ADD `principle_roster_start_date` date DEFAULT NULL AFTER `last_execution_of_maintenance`;";
+            database_wrapper::instance()->run($sql_query);
+        }
+    }
+
+    private function refactor_principle_roster() {
+        if (database_wrapper::database_table_exists('Grundplan') and ! database_wrapper::database_table_exists('principle_roster')) {
+            database_wrapper::instance()->beginTransaction();
+            $sql_query = file_get_contents(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/principle_roster.sql');
+            $result = database_wrapper::instance()->run($sql_query);
+            if ('00000' !== $result->errorCode()) {
+                database_wrapper::instance()->rollBack();
+                return FALSE;
+            }
+
+            $sql_query = "INSERT INTO `principle_roster` SELECT 0, `VK`, `Wochentag`, `Dienstbeginn`, `Dienstende`, `Mittagsbeginn`, `Mittagsende`, `Kommentar`, `Stunden`, `Mandant`, NULL, NULL FROM `Grundplan`;";
+            $result = database_wrapper::instance()->run($sql_query);
+            if ('00000' !== $result->errorCode()) {
+                database_wrapper::instance()->rollBack();
+                return FALSE;
+            }
+            $sql_query = "DROP TABLE Grundplan;";
+            $result = database_wrapper::instance()->run($sql_query);
+            if ('00000' !== $result->errorCode()) {
+                database_wrapper::instance()->rollBack();
+                return FALSE;
+            }
+            database_wrapper::instance()->commit();
+            return TRUE;
         }
     }
 

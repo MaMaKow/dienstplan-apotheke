@@ -63,7 +63,7 @@ You can navigate to:
 \end{itemize}
 
 \subsubsection{The navigation bar}
-In the top there is a navigation bar containing hyperlinks to nearly all the pages of PDR. Hover the mouse over an entry to open the submenus (Figure \ref{img_navigation_bar}).
+In the top there is a navigation bar containing hyperlinks to nearly all the pages of PDR. Hover the mouse over an entry to open the submenus (\autoref{img_navigation_bar}).
 \begin{multicols}{3}
 \begin{description}
     \item \menu{Weekly view > .. }
@@ -118,14 +118,22 @@ In the top there is a navigation bar containing hyperlinks to nearly all the pag
 	\label{img_roster_week_table_view}
 \end{figure}
 
-The roster week table view shows the roster of a chosen week and branch (Figure~\ref{img_roster_week_table_view}). If employees of the branch are working in an other branch, then those are shown below.
+The roster week table view shows the roster of a chosen week and branch (\autoref{img_roster_week_table_view}). If employees of the branch are working in an other branch, then those are shown below.
 The table foot contains the information about absent employees and their reason of absence.
 
 The date can be chosen by direct input. It can also be shifted by one week backwards or forwards by pressing \keys{\ctrl + \shift + \arrowkeyright} or \keys{\ctrl + \shift + \arrowkeyleft} respectively.
 
 \subsection{Roster daily view}
 \subsubsection{Read only}
-In the daily roster view there is a table, a bar plot and a histogram reflecting the roster.
+In the daily roster view there is a table, a bar plot and a histogram reflecting the roster (\autoref{img_roster-day-read}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/roster-day-read.php}.png}
+	\caption{Roster day view}
+	\label{img_roster-day-read}
+\end{figure}
+
 The roster table lists all the employees scheduled in the chosen branch on the one chosen day. For every entry there is the employee id and last name, the working hours, the start and end of duty and the time of the lunch break, if any.
 
 If an employee, that is primarily scheduled in the chosen branch, works in an other branch, then this entry is shown in the table at the bottom.
@@ -135,11 +143,19 @@ If employees are absent, these absences are displayed in the table footer.
 
 The roster bar plot shows the flow of employees coming and going. Each bar represents one entry. It reaches from the start of duty to its end. A white rectangle on the bar shows the time of the lunch break. The color of the bars is dependent on the profession of the employee. Pharmacists and Pharmazieingenieure \footnote{specific eastern german profession, see \url{https://de.wikipedia.org/wiki/Pharmazieingenieur}} are colored in dark green, while Pharmacy technicians are colored in light green. Other employees (non-pharmaceutical personnel) are colored in grey.
 
-The histogram plot shows a red area and a green line. The red area shows the expected amount of work (measured in packages per 15 minutes), while the green line represents the amount of working employees to any given time.
+The histogram plot shows a red area and a green line. The red area shows the expected amount of work (measured in packages per 15 minutes), while the green line represents the amount of working employees on any given time.
 
 
 \subsubsection{Edit}
-The edit page looks quite similar to the read only view. 
+The edit page looks quite similar to the read only view (\autoref{img_roster-day-edit}). 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/roster-day-edit.php}.png}
+	\caption{Roster day view with edit privileges}
+	\label{img_roster-day-edit}
+\end{figure}
+
 The roster is examined for errors. If any issues occur, then errors, warnings or information will be shown in the top right area.
 The examination includes:
 \begin{itemize}
@@ -152,7 +168,27 @@ The examination includes:
 \end{itemize}
 
 Only one break can be inserted per entry. If more breaks have to be assigned, then it is possible to enter multiple entries for the same employee.
+
 \subsection{Roster employee view}
+The employee view is similar to the weekly view, but only one employee is shown (\autoref{img_roster-employee-table}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{{images/en_GB/roster-employee-table.php}.png}
+	\caption{Employee view}
+	\label{img_roster-employee-table}
+\end{figure}
+
+An iCalendar file can be downloaded. See \autoref{section-calendar-api}~\nameref{section-calendar-api} for details.
+
+\subsection{Principle roster daily}
+A principle recurring roster can be saved. In the simplest case it is a list of the start and end of duty for all the employees.
+Every weekday is listed separately, and so are the branches.
+
+It is possible to create alternating weeks. For example an employee might work on an A-Week and a B-Week. On A-Weeks she might regularly start at 08:00 in the morning on Mondays, while on B-Weeks she starts at 10:00.
+
+
+
 \subsection{Overtime}
 \subsection{Absence}
 There are four views to the absence data.
@@ -174,7 +210,9 @@ There is a distinct list of possible reasons ( vacation,
         maternity leave).
 The number of days of absence is calculated for a 5 day week. Absences on saturdays and sundays are registered but not counted. The same applys for holidays.
 
-\section{Calendar API}
+
+
+\section{Calendar API}\label{section-calendar-api}
 It is possible to read the roster data from PDR in form of iCalendar files.
 These files can be used with all major calendar applications on desktops and smartphones.
 This API is by no means a full implementation of the webdav standard. It is not even an implementation of the CalDAV protocol.

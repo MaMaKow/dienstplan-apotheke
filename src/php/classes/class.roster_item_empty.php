@@ -43,7 +43,7 @@ class roster_item_empty extends roster_item {
     public $working_seconds;
     public $empty;
 
-    public function __construct($date_sql, $branch_id) {
+    public function __construct(string $date_sql, int $branch_id = NULL) {
 
         $this->empty = TRUE;
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');

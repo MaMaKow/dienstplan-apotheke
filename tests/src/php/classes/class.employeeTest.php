@@ -37,20 +37,16 @@ class employeeTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testread_principle_roster_from_database() {
-        $Principle_roster = $this->object->Principle_roster;
-        $weekday = $Principle_roster[2][0]->weekday;
+        $date_object = new DateTime('this wednesday');
+        $Principle_roster = $this->object->get_principle_roster_on_date($date_object);
+        $weekday = $Principle_roster[$date_object->getTimestamp()][0]->weekday;
         $this->assertEquals('2', $weekday);
 
-        $duty_start_sql = $Principle_roster[1][0]->__get('duty_start_sql');
+        $duty_start_sql = $Principle_roster[$date_object->getTimestamp()][0]->__get('duty_start_sql');
         $this->assertEquals('11:00', $duty_start_sql);
 
-        $duty_end_sql = $Principle_roster[1][0]->__get('duty_end_sql');
+        $duty_end_sql = $Principle_roster[$date_object->getTimestamp()][0]->__get('duty_end_sql');
         $this->assertEquals('20:00', $duty_end_sql);
-    }
-
-    public function testread_working_week_days_from_database() {
-        $working_week_days = $this->object->working_week_days;
-        $this->assertTrue(5 === $working_week_days);
     }
 
 }

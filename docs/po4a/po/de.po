@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dienstplan documentation\n"
-"POT-Creation-Date: 2019-01-06 23:06+0100\n"
-"PO-Revision-Date: 2019-01-06 23:40+0100\n"
+"POT-Creation-Date: 2019-04-10 10:33+0200\n"
+"PO-Revision-Date: 2019-04-10 10:50+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -169,22 +169,22 @@ msgid "Roster week table view"
 msgstr "Dienstplan Wochenansicht"
 
 #. type: subsection{#2}
-#: documentation_user.tex:64 documentation_user.tex:130
+#: documentation_user.tex:64 documentation_user.tex:129
 msgid "Roster daily view"
 msgstr "Dienstplan Tagesansicht"
 
-#. type: itemize
-#: documentation_user.tex:64
+#. type: subsection{#2}
+#: documentation_user.tex:64 documentation_user.tex:174
 msgid "Roster employee view"
 msgstr "Dienstplan Mitarbeiteransicht"
 
-#. type: itemize
-#: documentation_user.tex:64
+#. type: subsection{#2}
+#: documentation_user.tex:64 documentation_user.tex:212
 msgid "Overtime"
 msgstr "Überstunden"
 
-#. type: itemize
-#: documentation_user.tex:64
+#. type: subsection{#2}
+#: documentation_user.tex:64 documentation_user.tex:212
 msgid "Absence"
 msgstr "Abwesenheit"
 
@@ -197,12 +197,12 @@ msgstr "Die Navigationsleiste"
 #: documentation_user.tex:120
 msgid ""
 "In the top there is a navigation bar containing hyperlinks to nearly all the "
-"pages of PDR. Hover the mouse over an entry to open the submenus (Figure "
-"\\ref{img_navigation_bar})."
+"pages of PDR. Hover the mouse over an entry to open the submenus "
+"(\\autoref{img_navigation_bar})."
 msgstr ""
 "Im oberen Bereich befindet sich eine Navigationsleiste mit Hyperlinks zu "
 "fast allen PDR-Seiten. Bewegen Sie die Maus über einen Eintrag, um die "
-"Untermenüs zu öffnen (Abbildung \\ref{img_navigation_bar})."
+"Untermenüs zu öffnen (\\autoref{img_navigation_bar})."
 
 #. type: description
 #: documentation_user.tex:120
@@ -362,15 +362,15 @@ msgstr ""
 #: documentation_user.tex:123
 msgid ""
 "The roster week table view shows the roster of a chosen week and branch "
-"(Figure~\\ref{img_roster_week_table_view}). If employees of the branch are "
+"(\\autoref{img_roster_week_table_view}). If employees of the branch are "
 "working in an other branch, then those are shown below.  The table foot "
 "contains the information about absent employees and their reason of absence."
 msgstr ""
 "Die Dienstplan-Wochenansicht zeigt die Liste einer ausgewählten Woche und "
-"Zweigstelle (Abbildung~\\ref{img_roster_week_table_view}). Wenn Mitarbeiter "
-"der Zweigstelle in einer anderen Zweigstelle arbeiten, werden diese unten "
-"angezeigt. Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter "
-"und deren Abwesenheitsgründe."
+"Filiale (\\autoref{img_roster_week_table_view}). Wenn Mitarbeiter der "
+"Apotheke in einer anderen Filiale arbeiten, werden diese unten angezeigt. "
+"Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter und deren "
+"Abwesenheitsgründe."
 
 #. type: Plain text
 #: documentation_user.tex:125
@@ -384,28 +384,39 @@ msgstr ""
 "\\arrowkeyright} oder \\keys {\\ctrl + \\shift + \\arrowkeyleft} drückt."
 
 #. type: subsubsection{#2}
-#: documentation_user.tex:130
+#: documentation_user.tex:129
 msgid "Read only"
 msgstr "Schreibgeschützt"
 
 #. type: Plain text
-#: documentation_user.tex:130
+#: documentation_user.tex:129
 msgid ""
 "In the daily roster view there is a table, a bar plot and a histogram "
-"reflecting the roster.  The roster table lists all the employees scheduled "
-"in the chosen branch on the one chosen day. For every entry there is the "
-"employee id and last name, the working hours, the start and end of duty and "
-"the time of the lunch break, if any."
+"reflecting the roster (\\autoref{img_roster-day-read})."
 msgstr ""
-"In der täglichen Dienstplanansicht gibt es eine Tabelle, ein Balkendiagramm "
-"und ein Histogramm, welche den Dienstplan widerspiegeln. Die "
-"Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten Zweig "
-"an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und den "
-"Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des "
-"Dienstes und die Zeit der Mittagspause, falls vorhanden."
+"In der Tageslistenansicht gibt es eine Tabelle, ein Balkendiagramm und ein "
+"Histogramm, das den Dienstplan wiedergibt (\\autoref{img_roster-day-read})."
+
+#. type: caption{#2}
+#: documentation_user.tex:136
+msgid "Roster day view"
+msgstr "Dienstplan Tagesansicht"
 
 #. type: Plain text
-#: documentation_user.tex:134
+#: documentation_user.tex:138
+msgid ""
+"The roster table lists all the employees scheduled in the chosen branch on "
+"the one chosen day. For every entry there is the employee id and last name, "
+"the working hours, the start and end of duty and the time of the lunch "
+"break, if any."
+msgstr ""
+"Die Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten "
+"Zweig an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und "
+"den Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende "
+"des Dienstes und die Zeit der Mittagspause, falls vorhanden."
+
+#. type: Plain text
+#: documentation_user.tex:142
 msgid ""
 "If an employee, that is primarily scheduled in the chosen branch, works in "
 "an other branch, then this entry is shown in the table at the bottom.  An "
@@ -421,7 +432,7 @@ msgstr ""
 "Tabellenfußzeile angezeigt."
 
 #. type: Plain text
-#: documentation_user.tex:137
+#: documentation_user.tex:145
 msgid ""
 "The roster bar plot shows the flow of employees coming and going. Each bar "
 "represents one entry. It reaches from the start of duty to its end. A white "
@@ -441,11 +452,11 @@ msgstr ""
 "sind grau hinterlegt."
 
 #. type: Plain text
-#: documentation_user.tex:139
+#: documentation_user.tex:147
 msgid ""
 "The histogram plot shows a red area and a green line. The red area shows the "
 "expected amount of work (measured in packages per 15 minutes), while the "
-"green line represents the amount of working employees to any given time."
+"green line represents the amount of working employees on any given time."
 msgstr ""
 "Das Histogramm zeigt einen roten Bereich und eine grüne Linie. Der rote "
 "Bereich zeigt den erwarteten Arbeitsaufwand (gemessen in Packungen pro 15 "
@@ -453,41 +464,54 @@ msgstr ""
 "einem bestimmten Zeitpunkt darstellt."
 
 #. type: subsubsection{#2}
-#: documentation_user.tex:153
+#: documentation_user.tex:151
 msgid "Edit"
 msgstr "Bearbeiten"
 
 #. type: Plain text
-#: documentation_user.tex:153
+#: documentation_user.tex:151
 msgid ""
-"The edit page looks quite similar to the read only view.  The roster is "
-"examined for errors. If any issues occur, then errors, warnings or "
-"information will be shown in the top right area.  The examination includes:"
+"The edit page looks quite similar to the read only view "
+"(\\autoref{img_roster-day-edit})."
 msgstr ""
-"Die Bearbeitungsseite ähnelt der schreibgeschützten Ansicht. Der Dienstplan "
-"wird auf Fehler überprüft. Wenn Probleme auftreten, werden Fehler, Warnungen "
-"oder Informationen im oberen rechten Bereich angezeigt. Die Prüfung "
-"beinhaltet:"
+"Die Bearbeitungsseite sieht der schreibgeschützten Ansicht sehr ähnlich "
+"(\\autoref{img_roster-day-edit})."
+
+#. type: caption{#2}
+#: documentation_user.tex:158
+msgid "Roster day view with edit privileges"
+msgstr "Dienstplanansicht mit Bearbeitungsrechten"
+
+#. type: Plain text
+#: documentation_user.tex:169
+msgid ""
+"The roster is examined for errors. If any issues occur, then errors, "
+"warnings or information will be shown in the top right area.  The "
+"examination includes:"
+msgstr ""
+"Der Dienstplan wird auf Fehler überprüft. Wenn Probleme auftreten, werden "
+"Fehler, Warnungen oder Informationen im oberen rechten Bereich angezeigt. "
+"Die Prüfung beinhaltet:"
 
 #. type: itemize
-#: documentation_user.tex:153
+#: documentation_user.tex:169
 msgid "overlap of shifts for the same employee (Error)"
 msgstr "Überlappung von Schichten für denselben Mitarbeiter (Fehler)"
 
 #. type: itemize
-#: documentation_user.tex:153
+#: documentation_user.tex:169
 msgid "sufficient employee count (Warning, hardcoded at least two employees)"
 msgstr ""
 "ausreichende Mitarbeiterzahl (Warnung, fest codiert mindestens zwei "
 "Mitarbeiter)"
 
 #. type: itemize
-#: documentation_user.tex:153
+#: documentation_user.tex:169
 msgid "attendance of at least one pharmacist at any time (Error)."
 msgstr "Anwesenheit von mindestens einem Apotheker zu jeder Zeit (Fehler)."
 
 #. type: itemize
-#: documentation_user.tex:153
+#: documentation_user.tex:169
 msgid ""
 "attendance of at least one person able to carry out goods receipt (Warning)."
 msgstr ""
@@ -495,51 +519,104 @@ msgstr ""
 "kann (Warnung)."
 
 #. type: itemize
-#: documentation_user.tex:153
+#: documentation_user.tex:169
 msgid "scheduling of absent employees (Error)"
 msgstr "Einsatz abwesender Mitarbeiter (Fehler)"
 
 #. type: itemize
-#: documentation_user.tex:153
+#: documentation_user.tex:169
 msgid "non-scheduling of non-absent employees (Warning)"
 msgstr "Nichteinplanung von nicht abwesenden Mitarbeitern (Warnung)"
 
 #. type: Plain text
-#: documentation_user.tex:176
+#: documentation_user.tex:171
 msgid ""
 "Only one break can be inserted per entry. If more breaks have to be "
 "assigned, then it is possible to enter multiple entries for the same "
-"employee.  \\subsection{Roster employee view} \\subsection{Overtime} "
-"\\subsection{Absence} There are four views to the absence data."
+"employee."
 msgstr ""
 "Pro Eintrag kann nur eine Pause eingefügt werden. Wenn mehr Pausen "
 "zugewiesen werden müssen, können mehrere Einträge für denselben Mitarbeiter "
-"eingegeben werden. \\subsection{Mitarbeiterliste des Dienstplans} "
-"\\subsection{Überstunden} \\subsection{Abwesenheit} Es gibt vier Ansichten "
-"für die Abwesenheitsdaten."
+"eingegeben werden."
+
+#. type: Plain text
+#: documentation_user.tex:174
+msgid ""
+"The employee view is similar to the weekly view, but only one employee is "
+"shown (\\autoref{img_roster-employee-table})."
+msgstr ""
+"Die Mitarbeiteransicht ähnelt der Wochenansicht, es wird jedoch nur ein "
+"Mitarbeiter angezeigt (\\autoref{img_roster-employee-table})."
+
+#. type: caption{#2}
+#: documentation_user.tex:181
+msgid "Employee view"
+msgstr "Mitarbeiteransicht"
+
+#. type: Plain text
+#: documentation_user.tex:183
+msgid ""
+"An iCalendar file can be downloaded. See \\autoref{section-calendar-api}~"
+"\\nameref{section-calendar-api} for details."
+msgstr ""
+"Eine iCalendar-Datei kann heruntergeladen werden. Siehe \\autoref{section-"
+"calendar-api}~\\nameref{section-calendar-api} für weitere Informationen."
+
+#. type: subsection{#2}
+#: documentation_user.tex:187
+msgid "Principle roster daily"
+msgstr "Grundplan Tagesansicht"
+
+#. type: Plain text
+#: documentation_user.tex:187
+msgid ""
+"A principle recurring roster can be saved. In the simplest case it is a list "
+"of the start and end of duty for all the employees.  Every weekday is listed "
+"separately, and so are the branches."
+msgstr ""
+"Ein grundsätzlich wiederkehrender Dienstplan kann gespeichert werden. Im "
+"einfachsten Fall handelt es sich dabei um eine Auflistung von Beginn und "
+"Ende des Dienstes aller Mitarbeiter. Jeder Wochentag wird separat "
+"aufgeführt, ebenso die Filialen."
+
+#. type: Plain text
+#: documentation_user.tex:189
+msgid ""
+"It is possible to create alternating weeks. For example an employee might "
+"work on an A-Week and a B-Week. On A-Weeks she might regularly start at "
+"08:00 in the morning on Mondays, while on B-Weeks she starts at 10:00."
+msgstr ""
+"Es ist möglich, abwechselnde Wochen zu erstellen. Beispielsweise kann eine "
+"Mitarbeiterin in einer A-Woche und einer B-Woche arbeiten. In A-Wochen "
+"beginnt sie am Montag regelmäßig um 08:00 Uhr, in B-Wochen um 10:00 Uhr."
+
+#. type: Plain text
+#: documentation_user.tex:212
+msgid "There are four views to the absence data."
+msgstr "Es gibt vier Ansichten zu den Abwesenheitsdaten."
 
 #. type: itemize
-#: documentation_user.tex:176
+#: documentation_user.tex:212
 msgid "Employee view readonly"
 msgstr "Mitarbeiteransicht schreibgeschützt"
 
 #. type: itemize
-#: documentation_user.tex:176
+#: documentation_user.tex:212
 msgid "Employee view edit"
 msgstr "Mitarbeiteransicht Eingabe"
 
 #. type: itemize
-#: documentation_user.tex:176
+#: documentation_user.tex:212
 msgid "Monthly table"
 msgstr "Monatstabelle"
 
 #. type: itemize
-#: documentation_user.tex:176
+#: documentation_user.tex:212
 msgid "Year overview"
 msgstr "Jahrestabelle"
 
 #. type: Plain text
-#: documentation_user.tex:176
+#: documentation_user.tex:212
 msgid ""
 "In the \\emph{Employee view readonly} there is a select element to choose "
 "the employee to view. There is a button to switch to the edit view.  And "
@@ -563,12 +640,12 @@ msgstr ""
 "nicht gezählt. Das Gleiche gilt für Feiertage."
 
 #. type: subsection{#2}
-#: documentation_user.tex:183 documentation_developer.tex:143
+#: documentation_user.tex:221 documentation_developer.tex:142
 msgid "Calendar API"
 msgstr "Kalender API"
 
 #. type: Plain text
-#: documentation_user.tex:183
+#: documentation_user.tex:221
 msgid ""
 "It is possible to read the roster data from PDR in form of iCalendar files.  "
 "These files can be used with all major calendar applications on desktops and "
@@ -585,12 +662,12 @@ msgstr ""
 "auf die folgende URL auf: \\url{https://YOURHOSTNAME/YOUR/FOLDER/webdav.php}"
 
 #. type: Plain text
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid "The options are:"
 msgstr "Die Optionen sind:"
 
 #. type: description
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid ""
 "\\lstinline|employee_id| The employee id of the user from whom the roster "
 "should be given.  Any user can get the roster of every employee.  (default = "
@@ -601,14 +678,14 @@ msgstr ""
 "Mitarbeiter abrufen. (Standard = der angemeldete Benutzer)"
 
 #. type: description
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid ""
 "\\lstinline|date_string| A date in the format YYYY-MM-DD (default = today)"
 msgstr ""
 "\\lstinline|date_string| Ein Datum im Format JJJJ-MM-TT (Standard = heute)"
 
 #. type: description
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid ""
 "\\lstinline|days_into_the_future| The number of days that should be in the "
 "calendar file.  (default = 30)"
@@ -617,7 +694,7 @@ msgstr ""
 "Kalenderdatei enthalten sein sollen. (Standard = 30)"
 
 #. type: description
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid ""
 "\\lstinline|create_valarm| Create an alarm (\\lstinline|ACTION:DISPLAY|) on "
 "your device.  (default = 0)"
@@ -626,32 +703,32 @@ msgstr ""
 "DISPLAY|) auf Ihrem Gerät. (Standard = 0)"
 
 #. type: itemize
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid "0 = no alarm"
 msgstr "0 = kein Alarm"
 
 #. type: itemize
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid "1 = alarm 30 minutes before beginning of duty"
 msgstr "1 = Alarm 30 Minuten vor Dienstantritt"
 
 #. type: itemize
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid "2 = alarm on the end of duty"
 msgstr "2 = Alarm am Ende des Dienstes"
 
 #. type: itemize
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid "4 = alarm when the lunch break starts"
 msgstr "4 = Alarm, wenn die Mittagspause beginnt"
 
 #. type: itemize
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid "8 = alarm when the lunch break ends"
 msgstr "8 = Alarm, wenn die Mittagspause endet"
 
 #. type: itemize
-#: documentation_user.tex:209
+#: documentation_user.tex:247
 msgid ""
 "11 = 1+2+8 = alarm for start and end of duty and for end of lunch, but not "
 "for start of lunch"
@@ -660,7 +737,7 @@ msgstr ""
 "Mittagessens, jedoch nicht für den Beginn des Mittagessens"
 
 #. type: Plain text
-#: documentation_user.tex:212
+#: documentation_user.tex:250
 msgid ""
 "In order to get the roster of the week starting on 17.12.2018 for the "
 "employee number 5 you would use the following url: \\url{https://"
@@ -673,7 +750,7 @@ msgstr ""
 "employee_id=5&date_string=2018-12-17&days_into_the_future=6}"
 
 #. type: subsection{#2}
-#: documentation_user.tex:216
+#: documentation_user.tex:254
 msgid ""
 "Automatically import iCalendar files with \"iCal Import/Export CalDAV Pro\""
 msgstr ""
@@ -681,7 +758,7 @@ msgstr ""
 "importieren"
 
 #. type: Plain text
-#: documentation_user.tex:216
+#: documentation_user.tex:254
 msgid ""
 "Automatic import of iCalendar files into Android smartphones has been tested "
 "with \"iCal Import/Export CalDAV Pro\" (3,59 EUR). There are probably other "
@@ -692,27 +769,27 @@ msgstr ""
 "wahrscheinlich andere Apps, die das Selbe tun können."
 
 #. type: caption{#2}
-#: documentation_user.tex:246
+#: documentation_user.tex:284
 msgid "iCal main menu"
 msgstr "iCal Hauptmenü"
 
 #. type: caption{#2}
-#: documentation_user.tex:246
+#: documentation_user.tex:284
 msgid "iCal planned imports"
 msgstr "iCal geplante Importe"
 
 #. type: caption{#2}
-#: documentation_user.tex:246
+#: documentation_user.tex:284
 msgid "iCal adding a new import source"
 msgstr "iCal eine neue Importquelle hinzufügen"
 
 #. type: caption{#2}
-#: documentation_user.tex:246
+#: documentation_user.tex:284
 msgid "iCal setup import intervals"
 msgstr "iCal Importintervalle einstellen"
 
 #. type: caption{#2}
-#: documentation_user.tex:246
+#: documentation_user.tex:284
 msgid "iCal network settings and import settings"
 msgstr "iCal Netzwerkeinstellungen und Importeinstellungen"
 
@@ -1757,12 +1834,12 @@ msgstr ""
 "usr_ml_ntfcn_ca| oder \\lstinline|u_e_n_c|."
 
 #. type: subsection{#2}
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "The database"
 msgstr "Die Datenbank"
 
 #. type: Plain text
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "Currently there is only MySQL supported as a database management system "
 "(DBMS).  The tables are:"
@@ -1771,12 +1848,12 @@ msgstr ""
 "Die Tabellen sind:"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "absence (illness, vacation and other kinds of absence)"
 msgstr "Abwesenheit (Krankheit, Urlaub und andere Arten von Abwesenheit)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "approval (saves for each day if the leader has officially authorized the "
 "roster)"
@@ -1785,23 +1862,23 @@ msgstr ""
 "autorisiert hat)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "branch (information about the main pharmacy and possible branches)"
 msgstr "branch (Informationen über die Hauptapotheke und mögliche Filialen)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "Dienstplan (the actual roster data; start, end, break)"
 msgstr "Dienstplan (die tatsächlichen Dienstplandaten; Anfang, Ende, Pause)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "employees (employee data; employee\\_id, name, profession, abilities)"
 msgstr ""
 "employees (Mitarbeiterdaten; Mitarbeiter\\_id, Name, Beruf, Fähigkeiten)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "employees\\_backup (a copy of the employees table with historical data "
 "archived)"
@@ -1810,48 +1887,43 @@ msgstr ""
 "historischen Daten)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "Feiertage (obsolete)"
 msgstr "Feiertage (obsolet)"
 
 #. type: itemize
-#: documentation_developer.tex:83
-msgid "Grundplan\\_roll (not used yet)"
-msgstr "Grundplan\\_roll (noch nicht benutzt)"
-
-#. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
-"Grundplan (the basic plan; Beginning, end, pause; is used to suggest new "
-"rosters)"
+"principle\\_roster (the basic plan; start, end, lunch break; is used to "
+"suggest new rosters)"
 msgstr ""
-"Grundplan (der Grundsatzplan; Anfang, Ende, Pause; wird verwendet, um neue "
-"Dienstpläne vorzuschlagen)"
+"principle\\_roster (der Grundplan; Anfang, Ende, Pause; wird verwendet, um "
+"neue Dienstpläne vorzuschlagen)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "maintenance (obsolete)"
 msgstr "Wartung (obsolet)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "Mandant (obsolete)"
 msgstr "Mandant (obsolet)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "Notdienst (dates of emergency services and the employees scheduled to them)"
 msgstr ""
 "Notdienst (Daten der Notdienste und der ihnen zugewiesenen Mitarbeiter)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "opening\\_times\\_special (not used yet)"
 msgstr "opening\\_times\\_special (noch nicht benutzt)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "opening\\_times (the opening and closing times of the branches, no GUI yet "
 "for editing)"
@@ -1860,12 +1932,12 @@ msgstr ""
 "GUI zur Bearbeitung)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "pdr\\_self (reflects the state of the application itself)"
 msgstr "pdr\\_self (spiegelt den Zustand der Anwendung selbst wider)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "pep\\_month\\_day (the relative amount of work on different days in the "
 "month)"
@@ -1874,7 +1946,7 @@ msgstr ""
 "Monat)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "pep (the raw amount of work data, hashed to reduce the amount of deleted/"
 "ignored entries)"
@@ -1883,7 +1955,7 @@ msgstr ""
 "gelöschten / ignorierten Einträge zu reduzieren)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "pep\\_weekday\\_time (the amount of work at different times on different "
 "weekdays)"
@@ -1892,7 +1964,7 @@ msgstr ""
 "verschiedenen Wochentagen)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "pep\\_year\\_month (the relative amount of work on different months in the "
 "year)"
@@ -1901,12 +1973,12 @@ msgstr ""
 "Jahr)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "saturday\\_rotation (whose turn is it to work on which saturday?)"
 msgstr "saturday\\_rotation (Wer soll an welchem Samstag arbeiten?)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "saturday\\_rotation\\_teams (who belongs to which team for saturday's "
 "rotation?)"
@@ -1915,17 +1987,17 @@ msgstr ""
 "Rotation am Samstag?)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "Schulferien (not used yet)"
 msgstr "Schulferien (noch nicht benutzt)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "Stunden (overtime archive and balance)"
 msgstr "Stunden (Überstundenarchiv und Saldo)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "task\\_rotation (rotating assignment of employees to a task, e.g. "
 "compounding)"
@@ -1934,12 +2006,12 @@ msgstr ""
 "B. Rezeptur)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "user\\_email\\_notification\\_cache (not used yet)"
 msgstr "user\\_email\\_notification\\_cache (noch nicht benutzt)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "users\\_lost\\_password\\_token (tokens provided to change a forgotten "
 "password)"
@@ -1948,12 +2020,12 @@ msgstr ""
 "vergessenes Passwort zu ändern)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "users\\_privileges (the privileges of the user accounts)"
 msgstr "users\\_privileges (die Berechtigungen der Benutzerkonten)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid ""
 "users (the user accounts; there has to be exacly one employee for every user "
 "account; there may be employees without user accounts)"
@@ -1963,12 +2035,12 @@ msgstr ""
 "existieren)"
 
 #. type: itemize
-#: documentation_developer.tex:83
+#: documentation_developer.tex:82
 msgid "Wunschplan (obsolete)"
 msgstr "Wunschplan (obsolet)"
 
 #. type: Plain text
-#: documentation_developer.tex:89
+#: documentation_developer.tex:88
 msgid ""
 "A copy of all the table structures is stored in \\directory{src/sql/}.  The "
 "directory also contains the file \\directory{src/sql/database\\_version"
@@ -1986,12 +2058,12 @@ msgstr ""
 "in jener Datei."
 
 #. type: subsubsection{#2}
-#: documentation_developer.tex:93
+#: documentation_developer.tex:92
 msgid "Maintenance of the database"
 msgstr "Pflege der Datenbank"
 
 #. type: Plain text
-#: documentation_developer.tex:93
+#: documentation_developer.tex:92
 msgid ""
 "There is a class \\emph{update\\_database}.  This class holds a defined set "
 "of MySQL statements that alter the database structure from a known state in "
@@ -2002,7 +2074,7 @@ msgstr ""
 "bekannten Zustand in der Vergangenheit in den aktuellen Zustand versetzen."
 
 #. type: Plain text
-#: documentation_developer.tex:95
+#: documentation_developer.tex:94
 msgid ""
 "This class is not well tested. It might work. It might as well destroy the "
 "whole database."
@@ -2011,7 +2083,7 @@ msgstr ""
 "auch die gesamte Datenbank zerstören."
 
 #. type: Plain text
-#: documentation_developer.tex:98
+#: documentation_developer.tex:97
 msgid ""
 "The class \\emph{update\\_database} is called on every login of a user. It "
 "then decides on its own, if any actions have to be taken.  In order to "
@@ -2027,12 +2099,12 @@ msgstr ""
 "\\_database\\_version\\_hash}."
 
 #. type: paragraph{#2}
-#: documentation_developer.tex:101
+#: documentation_developer.tex:100
 msgid "Auto healing tables"
 msgstr "Selbstheilende Tabellen"
 
 #. type: Plain text
-#: documentation_developer.tex:101
+#: documentation_developer.tex:100
 msgid ""
 "The class \\emph{database\\_wrapper} has a function \\emph{create\\_table"
 "\\_from\\_template()} that is able to create missing tables from the "
@@ -2047,12 +2119,12 @@ msgstr ""
 "Ausnahme mit dem Code 42S02 und dem MySQL-Fehler 1146 wirft."
 
 #. type: subsection{#2}
-#: documentation_developer.tex:105
+#: documentation_developer.tex:104
 msgid "Classes"
 msgstr "Klassen"
 
 #. type: Plain text
-#: documentation_developer.tex:105
+#: documentation_developer.tex:104
 msgid ""
 "The classes are stored in the folder \\directory{src/php/classes/} or "
 "\\directory{src/php/3rdparty/}.  The autoloader will only load classes from "
@@ -2065,12 +2137,12 @@ msgstr ""
 "andere Klasse muss manuell geladen werden."
 
 #. type: subsubsection{#2}
-#: documentation_developer.tex:108
+#: documentation_developer.tex:107
 msgid "user"
 msgstr "Benutzer"
 
 #. type: Plain text
-#: documentation_developer.tex:108
+#: documentation_developer.tex:107
 msgid ""
 "The user class represents an employee, who has registered a user account in "
 "PDR."
@@ -2079,17 +2151,17 @@ msgstr ""
 "registriert hat."
 
 #. type: subsubsection{#2}
-#: documentation_developer.tex:115
+#: documentation_developer.tex:114
 msgid "user\\_input"
 msgstr "user\\_input"
 
 #. type: paragraph{#2}
-#: documentation_developer.tex:115
+#: documentation_developer.tex:114
 msgid "\\lstinline|user_input::get_variable_from_any_input|"
 msgstr "\\lstinline|user_input::get_variable_from_any_input|"
 
 #. type: Plain text
-#: documentation_developer.tex:115
+#: documentation_developer.tex:114
 msgid ""
 "This function reads user input from POST, GET or COOKIE in that order.  If "
 "the requested information is found in one of the sources, then the others "
@@ -2107,12 +2179,12 @@ msgstr ""
 "werden, wird ein Standardwert (der dritte Parameter) zurückgegeben."
 
 #. type: paragraph{#2}
-#: documentation_developer.tex:130
+#: documentation_developer.tex:129
 msgid "\\lstinline|escape_sql_value|"
 msgstr "\\lstinline|escape_sql_value|"
 
 #. type: Plain text
-#: documentation_developer.tex:130
+#: documentation_developer.tex:129
 msgid ""
 "foo \\paragraph{\\lstinline|convert_post_empty_to_php_null|} foo "
 "\\paragraph{\\lstinline|"
@@ -2149,12 +2221,12 @@ msgstr ""
 "\\paragraph{\\lstinline|roster_write_user_input_to_database|} foo"
 
 #. type: subsection{#2}
-#: documentation_developer.tex:137
+#: documentation_developer.tex:136
 msgid "Web Interface"
 msgstr "Web-Interface"
 
 #. type: Plain text
-#: documentation_developer.tex:143
+#: documentation_developer.tex:142
 msgid ""
 "The script does not discriminate between information sent by POST, GET or "
 "COOKIE.  See \\lstinline|user_input::get_variable_from_any_input| for "
@@ -2170,12 +2242,12 @@ msgstr ""
 "date.php} für Details."
 
 #. type: section{#2}
-#: documentation_developer.tex:148
+#: documentation_developer.tex:147
 msgid "Documentation"
 msgstr "Dokumentation"
 
 #. type: Plain text
-#: documentation_developer.tex:148
+#: documentation_developer.tex:147
 msgid ""
 "This documentation about a programm, app or script is a stub. You can help "
 "this project by expanding it.  Seriously, if there is something that does "
@@ -2187,17 +2259,17 @@ msgstr ""
 "eine E-Mail oder kontaktiert mich bei GitHub!"
 
 #. type: section{#2}
-#: documentation_developer.tex:151
+#: documentation_developer.tex:150
 msgid "Testing"
 msgstr "Testen"
 
 #. type: section{#2}
-#: documentation_developer.tex:155
+#: documentation_developer.tex:154
 msgid "Bug tracker"
 msgstr "Bug Tracker"
 
 #. type: Plain text
-#: documentation_developer.tex:155
+#: documentation_developer.tex:154
 msgid ""
 "Bugs and Issues are tracked at GitHub \\url{https://github.com/MaMaKow/"
 "dienstplan-apotheke/issues}"
@@ -2206,17 +2278,17 @@ msgstr ""
 "MaMaKow/dienstplan-apotheke/issues}"
 
 #. type: section{#2}
-#: documentation_developer.tex:159
+#: documentation_developer.tex:158
 msgid "Translation"
 msgstr "Übersetzung"
 
 #. type: Plain text
-#: documentation_developer.tex:159
+#: documentation_developer.tex:158
 msgid "Translations are handled with gettext()."
 msgstr "Übersetzungen werden mit gettext () verwaltet."
 
 #. type: Plain text
-#: documentation_developer.tex:162
+#: documentation_developer.tex:161
 msgid ""
 "See this article about po4a about the translation of this document: "
 "\\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}"
@@ -2225,18 +2297,21 @@ msgstr ""
 "\\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}"
 
 #. type: subsection{#2}
-#: documentation_developer.tex:164
+#: documentation_developer.tex:163
 msgid "Internationalization"
 msgstr "Internationalisierung"
 
 #. type: Plain text
-#: documentation_developer.tex:164
+#: documentation_developer.tex:163
 msgid ""
 "Different countries have different laws regarding pharmacies and employment. "
 "They also have different holidays."
 msgstr ""
 "Verschiedene Länder haben unterschiedliche Gesetze in Bezug auf Apotheken "
 "und Beschäftigung. Sie haben auch unterschiedliche Feiertage."
+
+#~ msgid "Grundplan\\_roll (not used yet)"
+#~ msgstr "Grundplan\\_roll (noch nicht benutzt)"
 
 #~ msgid "The classes are stored in the folder \\directory{src/php/classes/}."
 #~ msgstr ""

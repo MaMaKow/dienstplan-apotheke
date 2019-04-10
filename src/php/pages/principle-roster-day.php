@@ -18,21 +18,24 @@
  */
 
 require '../../../default.php';
-#Diese Seite wird den kompletten Grundplan eines einzelnen Wochentages anzeigen.
 
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
-$alternating_week_id = user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT, alternating_week::get_min_alternating_week_id());
+$employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+$branch_id = (int) user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+$weekday = (int) user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
+$alternating_week_id = (int) user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT, alternating_week::get_min_alternating_week_id());
+if (!in_array($alternating_week_id, alternating_week::get_alternating_week_ids())) {
+    $alternating_week_id = alternating_week::get_min_alternating_week_id();
+}
+$alternating_week = new alternating_week($alternating_week_id);
+$date_object = $alternating_week->get_sunday_date_for_alternating_week();
+$date_object->add(new DateInterval('P' . $weekday . 'D'));
 create_cookie('mandant', $branch_id, 30);
 /*
  * weekday
  */
-$weekday = user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
+create_cookie('alternating_week_id', $alternating_week_id, 1);
 create_cookie('weekday', $weekday, 1);
-$pseudo_date_unix = time() + ($weekday - date('w')) * PDR_ONE_DAY_IN_SECONDS;
-$pseudo_date_sql = date('Y-m-d', $pseudo_date_unix);
-$workforce = new workforce();
-
+$workforce = new workforce($date_object->format('Y-m-d'));
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     user_input::principle_roster_write_user_input_to_database($branch_id);
 }
@@ -40,8 +43,12 @@ if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
     $principle_roster_copy_from = filter_input(INPUT_POST, 'principle_roster_copy_from', FILTER_SANITIZE_STRING);
     user_input::principle_roster_copy_from($principle_roster_copy_from);
 }
+if (filter_has_var(INPUT_POST, 'principle_roster_delete')) {
+    $principle_roster_delete = filter_input(INPUT_POST, 'principle_roster_delete', FILTER_SANITIZE_STRING);
+    user_input::principle_roster_delete($principle_roster_delete);
+}
 
-$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql);
+$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_object);
 
 
 $VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
@@ -50,16 +57,17 @@ $VKmax = max(array_keys($workforce->List_of_employees));
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-
+$user_dialog = new user_dialog;
+echo $user_dialog->build_messages();
 //Hier beginnt die Normale Ausgabe.
-echo "<H1>Grundplan Tagesansicht</H1>\n";
+echo "<H1>" . gettext('Principle roster daily') . "</H1>\n";
 echo "<div id=main-area>\n";
-echo build_html_navigation_elements::build_select_branch($branch_id, $pseudo_date_sql);
+echo build_html_navigation_elements::build_select_branch($branch_id, $date_object->format('Y-m-d'));
 //Auswahl des Wochentages
 echo build_html_navigation_elements::build_select_weekday($weekday);
 echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday);
 echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
-//echo build_html_navigation_elements::build_button_principle_roster_new($alternating_week_id);
+echo build_html_navigation_elements::build_button_principle_roster_delete($alternating_week_id);
 
 echo "<div id=navigation_elements>";
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
@@ -68,7 +76,7 @@ $html_text = '';
 $html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
 $html_text .= "<table>\n";
 $max_employee_count = roster::calculate_max_employee_count($Principle_roster);
-$day_iterator = $pseudo_date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
+$day_iterator = $date_object->getTimestamp(); //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
     $html_text .= "<tr>\n";
     foreach (array_keys($Principle_roster) as $day_iterator) {
@@ -89,7 +97,7 @@ if (!empty($Principle_roster)) {
     echo "<br>\n";
     $Changing_times = roster::calculate_changing_times($Principle_roster);
     $Attendees = roster_headcount::headcount_roster($Principle_roster, $Changing_times);
-    echo roster_image_histogramm::draw_image_histogramm($Principle_roster, $branch_id, $Attendees, $pseudo_date_unix);
+    echo roster_image_histogramm::draw_image_histogramm($Principle_roster, $branch_id, $Attendees, $date_object->getTimestamp());
     echo "</div>\n";
     echo "</div>\n";
 }

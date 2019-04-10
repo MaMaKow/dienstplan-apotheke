@@ -131,8 +131,10 @@ abstract class build_html_navigation_elements {
         return $forward_button_week_img;
     }
 
-    public static function build_button_link_download_ics_file($date_sql, $employee_id) {
-        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php?employee_id=$employee_id&date_string=$date_sql' method='get'>"
+    public static function build_button_link_download_ics_file(string $date_sql, int $employee_id) {
+        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php' method='get' id='download_ics_file_form'>"
+                . "<input type='hidden' name='date_string' value='$date_sql' form='download_ics_file_form'>"
+                . "<input type='hidden' name='employee_id' value='$employee_id' form='download_ics_file_form'>"
                 . " <button type='submit' class='btn-primary no_print' "
                 . " title='" . gettext("Download iCalendar file") . "'>"
                 . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
@@ -144,13 +146,11 @@ abstract class build_html_navigation_elements {
 
     public static function build_button_submit($form_id) {
         global $session;
-        $input_disabled = '';
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
-            $input_disabled = 'disabled';
+            return NULL;
         }
-
         $submit_button = "
-        <button type='submit' id='submit_button' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id' $input_disabled>
+        <button type='submit' id='submit_button' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id'>
                 <i class='icon-white'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' class='button-image' alt='" . gettext("Save") . "' >
                 </i>
@@ -283,15 +283,35 @@ abstract class build_html_navigation_elements {
         return $html;
     }
 
+    public static function build_button_principle_roster_delete($alternating_week_id) {
+        global $session;
+        if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+            return NULL;
+        }
+        if (!alternating_week::alternations_exist()) {
+            return NULL;
+        }
+        $button_img = "<form class='inline_form' action='' method='post' id='principle_roster_delete'>
+            <input type='hidden' form='principle_roster_delete' name='principle_roster_delete' value=$alternating_week_id>
+		<button type='submit' class='btn-primary no_print'>
+			<i>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.svg' class='button-image' alt='" . gettext("Delete") . "'>
+			</i>
+			<br>
+			" . gettext("Delete") . "
+		</button>
+            </form>\n";
+        return $button_img;
+    }
+
     public static function build_button_principle_roster_copy($alternating_week_id) {
         global $session;
-        $input_disabled = '';
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
-            $input_disabled = 'disabled';
+            return NULL;
         }
         $button_img = "<form class='inline_form' action='' method='post' id='principle_roster_copy_form'>
             <input type='hidden' form='principle_roster_copy_form' name='principle_roster_copy_from' value=$alternating_week_id>
-		<button type='submit' class='btn-primary no_print' $input_disabled>
+		<button type='submit' class='btn-primary no_print'>
 			<i>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/copy.svg' class='button-image' alt='" . gettext("Copy") . "'>
 			</i>
@@ -300,10 +320,6 @@ abstract class build_html_navigation_elements {
 		</button>
             </form>\n";
         return $button_img;
-    }
-
-    public static function build_button_principle_roster_new($alternating_week_id) {
-        throw new Exception('Not implemented yet');
     }
 
     public static function build_select_alternating_week($alternating_week_id, $weekday) {
@@ -317,7 +333,6 @@ abstract class build_html_navigation_elements {
         foreach ($Alternating_week_ids as $alternating_week_id_current) {
             $alternating_week = new alternating_week($alternating_week_id_current);
             $example_sunday = $alternating_week->get_sunday_date_for_alternating_week();
-            print_debug_variable($example_sunday);
             $example_date = $example_sunday->add(new DateInterval('P' . $weekday . 'D'));
             $alternating_week_id_string = chr(65 + $alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
             if ($alternating_week_id != $alternating_week_id_current) {

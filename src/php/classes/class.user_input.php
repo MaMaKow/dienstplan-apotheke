@@ -45,57 +45,9 @@ abstract class user_input {
         }
     }
 
-    public static function principle_employee_roster_write_user_input_to_database($employee_id) {
+    public static function principle_employee_roster_write_user_input_to_database(int $employee_id) {
         $Principle_employee_roster_new = user_input::get_Roster_from_POST_secure();
-        database_wrapper::instance()->beginTransaction();
-        $sql_query = "DELETE FROM `Grundplan` WHERE `VK` = :employee_id";
-        database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
-        foreach ($Principle_employee_roster_new as $Principle_employee_roster_new_day_array) {
-            foreach ($Principle_employee_roster_new_day_array as $principle_employee_roster_new_object) {
-                if (NULL === $principle_employee_roster_new_object->employee_id) {
-                    /*
-                     * Just an empty row.
-                     */
-                    continue;
-                }
-                if ($employee_id != $principle_employee_roster_new_object->employee_id) {
-                    /*
-                     * The input must not contain any other employee.
-                     * We roll back the transaction here.
-                     */
-                    database_wrapper::instance()->rollBack();
-                    error_log('$employee_id is not equal to $principle_employee_roster_new_object->employee_id ' . "in " . __METHOD__ . " " . $employee_id . "!=" . $principle_employee_roster_new_object->employee_id);
-                    return FALSE;
-                }
-                if (NULL === $principle_employee_roster_new_object->duty_start_sql) {
-                    /*
-                     * The input must contain at least a starting time and and end of duty.
-                     */
-                    continue;
-                }
-                if (NULL === $principle_employee_roster_new_object->duty_end_sql) {
-                    /*
-                     * The input must contain at least a starting time and and end of duty.
-                     */
-                    continue;
-                }
-                $sql_query = "INSERT INTO `Grundplan` "
-                        . "(VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar) "
-                        . "VALUES (:employee_id, :weekday, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment)";
-                database_wrapper::instance()->run($sql_query, array(
-                    'employee_id' => $principle_employee_roster_new_object->employee_id,
-                    'weekday' => date('w', $principle_employee_roster_new_object->date_unix),
-                    'duty_start_sql' => $principle_employee_roster_new_object->duty_start_sql,
-                    'duty_end_sql' => $principle_employee_roster_new_object->duty_end_sql,
-                    'break_start_sql' => $principle_employee_roster_new_object->break_start_sql,
-                    'break_end_sql' => $principle_employee_roster_new_object->break_end_sql,
-                    'working_hours' => $principle_employee_roster_new_object->working_hours,
-                    'branch_id' => $principle_employee_roster_new_object->branch_id,
-                    'comment' => $principle_employee_roster_new_object->comment,
-                ));
-            }
-        }
-        database_wrapper::instance()->commit();
+        principle_roster::write_employee_user_input_to_database($employee_id, $Principle_employee_roster_new);
     }
 
     public static function principle_roster_copy_from($principle_roster_copy_from) {
@@ -104,27 +56,29 @@ abstract class user_input {
         alternating_week::create_alternation_copy_from_principle_roster($principle_roster_copy_from);
     }
 
-    public static function principle_roster_create_empty() {
+    public static function principle_roster_delete($principle_roster_delete) {
         global $session;
         $session->exit_on_missing_privilege(sessions::PRIVILEGE_CREATE_ROSTER);
-        alternating_week::create_alternation_empty();
+        alternating_week::delete_alternation($principle_roster_delete);
     }
 
     public static function principle_roster_write_user_input_to_database($branch_id) {
         global $session;
         $session->exit_on_missing_privilege('create_roster');
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
-        $pseudo_date_sql_start = date('Y-m-d', min(array_keys($Principle_roster_new)));
-        $pseudo_date_sql_end = date('Y-m-d', max(array_keys($Principle_roster_new)));
-        $Principle_roster_old = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_sql_start, $pseudo_date_sql_end);
+        $pseudo_date_start_object = new DateTime();
+        $pseudo_date_start_object->setTimestamp(min(array_keys($Principle_roster_new)));
+        $pseudo_date_end_object = new DateTime();
+        $pseudo_date_end_object->setTimestamp(max(array_keys($Principle_roster_new)));
+        $Principle_roster_old = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
         $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
         $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
         database_wrapper::instance()->beginTransaction();
-        user_input::remove_changed_entries_from_database_principle_roster($branch_id, $Deleted_roster_employee_id_list);
-        user_input::remove_changed_entries_from_database_principle_roster($branch_id, $Changed_roster_employee_id_list);
-        user_input::insert_changed_entries_into_database_principle_roster($Principle_roster_new, $Changed_roster_employee_id_list);
-        user_input::insert_changed_entries_into_database_principle_roster($Principle_roster_new, $Inserted_roster_employee_id_list);
+        principle_roster::remove_changed_employee_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
+        principle_roster::remove_changed_employee_entries_from_database($branch_id, $Changed_roster_employee_id_list);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list);
         database_wrapper::instance()->commit();
     }
 
@@ -141,16 +95,24 @@ abstract class user_input {
                 $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
                 $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
                 $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_STRING));
-                if ('' !== $employee_id) {
-                    /*
-                     * TODO: This test might be a bit more complex.
-                     * This might even be a good place to insert some sanity checks.
-                     * e.g. Is the end after the beginning? Is the break within the duty time? Are there no overlapping duties for the same employee?
-                     * roster_item::check_roster_item_sequence();
-                     */
-                    $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
-                } else {
+                if ('' === $employee_id) {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                    continue;
+                }
+                if (NULL === $duty_start_sql) {
+                    $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                    continue;
+                }
+                if (NULL === $duty_end_sql) {
+                    $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                    continue;
+                }
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
+                try {
+                    $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
+                } catch (PDRRosterLogicException $exception) {
+                    $user_dialog = new user_dialog();
+                    $user_dialog->add_message($exception->getMessage());
                 }
             }
         }
@@ -167,20 +129,6 @@ abstract class user_input {
                         . " AND `VK` IN ($IN_placeholder)"
                         . " AND `Mandant` = :branch_id";
                 database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array('date' => $date_sql, 'branch_id' => $branch_id)));
-            }
-        }
-    }
-
-    private static function remove_changed_entries_from_database_principle_roster($branch_id, $Employee_id_list) {
-        foreach ($Employee_id_list as $date_unix => $Employee_id_list_day) {
-            $weekday = date('w', $date_unix);
-            if (!empty($Employee_id_list_day)) {
-                list($IN_placeholder, $IN_employees_list) = database_wrapper::create_placeholder_for_mysql_IN_function($Employee_id_list_day, TRUE);
-                $sql_query = "DELETE FROM `Grundplan`"
-                        . " WHERE `Wochentag` = :weekday"
-                        . " AND `VK` IN ($IN_placeholder)"
-                        . " AND `Mandant` = :branch_id";
-                database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array('weekday' => $weekday, 'branch_id' => $branch_id)));
             }
         }
     }
@@ -207,7 +155,9 @@ abstract class user_input {
                  * TODO: Should we use an INSERT ON DUPLICATE UPDATE here instead of the REPLACE?
                  * Are there any advantages to that?
                  */
-                $sql_query = 'REPLACE INTO `Dienstplan` (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user) VALUES (:employee_id, :date_sql, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment, :user_name)';
+                $sql_query = 'REPLACE INTO `Dienstplan` '
+                        . ' (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user) '
+                        . ' VALUES (:employee_id, :date_sql, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment, :user_name)';
                 database_wrapper::instance()->run($sql_query, array(
                     'employee_id' => $roster_row_object->employee_id,
                     'date_sql' => $roster_row_object->date_sql,
@@ -219,39 +169,6 @@ abstract class user_input {
                     'branch_id' => $roster_row_object->branch_id,
                     'comment' => $roster_row_object->comment,
                     'user_name' => $_SESSION['user_object']->user_name,
-                ));
-            }
-        }
-    }
-
-    private static function insert_changed_entries_into_database_principle_roster($Roster, $Changed_roster_employee_id_list) {
-        foreach ($Roster as $date_unix => $Roster_day_array) {
-            if (!isset($Changed_roster_employee_id_list[$date_unix])) {
-                /* There are no changes. */
-                continue;
-            }
-            foreach ($Roster_day_array as $roster_row_object) {
-                if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
-                    continue;
-                }
-                if (NULL === $roster_row_object->employee_id) {
-                    continue;
-                }
-                /*
-                 * TODO: Should we use an INSERT ON DUPLICATE UPDATE here instead of the REPLACE?
-                 * Are there any advantages to that?
-                 */
-                $sql_query = "REPLACE INTO `Grundplan` (VK, Wochentag, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar) VALUES (:employee_id, :weekday, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment)";
-                database_wrapper::instance()->run($sql_query, array(
-                    'employee_id' => $roster_row_object->employee_id,
-                    'weekday' => date('w', $roster_row_object->date_unix),
-                    'duty_start_sql' => $roster_row_object->duty_start_sql,
-                    'duty_end_sql' => $roster_row_object->duty_end_sql,
-                    'break_start_sql' => $roster_row_object->break_start_sql,
-                    'break_end_sql' => $roster_row_object->break_end_sql,
-                    'working_hours' => $roster_row_object->working_hours,
-                    'branch_id' => $roster_row_object->branch_id,
-                    'comment' => $roster_row_object->comment,
                 ));
             }
         }
@@ -296,7 +213,7 @@ abstract class user_input {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Roster_old[$date_unix])) {
                 /*
-                 * There is no old roster every entry is new:
+                 * There is no old roster. Every entry is new:
                  */
                 foreach ($Roster_day_array as $roster_row_object) {
                     if (NULL === $roster_row_object->employee_id) {
@@ -322,11 +239,12 @@ abstract class user_input {
                              * CAVE: This will also put any employee on the list, who is on the roster more than once.
                              */
                             $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
-                        } else {
-                            /*
-                             * Everything stayed the same for this employee there is nothing to add to the list.
-                             */
+                            continue;
                         }
+                        /*
+                         * Everything stayed the same for this employee there is nothing to add to the list.
+                         */
+                        continue;
                     }
                 }
             }

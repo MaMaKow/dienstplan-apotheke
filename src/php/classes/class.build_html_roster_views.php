@@ -311,7 +311,7 @@ abstract class build_html_roster_views {
                     $table_html .= "<td><!--No more data in roster--></td>\n";
                     continue;
                 }
-                $roster_object = $Roster[$date_unix][$table_row_iterator];
+                $roster_item = $Roster[$date_unix][$table_row_iterator];
                 /*
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
@@ -325,15 +325,15 @@ abstract class build_html_roster_views {
                 $zeile = "";
 
                 $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
-                        . "datum=" . htmlentities($roster_object->date_sql)
-                        . "&employee_id=" . htmlentities($roster_object->employee_id) . "'>";
-                if (isset($workforce->List_of_employees[$roster_object->employee_id]->last_name)) {
-                    $zeile .= $workforce->List_of_employees[$roster_object->employee_id]->last_name;
+                        . "datum=" . htmlentities($roster_item->date_sql)
+                        . "&employee_id=" . htmlentities($roster_item->employee_id) . "'>";
+                if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
+                    $zeile .= $workforce->List_of_employees[$roster_item->employee_id]->last_name;
                 } else {
-                    $zeile .= "Unknown employee: " . $roster_object->employee_id;
+                    $zeile .= "Unknown employee: " . $roster_item->employee_id;
                 }
                 $zeile .= "</a></b> / <span class='roster_working_hours'>";
-                $zeile .= htmlentities($roster_object->working_hours);
+                $zeile .= htmlentities($roster_item->working_hours);
                 $zeile .= "&nbsp;h</span><!-- roster_working_hours --></span><!-- employee_and_hours --> ";
                 if (isset($Options['space_constraints']) and 'narrow' === $Options['space_constraints']) {
                     $zeile .= " <br> ";
@@ -344,10 +344,10 @@ abstract class build_html_roster_views {
                  * start and end of duty
                  */
                 $zeile .= "<span class='duty_time'>";
-                $zeile .= self::build_roster_readonly_table_add_time($roster_object, 'duty_start_sql');
+                $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_start_sql');
                 $zeile .= " - ";
-                $zeile .= self::build_roster_readonly_table_add_time($roster_object, 'duty_end_sql');
-                if (!empty($roster_object->comment)) {
+                $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_end_sql');
+                if (!empty($roster_item->comment)) {
                     /*
                      * In case, there is a comment available, add a hint in form of a single letter.
                      * That single letter is the first letter of the word Comment (in the chosen language).
@@ -363,12 +363,12 @@ abstract class build_html_roster_views {
                 } else {
                     $zeile .= "<span class='vertical_spacer'></span>";
                 }
-                if ($roster_object->break_start_int > 0) {
+                if ($roster_item->break_start_int > 0) {
                     $zeile .= "<span class='break_time'>";
                     $zeile .= " " . gettext("break") . ": ";
-                    $zeile .= "<span class='time'>" . htmlentities($roster_object->break_start_sql) . "</span>";
+                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_start_sql) . "</span>";
                     $zeile .= " - ";
-                    $zeile .= "<span class='time'>" . htmlentities($roster_object->break_end_sql) . "</span>";
+                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_end_sql) . "</span>";
                     $zeile .= "</span><!-- class='break_time' -->";
                 }
                 $table_html .= $zeile;
@@ -381,11 +381,11 @@ abstract class build_html_roster_views {
         return $table_html;
     }
 
-    private static function build_roster_readonly_table_add_time($roster_object, $parameter) {
-        if (self::equals_principle_roster($roster_object, $parameter)) {
-            $html = "<span class='time'>" . htmlentities($roster_object->$parameter) . "</span>";
+    private static function build_roster_readonly_table_add_time($roster_item, $parameter) {
+        if (self::equals_principle_roster($roster_item, $parameter)) {
+            $html = "<span class='time'>" . htmlentities($roster_item->$parameter) . "</span>";
         } else {
-            $html = "<span class='time'><strong>" . htmlentities($roster_object->$parameter) . "</strong></span>";
+            $html = "<span class='time'><strong>" . htmlentities($roster_item->$parameter) . "</strong></span>";
         }
         return $html;
     }
@@ -401,9 +401,11 @@ abstract class build_html_roster_views {
 
         $max_employee_count = roster::calculate_max_employee_count($Roster);
         $List_of_date_unix_in_roster = array_keys($Roster);
-        $date_sql_start = date('Y-m-d', min($List_of_date_unix_in_roster));
-        $date_sql_end = date('Y-m-d', max($List_of_date_unix_in_roster));
-        $Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
+        $date_start_object = new DateTime();
+        $date_start_object->setTimestamp(min($List_of_date_unix_in_roster));
+        $date_end_object = new DateTime();
+        $date_end_object->setTimestamp(max($List_of_date_unix_in_roster));
+        $Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_start_object, $date_end_object);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
@@ -414,7 +416,7 @@ abstract class build_html_roster_views {
                     $table_html .= "<td><!--No more data in roster--></td>\n";
                     continue;
                 }
-                $roster_object = $Roster[$date_unix][$table_row_iterator];
+                $roster_item = $Roster[$date_unix][$table_row_iterator];
                 /*
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
@@ -427,7 +429,7 @@ abstract class build_html_roster_views {
                 $table_html .= "<td>";
                 $zeile = "";
 
-                if (isset($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                if (isset($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_item->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
                     $emphasis_start = "<strong>"; //Significant emphasis
                     $emphasis_end = "</strong>"; //Significant emphasis
                 } else {
@@ -435,22 +437,22 @@ abstract class build_html_roster_views {
                     $emphasis_end = ""; //No emphasis
                 }
                 $zeile .= "$emphasis_start";
-                $zeile .= htmlentities($roster_object->duty_start_sql);
+                $zeile .= htmlentities($roster_item->duty_start_sql);
                 $zeile .= " - ";
-                $zeile .= htmlentities($roster_object->duty_end_sql);
+                $zeile .= htmlentities($roster_item->duty_end_sql);
                 $zeile .= " / ";
-                $zeile .= htmlentities($roster_object->working_hours);
+                $zeile .= htmlentities($roster_item->working_hours);
                 $zeile .= "&nbsp;h";
                 $zeile .= "<br>\n";
-                if ($roster_object->break_start_int > 0) {
+                if ($roster_item->break_start_int > 0) {
                     $zeile .= " " . gettext("break") . ": ";
-                    $zeile .= htmlentities($roster_object->break_start_sql);
+                    $zeile .= htmlentities($roster_item->break_start_sql);
                     $zeile .= " - ";
-                    $zeile .= htmlentities($roster_object->break_end_sql);
+                    $zeile .= htmlentities($roster_item->break_end_sql);
                 }
                 $zeile .= "$emphasis_end";
                 $zeile .= "<br>";
-                $zeile .= htmlentities($List_of_branch_objects[$roster_object->branch_id]->short_name);
+                $zeile .= htmlentities($List_of_branch_objects[$roster_item->branch_id]->short_name);
                 $table_html .= $zeile;
                 $table_html .= "</td>\n";
             }
@@ -524,7 +526,8 @@ abstract class build_html_roster_views {
         }
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
-            $weekday = date('N', $date_unix);
+            $date_object = new DateTime;
+            $date_object->setTimestamp($date_unix);
             $holiday = holidays::is_holiday($date_unix);
             $Absentees = absence::read_absentees_from_database($date_sql);
             /**
@@ -538,9 +541,8 @@ abstract class build_html_roster_views {
              */
             if (FALSE !== $holiday) {
                 foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-                    if (!empty($employee_object->Principle_roster[$weekday])) {
-                        $number_of_working_days_per_week = count($employee_object->Principle_roster);
-                        $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / $number_of_working_days_per_week;
+                    if (!empty($employee_object->get_principle_roster_on_date($date_object))) {
+                        $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / $employee_object->working_week_days;
                     }
                 }
             }
@@ -556,15 +558,14 @@ abstract class build_html_roster_views {
         return $Working_hours_week_should;
     }
 
-    public static function equals_principle_roster($roster_object, $parameter) {
+    public static function equals_principle_roster($roster_item, $parameter) {
         global $workforce;
-        $employee_id = $roster_object->employee_id;
-        $weekday = $roster_object->weekday;
-        if (!isset($workforce->List_of_employees[$employee_id]->Principle_roster[$weekday])) {
+        $employee_id = $roster_item->employee_id;
+        if (null === $workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object)) {
             return FALSE;
         }
-        foreach ($workforce->List_of_employees[$employee_id]->Principle_roster[$weekday] as $principle_roster_item) {
-            if ($principle_roster_item->$parameter == $roster_object->$parameter) {
+        foreach ($workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object) as $principle_roster_item) {
+            if ($principle_roster_item->$parameter == $roster_item->$parameter) {
                 return TRUE;
             }
         }

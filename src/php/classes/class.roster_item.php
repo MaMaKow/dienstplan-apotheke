@@ -27,6 +27,7 @@ class roster_item {
 
     public $date_sql;
     public $date_unix;
+    public $date_object;
     public $employee_id;
     public $branch_id;
     public $comment;
@@ -71,8 +72,9 @@ class roster_item {
         }
     }
 
-    public function __construct($date_sql, int $employee_id = NULL, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment = NULL) {
+    public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
+        $this->date_object = new DateTime($date_sql);
         $this->date_unix = strtotime($date_sql);
         $this->employee_id = $employee_id;
         $this->branch_id = (int) $branch_id;
@@ -160,14 +162,12 @@ class roster_item {
         return ($hours * 3600 ) + ($mins * 60 ) + $secs;
     }
 
-    private function check_roster_item_sequence() {
-        //TODO: Move this validation into the submiting of the form. That is the place to block wrong entries.
+    public function check_roster_item_sequence() {
         try {
             if ($this->break_end_int > $this->duty_end_int) {
                 throw new Exception('The break starts, before it ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
             }
             if (!empty($this->break_start_int) and $this->break_start_int < $this->duty_start_int) {
-                echo "Exception" . $this->employee_id . "<br>\n";
                 throw new Exception('The break starts, before duty begins.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
             }
             if ($this->break_end_int < $this->break_start_int) {

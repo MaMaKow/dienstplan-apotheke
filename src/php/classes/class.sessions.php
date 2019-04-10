@@ -206,12 +206,18 @@ class sessions {
             return $errorMessage;
         }
 
-//Check the password:
+        /*
+         * Check the password:
+         */
         if (NULL !== $user && $user->password_verify($user_password)) {
-//Fill $_SESSION data on success:
+            /*
+             * Fill $_SESSION data on success:
+             */
             session_regenerate_id(); //To prevent session fixation attacks we regenerate the session id right before setting up login details.
             $_SESSION['user_object'] = $user;
-//Reset failed_login_attempts
+            /*
+             * Reset failed_login_attempts
+             */
             $user->reset_failed_login_attempts();
 
             /*
@@ -238,11 +244,12 @@ class sessions {
                         header("Location:" . PDR_HTTP_SERVER_APPLICATION_PATH);
                     }
                 }
-            } else {
-                return TRUE;
             }
+            return TRUE;
         } else {
-//Register failed_login_attempts
+            /*
+             * Register failed_login_attempts
+             */
             $user->register_failed_login_attempt();
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);

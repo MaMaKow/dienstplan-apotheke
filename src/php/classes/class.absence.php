@@ -208,7 +208,9 @@ class absence {
         }
     }
 
-    private static function write_absence_data_to_database($employee_object, $beginn, $ende, $reason, $comment = NULL, $approval = 'approved') {
+    private static function write_absence_data_to_database(\employee $employee_object, string $beginn, string $ende, string $reason, string $comment = NULL, string $approval = 'approved') {
+        $date_start_object = new DateTime($beginn);
+        $date_end_object = new DateTime($ende);
         $user_dialog = new user_dialog();
         $employee_id = $employee_object->employee_id;
         /*
@@ -221,7 +223,7 @@ class absence {
         if ($employee_id === FALSE) {
             return FALSE;
         }
-        $days = self::calculate_employee_absence_days($beginn, $ende, $employee_object);
+        $days = self::calculate_employee_absence_days($date_start_object, $date_end_object, $employee_object);
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
             $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
             $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
@@ -233,8 +235,8 @@ class absence {
         try {
             database_wrapper::instance()->run($sql_query, array(
                 'employee_id' => $employee_id,
-                'start' => $beginn,
-                'end' => $ende,
+                'start' => $date_start_object->format('Y-m-d'),
+                'end' => $date_end_object->format('Y-m-d'),
                 'days' => $days,
                 'reason' => $reason,
                 'comment' => $comment,
@@ -262,12 +264,12 @@ class absence {
         return $result;
     }
 
-    public static function calculate_employee_absence_days($start_date_string, $end_date_string, $employee_object) {
+    public static function calculate_employee_absence_days(DateTime $date_start_object, DateTime $date_end_object, employee $employee_object) {
         $user_dialog = new user_dialog();
         $days = 0;
-        for ($date_unix = strtotime($start_date_string); $date_unix <= strtotime($end_date_string); $date_unix = strtotime('+ 1 day', $date_unix)) {
-            $current_week_day_number = date("N", $date_unix);
-            if (!empty($employee_object->Principle_roster[$current_week_day_number])
+        for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
+            $current_week_day_number = $date_object->format('N');
+            if (!empty($employee_object->get_principle_roster_on_date($date_object))
                     or ( 0 === $employee_object->working_week_days and $current_week_day_number < 6)) {
                 /*
                  * The employee normally does not work on this day.
@@ -276,13 +278,13 @@ class absence {
                  *
                  * Or if no principle roster is existent (0 === $employee_object->working_week_days) then Saturday and Sunday are excluded.
                  */
-                $holiday = holidays::is_holiday($date_unix);
+                $holiday = holidays::is_holiday($date_object);
                 if (FALSE !== $holiday) {
                     /*
                      * Holidays are not counted
                      * Also we inform the user about not counting those days.
                      */
-                    $date_string = strftime('%x', $date_unix);
+                    $date_string = strftime('%x', $date_object->getTimestamp());
                     $message = $date_string . " " . gettext('is a holiday') . " (" . $holiday . ") " . gettext('and will not be counted.');
                     $user_dialog->add_message($message, E_USER_NOTICE);
                 } else {
@@ -292,7 +294,7 @@ class absence {
                     $days++;
                 }
             } else {
-                $date_string = strftime('%a %x', $date_unix);
+                $date_string = strftime('%a %x', $date_object->getTimestamp());
                 $message = sprintf(gettext('%1s is not a working day for %2s and will not be counted.'), $date_string, $employee_object->full_name);
                 $user_dialog->add_message($message, E_USER_NOTICE);
             }
@@ -404,27 +406,10 @@ class absence {
              * Für jeden vollen Monat der Betriebszugehörigkeit hat der Mitarbeiter Anspruch auf 1/12 des tariflichen Jahresurlaubs.
              * Besteht das Arbeitsverhältnis länger als sechs Monate, darf der gesetzliche Mindesturlaub von 24 Werktagen nicht unterschritten werden.
              */
-            if ($start_of_employment > $start_of_month or ( $end_of_employment < $end_of_month)) {
+            if ($start_of_employment > $start_of_month or $end_of_employment < $end_of_month) {
                 $number_of_holidays_due -= $number_of_holidays_principle / 12;
             } else {
                 $months_worked_in_this_year++;
-            }
-            if ($months_worked_in_this_year >= 6) {
-                /*
-                 * Mindesturlaubsgesetz für Arbeitnehmer (Bundesurlaubsgesetz)
-                 * § 3 Dauer des Urlaubs
-                 * (1) Der Urlaub beträgt jährlich mindestens 24 Werktage.
-                 * This seems to be the definite minimum whenever at least 6 months have passed in the year
-                 *
-                 * § 4 Wartezeit
-                 * Der volle Urlaubsanspruch wird erstmalig nach sechsmonatigem Bestehen des Arbeitsverhältnisses erworben.
-                 *
-                 * § 5 Teilurlaub
-                 * (1) Anspruch auf ein Zwölftel des Jahresurlaubs für jeden vollen Monat des Bestehens des Arbeitsverhältnisses hat der Arbeitnehmer
-                 * c) wenn er nach erfüllter Wartezeit in der ersten Hälfte eines Kalenderjahrs aus dem Arbeitsverhältnis ausscheidet.
-                 */
-                $legal_minimum_holidays = 24 * ($number_of_working_week_days / 6);
-                $number_of_holidays_due = max($legal_minimum_holidays, $number_of_holidays_due);
             }
             /*
              * TODO:
@@ -437,6 +422,23 @@ class absence {
              *
              * This is facultative and to be decided by the employer.
              */
+        }
+        if ($months_worked_in_this_year >= 6) {
+            /*
+             * Mindesturlaubsgesetz für Arbeitnehmer (Bundesurlaubsgesetz)
+             * § 3 Dauer des Urlaubs
+             * (1) Der Urlaub beträgt jährlich mindestens 24 Werktage.
+             * This seems to be the definite minimum whenever at least 6 months have passed in the year
+             *
+             * § 4 Wartezeit
+             * Der volle Urlaubsanspruch wird erstmalig nach sechsmonatigem Bestehen des Arbeitsverhältnisses erworben.
+             *
+             * § 5 Teilurlaub
+             * (1) Anspruch auf ein Zwölftel des Jahresurlaubs für jeden vollen Monat des Bestehens des Arbeitsverhältnisses hat der Arbeitnehmer
+             * c) wenn er nach erfüllter Wartezeit in der ersten Hälfte eines Kalenderjahrs aus dem Arbeitsverhältnis ausscheidet.
+             */
+            $legal_minimum_holidays = 24 * ($number_of_working_week_days / 6);
+            $number_of_holidays_due = max($legal_minimum_holidays, $number_of_holidays_due);
         }
         /*
          * Mindesturlaubsgesetz für Arbeitnehmer (Bundesurlaubsgesetz)

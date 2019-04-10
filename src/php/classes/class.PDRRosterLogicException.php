@@ -18,10 +18,15 @@
  */
 
 /**
- * Description of class
+ * A PDRRosterLogicException is a situation where the data stored in a roster is not fitting the real word.
+ *   This might be the case if an employee starts working after the end of work (duty_start > duty_end).
+ *   That is a possible case in the input data. And it is possible to store such values in the database.
+ *   But it is not possible to end something before it was started.
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class PDRRosterLogicException extends Exception {
-
+    /*
+     * This space is intentionally left blank.
+     */
 }

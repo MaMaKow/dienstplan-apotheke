@@ -25,6 +25,18 @@ class holidays {
      */
 
     /**
+     *
+     * @var array $Holidays is an array in the format array((int) unix_timestamp => (string) name_of_the_holiday, )
+     */
+    static $Holidays = array();
+
+    /**
+     *
+     * @var int $year the year, which the unix timestamps in the $holidays variable refer to.
+     */
+    static $year;
+
+    /**
      * This function returns an array of timestamp corresponding to french holidays.
      *
      * Taken from http://php.net/manual/en/function.easter-date.php#96686
@@ -35,9 +47,13 @@ class holidays {
      * @param int $year An integer value representing a unix time.
      * @param string $country A country as a distinct national entity in the format ISO 3166 ALPHA-2 (e.g. "DE").
      */
-    private static function get_holidays($year = null, $country = "DE") {
+    private static function get_holidays(int $year = null, string $country = "DE") {
+        if (array() !== self::$Holidays and $year === self::$year) {
+            return self::$Holidays;
+        }
+
         if ($year === null) {
-            $year = intval(date("Y"));
+            $year = intval(date('Y'));
         }
 
         /**
@@ -116,7 +132,8 @@ class holidays {
             default:
                 return FALSE; //No holidays without a country
         }
-
+        self::$Holidays = $Holidays;
+        self::$year = $year;
         return $Holidays;
     }
 
@@ -126,15 +143,20 @@ class holidays {
      * This function returns FALSE if a day is not a holiday.
      * This function returns the string $holiday if a day is a holiday.
      *
-     * @param int $date_unix unix time.
+     * @param DateTime $date_object.
      *
      * @return boolean|string FALSE or name of holiday.
      */
-    public static function is_holiday($date_unix) {
-        $year = intval(date("Y", $date_unix));
+    public static function is_holiday($date_object) {
+        if (!$date_object instanceof DateTime) {
+            $date_unix = $date_object;
+            $date_object = new DateTime;
+            $date_object->setTimestamp($date_unix);
+        }
+        $year = intval($date_object->format('Y'));
         $Holidays = holidays::get_holidays($year); //TODO: The application is oblivious to countries right now. Use $Holidays = get_holidays($year, $country); if that value becomes available.
         foreach ($Holidays as $date => $holiday) {
-            if (date('Y-d-m', $date_unix) === date('Y-d-m', $date)) {
+            if ($date_object->format('Y-d-m') === date('Y-d-m', $date)) {
                 return $holiday;
             }
         }
