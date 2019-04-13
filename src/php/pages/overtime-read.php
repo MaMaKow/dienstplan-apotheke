@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2017 Mandelkow
+ * Copyright (C) 2017 Martin Mandelkow
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -42,20 +42,23 @@ echo "<div id=main-area>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/overtime-edit.php', array('employee_id' => $employee_id));
-echo "</div>\n";
+//echo "</div>\n";
 echo "<table>\n";
-//Überschrift
+/*
+ * table head
+ */
 echo "<thead><tr>\n" .
- "<th>Datum</th>\n" .
- "<th>Grund</th>\n" .
- "<th>Stunden</th>\n" .
- "<th>Saldo</th>\n" .
+ "<th>" . gettext('Date') . "</th>\n" .
+ "<th>" . gettext('Reason') . "</th>\n" .
+ "<th>" . gettext('Hours') . "</th>\n" .
+ "<th>" . gettext('Balance') . "</th>\n" .
  "</tr></thead>\n";
-//Ausgabe
+/*
+ * table body
+ */
 echo "$tablebody";
 echo "</table>\n";
-echo "</form>\n";
-echo "</div>\n";
+echo "</div><!-- id=main-area -->\n";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </body>

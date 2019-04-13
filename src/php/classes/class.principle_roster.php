@@ -355,7 +355,7 @@ class principle_roster extends roster {
                         . " `weekday` = :weekday, "
                         . " `branch_id` = :branch_id, "
                         . " `alternation_id` = :alternation_id, "
-                        . " `duty_start` = :duty_start, `duty_end` = :duty_end, `break_start` = :break_start, `:break_end` = :break_end, "
+                        . " `duty_start` = :duty_start, `duty_end` = :duty_end, `break_start` = :break_start, `break_end` = :break_end, "
                         . " `working_hours` = :working_hours, "
                         . " `comment` = :comment"
                         . ";";

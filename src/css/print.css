@@ -56,22 +56,16 @@ div#table_overlay_area {
     */
 }
 div#weekly_rotation {
-    position: absolute;
+    position: fixed;
     top: 0cm;
     right: 0cm;
-    /*
-    left: 23.7cm;
-    */
     width: 4cm;
     font-size: xx-small;
 }
 div#week_hours_table_div {
-    position: absolute;
+    position: fixed;
     top: 5cm;
     right: 0cm;
-    /*
-    left: 23.7cm;
-    */
     width: 4cm;
     font-size: xx-small;
 }

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2019-04-10 10:59+0100\n"
-"PO-Revision-Date: 2019-04-10 11:00+0100\n"
+"POT-Creation-Date: 2019-04-13 23:07+0100\n"
+"PO-Revision-Date: 2019-04-13 23:07+0100\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -239,6 +239,7 @@ msgid "Comment"
 msgstr "Kommentar"
 
 #: src/php/classes/class.build_html_roster_views.php:274
+#: src/php/pages/principle-roster-employee.php:75
 #: src/php/pages/roster-day-edit.php:152
 #: src/php/pages/roster-employee-table.php:60
 #: src/php/pages/roster-week-table.php:67
@@ -251,7 +252,7 @@ msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
 #: src/php/classes/class.build_html_roster_views.php:485
-#: src/php/pages/principle-roster-employee.php:93
+#: src/php/pages/principle-roster-employee.php:127
 msgid "Hours per week"
 msgstr "Wochenstunden"
 
@@ -493,14 +494,14 @@ msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
 msgid "Employee"
 msgstr "Mitarbeiter"
 
-#: src/php/classes/class.overtime.php:191
+#: src/php/classes/class.overtime.php:191 src/php/pages/overtime-read.php:54
 msgid "Balance"
 msgstr "Saldo"
 
 #: src/php/classes/class.overtime.php:192
 #: src/php/classes/class.roster_item.php:192
 #: src/php/pages/emergency-service-list.php:73
-#: src/php/pages/saturday-list.php:40
+#: src/php/pages/overtime-read.php:51 src/php/pages/saturday-list.php:40
 msgid "Date"
 msgstr "Datum"
 
@@ -736,6 +737,7 @@ msgstr "Ende"
 
 #: src/php/pages/absence-edit.php:131 src/php/pages/absence-read.php:48
 #: src/php/pages/collaborative-vacation-input-box.php:108
+#: src/php/pages/overtime-read.php:52
 msgid "Reason"
 msgstr "Grund"
 
@@ -1098,6 +1100,7 @@ msgid "Full year"
 msgstr "Ganzes Jahr"
 
 #: src/php/pages/menu-tiles.php:25
+#: src/php/pages/principle-roster-employee.php:72
 msgid "Week"
 msgstr "Woche"
 
@@ -1216,6 +1219,14 @@ msgstr "Benutzerverwaltung"
 #: src/php/pages/menu.php:122
 msgid "User page"
 msgstr "Benutzerseite"
+
+#: src/php/pages/overtime-read.php:53
+msgid "Hours"
+msgstr "Stunden"
+
+#: src/php/pages/principle-roster-employee.php:74
+msgid "e.g."
+msgstr "z.B."
 
 #: src/php/pages/reset_lost_password.php:33
 #: src/php/pages/reset_lost_password.php:61

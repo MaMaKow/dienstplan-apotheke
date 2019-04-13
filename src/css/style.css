@@ -23,7 +23,7 @@ html {
 }
 
 body {
-    background-color: #FEFEFF;
+    background-color: #ECE7E8;
     font-family: sans-serif;
 }
 
@@ -116,7 +116,10 @@ main {
 }
 
 div#main-area {
+    /*
     width: 95%;
+    overflow: auto;
+    */
     position: relative;
     float: left;
     clear: left;
@@ -124,7 +127,6 @@ div#main-area {
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 8px;
-    overflow: auto;
 }
 
 table#duty_roster_table {
@@ -781,6 +783,9 @@ div#navigation_elements {
 }
 .inline_element {
     display: inline;
+}
+.inline_block_element {
+    display: inline-block;
 }
 /*
  * <--

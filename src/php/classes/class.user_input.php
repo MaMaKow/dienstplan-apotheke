@@ -46,6 +46,10 @@ abstract class user_input {
     }
 
     public static function principle_employee_roster_write_user_input_to_database(int $employee_id) {
+        global $session;
+        if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+            return FALSE;
+        }
         $Principle_employee_roster_new = user_input::get_Roster_from_POST_secure();
         principle_roster::write_employee_user_input_to_database($employee_id, $Principle_employee_roster_new);
     }
