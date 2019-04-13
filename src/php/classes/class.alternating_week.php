@@ -67,7 +67,7 @@ class alternating_week {
         return $this->sunday_date;
     }
 
-    public function calculate_sunday_date_for_alternating_week() {
+    private function calculate_sunday_date_for_alternating_week() {
         $date_object = new DateTime('this sunday');
         $today_alternating_week_id = self::get_alternating_week_for_date($date_object);
         $difference = $this->alternating_week_id - $today_alternating_week_id;
@@ -90,9 +90,6 @@ class alternating_week {
         $date_difference_in_weeks = self::date_difference_in_weeks($alternation_start_date, $date_object);
         $alternating_week_id = $date_difference_in_weeks % count($Alternating_week_ids);
         /*
-         * TODO: count() is not correct. As long, as there are gaps possible, max would be correct.
-         *   However, we should avoid gaps in the first place.
-         * TODO: We need a function to reorganize the alternating week ids on every deletion or addition.
          * TODO: Should we store the result in a private static Array?
          *   This could speed up the method in case, it is called multiple times for the same date.
          *   But it will slow down the method if it is queried multiple times with different dates.
@@ -109,6 +106,14 @@ class alternating_week {
             self::read_alternating_week_ids_from_database();
         }
         return self::$Alternating_week_ids;
+    }
+
+    /**
+     *
+     * @return int alternating_week_id
+     */
+    public function get_alternating_week_id() {
+        return $this->alternating_week_id;
     }
 
     private static function read_alternating_week_ids_from_database() {
@@ -137,10 +142,14 @@ class alternating_week {
         }
     }
 
-    private static function date_difference_in_weeks(DateTime $first, DateTime $second) {
+    private static function date_difference_in_weeks(DateTime $first_date, DateTime $second_date) {
+        $first = clone $first_date;
+        $second = clone $second_date;
         if ($first > $second) {
             return self::date_difference_in_weeks($second, $first);
         }
+        $first->sub(new DateInterval('P' . $first->format('N') . 'D'));
+        $second->sub(new DateInterval('P' . $second->format('N') . 'D'));
         return floor($first->diff($second)->days / 7);
     }
 

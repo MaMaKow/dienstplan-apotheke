@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2018 Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
     Created on : 25.07.2018, 10:57:02
-    Author     : Dr. rer. nat. M. Mandelkow <netbeans-pdr@martin-mandelkow.de>
+    Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
 div#task_rotation_select_div {
@@ -27,4 +27,7 @@ div#task_rotation_select_div {
     padding-left: 1em;
     padding-right: 1em;
     margin: 1em;
+}
+div.image_group_container {
+    float: right;
 }

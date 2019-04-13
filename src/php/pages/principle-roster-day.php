@@ -90,7 +90,7 @@ $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 echo $html_text;
 if (!empty($Principle_roster)) {
-    echo "<div class=above-image>\n";
+    echo "<div class=image_group_container>\n";
     echo "<div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);
     echo $roster_image_bar_plot->svg_string;
