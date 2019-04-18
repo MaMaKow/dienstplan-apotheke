@@ -22,12 +22,14 @@ require_once 'install_head.php';
 $webserver_supports_https = $install->webserver_supports_https();
 $database_driver_is_installed = $install->database_driver_is_installed();
 $pdr_directories_are_writable = $install->pdr_directories_are_writable();
+$pdr_secret_directories_are_not_visible = $install->pdr_secret_directories_are_not_visible();
 $php_extension_requirements_are_fulfilled = $install->php_extension_requirements_are_fulfilled();
 $php_version_requirement_is_fulfilled = $install->php_version_requirement_is_fulfilled();
 
 $all_requirements_are_satisfied = $webserver_supports_https and
         $database_driver_is_installed and
         $pdr_directories_are_writable and
+        $pdr_secret_directories_are_not_visible and
         $php_extension_requirements_are_fulfilled and
         $php_version_requirement_is_fulfilled;
 ?>
@@ -91,6 +93,19 @@ $all_requirements_are_satisfied = $webserver_supports_https and
          * Check if there is write access to all write-necessary directories:
          */
         if ($pdr_directories_are_writable) {
+            echo "<em class='install_info_postive'>passed</em>";
+        } else {
+            echo "<em class='install_info_negative'>failed</em>";
+            echo $install->build_error_message_div();
+        }
+        ?>
+    </li>
+    <li> secret directories (i.e. config) are not visible on the web
+        <?php
+        /*
+         * Check if there is a 403 forbidden error when trying to access hidden folders:
+         */
+        if ($pdr_secret_directories_are_not_visible) {
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";

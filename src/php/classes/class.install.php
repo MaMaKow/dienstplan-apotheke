@@ -481,6 +481,15 @@ class install {
         }
     }
 
+    public function pdr_secret_directories_are_not_visible() {
+        $test_htaccess = new test_htaccess();
+        foreach (user_dialog::$Messages as $Message) {
+            $this->Error_message[] = $Message['text'];
+        }
+        unset(user_dialog::$Messages);
+        return $test_htaccess->all_folders_are_secure;
+    }
+
     public function handle_user_input_database() {
         $this->Config["database_management_system"] = filter_input(INPUT_POST, "database_management_system", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["database_host"] = filter_input(INPUT_POST, "database_host", FILTER_SANITIZE_STRING, $options = null);

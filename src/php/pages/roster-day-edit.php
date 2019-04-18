@@ -47,10 +47,14 @@ $Roster = roster::read_roster_from_database($branch_id, $date_sql);
  * User input:
  * Approve or disapprove rosters
  */
-if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
-    user_input::write_approval_to_database($branch_id, $Roster);
+if (count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
+    if (filter_has_var(INPUT_POST, 'submit_disapproval')) {
+        roster_approval::set_roster_approval($branch_id, $Roster, 'disapproved');
+    }
+    if (filter_has_var(INPUT_POST, 'submit_approval')) {
+        roster_approval::set_roster_approval($branch_id, $Roster, 'approved');
+    }
 }
-
 $Absentees = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
@@ -121,7 +125,7 @@ if ($session->user_has_privilege('create_roster')) {
     $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 }
 if ($session->user_has_privilege('approve_roster')) {
-    $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+    $approval = roster_approval::get_approval($date_sql, $branch_id);
 
     $html_text .= build_html_navigation_elements::build_button_approval($approval);
     $html_text .= build_html_navigation_elements::build_button_disapproval($approval);

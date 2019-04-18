@@ -141,7 +141,6 @@ function get_php_binary() {
 /**
  * TODO: Is this a good alternative for background_maintenance?
  * Does it work reliably?
- */
 function execute_in_background(string $command, string $logfile = "/dev/null", string $parameters = "") {
     if (substr(php_uname(), 0, 7) == "Windows") {
         pclose(popen("start /B " . $command . escapeshellcmd($parameters) . " > $logfile", "r"));
@@ -149,3 +148,4 @@ function execute_in_background(string $command, string $logfile = "/dev/null", s
         exec($cmd . escapeshellcmd($parameters) . " > $logfile &");
     }
 }
+ */

@@ -236,16 +236,10 @@ abstract class build_html_navigation_elements {
      * @return string HTML element
      */
 
-    public static function build_select_branch($current_branch_id, $date_sql) {
-        $current_branch_id = (int) $current_branch_id;
-        global $List_of_branch_objects;
+    public static function build_select_branch(int $current_branch_id, string $date_sql) {
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         if (1 === count($List_of_branch_objects)) {
             return FALSE;
-            /*
-              return "<p class=large>\n" .
-              $List_of_branch_objects[$current_branch_id]->name .
-              "</p>\n";
-             */
         }
         $text = "<!-- branch select form-->\n";
         $text .= "<div id='branch_form_div' class='inline_element'>\n";
@@ -363,13 +357,10 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_input_date($date_sql) {
-        /*
-         * TODO: Make this a button perhaps? With a form only displayed after clicking on it (or on hover?)
-         */
         $text = "";
         $text .= "<div id=date_chooser_div>\n";
         $text .= "<form id=date_chooser_form method=post>\n";
-        $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onChange='this.form.submit()' onblur='this.form.submit()'>\n";
+        $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onblur='this.form.submit()'>\n";
         $text .= "<input type=submit name=tagesAuswahl value=Anzeigen>\n";
         $text .= "</form>\n";
         $text .= "</div>\n";

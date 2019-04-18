@@ -156,7 +156,7 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name) {
-        global $List_of_branch_objects;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         /*
          * TODO: Build a select for branch.
          * Use it in the principle roster.
@@ -229,7 +229,7 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_readonly_branch_table_rows(array $Branch_roster, int $branch_id, string $date_sql_start, string $date_sql_end, $Options = NULL) {
-        global $List_of_branch_objects;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
 
         $date_start_object = new DateTime($date_sql_start);
         $date_end_object = new DateTime($date_sql_end);
@@ -254,7 +254,6 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_read_only_table_head($Roster, $Options = array()) {
-        global $workforce, $List_of_branch_objects;
         $head_table_html = "";
         $head_table_html .= "<thead>\n";
         $head_table_html .= "<tr>\n";
@@ -278,11 +277,13 @@ abstract class build_html_roster_views {
             if (FALSE !== $having_emergency_service) {
                 $head_table_html .= "<br><em>" . gettext("EMERGENCY SERVICE") . "</em><br>";
                 if (in_array(self::OPTION_SHOW_EMERGENCY_SERVICE_NAME, $Options)) {
+                    $workforce = new workforce($date_sql);
                     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
                         $head_table_html .= $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name;
                     } else {
                         $head_table_html .= "???";
                     }
+                    $List_of_branch_objects = branch::get_list_of_branch_objects();
                     $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
                 }
             }
@@ -316,7 +317,7 @@ abstract class build_html_roster_views {
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
-                $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+                $approval = roster_approval::get_approval($date_sql, $branch_id);
                 if ("approved" !== $approval and TRUE == $config['hide_disapproved']) {
                     $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
@@ -394,7 +395,8 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        global $workforce, $List_of_branch_objects;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
+
         global $config;
         $table_html = "";
         $table_html .= "<tbody>";
@@ -421,7 +423,7 @@ abstract class build_html_roster_views {
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
-                $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+                $approval = roster_approval::get_approval($date_sql, $branch_id);
                 if ("approved" !== $approval and false != $config['hide_disapproved']) {
                     $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
@@ -461,19 +463,6 @@ abstract class build_html_roster_views {
         $table_html .= "</tbody>\n";
 
         return $table_html;
-    }
-
-    public static function get_approval_from_database($date_sql, $branch_id) {
-        /*
-         * TODO: This might be better placed in some other class.
-         */
-        $sql_query = "SELECT state FROM `approval` WHERE date = :date AND branch = :branch_id";
-        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $approval = $row->state;
-            return $approval;
-        }
-        return FALSE;
     }
 
     public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $Options = NULL) {

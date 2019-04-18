@@ -183,7 +183,7 @@ class roster_item {
     }
 
     public function to_email_message_string($context_string) {
-        global $List_of_branch_objects, $workforce;
+
         $message = "";
         /*
          * The following part is added upon aggregation:
@@ -195,6 +195,7 @@ class roster_item {
         $message .= strftime('%x', $this->date_unix) . PHP_EOL;
         $message .= $context_string . PHP_EOL;
         $message .= gettext('You work at the following times:') . PHP_EOL;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         $message .= $List_of_branch_objects[$this->branch_id]->name . PHP_EOL;
         $message .= gettext('Start and end of duty');
         $message .= ":";

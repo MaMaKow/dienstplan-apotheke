@@ -221,6 +221,9 @@ div.user_dialog_container div.error {
     font-size: xx-large;
     font-family: monospace;
 }
+div.user_dialog_container div.error a {
+    color: #B4B4B4;
+}
 div.user_dialog_container div.warning {
     background-color: #BDE682;
     font-size: large;
