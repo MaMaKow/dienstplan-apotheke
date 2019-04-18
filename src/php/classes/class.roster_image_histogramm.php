@@ -172,7 +172,6 @@ abstract class roster_image_histogramm {
     }
 
     private static function get_expectation($date_unix, $branch_id) {
-        global $List_of_branch_objects;
         $Packungen = array();
         $Expectation = array();
         $factor_tag_im_monat = 1;
@@ -184,6 +183,7 @@ abstract class roster_image_histogramm {
         $month_day = date('j', $date_unix);
         $month = date('n', $date_unix);
 
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         $branch_pep_id = $List_of_branch_objects[$branch_id]->PEP;
         if (empty($branch_pep_id)) {
             return FALSE;

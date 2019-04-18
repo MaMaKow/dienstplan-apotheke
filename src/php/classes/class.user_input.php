@@ -178,40 +178,6 @@ abstract class user_input {
         }
     }
 
-    private static function insert_new_approval_into_database($date_sql, $branch_id) {
-        /*
-         * TODO: We should manage situations, where an entry already exists better.
-         */
-        $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
-			VALUES (:date, 'not_yet_approved', :branch_id, :user)";
-        database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id, 'user' => $_SESSION['user_object']->user_name));
-    }
-
-    public static function write_approval_to_database($branch_id, $Roster) {
-        foreach (array_keys($Roster) as $date_unix) {
-            $date_sql = date('Y-m-d', $date_unix);
-            if (filter_has_var(INPUT_POST, 'submit_approval')) {
-                $state = "approved";
-            } elseif (filter_has_var(INPUT_POST, 'submit_disapproval')) {
-                $state = "disapproved";
-            } else {
-                /*
-                 * no state is given.
-                 */
-                throw new Exception("An Error has occurred during approval!");
-            }
-            $sql_query = "INSERT INTO `approval` (date, branch, state, user) "
-                    . "values (:date, :branch_id, :state, :user) "
-                    . "ON DUPLICATE KEY "
-                    . "UPDATE date = :date2, branch = :branch_id2, state = :state2, user = :user2";
-            $result = database_wrapper::instance()->run($sql_query, array(
-                'date' => $date_sql, 'branch_id' => $branch_id, 'state' => $state, 'user' => $_SESSION['user_object']->employee_id,
-                'date2' => $date_sql, 'branch_id2' => $branch_id, 'state2' => $state, 'user2' => $_SESSION['user_object']->employee_id,
-            ));
-            return $result;
-        }
-    }
-
     public static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
@@ -311,10 +277,6 @@ abstract class user_input {
     public static function roster_write_user_input_to_database($Roster, $branch_id) {
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
-            /*
-             * The following line will add an entry for every day in the table approval.
-             */
-            user_input::insert_new_approval_into_database($date_sql, $branch_id);
             $Roster_old = roster::read_roster_from_database($branch_id, $date_sql);
 
             /*

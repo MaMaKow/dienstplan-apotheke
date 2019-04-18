@@ -40,7 +40,7 @@ class user_dialog {
      *  );
      *      </p>
      */
-    static $Messages = array();
+    public static $Messages = array();
 
     public function __construct() {
 
