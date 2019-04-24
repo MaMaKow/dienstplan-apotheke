@@ -139,6 +139,10 @@ $html_text .= build_html_navigation_elements::build_input_date($date_sql);
  */
 $html_text .= $user_dialog->build_messages();
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
+$html_text .= "<script> "
+        . " var Roster_array = " . json_encode($Principle_roster) . ";\n"
+        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
+        . "</script>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
 $html_text .= "<td>";

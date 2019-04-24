@@ -57,4 +57,12 @@ class workforce {
         }
     }
 
+    public function get_list_of_employee_names() {
+        $List_of_employee_last_names = array();
+        foreach ($this->List_of_employees as $employee_id => $employee_object) {
+            $List_of_employee_last_names[$employee_id] = $employee_object->last_name;
+        }
+        return $List_of_employee_last_names;
+    }
+
 }

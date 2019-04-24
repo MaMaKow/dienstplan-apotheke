@@ -23,7 +23,7 @@
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 
-class roster_item {
+class roster_item implements \JsonSerializable {
 
     public $date_sql;
     public $date_unix;
@@ -215,6 +215,10 @@ class roster_item {
          */
 
         return $message;
+    }
+
+    public function jsonSerialize() {
+        return get_object_vars($this);
     }
 
 }

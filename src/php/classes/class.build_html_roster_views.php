@@ -88,7 +88,17 @@ abstract class build_html_roster_views {
         /*
          * start of duty:
          */
-        $roster_input_row .= "<input type=time size=5 class=Dienstplan_Dienstbeginn name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_start_sql] id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 ) . " value='";
+        $roster_input_row .= "<input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Dienstbeginn' "
+                . " data-roster_column_name='duty_start_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Dienstbeginn "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_start_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 )
+                . " value='";
         $roster_input_row .= roster::get_duty_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n ";
 
@@ -97,7 +107,17 @@ abstract class build_html_roster_views {
         /*
          * end of duty:
          */
-        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Dienstende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_end_sql] id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 ) . " value='";
+        $roster_input_row .= " <input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Dienstende' "
+                . " data-roster_column_name='duty_end_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Dienstende "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_end_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 )
+                . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n";
         $roster_input_row .= "<br>\n";
@@ -105,7 +125,18 @@ abstract class build_html_roster_views {
         /*
          * start of break:
          */
-        $roster_input_row .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_start_sql] id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 ) . " value='";
+        $roster_input_row .= " " . gettext("break") . ": ";
+        $roster_input_row .= "<input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Mittagbeginn' "
+                . " data-roster_column_name='break_start_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Mittagbeginn "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_start_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 )
+                . " value='";
         $roster_input_row .= roster::get_break_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'> ";
         $roster_input_row .= gettext("to");
@@ -113,7 +144,17 @@ abstract class build_html_roster_views {
         /*
          * end of break:
          */
-        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Mittagsende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_end_sql] id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 ) . " value='";
+        $roster_input_row .= " <input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Mittagsende' "
+                . " data-roster_column_name='break_end_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Mittagsende "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_end_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 )
+                . " value='";
         $roster_input_row .= roster::get_break_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>";
 
@@ -175,11 +216,15 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
-        global $workforce;
-        if (NULL === $workforce) {
-            $workforce = new workforce(date('Y-m-d', $date_unix));
-        }
-        $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
+        $workforce = new workforce(date('Y-m-d', $date_unix));
+        $roster_input_row_employee_select = "<select "
+                . " name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] "
+                . " tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1)
+                . " data-date_unix='$date_unix' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-roster_column_name='employee_id' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . ">";
         /*
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
