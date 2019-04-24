@@ -74,6 +74,10 @@ echo build_html_navigation_elements::build_button_submit('principle_roster_form'
 echo "</div>\n";
 $html_text = '';
 $html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
+$html_text .= "<script> "
+        . " var Roster_array = " . json_encode($Principle_roster) . ";\n"
+        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
+        . "</script>\n";
 $html_text .= "<table>\n";
 $max_employee_count = roster::calculate_max_employee_count($Principle_roster);
 $day_iterator = $date_object->getTimestamp(); //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
