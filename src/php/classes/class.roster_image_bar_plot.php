@@ -113,7 +113,7 @@ class roster_image_bar_plot {
             /*
              * Draw the bars from start to end for every employee:
              */
-            $svg_box_text = "<!--Boxes-->\n";
+            $svg_box_text = "<!-- Boxes -->\n";
             foreach ($Roster_day_array as $roster_item) {
                 if (NULL === $roster_item->employee_id) {
                     continue;
@@ -146,7 +146,8 @@ class roster_image_bar_plot {
                         . "x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' "
                         . "style='cursor: $this->cursor_style_box;' "
                         . "data-line='$this->line' "
-                        . "data-column='work_box' "
+                        . "data-date_unix='$date_unix' "
+                        . "data-box_type='work_box' "
                         . ">";
                 $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' class='$employee_style_class'>";
                 if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
@@ -163,7 +164,8 @@ class roster_image_bar_plot {
                         . "x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' "
                         . "stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $this->cursor_style_break_box;' "
                         . "data-line='$this->line' "
-                        . "data-column='break_box' "
+                        . "data-box_type='break_box' "
+                        . "data-date_unix=$date_unix "
                         . "/>\n";
                 $this->line++;
             }
