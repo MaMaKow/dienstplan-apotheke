@@ -45,11 +45,6 @@ function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
     firstY = evt.clientY;
     currentX = evt.clientX;
     currentY = evt.clientY;
-    currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7, -1).split(' ');
-    for (var i = 0; i < currentMatrix.length; i++) {
-        currentMatrix[i] = parseFloat(currentMatrix[i]);
-    }
-    //selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
     selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
     selectedElement.classList.add("selected");
     if (selectedElement.firstChild) {
@@ -63,33 +58,23 @@ function moveElement(evt) {
         deselectElement(evt);
         return false;
     }
-    dx = (evt.clientX - currentX) * 0.8;
+    var dx = (evt.clientX - currentX) * 0.8;
     selectedElement.x.baseVal.value += dx;
-    console.log(selectedElement.x.baseVal.value);
     currentX = evt.clientX;
     currentY = evt.clientY;
     return true;
-    currentMatrix[4] += dx;
-    newMatrix = "matrix(" + currentMatrix.join(' ') + ")";
-    selectedElement.setAttributeNS(null, "transform", newMatrix);
 }
 function deselectElement(evt) {
     if (selectedElement !== 0) {
-        currentMatrix[4] = Math.round(currentMatrix[4] / bar_width_factor * 2) * (bar_width_factor / 2);
-        var diff_hour = (Math.round(currentMatrix[4] / bar_width_factor * 2) / 2).valueOf();
-        newMatrix = "matrix(" + currentMatrix.join(' ') + ")";
-        selectedElement.setAttributeNS(null, "transform", newMatrix);
+        var svg_element = selectedElement.parentNode.parentNode;
+        var box_type = selectedElement.dataset.box_type;
         var line = selectedElement.dataset.line;
-        var column = selectedElement.dataset.column;
-        if (column === "break_box") {
-            syncToTable(line, 'Dienstplan_Mittagbeginn', diff_hour);
-            syncToTable(line, 'Dienstplan_Mittagsende', diff_hour);
-        } else if (column === "work_box") {
-            syncToTable(line, 'Dienstplan_Dienstbeginn', diff_hour);
-            syncToTable(line, 'Dienstplan_Dienstende', diff_hour);
-        } else {
-            console.log('Error: deselectElement() only works on the "break_box" and on the "work_box"!' + evt + ", " + column);
-        }
+        var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
+        var start_hour_float = Math.round((selectedElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
+        selectedElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
+        var end_hour_float = (selectedElement.x.baseVal.value - margin_before_bar + selectedElement.width.baseVal.value) / bar_width_factor;
+        var date_unix = selectedElement.dataset.date_unix;
+        sync_from_bar_plot_to_roster_array_object(box_type, date_unix, line, start_hour_float, end_hour_float);
         selectedElement.parentNode.removeAttributeNS(null, "onmousemove");
         selectedElement.removeAttributeNS(null, "onmouseout");
         selectedElement.removeAttributeNS(null, "onmouseup");
@@ -101,27 +86,7 @@ function deselectElement(evt) {
     }
 }
 
-function syncToTable(line, column, diff_hour) {
-    var List_of_input_elements = document.getElementsByClassName(column);
-    var input_id = List_of_input_elements[line];
-//    var previous_time = input_id.value;
-    var previous_time = input_id.defaultValue;
-    var previous_hour = parseFloat(previous_time.substring(0, previous_time.lastIndexOf(':')));
-    var previous_minute = parseFloat(previous_time.substring(previous_time.lastIndexOf(':') + 1));
-    var previous_minute_float = parseFloat(previous_minute / 60);
-    var previous_hour_float = previous_hour + previous_minute_float;
-    var new_time = (previous_hour + (previous_minute / 60) + diff_hour);
-    var new_time_minute = (new_time % 1) * 60;
-    var new_time_hour = Math.floor(new_time);
-    var new_time_minute_string = ('0' + new_time_minute).slice(-2); //Add a fronting 0 to reach the HH:MM format, which is required.
-    var new_time_hour_string = ('0' + new_time_hour).slice(-2);
-    var new_time_string = new_time_hour_string + ":" + new_time_minute_string;
-    input_id.value = new_time_string;
-}
-
 function roster_change_bar_plot_on_change_of_table(input_object) {
-    //console.log(input_object);
-    //console.log(input_object.value);
     /*
      * Change the one directly changed column:
      */
@@ -139,7 +104,6 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     var break_end_object = new Date(roster_item['date_sql'] + 'T' + roster_item['break_end_sql']);
     var break_duration_integer = (break_end_object - break_start_object);
     var working_hours = (duty_end_object - duty_start_object - break_duration_integer) / 3600 / 1000;
-    //console.log('input_object', input_object, 'roster_item', roster_item);
 
     roster_item['working_hours'] = Math.round(working_hours * 4, 0) / 4;//round to quarter hours
     roster_item['working_seconds'] = working_hours * 3600;
@@ -192,13 +156,56 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     break_box_element.x.baseVal.value = new_box_x;
     break_box_element.width.baseVal.value = new_box_width;
 
-    //console.log(break_duration_integer); //TODO: The Text in the span has to be updated to reflect the new value.
-    //console.log(working_hours);
-    //console.log('bar_element', bar_element);
     var employee_name_text_element = bar_element.childNodes[0].childNodes[0];
     var working_hours_span = bar_element.childNodes[0].childNodes[1];
 
-    //console.log(roster_item);
     employee_name_text_element.nodeValue = List_of_employee_names[roster_item['employee_id']];
     working_hours_span.innerText = roster_item['working_hours'];
+}
+
+
+function sync_from_bar_plot_to_roster_array_object(box_type, date_unix, roster_row_iterator, start_hour_float, end_hour_float) {
+    var roster_item = Roster_array[date_unix][roster_row_iterator];
+    switch (box_type) {
+        case 'work_box':
+            roster_item['duty_start_int'] = start_hour_float * 3600;
+            roster_item['duty_end_int'] = end_hour_float * 3600;
+            roster_item['duty_start_sql'] = format_time_int_to_string(start_hour_float * 3600);
+            roster_item['duty_end_sql'] = format_time_int_to_string(end_hour_float * 3600);
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstbeginn', roster_item['duty_start_sql'])
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstende', roster_item['duty_end_sql'])
+            break;
+        case 'break_box':
+            roster_item['break_start_int'] = start_hour_float * 3600;
+            roster_item['break_start_sql'] = format_time_int_to_string(start_hour_float * 3600);
+            roster_item['break_end_int'] = end_hour_float * 3600;
+            roster_item['break_end_sql'] = format_time_int_to_string(end_hour_float * 3600);
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsbeginn', roster_item['break_start_sql'])
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsende', roster_item['break_end_sql'])
+            break;
+        default:
+            console.log('Error: sync_from_bar_plot_to_roster_array_object() only works on the "break_box" and on the "work_box"!' + box_type);
+            break;
+
+    }
+}
+
+function sync_from_roster_array_to_table(date_unix, roster_row_iterator, column, value) {
+    var input_element_id = "Dienstplan[" + date_unix + "][" + column + "][" + roster_row_iterator + "]";
+    var input_element = document.getElementById(input_element_id);
+    input_element.value = value;
+}
+
+
+/**
+ * This function expects an integer representing the seconds since the start of the day.
+ */
+function format_time_int_to_string(time_int) {
+    var hour_int = Math.floor(time_int / 3600);
+    var minute_int = Math.floor(time_int % 3600 / 60);
+    /*
+     * The function pad() is defined in datepicker.js
+     */
+    var time_string = pad(hour_int, 2) + ':' + pad(minute_int, 2);
+    return time_string;
 }
