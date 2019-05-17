@@ -37,8 +37,18 @@ class install {
     const PHP_VERSION_ID_REQUIRED = 70002;
 
     function __construct() {
-        $this->pdr_supported_database_management_systems = array("mysql");
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
+        define('PDR_FILE_SYSTEM_APPLICATION_PATH', $this->pdr_file_system_application_path);
+        $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
+        $root_folder = substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars) . "/";
+        define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
+        /*
+         * Define an autoloader:
+         */
+        spl_autoload_register(function ($class_name) {
+            include_once $this->pdr_file_system_application_path . 'src/php/classes/class.' . $class_name . '.php';
+        });
+        $this->pdr_supported_database_management_systems = array("mysql");
         ini_set('log_errors', 1);
         ini_set("error_log", $this->pdr_file_system_application_path . "error.log");
         error_reporting(E_ALL);
@@ -482,6 +492,7 @@ class install {
     }
 
     public function pdr_secret_directories_are_not_visible() {
+        require_once $this->pdr_file_system_application_path . 'src/php/classes/class.test_htaccess.php';
         $test_htaccess = new test_htaccess();
         foreach (user_dialog::$Messages as $Message) {
             $this->Error_message[] = $Message['text'];
