@@ -27,8 +27,10 @@ if (!in_array($alternating_week_id, alternating_week::get_alternating_week_ids()
     $alternating_week_id = alternating_week::get_min_alternating_week_id();
 }
 $alternating_week = new alternating_week($alternating_week_id);
-$date_object = $alternating_week->get_sunday_date_for_alternating_week();
-$date_object->add(new DateInterval('P' . $weekday . 'D'));
+$date_object = $alternating_week->get_monday_date_for_alternating_week();
+if ($weekday > 1) {
+    $date_object->add(new DateInterval('P' . ($weekday - 1) . 'D'));
+}
 create_cookie('mandant', $branch_id, 30);
 /*
  * weekday
@@ -68,7 +70,6 @@ echo build_html_navigation_elements::build_select_weekday($weekday);
 echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday);
 echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
 echo build_html_navigation_elements::build_button_principle_roster_delete($alternating_week_id);
-
 echo "<div id=navigation_elements>";
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
 echo "</div>\n";

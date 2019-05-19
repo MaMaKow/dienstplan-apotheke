@@ -42,8 +42,7 @@ function build_change_principle_roster_employee_form(alternating_week $alternati
 
     $alternating_week_id = $alternating_week->get_alternating_week_id();
 
-    $pseudo_date_start_object = $alternating_week->get_sunday_date_for_alternating_week();
-    $pseudo_date_start_object->add(new DateInterval('P1D'));
+    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week();
 
     $pseudo_date_end_object = clone $pseudo_date_start_object;
     $pseudo_date_end_object->add(new DateInterval('P6D'));
@@ -58,18 +57,14 @@ function build_change_principle_roster_employee_form(alternating_week $alternati
 
     $form_id = 'change_principle_roster_employee_form_' . $alternating_week_id;
     $html_text = '';
-    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form'>";
+    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form' action='../fragments/fragment.prompt_before_safe.php'>";
     $html_text .= build_html_navigation_elements::build_button_submit($form_id);
     if (alternating_week::alternations_exist()) {
-        /*
-         * TODO: Why does sunday_date return a monday? When and how is it changed to a monday?
-         *   Which functions interfere with the values?
-         */
-        $monday_date = clone $alternating_week->get_sunday_date_for_alternating_week();
+        $monday_date = clone $alternating_week->get_monday_date_for_alternating_week();
         $sunday_date = clone $monday_date;
         $sunday_date->add(new DateInterval('P6D'));
         $alternating_week_id_string = '<div class="inline_block_element"><p>'
-                . chr(65 + $alternating_week_id) . '-' . gettext('Week')
+                . alternating_week::get_human_readably_string($alternating_week_id)
                 . '<br> '
                 . gettext('e.g.') . ' '
                 . gettext('calendar week') . ' ' . $monday_date->format('W')
@@ -155,12 +150,6 @@ function calculate_list_of_working_hours($Roster_array) {
 }
 
 foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
-    $alternating_week = new alternating_week($alternating_week_id);
-    $date_object = $alternating_week->get_sunday_date_for_alternating_week();
-    $date_object->add(new DateInterval('P1D'));
-}
-foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
-    error_log(__METHOD__);
     $alternating_week = new alternating_week($alternating_week_id);
     $html_text .= build_change_principle_roster_employee_form($alternating_week, $employee_id);
 }

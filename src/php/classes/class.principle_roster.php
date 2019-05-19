@@ -85,7 +85,6 @@ class principle_roster extends roster {
         if ($date_start_object > $date_end_object) {
             throw new Exception('The start cannot be before the end.');
         }
-        global $workforce;
         if (NULL === $date_end_object) {
             $date_end_object = $date_start_object;
         }
@@ -115,6 +114,7 @@ class principle_roster extends roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
+                $workforce = new workforce($date_object->format('Y-m-d'));
                 $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
                 $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }

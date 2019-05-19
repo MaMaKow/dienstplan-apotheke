@@ -316,7 +316,7 @@ abstract class build_html_navigation_elements {
         return $button_img;
     }
 
-    public static function build_select_alternating_week($alternating_week_id, $weekday) {
+    public static function build_select_alternating_week(int $alternating_week_id, int $weekday) {
         if (!alternating_week::alternations_exist()) {
             return NULL;
         }
@@ -326,9 +326,12 @@ abstract class build_html_navigation_elements {
         $Alternating_week_ids = alternating_week::get_alternating_week_ids();
         foreach ($Alternating_week_ids as $alternating_week_id_current) {
             $alternating_week = new alternating_week($alternating_week_id_current);
-            $example_sunday = $alternating_week->get_sunday_date_for_alternating_week();
-            $example_date = $example_sunday->add(new DateInterval('P' . $weekday . 'D'));
-            $alternating_week_id_string = chr(65 + $alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
+            $example_monday = $alternating_week->get_monday_date_for_alternating_week();
+            $example_date = clone $example_monday;
+            if ($weekday > 1) {
+                $example_date = $example_monday->add(new DateInterval('P' . ($weekday - 1) . 'D'));
+            }
+            $alternating_week_id_string = alternating_week::get_human_readably_string($alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
             if ($alternating_week_id != $alternating_week_id_current) {
                 $html .= "<option value='$alternating_week_id_current'>$alternating_week_id_string</option>\n";
             } else {
