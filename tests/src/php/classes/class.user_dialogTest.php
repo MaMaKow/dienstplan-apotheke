@@ -47,7 +47,7 @@ EOT;
      * @covers user_dialog::build_messages_for_cli
      */
     public function testBuild_messages_for_cli() {
-        $this->object::$Messages = array();
+        $this->object->$Messages = array();
         $this->object->add_message('Test');
         $html_should = <<<EOT
 # Messages
@@ -65,23 +65,23 @@ EOT;
      * @todo   Implement testAdd_message().
      */
     public function testAdd_message() {
-        $this->object::$Messages = array();
+        $this->object->$Messages = array();
         $this->object->add_message('Test<script>alert(with xss ptotection);</script>', E_USER_WARNING, FALSE);
         $this->assertEquals(array(0 => array(
                 'text' => 'Test&lt;script&gt;alert(with xss ptotection);&lt;/script&gt;',
                 'type' => 'warning',
             ),
-                ), $this->object::$Messages);
+                ), $this->object->$Messages);
         /*
          * Reset and test without xss protection:
          */
-        $this->object::$Messages = array();
+        $this->object->$Messages = array();
         $this->object->add_message('Test<script>alert(without xss ptotection);</script>', E_USER_NOTICE, TRUE);
         $this->assertEquals(array(0 => array(
                 'text' => '<pre>Test<script>alert(without xss ptotection);</script></pre>',
                 'type' => 'notification',
             ),
-                ), $this->object::$Messages);
+                ), $this->object->$Messages);
     }
 
     /**

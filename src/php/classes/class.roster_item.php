@@ -65,11 +65,10 @@ class roster_item implements \JsonSerializable {
     }
 
     public function __get($variable_name) {
-        if (in_array($variable_name, self::$List_of_allowed_variables)) {
-            return $this->$variable_name;
-        } else {
-            throw new Exception($variable_name . " is private and not allowed to be called by " . __METHOD__);
-        }
+        /*
+         * All variables are allowed to be read. Just the writing is prohibited to some.
+         */
+        return $this->$variable_name;
     }
 
     public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
