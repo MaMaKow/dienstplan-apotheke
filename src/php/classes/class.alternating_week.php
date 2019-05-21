@@ -237,42 +237,52 @@ class alternating_week {
             $date_start_object = $alternating_week->get_monday_date_for_alternating_week();
             $date_end_object = clone $date_start_object;
             $date_end_object->add(new DateInterval('P6D'));
-            $List_of_principle_rosters[$alternating_week_id] = principle_roster::read_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
+            $List_of_principle_rosters[$alternating_week_id] = principle_roster::read_all_principle_employee_rosters_from_database($employee_id, $alternating_week_id);
         }
         return $List_of_principle_rosters;
     }
 
     public static function find_differences_between_principle_rosters(array $List_of_principle_rosters, int $alternation_id) {
+        //throw new Exception('The format of $List_of_principle_rosters has changed. This is not implemented yet.');
         $Differences_between_principle_rosters = array();
-        $Comparison_roster = $List_of_principle_rosters[$alternation_id];
-        foreach ($List_of_principle_rosters as $alternation_id_current => $Principle_roster_current) {
+        $latest_comparison_date = max(array_keys($List_of_principle_rosters[$alternation_id]));
+        $Comparison_roster = $List_of_principle_rosters[$alternation_id][$latest_comparison_date];
+        foreach ($List_of_principle_rosters as $alternation_id_current => $Principle_rosters_list) {
             if ($alternation_id === $alternation_id_current) {
                 continue;
             }
-            foreach ($Principle_roster_current as $date_unix_current => $roster_day_array) {
-                foreach ($roster_day_array as $roster_row_iterator => $roster_item) {
-                    /*
-                     * Compare to the comparson roster:
-                     */
-                    foreach ($Comparison_roster as $date_unix_compare => $roster_day_array_compare) {
-                        if (date('w', $date_unix_current) !== date('w', $date_unix_compare)) {
-                            continue;
-                        }
-                        foreach ($roster_day_array_compare as $roster_row_iterator_compare => $roster_item_compare) {
-                            if ($roster_row_iterator !== $roster_row_iterator_compare) {
+            foreach ($Principle_rosters_list as $valid_from => $Principle_roster_current) {
+                /*
+                 * only compare with the latest version:
+                 */
+                if ($valid_from !== max(array_keys($Principle_rosters_list))) {
+                    continue;
+                }
+                foreach ($Principle_roster_current as $date_unix_current => $roster_day_array) {
+                    foreach ($roster_day_array as $roster_row_iterator => $roster_item) {
+                        /*
+                         * Compare to the comparson roster:
+                         */
+                        foreach ($Comparison_roster as $date_unix_compare => $roster_day_array_compare) {
+                            if (date('w', $date_unix_current) !== date('w', $date_unix_compare)) {
                                 continue;
                             }
-                            if ($roster_item->duty_start_int != $roster_item_compare->duty_start_int) {
-                                $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_start_int';
-                            }
-                            if ($roster_item->duty_end_int != $roster_item_compare->duty_end_int) {
-                                $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_end_int';
-                            }
-                            if ($roster_item->break_start_int != $roster_item_compare->break_start_int) {
-                                $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'break_start_int';
-                            }
-                            if ($roster_item->break_end_int != $roster_item_compare->break_end_int) {
-                                $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
+                            foreach ($roster_day_array_compare as $roster_row_iterator_compare => $roster_item_compare) {
+                                if ($roster_row_iterator !== $roster_row_iterator_compare) {
+                                    continue;
+                                }
+                                if ($roster_item->duty_start_int != $roster_item_compare->duty_start_int) {
+                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_start_int';
+                                }
+                                if ($roster_item->duty_end_int != $roster_item_compare->duty_end_int) {
+                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_end_int';
+                                }
+                                if ($roster_item->break_start_int != $roster_item_compare->break_start_int) {
+                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'break_start_int';
+                                }
+                                if ($roster_item->break_end_int != $roster_item_compare->break_end_int) {
+                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
+                                }
                             }
                         }
                     }

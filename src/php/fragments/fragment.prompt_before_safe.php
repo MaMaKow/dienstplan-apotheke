@@ -92,39 +92,53 @@ function build_difference_string(array $List_of_differences, array $Principle_ro
 }
 
 $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+if (FALSE !== $Principle_roster_new) {
+    //print_debug_variable($_POST);
+}
 $List_of_employee_ids = get_list_of_employee_ids($Principle_roster_new);
 
 require '../../../head.php';
+echo "<main>";
 if (1 === count($List_of_employee_ids)) {
     $employee_id = current($List_of_employee_ids);
     $date_start_object = new DateTime;
     $date_start_object->setTimestamp(min(array_keys($Principle_roster_new)));
     $date_end_object = new DateTime;
     $date_end_object->setTimestamp(max(array_keys($Principle_roster_new)));
-    $Principle_roster_old = principle_roster::read_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
+    $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
     $List_of_differences = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
     if (array() !== $List_of_differences) {
         /*
          * Something has changed between the last roster and the new roster.
          */
-        if (alternating_week::alternations_exist()) {
-            $List_of_principle_rosters = alternating_week::get_list_of_principle_rosters($employee_id);
-            $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
-            $Differences_between_principle_rosters = alternating_week::find_differences_between_principle_rosters($List_of_principle_rosters, $alternation_id);
-            print_debug_variable($Differences_between_principle_rosters);
-            foreach ($Differences_between_principle_rosters as $alt_id => $dt_ar) {
-                foreach ($dt_ar as $dt_unix => $rri) {
-                    print_debug_variable($alt_id, $dt_unix, date('r', $dt_unix));
-                }
-            }
-        }
-        //$comparison_string = build_comparison_string($Differences_between_principle_rosters);
-
+        /*
+         * TODO: Create an option to take the changes nto other alternations:
+         *         if (alternating_week::alternations_exist()) {
+          $List_of_principle_rosters = alternating_week::get_list_of_principle_rosters($employee_id);
+          $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
+          $Differences_between_principle_rosters = alternating_week::find_differences_between_principle_rosters($List_of_principle_rosters, $alternation_id);
+          //print_debug_variable($Differences_between_principle_rosters);
+          }
+          //$comparison_string = build_comparison_string($Differences_between_principle_rosters);
+         */
         echo "<p>";
-        echo sprintf(gettext('The %1s was changed.'), alternating_week::get_human_readably_string($alternation_id));
+        echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternation_id));
         echo "</p>";
         echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);
-        print_debug_variable($List_of_differences);
+        echo "<form id='principle_roster_prompt_before_safe' method='post' action='../pages/principle-roster-employee.php'>"
+        . "<input type=hidden name='Principle_roster_from_prompt' value=" . base64_encode(serialize($Principle_roster_new)) . ">"
+        . "<input type=hidden name='List_of_differences' value=" . base64_encode(serialize($List_of_differences)) . ">"
+        . "</form>";
+        echo "<hr>";
+        echo "<p>";
+        echo gettext("When should the changes come into force?");
+        echo "";
+        echo "</p>";
+        echo "</p>";
+        echo "<input name='valid_from' type='date' form='principle_roster_prompt_before_safe' value='" . $date_start_object->format('Y-m-d') . "'>";
+        echo "<hr>";
+        echo build_html_navigation_elements::build_button_submit('principle_roster_prompt_before_safe');
+        echo build_html_navigation_elements::build_button_back();
     } else {
         echo "<p>";
         echo gettext('There are no changes.');
@@ -135,5 +149,4 @@ if (1 === count($List_of_employee_ids)) {
     }
 }
 
-echo "<hr>";
-echo "done";
+echo "</main>";

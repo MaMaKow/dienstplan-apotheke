@@ -66,7 +66,7 @@ abstract class user_input {
         alternating_week::delete_alternation($principle_roster_delete);
     }
 
-    public static function principle_roster_write_user_input_to_database($branch_id) {
+    public static function principle_roster_write_user_input_to_database($branch_id, $valid_from, $valid_until) {
         global $session;
         $session->exit_on_missing_privilege('create_roster');
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
@@ -81,14 +81,17 @@ abstract class user_input {
         database_wrapper::instance()->beginTransaction();
         principle_roster::remove_changed_employee_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
         principle_roster::remove_changed_employee_entries_from_database($branch_id, $Changed_roster_employee_id_list);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list, $valid_from, $valid_until);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list, $valid_from, $valid_until);
         database_wrapper::instance()->commit();
     }
 
     public static function get_Roster_from_POST_secure() {
         $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
         $Roster = array();
+        if (empty($Roster_from_post)) {
+            return FALSE;
+        }
         foreach ($Roster_from_post as $date_unix => $Roster_from_post_day_array) {
             foreach ($Roster_from_post_day_array as $roster_row_iterator => $Roster_row_array) {
                 $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_STRING);

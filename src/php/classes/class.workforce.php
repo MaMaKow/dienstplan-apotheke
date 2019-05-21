@@ -65,4 +65,17 @@ class workforce {
         return $List_of_employee_last_names;
     }
 
+    public static function get_first_start_of_employment($employee_id) {
+        $sql_query = "SELECT min(`start_of_employment`) as `first_start_of_employment` "
+                . " FROM `employees` "
+                . " WHERE `id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'employee_id' => $employee_id,
+        ));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            return $row->first_start_of_employment;
+        }
+        return FALSE;
+    }
+
 }

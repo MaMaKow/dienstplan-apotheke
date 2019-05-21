@@ -75,7 +75,7 @@ class database_wrapper {
 
     /**
      *  A classical static method to make it universally available
-     *  @return object Object of class PDO
+     *  @return PDO Object of class PDO
      */
     public static function instance() {
         if (self::$instance === null) {

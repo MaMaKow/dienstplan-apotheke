@@ -22,7 +22,32 @@ create_cookie('employee_id', $employee_id, 30);
 $workforce = new workforce();
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    user_input::principle_employee_roster_write_user_input_to_database($employee_id);
+    if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+        return FALSE;
+    }
+
+    if (filter_has_var(INPUT_POST, 'Roster')) {
+        user_input::principle_employee_roster_write_user_input_to_database($employee_id);
+    }
+    if (filter_has_var(INPUT_POST, 'Principle_roster_from_prompt')) {
+        $Principle_roster_new = unserialize(base64_decode(filter_input(INPUT_POST, 'Principle_roster_from_prompt', FILTER_UNSAFE_RAW)));
+        $List_of_differences = unserialize(base64_decode(filter_input(INPUT_POST, 'List_of_differences', FILTER_UNSAFE_RAW)));
+        $valid_from_input = user_input::get_variable_from_any_input('valid_from', FILTER_SANITIZE_STRING);
+        /*
+         * TODO: find a correct date for the change.
+         * It should be the first monday in the relevant alternation_id week (after the given date?).
+         */
+        $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
+        $valid_from = (
+                new alternating_week(
+                alternating_week::get_alternating_week_for_date(
+                        $some_date_from_input)
+                )
+                )->get_monday_date_for_alternating_week();
+        $valid_until = clone $valid_from;
+        $valid_until->sub(new DateInterval('P1D'));
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_differences, $valid_from->format('Y-m-d'), $valid_until->format('Y-m-d'));
+    }
 }
 
 
@@ -50,8 +75,8 @@ function build_change_principle_roster_employee_form(alternating_week $alternati
     $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
 
 
-    $Principle_employee_roster = principle_roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_start_object, $pseudo_date_end_object);
-    $Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
+    $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $pseudo_date_start_object, $pseudo_date_end_object);
+    $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
     roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
     unset($Principle_roster);
 
