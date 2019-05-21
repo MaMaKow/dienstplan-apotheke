@@ -160,6 +160,18 @@ abstract class build_html_navigation_elements {
         return $submit_button;
     }
 
+    public static function build_button_back() {
+        $back_button = "
+        <button id='back_button' class='btn-primary btn-save no_print' onClick='javascript:history.back()'>
+                <i class='icon-white'>
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("Back") . "' >
+                </i>
+                <br>
+                " . gettext("Back") . "
+                </button>";
+        return $back_button;
+    }
+
     public static function build_button_approval($approval) {
         if ('approved' === $approval) {
             $disabled = 'disabled';

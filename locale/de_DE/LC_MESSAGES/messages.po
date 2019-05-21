@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2019-05-19 14:46+0200\n"
-"PO-Revision-Date: 2019-05-19 14:50+0200\n"
+"POT-Creation-Date: 2019-05-22 01:49+0200\n"
+"PO-Revision-Date: 2019-05-22 01:49+0200\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -122,7 +122,7 @@ msgstr "und wird nicht berechnet."
 msgid "%1s is not a working day for %2s and will not be counted."
 msgstr "%1s ist kein Arbeitstag für %2s und wird nicht gezählt."
 
-#: src/php/classes/class.alternating_week.php:296
+#: src/php/classes/class.alternating_week.php:306
 msgid "week"
 msgstr "Woche"
 
@@ -187,53 +187,58 @@ msgstr "iCalendar Datei"
 msgid "Save"
 msgstr "Speichern"
 
-#: src/php/classes/class.build_html_navigation_elements.php:173
-#: src/php/classes/class.build_html_navigation_elements.php:176
+#: src/php/classes/class.build_html_navigation_elements.php:167
+#: src/php/classes/class.build_html_navigation_elements.php:170
+msgid "Back"
+msgstr "Zurück"
+
+#: src/php/classes/class.build_html_navigation_elements.php:185
+#: src/php/classes/class.build_html_navigation_elements.php:188
 #: src/php/pages/collaborative-vacation-input-box.php:114
 msgid "Approve"
 msgstr "Genehmigen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:193
-#: src/php/classes/class.build_html_navigation_elements.php:196
+#: src/php/classes/class.build_html_navigation_elements.php:205
+#: src/php/classes/class.build_html_navigation_elements.php:208
 msgid "Disapprove"
 msgstr "Ablehnen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:292
-#: src/php/classes/class.build_html_navigation_elements.php:295
+#: src/php/classes/class.build_html_navigation_elements.php:304
+#: src/php/classes/class.build_html_navigation_elements.php:307
 #: src/php/pages/collaborative-vacation-input-box.php:130
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:310
-#: src/php/classes/class.build_html_navigation_elements.php:313
+#: src/php/classes/class.build_html_navigation_elements.php:322
+#: src/php/classes/class.build_html_navigation_elements.php:325
 msgid "Copy"
 msgstr "Kopieren"
 
-#: src/php/classes/class.build_html_navigation_elements.php:351
+#: src/php/classes/class.build_html_navigation_elements.php:363
 msgid "Monday"
 msgstr "Montag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:352
+#: src/php/classes/class.build_html_navigation_elements.php:364
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:353
+#: src/php/classes/class.build_html_navigation_elements.php:365
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: src/php/classes/class.build_html_navigation_elements.php:354
+#: src/php/classes/class.build_html_navigation_elements.php:366
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:355
+#: src/php/classes/class.build_html_navigation_elements.php:367
 msgid "Friday"
 msgstr "Freitag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:356
+#: src/php/classes/class.build_html_navigation_elements.php:368
 msgid "Saturday"
 msgstr "Samstag"
 
-#: src/php/classes/class.build_html_navigation_elements.php:357
+#: src/php/classes/class.build_html_navigation_elements.php:369
 msgid "Sunday"
 msgstr "Sonntag"
 
@@ -262,7 +267,7 @@ msgid "Comment"
 msgstr "Kommentar"
 
 #: src/php/classes/class.build_html_roster_views.php:318
-#: src/php/pages/principle-roster-employee.php:70
+#: src/php/pages/principle-roster-employee.php:95
 #: src/php/pages/roster-day-edit.php:160
 #: src/php/pages/roster-employee-table.php:60
 #: src/php/pages/roster-week-table.php:67
@@ -275,7 +280,7 @@ msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
 #: src/php/classes/class.build_html_roster_views.php:519
-#: src/php/pages/principle-roster-employee.php:127
+#: src/php/pages/principle-roster-employee.php:152
 msgid "Hours per week"
 msgstr "Wochenstunden"
 
@@ -518,7 +523,7 @@ msgid "Balance"
 msgstr "Saldo"
 
 #: src/php/classes/class.overtime.php:192
-#: src/php/classes/class.roster_item.php:192
+#: src/php/classes/class.roster_item.php:191
 #: src/php/pages/emergency-service-list.php:73
 #: src/php/pages/overtime-read.php:51 src/php/pages/saturday-list.php:40
 msgid "Date"
@@ -535,21 +540,21 @@ msgstr ""
 msgid "Please %1s configure %2s the opening times!"
 msgstr "Bitte %1s konfigurieren %2s Sie die Öffnungszeiten!"
 
-#: src/php/classes/class.roster_item.php:197
+#: src/php/classes/class.roster_item.php:196
 msgid "You work at the following times:"
 msgstr "Sie arbeiten zu folgenden Zeiten:"
 
-#: src/php/classes/class.roster_item.php:200
+#: src/php/classes/class.roster_item.php:199
 msgid "Start and end of duty"
 msgstr "Beginn und Ende des Dienstes"
 
-#: src/php/classes/class.roster_item.php:203
-#: src/php/classes/class.roster_item.php:209
+#: src/php/classes/class.roster_item.php:202
+#: src/php/classes/class.roster_item.php:208
 #, php-format
 msgid "From %1s to %2s"
 msgstr "Von %1s bis %2s"
 
-#: src/php/classes/class.roster_item.php:206
+#: src/php/classes/class.roster_item.php:205
 msgid "Start and end of lunch break"
 msgstr "Start und Ende der Pause"
 
@@ -731,15 +736,28 @@ msgstr "Mittagsbeginn"
 msgid "break end"
 msgstr "Mittagsende"
 
-# Die Woche ist weiblich. %1s wird z.B. durch "A-Woche" ersetzt.
-#: src/php/fragments/fragment.prompt_before_safe.php:117
-#, php-format
-msgid "The %1s was changed."
-msgstr "Die %1s wurde geändert."
+#: src/php/fragments/fragment.prompt_before_safe.php:81
+msgid "branch"
+msgstr "Filiale"
 
-#: src/php/fragments/fragment.prompt_before_safe.php:123
+# Die Woche ist weiblich. %1s wird z.B. durch "A-Woche" ersetzt.
+#: src/php/fragments/fragment.prompt_before_safe.php:128
+#, php-format
+msgid "The %1s will be changed."
+msgstr "Die %1s wird geändert."
+
+#: src/php/fragments/fragment.prompt_before_safe.php:137
+msgid "When should the changes come into force?"
+msgstr "Wann sollen die Änderungen in Kraft treten?"
+
+#: src/php/fragments/fragment.prompt_before_safe.php:147
 msgid "There are no changes."
 msgstr "Es gibt keine Änderungen."
+
+#: src/php/fragments/fragment.prompt_before_safe.php:149
+msgid "You will be sent <a href=\"javascript:history.back()\">back</a>."
+msgstr ""
+"Sie werden <a href=\"javascript:history.back()\"> zurück </a> gesendet."
 
 #: src/php/login.php:45
 msgid "Create new user account"
@@ -1184,7 +1202,7 @@ msgstr "Tagesansicht Eingabe"
 msgid "Daily output"
 msgstr "Tagesansicht Ausgabe"
 
-#: src/php/pages/menu.php:36 src/php/pages/principle-roster-day.php:65
+#: src/php/pages/menu.php:36 src/php/pages/principle-roster-day.php:66
 msgid "Principle roster daily"
 msgstr "Grundplan Tagesansicht"
 
@@ -1268,7 +1286,7 @@ msgstr "Benutzerseite"
 msgid "Hours"
 msgstr "Stunden"
 
-#: src/php/pages/principle-roster-employee.php:69
+#: src/php/pages/principle-roster-employee.php:94
 msgid "e.g."
 msgstr "z.B."
 
