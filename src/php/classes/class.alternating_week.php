@@ -59,22 +59,40 @@ class alternating_week {
         $this->alternating_week_id = $alternating_week_id;
     }
 
-    public function get_monday_date_for_alternating_week() {
+    public function get_monday_date_for_alternating_week(DateTime $date_minimum = NULL) {
         if (!isset($this->monday_date)) {
-            $this->monday_date = $this->calculate_monday_date_for_alternating_week();
+            $this->monday_date = $this->calculate_monday_date_for_alternating_week($date_minimum);
+        }
+        if ($date_minimum instanceof DateTime) {
+            /*
+             * The date_minimum is the first date on which an alternation becomes valid.
+             * There are edge cases, where this date is not a monday.
+             *   e.g. if no valid_from date is set, the `start_of_employment` of some current or former employee will be chosen.
+             *     Such a $date_minimum would not have to be a monday. Therefore we convert to monday before comparison.
+             */
+            $date_compare = clone $date_minimum;
+            if ($this->monday_date < $date_compare->modify('Monday this week')) {
+                throw new Exception('A date minimum was given. But the monday_date was already set to an earlier value.');
+            }
         }
         return $this->monday_date;
     }
 
-    private function calculate_monday_date_for_alternating_week() {
-        $date_object = new DateTime('this monday');
+    private function calculate_monday_date_for_alternating_week(DateTime $date_minimum = NULL) {
+        if (NULL === $date_minimum) {
+            $date_object = new DateTime('Monday this week');
+        } else {
+            $date_object = clone $date_minimum;
+            //$date_object->modify('Monday ago');
+            $date_object->modify('Monday this week');
+        }
         $today_alternating_week_id = self::get_alternating_week_for_date($date_object);
         $difference = $this->alternating_week_id - $today_alternating_week_id;
-        if (0 < $difference) {
-            $date_object->add(new DateInterval('P' . $difference . 'W'));
-        } else {
-            $date_object->sub(new DateInterval('P' . abs($difference) . 'W'));
+        $number_of_alternations = count(self::get_alternating_week_ids());
+        if ($difference < 0) {
+            $difference+=$number_of_alternations;
         }
+        $date_object->add(new DateInterval('P' . $difference . 'W'));
         return $date_object;
     }
 

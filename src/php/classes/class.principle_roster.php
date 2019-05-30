@@ -85,15 +85,17 @@ class principle_roster extends roster {
         return $Roster;
     }
 
-    public static function read_all_principle_employee_rosters_from_database(int $employee_id, int $alternation_id) {
+    public static function get_list_of_change_dates(int $employee_id, int $alternation_id) {
         /*
          * Define a valid_from for all the entries in the database. 1970-01-01
          * Read all the valid_until values.
          * Make an array of those values.
          * Make a list of weeks.
-         * Make an array of Rosters in those weeks, with the valid_from as
+         * Make an array of Rosters in those weeks, with the valid_from as key
          */
-        $sql_query = "SELECT DISTINCT `valid_from` FROM `principle_roster` WHERE `employee_id` = :employee_id AND `alternation_id` = :alternation_id;";
+        $sql_query = "SELECT DISTINCT `valid_from` "
+                . " FROM `principle_roster` "
+                . " WHERE `employee_id` = :employee_id AND `alternation_id` = :alternation_id ORDER BY `valid_from`;";
         $result = database_wrapper::instance()->run($sql_query, array(
             'employee_id' => $employee_id,
             'alternation_id' => $alternation_id,
@@ -111,6 +113,11 @@ class principle_roster extends roster {
             }
             $List_of_change_dates[] = $date_of_change;
         }
+        return $List_of_change_dates;
+    }
+
+    public static function read_all_principle_employee_rosters_from_database(int $employee_id, int $alternation_id) {
+        $List_of_change_dates = self::get_list_of_change_dates();
         foreach ($List_of_change_dates as $date_sql) {
             $date_start_object = new DateTime($date_sql);
             $date_end_object = clone $date_start_object;

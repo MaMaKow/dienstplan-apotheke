@@ -24,23 +24,38 @@
  */
 class workforce {
 
-//public $List_of_employee_ids;
+    /**
+     *
+     * @var string $date_start_sql is the date string with which the object was instantiated. It is only stored for debugging purposes.
+     */
+    public $date_start_sql;
+
+    /**
+     *
+     * @var string $date_end_sql is an optional date string with which the object was instantiated. It is only stored for debugging purposes.
+     */
+    public $date_end_sql;
     public $List_of_employees;
     public $List_of_qualified_pharmacist_employees;
     public $List_of_goods_receipt_employees;
     public $List_of_compounding_employees;
 
-    public function __construct($date_sql = NULL) {
-        if (NULL === $date_sql) {
+    public function __construct($date_start_sql = NULL, $date_end_sql = NULL) {
+        $this->date_start_sql = $date_start_sql;
+        $this->date_end_sql = $date_end_sql;
+        if (NULL === $date_start_sql) {
             $sql_query = 'SELECT * FROM `employees` '
                     . 'ORDER BY `id` ASC, ISNULL(`end_of_employment`) ASC, `end_of_employment` ASC;';
             $result = database_wrapper::instance()->run($sql_query);
         } else {
+            if (NULL === $date_end_sql) {
+                $date_end_sql = $date_start_sql;
+            }
             $sql_query = 'SELECT * FROM `employees` '
-                    . 'WHERE  (`end_of_employment` >= :date1 OR `end_of_employment` IS NULL) '
-                    . 'AND  (`start_of_employment` <= :date2 OR `start_of_employment` IS NULL) '
+                    . 'WHERE  (`end_of_employment` >= :date_start OR `end_of_employment` IS NULL) '
+                    . 'AND  (`start_of_employment` <= :date_end OR `start_of_employment` IS NULL) '
                     . 'ORDER BY `id` ASC, ISNULL(`end_of_employment`) ASC, `end_of_employment` ASC;';
-            $result = database_wrapper::instance()->run($sql_query, array('date1' => $date_sql, 'date2' => $date_sql));
+            $result = database_wrapper::instance()->run($sql_query, array('date_end' => $date_end_sql, 'date_start' => $date_start_sql));
         }
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $this->List_of_employees[$row->id] = new employee((int) $row->id, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
@@ -55,6 +70,13 @@ class workforce {
                 $this->List_of_compounding_employees[] = $row->id;
             }
         }
+    }
+
+    public function __set($name, $value) {
+        if ('date_sql' === $name) {
+            throw new Exception('$date_sql may only be given on __construct!');
+        }
+        $this->$name = $value;
     }
 
     public function get_list_of_employee_names() {
