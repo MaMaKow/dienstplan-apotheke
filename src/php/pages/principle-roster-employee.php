@@ -63,7 +63,7 @@ $html_text .= "<div id=main-area>\n";
 //TODO: find out how to respect the lunch breaks!
 $html_text .= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
-function build_change_principle_roster_employee_form(int $alternation_id, string $valid_from_sql, int $employee_id) {
+function build_change_principle_roster_employee_form(int $alternation_id, string $valid_from_sql, int $employee_id, bool $hide_this_form) {
     $date_minimum = new DateTime($valid_from_sql);
     $alternating_week = new alternating_week($alternation_id);
     $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week($date_minimum);
@@ -85,9 +85,14 @@ function build_change_principle_roster_employee_form(int $alternation_id, string
     roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
     unset($Principle_roster);
 
-    $form_id = 'change_principle_roster_employee_form_' . $alternation_id;
+    $form_id = 'change_principle_roster_employee_form_' . $alternation_id . '_' . $pseudo_date_start_object->format('Y-m-d');
     $html_text = '';
-    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form' action='../fragments/fragment.prompt_before_safe.php'>";
+    $form_is_hidden_string = '';
+    if (TRUE === $hide_this_form) {
+        $form_is_hidden_string = "hidden";
+    }
+    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form $form_is_hidden_string' action='../fragments/fragment.prompt_before_safe.php'>";
+    $html_text .= "<input type=hidden name=valid_from='$valid_from_sql'>";
     $html_text .= build_html_navigation_elements::build_button_submit($form_id);
     if (alternating_week::alternations_exist()) {
         $monday_date = clone $alternating_week->get_monday_date_for_alternating_week();
@@ -130,7 +135,6 @@ function build_change_principle_roster_employee_form(int $alternation_id, string
         $html_text .= "</tr>\n";
     }
     $html_text .= "</tr>\n";
-    //print_debug_variable($Principle_employee_roster);
     /*
      * TODO: Write JavaScript Code to allow adding more rows to the form
       echo "<tr>";
@@ -184,9 +188,27 @@ function calculate_list_of_working_hours($Roster_array) {
 
 foreach (alternating_week::get_alternating_week_ids() as $alternation_id) {
     $List_of_change_dates = principle_roster::get_list_of_change_dates($employee_id, $alternation_id);
-    foreach ($List_of_change_dates as $valid_from_sql) {
-        $html_text .= build_change_principle_roster_employee_form($alternation_id, $valid_from_sql, $employee_id);
+    $html_text .= "<div class=principle_roster_alternation_container>";
+    if (1 !== count($List_of_change_dates)) {
+        $html_text .= "<label for='toggle_$alternation_id' id='toggle_label_$alternation_id'>";
+        $html_text .= gettext('Show older versions?') . "</label>";
+        $html_text .= "<input type='checkbox' class='toggle_switch' id='toggle_$alternation_id'/>";
     }
+    foreach ($List_of_change_dates as $valid_from_sql) {
+        $hide_this_form = TRUE;
+        if ($valid_from_sql === max($List_of_change_dates)) {
+            /*
+             * This is the actually relevant and current principle roster for this alternation.
+             * All the others are just history.
+             *  CAVE: This might be a change far in the future.
+             *   Actually one of the history entries might be for today and the next months.
+             *   TODO: How do wee deal with sudden changes before the last valid_until?
+             */
+            $hide_this_form = FALSE;
+        }
+        $html_text .= build_change_principle_roster_employee_form($alternation_id, $valid_from_sql, $employee_id, $hide_this_form);
+    }
+    $html_text .= "</div>";
 }
 
 

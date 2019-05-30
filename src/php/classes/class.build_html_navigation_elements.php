@@ -248,7 +248,11 @@ abstract class build_html_navigation_elements {
      * @return string HTML element
      */
 
-    public static function build_select_branch(int $current_branch_id, string $date_sql) {
+    public static function build_select_branch(int $current_branch_id, string $date_sql = NULL) {
+        /*
+         * TODO: Is it possible to leave out the date_sql?
+         * Branch management will send NULL. Does this interrupt any cookies?
+         */
         $List_of_branch_objects = branch::get_list_of_branch_objects();
         if (1 === count($List_of_branch_objects)) {
             return FALSE;
