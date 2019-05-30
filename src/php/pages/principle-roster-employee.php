@@ -63,24 +63,29 @@ $html_text .= "<div id=main-area>\n";
 //TODO: find out how to respect the lunch breaks!
 $html_text .= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
-function build_change_principle_roster_employee_form(alternating_week $alternating_week, int $employee_id) {
-
-    $alternating_week_id = $alternating_week->get_alternating_week_id();
-
-    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week();
-
+function build_change_principle_roster_employee_form(int $alternation_id, string $valid_from_sql, int $employee_id) {
+    $date_minimum = new DateTime($valid_from_sql);
+    $alternating_week = new alternating_week($alternation_id);
+    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week($date_minimum);
     $pseudo_date_end_object = clone $pseudo_date_start_object;
     $pseudo_date_end_object->add(new DateInterval('P6D'));
-    $workforce = new workforce($pseudo_date_start_object->format('Y-m-d'));
-    $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
-
 
     $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $pseudo_date_start_object, $pseudo_date_end_object);
+    /*
+     * TODO: We might stop using a transfer for the lunch breaks.
+     *   This means, that the breaks will not magically appear in the principle-roster-employee.php
+     *   They will however robably be automaticcaly be inserted in the daily view.
+     *   This might bring up some confusion. Should I give up calculating probably lunch_breaks alltogether?
+     *     If so, should there be a warning/notice if the law wants a break to be given?
+     *
+     */
+    $workforce = new workforce($pseudo_date_start_object->format('Y-m-d'), $pseudo_date_end_object->format('Y-m-d'));
+    $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
     $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
     roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
     unset($Principle_roster);
 
-    $form_id = 'change_principle_roster_employee_form_' . $alternating_week_id;
+    $form_id = 'change_principle_roster_employee_form_' . $alternation_id;
     $html_text = '';
     $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form' action='../fragments/fragment.prompt_before_safe.php'>";
     $html_text .= build_html_navigation_elements::build_button_submit($form_id);
@@ -88,15 +93,17 @@ function build_change_principle_roster_employee_form(alternating_week $alternati
         $monday_date = clone $alternating_week->get_monday_date_for_alternating_week();
         $sunday_date = clone $monday_date;
         $sunday_date->add(new DateInterval('P6D'));
-        $alternating_week_id_string = '<div class="inline_block_element"><p>'
-                . alternating_week::get_human_readably_string($alternating_week_id)
+        $alternation_id_string = '<div class="inline_block_element"><p>'
+                . alternating_week::get_human_readably_string($alternation_id)
+                . '<br> '
+                . gettext('valid from') . ' ' . $date_minimum->format('d.m.Y')
                 . '<br> '
                 . gettext('e.g.') . ' '
                 . gettext('calendar week') . ' ' . $monday_date->format('W')
                 . '<br> '
                 . $monday_date->format('d.m.Y') . ' - ' . $sunday_date->format('d.m.Y')
                 . '</p></div>';
-        $html_text .= $alternating_week_id_string;
+        $html_text .= $alternation_id_string;
     }
     $html_text .= "<script> "
             . " var Roster_array = " . json_encode($Principle_employee_roster) . ";\n"
@@ -123,6 +130,7 @@ function build_change_principle_roster_employee_form(alternating_week $alternati
         $html_text .= "</tr>\n";
     }
     $html_text .= "</tr>\n";
+    //print_debug_variable($Principle_employee_roster);
     /*
      * TODO: Write JavaScript Code to allow adding more rows to the form
       echo "<tr>";
@@ -174,9 +182,11 @@ function calculate_list_of_working_hours($Roster_array) {
     return $List_of_working_hours;
 }
 
-foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
-    $alternating_week = new alternating_week($alternating_week_id);
-    $html_text .= build_change_principle_roster_employee_form($alternating_week, $employee_id);
+foreach (alternating_week::get_alternating_week_ids() as $alternation_id) {
+    $List_of_change_dates = principle_roster::get_list_of_change_dates($employee_id, $alternation_id);
+    foreach ($List_of_change_dates as $valid_from_sql) {
+        $html_text .= build_change_principle_roster_employee_form($alternation_id, $valid_from_sql, $employee_id);
+    }
 }
 
 

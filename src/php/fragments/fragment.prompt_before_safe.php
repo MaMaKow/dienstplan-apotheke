@@ -111,20 +111,24 @@ if (1 === count($List_of_employee_ids)) {
         /*
          * Something has changed between the last roster and the new roster.
          */
+        if (alternating_week::alternations_exist()) {
+            $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
+            /*
+             * TODO: Create an option to take the changes nto other alternations:
+              $List_of_principle_rosters = alternating_week::get_list_of_principle_rosters($employee_id);
+              $Differences_between_principle_rosters = alternating_week::find_differences_between_principle_rosters($List_of_principle_rosters, $alternation_id);
+              //print_debug_variable($Differences_between_principle_rosters);
+              //$comparison_string = build_comparison_string($Differences_between_principle_rosters);
+             */
+            echo "<p>";
+            echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternation_id));
+            echo "</p>";
+            echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);
+        }
         /*
-         * TODO: Create an option to take the changes nto other alternations:
-         *         if (alternating_week::alternations_exist()) {
-          $List_of_principle_rosters = alternating_week::get_list_of_principle_rosters($employee_id);
-          $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
-          $Differences_between_principle_rosters = alternating_week::find_differences_between_principle_rosters($List_of_principle_rosters, $alternation_id);
-          //print_debug_variable($Differences_between_principle_rosters);
-          }
-          //$comparison_string = build_comparison_string($Differences_between_principle_rosters);
+         * Parameters to be sent back to the principle roster page.
+         * TODO: Use the session variable maybe? So we do not have to trust user data from POST?
          */
-        echo "<p>";
-        echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternation_id));
-        echo "</p>";
-        echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);
         echo "<form id='principle_roster_prompt_before_safe' method='post' action='../pages/principle-roster-employee.php'>"
         . "<input type=hidden name='Principle_roster_from_prompt' value=" . base64_encode(serialize($Principle_roster_new)) . ">"
         . "<input type=hidden name='List_of_differences' value=" . base64_encode(serialize($List_of_differences)) . ">"
@@ -132,11 +136,17 @@ if (1 === count($List_of_employee_ids)) {
         echo "<hr>";
         echo "<p>";
         echo gettext("When should the changes come into force?");
-        echo "";
         echo "</p>";
-        echo "</p>";
-        echo "<input name='valid_from' type='date' form='principle_roster_prompt_before_safe' value='" . $date_start_object->format('Y-m-d') . "'>";
+        /*
+         * valid from:
+         */
+        $earliest_allowed_valid_from = max(principle_roster::get_list_of_change_dates($employee_id, $alternation_id));
+        $suggested_valid_from = max($earliest_allowed_valid_from, $date_start_object->format('Y-m-d'));
+        echo "<input name='valid_from' type='date' form='principle_roster_prompt_before_safe' step='7' min='$earliest_allowed_valid_from' value='$suggested_valid_from'>";
         echo "<hr>";
+        /*
+         * buttons:
+         */
         echo build_html_navigation_elements::build_button_submit('principle_roster_prompt_before_safe');
         echo build_html_navigation_elements::build_button_back();
     } else {

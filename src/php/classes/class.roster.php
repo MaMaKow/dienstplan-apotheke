@@ -174,7 +174,7 @@ class roster {
                             $principle_employee_roster_object->break_end_int = $principle_roster_object->break_end_int;
                             $principle_employee_roster_object->break_start_sql = $principle_roster_object->break_start_sql;
                             $principle_employee_roster_object->break_end_sql = $principle_roster_object->break_end_sql;
-                            /* The durations are automagically recalculated using roster_intem->__set() which calls roster_item->calculate_durations() */
+                            // The durations are automagically recalculated using roster_intem->__set() which calls roster_item->calculate_durations()
                         }
                     }
                 }
@@ -244,7 +244,7 @@ class roster {
             $Employee_count[] = (count($Roster_day_array));
         }
         $roster_employee_count = max($Employee_count); //The number of rows is defined by the column (=day) with the most lines
-        //$max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
+//$max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
         return $roster_employee_count;
     }
 
