@@ -60,7 +60,7 @@ class roster_item implements \JsonSerializable {
             $this->$variable_name = $variable_value;
             $this->calculate_durations();
         } else {
-            throw new Exception($variable_name . " is private and not allowed to be called by " . __METHOD__);
+            throw new Exception($variable_name . " is private and not allowed to be changed by " . __METHOD__);
         }
     }
 
@@ -74,7 +74,7 @@ class roster_item implements \JsonSerializable {
     public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_object = new DateTime($date_sql);
-        $this->date_unix = strtotime($date_sql);
+        $this->date_unix = $this->date_object->getTimestamp();
         $this->employee_id = $employee_id;
         $this->branch_id = (int) $branch_id;
         $this->duty_start_sql = $this->format_time_string_correct($duty_start);

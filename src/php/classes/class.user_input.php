@@ -45,15 +45,6 @@ abstract class user_input {
         }
     }
 
-    public static function principle_employee_roster_write_user_input_to_database(int $employee_id) {
-        global $session;
-        if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
-            return FALSE;
-        }
-        $Principle_employee_roster_new = user_input::get_Roster_from_POST_secure();
-        principle_roster::write_employee_user_input_to_database($employee_id, $Principle_employee_roster_new);
-    }
-
     public static function principle_roster_copy_from($principle_roster_copy_from) {
         global $session;
         $session->exit_on_missing_privilege(sessions::PRIVILEGE_CREATE_ROSTER);
@@ -66,7 +57,7 @@ abstract class user_input {
         alternating_week::delete_alternation($principle_roster_delete);
     }
 
-    public static function principle_roster_write_user_input_to_database($branch_id, $valid_from, $valid_until) {
+    public static function principle_roster_write_user_input_to_database($branch_id, $valid_from) {
         global $session;
         $session->exit_on_missing_privilege('create_roster');
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
@@ -81,8 +72,8 @@ abstract class user_input {
         database_wrapper::instance()->beginTransaction();
         principle_roster::remove_changed_employee_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
         principle_roster::remove_changed_employee_entries_from_database($branch_id, $Changed_roster_employee_id_list);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list, $valid_from, $valid_until);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list, $valid_from, $valid_until);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list, $valid_from);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list, $valid_from);
         database_wrapper::instance()->commit();
     }
 
@@ -140,7 +131,7 @@ abstract class user_input {
         }
     }
 
-    private static function insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list) {
+    private static function insert_changed_roster_into_database($Roster, $Changed_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_id_list[$date_unix])) {
                 /* There are no changes. */
@@ -184,7 +175,7 @@ abstract class user_input {
     public static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
-            if (!isset($Roster_old[$date_unix])) {
+            if (roster::is_empty_roster_day_array($Roster_old[$date_unix])) {
                 /*
                  * There is no old roster. Every entry is new:
                  */
@@ -292,8 +283,8 @@ abstract class user_input {
             database_wrapper::instance()->beginTransaction();
             user_input::remove_changed_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
             user_input::remove_changed_entries_from_database($branch_id, $Changed_roster_employee_id_list);
-            user_input::insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list);
-            user_input::insert_changed_entries_into_database($Roster, $Inserted_roster_employee_id_list);
+            user_input::insert_changed_roster_into_database($Roster, $Changed_roster_employee_id_list);
+            user_input::insert_changed_roster_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
             $user_dialog_email = new user_dialog_email();
             $user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);

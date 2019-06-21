@@ -40,7 +40,7 @@ create_cookie('weekday', $weekday, 1);
 $workforce = new workforce($date_object->format('Y-m-d'));
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     throw new Exception('$valid_from and $valid_until are not yet implemented');
-    user_input::principle_roster_write_user_input_to_database($branch_id, $valid_from, $valid_until);
+    user_input::principle_roster_write_user_input_to_database($branch_id, $valid_from);
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
     $principle_roster_copy_from = filter_input(INPUT_POST, 'principle_roster_copy_from', FILTER_SANITIZE_STRING);

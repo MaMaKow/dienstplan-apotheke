@@ -47,6 +47,8 @@ class roster_item_empty extends roster_item {
 
         $this->empty = TRUE;
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
+        $this->date_object = new DateTime($date_sql);
+        $this->date_unix = $this->date_object->getTimestamp();
         $this->branch_id = $branch_id;
     }
 
