@@ -59,6 +59,12 @@ function calculate_percentile($arr, $percentile) {
     return $median;
 }
 
+function print_debug_variable_to_screen($variable) {
+    echo "<pre>";
+    var_dump($variable);
+    echo "</pre>";
+}
+
 function print_debug_variable($variable) {
     /*
      * Enhanced with https://stackoverflow.com/a/19788805/2323627

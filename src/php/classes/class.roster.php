@@ -283,8 +283,8 @@ class roster {
      * @return boolean
      */
     public static function is_empty($Roster) {
-        foreach ($Roster as $roster_array) {
-            foreach ($roster_array as $roster_object) {
+        foreach ($Roster as $Roster_day_array) {
+            foreach ($Roster_day_array as $roster_object) {
                 if (NULL !== $roster_object->employee_id) {
                     /*
                      * In most cases we do not have to loop through the whole array.
@@ -298,6 +298,19 @@ class roster {
          * In those cases, where there is no actual roster data given, the array is mostly small.
          * Therefore this should also not be a huge load of work.
          */
+        return TRUE;
+    }
+
+    public static function is_empty_roster_day_array($Roster_day_array) {
+        foreach ($Roster_day_array as $roster_object) {
+            if (NULL !== $roster_object->employee_id) {
+                /*
+                 * In most cases we do not have to loop through the whole array.
+                 * If the first element is filled, then we allready stop searching.
+                 */
+                return FALSE;
+            }
+        }
         return TRUE;
     }
 
