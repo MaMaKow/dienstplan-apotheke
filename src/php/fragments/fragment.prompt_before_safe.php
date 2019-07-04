@@ -132,11 +132,11 @@ if (1 === count($List_of_employee_ids)) {
          * Parameters to be sent back to the principle roster page.
          * TODO: Use the session variable maybe? So we do not have to trust user data from POST?
          */
-        $valid_from_from_post = user_input::get_variable_from_any_input('valid_from', FILTER_SANITIZE_STRING);
+        //$valid_from_from_post = user_input::get_variable_from_any_input('valid_from', FILTER_SANITIZE_STRING);
         $_SESSION['Principle_roster_from_prompt'] = $Principle_roster_new;
         $_SESSION['List_of_differences'] = $List_of_differences;
         echo "<form id='principle_roster_prompt_before_safe' method='post' action='../pages/principle-roster-employee.php'>";
-        echo "<input type=hidden name='valid_from' value=$valid_from_from_post>";
+        //echo "<input type=hidden name='valid_from' value=$valid_from_from_post>";
         echo "</form>";
         echo "<hr>";
         echo "<p>";
@@ -149,7 +149,8 @@ if (1 === count($List_of_employee_ids)) {
         $suggested_valid_from = max($earliest_allowed_valid_from, $date_start_object);
         $step = 7 * count(alternating_week::get_alternating_week_ids());
         echo "<input name='valid_from' type='date' form='principle_roster_prompt_before_safe' "
-        . "step='$step' min='" . $earliest_allowed_valid_from->format('Y-m-d') . "' "
+        //. "step='$step' min='" . $earliest_allowed_valid_from->format('Y-m-d') . "' "
+        . "step='$step' "
         . "value='" . $suggested_valid_from->format('Y-m-d') . "'>";
         echo "<hr>";
         /*
