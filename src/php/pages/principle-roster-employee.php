@@ -31,16 +31,15 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
         $List_of_differences = $_SESSION['List_of_differences'];
         unset($_SESSION['Principle_roster_from_prompt']);
         unset($_SESSION['List_of_differences']);
-        //$valid_from_input = filter_input(INPUT_POST, 'valid_from', FILTER_SANITIZE_STRING);
+        $valid_from_input = new DateTime(filter_input(INPUT_POST, 'valid_from', FILTER_SANITIZE_STRING));
         /*
-         * TODO: find a correct date for the change.
-         * It should be the first monday in the relevant alternation_id week (after the given date?).
+         * find a correct date for the change.
+         * It should be the first monday in the relevant alternation_id week, after the given date.
          */
         $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
-        $valid_from = (
-                new alternating_week(
-                alternating_week::get_alternating_week_for_date($some_date_from_input)
-                ))->get_monday_date_for_alternating_week();
+        $valid_from = ( new alternating_week(
+                alternating_week::get_alternating_week_for_date($some_date_from_input))
+                )->get_monday_date_for_alternating_week($valid_from_input);
         principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_differences, $valid_from->format('Y-m-d'));
     }
 }
@@ -86,7 +85,7 @@ function build_change_principle_roster_employee_form(int $alternation_id, DateTi
         $form_is_hidden_string = "hidden";
     }
     $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form $form_is_hidden_string' action='../fragments/fragment.prompt_before_safe.php'>";
-    $html_text .= "<input type=hidden name=valid_from='" . $date_minimum->format('Y-m-d') . "'>";
+    //$html_text .= "<input type=hidden name=valid_from='" . $date_minimum->format('Y-m-d') . "'>";
     $html_text .= build_html_navigation_elements::build_button_submit($form_id);
     if (alternating_week::alternations_exist()) {
         $monday_date = clone $alternating_week->get_monday_date_for_alternating_week();

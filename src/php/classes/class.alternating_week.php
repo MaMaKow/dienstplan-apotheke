@@ -83,7 +83,6 @@ class alternating_week {
             $date_object = new DateTime('Monday this week');
         } else {
             $date_object = clone $date_minimum;
-            //$date_object->modify('Monday ago');
             $date_object->modify('Monday this week');
         }
         $today_alternating_week_id = self::get_alternating_week_for_date($date_object);
