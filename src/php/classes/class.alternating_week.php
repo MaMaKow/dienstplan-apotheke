@@ -59,6 +59,12 @@ class alternating_week {
         $this->alternating_week_id = $alternating_week_id;
     }
 
+    /**
+     *
+     * @param DateTime $date_minimum
+     * @return DateTime $this->monday_date
+     * @throws Exception
+     */
     public function get_monday_date_for_alternating_week(DateTime $date_minimum = NULL) {
         if (!isset($this->monday_date)) {
             $this->monday_date = $this->calculate_monday_date_for_alternating_week($date_minimum);

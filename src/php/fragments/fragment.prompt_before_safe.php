@@ -102,6 +102,10 @@ $List_of_employee_ids = get_list_of_employee_ids($Principle_roster_new);
 require '../../../head.php';
 echo "<main>";
 if (1 === count($List_of_employee_ids)) {
+    /*
+     * TODO: Make this work for multiple employees:
+     * Maybe make a foreach loop. Also try to encapsulate into some functions
+     */
     $employee_id = current($List_of_employee_ids);
     $date_start_object = new DateTime;
     $date_start_object->setTimestamp(min(array_keys($Principle_roster_new)));
@@ -116,7 +120,7 @@ if (1 === count($List_of_employee_ids)) {
         if (alternating_week::alternations_exist()) {
             $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
             /*
-             * TODO: Create an option to take the changes nto other alternations:
+             * TODO: Create an option to take the changes to other alternations:
               $List_of_principle_rosters = alternating_week::get_list_of_principle_rosters($employee_id);
               $Differences_between_principle_rosters = alternating_week::find_differences_between_principle_rosters($List_of_principle_rosters, $alternation_id);
               //print_debug_variable($Differences_between_principle_rosters);
@@ -130,13 +134,11 @@ if (1 === count($List_of_employee_ids)) {
         }
         /*
          * Parameters to be sent back to the principle roster page.
-         * TODO: Use the session variable maybe? So we do not have to trust user data from POST?
+         * We use the session variable, so we do not have to trust user data from POST:
          */
-        //$valid_from_from_post = user_input::get_variable_from_any_input('valid_from', FILTER_SANITIZE_STRING);
         $_SESSION['Principle_roster_from_prompt'] = $Principle_roster_new;
         $_SESSION['List_of_differences'] = $List_of_differences;
         echo "<form id='principle_roster_prompt_before_safe' method='post' action='../pages/principle-roster-employee.php'>";
-        //echo "<input type=hidden name='valid_from' value=$valid_from_from_post>";
         echo "</form>";
         echo "<hr>";
         echo "<p>";

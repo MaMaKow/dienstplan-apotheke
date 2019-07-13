@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once "../../../default.php";
-$workforce = new workforce();
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 $year = \user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date("Y"));
 $month_number = \user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_NUMBER_INT, date("n"));
@@ -32,7 +31,7 @@ $session->exit_on_missing_privilege('request_own_absence');
 
 echo "<div id='input_box_data_div'></div>";
 echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";
-echo $collaborative_vacation->build_absence_month($year, $month_number, $workforce);
+echo $collaborative_vacation->build_absence_month($year, $month_number);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </BODY>
