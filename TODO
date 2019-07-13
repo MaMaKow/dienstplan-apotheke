@@ -1,5 +1,12 @@
 LDAP
 
+Move all the database interaction into the respective classes
+
+Cite CC-BY Icons:
+    For design elements, put all the attributions on a separate page.
+    This is usually the same page where you would mention the third-party software that you used and the licenses that are applicable to the software.
+    For the style of attribution, use the recommendations from Creative Commons.
+
 Employees should allways have a branch, which they belong to (or NULL). Branches in the employee table have to exist in the branches table too!
 
 human-resource-management.php is missing a feature to delete (archive) an employee

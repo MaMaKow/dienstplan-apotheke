@@ -18,7 +18,7 @@
  */
 
 /**
- * Description of class
+ * This class contains functions needed to build various navigation elements, e.g. buttons and selects.
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
@@ -293,6 +293,27 @@ abstract class build_html_navigation_elements {
         return $html;
     }
 
+    public static function build_button_show_principle_roster_history($alternating_week_id, $employee_id, $weekday, $branch_id) {
+        if (2 > count(principle_roster_history::get_list_of_history_dates($weekday, $alternating_week_id, $branch_id))) {
+            return NULL;
+        }
+
+        $button_img = "<form class='inline_form' action='../fragments/fragment.principle-roster-day-history.php' method='post' id='show_principle_roster_history'>
+            <input type='hidden' form='show_principle_roster_history' name='alternation_id' value=$alternating_week_id>
+            <input type='hidden' form='show_principle_roster_history' name='employee_id' value=$employee_id>
+            <input type='hidden' form='show_principle_roster_history' name='weekday' value=$weekday>
+            <input type='hidden' form='show_principle_roster_history' name='branch_id' value=$branch_id>
+		<button type='submit' class='btn-primary no_print'>
+			<i>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/history.svg' class='button-image' alt='" . gettext("principle roster history") . "'>
+			</i>
+			<br>
+			" . gettext("History") . "
+		</button>
+            </form>\n";
+        return $button_img;
+    }
+
     public static function build_button_principle_roster_delete($alternating_week_id) {
         global $session;
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
@@ -332,7 +353,7 @@ abstract class build_html_navigation_elements {
         return $button_img;
     }
 
-    public static function build_select_alternating_week(int $alternating_week_id, int $weekday) {
+    public static function build_select_alternating_week(int $alternating_week_id, int $weekday, DateTime $date = NULL) {
         if (!alternating_week::alternations_exist()) {
             return NULL;
         }
@@ -342,7 +363,7 @@ abstract class build_html_navigation_elements {
         $Alternating_week_ids = alternating_week::get_alternating_week_ids();
         foreach ($Alternating_week_ids as $alternating_week_id_current) {
             $alternating_week = new alternating_week($alternating_week_id_current);
-            $example_monday = $alternating_week->get_monday_date_for_alternating_week();
+            $example_monday = $alternating_week->get_monday_date_for_alternating_week($date);
             $example_date = clone $example_monday;
             if ($weekday > 1) {
                 $example_date = $example_monday->add(new DateInterval('P' . ($weekday - 1) . 'D'));

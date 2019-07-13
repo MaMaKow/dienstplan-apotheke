@@ -110,7 +110,7 @@ abstract class user_input {
                     $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
                 } catch (PDRRosterLogicException $exception) {
                     $user_dialog = new user_dialog();
-                    $user_dialog->add_message($exception->getMessage());
+                    $user_dialog->add_message($exception->getMessage(), E_USER_ERROR, TRUE);
                 }
             }
         }
@@ -175,7 +175,7 @@ abstract class user_input {
     public static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
-            if (roster::is_empty_roster_day_array($Roster_old[$date_unix])) {
+            if (!isset($Roster_old[$date_unix]) or roster::is_empty_roster_day_array($Roster_old[$date_unix])) {
                 /*
                  * There is no old roster. Every entry is new:
                  */

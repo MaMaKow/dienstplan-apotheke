@@ -23,11 +23,17 @@ $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILT
 $branch_id = (int) user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $weekday = (int) user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
 $alternating_week_id = (int) user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT, alternating_week::get_min_alternating_week_id());
+
+$chosen_history_date_valid_from = NULL;
+if (filter_has_var(INPUT_POST, 'chosen_history_date_valid_from')) {
+    $chosen_history_date_valid_from = new DateTime(filter_input(INPUT_POST, 'chosen_history_date_valid_from', FILTER_SANITIZE_STRING));
+}
+
 if (!in_array($alternating_week_id, alternating_week::get_alternating_week_ids())) {
     $alternating_week_id = alternating_week::get_min_alternating_week_id();
 }
 $alternating_week = new alternating_week($alternating_week_id);
-$date_object = $alternating_week->get_monday_date_for_alternating_week();
+$date_object = $alternating_week->get_monday_date_for_alternating_week($chosen_history_date_valid_from);
 if ($weekday > 1) {
     $date_object->add(new DateInterval('P' . ($weekday - 1) . 'D'));
 }
@@ -51,8 +57,10 @@ if (filter_has_var(INPUT_POST, 'principle_roster_delete')) {
     user_input::principle_roster_delete($principle_roster_delete);
 }
 
-$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_object);
-
+$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object, $date_object);
+/*
+ * TODO: Build this page for the new valid_from approach!;
+ */
 
 $VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($workforce->List_of_employees));
@@ -68,14 +76,19 @@ echo "<div id=main-area>\n";
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_object->format('Y-m-d'));
 //Auswahl des Wochentages
 echo build_html_navigation_elements::build_select_weekday($weekday);
-echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday);
+echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday, $date_object);
 echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
 echo build_html_navigation_elements::build_button_principle_roster_delete($alternating_week_id);
+echo build_html_navigation_elements::build_button_show_principle_roster_history($alternating_week_id, $employee_id, $weekday, $branch_id);
 echo "<div id=navigation_elements>";
+/*
+ * TODO: Make it work:
+ */
+
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
 echo "</div>\n";
 $html_text = '';
-$html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
+$html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post action='../fragments/fragment.prompt_before_safe.php'>\n";
 $html_text .= "<script> "
         . " var Roster_array = " . json_encode($Principle_roster) . ";\n"
         . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
