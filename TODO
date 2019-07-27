@@ -1,6 +1,18 @@
 LDAP
 
+exchange all alternation_id by alternating_week_id
+
+sprintf must use %1$s instead of %1s.
+    Correct this everywhere!
+    Also in the translations
+
+Write an updater
+    That includes a webservice, which holds the current master state and an API to answer update queries.
+
 Move all the database interaction into the respective classes
+
+Change the navigation menu
+    On mobile touch devices, some menu items are not reachable.
 
 Cite CC-BY Icons:
     For design elements, put all the attributions on a separate page.
@@ -79,6 +91,11 @@ Put notdienst-out.php into the menu
 /var/www/html/apotheke/dienstplan/tag-in.php
 Kommentare müssen angezeigt werden, wenn vorhanden
 >>>   >>>
+
+The following line should not be shown on saturdays and sundays, if Monday until Friday are set.
+"The are no opening times stored inside the database for this weekday. Please configure the opening times!"
+
+
 
     * Upload a PEP file to upload-pep.php				**FAILED**
       - Sorry, there was an error uploading your file

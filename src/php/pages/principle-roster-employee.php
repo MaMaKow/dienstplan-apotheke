@@ -180,7 +180,7 @@ function calculate_list_of_working_hours($Roster_array) {
 }
 
 foreach (alternating_week::get_alternating_week_ids() as $alternation_id) {
-    $List_of_change_dates = principle_roster::get_list_of_change_dates($employee_id, $alternation_id);
+    $List_of_change_dates = principle_roster::get_list_of_employee_change_dates($employee_id, $alternation_id);
     $html_text .= "<div class=principle_roster_alternation_container>";
     if (1 !== count($List_of_change_dates)) {
         $html_text .= "<label for='toggle_$alternation_id' id='toggle_label_$alternation_id'>";

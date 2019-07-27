@@ -18,6 +18,21 @@
  */
 require '../../../default.php';
 
+if (!filter_has_var(INPUT_POST, 'Roster')) {
+    $url = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/principle-roster-day.php";
+    /*
+     * The url is a wild guess.
+     * It might be principle-roster-employee.php
+     */
+    if (!headers_sent()) {
+        header("Status: 307 Temporary Redirect");
+        header("Location: $url");
+    } else {
+        echo '<script type="javascript">document.location.href="' . $url . '";</script>';
+    }
+    exit();
+}
+
 function get_list_of_employee_ids(array $Roster) {
     $List_of_employee_ids = array();
     foreach ($Roster as $date_unix => $Roster_day_array) {
@@ -31,14 +46,29 @@ function get_list_of_employee_ids(array $Roster) {
     return $List_of_employee_ids;
 }
 
+function get_list_of_branch_ids(array $Roster) {
+    $List_of_branch_ids = array();
+    foreach ($Roster as $date_unix => $Roster_day_array) {
+        foreach ($Roster_day_array as $roster_row_iterator => $roster_item) {
+            if (NULL === $roster_item->branch_id) {
+                continue;
+            }
+            $List_of_branch_ids[$roster_item->branch_id] = $roster_item->branch_id;
+        }
+    }
+    return $List_of_branch_ids;
+}
+
 function build_difference_string(array $List_of_differences, array $Principle_roster_new, array $Principle_roster_old) {
     $difference_string = "";
     $Weekday_names = build_html_navigation_elements::get_weekday_names();
     foreach ($List_of_differences as $date_unix => $Employee_ids) {
+        $workforce = new workforce(date('Y-m-d', $date_unix));
         foreach ($Employee_ids as $employee_id) {
             foreach ($Principle_roster_new[$date_unix] as $roster_row_iterator_new => $roster_item_new) {
                 if ($roster_item_new->employee_id !== $employee_id) {
-                    throw new Exception('The employee_id does not match!');
+                    //throw new Exception('The employee_id does not match!');
+                    continue;
                 }
                 foreach ($Principle_roster_old[$date_unix] as $roster_row_iterator_old => $roster_item_old) {
                     if ($roster_row_iterator_new !== $roster_row_iterator_old) {
@@ -49,6 +79,7 @@ function build_difference_string(array $List_of_differences, array $Principle_ro
                     }
 
                     $difference_string .= "<div class='inline_block_element' style='vertical-align: top; margin-right: 1em;'>";
+                    $difference_string .= $workforce->List_of_employees[$employee_id]->last_name . '<br>';
                     $difference_string .= $Weekday_names[$roster_item_new->date_object->format('N')]
                             . "<br>";
                     if ($roster_item_new->duty_start_sql !== $roster_item_old->duty_start_sql) {
@@ -94,80 +125,82 @@ function build_difference_string(array $List_of_differences, array $Principle_ro
 }
 
 $Principle_roster_new = user_input::get_Roster_from_POST_secure();
-if (FALSE !== $Principle_roster_new) {
-    //print_debug_variable($_POST);
-}
 $List_of_employee_ids = get_list_of_employee_ids($Principle_roster_new);
+$List_of_branch_ids = get_list_of_branch_ids($Principle_roster_new);
 
 require '../../../head.php';
 echo "<main>";
+$date_start_object = new DateTime;
+$date_start_object->setTimestamp(min(array_keys($Principle_roster_new)));
+$date_end_object = new DateTime;
+$date_end_object->setTimestamp(max(array_keys($Principle_roster_new)));
 if (1 === count($List_of_employee_ids)) {
+    $referrer_url = '../pages/principle-roster-employee.php';
     /*
      * TODO: Make this work for multiple employees:
      * Maybe make a foreach loop. Also try to encapsulate into some functions
      */
     $employee_id = current($List_of_employee_ids);
-    $date_start_object = new DateTime;
-    $date_start_object->setTimestamp(min(array_keys($Principle_roster_new)));
-    $date_end_object = new DateTime;
-    $date_end_object->setTimestamp(max(array_keys($Principle_roster_new)));
     $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
-    $List_of_differences = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
-    if (array() !== $List_of_differences) {
-        /*
-         * Something has changed between the last roster and the new roster.
-         */
-        if (alternating_week::alternations_exist()) {
-            $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
-            /*
-             * TODO: Create an option to take the changes to other alternations:
-              $List_of_principle_rosters = alternating_week::get_list_of_principle_rosters($employee_id);
-              $Differences_between_principle_rosters = alternating_week::find_differences_between_principle_rosters($List_of_principle_rosters, $alternation_id);
-              //print_debug_variable($Differences_between_principle_rosters);
-              //$comparison_string = build_comparison_string($Differences_between_principle_rosters);
-             */
-            echo "<p>";
-            echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternation_id));
-            echo "</p>";
-
-            echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);
-        }
-        /*
-         * Parameters to be sent back to the principle roster page.
-         * We use the session variable, so we do not have to trust user data from POST:
-         */
-        $_SESSION['Principle_roster_from_prompt'] = $Principle_roster_new;
-        $_SESSION['List_of_differences'] = $List_of_differences;
-        echo "<form id='principle_roster_prompt_before_safe' method='post' action='../pages/principle-roster-employee.php'>";
-        echo "</form>";
-        echo "<hr>";
-        echo "<p>";
-        echo gettext("When should the changes come into force?");
-        echo "</p>";
-        /*
-         * valid from:
-         */
-        $earliest_allowed_valid_from = max(principle_roster::get_list_of_change_dates($employee_id, $alternation_id));
-        $suggested_valid_from = max($earliest_allowed_valid_from, $date_start_object);
-        $step = 7 * count(alternating_week::get_alternating_week_ids());
-        echo "<input name='valid_from' type='date' form='principle_roster_prompt_before_safe' "
-        //. "step='$step' min='" . $earliest_allowed_valid_from->format('Y-m-d') . "' "
-        . "step='$step' "
-        . "value='" . $suggested_valid_from->format('Y-m-d') . "'>";
-        echo "<hr>";
-        /*
-         * buttons:
-         */
-        echo build_html_navigation_elements::build_button_submit('principle_roster_prompt_before_safe');
-        echo build_html_navigation_elements::build_button_back();
-    } else {
-        echo "<p>";
-        echo gettext('There are no changes.');
-        echo " ";
-        echo gettext('You will be sent <a href="javascript:history.back()">back</a>.');
-        echo "</p>";
-        echo "<script>setTimeout(function() {window.history.back();}, 10000);</script>";
-    }
+    $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
+    $earliest_allowed_valid_from = max(principle_roster::get_list_of_employee_change_dates($employee_id, $alternation_id));
+} else if (1 === count($List_of_branch_ids)) {
+    $referrer_url = '../pages/principle-roster-day.php';
+    $branch_id = current($List_of_branch_ids);
+    $Principle_roster_old = principle_roster::read_current_principle_roster_from_database($branch_id, $date_start_object, $date_end_object);
+    $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
+    $earliest_allowed_valid_from = max(principle_roster_history::get_list_of_change_dates($alternation_id));
+} else {
+    throw new Exception('This case has not yet been implemented. You seem to have submitted multiple branches and multiple employees at the same time.');
 }
+$List_of_differences = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
+if (array() !== $List_of_differences) {
+    /*
+     * Something has changed between the last roster and the new roster.
+     */
+    /*
+     * Parameters to be sent back to the principle roster page.
+     * We use the session variable, so we do not have to trust user data from POST:
+     */
+    $_SESSION['Principle_roster_from_prompt'] = $Principle_roster_new;
+    $_SESSION['List_of_differences'] = $List_of_differences;
+    if (alternating_week::alternations_exist()) {
+        /*
+         * TODO: Create an option to take the changes to other alternations:
+         */
+        echo "<p>";
+        echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternation_id));
+        echo "</p>";
 
+        echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);
+    }
+    echo "<form id='principle_roster_prompt_before_safe' method='post' action='$referrer_url'>";
+    echo "</form>";
+    echo "<hr>";
+    echo "<p>";
+    echo gettext("When should the changes come into force?");
+    echo "</p>";
+    /*
+     * valid from:
+     */
+    $suggested_valid_from = max($earliest_allowed_valid_from, $date_start_object);
+    $step = 7 * count(alternating_week::get_alternating_week_ids());
+    echo "<input name='valid_from' type='date' form='principle_roster_prompt_before_safe' "
+    //. "step='$step' min='" . $earliest_allowed_valid_from->format('Y-m-d') . "' "
+    . "step='$step' "
+    . "value='" . $suggested_valid_from->format('Y-m-d') . "'>";
+    echo "<hr>";
+    /*
+     * buttons:
+     */
+    echo build_html_navigation_elements::build_button_submit('principle_roster_prompt_before_safe');
+    echo build_html_navigation_elements::build_button_back();
+} else {
+    echo "<p>";
+    echo gettext('There are no changes.');
+    echo " ";
+    echo gettext('You will be sent <a href="javascript:history.back()">back</a>.');
+    echo "</p>";
+    echo "<script>setTimeout(function() {window.history.back();}, 10000);</script>";
+}
 echo "</main>";

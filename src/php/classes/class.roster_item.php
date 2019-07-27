@@ -107,7 +107,7 @@ class roster_item implements \JsonSerializable {
         $this->working_hours = round($this->working_seconds / 3600, 2);
     }
 
-    public static function format_time_string_correct($time_string, $format = '%H:%M') {
+    public static function format_time_string_correct(string $time_string = NULL, string $format = '%H:%M') {
         /*
          * TODO: This could be part of a namespaced DateTime class.
          */
@@ -124,14 +124,14 @@ class roster_item implements \JsonSerializable {
      * @return string A string representing the unix date in a given format.
      */
 
-    public static function format_date_unix_to_string($date_unix, $format = 'Y-m-d') {
+    public static function format_date_unix_to_string(int $date_unix = NULL, string $format = 'Y-m-d') {
         if (NULL === $date_unix) {
             return NULL;
         }
         return gmdate($format, $date_unix);
     }
 
-    public static function format_time_integer_to_string($time_seconds, $format = 'H:i') {
+    public static function format_time_integer_to_string(int $time_seconds = NULL, string $format = 'H:i') {
         if ($time_seconds > PDR_ONE_DAY_IN_SECONDS) {
             throw new Exception('The time in seconds must be below 1 day (' . PDR_ONE_DAY_IN_SECONDS . ')');
         }
@@ -149,7 +149,7 @@ class roster_item implements \JsonSerializable {
         return gmdate($format, $time_seconds);
     }
 
-    public static function convert_time_to_seconds($time_string) {
+    public static function convert_time_to_seconds(string $time_string = NULL) {
         if (NULL === $time_string) {
             return NULL;
         }

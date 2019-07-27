@@ -81,11 +81,15 @@ class principle_roster extends roster {
                 $roster_row_iterator++;
             }
         }
-        self::determine_lunch_breaks($Roster);
+        /*
+         * TODO: Build a function instead,
+         *   that gives a warning or information, if a required lunch break is not scheduled.
+         */
+        //self::determine_lunch_breaks($Roster);
         return $Roster;
     }
 
-    public static function get_list_of_change_dates(int $employee_id, int $alternation_id) {
+    public static function get_list_of_employee_change_dates(int $employee_id, int $alternation_id) {
         $List_of_change_dates = array();
         /*
          * Define a valid_from for all the entries in the database. 1970-01-01
@@ -128,7 +132,7 @@ class principle_roster extends roster {
     }
 
     public static function read_all_principle_employee_rosters_from_database(int $employee_id, int $alternation_id) {
-        $List_of_change_dates = self::get_list_of_change_dates();
+        $List_of_change_dates = self::get_list_of_employee_change_dates();
         foreach ($List_of_change_dates as $date_start_object) {
             $date_end_object = clone $date_start_object;
             $date_end_object->add(new DateInterval('P6D'));
@@ -138,11 +142,11 @@ class principle_roster extends roster {
     }
 
     public static function read_current_principle_employee_roster_from_database(int $employee_id, DateTime $date_start_object, DateTime $date_end_object = NULL) {
+        if (NULL === $date_end_object) {
+            $date_end_object = clone $date_start_object;
+        }
         if ($date_start_object > $date_end_object) {
             throw new Exception('The start cannot be before the end.');
-        }
-        if (NULL === $date_end_object) {
-            $date_end_object = $date_start_object;
         }
         $Roster = array();
         for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
@@ -186,6 +190,7 @@ class principle_roster extends roster {
      * This function determines the optimal lunch breaks.
      *
      * It considers the principle lunch breaks.
+     * @deprecated No longer used by internal code and not recommended.
      * @return array $Roster
      */
     public static function determine_lunch_breaks($Roster) {
@@ -324,7 +329,8 @@ class principle_roster extends roster {
                 database_wrapper::instance()->beginTransaction();
 
                 /*
-                 * TODO: Check if an existing entry has to be overwritten:
+                 * TODO: Do we also have to delete entries in some cases?
+                 *     Or do we at least have to end their validity?
                  */
                 $primary_key_of_existing_entry = self::find_existing_entry_in_db($roster_item, $alternation_id, $valid_from);
                 if (FALSE !== $primary_key_of_existing_entry) {

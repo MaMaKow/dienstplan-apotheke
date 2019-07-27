@@ -23,6 +23,11 @@
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class workforce {
+    /*
+     * TODO: This class is now used more often to create objects.
+     *     It should be optimized.
+     *     For example it could store an array of known workforce objects/arrays.
+     */
 
     /**
      *

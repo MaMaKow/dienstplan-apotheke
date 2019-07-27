@@ -84,11 +84,15 @@ class saturday_rotation {
     }
 
     protected function set_new_participation() {
+        $last_team_id = NULL;
         $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `branch_id` = :branch_id and `date` <= :date ORDER BY `date` DESC LIMIT 1';
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id, 'date' => $this->target_date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $last_team_id = (int) $row->team_id;
             $last_date_sql = $row->date;
+        }
+        if (NULL === $last_team_id) {
+            return FALSE;
         }
         /*
          * move the pointer for the array $this->List_of_teams to the position given by $last_team_id:
@@ -149,13 +153,25 @@ class saturday_rotation {
         if (NULL === $team_id) {
             $team_id = $this->team_id;
         }
-        $comment = "algorithmic rotation by " . __METHOD__ . ". Chosen rotation team: " . $this->team_id;
+        if (!isset($this->List_of_teams[$team_id])) {
+            $Roster[$date_unix][] = new roster_item_empty($this->target_date_sql, $this->branch_id);
+            return $Roster;
+        }
+        $comment = "";
 
         /*
          * TODO: This should be saved inside the database
          */
-        $duty_start = '9:00';
+
+        $duty_start = '10:00';
         $duty_end = '18:00';
+        $Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $this->branch_id);
+        if (NULL !== $Opening_times['day_opening_start']) {
+            $duty_start = roster_item::format_time_integer_to_string($Opening_times['day_opening_start']);
+        }
+        if (NULL !== $Opening_times['day_opening_end']) {
+            $duty_end = roster_item::format_time_integer_to_string($Opening_times['day_opening_end']);
+        }
         $break_start = NULL;
         $break_end = NULL;
 

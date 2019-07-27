@@ -179,41 +179,43 @@ abstract class user_input {
                 /*
                  * There is no old roster. Every entry is new:
                  */
-                foreach ($Roster_day_array as $roster_row_object) {
-                    if (NULL === $roster_row_object->employee_id) {
+                foreach ($Roster_day_array as $roster_item) {
+                    if (NULL === $roster_item->employee_id) {
                         continue;
                     }
-                    $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
+                    $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                 }
-                return $Changed_roster_employee_id_list;
             } else {
-                foreach ($Roster_day_array as $roster_row_object) {
-                    foreach ($Roster_old[$date_unix] as $roster_row_object_old) {
-                        if ($roster_row_object->employee_id !== $roster_row_object_old->employee_id) {
-                            /*
-                             * TODO: Make sure, that both employee ids are integers.
-                              Also make sure, that all of the other values are properly formated!
-                             */
-                            continue;
-                        }
-                        if ($roster_row_object != $roster_row_object_old) {
-                            /*
-                             * There is an old entry for this employee, which does not exactly match the newly sent entry.
-                             * CAVE: This only works with the comparison operator != while !== will allways return FALSE if the objects are not references to the SAME object
-                             * CAVE: This will also put any employee on the list, who is on the roster more than once.
-                             */
-                            $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
-                            continue;
-                        }
-                        /*
-                         * Everything stayed the same for this employee there is nothing to add to the list.
-                         */
+                foreach ($Roster_day_array as $roster_item) {
+                    if (NULL === $roster_item->employee_id) {
                         continue;
+                    }
+                    if (self::roster_item_has_changed($roster_item, $Roster_old)) {
+                        $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                     }
                 }
             }
         }
         return $Changed_roster_employee_id_list;
+    }
+
+    /**
+     * This function aims to determine, if a roster_item has changed.
+     *     It compares it to ALL the old elements.
+     *     If ANY element in the old roster is the same, then no change has been made to this item.
+     *
+     * @param type $roster_item
+     * @param type $Roster_old
+     * @return boolean
+     */
+    private static function roster_item_has_changed($roster_item, $Roster_old) {
+
+        foreach ($Roster_old[$roster_item->date_unix] as $roster_item_old) {
+            if ($roster_item == $roster_item_old) {
+                return FALSE;
+            }
+        }
+        return TRUE;
     }
 
     private static function get_deleted_roster_employee_id_list($Roster, $Roster_old) {

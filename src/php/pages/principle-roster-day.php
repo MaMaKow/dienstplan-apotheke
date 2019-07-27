@@ -45,8 +45,26 @@ create_cookie('alternating_week_id', $alternating_week_id, 1);
 create_cookie('weekday', $weekday, 1);
 $workforce = new workforce($date_object->format('Y-m-d'));
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    throw new Exception('$valid_from and $valid_until are not yet implemented');
-    user_input::principle_roster_write_user_input_to_database($branch_id, $valid_from);
+    if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+        return FALSE;
+    }
+
+    if (isset($_SESSION['Principle_roster_from_prompt'])) {
+        $Principle_roster_new = $_SESSION['Principle_roster_from_prompt'];
+        $List_of_differences = $_SESSION['List_of_differences'];
+        unset($_SESSION['Principle_roster_from_prompt']);
+        unset($_SESSION['List_of_differences']);
+        $valid_from_input = new DateTime(filter_input(INPUT_POST, 'valid_from', FILTER_SANITIZE_STRING));
+        /*
+         * Find a correct date for the change:
+         *     It should be the first monday in the relevant alternation_id week, after the given date.
+         */
+        $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
+        $valid_from = ( new alternating_week(
+                alternating_week::get_alternating_week_for_date($some_date_from_input))
+                )->get_monday_date_for_alternating_week($valid_from_input);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_differences, $valid_from->format('Y-m-d'));
+    }
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
     $principle_roster_copy_from = filter_input(INPUT_POST, 'principle_roster_copy_from', FILTER_SANITIZE_STRING);
@@ -62,9 +80,6 @@ $Principle_roster = principle_roster::read_current_principle_roster_from_databas
  * TODO: Build this page for the new valid_from approach!;
  */
 
-$VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-$VKmax = max(array_keys($workforce->List_of_employees));
-
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -79,7 +94,7 @@ echo build_html_navigation_elements::build_select_weekday($weekday);
 echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday, $date_object);
 echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
 echo build_html_navigation_elements::build_button_principle_roster_delete($alternating_week_id);
-echo build_html_navigation_elements::build_button_show_principle_roster_history($alternating_week_id, $employee_id, $weekday, $branch_id);
+echo build_html_navigation_elements::build_button_show_principle_roster_history($alternating_week_id, $employee_id, $weekday, $branch_id, $date_object);
 echo "<div id=navigation_elements>";
 /*
  * TODO: Make it work:
