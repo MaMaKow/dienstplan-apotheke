@@ -100,6 +100,10 @@ abstract class roster_headcount {
     }
 
     public static function read_opening_hours_from_database(int $date_unix, int $branch_id) {
+        /*
+         * TODO: Should this be part of the branch class?
+         *     Or should opening_times be a class of its own?
+         */
         $user_dialog = new user_dialog();
         $Opening_times['day_opening_start'] = NULL;
         $Opening_times['day_opening_end'] = NULL;

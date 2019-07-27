@@ -70,7 +70,7 @@ $Principle_roster = principle_roster::read_current_principle_roster_from_databas
  * In case there is no roster scheduled yet, create a suggestion:
  */
 if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
-    if (!empty($Principle_roster)) {
+    if (!roster::is_empty($Principle_roster)) {
         /*
          * Create roster from principle roster:
          */
@@ -82,8 +82,10 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
             $saturday_rotation = new saturday_rotation($branch_id);
             $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
             $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
-            $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
-            $user_dialog->add_message($message);
+            if (!roster::is_empty($Roster)) {
+                $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
+                $user_dialog->add_message($message);
+            }
         } catch (Exception $exception) {
             error_log($exception->getMessage());
         }

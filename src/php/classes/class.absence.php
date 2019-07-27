@@ -109,7 +109,7 @@ class absence {
     public static function read_absentees_from_database($date_sql) {
 
         $Absentees = array();
-        global $workforce;
+        $workforce = new workforce($date_sql);
         if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
             throw new Exception("\$date_sql has to be a string! $date_sql given.");
         }

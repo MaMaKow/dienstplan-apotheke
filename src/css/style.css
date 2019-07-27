@@ -410,7 +410,10 @@ button {
     display: inline-block;
     font-size: medium;
 }
+button.attention {
+    background-color: #E6828B;
 
+}
 img.button-image
 {
     height: 2em;

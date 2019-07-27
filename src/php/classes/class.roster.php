@@ -125,7 +125,7 @@ class roster {
         return $Roster;
     }
 
-    public static function read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql_start, $date_sql_end = NULL) {
+    public static function read_branch_roster_from_database(int $branch_id, int $other_branch_id, string $date_sql_start, string $date_sql_end = NULL) {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
@@ -142,7 +142,7 @@ class roster {
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->getTimestamp()][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -151,7 +151,7 @@ class roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                $Roster[$date_object->format('Y-m-d')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                $Roster[$date_object->getTimestamp()][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
         if (TRUE === $the_whole_roster_is_empty) {

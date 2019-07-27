@@ -107,10 +107,14 @@ abstract class task_rotation {
          * Make a list of people who can do the task:
          * Currently only compounding is a task.
          */
+        $List_of_compounding_rotation_employees = array();
         foreach ($workforce->List_of_compounding_employees as $employee_id) {
             if ($workforce->List_of_employees[$employee_id]->principle_branch_id == $branch_id) {
                 $List_of_compounding_rotation_employees[$employee_id] = $employee_id;
             }
+        }
+        if (array() === $List_of_compounding_rotation_employees) {
+            return FALSE;
         }
         $task_workers_count = count($List_of_compounding_rotation_employees);
 
