@@ -306,7 +306,7 @@ abstract class build_html_navigation_elements {
                     gettext("Dieser Grundplan gilt ab dem %2\$s.\nDies ist nicht die jüngste Version des Grundplanes.\nDer aktuellste Grundplan beginnt am %1\$s."), max($List_of_history_dates)->format('d.m.Y'), $date_object->format('d.m.Y'));
         }
         $button_img = "<form class='inline_form' action='../fragments/fragment.principle-roster-day-history.php' method='post' id='show_principle_roster_history'>
-            <input type='hidden' form='show_principle_roster_history' name='alternation_id' value=$alternating_week_id>
+            <input type='hidden' form='show_principle_roster_history' name='alternating_week_id' value=$alternating_week_id>
             <input type='hidden' form='show_principle_roster_history' name='employee_id' value=$employee_id>
             <input type='hidden' form='show_principle_roster_history' name='weekday' value=$weekday>
             <input type='hidden' form='show_principle_roster_history' name='branch_id' value=$branch_id>

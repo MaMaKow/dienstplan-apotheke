@@ -1,6 +1,9 @@
-LDAP
+Cite CC-BY Icons:
+    For design elements, put all the attributions on a separate page.
+    This is usually the same page where you would mention the third-party software that you used and the licenses that are applicable to the software.
+    For the style of attribution, use the recommendations from Creative Commons.
 
-exchange all alternation_id by alternating_week_id
+Move all the database interaction into the respective classes
 
 sprintf must use %1$s instead of %1s.
     Correct this everywhere!
@@ -9,15 +12,11 @@ sprintf must use %1$s instead of %1s.
 Write an updater
     That includes a webservice, which holds the current master state and an API to answer update queries.
 
-Move all the database interaction into the respective classes
+LDAP
 
 Change the navigation menu
     On mobile touch devices, some menu items are not reachable.
 
-Cite CC-BY Icons:
-    For design elements, put all the attributions on a separate page.
-    This is usually the same page where you would mention the third-party software that you used and the licenses that are applicable to the software.
-    For the style of attribution, use the recommendations from Creative Commons.
 
 Employees should allways have a branch, which they belong to (or NULL). Branches in the employee table have to exist in the branches table too!
 
