@@ -140,7 +140,7 @@ class alternating_week {
 
     private static function read_alternating_week_ids_from_database() {
         self::$Alternating_week_ids = array();
-        $sql_query = "SELECT DISTINCT `alternation_id` AS `alternating_week_id` FROM `principle_roster` ORDER BY `alternation_id` ASC;";
+        $sql_query = "SELECT DISTINCT `alternating_week_id` AS `alternating_week_id` FROM `principle_roster` ORDER BY `alternating_week_id` ASC;";
         $result = database_wrapper::instance()->run($sql_query);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             self::$Alternating_week_ids[] = $row->alternating_week_id;
@@ -182,44 +182,44 @@ class alternating_week {
         return TRUE;
     }
 
-    private static function get_principle_roster_new_alternation_id() {
-        $sql_query = "SELECT MAX(`alternation_id`) + 1 as `new_alternation_id` FROM `principle_roster`;";
+    private static function get_principle_roster_new_alternating_week_id() {
+        $sql_query = "SELECT MAX(`alternating_week_id`) + 1 as `new_alternating_week_id` FROM `principle_roster`;";
         $result = database_wrapper::instance()->run($sql_query);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            return $row->new_alternation_id;
+            return $row->new_alternating_week_id;
         }
         return FALSE;
     }
 
     public static function create_alternation_copy_from_principle_roster($principle_roster_copy_from) {
-        $new_alternation_id = self::get_principle_roster_new_alternation_id();
+        $new_alternating_week_id = self::get_principle_roster_new_alternating_week_id();
         $sql_query = "INSERT INTO `principle_roster` "
-                . "(SELECT :new_alternation_id, `employee_id`, `weekday`, "
+                . "(SELECT :new_alternating_week_id, `employee_id`, `weekday`, "
                 . "`duty_start`, `duty_end`, `break_start`, `break_end`, "
                 . "`comment`, `working_hours`, "
                 . "`branch_id`, "
                 . "`valid_from`, "
                 . "`valid_until` "
-                . "FROM `principle_roster` WHERE `alternation_id` = :alternation_id);";
+                . "FROM `principle_roster` WHERE `alternating_week_id` = :alternating_week_id);";
         database_wrapper::instance()->run(
                 $sql_query, array(
-            'alternation_id' => $principle_roster_copy_from,
-            'new_alternation_id' => $new_alternation_id,
+            'alternating_week_id' => $principle_roster_copy_from,
+            'new_alternating_week_id' => $new_alternating_week_id,
                 )
         );
         self::reorganize_ids();
     }
 
-    public static function delete_alternation($alternation_id) {
+    public static function delete_alternation($alternating_week_id) {
         /*
          * TODO: Is it necessary to check if any alternation is left?
          * How does the program respond if there is none?
          * Would create_alternation_empty() help?
          */
-        $sql_query = "DELETE FROM `principle_roster` WHERE `alternation_id` = :alternation_id;";
+        $sql_query = "DELETE FROM `principle_roster` WHERE `alternating_week_id` = :alternating_week_id;";
         database_wrapper::instance()->run(
                 $sql_query, array(
-            'alternation_id' => $alternation_id,
+            'alternating_week_id' => $alternating_week_id,
                 )
         );
         /*
@@ -238,15 +238,15 @@ class alternating_week {
          */
         sort(self::$Alternating_week_ids);
         /*
-         * Update the alternation_ids to be continous:
+         * Update the alternating_week_ids to be continous:
          */
         $number_of_ids = count(self::$Alternating_week_ids);
         for ($index = 0; $index < $number_of_ids; $index++) {
             if ($index != self::$Alternating_week_ids[$index]) {
-                $sql_query = "UPDATE `principle_roster` SET `alternation_id` = :alternation_id_new WHERE `alternation_id` = :alternation_id_old";
+                $sql_query = "UPDATE `principle_roster` SET `alternating_week_id` = :alternating_week_id_new WHERE `alternating_week_id` = :alternating_week_id_old";
                 database_wrapper::instance()->run($sql_query, array(
-                    'alternation_id_old' => self::$Alternating_week_ids[$index],
-                    'alternation_id_new' => $index,
+                    'alternating_week_id_old' => self::$Alternating_week_ids[$index],
+                    'alternating_week_id_new' => $index,
                 ));
             }
         }
@@ -265,13 +265,13 @@ class alternating_week {
         return $List_of_principle_rosters;
     }
 
-    public static function find_differences_between_principle_rosters(array $List_of_principle_rosters, int $alternation_id) {
+    public static function find_differences_between_principle_rosters(array $List_of_principle_rosters, int $alternating_week_id) {
         //throw new Exception('The format of $List_of_principle_rosters has changed. This is not implemented yet.');
         $Differences_between_principle_rosters = array();
-        $latest_comparison_date = max(array_keys($List_of_principle_rosters[$alternation_id]));
-        $Comparison_roster = $List_of_principle_rosters[$alternation_id][$latest_comparison_date];
-        foreach ($List_of_principle_rosters as $alternation_id_current => $Principle_rosters_list) {
-            if ($alternation_id === $alternation_id_current) {
+        $latest_comparison_date = max(array_keys($List_of_principle_rosters[$alternating_week_id]));
+        $Comparison_roster = $List_of_principle_rosters[$alternating_week_id][$latest_comparison_date];
+        foreach ($List_of_principle_rosters as $alternating_week_id_current => $Principle_rosters_list) {
+            if ($alternating_week_id === $alternating_week_id_current) {
                 continue;
             }
             foreach ($Principle_rosters_list as $valid_from => $Principle_roster_current) {
@@ -295,16 +295,16 @@ class alternating_week {
                                     continue;
                                 }
                                 if ($roster_item->duty_start_int != $roster_item_compare->duty_start_int) {
-                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_start_int';
+                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_start_int';
                                 }
                                 if ($roster_item->duty_end_int != $roster_item_compare->duty_end_int) {
-                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_end_int';
+                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_end_int';
                                 }
                                 if ($roster_item->break_start_int != $roster_item_compare->break_start_int) {
-                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'break_start_int';
+                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'break_start_int';
                                 }
                                 if ($roster_item->break_end_int != $roster_item_compare->break_end_int) {
-                                    $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
+                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
                                 }
                             }
                         }
@@ -317,8 +317,8 @@ class alternating_week {
 
     /*
       public static function build_comparison_string($Differences_between_principle_rosters) {
-      $Differences_between_principle_rosters[$alternation_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
-      foreach ($Differences_between_principle_rosters as $alternation_id_current => $date_unix_current) {
+      $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
+      foreach ($Differences_between_principle_rosters as $alternating_week_id_current => $date_unix_current) {
 
       ;
       }

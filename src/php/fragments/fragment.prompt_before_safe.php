@@ -142,14 +142,14 @@ if (1 === count($List_of_employee_ids)) {
      */
     $employee_id = current($List_of_employee_ids);
     $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
-    $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
-    $earliest_allowed_valid_from = max(principle_roster::get_list_of_employee_change_dates($employee_id, $alternation_id));
+    $alternating_week_id = alternating_week::get_alternating_week_for_date($date_start_object);
+    $earliest_allowed_valid_from = max(principle_roster::get_list_of_employee_change_dates($employee_id, $alternating_week_id));
 } else if (1 === count($List_of_branch_ids)) {
     $referrer_url = '../pages/principle-roster-day.php';
     $branch_id = current($List_of_branch_ids);
     $Principle_roster_old = principle_roster::read_current_principle_roster_from_database($branch_id, $date_start_object, $date_end_object);
-    $alternation_id = alternating_week::get_alternating_week_for_date($date_start_object);
-    $earliest_allowed_valid_from = max(principle_roster_history::get_list_of_change_dates($alternation_id));
+    $alternating_week_id = alternating_week::get_alternating_week_for_date($date_start_object);
+    $earliest_allowed_valid_from = max(principle_roster_history::get_list_of_change_dates($alternating_week_id));
 } else {
     throw new Exception('This case has not yet been implemented. You seem to have submitted multiple branches and multiple employees at the same time.');
 }
@@ -169,7 +169,7 @@ if (array() !== $List_of_differences) {
          * TODO: Create an option to take the changes to other alternations:
          */
         echo "<p>";
-        echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternation_id));
+        echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternating_week_id));
         echo "</p>";
 
         echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);
