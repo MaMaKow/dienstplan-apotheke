@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS `principle_roster` (
+  `primary_key` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `alternating_week_id` tinyint(4) NOT NULL,
   `employee_id` tinyint(4) NOT NULL,
   `weekday` tinyint(4) NOT NULL,
@@ -11,5 +12,5 @@ CREATE TABLE IF NOT EXISTS `principle_roster` (
   `branch_id` int(11) NOT NULL DEFAULT '1',
   `valid_from` date DEFAULT NULL,
   `valid_until` date DEFAULT NULL,
-  PRIMARY KEY (`alternating_week_id`,`employee_id`,`weekday`,`branch_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci
+  PRIMARY KEY (`primary_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;

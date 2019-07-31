@@ -179,7 +179,15 @@ class principle_roster extends roster {
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
                 $workforce = new workforce($date_object->format('Y-m-d'));
-                $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
+                if (isset($workforce->List_of_employees[$employee_id])) {
+                    $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
+                } else {
+                    /*
+                     * In case, the employee does not exist on this day we fall back to using the first branch.
+                     * This can happen if an employee will start shortly, but not on a monday.
+                     */
+                    $branch_id = min(array_keys(branch::get_list_of_branch_objects()));
+                }
                 $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }

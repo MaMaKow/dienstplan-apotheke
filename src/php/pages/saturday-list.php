@@ -45,6 +45,9 @@ $table_head .= "</tr>\n";
 $table_head .= "</thead>\n";
 $table_body = "<tbody>\n";
 for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += PDR_ONE_DAY_IN_SECONDS * 7) {
+    /*
+     * TODO: Move to date objects!
+     */
     $date_string = strftime('%a %x', $date_unix);
     $date_sql = date('Y-m-d', $date_unix);
 
@@ -53,7 +56,12 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
     $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 
     $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
-
+    if (NULL === $saturday_rotation_team_id or FALSE === $saturday_rotation_team_id) {
+        /*
+         * TODO: Find a better workaround?
+         */
+        continue;
+    }
     $Saturday_rotation_team_member_ids = $saturday_rotation->List_of_teams[$saturday_rotation_team_id];
     $Saturday_rotation_team_member_names = array();
     foreach ($Saturday_rotation_team_member_ids as $employee_id) {

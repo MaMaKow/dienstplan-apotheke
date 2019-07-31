@@ -145,6 +145,12 @@ class alternating_week {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             self::$Alternating_week_ids[] = $row->alternating_week_id;
         }
+        if (array() === self::$Alternating_week_ids) {
+            /*
+             * There should at least be one alternating week id, even if there is no principle_roster setup at all.
+             */
+            self::$Alternating_week_ids[] = 0;
+        }
     }
 
     private static function get_alternation_start_date() {
