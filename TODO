@@ -1,3 +1,6 @@
+update_database requires the hash to be rewritten before commit.
+    Does that still hapen? Do we need a new hook?
+
 Cite CC-BY Icons:
     For design elements, put all the attributions on a separate page.
     This is usually the same page where you would mention the third-party software that you used and the licenses that are applicable to the software.

@@ -26,8 +26,7 @@ $pdr_secret_directories_are_not_visible = $install->pdr_secret_directories_are_n
 $php_extension_requirements_are_fulfilled = $install->php_extension_requirements_are_fulfilled();
 $php_version_requirement_is_fulfilled = $install->php_version_requirement_is_fulfilled();
 
-$all_requirements_are_satisfied = $webserver_supports_https and
-        $database_driver_is_installed and
+$all_requirements_are_satisfied = $database_driver_is_installed and
         $pdr_directories_are_writable and
         $pdr_secret_directories_are_not_visible and
         $php_extension_requirements_are_fulfilled and
