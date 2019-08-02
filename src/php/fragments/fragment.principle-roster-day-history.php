@@ -21,7 +21,7 @@ require_once '../../../default.php';
 
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT);
 $branch_id = user_input::get_variable_from_any_input('branch_id', FILTER_SANITIZE_NUMBER_INT);
-$alternation_id = user_input::get_variable_from_any_input('alternation_id', FILTER_SANITIZE_NUMBER_INT);
+$alternating_week_id = user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT);
 $weekday = user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT);
 
 if (!filter_has_var(INPUT_POST, 'weekday')) {
@@ -35,7 +35,7 @@ if (!filter_has_var(INPUT_POST, 'weekday')) {
     exit();
 }
 
-$List_of_history_dates = principle_roster_history::get_list_of_history_dates($weekday, $alternation_id, $branch_id);
+$List_of_history_dates = principle_roster_history::get_list_of_history_dates($weekday, $alternating_week_id, $branch_id);
 echo "<HTML>";
 echo "<HEAD>";
 echo "<LINK rel='stylesheet' type='text/css' href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/css/style.css' media='all'>";

@@ -342,7 +342,12 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        global $workforce;
+        $first_day = new DateTime;
+        $last_day = new DateTime;
+        $first_day->setTimestamp(min(array_keys($Roster)));
+        $last_day->setTimestamp(max(array_keys($Roster)));
+        $workforce = new workforce($first_day->format('Y-m-d'), $last_day->format('Y-m-d'));
+
         global $config;
         $table_html = "";
         $table_html .= "<tbody>";
@@ -575,7 +580,7 @@ abstract class build_html_roster_views {
              */
             if (FALSE !== $holiday) {
                 foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-                    if (!empty($employee_object->get_principle_roster_on_date($date_object))) {
+                    if (!empty($employee_object->get_principle_roster_on_date($date_object)) and !empty($employee_object->working_week_days)) {
                         $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / $employee_object->working_week_days;
                     }
                 }
@@ -592,13 +597,17 @@ abstract class build_html_roster_views {
         return $Working_hours_week_should;
     }
 
-    public static function equals_principle_roster($roster_item, $parameter) {
-        global $workforce;
+    public static function equals_principle_roster(roster_item $roster_item, string $parameter) {
+        $workforce = new workforce($roster_item->date_sql);
         $employee_id = $roster_item->employee_id;
-        if (null === $workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object)) {
+        if (!isset($workforce->List_of_employees[$employee_id])) {
             return FALSE;
         }
-        foreach ($workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object) as $principle_roster_item) {
+        $Principle_roster_on_date = $workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object);
+        if (null === $Principle_roster_on_date) {
+            return FALSE;
+        }
+        foreach ($Principle_roster_on_date as $principle_roster_item) {
             if ($principle_roster_item->$parameter == $roster_item->$parameter) {
                 return TRUE;
             }

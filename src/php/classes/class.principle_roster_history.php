@@ -24,18 +24,18 @@
  */
 class principle_roster_history {
 
-    public static function get_list_of_history_dates($weekday, $alternation_id, $branch_id) {
+    public static function get_list_of_history_dates($weekday, $alternating_week_id, $branch_id) {
         $List_of_history_dates = array();
 
         $sql_query = "SELECT DISTINCT `valid_from` FROM `principle_roster`"
                 . " WHERE "
                 . " `branch_id` = :branch_id AND "
-                . " `alternation_id` = :alternation_id AND "
+                . " `alternating_week_id` = :alternating_week_id AND "
                 . " `weekday` = :weekday"
                 . " ORDER BY `valid_from` DESC";
         $result = database_wrapper::instance()->run($sql_query, array(
             'weekday' => $weekday,
-            'alternation_id' => $alternation_id,
+            'alternating_week_id' => $alternating_week_id,
             'branch_id' => $branch_id,
         ));
 
@@ -45,7 +45,8 @@ class principle_roster_history {
                  * TODO: We should also insert a date here. But how do we decide which one?
                  *     We could just take the first date, which any still stored roster has.
                  */
-                continue;
+//                continue;
+$row->valid_from = "1970-01-01";
             }
             $List_of_history_dates[] = new DateTime($row->valid_from);
         }
@@ -53,7 +54,7 @@ class principle_roster_history {
         return $List_of_history_dates;
     }
 
-    public static function get_list_of_change_dates(int $alternation_id) {
+    public static function get_list_of_change_dates(int $alternating_week_id) {
         $List_of_change_dates = array();
         /*
          * Define a valid_from for all the entries in the database. 1970-01-01
@@ -64,9 +65,9 @@ class principle_roster_history {
          */
         $sql_query = "SELECT DISTINCT `valid_from` "
                 . " FROM `principle_roster` "
-                . " WHERE `alternation_id` = :alternation_id ORDER BY `valid_from`;";
+                . " WHERE `alternating_week_id` = :alternating_week_id ORDER BY `valid_from`;";
         $result = database_wrapper::instance()->run($sql_query, array(
-            'alternation_id' => $alternation_id,
+            'alternating_week_id' => $alternating_week_id,
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $date_of_change = $row->valid_from;
