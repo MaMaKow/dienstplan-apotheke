@@ -45,7 +45,8 @@ class principle_roster_history {
                  * TODO: We should also insert a date here. But how do we decide which one?
                  *     We could just take the first date, which any still stored roster has.
                  */
-                continue;
+                //continue;
+                $row->valid_from = "1970-01-01";
             }
             $List_of_history_dates[] = new DateTime($row->valid_from);
         }
