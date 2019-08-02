@@ -580,7 +580,7 @@ abstract class build_html_roster_views {
              */
             if (FALSE !== $holiday) {
                 foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-                    if (!empty($employee_object->get_principle_roster_on_date($date_object))) {
+                    if (!empty($employee_object->get_principle_roster_on_date($date_object)) and !empty($employee_object->working_week_days)) {
                         $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / $employee_object->working_week_days;
                     }
                 }

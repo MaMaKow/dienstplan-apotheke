@@ -200,7 +200,7 @@ class alternating_week {
     public static function create_alternation_copy_from_principle_roster($principle_roster_copy_from) {
         $new_alternating_week_id = self::get_principle_roster_new_alternating_week_id();
         $sql_query = "INSERT INTO `principle_roster` "
-                . "(SELECT :new_alternating_week_id, `employee_id`, `weekday`, "
+                . "(SELECT NULL, :new_alternating_week_id, `employee_id`, `weekday`, "
                 . "`duty_start`, `duty_end`, `break_start`, `break_end`, "
                 . "`comment`, `working_hours`, "
                 . "`branch_id`, "
