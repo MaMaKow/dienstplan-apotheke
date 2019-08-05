@@ -127,7 +127,7 @@ class collaborative_vacation {
         if ("save" === $command) {
             $workforce = new \workforce();
             $employee_object = $workforce->List_of_employees[$employee_id];
-            $days = \absence::calculate_employee_absence_days($start_date_string, $end_date_string, $employee_object);
+            $days = \absence::calculate_employee_absence_days(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
             $query = "INSERT INTO absence (`employee_id`, `start`, `end`, `days`, `reason`, `comment`, `approval`, `user`) "
                     . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :approval, :user)";
             $result = \database_wrapper::instance()->run($query, array(

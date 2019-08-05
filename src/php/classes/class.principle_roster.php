@@ -106,27 +106,25 @@ class principle_roster extends roster {
             'alternating_week_id' => $alternating_week_id,
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $date_of_change = $row->valid_from;
-            if (NULL === $date_of_change) {
+            $date_of_change = new DateTime($row->valid_from);
+            if (NULL === $row->valid_from) {
                 /*
                  * If there is no known start of validity for one entry, we just take the start of employment for this employee.
                  * CAVE: This might not be correct if the employee started working after this change.
                  *   This may happen if an old employee_id is given to someone new.
                  * TODO: Fix this maybe?
                  */
-                $date_of_change = workforce::get_first_start_of_employment($employee_id);
+                $alternating_week = new alternating_week($alternating_week_id);
+                $date_of_change = $alternating_week->get_monday_date_for_alternating_week(workforce::get_first_start_of_employment($employee_id));
             }
-            $List_of_change_dates[] = new DateTime($date_of_change);
+            $List_of_change_dates[] = $date_of_change;
         }
         if (array() === $List_of_change_dates) {
             /*
              * There has to be at least one entry in the list:
              */
             $date_of_change = workforce::get_first_start_of_employment($employee_id);
-            if (FALSE !== $date_of_change) {
-                return array(new DateTime($date_of_change));
-            }
-            return array(new DateTime('1970-01-01'));
+            return array($date_of_change);
         }
         return $List_of_change_dates;
     }

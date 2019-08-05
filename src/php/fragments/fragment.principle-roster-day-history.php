@@ -46,7 +46,7 @@ echo "<BODY>";
 echo "<p>" . gettext('Please choose a date!') . "</p>";
 echo "<p class='hint'>" . gettext('Dies ist eine Liste von Daten. An jedem Datum wurde der Grundplan für diesen Wochentag für mindestens einen Mitarbeiter geändert. Klicken Sie auf eines der Daten um den Grundplan an diesem Tag zu betrachten.') . "</p>";
 
-echo "<form id='principle_roster_history_form' action='../pages/principle-roster-day.php' method='POST'>";
+echo "<form id='principle_roster_history_form' action='../pages/principle-roster-day.php' method='GET'>";
 echo "<fieldset>";
 echo gettext('valid from') . ":<br>";
 foreach ($List_of_history_dates as $history_date) {

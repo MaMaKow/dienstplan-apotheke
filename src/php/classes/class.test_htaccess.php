@@ -52,7 +52,13 @@ class test_htaccess {
     private function secret_folder_is_secure(string $folder) {
         $user_dialog = new user_dialog();
         $hostname = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
-        $url = "https://" . $hostname . PDR_HTTP_SERVER_APPLICATION_PATH . $folder . '/';
+
+        $input_server_https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_STRING);
+        $protocol = 'http';
+        if (!empty($input_server_https) and $input_server_https === "on") {
+            $protocol = 'https';
+        }
+        $url = $protocol . "://" . $hostname . PDR_HTTP_SERVER_APPLICATION_PATH . $folder . '/';
         $Response = get_headers($url);
         $response = $Response[0];
         $response_code = substr($response, strpos($response, " "), (strrpos($response, " ") - strpos($response, " ")));

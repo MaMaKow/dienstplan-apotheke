@@ -100,7 +100,10 @@ class workforce {
             'employee_id' => $employee_id,
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            return $row->first_start_of_employment;
+            if (NULL === $row->first_start_of_employment) {
+                $row->first_start_of_employment = "1970-01-01";
+            }
+            return new DateTime($row->first_start_of_employment);
         }
         return FALSE;
     }
