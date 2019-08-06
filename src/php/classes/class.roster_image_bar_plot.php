@@ -72,16 +72,29 @@ class roster_image_bar_plot {
      * @return string The svg element
      */
     private function draw_image_dienstplan($Roster, $svg_width, $svg_height) {
-        global $workforce;
         $this->line = 0;
         $javascript_variables = "var bar_width_factor = $this->bar_width_factor;";
 
 
+        $svg_viewBox_x_start = $this->first_start * $this->bar_width_factor;
+        $svg_viewBox_y_start = 0;
+        $svg_viewBox_width = $this->svg_outer_width;
+        $svg_viewBox_heigt = $this->svg_outer_height;
+        $svg_viewBox_string = "$svg_viewBox_x_start $svg_viewBox_y_start $svg_viewBox_width $svg_viewBox_heigt ";
+
         $svg_text = "";
-        $svg_text .= "<svg width='$svg_width' height='$svg_height' class='svg_img noselect' viewBox='0 0 $this->svg_outer_width $this->svg_outer_height'>\n";
+        $svg_text .= "<svg "
+                . "width='$svg_width' height='$svg_height' "
+                . "class='roster_bar_plot svg_img noselect' "
+                . "viewBox='$svg_viewBox_string' "
+                . "data-inner_margin_x=$this->inner_margin_x "
+                . "data-outer_margin_x=$this->outer_margin_x "
+                . "data-bar_width_factor=$this->bar_width_factor"
+                . ">\n";
 
 
         foreach ($Roster as $date_unix => $Roster_day_array) {
+            $workforce = new workforce(date('Y-m-d', $date_unix));
 
             $svg_text .= "<g id='svg_img_g_$date_unix'>\n";
             if (1 < count($Roster)) {
@@ -100,7 +113,7 @@ class roster_image_bar_plot {
             /*
              * Draw the bars from start to end for every employee:
              */
-            $svg_box_text = "<!--Boxes-->\n";
+            $svg_box_text = "<!-- Boxes -->\n";
             foreach ($Roster_day_array as $roster_item) {
                 if (NULL === $roster_item->employee_id) {
                     continue;
@@ -119,7 +132,7 @@ class roster_image_bar_plot {
                     $employee_style_class = '';
                 }
 
-                $x_pos_box = $this->outer_margin_x + $this->inner_margin_x + ($dienst_beginn - floor($this->first_start)) * $this->bar_width_factor;
+                $x_pos_box = $this->outer_margin_x + $this->inner_margin_x + ($dienst_beginn) * $this->bar_width_factor;
                 $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $this->bar_width_factor);
                 $this->x_pos_text = $x_pos_box;
                 $y_pos_box = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
@@ -129,11 +142,12 @@ class roster_image_bar_plot {
                 $break_box_id = "break_box_" . $this->line . '_' . $roster_item->date_unix;
 
                 $svg_box_text .= "<foreignObject id=$work_box_id transform='matrix(1 0 0 1 0 0)' "
-                        . "onmousedown='selectElement(evt, \"group\")' "
+                        . "onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"group\")' "
                         . "x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' "
                         . "style='cursor: $this->cursor_style_box;' "
                         . "data-line='$this->line' "
-                        . "data-column='work_box' "
+                        . "data-date_unix='$date_unix' "
+                        . "data-box_type='work_box' "
                         . ">";
                 $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' class='$employee_style_class'>";
                 if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
@@ -146,11 +160,12 @@ class roster_image_bar_plot {
                 $svg_box_text .= "</foreignObject>";
 
                 $svg_box_text .= "<rect id='$break_box_id' transform='matrix(1 0 0 1 0 0)' "
-                        . "onmousedown='selectElement(evt, \"single\")' "
+                        . "onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"single\")' "
                         . "x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' "
                         . "stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $this->cursor_style_break_box;' "
                         . "data-line='$this->line' "
-                        . "data-column='break_box' "
+                        . "data-box_type='break_box' "
+                        . "data-date_unix=$date_unix "
                         . "/>\n";
                 $this->line++;
             }
@@ -168,7 +183,7 @@ class roster_image_bar_plot {
         $svg_grid_text = "<!--Grid-->\n";
 
         for ($time = floor($this->first_start); $time <= ceil($this->last_end); $time = $time + 2) {
-            $x_pos = $this->outer_margin_x + $this->inner_margin_x + (($time - floor($this->first_start)) * $this->bar_width_factor);
+            $x_pos = $this->outer_margin_x + $this->inner_margin_x + ($time * $this->bar_width_factor);
             $x_pos_secondary = $x_pos + ($this->bar_width_factor / 1);
             $this->x_pos_text = $x_pos;
             $y_pos_text = $this->font_size;

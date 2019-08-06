@@ -45,6 +45,8 @@ class update_database {
             /*
              * No need to update the database
              */
+            $message = date('Y-m-d') . ': ' . 'No need to update the database.' . PHP_EOL;
+            error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             return NULL;
         }
         $message = date('Y-m-d') . ': ' . 'Performing update of the database.' . PHP_EOL;
@@ -142,16 +144,13 @@ class update_database {
     }
 
     private function refactor_principle_roster() {
-        if (database_wrapper::database_table_exists('Grundplan') and ! database_wrapper::database_table_exists('principle_roster')) {
-            database_wrapper::instance()->beginTransaction();
+        if (!database_wrapper::database_table_exists('principle_roster')) {
             $sql_query = file_get_contents(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/principle_roster.sql');
-            $result = database_wrapper::instance()->run($sql_query);
-            if ('00000' !== $result->errorCode()) {
-                database_wrapper::instance()->rollBack();
-                return FALSE;
-            }
-
-            $sql_query = "INSERT INTO `principle_roster` SELECT 0, `VK`, `Wochentag`, `Dienstbeginn`, `Dienstende`, `Mittagsbeginn`, `Mittagsende`, `Kommentar`, `Stunden`, `Mandant`, NULL, NULL FROM `Grundplan`;";
+            database_wrapper::instance()->run($sql_query);
+        }
+        if (database_wrapper::database_table_exists('Grundplan')) {
+            database_wrapper::instance()->beginTransaction();
+            $sql_query = "INSERT INTO `principle_roster` SELECT NULL, 0, `VK`, `Wochentag`, `Dienstbeginn`, `Dienstende`, `Mittagsbeginn`, `Mittagsende`, `Kommentar`, `Stunden`, `Mandant`, NULL, NULL FROM `Grundplan`;";
             $result = database_wrapper::instance()->run($sql_query);
             if ('00000' !== $result->errorCode()) {
                 database_wrapper::instance()->rollBack();

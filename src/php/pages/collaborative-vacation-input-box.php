@@ -112,7 +112,7 @@ if ($session->user_has_privilege('create_absence') and "edit" === $Absence_detai
     //TODO: Remove all occurences of "disapprove" and change them to "deny".
     if ("approved" !== $Absence_details['approval']) {
         echo "<button type='submit' value='approved'         name='approve_absence' />" . gettext("Approve") . "</button>";
-        echo "<button type='submit' value='not_yet_approved' name='approve_absence' />" . gettext("Pending") . ".</button>";
+        echo "<button type='submit' value='not_yet_approved' name='approve_absence' />" . gettext("Pending") . "</button>";
         echo "<button type='submit' value='disapproved'      name='approve_absence' />" . gettext("Deny") . "</button>";
     }
 }

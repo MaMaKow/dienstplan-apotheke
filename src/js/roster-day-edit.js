@@ -17,6 +17,10 @@
 
 
 function roster_input_row_add(id) {
+    /*
+     * TODO: The new element does not yet work properly with the plot.
+     *     Try to sync the information upon adding here to the plot.
+     */
     var xml_http_request = new XMLHttpRequest();
     var target_id = id;
     var day_iterator = target_id.dataset.day_iterator;

@@ -85,7 +85,8 @@ class iCalendar {
     }
 
     private static function build_ics_roster_employee_head($roster_object, $same_employee_count) {
-        global $List_of_branch_objects, $config;
+        global $config;
+
         $administrator_email = $config['contact_email']; /* This is the email of the roster administrator. It is not specific to the branch. */
 
         $date_unix = $roster_object->date_unix;
@@ -96,6 +97,7 @@ class iCalendar {
         $duty_end_string = self::time_int_to_utc_string($roster_object->duty_end_int);
 
         $branch_id = $roster_object->branch_id;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         $branch_name = $List_of_branch_objects[$branch_id]->name;
         $branch_address = $List_of_branch_objects[$branch_id]->address;
         $branch_manager = $List_of_branch_objects[$branch_id]->manager;

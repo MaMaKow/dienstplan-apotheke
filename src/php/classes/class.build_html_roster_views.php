@@ -88,7 +88,17 @@ abstract class build_html_roster_views {
         /*
          * start of duty:
          */
-        $roster_input_row .= "<input type=time size=5 class=Dienstplan_Dienstbeginn name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_start_sql] id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 ) . " value='";
+        $roster_input_row .= "<input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Dienstbeginn' "
+                . " data-roster_column_name='duty_start_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Dienstbeginn "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_start_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 )
+                . " value='";
         $roster_input_row .= roster::get_duty_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n ";
 
@@ -97,7 +107,17 @@ abstract class build_html_roster_views {
         /*
          * end of duty:
          */
-        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Dienstende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_end_sql] id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 ) . " value='";
+        $roster_input_row .= " <input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Dienstende' "
+                . " data-roster_column_name='duty_end_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Dienstende "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_end_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 )
+                . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n";
         $roster_input_row .= "<br>\n";
@@ -105,7 +125,18 @@ abstract class build_html_roster_views {
         /*
          * start of break:
          */
-        $roster_input_row .= " " . gettext("break") . ": <input type=time size=5 class=Dienstplan_Mittagbeginn name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_start_sql] id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 ) . " value='";
+        $roster_input_row .= " " . gettext("break") . ": ";
+        $roster_input_row .= "<input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Mittagbeginn' "
+                . " data-roster_column_name='break_start_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Mittagbeginn "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_start_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 )
+                . " value='";
         $roster_input_row .= roster::get_break_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'> ";
         $roster_input_row .= gettext("to");
@@ -113,7 +144,17 @@ abstract class build_html_roster_views {
         /*
          * end of break:
          */
-        $roster_input_row .= " <input type=time size=5 class=Dienstplan_Mittagsende name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_end_sql] id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 ) . " value='";
+        $roster_input_row .= " <input type=time size=5 "
+                . " data-date_unix='$day_iterator' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-column='Dienstplan_Mittagsende' "
+                . " data-roster_column_name='break_end_sql' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . " class=Dienstplan_Mittagsende "
+                . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_end_sql] "
+                . " id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] "
+                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 )
+                . " value='";
         $roster_input_row .= roster::get_break_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>";
 
@@ -156,7 +197,7 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name) {
-        global $List_of_branch_objects;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         /*
          * TODO: Build a select for branch.
          * Use it in the principle roster.
@@ -175,11 +216,15 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
-        global $workforce;
-        if (NULL === $workforce) {
-            $workforce = new workforce(date('Y-m-d', $date_unix));
-        }
-        $roster_input_row_employee_select = "<select name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1) . ">";
+        $workforce = new workforce(date('Y-m-d', $date_unix));
+        $roster_input_row_employee_select = "<select "
+                . " name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] "
+                . " tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1)
+                . " data-date_unix='$date_unix' "
+                . " data-roster_row_iterator='$roster_row_iterator' "
+                . " data-roster_column_name='employee_id' "
+                . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
+                . ">";
         /*
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
@@ -229,7 +274,7 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_readonly_branch_table_rows(array $Branch_roster, int $branch_id, string $date_sql_start, string $date_sql_end, $Options = NULL) {
-        global $List_of_branch_objects;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
 
         $date_start_object = new DateTime($date_sql_start);
         $date_end_object = new DateTime($date_sql_end);
@@ -254,7 +299,6 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_read_only_table_head($Roster, $Options = array()) {
-        global $workforce, $List_of_branch_objects;
         $head_table_html = "";
         $head_table_html .= "<thead>\n";
         $head_table_html .= "<tr>\n";
@@ -278,11 +322,13 @@ abstract class build_html_roster_views {
             if (FALSE !== $having_emergency_service) {
                 $head_table_html .= "<br><em>" . gettext("EMERGENCY SERVICE") . "</em><br>";
                 if (in_array(self::OPTION_SHOW_EMERGENCY_SERVICE_NAME, $Options)) {
+                    $workforce = new workforce($date_sql);
                     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
                         $head_table_html .= $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name;
                     } else {
                         $head_table_html .= "???";
                     }
+                    $List_of_branch_objects = branch::get_list_of_branch_objects();
                     $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
                 }
             }
@@ -296,7 +342,12 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        global $workforce;
+        $first_day = new DateTime;
+        $last_day = new DateTime;
+        $first_day->setTimestamp(min(array_keys($Roster)));
+        $last_day->setTimestamp(max(array_keys($Roster)));
+        $workforce = new workforce($first_day->format('Y-m-d'), $last_day->format('Y-m-d'));
+
         global $config;
         $table_html = "";
         $table_html .= "<tbody>";
@@ -316,7 +367,7 @@ abstract class build_html_roster_views {
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
-                $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+                $approval = roster_approval::get_approval($date_sql, $branch_id);
                 if ("approved" !== $approval and TRUE == $config['hide_disapproved']) {
                     $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
@@ -394,7 +445,8 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        global $workforce, $List_of_branch_objects;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
+
         global $config;
         $table_html = "";
         $table_html .= "<tbody>";
@@ -405,7 +457,7 @@ abstract class build_html_roster_views {
         $date_start_object->setTimestamp(min($List_of_date_unix_in_roster));
         $date_end_object = new DateTime();
         $date_end_object->setTimestamp(max($List_of_date_unix_in_roster));
-        $Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_start_object, $date_end_object);
+        $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $date_start_object, $date_end_object);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {
@@ -421,7 +473,7 @@ abstract class build_html_roster_views {
                  * The following lines check for the state of approval.
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
-                $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+                $approval = roster_approval::get_approval($date_sql, $branch_id);
                 if ("approved" !== $approval and false != $config['hide_disapproved']) {
                     $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
@@ -461,19 +513,6 @@ abstract class build_html_roster_views {
         $table_html .= "</tbody>\n";
 
         return $table_html;
-    }
-
-    public static function get_approval_from_database($date_sql, $branch_id) {
-        /*
-         * TODO: This might be better placed in some other class.
-         */
-        $sql_query = "SELECT state FROM `approval` WHERE date = :date AND branch = :branch_id";
-        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $approval = $row->state;
-            return $approval;
-        }
-        return FALSE;
     }
 
     public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $Options = NULL) {
@@ -541,7 +580,7 @@ abstract class build_html_roster_views {
              */
             if (FALSE !== $holiday) {
                 foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-                    if (!empty($employee_object->get_principle_roster_on_date($date_object))) {
+                    if (!empty($employee_object->get_principle_roster_on_date($date_object)) and ! empty($employee_object->working_week_days)) {
                         $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / $employee_object->working_week_days;
                     }
                 }
@@ -558,13 +597,17 @@ abstract class build_html_roster_views {
         return $Working_hours_week_should;
     }
 
-    public static function equals_principle_roster($roster_item, $parameter) {
-        global $workforce;
+    public static function equals_principle_roster(roster_item $roster_item, string $parameter) {
+        $workforce = new workforce($roster_item->date_sql);
         $employee_id = $roster_item->employee_id;
-        if (null === $workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object)) {
+        if (!isset($workforce->List_of_employees[$employee_id])) {
             return FALSE;
         }
-        foreach ($workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object) as $principle_roster_item) {
+        $Principle_roster_on_date = $workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object);
+        if (null === $Principle_roster_on_date) {
+            return FALSE;
+        }
+        foreach ($Principle_roster_on_date as $principle_roster_item) {
             if ($principle_roster_item->$parameter == $roster_item->$parameter) {
                 return TRUE;
             }

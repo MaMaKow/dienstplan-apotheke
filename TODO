@@ -1,3 +1,28 @@
+update_database requires the hash to be rewritten before commit.
+    Does that still hapen? Do we need a new hook?
+
+Cite CC-BY Icons:
+    For design elements, put all the attributions on a separate page.
+    This is usually the same page where you would mention the third-party software that you used and the licenses that are applicable to the software.
+    For the style of attribution, use the recommendations from Creative Commons.
+
+Move all the database interaction into the respective classes
+
+sprintf must use %1$s instead of %1s.
+    Correct this everywhere!
+    Also in the translations
+
+Write an updater
+    That includes a webservice, which holds the current master state and an API to answer update queries.
+
+LDAP
+
+Change the navigation menu
+    On mobile touch devices, some menu items are not reachable.
+
+
+Employees should allways have a branch, which they belong to (or NULL). Branches in the employee table have to exist in the branches table too!
+
 human-resource-management.php is missing a feature to delete (archive) an employee
 
 register_approve.php
@@ -68,6 +93,11 @@ Put notdienst-out.php into the menu
 /var/www/html/apotheke/dienstplan/tag-in.php
 Kommentare müssen angezeigt werden, wenn vorhanden
 >>>   >>>
+
+The following line should not be shown on saturdays and sundays, if Monday until Friday are set.
+"The are no opening times stored inside the database for this weekday. Please configure the opening times!"
+
+
 
     * Upload a PEP file to upload-pep.php				**FAILED**
       - Sorry, there was an error uploading your file

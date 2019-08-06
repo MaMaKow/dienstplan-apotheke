@@ -239,7 +239,7 @@ class user_dialog_email {
             /*
              * Server settings
              */
-            switch ($config['email_email_method']) {
+            switch ($config['email_method']) {
                 case 'smtp':
                     if (!isset($config['email_smtp_host'], $config['email_smtp_port'], $config['email_smtp_username'], $config['email_smtp_password'])) {
                         print_debug_variable('Error while sending mail: SMTP not correctly configured');

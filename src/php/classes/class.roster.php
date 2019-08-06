@@ -125,7 +125,7 @@ class roster {
         return $Roster;
     }
 
-    public static function read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql_start, $date_sql_end = NULL) {
+    public static function read_branch_roster_from_database(int $branch_id, int $other_branch_id, string $date_sql_start, string $date_sql_end = NULL) {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
         }
@@ -142,7 +142,7 @@ class roster {
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->getTimestamp()][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -151,7 +151,7 @@ class roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                $Roster[$date_object->format('Y-m-d')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                $Roster[$date_object->getTimestamp()][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
         }
         if (TRUE === $the_whole_roster_is_empty) {
@@ -174,7 +174,7 @@ class roster {
                             $principle_employee_roster_object->break_end_int = $principle_roster_object->break_end_int;
                             $principle_employee_roster_object->break_start_sql = $principle_roster_object->break_start_sql;
                             $principle_employee_roster_object->break_end_sql = $principle_roster_object->break_end_sql;
-                            /* The durations are automagically recalculated using roster_intem->__set() which calls roster_item->calculate_durations() */
+                            // The durations are automagically recalculated using roster_intem->__set() which calls roster_item->calculate_durations()
                         }
                     }
                 }
@@ -244,7 +244,7 @@ class roster {
             $Employee_count[] = (count($Roster_day_array));
         }
         $roster_employee_count = max($Employee_count); //The number of rows is defined by the column (=day) with the most lines
-        //$max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
+//$max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
         return $roster_employee_count;
     }
 
@@ -283,8 +283,8 @@ class roster {
      * @return boolean
      */
     public static function is_empty($Roster) {
-        foreach ($Roster as $roster_array) {
-            foreach ($roster_array as $roster_object) {
+        foreach ($Roster as $Roster_day_array) {
+            foreach ($Roster_day_array as $roster_object) {
                 if (NULL !== $roster_object->employee_id) {
                     /*
                      * In most cases we do not have to loop through the whole array.
@@ -298,6 +298,19 @@ class roster {
          * In those cases, where there is no actual roster data given, the array is mostly small.
          * Therefore this should also not be a huge load of work.
          */
+        return TRUE;
+    }
+
+    public static function is_empty_roster_day_array($Roster_day_array) {
+        foreach ($Roster_day_array as $roster_object) {
+            if (NULL !== $roster_object->employee_id) {
+                /*
+                 * In most cases we do not have to loop through the whole array.
+                 * If the first element is filled, then we allready stop searching.
+                 */
+                return FALSE;
+            }
+        }
         return TRUE;
     }
 

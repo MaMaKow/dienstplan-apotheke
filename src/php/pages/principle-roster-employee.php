@@ -22,7 +22,26 @@ create_cookie('employee_id', $employee_id, 30);
 $workforce = new workforce();
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    user_input::principle_employee_roster_write_user_input_to_database($employee_id);
+    if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+        return FALSE;
+    }
+
+    if (isset($_SESSION['Principle_roster_from_prompt'])) {
+        $Principle_roster_new = $_SESSION['Principle_roster_from_prompt'];
+        $List_of_differences = $_SESSION['List_of_differences'];
+        unset($_SESSION['Principle_roster_from_prompt']);
+        unset($_SESSION['List_of_differences']);
+        $valid_from_input = new DateTime(filter_input(INPUT_POST, 'valid_from', FILTER_SANITIZE_STRING));
+        /*
+         * find a correct date for the change.
+         * It should be the first monday in the relevant alternating_week_id week, after the given date.
+         */
+        $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
+        $valid_from = ( new alternating_week(
+                alternating_week::get_alternating_week_for_date($some_date_from_input))
+                )->get_monday_date_for_alternating_week($valid_from_input);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_differences, $valid_from->format('Y-m-d'));
+    }
 }
 
 
@@ -38,38 +57,44 @@ $html_text .= "<div id=main-area>\n";
 //TODO: find out how to respect the lunch breaks!
 $html_text .= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
-function build_change_principle_roster_employee_form(alternating_week $alternating_week, int $employee_id) {
-
-    $alternating_week_id = $alternating_week->get_alternating_week_id();
-
-    $pseudo_date_start_object = $alternating_week->get_sunday_date_for_alternating_week();
-    $pseudo_date_start_object->add(new DateInterval('P1D'));
-
+function build_change_principle_roster_employee_form(int $alternating_week_id, DateTime $date_minimum, int $employee_id, bool $hide_this_form) {
+    $alternating_week = new alternating_week($alternating_week_id);
+    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week($date_minimum);
     $pseudo_date_end_object = clone $pseudo_date_start_object;
     $pseudo_date_end_object->add(new DateInterval('P6D'));
-    $workforce = new workforce($pseudo_date_start_object->format('Y-m-d'));
+
+    $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $pseudo_date_start_object, $pseudo_date_end_object);
+    /*
+     * TODO: We might stop using a transfer for the lunch breaks.
+     *   This means, that the breaks will not magically appear in the principle-roster-employee.php
+     *   They will however robably be automaticcaly be inserted in the daily view.
+     *   This might bring up some confusion. Should I give up calculating probably lunch_breaks alltogether?
+     *     If so, should there be a warning/notice if the law wants a break to be given?
+     *
+     */
+    $workforce = new workforce($pseudo_date_start_object->format('Y-m-d'), $pseudo_date_end_object->format('Y-m-d'));
     $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
-
-
-    $Principle_employee_roster = principle_roster::read_principle_employee_roster_from_database($employee_id, $pseudo_date_start_object, $pseudo_date_end_object);
-    $Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
+    $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
     roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
     unset($Principle_roster);
 
-    $form_id = 'change_principle_roster_employee_form_' . $alternating_week_id;
+    $form_id = 'change_principle_roster_employee_form_' . $alternating_week_id . '_' . $pseudo_date_start_object->format('Y-m-d');
     $html_text = '';
-    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form'>";
+    $form_is_hidden_string = '';
+    if (TRUE === $hide_this_form) {
+        $form_is_hidden_string = "hidden";
+    }
+    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form $form_is_hidden_string' action='../fragments/fragment.prompt_before_safe.php'>";
+    //$html_text .= "<input type=hidden name=valid_from='" . $date_minimum->format('Y-m-d') . "'>";
     $html_text .= build_html_navigation_elements::build_button_submit($form_id);
     if (alternating_week::alternations_exist()) {
-        /*
-         * TODO: Why does sunday_date return a monday? When and how is it changed to a monday?
-         *   Which functions interfere with the values?
-         */
-        $monday_date = clone $alternating_week->get_sunday_date_for_alternating_week();
+        $monday_date = clone $alternating_week->get_monday_date_for_alternating_week();
         $sunday_date = clone $monday_date;
         $sunday_date->add(new DateInterval('P6D'));
         $alternating_week_id_string = '<div class="inline_block_element"><p>'
-                . chr(65 + $alternating_week_id) . '-' . gettext('Week')
+                . alternating_week::get_human_readably_string($alternating_week_id)
+                . '<br> '
+                . gettext('valid from') . ' ' . $date_minimum->format('d.m.Y')
                 . '<br> '
                 . gettext('e.g.') . ' '
                 . gettext('calendar week') . ' ' . $monday_date->format('W')
@@ -78,6 +103,11 @@ function build_change_principle_roster_employee_form(alternating_week $alternati
                 . '</p></div>';
         $html_text .= $alternating_week_id_string;
     }
+    $html_text .= "<script> "
+            . " var Roster_array = " . json_encode($Principle_employee_roster) . ";\n"
+            . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
+            . "</script>\n";
+
     $html_text .= "<table>\n";
     $html_text .= "<thead>\n";
     $html_text .= "<tr>\n";
@@ -150,14 +180,28 @@ function calculate_list_of_working_hours($Roster_array) {
 }
 
 foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
-    $alternating_week = new alternating_week($alternating_week_id);
-    $date_object = $alternating_week->get_sunday_date_for_alternating_week();
-    $date_object->add(new DateInterval('P1D'));
-}
-foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
-    error_log(__METHOD__);
-    $alternating_week = new alternating_week($alternating_week_id);
-    $html_text .= build_change_principle_roster_employee_form($alternating_week, $employee_id);
+    $List_of_change_dates = principle_roster::get_list_of_employee_change_dates($employee_id, $alternating_week_id);
+    $html_text .= "<div class=principle_roster_alternation_container>";
+    if (1 !== count($List_of_change_dates)) {
+        $html_text .= "<label for='toggle_$alternating_week_id' id='toggle_label_$alternating_week_id'>";
+        $html_text .= gettext('Show older versions?') . "</label>";
+        $html_text .= "<input type='checkbox' class='toggle_switch' id='toggle_$alternating_week_id'/>";
+    }
+    foreach ($List_of_change_dates as $valid_from_object) {
+        $hide_this_form = TRUE;
+        if ($valid_from_object === max($List_of_change_dates)) {
+            /*
+             * This is the actually relevant and current principle roster for this alternation.
+             * All the others are just history.
+             *  CAVE: This might be a change far in the future.
+             *   Actually one of the history entries might be for today and the next months.
+             *   TODO: How do we deal with sudden changes before the last valid_until?
+             */
+            $hide_this_form = FALSE;
+        }
+        $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $valid_from_object, $employee_id, $hide_this_form);
+    }
+    $html_text .= "</div>";
 }
 
 

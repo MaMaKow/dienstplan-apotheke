@@ -28,6 +28,12 @@
 class database_wrapper {
 
     protected static $instance;
+
+    /**
+     *
+     * @var int A counter to prevent a loop in exception handling.
+     */
+    protected static $unknown_column_iterator;
     protected $pdo;
     private $database_host;
     private $database_port;
@@ -69,7 +75,7 @@ class database_wrapper {
 
     /**
      *  A classical static method to make it universally available
-     *  @return object Object of class PDO
+     *  @return PDO Object of class PDO
      */
     public static function instance() {
         if (self::$instance === null) {
@@ -254,6 +260,22 @@ class database_wrapper {
             $message = gettext('There was an error while querying the database.')
                     . " " . gettext('Please see the error log for more details!');
             die("<p>$message</p>");
+        } elseif ('42S22' == $exception->getCode() and 1054 === $exception->errorInfo[1]) {
+            /*
+             * Unknown column ... in field list
+             * The database table does not match the expected layout.
+             * We try to update the database.
+             * CAVE: This will not be called on querys, which are inside a transaction.
+             */
+            if (3 <= self::$unknown_column_iterator++) {
+                $message = gettext('There was an error while querying the database.')
+                        . " " . gettext('Please see the error log for more details!');
+                die("<p>$message</p>");
+            }
+            new update_database();
+            $statement = $this->pdo->prepare($sql_query);
+            $statement->execute($arguments);
+            return $statement;
         } elseif ('42S02' == $exception->getCode() and 1146 === $exception->errorInfo[1]) {
             /*
              * Base table or view not found: 1146 Table doesn't exist

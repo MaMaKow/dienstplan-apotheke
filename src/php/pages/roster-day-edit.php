@@ -47,10 +47,14 @@ $Roster = roster::read_roster_from_database($branch_id, $date_sql);
  * User input:
  * Approve or disapprove rosters
  */
-if ((filter_has_var(INPUT_POST, 'submit_approval') or filter_has_var(INPUT_POST, 'submit_disapproval')) && count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
-    user_input::write_approval_to_database($branch_id, $Roster);
+if (count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
+    if (filter_has_var(INPUT_POST, 'submit_disapproval')) {
+        roster_approval::set_roster_approval($branch_id, $Roster, 'disapproved');
+    }
+    if (filter_has_var(INPUT_POST, 'submit_approval')) {
+        roster_approval::set_roster_approval($branch_id, $Roster, 'approved');
+    }
 }
-
 $Absentees = absence::read_absentees_from_database($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
@@ -61,12 +65,12 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql);
 }
 
-$Principle_roster = principle_roster::read_principle_roster_from_database($branch_id, $date_object, $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
+$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object, $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
 /*
  * In case there is no roster scheduled yet, create a suggestion:
  */
 if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
-    if (!empty($Principle_roster)) {
+    if (!roster::is_empty($Principle_roster)) {
         /*
          * Create roster from principle roster:
          */
@@ -78,8 +82,10 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
             $saturday_rotation = new saturday_rotation($branch_id);
             $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
             $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
-            $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
-            $user_dialog->add_message($message);
+            if (!roster::is_empty($Roster)) {
+                $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
+                $user_dialog->add_message($message);
+            }
         } catch (Exception $exception) {
             error_log($exception->getMessage());
         }
@@ -121,7 +127,7 @@ if ($session->user_has_privilege('create_roster')) {
     $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 }
 if ($session->user_has_privilege('approve_roster')) {
-    $approval = build_html_roster_views::get_approval_from_database($date_sql, $branch_id);
+    $approval = roster_approval::get_approval($date_sql, $branch_id);
 
     $html_text .= build_html_navigation_elements::build_button_approval($approval);
     $html_text .= build_html_navigation_elements::build_button_disapproval($approval);
@@ -135,6 +141,10 @@ $html_text .= build_html_navigation_elements::build_input_date($date_sql);
  */
 $html_text .= $user_dialog->build_messages();
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
+$html_text .= "<script> "
+        . " var Roster_array = " . json_encode($Principle_roster) . ";\n"
+        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
+        . "</script>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
 $html_text .= "<td>";

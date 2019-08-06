@@ -109,7 +109,7 @@ class absence {
     public static function read_absentees_from_database($date_sql) {
 
         $Absentees = array();
-        global $workforce;
+        $workforce = new workforce($date_sql);
         if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
             throw new Exception("\$date_sql has to be a string! $date_sql given.");
         }
@@ -213,16 +213,7 @@ class absence {
         $date_end_object = new DateTime($ende);
         $user_dialog = new user_dialog();
         $employee_id = $employee_object->employee_id;
-        /*
-         * TODO: Check why the next lines are needed:
-         *         if ($employee_id === FALSE) {
-          return FALSE;
-          }
 
-         */
-        if ($employee_id === FALSE) {
-            return FALSE;
-        }
         $days = self::calculate_employee_absence_days($date_start_object, $date_end_object, $employee_object);
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
             $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);

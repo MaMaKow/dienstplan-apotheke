@@ -260,12 +260,15 @@ class sessions {
 
     public static function logout() {
         if (session_destroy()) {
-            echo "Logout erfolgreich";
+            //echo "Logout erfolgreich";
         }
         header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php");
     }
 
     public function build_logout_button() {
+        /*
+         * TODO: MOve this to build_navigation perhaps.
+         */
         $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
         $text_html = "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/logout.php'>" . gettext('Logout') . '</a>';
         return $text_html;

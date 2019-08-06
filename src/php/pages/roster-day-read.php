@@ -36,14 +36,11 @@ create_cookie("datum", $date_sql, 0.5);
 
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 
-//The following lines check for the state of approval.
-//Duty rosters have to be approved by the leader, before the staff can view them.
-unset($approval);
-$sql_query = "SELECT state FROM `approval` WHERE date=:date AND branch=:branch_id";
-$result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id));
-while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $approval = $row->state;
-}
+/*
+ * The following lines check for the state of approval.
+ * Duty rosters have to be approved by the leader, before the staff can view them.
+ */
+$approval = roster_approval::get_approval($date_sql, $branch_id);
 if (isset($approval)) {
     if ($approval == 'approved') {
         //Everything is fine.

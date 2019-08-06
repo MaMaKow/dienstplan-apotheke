@@ -80,7 +80,15 @@ if (filter_has_var(INPUT_GET, 'register')) {
 }
 
 if ($show_form) {
-
+    if(empty($user_name)){
+        $user_name = "";
+    }
+    if(empty($employee_id)){
+        $employee_id = "";
+    }
+    if(empty($email)){
+        $email = "";
+    }
     if (isset($config['application_name'])) {
         $application_name = $config['application_name'];
     } else {

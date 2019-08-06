@@ -376,34 +376,3 @@ function configuration_toggle_show_smtp_options() {
         }
     }
 }
-
-
-/**
- * Hide visible elements and show invisible elements
- *
- * @param {string} element_id
- * @param {string} style_visible
- * @param {string} style_hidden
- * @returns {void}
- */
-function toggle_visibility_of_element(element_id, style_visible = 'block', style_hidden = 'none') {
-    var element = document.getElementById(element_id);
-
-    if (is_hidden(element, style_hidden)) {
-        element.style.display = style_visible;
-    } else {
-        element.style.display = style_hidden;
-}
-}
-
-/**
- * Test if an element is hidden or visible
- *
- * @param {object} element
- * @param {string} style_hidden
- * @returns {Boolean}
- */
-function is_hidden(element, style_hidden = 'none') {
-    var element_style = window.getComputedStyle(element);
-    return (element_style.display === style_hidden);
-}

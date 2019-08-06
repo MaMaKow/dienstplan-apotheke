@@ -18,7 +18,7 @@
  */
 
 /**
- * Description of class
+ * This class contains functions needed to build various navigation elements, e.g. buttons and selects.
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
@@ -160,6 +160,18 @@ abstract class build_html_navigation_elements {
         return $submit_button;
     }
 
+    public static function build_button_back() {
+        $back_button = "
+        <button id='back_button' class='btn-primary btn-save no_print' onClick='javascript:history.back()'>
+                <i class='icon-white'>
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("Back") . "' >
+                </i>
+                <br>
+                " . gettext("Back") . "
+                </button>";
+        return $back_button;
+    }
+
     public static function build_button_approval($approval) {
         if ('approved' === $approval) {
             $disabled = 'disabled';
@@ -236,16 +248,14 @@ abstract class build_html_navigation_elements {
      * @return string HTML element
      */
 
-    public static function build_select_branch($current_branch_id, $date_sql) {
-        $current_branch_id = (int) $current_branch_id;
-        global $List_of_branch_objects;
+    public static function build_select_branch(int $current_branch_id, string $date_sql = NULL) {
+        /*
+         * TODO: Is it possible to leave out the date_sql?
+         * Branch management will send NULL. Does this interrupt any cookies?
+         */
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         if (1 === count($List_of_branch_objects)) {
             return FALSE;
-            /*
-              return "<p class=large>\n" .
-              $List_of_branch_objects[$current_branch_id]->name .
-              "</p>\n";
-             */
         }
         $text = "<!-- branch select form-->\n";
         $text .= "<div id='branch_form_div' class='inline_element'>\n";
@@ -281,6 +291,34 @@ abstract class build_html_navigation_elements {
         }
         $html .= "</select></form>\n";
         return $html;
+    }
+
+    public static function build_button_show_principle_roster_history(int $alternating_week_id, int $employee_id, int $weekday, int $branch_id, DateTime $date_object) {
+        $List_of_history_dates = principle_roster_history::get_list_of_history_dates($weekday, $alternating_week_id, $branch_id);
+        if (2 > count($List_of_history_dates)) {
+            return NULL;
+        }
+        $class_string = '';
+        $title_string = '';
+        if ($date_object < max($List_of_history_dates)) {
+            $class_string = ' attention ';
+            $title_string = sprintf(
+                    gettext("Dieser Grundplan gilt ab dem %2\$s.\nDies ist nicht die jüngste Version des Grundplanes.\nDer aktuellste Grundplan beginnt am %1\$s."), max($List_of_history_dates)->format('d.m.Y'), $date_object->format('d.m.Y'));
+        }
+        $button_img = "<form class='inline_form' action='../fragments/fragment.principle-roster-day-history.php' method='post' id='show_principle_roster_history'>
+            <input type='hidden' form='show_principle_roster_history' name='alternating_week_id' value=$alternating_week_id>
+            <input type='hidden' form='show_principle_roster_history' name='employee_id' value=$employee_id>
+            <input type='hidden' form='show_principle_roster_history' name='weekday' value=$weekday>
+            <input type='hidden' form='show_principle_roster_history' name='branch_id' value=$branch_id>
+		<button type='submit' class='btn-primary no_print $class_string' title='$title_string'>
+			<i>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/history.svg' class='button-image' alt='" . gettext("principle roster history") . "'>
+			</i>
+			<br>
+			" . gettext("History") . "
+		</button>
+            </form>\n";
+        return $button_img;
     }
 
     public static function build_button_principle_roster_delete($alternating_week_id) {
@@ -322,7 +360,7 @@ abstract class build_html_navigation_elements {
         return $button_img;
     }
 
-    public static function build_select_alternating_week($alternating_week_id, $weekday) {
+    public static function build_select_alternating_week(int $alternating_week_id, int $weekday, DateTime $date = NULL) {
         if (!alternating_week::alternations_exist()) {
             return NULL;
         }
@@ -332,9 +370,12 @@ abstract class build_html_navigation_elements {
         $Alternating_week_ids = alternating_week::get_alternating_week_ids();
         foreach ($Alternating_week_ids as $alternating_week_id_current) {
             $alternating_week = new alternating_week($alternating_week_id_current);
-            $example_sunday = $alternating_week->get_sunday_date_for_alternating_week();
-            $example_date = $example_sunday->add(new DateInterval('P' . $weekday . 'D'));
-            $alternating_week_id_string = chr(65 + $alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
+            $example_monday = $alternating_week->get_monday_date_for_alternating_week($date);
+            $example_date = clone $example_monday;
+            if ($weekday > 1) {
+                $example_date = $example_monday->add(new DateInterval('P' . ($weekday - 1) . 'D'));
+            }
+            $alternating_week_id_string = alternating_week::get_human_readably_string($alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
             if ($alternating_week_id != $alternating_week_id_current) {
                 $html .= "<option value='$alternating_week_id_current'>$alternating_week_id_string</option>\n";
             } else {
@@ -363,13 +404,10 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_input_date($date_sql) {
-        /*
-         * TODO: Make this a button perhaps? With a form only displayed after clicking on it (or on hover?)
-         */
         $text = "";
         $text .= "<div id=date_chooser_div>\n";
         $text .= "<form id=date_chooser_form method=post>\n";
-        $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onChange='this.form.submit()' onblur='this.form.submit()'>\n";
+        $text .= "<input name=datum type=date id=date_chooser_input class='datepicker' value='$date_sql' onblur='this.form.submit()'>\n";
         $text .= "<input type=submit name=tagesAuswahl value=Anzeigen>\n";
         $text .= "</form>\n";
         $text .= "</div>\n";

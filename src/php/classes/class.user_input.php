@@ -45,15 +45,6 @@ abstract class user_input {
         }
     }
 
-    public static function principle_employee_roster_write_user_input_to_database(int $employee_id) {
-        global $session;
-        if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
-            return FALSE;
-        }
-        $Principle_employee_roster_new = user_input::get_Roster_from_POST_secure();
-        principle_roster::write_employee_user_input_to_database($employee_id, $Principle_employee_roster_new);
-    }
-
     public static function principle_roster_copy_from($principle_roster_copy_from) {
         global $session;
         $session->exit_on_missing_privilege(sessions::PRIVILEGE_CREATE_ROSTER);
@@ -66,7 +57,7 @@ abstract class user_input {
         alternating_week::delete_alternation($principle_roster_delete);
     }
 
-    public static function principle_roster_write_user_input_to_database($branch_id) {
+    public static function principle_roster_write_user_input_to_database($branch_id, $valid_from) {
         global $session;
         $session->exit_on_missing_privilege('create_roster');
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
@@ -81,14 +72,17 @@ abstract class user_input {
         database_wrapper::instance()->beginTransaction();
         principle_roster::remove_changed_employee_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
         principle_roster::remove_changed_employee_entries_from_database($branch_id, $Changed_roster_employee_id_list);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list, $valid_from);
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list, $valid_from);
         database_wrapper::instance()->commit();
     }
 
     public static function get_Roster_from_POST_secure() {
         $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
         $Roster = array();
+        if (empty($Roster_from_post)) {
+            return FALSE;
+        }
         foreach ($Roster_from_post as $date_unix => $Roster_from_post_day_array) {
             foreach ($Roster_from_post_day_array as $roster_row_iterator => $Roster_row_array) {
                 $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
@@ -116,7 +110,7 @@ abstract class user_input {
                     $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
                 } catch (PDRRosterLogicException $exception) {
                     $user_dialog = new user_dialog();
-                    $user_dialog->add_message($exception->getMessage());
+                    $user_dialog->add_message($exception->getMessage(), E_USER_ERROR, TRUE);
                 }
             }
         }
@@ -137,7 +131,7 @@ abstract class user_input {
         }
     }
 
-    private static function insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list) {
+    private static function insert_changed_roster_into_database($Roster, $Changed_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_id_list[$date_unix])) {
                 /* There are no changes. */
@@ -178,82 +172,50 @@ abstract class user_input {
         }
     }
 
-    private static function insert_new_approval_into_database($date_sql, $branch_id) {
-        /*
-         * TODO: We should manage situations, where an entry already exists better.
-         */
-        $sql_query = "INSERT IGNORE INTO `approval` (date, state, branch, user)
-			VALUES (:date, 'not_yet_approved', :branch_id, :user)";
-        database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'branch_id' => $branch_id, 'user' => $_SESSION['user_object']->user_name));
-    }
-
-    public static function write_approval_to_database($branch_id, $Roster) {
-        foreach (array_keys($Roster) as $date_unix) {
-            $date_sql = date('Y-m-d', $date_unix);
-            if (filter_has_var(INPUT_POST, 'submit_approval')) {
-                $state = "approved";
-            } elseif (filter_has_var(INPUT_POST, 'submit_disapproval')) {
-                $state = "disapproved";
-            } else {
-                /*
-                 * no state is given.
-                 */
-                throw new Exception("An Error has occurred during approval!");
-            }
-            $sql_query = "INSERT INTO `approval` (date, branch, state, user) "
-                    . "values (:date, :branch_id, :state, :user) "
-                    . "ON DUPLICATE KEY "
-                    . "UPDATE date = :date2, branch = :branch_id2, state = :state2, user = :user2";
-            $result = database_wrapper::instance()->run($sql_query, array(
-                'date' => $date_sql, 'branch_id' => $branch_id, 'state' => $state, 'user' => $_SESSION['user_object']->employee_id,
-                'date2' => $date_sql, 'branch_id2' => $branch_id, 'state2' => $state, 'user2' => $_SESSION['user_object']->employee_id,
-            ));
-            return $result;
-        }
-    }
-
     public static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
-            if (!isset($Roster_old[$date_unix])) {
+            if (!isset($Roster_old[$date_unix]) or roster::is_empty_roster_day_array($Roster_old[$date_unix])) {
                 /*
                  * There is no old roster. Every entry is new:
                  */
-                foreach ($Roster_day_array as $roster_row_object) {
-                    if (NULL === $roster_row_object->employee_id) {
+                foreach ($Roster_day_array as $roster_item) {
+                    if (NULL === $roster_item->employee_id) {
                         continue;
                     }
-                    $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
+                    $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                 }
-                return $Changed_roster_employee_id_list;
             } else {
-                foreach ($Roster_day_array as $roster_row_object) {
-                    foreach ($Roster_old[$date_unix] as $roster_row_object_old) {
-                        if ($roster_row_object->employee_id !== $roster_row_object_old->employee_id) {
-                            /*
-                             * TODO: Make sure, that both employee ids are integers.
-                              Also make sure, that all of the other values are properly formated!
-                             */
-                            continue;
-                        }
-                        if ($roster_row_object != $roster_row_object_old) {
-                            /*
-                             * There is an old entry for this employee, which does not exactly match the newly sent entry.
-                             * CAVE: This only works with the comparison operator != while !== will allways return FALSE if the objects are not references to the SAME object
-                             * CAVE: This will also put any employee on the list, who is on the roster more than once.
-                             */
-                            $Changed_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
-                            continue;
-                        }
-                        /*
-                         * Everything stayed the same for this employee there is nothing to add to the list.
-                         */
+                foreach ($Roster_day_array as $roster_item) {
+                    if (NULL === $roster_item->employee_id) {
                         continue;
+                    }
+                    if (self::roster_item_has_changed($roster_item, $Roster_old)) {
+                        $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                     }
                 }
             }
         }
         return $Changed_roster_employee_id_list;
+    }
+
+    /**
+     * This function aims to determine, if a roster_item has changed.
+     *     It compares it to ALL the old elements.
+     *     If ANY element in the old roster is the same, then no change has been made to this item.
+     *
+     * @param type $roster_item
+     * @param type $Roster_old
+     * @return boolean
+     */
+    private static function roster_item_has_changed($roster_item, $Roster_old) {
+
+        foreach ($Roster_old[$roster_item->date_unix] as $roster_item_old) {
+            if ($roster_item == $roster_item_old) {
+                return FALSE;
+            }
+        }
+        return TRUE;
     }
 
     private static function get_deleted_roster_employee_id_list($Roster, $Roster_old) {
@@ -311,10 +273,6 @@ abstract class user_input {
     public static function roster_write_user_input_to_database($Roster, $branch_id) {
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
-            /*
-             * The following line will add an entry for every day in the table approval.
-             */
-            user_input::insert_new_approval_into_database($date_sql, $branch_id);
             $Roster_old = roster::read_roster_from_database($branch_id, $date_sql);
 
             /*
@@ -327,8 +285,8 @@ abstract class user_input {
             database_wrapper::instance()->beginTransaction();
             user_input::remove_changed_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
             user_input::remove_changed_entries_from_database($branch_id, $Changed_roster_employee_id_list);
-            user_input::insert_changed_entries_into_database($Roster, $Changed_roster_employee_id_list);
-            user_input::insert_changed_entries_into_database($Roster, $Inserted_roster_employee_id_list);
+            user_input::insert_changed_roster_into_database($Roster, $Changed_roster_employee_id_list);
+            user_input::insert_changed_roster_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
             $user_dialog_email = new user_dialog_email();
             $user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);

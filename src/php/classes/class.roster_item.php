@@ -23,7 +23,7 @@
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 
-class roster_item {
+class roster_item implements \JsonSerializable {
 
     public $date_sql;
     public $date_unix;
@@ -60,22 +60,21 @@ class roster_item {
             $this->$variable_name = $variable_value;
             $this->calculate_durations();
         } else {
-            throw new Exception($variable_name . " is private and not allowed to be called by " . __METHOD__);
+            throw new Exception($variable_name . " is private and not allowed to be changed by " . __METHOD__);
         }
     }
 
     public function __get($variable_name) {
-        if (in_array($variable_name, self::$List_of_allowed_variables)) {
-            return $this->$variable_name;
-        } else {
-            throw new Exception($variable_name . " is private and not allowed to be called by " . __METHOD__);
-        }
+        /*
+         * All variables are allowed to be read. Just the writing is prohibited to some.
+         */
+        return $this->$variable_name;
     }
 
     public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_object = new DateTime($date_sql);
-        $this->date_unix = strtotime($date_sql);
+        $this->date_unix = $this->date_object->getTimestamp();
         $this->employee_id = $employee_id;
         $this->branch_id = (int) $branch_id;
         $this->duty_start_sql = $this->format_time_string_correct($duty_start);
@@ -108,7 +107,7 @@ class roster_item {
         $this->working_hours = round($this->working_seconds / 3600, 2);
     }
 
-    public static function format_time_string_correct($time_string, $format = '%H:%M') {
+    public static function format_time_string_correct(string $time_string = NULL, string $format = '%H:%M') {
         /*
          * TODO: This could be part of a namespaced DateTime class.
          */
@@ -125,14 +124,14 @@ class roster_item {
      * @return string A string representing the unix date in a given format.
      */
 
-    public static function format_date_unix_to_string($date_unix, $format = 'Y-m-d') {
+    public static function format_date_unix_to_string(int $date_unix = NULL, string $format = 'Y-m-d') {
         if (NULL === $date_unix) {
             return NULL;
         }
         return gmdate($format, $date_unix);
     }
 
-    public static function format_time_integer_to_string($time_seconds, $format = 'H:i') {
+    public static function format_time_integer_to_string(int $time_seconds = NULL, string $format = 'H:i') {
         if ($time_seconds > PDR_ONE_DAY_IN_SECONDS) {
             throw new Exception('The time in seconds must be below 1 day (' . PDR_ONE_DAY_IN_SECONDS . ')');
         }
@@ -150,7 +149,7 @@ class roster_item {
         return gmdate($format, $time_seconds);
     }
 
-    public static function convert_time_to_seconds($time_string) {
+    public static function convert_time_to_seconds(string $time_string = NULL) {
         if (NULL === $time_string) {
             return NULL;
         }
@@ -183,7 +182,7 @@ class roster_item {
     }
 
     public function to_email_message_string($context_string) {
-        global $List_of_branch_objects, $workforce;
+
         $message = "";
         /*
          * The following part is added upon aggregation:
@@ -195,6 +194,7 @@ class roster_item {
         $message .= strftime('%x', $this->date_unix) . PHP_EOL;
         $message .= $context_string . PHP_EOL;
         $message .= gettext('You work at the following times:') . PHP_EOL;
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         $message .= $List_of_branch_objects[$this->branch_id]->name . PHP_EOL;
         $message .= gettext('Start and end of duty');
         $message .= ":";
@@ -214,6 +214,10 @@ class roster_item {
          */
 
         return $message;
+    }
+
+    public function jsonSerialize() {
+        return get_object_vars($this);
     }
 
 }
