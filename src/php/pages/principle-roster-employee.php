@@ -102,6 +102,11 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, D
                 . $monday_date->format('d.m.Y') . ' - ' . $sunday_date->format('d.m.Y')
                 . '</p></div>';
         $html_text .= $alternating_week_id_string;
+    } else {
+        $alternating_week_id_string = '<div class="inline_block_element"><p>'
+                . gettext('valid from') . ' ' . $date_minimum->format('d.m.Y')
+                . '</p></div>';
+        $html_text .= $alternating_week_id_string;
     }
     $html_text .= "<script> "
             . " var Roster_array = " . json_encode($Principle_employee_roster) . ";\n"

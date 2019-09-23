@@ -133,7 +133,7 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     var duty_end_object = new Date(roster_item['date_sql'] + 'T' + roster_item['duty_end_sql']);
     var break_start_object = new Date(roster_item['date_sql'] + 'T' + roster_item['break_start_sql']);
     var break_end_object = new Date(roster_item['date_sql'] + 'T' + roster_item['break_end_sql']);
-    var break_duration_integer = (break_end_object - break_start_object);
+    /*var break_duration_integer = (break_end_object - break_start_object);*/
     var new_bar_x = (duty_start_object.getHours() + duty_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
     var new_bar_width = (
             (duty_end_object.getHours() + duty_end_object.getMinutes() / 60)

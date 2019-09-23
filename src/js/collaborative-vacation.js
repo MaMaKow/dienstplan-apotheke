@@ -135,7 +135,7 @@ function highlight_absence_create_end(evt) {
 
 function insert_form_div(edit_create) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    var evt = evt || window.event || input_box_data_div.highlight_event;
+    var evt = window.event || input_box_data_div.highlight_event;
     var x = evt.clientX;
     var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
