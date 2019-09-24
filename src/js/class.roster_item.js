@@ -20,202 +20,122 @@
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
+/*jshint esversion: 6 */
 
 class roster_item {
 
-    public $date_sql;
-    public $date_unix;
-    public $date_object;
-    public $employee_id;
-    public $branch_id;
-    public $comment;
-    protected $duty_start_int;
-    protected $duty_start_sql;
-    protected $duty_end_int;
-    protected $duty_end_sql;
-    protected $break_start_int;
-    protected $break_start_sql;
-    protected $break_end_int;
-    protected $break_end_sql;
-    public $working_hours;
-    public $break_duration;
-    public $duty_duration;
-    public $working_seconds;
-    public $weekday;
-    protected static $List_of_allowed_variables = array(
-        'duty_start_int',
-        'duty_start_sql',
-        'duty_end_int',
-        'duty_end_sql',
-        'break_start_int',
-        'break_start_sql',
-        'break_end_int',
-        'break_end_sql',
-    );
+set duty_start_int (variable_value) {
+this.duty_start_int_value = variable_value;
+        this.calculate_durations();
+}
+set duty_start_sql (variable_value) {
+this.duty_start_sql_value = variable_value;
+        this.calculate_durations();
+}
+set duty_end_int (variable_value) {
+this.duty_end_int_value = variable_value;
+        this.calculate_durations();
+}
+set duty_end_sql (variable_value) {
+this.duty_end_sql_value = variable_value;
+        this.calculate_durations();
+}
+set break_start_int (variable_value) {
+this.break_start_int_value = variable_value;
+        this.calculate_durations();
+}
+set break_start_sql (variable_value) {
+this.break_start_sql_value = variable_value;
+        this.calculate_durations();
+}
+set break_end_int (variable_value) {
+this.break_end_int_value = variable_value;
+        this.calculate_durations();
+}
+set break_end_sql (variable_value) {
+this.break_end_sql_value = variable_value;
+        this.calculate_durations();
+}
 
-    public function __set($variable_name, $variable_value) {
-        if (in_array($variable_name, self::$List_of_allowed_variables)) {
-            $this->$variable_name = $variable_value;
-            $this->calculate_durations();
-        } else {
-            throw new Exception($variable_name . " is private and not allowed to be changed by " . __METHOD__);
+
+get duty_start_int () {
+return this.duty_start_int_value;
+}
+get duty_start_sql () {
+return this.duty_start_sql_value;
         }
-    }
+get duty_end_int () {
+return this.duty_end_int_value;
+        }
+get duty_end_sql () {
+return this.duty_end_sql_value;
+        }
+get break_start_int () {
+return this.break_start_int_value;
+        }
+get break_start_sql () {
+return this.break_start_sql_value;
+        }
+get break_end_int () {
+return this.break_end_int_value;
+        }
+get break_end_sql () {
+return this.break_end_sql_value;
+        }
 
-    public function __get($variable_name) {
-        /*
-         * All variables are allowed to be read. Just the writing is prohibited to some.
-         */
-        return $this->$variable_name;
-    }
 
-     constructor(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
-        $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
-        $this->date_object = new DateTime($date_sql);
-        $this->date_unix = $this->date_object->getTimestamp();
-        $this->employee_id = $employee_id;
-        $this->branch_id = (int) $branch_id;
-        $this->duty_start_sql = $this->format_time_string_correct($duty_start);
-        $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
-        $this->duty_end_sql = $this->format_time_string_correct($duty_end);
-        $this->duty_end_int = $this->convert_time_to_seconds($duty_end);
-        $this->break_start_sql = $this->format_time_string_correct($break_start);
-        $this->break_start_int = $this->convert_time_to_seconds($break_start);
-        $this->break_end_sql = $this->format_time_string_correct($break_end);
-        $this->break_end_int = $this->convert_time_to_seconds($break_end);
-        $this->comment = $comment;
-        $this->weekday = date("N", $this->date_unix);
+constructor(date_sql_value, employee_id, branch_id, duty_start, duty_end, break_start = null, break_end = null, comment = null) {
 
-        /*
-         * TODO: This might be a good place to issue an error, if the break times are not within the working times.
-         * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?
-         */
-        //$this->check_roster_item_sequence();
-        $this->calculate_durations();
-    }
+this.date_object = new Date(date_sql_value);
+        this.date_sql_value = this.date_object.getFullYear() + "-" + this.date_object.getMonth() + "-" + this.date_object.getDate();
+        this.date_unix = this.date_object.getTime() / 1000;
+        this.employee_id = employee_id;
+        this.branch_id = Number(branch_id);
+        this.duty_start_sql_value = duty_start;
+        this.duty_start_int_value = this.convert_time_to_seconds(duty_start);
+        this.duty_end_sql_value = duty_end;
+        this.duty_end_int_value = this.convert_time_to_seconds(duty_end);
+        this.break_start_sql_value = break_start;
+        this.break_start_int_value = this.convert_time_to_seconds(break_start);
+        this.break_end_sql_value = break_end;
+        this.break_end_int_value = this.convert_time_to_seconds(break_end);
+        this.comment = comment;
+        this.weekday = this.date_object.getDay(); //CAVE: Will this is fom 0-6 0 = Sunday
+        this.calculate_durations();
+}
 
-    private function calculate_durations() {
+convert_time_to_seconds(time_string = null) {
+if (null === time_string) {
+return null;
+}
+let time_array = time_string.split(':');
+        if (3 === time_array.length){
+let seconds = 3600 * time_array[0] + 60 * time_array[1] + time_array[2];
+        return seconds;
+}
+if (2 === time_array.length){
+let seconds = 3600 * time_array[0] + 60 * time_array[1];
+        return seconds;
+}
+}
+
+calculate_durations() {
+console.log("calculate_durations");
         /*
          * TODO: This does not take into account, that emergency service is not calculated as full hours.
          * Emergeny service calculation might differ between states, federal states, or even employees with different contracts.
          */
-        $this->duty_duration = $this->duty_end_int - $this->duty_start_int;
-        $this->break_duration = $this->break_end_int - $this->break_start_int;
-        $this->working_seconds = ($this->duty_duration - $this->break_duration);
-        $this->working_hours = round($this->working_seconds / 3600, 2);
-    }
+        this.duty_duration = this.duty_end_int_value - this.duty_start_int_value;
+        this.break_duration = this.break_end_int_value - this.break_start_int_value;
+        this.working_seconds = (this.duty_duration - this.break_duration);
+        this.working_hours = Math.round(this.working_seconds / 3600, 2);
+}
 
-    public static function format_time_string_correct(string $time_string = NULL, string $format = '%H:%M') {
-        /*
-         * TODO: This could be part of a namespaced DateTime class.
-         */
-        $time_int = strtotime($time_string);
-        if (FALSE === $time_int) {
-            return $time_string;
-        }
-        return strftime($format, $time_int);
-    }
 
-    /*
-     * @param $date_unix int A unix timestamp
-     * @param $format string A valid format for the date() function
-     * @return string A string representing the unix date in a given format.
-     */
-
-    public static function format_date_unix_to_string(int $date_unix = NULL, string $format = 'Y-m-d') {
-        if (NULL === $date_unix) {
-            return NULL;
-        }
-        return gmdate($format, $date_unix);
-    }
-
-    public static function format_time_integer_to_string(int $time_seconds = NULL, string $format = 'H:i') {
-        if ($time_seconds > PDR_ONE_DAY_IN_SECONDS) {
-            throw new Exception('The time in seconds must be below 1 day (' . PDR_ONE_DAY_IN_SECONDS . ')');
-        }
-        if (NULL === $time_seconds) {
-            return NULL;
-        }
-        if ('' === $time_seconds) {
-            return '';
-        }
-        /*
-         * TODO: find out why we have to use gmdate here.
-         * Is it possible to configure the date environment?
-         * Also have a look at format_date_unix_to_string
-         */
-        return gmdate($format, $time_seconds);
-    }
-
-    public static function convert_time_to_seconds(string $time_string = NULL) {
-        if (NULL === $time_string) {
-            return NULL;
-        }
-        /*
-         * array_pad is used to ensure that input in the format HH:MM i.e. 9:30 is treated as HH:MM:SS i.e. 9:30:00
-         * array_pad just puts a 0 to the missing seconds and or minutes.
-         */
-        list($hours, $mins, $secs) = array_pad(explode(':', $time_string), 3, 0);
-        return ($hours * 3600 ) + ($mins * 60 ) + $secs;
-    }
-
-    public function check_roster_item_sequence() {
-        try {
-            if ($this->break_end_int > $this->duty_end_int) {
-                throw new Exception('The break starts, before it ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-            if (!empty($this->break_start_int) and $this->break_start_int < $this->duty_start_int) {
-                throw new Exception('The break starts, before duty begins.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-            if ($this->break_end_int < $this->break_start_int) {
-                throw new Exception('The break ends, after duty ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-            if ($this->duty_end_int < $this->duty_start_int) {
-                throw new Exception('The duty starts, after it ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-        } catch (Exception $exception) {
-            error_log('Message: ' . $exception->getMessage());
-            throw new PDRRosterLogicException($exception->getMessage());
-        }
-    }
-
-    public function to_email_message_string($context_string) {
-
-        $message = "";
-        /*
-         * The following part is added upon aggregation:
-         * $message = sprintf(gettext("Dear %1s,"), $workforce->List_of_employees[$this->employee_id]->full_name) . PHP_EOL . PHP_EOL;
-         */
-        $message .= gettext('Date');
-        $message .= ":";
-        $message .= PHP_EOL;
-        $message .= strftime('%x', $this->date_unix) . PHP_EOL;
-        $message .= $context_string . PHP_EOL;
-        $message .= gettext('You work at the following times:') . PHP_EOL;
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
-        $message .= $List_of_branch_objects[$this->branch_id]->name . PHP_EOL;
-        $message .= gettext('Start and end of duty');
-        $message .= ":";
-        $message .= PHP_EOL;
-        $message .= sprintf(gettext("From %1s to %2s"), $this->duty_start_sql, $this->duty_end_sql);
-        $message .= PHP_EOL;
-        if (!empty($this->break_start_sql) and ! empty($this->break_end_sql)) {
-            $message .= gettext('Start and end of lunch break');
-            $message .= ":";
-            $message .= PHP_EOL;
-            $message .= sprintf(gettext("From %1s to %2s"), $this->break_start_sql, $this->break_end_sql);
-            $message .= PHP_EOL;
-        }
-        /*
-         * The following part is added upon aggregation:
-         * $message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
-         */
-
-        return $message;
-    }
-
-    public function jsonSerialize() {
-        return get_object_vars($this);
-    }
 
 }
+
+/*
+ let some_roster_item = new roster_item("2019-09-21", 5, 1, "10:00", "18:00", null, null, null);
+ console.log(some_roster_item);
+ */

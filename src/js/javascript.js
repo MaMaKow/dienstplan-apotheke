@@ -323,7 +323,7 @@ function clear_form(form_id) {
     console.log(form_id);
     var elements = form_id.elements;
     form_id.reset();
-    for (i = 0; i < elements.length; i++) {
+    for (var i = 0; i < elements.length; i++) {
 
         var field_type = elements[i].type.toLowerCase();
         switch (field_type) {

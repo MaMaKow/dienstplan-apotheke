@@ -1,3 +1,11 @@
+fragment.principle-roster-day-history.php
+    does not allways result in the chosen date. For example when the rotation weekdoes not match the chosen week.
+    Perhaps more care should be given to the possible change dates?
+
+Drag and drop is somehow defective.
+    It seems to work only for the first 7 elements.
+    Also newy inserted employees do not show up in the plot.
+
 update_database requires the hash to be rewritten before commit.
     Does that still hapen? Do we need a new hook?
 
