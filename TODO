@@ -23,7 +23,7 @@ sprintf must use %1$s instead of %1s.
 Write an updater
     That includes a webservice, which holds the current master state and an API to answer update queries.
 
-LDAP
+LDAP / OAuth2
 
 Change the navigation menu
     On mobile touch devices, some menu items are not reachable.

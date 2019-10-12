@@ -864,3 +864,8 @@ div.remaining_holidays p span {
 
 }
 
+img.example_artwork {
+    /*Relevant for list_of_artwork.php*/
+    height: 32px;
+    margin-top: 1em;
+}

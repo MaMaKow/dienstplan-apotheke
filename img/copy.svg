@@ -10,34 +10,37 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg4847"
-   sodipodi:docname="copy-icon4.svg"
+   sodipodi:docname="copy.svg"
    viewBox="0 0 628.10472 799.6376"
    version="1.1"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.92.0 r15299"
    width="100%"
-   height="100%">
+   height="100%"
+   inkscape:export-filename="C:\Users\Mandelkow\Nextcloud\Dokumente\Freizeit\Programmierung\git\dienstplan-apotheke\img\copy.png"
+   inkscape:export-xdpi="192"
+   inkscape:export-ydpi="192">
   <defs
      id="defs3190" />
   <sodipodi:namedview
      id="base"
      bordercolor="#666666"
      inkscape:pageshadow="2"
-     inkscape:window-y="27"
+     inkscape:window-y="-8"
      fit-margin-left="0"
      pagecolor="#ffffff"
-     inkscape:window-height="1014"
+     inkscape:window-height="657"
      inkscape:window-maximized="1"
      inkscape:zoom="0.48395641"
-     inkscape:window-x="0"
+     inkscape:window-x="-8"
      showgrid="false"
      borderopacity="1.0"
      inkscape:current-layer="layer1"
-     inkscape:cx="291.83012"
+     inkscape:cx="-159.65682"
      inkscape:cy="744.33338"
      fit-margin-top="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1920"
+     inkscape:window-width="1280"
      inkscape:pageopacity="0.0"
      inkscape:document-units="px" />
   <g
@@ -79,8 +82,7 @@
          style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
          x="340.73529"
          y="707.2146"
-         id="text3816"
-         sodipodi:linespacing="125%"><tspan
+         id="text3816"><tspan
            sodipodi:role="line"
            id="tspan3818"
            x="340.73529"
@@ -96,7 +98,7 @@
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <cc:license
-           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
         <dc:publisher>
           <cc:Agent
              rdf:about="http://openclipart.org/">

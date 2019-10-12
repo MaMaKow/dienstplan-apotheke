@@ -7,13 +7,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="185.13693"
-   height="507.60385"
+   width="197.4794"
+   height="541.44409"
    version="1.1"
    viewBox="0 0 185.13693 507.60386"
    id="svg52"
    sodipodi:docname="employee_2.svg"
-   inkscape:version="0.48.5 r10040">
+   inkscape:version="0.92.0 r15299"
+   inkscape:export-filename="C:\Users\Mandelkow\Nextcloud\Dokumente\Freizeit\Programmierung\git\dienstplan-apotheke\img\employee_2.png"
+   inkscape:export-xdpi="192"
+   inkscape:export-ydpi="192">
   <metadata
      id="metadata58">
     <rdf:RDF>
@@ -37,15 +40,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1014"
+     inkscape:window-width="1280"
+     inkscape:window-height="657"
      id="namedview54"
      showgrid="false"
      inkscape:zoom="0.4204826"
-     inkscape:cx="120.72527"
+     inkscape:cx="-398.91573"
      inkscape:cy="301.1093"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg52"
      fit-margin-top="0"
@@ -59,12 +62,7 @@
        cx="-2875.8"
        cy="-184.32001"
        r="210.25"
-       id="circle12"
-       d="m -2665.55,-184.32001 c 0,116.117871 -94.1322,210.250003 -210.25,210.250003 -116.1179,0 -210.25,-94.132132 -210.25,-210.250003 0,-116.11787 94.1321,-210.25 210.25,-210.25 116.1178,0 210.25,94.13213 210.25,210.25 z"
-       sodipodi:cx="-2875.8"
-       sodipodi:cy="-184.32001"
-       sodipodi:rx="210.25"
-       sodipodi:ry="210.25" />
+       id="circle12" />
     <path
        d="m -3085.6,68.656 h 146.89 l 62.888,160.85 62.888,-160.85 h 146.89 c 74.081,0 133.72,59.639 133.72,133.72 v 425.47 c 0,74.081 -59.639,133.72 -133.72,133.72 h -419.55 c -74.081,0 -133.72,-59.639 -133.72,-133.72 v -425.47 c 0,-74.08 59.639,-133.72 133.72,-133.72 z"
        id="path14"
@@ -78,13 +76,13 @@
        id="path18"
        inkscape:connector-curvature="0" />
     <path
-       d="m -2752.9,347.63 v 58.259 h -58.217 v 80.314 h 58.217 v 58.217 h 80.314 v -58.217 h 58.26 v -80.314 h -58.26 V 347.63 z"
+       d="m -2752.9,347.63 v 58.259 h -58.217 v 80.314 h 58.217 v 58.217 h 80.314 v -58.217 h 58.26 v -80.314 h -58.26 V 347.63 Z"
        id="path20"
        inkscape:connector-curvature="0"
        style="fill:#ffffff" />
     <path
        d="m -2958.7,68.422 -25.395,0.51367 -25.719,68.27 -30.725,86.412 69.514,21.156 -21.094,57.254 108.9,96.799 v 807.22003 h 25.799 V 398.82667 l 108.9,-96.799 -21.094,-57.254 69.514,-21.156 -30.725,-86.412 -25.719,-68.27 -25.395,-0.51367 49.359,138.82 -69.801,21.246 24.367,66.143 -92.307,82.051 -92.307,-82.051 24.369,-66.143 -69.803,-21.246 z"
-       style="text-indent:0;text-decoration:none;text-transform:none;color:#000000;fill:#ffffff;fill-rule:evenodd"
+       style="color:#000000;text-indent:0;text-decoration:none;text-decoration-line:none;text-transform:none;fill:#ffffff;fill-rule:evenodd"
        id="path22"
        inkscape:connector-curvature="0" />
   </g>

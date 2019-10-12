@@ -9,11 +9,11 @@
     <ul id="navigation">
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php><?= gettext("Weekly view") ?>
-                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/week_2.svg class="inline-image" alt="week-button" title="Show week">
+                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_view_week-24px.svg class="inline-image" alt="week-button" title="Show week">
             </a>
             <ul>
                 <li>            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php><?= gettext("Weekly table") ?>
-                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/week_2.svg class="inline-image" alt="week-button" title="Show week">
+                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_view_week-24px.svg class="inline-image" alt="week-button" title="Show week">
                     </a>
                 </li>
                 <li>            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-images.php><?= gettext("Weekly images") ?>
@@ -25,7 +25,7 @@
         </li>
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-read.php><?= gettext("Daily view") ?>
-                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/day.svg class="inline-image" alt="day-button" title="Show day">
+                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_today-24px.svg class="inline-image" alt="day-button" title="Show day">
             </a>
             <ul>
                 <li>
@@ -72,7 +72,7 @@
         </li>
         <li>
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-read.php title="Urlaub, Krankheit, Abwesenheit"><?= gettext("Absence") ?>
-                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/absence.svg class="inline-image" alt="absence-button" title="Show absence">
+                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg class="inline-image" alt="absence-button" title="Show absence">
             </a>
             <ul>
                 <li>
@@ -92,7 +92,7 @@
         </li>
         <li><a>
                 <?= gettext("Administration") ?>
-                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/settings.png class="inline-image" alt="settings-button" title="Show settings">
+                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_ic_settings_24px.svg class="inline-image" alt="settings-button" title="Show settings">
             </a>
             <ul>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/attendance-list.php><?= gettext("Attendance list") ?></a></li>
@@ -108,7 +108,7 @@
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/branch-management.php><?= gettext("Branch management") ?></a></li>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-management.php><?= gettext("User management") ?></a></li>
                 <li><a>&nbsp;</a></li>
-                <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/configuration.php><?= gettext('Configuration') ?><img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/settings.png class="inline-image" alt="configuration-button" title="Configuration"></a></li>
+                <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/configuration.php><?= gettext('Configuration') ?><img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_ic_settings_24px.svg class="inline-image" alt="configuration-button" title="Configuration"></a></li>
                 <li><a href=/phpmyadmin>PhpMyAdmin</a></li>
             </ul>
         </li>
@@ -121,6 +121,12 @@
                     <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-page.php">
                         <?= gettext('User page'); ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/user_1.svg class="inline-image" alt="user-button" title="Show user">
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/about.php">
+                        <?= gettext('About'); ?>
+                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg class="inline-image" alt="information" title="Show user">
                     </a>
                 </li>
                 <li>
