@@ -99,8 +99,8 @@ echo $user_dialog->build_messages();
                        onpaste="compare_passwords()"
                        >
                 <br>
-                <img id="approve_pass_img"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/approve.png" height="20">
-                <img id="disapprove_pass_img" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/disapprove.png" height="20">
+                <img id="approve_pass_img"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_up-24px.svg" height="20">
+                <img id="disapprove_pass_img" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_down-24px.svg" height="20">
                 <br>
                 <label><?= gettext('Repeat password') ?></label>
                 <br>

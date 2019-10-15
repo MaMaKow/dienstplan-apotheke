@@ -40,7 +40,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
                     . "<form id='branch_deletion_done_confirmation_form'>"
                     . "<p>The branch was successfully deleted.</p>"
                     . "<button type='submit' form='branch_deletion_done_confirmation_form' class='form_button' name='deletion_done_confirmation_button' id='deletion_done_confirmation_button'>"
-                    . "<img src=" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png>"
+                    . "<img src=" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_up-24px.svg>"
                     . "<p>Continue</p>"
                     . "</button>"
                     . "</form>"

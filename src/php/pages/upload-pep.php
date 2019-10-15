@@ -109,7 +109,7 @@ EOT;
         return FALSE;
     }
     if (!move_uploaded_file($_FILES["file_to_upload"]["tmp_name"], $target_file)) {
-        $message = gettext('Sorry, there was an error uploading your file');
+        $message = gettext('Sorry, there was an error uploading your file.');
         $user_dialog->add_message($message, E_USER_ERROR);
         return FALSE;
     }

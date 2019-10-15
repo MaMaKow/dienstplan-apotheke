@@ -182,7 +182,7 @@ abstract class build_html_navigation_elements {
         <form method=post class='inline_form'>
                 <button type='submit' class='btn-secondary no_print' value='approve' name='submit_approval' $disabled>
                 <i class='icon-grey'>
-                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png' class='button-image' alt='" . gettext('Approve') . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_up-24px.svg' class='button-image' alt='" . gettext('Approve') . "' >
                 </i>
                 <br>
                 " . gettext('Approve') . "
@@ -202,7 +202,7 @@ abstract class build_html_navigation_elements {
         <form method=post class='inline_form'>
                 <button type='submit' class='btn-secondary no_print' value='disapprove' name='submit_disapproval' $disabled>
                 <i class='icon-grey'>
-                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/disapprove.png' class='button-image' alt='" . gettext("Disapprove") . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_down-24px.svg' class='button-image' alt='" . gettext("Disapprove") . "' >
                 </i>
                 <br>
                 " . gettext("Disapprove") . "
