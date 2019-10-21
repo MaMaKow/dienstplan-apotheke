@@ -189,7 +189,7 @@ class configuration {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
-                        $user_dialog->add_message(gettext('Passwords do not match!'));
+                        $user_dialog->add_message(gettext('The passwords do not match.'));
                         $new_config[$key] = $config[$key];
                         continue;
                     }

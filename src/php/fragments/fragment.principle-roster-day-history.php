@@ -44,7 +44,7 @@ echo "</HEAD>";
 echo "<BODY>";
 
 echo "<p>" . gettext('Please choose a date!') . "</p>";
-echo "<p class='hint'>" . gettext('Dies ist eine Liste von Daten. An jedem Datum wurde der Grundplan für diesen Wochentag für mindestens einen Mitarbeiter geändert. Klicken Sie auf eines der Daten um den Grundplan an diesem Tag zu betrachten.') . "</p>";
+echo "<p class='hint'>" . gettext('This is a list of dates. On each date, the basic plan for this day of the week has been changed for at least one employee. Click on one of the dates to view the principle roster for that day.') . "</p>";
 
 echo "<form id='principle_roster_history_form' action='../pages/principle-roster-day.php' method='GET'>";
 echo "<fieldset>";

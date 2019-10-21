@@ -96,7 +96,7 @@ EOT;
          * Allow certain file formats
          */
         $user_dialog->add_message(gettext('Sorry, only ASYS PEP files are allowed.'));
-        $user_dialog->add_message(sprintf(gettext('You tried to upload: %1$s'), $upload_file_name), E_USER_NOTICE);
+        $user_dialog->add_message(sprintf(gettext('You tried to upload: %1$s.'), $upload_file_name), E_USER_NOTICE);
         $user_dialog->add_message(gettext('Please upload a valid ASYS PEP file!'), E_USER_NOTICE);
         $upload_ok = 0;
         return FALSE;

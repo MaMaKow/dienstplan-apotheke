@@ -107,7 +107,7 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
         }
     }
 } else {
-    $user_dialog->add_message(gettext('Missing input token'));
+    $user_dialog->add_message(gettext('The input token is missing.'));
 }
 echo $user_dialog->build_messages();
 ?>
