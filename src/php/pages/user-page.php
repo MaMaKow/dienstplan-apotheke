@@ -75,7 +75,7 @@ $user_dialog = new \user_dialog;
 echo $user_dialog->build_messages();
 ?>
 <main>
-    <h1><?= sprintf(gettext('User page for user %1s'), $_SESSION['user_object']->user_name); ?></h1>
+    <h1><?= sprintf(gettext('User page for user %1$s'), $_SESSION['user_object']->user_name); ?></h1>
     <form action='' method='POST' id='user_form'></form>
     <form action='' method='POST' id="user_page_password_form"></form>
     <fieldset id='email_consent'>

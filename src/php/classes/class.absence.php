@@ -286,7 +286,7 @@ class absence {
                 }
             } else {
                 $date_string = strftime('%a %x', $date_object->getTimestamp());
-                $message = sprintf(gettext('%1s is not a working day for %2s and will not be counted.'), $date_string, $employee_object->full_name);
+                $message = sprintf(gettext('%1$s is not a working day for %2$s and will not be counted.'), $date_string, $employee_object->full_name);
                 $user_dialog->add_message($message, E_USER_NOTICE);
             }
         }

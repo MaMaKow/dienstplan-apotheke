@@ -141,7 +141,7 @@ class iCalendar {
                 . gettext("contains the roster for") . " $branch_name. \\r\\n"
                 . gettext("Weekday") . ": $date_weekday_name\\r\\n";
         if (!empty($mittags_beginn) and ! empty($mittags_ende)) {
-            $text_ics .= sprintf(gettext('Lunch from %1s to %2s'), $mittags_beginn, $mittags_ende) . "\\r\\n";
+            $text_ics .= sprintf(gettext('Lunch from %1$s to %2$s'), $mittags_beginn, $mittags_ende) . "\\r\\n";
         }
         $text_ics .= "\r\n";
         /*

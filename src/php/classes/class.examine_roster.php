@@ -71,7 +71,7 @@ class examine_roster {
 
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $message = sprintf(gettext('Conflict at employee %1s <br>%2s to %3s (%4s) <br>with<br>%5s to %6s (%7s)'), $workforce->List_of_employees[$row->VK]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->short_name, $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->short_name
+            $message = sprintf(gettext('Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s (%7$s)'), $workforce->List_of_employees[$row->VK]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->short_name, $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->short_name
             );
             $user_dialog->add_message($message, E_USER_ERROR, TRUE);
         }
@@ -94,13 +94,16 @@ class examine_roster {
         if (FALSE === $this->Anwesende) {
             return FALSE;
         }
+        /*
+         * TODO: Make the number $minimum_number_of_employees configurable for different branches and times.
+         */
         $minimum_number_of_employees = 2;
         foreach ($this->Anwesende as $zeit => $anwesende) {
             if ($anwesende < $minimum_number_of_employees
                     and $zeit < $this->Opening_times['day_opening_end']
                     and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $message = sprintf(gettext('At %1s there are less than %2s employees present.'), roster_item::format_time_integer_to_string($zeit), $minimum_number_of_employees);
+                    $message = sprintf(gettext('At %1$s there are less than %2$s employees present.'), roster_item::format_time_integer_to_string($zeit), $minimum_number_of_employees);
                     $user_dialog->add_message($message, E_USER_WARNING);
                     $attendant_error = true;
                 }
@@ -130,7 +133,7 @@ class examine_roster {
             // TODO: Die tatsächlichen Termine für den Wareneingang wären sinnvoller, als die Öffnungszeiten. ($Opening_times['day_opening_end'])
             if ($anwesende_wareneingang === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $message = sprintf(gettext('At %1s there is no goods receipt employee present.'), roster_item::format_time_integer_to_string($zeit));
+                    $message = sprintf(gettext('At %1$s there is no goods receipt employee present.'), roster_item::format_time_integer_to_string($zeit));
                     $user_dialog->add_message($message, E_USER_WARNING);
                     $attendant_error = true;
                 }
@@ -160,7 +163,7 @@ class examine_roster {
         foreach ($this->Approbierten_anwesende as $zeit => $anwesende_approbierte) {
             if ($anwesende_approbierte === 0 and $zeit < $this->Opening_times['day_opening_end'] and $zeit >= $this->Opening_times['day_opening_start']) {
                 if (!isset($attendant_error)) {
-                    $message = sprintf(gettext('At %1s there is no authorized person present.'), roster_item::format_time_integer_to_string($zeit));
+                    $message = sprintf(gettext('At %1$s there is no authorized person present.'), roster_item::format_time_integer_to_string($zeit));
                     $user_dialog->add_message($message);
                     $attendant_error = true;
                 }

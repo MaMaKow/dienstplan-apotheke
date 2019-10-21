@@ -169,7 +169,7 @@ if (array() !== $List_of_differences) {
          * TODO: Create an option to take the changes to other alternations:
          */
         echo "<p>";
-        echo sprintf(gettext('The %1s will be changed.'), alternating_week::get_human_readably_string($alternating_week_id));
+        echo sprintf(gettext('The %1$s will be changed.'), alternating_week::get_human_readably_string($alternating_week_id));
         echo "</p>";
 
         echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);

@@ -115,7 +115,7 @@ class user_dialog_email {
                 }
 
                 if (!empty($Deleted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
-                    $message = sprintf(gettext('You are not in the roster anymore on %1s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
+                    $message = sprintf(gettext('You are not in the roster anymore on %1$s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
                     $ics_file = iCalendar::build_ics_roster_cancelled($roster_item_object);
                     self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }
@@ -163,7 +163,7 @@ class user_dialog_email {
         while ($employee_row = $result->fetch(PDO::FETCH_OBJ)) {
             $employee_id = $employee_row->employee_id;
 
-            $aggregated_message = sprintf(gettext("Dear %1s,"), $workforce->List_of_employees[$employee_id]->full_name) . PHP_EOL . PHP_EOL;
+            $aggregated_message = sprintf(gettext('Dear %1$s,'), $workforce->List_of_employees[$employee_id]->full_name) . PHP_EOL . PHP_EOL;
             $aggregated_ics_file = (string) "";
             $notifications_exist = FALSE;
 

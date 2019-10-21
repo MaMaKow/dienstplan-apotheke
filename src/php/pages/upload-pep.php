@@ -96,7 +96,7 @@ EOT;
          * Allow certain file formats
          */
         $user_dialog->add_message(gettext('Sorry, only ASYS PEP files are allowed.'));
-        $user_dialog->add_message(sprintf(gettext('You tried to upload: %1s'), $upload_file_name), E_USER_NOTICE);
+        $user_dialog->add_message(sprintf(gettext('You tried to upload: %1$s'), $upload_file_name), E_USER_NOTICE);
         $user_dialog->add_message(gettext('Please upload a valid ASYS PEP file!'), E_USER_NOTICE);
         $upload_ok = 0;
         return FALSE;
@@ -113,7 +113,7 @@ EOT;
         $user_dialog->add_message($message, E_USER_ERROR);
         return FALSE;
     }
-    $message = sprintf(gettext("The file %1s has been uploaded."), htmlentities($upload_file_name));
+    $message = sprintf(gettext('The file %1$s has been uploaded.'), htmlentities($upload_file_name));
     $message .= ' ' . gettext('It will be processed in the background.');
     $user_dialog->add_message($message, E_USER_NOTICE);
     echo "<input hidden type=text id=filename value='upload/" . htmlentities($_FILES["file_to_upload"]["name"]) . "'>\n";

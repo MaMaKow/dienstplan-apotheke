@@ -45,7 +45,7 @@ abstract class examine_attendance {
         }
         if (isset($Arbeitende_abwesende)) {
             foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
-                $message = sprintf(gettext("%1s is absent (%2s) and should not be in the roster."), $workforce->List_of_employees[$arbeitender_abwesender]->last_name, pdr_gettext($Abwesende[$arbeitender_abwesender]));
+                $message = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'), $workforce->List_of_employees[$arbeitender_abwesender]->last_name, pdr_gettext($Abwesende[$arbeitender_abwesender]));
                 $user_dialog->add_message($message);
             }
         }

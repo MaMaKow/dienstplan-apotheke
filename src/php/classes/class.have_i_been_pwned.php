@@ -98,7 +98,7 @@ class have_i_been_pwned {
         if (0 >= $this->hash_count) {
             return FALSE;
         }
-        $string = sprintf(ngettext("This password has been seen %1s time before.", "This password has been seen %1s times before.", $this->hash_count), $this->hash_count)
+        $string = sprintf(ngettext('This password has been seen %1$s time before.', 'This password has been seen %1$s times before.', $this->hash_count), $this->hash_count)
                 . " "
                 . gettext("This password has previously appeared in a data breach and should never be used. If you've ever used it anywhere before, change it!");
         return $string;
