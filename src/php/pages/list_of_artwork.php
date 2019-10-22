@@ -20,7 +20,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
 <main>
-    <?= gettext('Dies ist eine Liste von Kunstwerken, die Teil von Dienstplan Apotheke sind. Es ist für jedes Werk soweit bekannt Titel, Autor, Quelle und Lizenz gelistet.'); ?>
+    <?= gettext('This is a list of works of art that are part of pharmacy duty roster. It is listed for each work as far as is known title, author, source and license.'); ?>
     <ol>
         <li>
             <img class="example_artwork" src="../../../img/md_ic_settings_24px.svg"><br>

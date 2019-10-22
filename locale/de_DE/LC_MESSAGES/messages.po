@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2019-10-10 22:06+0200\n"
-"PO-Revision-Date: 2019-10-11 07:54+0200\n"
+"POT-Creation-Date: 2019-10-21 09:39+0200\n"
+"PO-Revision-Date: 2019-10-21 09:42+0200\n"
 "Last-Translator: Dr. Martin Mandelkow <poedit-debian@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -119,8 +119,8 @@ msgstr "und wird nicht berechnet."
 
 #: src/php/classes/class.absence.php:289
 #, php-format
-msgid "%1s is not a working day for %2s and will not be counted."
-msgstr "%1s ist kein Arbeitstag für %2s und wird nicht gezählt."
+msgid "%1$s is not a working day for %2$s and will not be counted."
+msgstr "%1$s ist kein Arbeitstag für %2$s und wird nicht gezählt."
 
 #: src/php/classes/class.alternating_week.php:335
 msgid "week"
@@ -318,8 +318,8 @@ msgstr "von"
 
 #: src/php/classes/class.collaborative_vacation.php:404
 #, php-format
-msgid "%1s days taken"
-msgstr "%1s Tage genommen"
+msgid "%1$s days taken"
+msgstr "%1$s Tage genommen"
 
 #: src/php/classes/class.collaborative_vacation.php:436
 msgid "January"
@@ -370,13 +370,13 @@ msgid "December"
 msgstr "Dezember"
 
 #: src/php/classes/class.configuration.php:192
-msgid "Passwords do not match!"
+msgid "The passwords do not match."
 msgstr "Die Passwörter stimmen nicht überein."
 
 #: src/php/classes/class.examine_attendance.php:48
 #, php-format
-msgid "%1s is absent (%2s) and should not be in the roster."
-msgstr "%1s ist abwesend (%2s) und sollte nicht im Dienstplan stehen."
+msgid "%1$s is absent (%2$s) and should not be in the roster."
+msgstr "%1$s ist abwesend (%2$s) und sollte nicht im Dienstplan stehen."
 
 #: src/php/classes/class.examine_attendance.php:105
 msgid "The following employees are not scheduled:"
@@ -385,31 +385,32 @@ msgstr "Es sind folgende Mitarbeiter nicht eingesetzt:"
 #: src/php/classes/class.examine_roster.php:74
 #, php-format
 msgid ""
-"Conflict at employee %1s <br>%2s to %3s (%4s) <br>with<br>%5s to %6s (%7s)"
+"Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s "
+"(%7$s)"
 msgstr ""
-"Konflikt bei Mitarbeiter %1s <br>%2s bis %3s (%4s) <br>mit <br>%5s bis %6s "
-"(%7s)"
+"Konflikt bei Mitarbeiter %1$s <br>%2$s bis %3$s (%4$s) <br>mit <br>%5$s bis "
+"%6$s (%7$s)"
 
-#: src/php/classes/class.examine_roster.php:103
+#: src/php/classes/class.examine_roster.php:106
 #, php-format
-msgid "At %1s there are less than %2s employees present."
-msgstr "Um %1s Uhr sind weniger als %2s Mitarbeiter anwesend."
+msgid "At %1$s there are less than %2$s employees present."
+msgstr "Um %1$s Uhr sind weniger als %2$s Mitarbeiter anwesend."
 
-#: src/php/classes/class.examine_roster.php:133
+#: src/php/classes/class.examine_roster.php:136
 #, php-format
-msgid "At %1s there is no goods receipt employee present."
-msgstr "Um %1s Uhr ist niemand für den Wareneingang anwesend."
+msgid "At %1$s there is no goods receipt employee present."
+msgstr "Um %1$s Uhr ist niemand für den Wareneingang anwesend."
 
-#: src/php/classes/class.examine_roster.php:163
+#: src/php/classes/class.examine_roster.php:166
 #, php-format
-msgid "At %1s there is no authorized person present."
-msgstr "Um %1s Uhr ist kein Approbierter anwesend."
+msgid "At %1$s there is no authorized person present."
+msgstr "Um %1$s Uhr ist kein Approbierter anwesend."
 
 #: src/php/classes/class.have_i_been_pwned.php:101
 #, php-format
-msgid "This password has been seen %1s time before."
-msgid_plural "This password has been seen %1s times before."
-msgstr[0] "Dieses Passwort wurde %1s zuvor gesehen."
+msgid "This password has been seen %1$s time before."
+msgid_plural "This password has been seen %1$s times before."
+msgstr[0] "Dieses Passwort wurde %1$s zuvor gesehen."
 msgstr[1] "Dieses Passwort wurde %1s Male zuvor gesehen."
 
 #: src/php/classes/class.have_i_been_pwned.php:103
@@ -434,7 +435,7 @@ msgid "None"
 msgstr "Kein"
 
 #: src/php/classes/class.iCalendar.php:140
-msgid "Calendar file for employee "
+msgid "Calendar file for employee"
 msgstr "Kalenderdatei für Mitarbeiter"
 
 #: src/php/classes/class.iCalendar.php:141
@@ -447,8 +448,8 @@ msgstr "Wochentag"
 
 #: src/php/classes/class.iCalendar.php:144
 #, php-format
-msgid "Lunch from %1s to %2s"
-msgstr "Mittagspause von %1s bis %2s"
+msgid "Lunch from %1$s to %2$s"
+msgstr "Mittagspause von %1$s bis %2$s"
 
 #: src/php/classes/class.iCalendar.php:167
 msgid "Time to go to work"
@@ -459,11 +460,11 @@ msgid "Time to leave"
 msgstr "Es ist Zeit zu gehen"
 
 #: src/php/classes/class.iCalendar.php:179
-msgid "Time for lunch break"
-msgstr "Es ist Zeit für eine Pause"
+msgid "Time for lunch break."
+msgstr "Es ist Zeit für eine Pause."
 
 #: src/php/classes/class.iCalendar.php:185
-msgid "Lunch break ends now"
+msgid "The Lunch break ends now."
 msgstr "Die Pause endet jetzt."
 
 #: src/php/classes/class.install.php:58
@@ -488,9 +489,9 @@ msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
 
 #: src/php/classes/class.install.php:482
 #, php-format
-msgid "The directory %1s is not writable."
-msgid_plural "The directories %1s are not writable."
-msgstr[0] "Das Verzeichnis %1s ist nicht beschreibbar."
+msgid "The directory %1$s is not writable."
+msgid_plural "The directories %1$s are not writable."
+msgstr[0] "Das Verzeichnis %1$s ist nicht beschreibbar."
 msgstr[1] "Die Verzeichnisse %1s sind nicht beschreibbar."
 
 #: src/php/classes/class.install.php:484
@@ -542,7 +543,7 @@ msgid "Balance"
 msgstr "Saldo"
 
 #: src/php/classes/class.overtime.php:192
-#: src/php/classes/class.roster_item.php:191
+#: src/php/classes/class.roster_item.php:190
 #: src/php/pages/emergency-service-list.php:73
 #: src/php/pages/overtime-read.php:51 src/php/pages/saturday-list.php:40
 msgid "Date"
@@ -556,24 +557,24 @@ msgstr ""
 
 #: src/php/classes/class.roster_headcount.php:123
 #, php-format
-msgid "Please %1s configure %2s the opening times!"
-msgstr "Bitte %1s konfigurieren %2s Sie die Öffnungszeiten!"
+msgid "Please %1$s configure %2$s the opening times!"
+msgstr "Bitte %1$s konfigurieren %2$s Sie die Öffnungszeiten!"
 
-#: src/php/classes/class.roster_item.php:196
+#: src/php/classes/class.roster_item.php:195
 msgid "You work at the following times:"
 msgstr "Sie arbeiten zu folgenden Zeiten:"
 
-#: src/php/classes/class.roster_item.php:199
+#: src/php/classes/class.roster_item.php:198
 msgid "Start and end of duty"
 msgstr "Beginn und Ende des Dienstes"
 
-#: src/php/classes/class.roster_item.php:202
-#: src/php/classes/class.roster_item.php:208
+#: src/php/classes/class.roster_item.php:201
+#: src/php/classes/class.roster_item.php:207
 #, php-format
-msgid "From %1s to %2s"
-msgstr "Von %1s bis %2s"
+msgid "From %1$s to %2$s"
+msgstr "Von %1$s bis %2$s"
 
-#: src/php/classes/class.roster_item.php:205
+#: src/php/classes/class.roster_item.php:204
 msgid "Start and end of lunch break"
 msgstr "Start und Ende der Pause"
 
@@ -715,13 +716,13 @@ msgstr "Ihr Dienstplan wurde geändert."
 
 #: src/php/classes/class.user_dialog_email.php:118
 #, php-format
-msgid "You are not in the roster anymore on %1s."
-msgstr "Sie sind am %1s nicht mehr im Dienstplan gelistet."
+msgid "You are not in the roster anymore on %1$s."
+msgstr "Sie sind am %1$s nicht mehr im Dienstplan gelistet."
 
 #: src/php/classes/class.user_dialog_email.php:166
 #, php-format
-msgid "Dear %1s,"
-msgstr "Sehr geehrte(r) %1s,"
+msgid "Dear %1$s,"
+msgstr "Sehr geehrte(r) %1$s,"
 
 #: src/php/classes/class.user_dialog_email.php:184
 msgid "Sincerely yours,"
@@ -745,10 +746,13 @@ msgstr "Wählen Sie ein Datum!"
 
 #: src/php/fragments/fragment.principle-roster-day-history.php:47
 msgid ""
+"This is a list of dates. On each date, the basic plan for this day of the "
+"week has been changed for at least one employee. Click on one of the dates "
+"to view the principle roster for that day."
+msgstr ""
 "Dies ist eine Liste von Daten. An jedem Datum wurde der Grundplan für diesen "
 "Wochentag für mindestens einen Mitarbeiter geändert. Klicken Sie auf eines "
 "der Daten um den Grundplan an diesem Tag zu betrachten."
-msgstr ""
 
 #: src/php/fragments/fragment.principle-roster-day-history.php:51
 #: src/php/pages/principle-roster-employee.php:97
@@ -779,8 +783,8 @@ msgstr "Filiale"
 # Die Woche ist weiblich. %1s wird z.B. durch "A-Woche" ersetzt.
 #: src/php/fragments/fragment.prompt_before_safe.php:172
 #, php-format
-msgid "The %1s will be changed."
-msgstr "Die %1s wird geändert."
+msgid "The %1$s will be changed."
+msgstr "Die %1$s wird geändert."
 
 #: src/php/fragments/fragment.prompt_before_safe.php:181
 msgid "When should the changes come into force?"
@@ -1178,10 +1182,12 @@ msgstr "Wiederholen"
 
 #: src/php/pages/list_of_artwork.php:23
 msgid ""
+"This is a list of works of art that are part of pharmacy duty roster. It is "
+"listed for each work as far as is known title, author, source and license."
+msgstr ""
 "Dies ist eine Liste von Kunstwerken, die Teil von Dienstplan Apotheke sind. "
 "Es ist für jedes Werk soweit bekannt Titel, Autor, Quelle und Lizenz "
 "gelistet."
-msgstr ""
 
 #: src/php/pages/lost_password.php:45
 msgid "Please enter your email address, user name or user id!"
@@ -1381,7 +1387,7 @@ msgid "There was an error while saving the data."
 msgstr "Beim Speichern der Daten trat ein Fehler auf."
 
 #: src/php/pages/reset_lost_password.php:110
-msgid "Missing input token"
+msgid "The input token is missing."
 msgstr "Es wurde kein Token übergeben."
 
 #: src/php/pages/roster-day-edit.php:77 src/php/pages/roster-day-edit.php:86
@@ -1397,11 +1403,11 @@ msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
 
 #: src/php/pages/roster-day-read.php:48
-msgid "The roster has not been approved by the administration!"
+msgid "The roster has not been approved by the administration."
 msgstr "Dieser Dienstplan wurde noch nicht von der Leitung bestätigt."
 
 #: src/php/pages/roster-day-read.php:51
-msgid "The roster is still beeing revised!"
+msgid "The roster is still beeing revised."
 msgstr "Der Dienstplan wird noch überarbeitet."
 
 #: src/php/pages/roster-day-read.php:57
@@ -1410,8 +1416,8 @@ msgstr "Fehlende Daten in der Tabelle `approval`"
 
 #: src/php/pages/roster-week-table.php:137
 #, php-format
-msgid "Time of print: %1s"
-msgstr "Druckdatum: %1s"
+msgid "Time of print: %1$s"
+msgstr "Druckdatum: %1$s"
 
 #: src/php/pages/saturday-list.php:41
 msgid "Team"
@@ -1479,7 +1485,7 @@ msgstr "UPLOAD_ERR_NO_TMP_DIR: Ein temporärer Ordner fehlt."
 #: src/php/pages/upload-pep.php:78
 msgid "UPLOAD_ERR_CANT_WRITE: Failed to write file to disk"
 msgstr ""
-"UPLOAD_ERR_CANT_WRITE: Fehler beim Schreiben der Datei auf die Festplatte."
+"UPLOAD_ERR_CANT_WRITE: Fehler beim Schreiben der Datei auf die Festplatte"
 
 #: src/php/pages/upload-pep.php:82
 msgid "UPLOAD_ERR_EXTENSION: A PHP extension stopped the file upload."
@@ -1497,12 +1503,12 @@ msgstr "Leider sind nur ASYS PEP-Dateien erlaubt."
 
 #: src/php/pages/upload-pep.php:99
 #, php-format
-msgid "You tried to upload: %1s"
-msgstr "Sie haben versucht %1s hochzuladen."
+msgid "You tried to upload: %1$s."
+msgstr "Sie haben versucht %1$s hochzuladen."
 
 #: src/php/pages/upload-pep.php:100
 msgid "Please upload a valid ASYS PEP file!"
-msgstr "Bitte eine korrekt formatierte ASYS PEP Datei hochladen."
+msgstr "Bitte eine korrekt formatierte ASYS PEP Datei hochladen!"
 
 #: src/php/pages/upload-pep.php:108
 msgid "Sorry, your file was not uploaded."
@@ -1514,8 +1520,8 @@ msgstr "Beim Hochladen Ihrer Datei ist ein Fehler aufgetreten."
 
 #: src/php/pages/upload-pep.php:116
 #, php-format
-msgid "The file %1s has been uploaded."
-msgstr "Die Datei %1s wurde hochgeladen."
+msgid "The file %1$s has been uploaded."
+msgstr "Die Datei %1$s wurde hochgeladen."
 
 #: src/php/pages/upload-pep.php:117
 msgid "It will be processed in the background."
@@ -1527,8 +1533,8 @@ msgstr "Ihr Passwort wurde erfolgreich geändert."
 
 #: src/php/pages/user-page.php:78
 #, php-format
-msgid "User page for user %1s"
-msgstr "Benutzerseite für Benutzer %1s"
+msgid "User page for user %1$s"
+msgstr "Benutzerseite für Benutzer %1$s"
 
 #: src/php/pages/user-page.php:82
 msgid "Receive emails when the roster is changed"
@@ -1577,9 +1583,9 @@ msgstr "Sie wurden erfolgreich registriert."
 
 #: src/php/register.php:73
 #, php-format
-msgid "Once your user is unlocked, you can %1s log in.%2s"
+msgid "Once your user is unlocked, you can %1$s log in.%2$s"
 msgstr ""
-"Sobald Ihr Benutzer freigeschaltet ist, können Sie sich %1s einloggen.%2s"
+"Sobald Ihr Benutzer freigeschaltet ist, können Sie sich %1$s einloggen.%2$s"
 
 #: src/php/register.php:77
 msgid "Unfortunately, an error occurred while saving."
@@ -1621,6 +1627,9 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
 
+#~ msgid "Missing input token"
+#~ msgstr "Es wurde kein Token übergeben."
+
 #~ msgid "Es gibt Änderungen an der %1s."
 #~ msgstr "Es gibt Änderungen an der %1s."
 
@@ -1632,9 +1641,6 @@ msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
 
 #~ msgid "Locale"
 #~ msgstr "Gebietsschema"
-
-#~ msgid "The permission to create a roster is missing."
-#~ msgstr "Die notwendige Berechtigung zum Erstellen von Dienstplänen fehlt."
 
 #~ msgid " is having emergency service at "
 #~ msgstr " hat Notdienst in "

@@ -401,7 +401,7 @@ class collaborative_vacation {
                 . $Absence['comment'] . "\n"
                 . gettext('from') . ' ' . strftime('%x', strtotime($Absence['start'])) . "\n"
                 . gettext('to') . ' ' . strftime('%x', strtotime($Absence['end'])) . "\n"
-                . sprintf(gettext('%1s days taken'), $Absence['days']) . "\n"
+                . sprintf(gettext('%1$s days taken'), $Absence['days']) . "\n"
                 . pdr_gettext($Absence['approval']) . "";
         return $absence_title_text;
     }

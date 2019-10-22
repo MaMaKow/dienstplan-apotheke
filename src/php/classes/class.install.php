@@ -479,7 +479,7 @@ class install {
             }
         }
         if (!empty($List_of_non_writable_directories)) {
-            $this->Error_message[] = sprintf(ngettext("The directory %1s is not writable.", "The directories %1s are not writable.", count($List_of_non_writable_directories)), $this->fancy_implode($List_of_non_writable_directories, ", "));
+            $this->Error_message[] = sprintf(ngettext('The directory %1$s is not writable.', 'The directories %1$s are not writable.', count($List_of_non_writable_directories)), $this->fancy_implode($List_of_non_writable_directories, ", "));
 
             $this->Error_message[] = gettext("Make sure that the directories are writable by pdr!");
             $current_www_user = posix_getpwuid(posix_geteuid())["name"];

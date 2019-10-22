@@ -70,7 +70,7 @@ if (filter_has_var(INPUT_GET, 'register')) {
             send_mail_about_registration();
             echo gettext('You have been successfully registered.')
             . " "
-            . sprintf(gettext('Once your user is unlocked, you can %1s log in.%2s'), '<a href="login.php">', '</a>');
+            . sprintf(gettext('Once your user is unlocked, you can %1$s log in.%2$s'), '<a href="login.php">', '</a>');
             $show_form = false;
         } else {
             error_log('Unfortunately, an error occurred while saving.' . var_export($statement->errorInfo(), TRUE));
@@ -80,13 +80,13 @@ if (filter_has_var(INPUT_GET, 'register')) {
 }
 
 if ($show_form) {
-    if(empty($user_name)){
+    if (empty($user_name)) {
         $user_name = "";
     }
-    if(empty($employee_id)){
+    if (empty($employee_id)) {
         $employee_id = "";
     }
-    if(empty($email)){
+    if (empty($email)) {
         $email = "";
     }
     if (isset($config['application_name'])) {

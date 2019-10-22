@@ -134,7 +134,7 @@ $main_div_html .= $duty_roster_working_hours_div;
 
 echo $user_dialog->build_messages();
 
-echo '<div id="print_time_info" class="only_print"><p class="tiny">' . sprintf(gettext('Time of print: %1s'), date('d.m.Y H:i:s')) . '</p></div>';
+echo '<div id="print_time_info" class="only_print"><p class="tiny">' . sprintf(gettext('Time of print: %1$s'), date('d.m.Y H:i:s')) . '</p></div>';
 echo $main_div_html;
 /* echo <<<EOF
   <p style="page-break-after: always;">&nbsp;</p>

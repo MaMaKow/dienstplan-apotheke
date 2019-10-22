@@ -137,11 +137,11 @@ class iCalendar {
          */
         $text_ics = '';
         $text_ics .= "DESCRIPTION:"
-                . gettext("Calendar file for employee ") . " " . $roster_object->employee_id . " (" . $workforce->List_of_employees[$roster_object->employee_id]->full_name . ") \\r\\n"
+                . gettext("Calendar file for employee") . " " . $roster_object->employee_id . " (" . $workforce->List_of_employees[$roster_object->employee_id]->full_name . ") \\r\\n"
                 . gettext("contains the roster for") . " $branch_name. \\r\\n"
                 . gettext("Weekday") . ": $date_weekday_name\\r\\n";
         if (!empty($mittags_beginn) and ! empty($mittags_ende)) {
-            $text_ics .= sprintf(gettext('Lunch from %1s to %2s'), $mittags_beginn, $mittags_ende) . "\\r\\n";
+            $text_ics .= sprintf(gettext('Lunch from %1$s to %2$s'), $mittags_beginn, $mittags_ende) . "\\r\\n";
         }
         $text_ics .= "\r\n";
         /*
@@ -176,13 +176,13 @@ class iCalendar {
             $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
         }
         if ($create_valarm & self::VALARM_FOR_BREAK_START and NULL !== $roster_object->break_start_int) {
-            $description = gettext('Time for lunch break');
+            $description = gettext('Time for lunch break.');
             $trigger_time_string = self::time_int_to_utc_string($roster_object->break_start_int);
             $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
             $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
         }
         if ($create_valarm & self::VALARM_FOR_BREAK_END and NULL !== $roster_object->break_end_int) {
-            $description = gettext('Lunch break ends now');
+            $description = gettext('The Lunch break ends now.');
             $trigger_time_string = self::time_int_to_utc_string($roster_object->break_end_int);
             $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
             $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);

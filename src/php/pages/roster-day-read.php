@@ -45,10 +45,10 @@ if (isset($approval)) {
     if ($approval == 'approved') {
         //Everything is fine.
     } elseif ($approval == 'not_yet_approved') {
-        $message = gettext('The roster has not been approved by the administration!');
+        $message = gettext('The roster has not been approved by the administration.');
         $user_dialog->add_message($message, E_USER_NOTICE);
     } elseif ($approval == 'disapproved') {
-        $message = gettext('The roster is still beeing revised!');
+        $message = gettext('The roster is still beeing revised.');
         $user_dialog->add_message($message, E_USER_WARNING);
     }
 } else {

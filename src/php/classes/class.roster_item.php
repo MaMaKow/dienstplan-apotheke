@@ -186,7 +186,6 @@ class roster_item implements \JsonSerializable {
         $message = "";
         /*
          * The following part is added upon aggregation:
-         * $message = sprintf(gettext("Dear %1s,"), $workforce->List_of_employees[$this->employee_id]->full_name) . PHP_EOL . PHP_EOL;
          */
         $message .= gettext('Date');
         $message .= ":";
@@ -199,13 +198,13 @@ class roster_item implements \JsonSerializable {
         $message .= gettext('Start and end of duty');
         $message .= ":";
         $message .= PHP_EOL;
-        $message .= sprintf(gettext("From %1s to %2s"), $this->duty_start_sql, $this->duty_end_sql);
+        $message .= sprintf(gettext('From %1$s to %2$s'), $this->duty_start_sql, $this->duty_end_sql);
         $message .= PHP_EOL;
         if (!empty($this->break_start_sql) and ! empty($this->break_end_sql)) {
             $message .= gettext('Start and end of lunch break');
             $message .= ":";
             $message .= PHP_EOL;
-            $message .= sprintf(gettext("From %1s to %2s"), $this->break_start_sql, $this->break_end_sql);
+            $message .= sprintf(gettext('From %1$s to %2$s'), $this->break_start_sql, $this->break_end_sql);
             $message .= PHP_EOL;
         }
         /*
