@@ -2,15 +2,9 @@
 # Diese Daten sind zudem geheim, weil sie das Passwort enthalten. 	#
 #########################################################################
 config/
-documentation/
 
 # These files are for development purposes only: #
 ##################################################
-layout-test.html
-style-test.css
-#tests/*
-#!tests/log
-#!tests/log/*
 nbproject/
 
 # Dateien, die im Dienstplan erzeugt werden #

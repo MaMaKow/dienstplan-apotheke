@@ -8,9 +8,9 @@
 <nav id="nav" class="no_print">
     <ul id="navigation">
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php><?= gettext("Weekly view") ?>
+            <span><?= gettext("Weekly view") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_view_week-24px.svg class="inline-image" alt="week-button" title="Show week">
-            </a>
+            </span>
             <ul>
                 <li>            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php><?= gettext("Weekly table") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_view_week-24px.svg class="inline-image" alt="week-button" title="Show week">
@@ -24,9 +24,9 @@
 
         </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-read.php><?= gettext("Daily view") ?>
+            <span><?= gettext("Daily view") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_today-24px.svg class="inline-image" alt="day-button" title="Show day">
-            </a>
+            </span>
             <ul>
                 <li>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-edit.php><?= gettext("Daily input") ?>
@@ -39,9 +39,9 @@
                 </li>
             </ul>
         </li>
-        <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-employee-table.php><?= gettext("Employee") ?>
+        <li><span><?= gettext("Employee") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/employee_2.svg class="inline-image" alt="employee-button" title="Show employee">
-            </a>
+            </span>
             <ul>
                 <li>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-employee-table.php><?= gettext("Roster employee") ?></a>
@@ -56,10 +56,11 @@
                     </a></li>
 
             </ul>
+        </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-read.php><?= gettext("Overtime") ?>
+            <span><?= gettext("Overtime") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/watch_overtime.svg class="inline-image" alt="overtime-button" title="Show overtime">
-            </a>
+            </span>
             <ul>
                 <li>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-edit.php><?= gettext("Overtime input") ?>
@@ -71,9 +72,9 @@
             </ul>
         </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-read.php title="Urlaub, Krankheit, Abwesenheit"><?= gettext("Absence") ?>
+            <span><?= gettext("Absence") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg class="inline-image" alt="absence-button" title="Show absence">
-            </a>
+            </span>
             <ul>
                 <li>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-edit.php title="Urlaub, Krankheit, Abwesenheit"><?= gettext("Absence input") ?>
@@ -90,10 +91,10 @@
                 </li>
             </ul>
         </li>
-        <li><a>
+        <li><span>
                 <?= gettext("Administration") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_ic_settings_24px.svg class="inline-image" alt="settings-button" title="Show settings">
-            </a>
+            </span>
             <ul>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/attendance-list.php><?= gettext("Attendance list") ?></a></li>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/saturday-list.php><?= gettext("Saturday list") ?></a></li>
@@ -113,9 +114,9 @@
             </ul>
         </li>
         <li>
-            <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-page.php"><?= $_SESSION['user_object']->user_name; ?>&nbsp;
+            <span><?= $_SESSION['user_object']->user_name; ?>&nbsp;
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/user_1.svg class="inline-image" alt="user-button" title="Show user">
-            </a>
+            </span>
             <ul>
                 <li>
                     <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-page.php">

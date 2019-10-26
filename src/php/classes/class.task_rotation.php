@@ -189,6 +189,7 @@ abstract class task_rotation {
     }
 
     private static function read_done_rotation_count_from_database($List_of_compounding_rotation_employees, $from_date_sql, $to_date_sql) {
+        $Done_rotation_count = array();
         foreach ($List_of_compounding_rotation_employees as $employee_id) {
             $Done_rotation_count[$employee_id] = 0;
             $sql_query = "SELECT `VK`, COUNT(`date`) as `count`"

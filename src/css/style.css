@@ -288,7 +288,8 @@ nav ul#navigation li:last-child a {
     font-style: italic;
 }
 
-nav ul#navigation li a {
+nav ul#navigation li p, nav ul#navigation li span, nav ul#navigation li a {
+    vertical-align: central;
     border-left: 1px solid #73AC22;
     display: inline-block;
     text-align: center;
