@@ -28,13 +28,13 @@ class holidays {
      *
      * @var array $Holidays is an array in the format array((int) unix_timestamp => (string) name_of_the_holiday, )
      */
-    static $Holidays = array();
+    private static $Holidays = array();
 
     /**
      *
      * @var int $year the year, which the unix timestamps in the $holidays variable refer to.
      */
-    static $year;
+    private static $year;
 
     /**
      * This function returns an array of timestamp corresponding to french holidays.
@@ -154,7 +154,7 @@ class holidays {
             $date_object->setTimestamp($date_unix);
         }
         $year = intval($date_object->format('Y'));
-        $Holidays = holidays::get_holidays($year); //TODO: The application is oblivious to countries right now. Use $Holidays = get_holidays($year, $country); if that value becomes available.
+        $Holidays = holidays::get_holidays($year, 'DE'); //TODO: The application is oblivious to countries right now. Use $Holidays = get_holidays($year, $country); if that value becomes available.
         foreach ($Holidays as $date => $holiday) {
             if ($date_object->format('Y-d-m') === date('Y-d-m', $date)) {
                 return $holiday;

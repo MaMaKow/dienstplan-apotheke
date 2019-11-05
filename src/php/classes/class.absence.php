@@ -149,21 +149,25 @@ class absence {
         return $Absence;
     }
 
-    /*
-      function get_all_absence_data_in_period($start_date_sql, $end_date_sql) {
-      $query = "SELECT *
+    public static function get_all_absence_data_in_period($start_date_sql, $end_date_sql) {
+        $Absences = array();
+        $query = "SELECT *
       FROM `absence`
-      WHERE `start` <= :start AND `end` >= :end";
-      $result = database_wrapper::instance()->run($query, array('start'=>$start_date_sql,'end'=>$end_date_sql));
-      while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-      $Absences[]['employee_id'] = $row->employee_id;
-      $Absences[]['reason'] = $row->reason;
-      $Absences[]['start'] = $row->start;
-      $Absences[]['end'] = $row->end;
-      }
-      return $Absences;
-      }
-     */
+      WHERE `start` <= :end AND `end` >= :start ORDER BY `start`";
+        $result = database_wrapper::instance()->run($query, array('start' => $start_date_sql, 'end' => $end_date_sql));
+        $i = 0;
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Absences[$i]['employee_id'] = $row->employee_id;
+            $Absences[$i]['reason'] = $row->reason;
+            $Absences[$i]['comment'] = $row->comment;
+            $Absences[$i]['start'] = $row->start;
+            $Absences[$i]['end'] = $row->end;
+            $Absences[$i]['days'] = $row->days;
+            $Absences[$i]['approval'] = $row->approval;
+            $i++;
+        }
+        return $Absences;
+    }
 
     public static function handle_user_input() {
         global $session;

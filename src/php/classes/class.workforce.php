@@ -23,11 +23,11 @@
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class workforce {
-    /*
-     * TODO: This class is now used more often to create objects.
-     *     It should be optimized.
-     *     For example it could store an array of known workforce objects/arrays.
+
+    /**
+     * @var array List_of_workforce_objects <p>is an array of known workforce objects</p>
      */
+    static private $List_of_workforce_objects = array();
 
     /**
      *
@@ -48,6 +48,17 @@ class workforce {
     public function __construct($date_start_sql = NULL, $date_end_sql = NULL) {
         $this->date_start_sql = $date_start_sql;
         $this->date_end_sql = $date_end_sql;
+        if (isset(self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql])) {
+            /*
+             * If this exact workforce is known already, we do not have to repeat that queries.
+             */
+            $this->List_of_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_employees;
+            $this->List_of_qualified_pharmacist_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_qualified_pharmacist_employees;
+            $this->List_of_goods_receipt_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_goods_receipt_employees;
+            $this->List_of_compounding_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_compounding_employees;
+
+            return TRUE;
+        }
         if (NULL === $date_start_sql) {
             $sql_query = 'SELECT * FROM `employees` '
                     . 'ORDER BY `id` ASC, ISNULL(`end_of_employment`) ASC, `end_of_employment` ASC;';
@@ -75,6 +86,7 @@ class workforce {
                 $this->List_of_compounding_employees[] = $row->id;
             }
         }
+        self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql] = $this;
     }
 
     public function __set($name, $value) {
