@@ -65,6 +65,13 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
+            <img class="example_artwork" src="../../../img/md_date_range-24px.svg"><br>
+            <span class="cc-by_title">date range</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://www.google.com/design/icons/">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
             <img class="example_artwork" src="../../../img/employee_2.svg"><br>
             <span class="cc-by_title">Unternehmen Arzt Apotheker</span>,
             <span class="cc-by_author"><a href="https://pixabay.com/de/users/martex-2358270/">martex</a></span>,

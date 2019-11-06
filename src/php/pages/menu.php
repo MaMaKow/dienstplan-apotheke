@@ -86,7 +86,7 @@
                     </a>
                     <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/collaborative-vacation-month.php title="Urlaub, Krankheit, Abwesenheit"><?= gettext("Absence monthly plan") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
-                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/month_1.svg class="inline-image" alt="month-button" title="Edit month">
+                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_date_range-24px.svg class="inline-image" alt="month-button" title="Edit month">
                     </a>
                 </li>
             </ul>

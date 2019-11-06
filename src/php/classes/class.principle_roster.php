@@ -267,7 +267,7 @@ class principle_roster extends roster {
     }
 
     public static function get_working_week_days($employee_id) {
-        $sql_query = "SELECT `employee_id`, Count(DISTINCT `weekday`) as `working_week_days`, Count(DISTINCT `alternating_week_id`) as `alternations` FROM `principle_roster` WHERE `employee_id` = :employee_id";
+        $sql_query = "SELECT COUNT(*) AS `working_week_days`,COUNT(DISTINCT `alternating_week_id`) AS `alternations` FROM (SELECT `employee_id`, `alternating_week_id` FROM `principle_roster` WHERE `employee_id` = :employee_id GROUP BY `alternating_week_id`, `weekday`) AS q1;";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             if (0 != $row->alternations) {
