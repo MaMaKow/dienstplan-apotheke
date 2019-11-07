@@ -3,18 +3,13 @@ fragment.principle-roster-day-history.php
     Perhaps more care should be given to the possible change dates?
 
 Drag and drop is somehow defective.
-    - It seems to work only for the first 7 elements.
-    - Also newy inserted employees do not show up in the plot.
+    - newy inserted employees do not show up in the plot.
     - get rid of transform
 
 update_database requires the hash to be rewritten before commit.
     Does that still hapen? Do we need a new hook?
 
 Move all the database interaction into the respective classes
-
-sprintf must use %1$s instead of %1s.
-    Correct this everywhere!
-    Also in the translations
 
 Write an updater
     That includes a webservice, which holds the current master state and an API to answer update queries.
@@ -77,24 +72,6 @@ filter for absence
 filter option for years and for specific reasons e.g. Vacation
 >>>   >>>
 
-<<<Nachricht<<<
-&#34; . gettext(&#34;break&#34;) . &#34;:
-
-on grundplan-vk-in.php
-when the break actually exists
->>>   >>>
-
-<<<Nachricht<<<
-/var/www/html/apotheke/dienstplan/stunden-in.php
-fokus auf dem eingabe-feld
->>>   >>>
-
-Put notdienst-out.php into the menu
-
-<<<Nachricht<<<
-/var/www/html/apotheke/dienstplan/tag-in.php
-Kommentare müssen angezeigt werden, wenn vorhanden
->>>   >>>
 
 The following line should not be shown on saturdays and sundays, if Monday until Friday are set.
 "The are no opening times stored inside the database for this weekday. Please configure the opening times!"
@@ -107,8 +84,11 @@ The following line should not be shown on saturdays and sundays, if Monday until
 
 * Notdienst Eingabe-Maske
   * use an API to get the data for the emergency services
+
 * Installation
+
 * Konfiguration
+
 * Dokumentation
 
 - database Ware-Termine / Ware-PEP

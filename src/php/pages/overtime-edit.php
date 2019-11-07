@@ -96,7 +96,7 @@ echo "<tr>\n"
  */
 echo "<tr class='no_print'>\n";
 echo "<td>\n";
-echo "<input type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime>\n";
+echo "<input type=date id='date_chooser_input' class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime  autofocus>\n";
 echo "</td>\n";
 echo "<td>\n";
 echo "<input type=text onchange=update_overtime_balance() id=stunden name=stunden form=insert_new_overtime>\n";
