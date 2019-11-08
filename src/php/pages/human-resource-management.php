@@ -82,6 +82,9 @@ $session->exit_on_missing_privilege('create_employee');
                 <br>
                 <label for="end_of_employment"><?= gettext("End of employment") ?>:  </label>
                 <input type='date' name='end_of_employment' id="end_of_employment" value="<?php echo $Worker["end_of_employment"] ?>">
+                <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
+                     class="inline-image"
+                     title="<?= gettext("This is the last day the employee worked.") ?>">
             </p>
         </fieldset>
 
