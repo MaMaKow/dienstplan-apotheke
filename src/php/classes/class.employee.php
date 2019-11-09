@@ -56,6 +56,13 @@ class employee {
      *   This might be a day before the start of the actual contract.
      */
     public $start_of_employment;
+
+    /**
+     *
+     * @var string The last day on which the employee did work.
+     *   This might be a day after the start of the actual contract.
+     *   This might also be a day without work if the employee was sick or had holidays or overtime left.
+     */
     public $end_of_employment;
 
     /**
