@@ -221,7 +221,7 @@ abstract class task_rotation {
         }
         $task_rotation_select_html = "";
         $task_rotation_select_html .= "<div id='task_rotation_select_div'>";
-        $task_rotation_select_html .= "<p>" . pdr_gettext($task) . "</p>";
+        $task_rotation_select_html .= "<p>" . localization::gettext($task) . "</p>";
         $task_rotation_select_html .= "<form>";
         $task_rotation_select_html .= "<input  name='task_rotation_task' type='hidden' value='$task'>";
         $task_rotation_select_html .= "<input  name='task_rotation_date' type='hidden' value='$date_sql'>";

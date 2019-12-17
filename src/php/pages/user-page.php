@@ -27,7 +27,7 @@ function build_permission_list($user) {
     $text = (string) "";
     foreach (sessions::$Pdr_list_of_privileges as $privilege) {
 
-        $privilege_name = pdr_gettext(str_replace('_', ' ', $privilege));
+        $privilege_name = localization::gettext(str_replace('_', ' ', $privilege));
         $text .= "<label for='$privilege'>" . $privilege_name . ": </label>";
         $text .= "<input type='checkbox' name='privilege[]' value='$privilege' id='$privilege' ";
         if (in_array($privilege, $user->privileges)) {

@@ -61,7 +61,7 @@ function get_list_of_branch_ids(array $Roster) {
 
 function build_difference_string(array $List_of_differences, array $Principle_roster_new, array $Principle_roster_old) {
     $difference_string = "";
-    $Weekday_names = build_html_navigation_elements::get_weekday_names();
+    $Weekday_names = localization::get_weekday_names();
     foreach ($List_of_differences as $date_unix => $Employee_ids) {
         $workforce = new workforce(date('Y-m-d', $date_unix));
         foreach ($Employee_ids as $employee_id) {

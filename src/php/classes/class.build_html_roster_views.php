@@ -51,7 +51,7 @@ abstract class build_html_roster_views {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($Absentees as $employee_id => $reason) {
-            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . pdr_gettext($reason) . ")<br>";
+            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . localization::gettext($reason) . ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -198,10 +198,6 @@ abstract class build_html_roster_views {
 
     private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name) {
         $List_of_branch_objects = branch::get_list_of_branch_objects();
-        /*
-         * TODO: Build a select for branch.
-         * Use it in the principle roster.
-         */
         $branch_select = "";
         $branch_select .= "<select name='$form_input_name' >\n";
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {

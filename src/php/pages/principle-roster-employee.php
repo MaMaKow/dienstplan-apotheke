@@ -116,7 +116,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, D
     $html_text .= "<table>\n";
     $html_text .= "<thead>\n";
     $html_text .= "<tr>\n";
-    $Weekday_names = build_html_navigation_elements::get_weekday_names();
+    $Weekday_names = localization::get_weekday_names();
     foreach ($Weekday_names as $weekday_name) {
         //Wochentag
         $html_text .= "<td width=10%>";

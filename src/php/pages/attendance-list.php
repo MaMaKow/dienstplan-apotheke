@@ -34,8 +34,8 @@ $workforce = new workforce($date_sql);
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-echo absence::build_html_select_month($month_number);
-echo absence::build_html_select_year($year);
+echo form_element_builder::build_html_select_month($month_number);
+echo form_element_builder::build_html_select_year($year);
 ?>
 <TABLE class="table_with_border">
     <TR>
@@ -61,7 +61,7 @@ echo absence::build_html_select_year($year);
             //TODO: The following part is not localized. It will not wrk in any other language:
             foreach (array_keys($workforce->List_of_employees) as $employee_id) {
                 if (isset($Absentees[$employee_id])) {
-                    $reason_short_string = mb_substr(pdr_gettext($Absentees[$employee_id]), 0, 4);
+                    $reason_short_string = mb_substr(localization::gettext($Absentees[$employee_id]), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . $Absentees[$employee_id] . "'>" . $reason_short_string . "</TD>";
                 } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_id'] == $employee_id) {
                     $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);
