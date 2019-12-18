@@ -21,10 +21,6 @@
  * This is a helper class for the principle_roster.
  * It provides functions to calculate weekly rotations.
  *
- * TODO: Write some GUI for viewing which week will be which in the future.
- *   Make it viewable with JavaScript. Make it printable perhaps.
- * TODO: Should it be possible to see emphasised (e.g. bold) the exact differences
- *   between the alternations in the principle rosters?
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
@@ -111,11 +107,6 @@ class alternating_week {
         $Alternating_week_ids = self::get_alternating_week_ids();
         $date_difference_in_weeks = self::date_difference_in_weeks($alternation_start_date, $date_object);
         $alternating_week_id = $date_difference_in_weeks % count($Alternating_week_ids);
-        /*
-         * TODO: Should we store the result in a private static Array?
-         *   This could speed up the method in case, it is called multiple times for the same date.
-         *   But it will slow down the method if it is queried multiple times with different dates.
-         */
         return $alternating_week_id;
     }
 
@@ -217,11 +208,14 @@ class alternating_week {
     }
 
     public static function delete_alternation($alternating_week_id) {
-        /*
-         * TODO: Is it necessary to check if any alternation is left?
-         * How does the program respond if there is none?
-         * Would create_alternation_empty() help?
-         */
+        if (!self::alternations_exist()) {
+            /*
+             * Prohibit deleting the last remaining alternation:
+             *   This is also enforced in the GUI by build_button_principle_roster_delete()
+             */
+            return FALSE;
+        }
+
         $sql_query = "DELETE FROM `principle_roster` WHERE `alternating_week_id` = :alternating_week_id;";
         database_wrapper::instance()->run(
                 $sql_query, array(
@@ -321,17 +315,18 @@ class alternating_week {
         return $Differences_between_principle_rosters;
     }
 
-    /*
-      public static function build_comparison_string($Differences_between_principle_rosters) {
-      $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
-      foreach ($Differences_between_principle_rosters as $alternating_week_id_current => $date_unix_current) {
-
-      ;
-      }
-      }
+    /**
+     * Get a string, that is readable and easily understandable by a human.
+     *
+     * For example the first alternation will be A-week, followed by B-week and C-week.
+     *
+     * @param type $alternating_week_id
+     * @return boolean|string
      */
-
     public static function get_human_readably_string($alternating_week_id) {
+        if (!self::alternations_exist()) {
+            return FALSE;
+        }
         $human_readably_string = chr(65 + $alternating_week_id) . '-' . gettext('week');
         return $human_readably_string;
     }

@@ -66,7 +66,7 @@ echo "<div id=main-area>\n";
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 
-echo absence::build_html_select_year($year);
+echo form_element_builder::build_html_select_year($year);
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_id' => $employee_id));
 

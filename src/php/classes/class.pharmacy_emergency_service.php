@@ -23,6 +23,9 @@
  * @author Mandelkow
  */
 abstract class pharmacy_emergency_service {
+    /*
+     * TODO: optimize for vacation year view!
+     */
 
     /**
      * Do we have emergency service at the given date?
@@ -46,6 +49,19 @@ abstract class pharmacy_emergency_service {
         } else {
             return FALSE;
         }
+    }
+
+    public static function get_all_emergency_services_in_range($date_start_sql, $date_end_sql) {
+        $Emergency_services = array();
+        $sql_query = "SELECT *
+		FROM `Notdienst`
+		WHERE `Datum` >= :date_start AND `Datum` <= :date_end";
+        $result = database_wrapper::instance()->run($sql_query, array('date_start' => $date_start_sql, 'date_end' => $date_end_sql));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $Emergency_services[$row->Datum]["employee_id"] = $row->VK;
+            $Emergency_services[$row->Datum]["branch_id"] = $row->Mandant;
+        }
+        return $Emergency_services;
     }
 
 }

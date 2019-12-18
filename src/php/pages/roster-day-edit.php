@@ -22,6 +22,7 @@
  */
 require '../../../default.php';
 
+$List_of_branch_objects = branch::get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
@@ -121,8 +122,8 @@ $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
 $html_text .= "<div id=main-area>\n";
 $html_text .= "<div id=navigation_elements>";
-$html_text .= build_html_navigation_elements::build_button_day_backward($date_unix);
-$html_text .= build_html_navigation_elements::build_button_day_forward($date_unix);
+$html_text .= build_html_navigation_elements::build_button_day_backward($date_object);
+$html_text .= build_html_navigation_elements::build_button_day_forward($date_object);
 if ($session->user_has_privilege('create_roster')) {
     $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 }
@@ -159,7 +160,11 @@ if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
 $html_text .= "<br>";
-$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix);
+$html_text .= ""
+        . strftime(gettext("calendar week")
+                . ' %V', $date_unix)
+        . '&nbsp'
+        . alternating_week::get_human_readably_string(alternating_week::get_alternating_week_for_date($date_object));
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {

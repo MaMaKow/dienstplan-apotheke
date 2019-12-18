@@ -50,4 +50,49 @@ EOT;
         return $checkbox_switch_html;
     }
 
+    /**
+     *
+     * @param int $current_year
+     * @return string
+     */
+    public static function build_html_select_year(int $current_year) {
+
+        $Years = absence::get_rostering_years();
+        $html_select_year = "";
+        $html_select_year .= "<form id='select_year' class='inline_form' method=post>";
+        $html_select_year .= "<select name=year class='large' onchange=this.form.submit()>";
+        foreach ($Years as $year_number) {
+            $html_select_year .= "<option value='$year_number'";
+            if ($year_number == $current_year) {
+                $html_select_year .= " SELECTED ";
+            }
+            $html_select_year .= ">$year_number</option>\n";
+        }
+        $html_select_year .= "</select>";
+        $html_select_year .= "</form>";
+        return $html_select_year;
+    }
+
+    /**
+     *
+     * @param int $current_month
+     * @return string
+     */
+    public static function build_html_select_month(int $current_month) {
+        $Months = localization::get_month_names();
+        $html_select_month = "";
+        $html_select_month .= "<form id='select_month' class='inline_form' method=post>";
+        $html_select_month .= "<select name=month_number class='large' onchange=this.form.submit()>";
+        foreach ($Months as $month_number => $month_name) {
+            $html_select_month .= "<option value='$month_number'";
+            if ($month_number == $current_month) {
+                $html_select_month .= " SELECTED ";
+            }
+            $html_select_month .= ">$month_name</option>\n";
+        }
+        $html_select_month .= "</select>";
+        $html_select_month .= "</form>";
+        return $html_select_month;
+    }
+
 }

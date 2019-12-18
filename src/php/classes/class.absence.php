@@ -18,13 +18,6 @@
  */
 
 class absence {
-    /*
-     * This function gets a list of absent employees
-     *
-     * @param date_sql string date in the format 'Y-m-d' a unix date is accepted. This might be removed in the future
-     *
-     * @return array $Absentees array(employee_id => reason)
-     */
 
     public static $List_of_absence_reasons = array(
         'vacation',
@@ -46,6 +39,7 @@ class absence {
     /**
      * poEdit and gettext are not willing to include words, that are not in the source files.
      * Therefore we randomly include some words here, which are necessary.
+     * @todo Is there a better way? Work with constants and integer numbers?
      */
     private function gettext_fake() {
         return TRUE;
@@ -63,6 +57,41 @@ class absence {
         gettext('changed_after_approval');
     }
 
+    public static function insert_absence($employee_id, $date_start_object, $date_end_object, $days, $reason, $comment, $approval) {
+        $sql_query = "INSERT INTO `absence` "
+                . "(employee_id, start, end, days, reason, comment, user, approval) "
+                . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :user, :approval)";
+        try {
+            database_wrapper::instance()->run($sql_query, array(
+                'employee_id' => $employee_id,
+                'start' => $date_start_object->format('Y-m-d'),
+                'end' => $date_end_object->format('Y-m-d'),
+                'days' => $days,
+                'reason' => $reason,
+                'comment' => $comment,
+                'user' => $_SESSION['user_object']->user_name,
+                'approval' => $approval
+            ));
+        } catch (Exception $exception) {
+            if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
+                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+                $user_dialog = new user_dialog();
+                $user_dialog->add_message($message, E_USER_ERROR);
+            } else {
+                print_debug_variable($exception);
+                $message = gettext('There was an error while querying the database.')
+                        . " " . gettext('Please see the error log for more details!');
+                die("<p>$message</p>");
+            }
+        }
+    }
+
+    public static function delete_absence($employee_id, $start_date_sql) {
+        $query = "DELETE FROM absence WHERE `employee_id` = :employee_id AND `start` = :start";
+        $result = \database_wrapper::instance()->run($query, array('employee_id' => $employee_id, 'start' => $start_date_sql));
+        return $result;
+    }
+
     /**
      * Build a select element for easy input of absence entries.
      *
@@ -76,22 +105,9 @@ class absence {
         $html_text = "<select id='$html_id' form='$html_form' class='absence_reason_input_select' name='reason'>\n";
         foreach (absence::$List_of_absence_reasons as $reason) {
             if ($reason == $reason_specified) {
-                $html_text .= "<option value='$reason' selected>" . pdr_gettext($reason) . "</option>\n";
+                $html_text .= "<option value='$reason' selected>" . localization::gettext($reason) . "</option>\n";
             } else {
-                $html_text .= "<option value='$reason'>" . pdr_gettext($reason) . "</option>\n";
-            }
-        }
-        $html_text .= "</select>\n";
-        return $html_text;
-    }
-
-    public static function build_approval_input_select($approval_specified, $html_id = NULL, $html_form = NULL) {
-        $html_text = "<select id='$html_id' form='$html_form' class='absence_approval_input_select' name='approval'>\n";
-        foreach (absence::$List_of_approval_states as $approval) {
-            if ($approval == $approval_specified) {
-                $html_text .= "<option value='$approval' selected>" . pdr_gettext($approval) . "</option>\n";
-            } else {
-                $html_text .= "<option value='$approval'>" . pdr_gettext($approval) . "</option>\n";
+                $html_text .= "<option value='$reason'>" . localization::gettext($reason) . "</option>\n";
             }
         }
         $html_text .= "</select>\n";
@@ -100,7 +116,27 @@ class absence {
 
     /**
      *
-     * @global object $workforce
+     * @param type $approval_specified
+     * @param type $html_id
+     * @param type $html_form
+     * @return string
+     * @todo Move this into a builder class?
+     */
+    public static function build_approval_input_select($approval_specified, $html_id = NULL, $html_form = NULL) {
+        $html_text = "<select id='$html_id' form='$html_form' class='absence_approval_input_select' name='approval'>\n";
+        foreach (absence::$List_of_approval_states as $approval) {
+            if ($approval == $approval_specified) {
+                $html_text .= "<option value='$approval' selected>" . localization::gettext($approval) . "</option>\n";
+            } else {
+                $html_text .= "<option value='$approval'>" . localization::gettext($approval) . "</option>\n";
+            }
+        }
+        $html_text .= "</select>\n";
+        return $html_text;
+    }
+
+    /**
+     *
      * @param string $date_sql
      * @return array $Absentees[$employee_id] = $reason;
      * @throws Exception
@@ -212,51 +248,51 @@ class absence {
         }
     }
 
+    /**
+     *
+     * @param \employee $employee_object
+     * @param string $beginn
+     * @param string $ende
+     * @param string $reason
+     * @param string $comment
+     * @param string $approval
+     * @todo Move this somewhere else?
+     */
     private static function write_absence_data_to_database(\employee $employee_object, string $beginn, string $ende, string $reason, string $comment = NULL, string $approval = 'approved') {
         $date_start_object = new DateTime($beginn);
         $date_end_object = new DateTime($ende);
-        $user_dialog = new user_dialog();
         $employee_id = $employee_object->employee_id;
 
         $days = self::calculate_employee_absence_days($date_start_object, $date_end_object, $employee_object);
+        database_wrapper::instance()->beginTransaction();
+        /*
+         * TODO: externalize the following part out or get the $start_date_old_sql as a parameter?
+         */
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
-            $start_old = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
-            $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
-            database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start_old));
+            $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
+            self::delete_absence($employee_id, $start_date_old_sql);
         }
-        $sql_query = "INSERT INTO `absence` "
-                . "(employee_id, start, end, days, reason, comment, user, approval) "
-                . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :user, :approval)";
-        try {
-            database_wrapper::instance()->run($sql_query, array(
-                'employee_id' => $employee_id,
-                'start' => $date_start_object->format('Y-m-d'),
-                'end' => $date_end_object->format('Y-m-d'),
-                'days' => $days,
-                'reason' => $reason,
-                'comment' => $comment,
-                'user' => $_SESSION['user_object']->user_name,
-                'approval' => $approval
-            ));
-        } catch (Exception $exception) {
-            if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
-                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
-                $user_dialog->add_message($message, E_USER_ERROR);
-            } else {
-                print_debug_variable($exception);
-                $message = gettext('There was an error while querying the database.')
-                        . " " . gettext('Please see the error log for more details!');
-                die("<p>$message</p>");
-            }
-        }
+        self::insert_absence($employee_id, $date_start_object, $date_end_object, $days, $reason, $comment, $approval);
+        database_wrapper::instance()->commit();
     }
 
+    public static function set_approval(string $approval, int $employee_id, string $start_date) {
+        if (!in_array($approval, self::$List_of_approval_states)) {
+            throw new Exception('Ileagal approval state');
+        }
+        $query = "UPDATE `absence` SET `approval` = :approval "
+                . " WHERE `employee_id` = :employee_id AND `start` = :start";
+        database_wrapper::instance()->run($query, array('approval' => $approval, 'employee_id' => $employee_id, 'start' => $start_date));
+    }
+
+    /**
+     * @todo Move this function directly to where it belongs.
+     * @return Statement
+     */
     private static function delete_absence_data() {
         $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
-        $start = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
-        $sql_query = "DELETE FROM `absence` WHERE `employee_id` = :employee_id AND `start` = :start";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'start' => $start));
-        return $result;
+        $start_date_sql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
+        return self::delete_absence($employee_id, $start_date_sql);
     }
 
     public static function calculate_employee_absence_days(DateTime $date_start_object, DateTime $date_end_object, employee $employee_object) {
@@ -298,20 +334,10 @@ class absence {
     }
 
     /**
-     *
+     * @todo Move this somewhere else. Or make it use only absence data. The roser class could use its own version.
      * @return array $Years <p>An array containing all the years, that are stored with at least one day in the `Dienstplan`table.
-     *
      * </p>
      */
-    private static function get_rostering_month_names() {
-        $Months = array();
-        for ($i = 1; $i <= 12; $i++) {
-            $timestamp = mktime(0, 0, 0, $i, 1);
-            $Months[date('n', $timestamp)] = strftime('%B', $timestamp);
-        }
-        return $Months;
-    }
-
     public static function get_rostering_years() {
         $Years = array();
         $sql_query = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan` ORDER BY `Datum`";
@@ -335,40 +361,6 @@ class absence {
         $Years[] = max($Years) + 1;
         sort($Years);
         return array_unique($Years);
-    }
-
-    public static function build_html_select_year($current_year) {
-        $Years = self::get_rostering_years();
-        $html_select_year = "";
-        $html_select_year .= "<form id='select_year' class='inline_form' method=post>";
-        $html_select_year .= "<select name=year class='large' onchange=this.form.submit()>";
-        foreach ($Years as $year_number) {
-            $html_select_year .= "<option value='$year_number'";
-            if ($year_number == $current_year) {
-                $html_select_year .= " SELECTED ";
-            }
-            $html_select_year .= ">$year_number</option>\n";
-        }
-        $html_select_year .= "</select>";
-        $html_select_year .= "</form>";
-        return $html_select_year;
-    }
-
-    public static function build_html_select_month($current_month) {
-        $Months = self::get_rostering_month_names();
-        $html_select_month = "";
-        $html_select_month .= "<form id='select_month' class='inline_form' method=post>";
-        $html_select_month .= "<select name=month_number class='large' onchange=this.form.submit()>";
-        foreach ($Months as $month_number => $month_name) {
-            $html_select_month .= "<option value='$month_number'";
-            if ($month_number == $current_month) {
-                $html_select_month .= " SELECTED ";
-            }
-            $html_select_month .= ">$month_name</option>\n";
-        }
-        $html_select_month .= "</select>";
-        $html_select_month .= "</form>";
-        return $html_select_month;
     }
 
     public static function get_number_of_holidays_due($employee_id, $workforce, $year) {
@@ -407,7 +399,6 @@ class absence {
                 $months_worked_in_this_year++;
             }
             /*
-             * TODO:
              * It is possible to also reduce on Elternzeit:
              * Gesetz zum Elterngeld und zur Elternzeit (Bundeselterngeld- und Elternzeitgesetz - BEEG)
              * § 17 Abs. 1
