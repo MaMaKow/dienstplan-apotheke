@@ -20,6 +20,7 @@ require_once "../../../default.php";
 $tage = 7; //One week
 $user_dialog = new user_dialog();
 
+$List_of_branch_objects = branch::get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $mandant = $branch_id;
 create_cookie('mandant', $branch_id, 30);
@@ -33,6 +34,9 @@ $date_sql_start = $date_sql;
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
 create_cookie('datum', $date_sql, 0.5);
 $date_unix_start = $date_unix;
+$date_start_object = new DateTime();
+$date_start_object->setTimestamp($date_unix_start);
+
 $date_unix_end = $date_unix_start + ($tage - 1) * PDR_ONE_DAY_IN_SECONDS;
 
 for ($i = 0; $i < $tage; $i++) {
@@ -51,7 +55,6 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 $VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
 $VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
 //Build a div containing assignment of tasks:
-//TODO: Works only for "Rezeptur" right now!
 $weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id);
 $Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
 $duty_roster_working_hours_div = "";
@@ -64,7 +67,11 @@ if (array() !== $Roster and isset($Working_hours_week_have)) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $main_div_html = "<div id='main-area'>\n";
-$date_info_line_html = "<div id=date_info_line class='no_print'>" . gettext("calendar week") . strftime(' %V', $date_unix) . "</div>\n";
+$date_info_line_html = "<div id=date_info_line class='no_print'>"
+        . gettext("calendar week")
+        . strftime(' %V', $date_unix)
+        . '&nbsp' . alternating_week::get_human_readably_string(alternating_week::get_alternating_week_for_date($date_start_object))
+        . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.

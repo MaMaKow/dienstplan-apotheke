@@ -19,6 +19,7 @@
 
 require_once '../../../default.php';
 $tage = 7;
+$List_of_branch_objects = branch::get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $mandant = $branch_id;
 create_cookie('mandant', $mandant, 30);

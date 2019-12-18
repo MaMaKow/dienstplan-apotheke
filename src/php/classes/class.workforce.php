@@ -96,6 +96,50 @@ class workforce {
         $this->$name = $value;
     }
 
+    /**
+     * Get the last name of an employee
+     *
+     * @param int $employee_id
+     * @return string <p>last name of chosen employee or '???' if the employee is not known.
+     * For example if an emergency service is not yet chosen ($employee_id = NULL)</p>
+     */
+    public function get_employee_last_name($employee_id) {
+        if (FALSE !== $this->get_employee_value($employee_id, 'last_name')) {
+            return $this->get_employee_value($employee_id, 'last_name');
+        }
+        return $employee_id . '???';
+    }
+
+    /**
+     * Get the profession of an employee
+     *
+     * @param int $employee_id
+     * @return string profession of the chosen employee
+     */
+    public function get_employee_profession($employee_id) {
+        if (FALSE !== $this->get_employee_value($employee_id, 'profession')) {
+            return $this->get_employee_value($employee_id, 'profession');
+        } else {
+            throw new Exception('This employee does not exist!');
+        }
+    }
+
+    public function get_employee_object($employee_id) {
+        if ($this->List_of_employees[$employee_id] instanceof employee) {
+            return $this->List_of_employees[$employee_id];
+        }
+        throw new Exception('This employee does not exist!');
+    }
+
+    private function get_employee_value($employee_id, $key) {
+        if (isset($this->List_of_employees[$employee_id])) {
+            if (isset($this->List_of_employees[$employee_id]->$key)) {
+                return $this->List_of_employees[$employee_id]->$key;
+            }
+        }
+        return FALSE;
+    }
+
     public function get_list_of_employee_names() {
         $List_of_employee_last_names = array();
         foreach ($this->List_of_employees as $employee_id => $employee_object) {

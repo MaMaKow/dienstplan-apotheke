@@ -17,11 +17,11 @@
  */
 require_once '../../../default.php';
 /*
- * @var $mandant int the id of the active branch.
+ * @var $branch_id int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
  */
+$List_of_branch_objects = branch::get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
-$mandant = $branch_id; //TODO: Make sure, that $mandant can be removed savely!
 create_cookie('mandant', $branch_id, 30);
 /*
  * @var $number_of_days int Number of days to show.
@@ -57,7 +57,7 @@ if (isset($approval)) {
         $message = gettext('Missing data in table `approval`');
         $user_dialog->add_message($message, E_USER_NOTICE);
         /*
-         * TODO: This is an Exception.
+         * This is an Exception.
          * It will occur when there is no approval, disapproval or other connected information in the approval table of the database.
          * That might espacially occur during the development stage of this feature.
          */
@@ -90,8 +90,8 @@ echo "<div id=main-area>\n";
 echo $user_dialog->build_messages();
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 echo "<div id=navigation_form_div class=no_print>\n";
-echo build_html_navigation_elements::build_button_day_backward($date_unix);
-echo build_html_navigation_elements::build_button_day_forward($date_unix);
+echo build_html_navigation_elements::build_button_day_backward($date_object);
+echo build_html_navigation_elements::build_button_day_forward($date_object);
 echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/roster-day-edit.php', array('datum' => $date_sql));
 echo "<br><br>\n";
 echo build_html_navigation_elements::build_input_date($date_sql);

@@ -46,6 +46,7 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
 
 $roster_object = new roster($date_start_object, $date_end_object, $employee_id, NULL);
 $Roster = $roster_object->array_of_days_of_roster_items;
+$List_of_branch_objects = branch::get_list_of_branch_objects();
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
@@ -57,7 +58,11 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
+echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> "
+ . gettext("calendar week")
+ . strftime(' %V', $date_unix)
+ . '&nbsp' . alternating_week::get_human_readably_string(alternating_week::get_alternating_week_for_date($date_start_object))
+ . "</a><br>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 

@@ -147,13 +147,15 @@ function get_php_binary() {
 }
 
 /**
- * TODO: Is this a good alternative for background_maintenance?
- * Does it work reliably?
-function execute_in_background(string $command, string $logfile = "/dev/null", string $parameters = "") {
+ * Execute a shell command without waiting for it's output.
+ *
+ * @param string $command
+ */
+function execute_in_background(string $command) {
+    $logfile = PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log';
     if (substr(php_uname(), 0, 7) == "Windows") {
-        pclose(popen("start /B " . $command . escapeshellcmd($parameters) . " > $logfile", "r"));
+        pclose(popen("start /B " . $command . " > $logfile", "r"));
     } else {
-        exec($cmd . escapeshellcmd($parameters) . " > $logfile &");
+        exec($command . " > $logfile 2>&1 &");
     }
 }
- */
