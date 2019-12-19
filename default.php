@@ -23,11 +23,12 @@
 define('PDR_FILE_SYSTEM_APPLICATION_PATH', __DIR__ . '/');
 /**
  * @var PDR_HTTP_SERVER_APPLICATION_PATH The relative path of the application root on the web server.
+ *   This has been tested to work also for symbolic links.
+ *
  */
 $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
 $root_folder = substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars) . "/";
 define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
-//TODO: This does not work, if the location is a symbolic link.
 /**
  * @var PDR_ONE_DAY_IN_SECONDS The amount of seconds in one day.
  */
@@ -41,7 +42,7 @@ spl_autoload_register(function ($class_name) {
 });
 
 
-if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
+if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php')) {
     header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php");
     die("The application does not seem to be installed. Please see the <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php'>installation page</a>!");
 } else {
@@ -98,17 +99,13 @@ date_default_timezone_set($config['timezone']);
  * This is necessary for the usage of UTF-8 characters in functions like mb_substr()
  */
 mb_internal_encoding($config['mb_internal_encoding']);
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
+localization::initialize_gettext($config["language"]);
 
 /*
  * session management
  */
 $session = new sessions;
 
-/*
- * TODO: Get rid of this maybe?
- */
-$List_of_branch_objects = branch::get_list_of_branch_objects();
 /*
  * Guess the navigator (=browser) language from HTTP_ACCEPT_LANGUAGE:
  * This is used in the head.php

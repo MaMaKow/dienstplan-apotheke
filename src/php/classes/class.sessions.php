@@ -157,7 +157,7 @@ class sessions {
             $request_uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
             $message = gettext('You are missing the necessary permission to use this page.')
                     . ' ' . gettext('Please contact the administrator if you feel this is an error.')
-                    . ' ("' . pdr_gettext(str_replace('_', ' ', $privilege))
+                    . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
                     . '" ' . gettext('is required for') . ' ' . basename($request_uri) . ')';
             $user_dialog->add_message($message, E_USER_ERROR);
             echo $user_dialog->build_messages();
@@ -223,8 +223,10 @@ class sessions {
             /*
              * Start another PHP process to do maintenance tasks:
              */
-            $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php' . ' > ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log 2>&1 &';
-            exec($command);
+            $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php';
+            execute_in_background($command);
+            //$command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php' . ' > ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log 2>&1 &';
+            //exec($command);
 
 
             if (TRUE === $redirect) {

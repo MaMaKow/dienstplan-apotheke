@@ -34,7 +34,7 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "funktionen.php";
 setlocale(LC_TIME, $config['LC_TIME']);
 date_default_timezone_set($config['timezone']);
 mb_internal_encoding($config['mb_internal_encoding']);
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
+localization::initialize_gettext($config["language"]);
 $navigator_language = 'de-de';
 
 

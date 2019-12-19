@@ -28,7 +28,10 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     </p>
     <p>
         This program is free software; you can redistribute it and/or modify it under the terms of the <a href="../../../LICENSE.md">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-        Find  <a href="list_of_artwork.php">a list of included artwork</a>.
+        <br>
+        <?= gettext('Pharmacy Duty Roster') ?> uses PHPMailer from the authors: Marcus Bointon, Jim Jagielski, Andy Prevostand and Brent R. Matzelle
+        <br>
+        Also, find  <a href="list_of_artwork.php">a list of included artwork</a>.
 
     </p>
     <p><a href="https://github.com/MaMaKow/dienstplan-apotheke">Download source code</a></p>

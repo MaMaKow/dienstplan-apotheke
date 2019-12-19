@@ -16,9 +16,9 @@ Benutzernamen und Ihr Passwort ein.
 \end{figure}
 Die Anmeldeseite zeigt den Namen der Anwendung an. Sie werden aufgefordert,
 Ihren Benutzernamen und Ihr Passwort einzugeben. Wenn Sie noch keinen
-Account haben, können Sie \menu{Create a new account} erstellen. Wenn Sie
+Account haben, können Sie einen (\menu{Neuen Benutzer anlegen}). Wenn Sie
 ein Konto haben, aber Ihr Passwort vergessen haben oder es ändern möchten,
-können Sie auf \menu{Passwort vergessen?} Klicken.
+können Sie auf \menu{Passwort vergessen?} klicken.
 
 
 \subsection{Neuen Benutzer-Account erstellen}
@@ -42,13 +42,13 @@ Mitarbeiter werden von einem Administrator erstellt.
     \includegraphics[width=.3\linewidth]{{images/en_GB/lost_password.php}.png}
     \caption{Passwort vergessen Seite}
 \end{figure}
-Auf der Seite "Passwort vergessen" wird der Name der Anwendung
+Auf der Seite \menu{Passwort vergessen} wird der Name der Anwendung
 angezeigt. Sie werden aufgefordert, entweder Ihren Benutzernamen, Ihre ID
 oder Ihre E-Mail-Adresse einzugeben. Nachdem Sie das Formular abgeschickt
 haben, wird eine E-Mail an Ihre gespeicherte E-Mail-Adresse gesendet. In
 dieser E-Mail finden Sie einen Link, der Sie zur Seite zum Ändern des
 Passworts führt.
-\subsubsection{Wiederherstellung des Passwortes}
+\subsubsection{Wiederherstellung des Passworts}
 \begin{figure}[ph]
     \centering
     \includegraphics[width=0.3\linewidth]{{images/en_GB/reset-lost-password.php}.png}
@@ -70,10 +70,10 @@ Standardmäßig öffnet die PDR-Weboberfläche ein Menü mit 5 Kacheln. Sie
 können navigieren zu:
 \begin{itemize}
 \item Dienstplan Wochenansicht \includegraphics[height=2em]{../img/md_view_week-24px}
-\item Dienstplan Tagesansicht \includegraphics[height=2em]{../img/day}
+\item Dienstplan Tagesansicht \includegraphics[height=2em]{../img/md_today-24px}
 \item Dienstplan Mitarbeiteransicht \includegraphics[height=2em]{../img/employee_2}
 \item Überstunden  \includegraphics[height=2em]{../img/watch_overtime}
-\item Abwesenheit \includegraphics[height=2em]{../img/absence}
+\item Abwesenheit \includegraphics[height=2em]{../img/md_card_travel-24px}
 \end{itemize}
 
 \subsubsection{Die Navigationsleiste}
@@ -136,19 +136,20 @@ Arbeitszeit}
 \end{figure}
 
 Die Dienstplan-Wochenansicht zeigt die Liste einer ausgewählten Woche und
-Filiale (\autoref{img_roster_week_table_view}). Wenn Mitarbeiter der
-Apotheke in einer anderen Filiale arbeiten, werden diese unten
+Filiale (\autoref{img_roster_week_table_view}). 
+Für die Mitarbeiter wird der Nachname gefolgt von den Arbeitsstunden, dem Beginn und dem Ende der Arbeitszeit, sowie der Pausenzeiten angezeigt.
+Wenn Mitarbeiter der Apotheke in einer anderen Filiale arbeiten, werden diese unten
 angezeigt. Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter
 und deren Abwesenheitsgründe.
 
-Das Datum kann durch direkte Eingabe ausgewählt werden. Es kann auch um eine
-Woche vor oder zurück verschoben werden, indem man \keys{\ctrl + \shift +
-\arrowkeyright} oder \keys {\ctrl + \shift + \arrowkeyleft} drückt.
+Das Datum kann durch direkte Eingabe ausgewählt werden. Man kann auch um eine
+Woche vor oder zurück blättern, indem man \keys{\ctrl +
+\arrowkeyright} oder \keys{\ctrl + \arrowkeyleft} drückt.
 
 \subsection{Dienstplan Tagesansicht}
 \subsubsection{Schreibgeschützt}
 In der Tageslistenansicht gibt es eine Tabelle, ein Balkendiagramm und ein
-Histogramm, das den Dienstplan wiedergibt (\autoref{img_roster-day-read}).
+Histogramm, welche den Dienstplan wiedergeben (\autoref{img_roster-day-read}).
 
 \begin{figure}[h]
 	\centering
@@ -158,21 +159,17 @@ Histogramm, das den Dienstplan wiedergibt (\autoref{img_roster-day-read}).
 \end{figure}
 
 Die Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten
-Zweig an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält die ID und
-den Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende
-des Dienstes und die Zeit der Mittagspause, falls vorhanden.
+Zweig an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält den Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des Dienstes und die Zeit der Mittagspause, soweit vorhanden.
 
 Wenn ein Mitarbeiter, der in erster Linie in der ausgewählten Filiale
 eingeplant ist, in einer anderen Filiale arbeitet, wird dieser Eintrag in
 der Tabelle unten angezeigt. Ein Mitarbeiter kann mehr als einen Eintrag pro
-Tag haben. Dadurch kann eine geteilte Arbeitszeit gespeichert werden. Wenn
-Mitarbeiter abwesend sind, werden diese Abwesenheiten in der
-Tabellenfußzeile angezeigt.
+Tag haben. Dadurch kann eine geteilte Arbeitszeit gespeichert werden.
+
+Wenn Mitarbeiter abwesend sind, werden diese Abwesenheiten in der Tabellenfußzeile angezeigt.
 
 
-Das Dienstplan-Balken-Diagramm zeigt das Kommen und Gehen von
-Mitarbeitern. Jeder Balken repräsentiert einen Eintrag. Er reicht vom Beginn
-des Dienstes bis zu seinem Ende. Ein weißes Rechteck auf dem Balken zeigt
+Das Balkendiagramm zeigt das Kommen und Gehen von Mitarbeitern. Jeder Balken repräsentiert einen Eintrag. Er reicht vom Beginn des Dienstes bis zu seinem Ende. Ein weißes Rechteck auf dem Balken zeigt
 die Zeit der Mittagspause an. Die Farbe der Balken hängt vom Beruf des
 Mitarbeiters ab. Apotheker und Pharmazieingenieure sind in dunkelgrün
 gefärbt, während PTA in hellgrün gefärbt sind. Andere Mitarbeiter
@@ -233,14 +230,32 @@ Ein grundsätzlich wiederkehrender Dienstplan kann gespeichert werden. Im
 einfachsten Fall handelt es sich dabei um eine Auflistung von Beginn und
 Ende des Dienstes aller Mitarbeiter. Jeder Wochentag wird separat
 aufgeführt, ebenso die Filialen.
-
+	
 Es ist möglich, abwechselnde Wochen zu erstellen. Beispielsweise kann eine
 Mitarbeiterin in einer A-Woche und einer B-Woche arbeiten. In A-Wochen
 beginnt sie am Montag regelmäßig um 08:00 Uhr, in B-Wochen um 10:00 Uhr.
 
-
+PDR speichert die Historie von Grundplänen. Auch Grundpläne für die Zukunft können eingestellt werden.
 
 \subsection{Überstunden}
+Es gibt drei Ansichten auf die Überstunden: Überstunden Eingabe, Überstunden Ausgabe und Überstunden Übersicht.
+\subsubsection{Überstunden Eingabe}
+In der Eingabemaske kann zunächst ein Jahr und ein Mitarbeiter ausgewählt werden.
+Darunter befindet sich eine Eingabemaske für Überstunden. Es müssen Datum und Stunden eingegeben werden. Optional kann auch ein Grund ergänzt werden. Der Saldo wird automatisch berechnet. 
+
+CAVE: Der Saldo ist immer das Resultat aller Jahre. Wenn also z.B. die Überstunden in 2015 geändert werden, so gibt der Saldo dennoch immer die Summe von 2015 bis heute wieder.
+
+Unter der Eingabemaske ist eine Tabelle zu sehen. Hier wird in chronologischer Reihenfolge aufgelistet, wann welche Überstunden gemacht wurden und welcher Saldo daraus resultierte. Einzelne Datensätze können gelöscht werden. Dazu wird einfach auf das Kreuz \keys{x} geklickt und mit \keys{OK} bestätigt.
+
+\subsubsection{Überstunden Ausgabe}
+Die Überstunden Ausgabe entspricht der Tabelle der Überstunden Eingabe. Allerdings kann hier kein Jahr ausgewählt werden. Statt dessen wird der komplette Datensatz eines Mitarbeiters geladen und angezeigt.
+
+
+\subsubsection{Überstunden Übersicht}
+In der Übersicht gibt es keinerlei Navigation. Hier wird lediglich eine reine Aufzählung der Saldi von Überstunden aufgeführt. Die Tabelle ist nach Mitarbeiternummer sortiert. Negative Überstunden sind rot dargestellt. Überstunden, die 20 oder sogar 40 übersteigen werden betont.
+
+Da die Überstunden nicht immer sofort aktualisiert werden, ist jeweils das Datum der letzten Aktualisierung mit angegeben.
+
 \subsection{Abwesenheit}
 Es gibt vier Ansichten zu den Abwesenheitsdaten.
 \begin{itemize}
@@ -249,6 +264,7 @@ Es gibt vier Ansichten zu den Abwesenheitsdaten.
 \item Monatstabelle
 \item Jahrestabelle
 \end{itemize}
+\subsubsection{schreibgeschützte Mitarbeitersicht}
 In der \emph{schreibgeschützten Mitarbeitersicht} gibt es ein
 Select-Element, um den anzuzeigenden Mitarbeiter auszuwählen. Es gibt eine
 Schaltfläche, um zur Bearbeitungsansicht zu wechseln. Und es gibt eine
@@ -260,12 +276,38 @@ Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche
 berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber
 nicht gezählt. Das Gleiche gilt für Feiertage.
 
+\subsubsection{Mitarbeiteransicht Eingabe}
+\changemenucolortheme{menus}{icon}
+In der \emph{Mitarbeiteransicht Eingabe} kann zunächst ein Jahr und ein Mitarbeiter ausgewählt werden.
+Darunter befindet sich eine Eingabemaske für Abwesenheiten.
+Hier werden der Beginn und das Ende der Abwesenheit angegeben.
+Darauf folgt der Abwesenheitsgrund. Für das Abbummeln von Überstunden sollte unbezahlte Freistellung gewählt werden, Diese Option wird als einzige nicht positiv auf die Wochenstunden angerechnet.
+Außerdem kann ein Kommentar angegeben werden. Für alle Abwesenheiten kann vermerkt werden, ob sie bereits genehmigt, oder erst beantragt wurden. Mit \menu{Speichern} werden die Daten in die Datenbank geschrieben.
 
+Die Tabelle unter der Eingabemaske gibt die bereits eingetragenen Abwesenheiten wieder.
+Einzelne Zeilen können gelöscht \menu{\includegraphics[height=.7em]{../img/delete}} oder nachträglich bearbeitet \menu{\includegraphics[height=.7em]{../img/pencil-pictogram}} werden. Eine Bearbeitung kann wahlweise gespeichert \menu{\includegraphics[height=.7em]{../img/save}} oder abgebrochen \changemenucolortheme{menus}{gray}\menu{\includegraphics[height=.7em]{../img/delete}}werden.
+
+Unter der Tabelle findet sich eine Zusammenfassung des Urlaubsanspruches. Sie enthält zustehende Urlaubstage im Jahr, genommene Tage, beantragte Resturlaubstage im nächsten Jahr und noch zur Verfügung stehende Urlaubstage. 
+
+\subsubsection{Monatsplan}
+Der Monat und das Jahr können ausgewählt werden. Darunter erscheint eine Tabelle mit dem gewählten Monat und den angrenzenden Wochen.
+An jedem Tag werden die Abwesenden Mitarbeiter aufgelistet. Per Mouseover werden Details angezeigt.
+Feiertage werden hervorgehoben. Es erscheinen auch Notdienste.
+
+Um eine bestehende Abwesenheit zu ändern, kann man auf den Namen des abwesenden Mitarbeiters klicken. Es öffnet sich eine Eingabemaske. Hier können die Werte Mitarbeiter, Start, Ende, Art der Abwesenheit und optional ein Kommentar übergeben werden. Auch kann man eine Abwesenheit als genehmigt, offen oder abgelehnt markieren.
+
+CAVE: Änderungen müssen zunächst mit Speichern in die Datenbank übernommen werden. Beim Kick auf Genehmigen würden veränderte Daten verworfen werden.
+%TODO: Das könnte man sicher mit einem SELECT-Element anpassen.
+
+Um eine neue Abwesenheit zu erstellen, kann man auf den gewünschten Tag klicken. Der gewählte Tag wird als Vorauswahl in die Eingabemaske übernommen. Per Drag\&Drop kann auch ein Zeitraum markiert und in die Eingabemaske übernommen werden.
+
+Die Bearbeitung kann mit \keys{\esc} oder oben rechts per Klick auf \menu{X} geschlossen werden.
+
+\subsubsection{Jahresplan}
+Der Jahresplan ähnelt dem Monatsplan. Es werden alle Monate des ausgewählten Jahres dargestellt. Statt ausgeschriebenen Namen wird hier auf die VK-Nummer verkürzt.
 
 \section{Kalender API}\label{section-calendar-api}
-Es ist möglich, die Dienstplandaten in Form von iCalendar-Dateien von PDR zu
-lesen. Diese Dateien können mit allen wichtigen Kalenderanwendungen auf
-Desktops und Smartphones verwendet werden. Diese API ist keinesfalls eine
+Es ist möglich, die Dienstplandaten in Form von iCalendar-Dateien auszulesen. Diese Dateien können mit allen wichtigen Kalenderanwendungen auf Desktops und Smartphones verwendet werden. Diese API ist keinesfalls eine
 vollständige Implementierung des Webdav-Standards. Es ist nicht einmal eine
 Implementierung des CalDAV-Protokolls. Rufen Sie in Ihrem Browser einfach
 auf die folgende URL auf: \url{https://YOURHOSTNAME/YOUR/FOLDER/webdav.php}
@@ -296,10 +338,10 @@ Um den Dienstplan der Woche ab 17.12.2018 für den Angestellten Nummer 5 zu
 erhalten, verwenden Sie die folgende URL:
 \url{https://YOURHOSTNAME/YOUR/FOLDER/webdav.php?employee_id=5&date_string=2018-12-17&days_into_the_future=6}
 
-\subsection{ICalendar-Dateien automatisch mit  "iCal Import/Export CalDAV Pro"
+\subsection{ICalendar-Dateien automatisch mit \emph{iCal Import/Export CalDAV Pro}
 importieren}
 Der automatische Import von iCalendar-Dateien in Android-Smartphones wurde
-mit "iCal Import/Export CalDAV Pro" (3,59 EUR) getestet. Es gibt
+mit \emph{iCal Import/Export CalDAV Pro} (3,59 EUR) getestet. Es gibt
 wahrscheinlich andere Apps, die das Selbe tun können.
 
 \begin{figure}[hbtp]

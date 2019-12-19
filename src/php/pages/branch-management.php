@@ -157,7 +157,7 @@ function build_branch_input_opening_times($branch_id) {
             . gettext('Opening times')
             . "</legend>";
     $string .= "<table id='branch_input_opening_times_fieldset_table'>";
-    $Weekday_names = build_html_navigation_elements::get_weekday_names();
+    $Weekday_names = localization::get_weekday_names();
     foreach ($Weekday_names as $weekday_number => $weekday_name) {
         $string .= "<tr>";
         $string .= "<td>" . $weekday_name . "</td> ";

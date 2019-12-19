@@ -23,7 +23,8 @@
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 abstract class general_calculations {
-    /*
+
+    /**
      * Get the first day of the week.
      *
      * We aim for the monday of the given week.
@@ -36,46 +37,14 @@ abstract class general_calculations {
      * @return $first_day_of_week_sql string
      *
      */
-
     public static function get_first_day_of_week($date_sql = NULL) {
 
-        /*
-         * TODO: Perhaps include a configuration option to select Sunday as the first day of the week.
-         */
         if (NULL === $date_sql) {
             $date_sql = date('Y-m-d');
         }
         $date_unix = strtotime('Monday this week', strtotime($date_sql));
         $first_day_of_week_sql = date('Y-m-d', $date_unix);
         return $first_day_of_week_sql;
-    }
-
-    /**
-     * The date string one day after the input timestamp
-     *
-     * @param int $date_unix
-     * @return string
-     * @todo Move this function into an internal Date class.
-     */
-    public static function tomorow_date_string($date_unix) {
-        $date_object = new DateTime();
-        $date_object->setTimestamp($date_unix);
-        $date_object->add(new DateInterval('P1D'));
-        return $date_object->format('Y-m-d');
-    }
-
-    /**
-     * The date string one day before the input timestamp
-     *
-     * @param int $date_unix
-     * @return string
-     * @todo Move this function into an internal Date class.
-     */
-    public static function yesterday_date_string($date_unix) {
-        $date_object = new DateTime();
-        $date_object->setTimestamp($date_unix);
-        $date_object->sub(new DateInterval('P1D'));
-        return $date_object->format('Y-m-d');
     }
 
 }

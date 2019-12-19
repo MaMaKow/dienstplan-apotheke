@@ -34,9 +34,9 @@ foreach ($Javascript_files as $javascript_file) {
 $Localization_folders = glob(PDR_FILE_SYSTEM_APPLICATION_PATH . 'locale/*');
 foreach ($Localization_folders as $localization_folder) {
     $localization = basename($localization_folder);
-    initialize_gettext($localization);
+    localization::initialize_gettext($localization);
     foreach ($Strings_to_translate as $string_to_translate) {
-        $translated_string = pdr_gettext($string_to_translate);
+        $translated_string = localization::gettext($string_to_translate);
         if ($translated_string !== $string_to_translate) {
             /*
              * The string only gets inserted, if a translation is existent.

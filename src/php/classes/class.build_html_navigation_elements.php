@@ -71,8 +71,9 @@ abstract class build_html_navigation_elements {
         return $button_img;
     }
 
-    public static function build_button_day_backward($date_unix) {
-        $yesterday_date_string = general_calculations::yesterday_date_string($date_unix);
+    public static function build_button_day_backward(DateTime $date_object) {
+        $date_object->sub(new DateInterval('P1D'));
+        $yesterday_date_string = $date_object->format('Y-m-d');
         $backward_button_img = "
             <form class='inline_form' id='button_day_backward_form'>
 		<button type='submit' class='btn-primary no_print' value='$yesterday_date_string' name='datum' id='button_day_backward' title='" . gettext('Ctrl + &#8678;') . "'>
@@ -86,8 +87,9 @@ abstract class build_html_navigation_elements {
         return $backward_button_img;
     }
 
-    public static function build_button_day_forward($date_unix) {
-        $tomorow_date_string = general_calculations::tomorow_date_string($date_unix);
+    public static function build_button_day_forward(DateTime $date_object) {
+        $date_object->add(new DateInterval('P1D'));
+        $tomorow_date_string = $date_object->format('Y-m-d');
         $forward_button_img = "
             <form class='inline_form' id='button_day_forward_form'>
 		<button type='submit' class='btn-primary no_print' value='$tomorow_date_string' name='datum' id='button_day_forward' title='" . gettext('Ctrl + &#8680;') . "'>
@@ -260,7 +262,7 @@ abstract class build_html_navigation_elements {
         $text = "<!-- branch select form-->\n";
         $text .= "<div id='branch_form_div' class='inline_element'>\n";
         $text .= "<form id=branch_form method=post>\n";
-        $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
+        //$text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
         $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
             if ($branch_id != $current_branch_id) {
@@ -277,7 +279,7 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_select_weekday($weekday_selected) {
-        $Weekday_names = build_html_navigation_elements::get_weekday_names();
+        $Weekday_names = localization::get_weekday_names();
 
         $html = '';
         $html .= "<form id='week_day_form' method=post>";
@@ -327,6 +329,11 @@ abstract class build_html_navigation_elements {
             return NULL;
         }
         if (!alternating_week::alternations_exist()) {
+            /*
+             * Prohibit deleting the last remaining alternation:
+             *   This is also enforced in the core by alternaing_week::delete_alternation()
+             */
+
             return NULL;
         }
         $button_img = "<form class='inline_form' action='' method='post' id='principle_roster_delete'>
@@ -384,23 +391,6 @@ abstract class build_html_navigation_elements {
         }
         $html .= "</select></form>\n";
         return $html;
-    }
-
-    public static function get_weekday_names() {
-        /*
-         * TODO: Move this function to somewhere more general!
-         * It should go into the localization class, once that it exists.
-         */
-        $Weekday_names = array(
-            1 => gettext('Monday'),
-            2 => gettext('Tuesday'),
-            3 => gettext('Wednesday'),
-            4 => gettext('Thursday'),
-            5 => gettext('Friday'),
-            6 => gettext('Saturday'),
-            7 => gettext('Sunday'),
-        );
-        return $Weekday_names;
     }
 
     public static function build_input_date($date_sql) {

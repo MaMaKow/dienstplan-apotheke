@@ -71,7 +71,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     /*
      * reason
      */
-    $tablebody .= "<td><div id=reason_out_$row->start>" . pdr_gettext($row->reason) . "</div>";
+    $tablebody .= "<td><div id=reason_out_$row->start>" . localization::gettext($row->reason) . "</div>";
     $html_id = "reason_in_$row->start";
     $tablebody .= absence::build_reason_input_select($row->reason, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
@@ -86,7 +86,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
      * days
      */
     $tablebody .= "<td>$row->days</td>\n";
-    $tablebody .= "<td><span id=absence_out_$row->start>" . pdr_gettext($row->approval) . "</span>";
+    $tablebody .= "<td><span id=absence_out_$row->start>" . localization::gettext($row->approval) . "</span>";
     $html_id = "absence_in_$row->start";
     $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
@@ -119,7 +119,7 @@ echo "<div id=main-area>\n";
 
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
-echo absence::build_html_select_year($year);
+echo form_element_builder::build_html_select_year($year);
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/absence-read.php', array('employee_id' => $employee_id));
