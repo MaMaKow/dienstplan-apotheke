@@ -149,13 +149,16 @@ function get_php_binary() {
 /**
  * Execute a shell command without waiting for it's output.
  *
+ * @todo Find a better way to do this and get rid of exec!
  * @param string $command
  */
 function execute_in_background(string $command) {
+    $filtered_command = escapeshellcmd($command);
+    unset($command);
     $logfile = PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log';
     if (substr(php_uname(), 0, 7) == "Windows") {
-        pclose(popen("start /B " . $command . " > $logfile", "r"));
+        pclose(popen("start /B " . $filtered_command . " > $logfile", "r"));
     } else {
-        exec($command . " > $logfile 2>&1 &");
+        exec($filtered_command . " > $logfile 2>&1 &");
     }
 }
