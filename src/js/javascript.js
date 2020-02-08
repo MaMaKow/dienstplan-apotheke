@@ -14,6 +14,20 @@ function gettext(string_to_translate) {
     }
 }
 
+/*
+ * Add leading zeros to numbers.
+ *
+ * @param float number
+ * @param int size Number of characters in final string.
+ * @returns {pad.number_string|String}
+ */
+function pad(number, size) {
+    var number_string = number + "";
+    while (number_string.length < size)
+        number_string = "0" + number_string;
+    return number_string;
+}
+
 function get_http_server_application_path() {
     var javascript_folder_path_depth = -3;
     /*
