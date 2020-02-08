@@ -163,9 +163,15 @@ class configuration {
      */
     public static function build_supported_locales_datalist() {
         $datalist_locales = "<datalist id='locales'>\n";
+        $exec_result = array();
         exec("locale -a", $exec_result);
-        foreach ($exec_result as $key => $installed_locale) {
-            $datalist_locales .= "<option value='$installed_locale'>\n";
+        foreach ($exec_result as $installed_locale) {
+            /*
+             * For security reasons we clean the result of the shell execution.
+             * This might be paranoid. But I count this as user input.
+             */
+            $installed_locale_clean = filter_var($installed_locale, FILTER_SANITIZE_STRING);
+            $datalist_locales .= "<option value='" . htmlentities($installed_locale_clean, ENT_QUOTES) . "'>\n";
         }
         $datalist_locales .= "</datalist>\n";
         return $datalist_locales;
