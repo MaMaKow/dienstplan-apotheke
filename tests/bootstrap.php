@@ -37,8 +37,10 @@ mb_internal_encoding($config['mb_internal_encoding']);
 localization::initialize_gettext($config["language"]);
 $navigator_language = 'de-de';
 
-
-exec("mysql < " . PDR_FILE_SYSTEM_APPLICATION_PATH . 'tests/pdr_test.sql', $exec_result);
+/**
+ *  Read predefined data into the database:
+ */
+exec("mysql < " . escapeshellarg(PDR_FILE_SYSTEM_APPLICATION_PATH . 'tests/pdr_test.sql'), $exec_result);
 if (!empty($exec_result)) {
     echo "mysql result: " . var_export($exec_result, TRUE) . PHP_EOL;
 }
