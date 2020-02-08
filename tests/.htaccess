@@ -1,4 +1,7 @@
 <Files testContact_form_send_mail.php>
     allow from all
 </Files>
+<Files test-database-structure.php>
+    Allow from 127.0.0.1 ::1 localhost 192.168
+</Files>
 deny from all
