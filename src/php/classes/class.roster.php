@@ -161,6 +161,12 @@ class roster {
         return $Roster;
     }
 
+    /**
+     *
+     * @param type $Principle_employee_roster
+     * @param type $Principle_roster
+     * @todo Is this function still used?
+     */
     public static function transfer_lunch_breaks($Principle_employee_roster, $Principle_roster) {
         foreach ($Principle_employee_roster as $date_unix => $Principle_employee_roster_day_array) {
             foreach ($Principle_employee_roster_day_array as $principle_employee_roster_object) {
@@ -209,6 +215,14 @@ class roster {
         return $Clean_changing_times;
     }
 
+    /**
+     *
+     * @param type $Roster
+     * @param type $day_iterator
+     * @param type $roster_row_iterator
+     * @return type
+     * @todo Are these functions used somewhere?
+     */
     public static function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
         return $Roster[$day_iterator][$roster_row_iterator]->employee_id;
     }
@@ -233,6 +247,19 @@ class roster {
         return $Roster[$day_iterator][$roster_row_iterator]->comment;
     }
 
+    public static function get_working_hours_in_all_branches($date_object, $employee_id) {
+        $working_hours = 0;
+        $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `VK` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'date' => $date_object->format('Y-m-d'),
+            'employee_id' => $employee_id,
+        ));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $working_hours = $row->working_hours;
+        }
+        return $working_hours;
+    }
+
     /**
      *
      * @param array $Roster
@@ -248,10 +275,9 @@ class roster {
         return $roster_employee_count;
     }
 
-    /*
+    /**
      * Calculation of the working hours of the employees:
      */
-
     public static function calculate_working_hours_weekly_from_branch_roster($Branch_roster) {
         /*
          * CAVE! This function expects an array of the format: $Branch_roster[$branch_id][$date_unix][$roster_item]

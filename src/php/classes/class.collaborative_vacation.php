@@ -45,7 +45,6 @@ class collaborative_vacation {
      *
      * The approval status of new entries defaults to "not_yet_approved".
      * Old entries keep their approval state.
-     * TODO: There is no approval-tool for administrator users yet.
      *
      * @global type $user from default.php
      * @return void
@@ -72,20 +71,23 @@ class collaborative_vacation {
              * User is only allowed to ask for specific changes to the database.
              */
             if ($_SESSION['user_object']->employee_id !== $employee_id) {
-                /*
-                 * TODO: Make this an email.
-                 * TODO: Build a contact class to handle this.
-                 */
                 error_log("Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays for employee " . $employee_id);
-                return FALSE;
+                global $config;
+                $recipient = $config['contact_email'];
+                $subject = "Permission Error";
+                $message = "Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays for employee " . $employee_id;
+                $user_dialog_email->send_email($recipient, $subject, $message);
+                throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
             }
             if ("" !== $employee_id_old and $_SESSION['user_object']->employee_id !== $employee_id_old) {
-                /*
-                 * TODO: Make this an email.
-                 * TODO: Build a contact class to handle this.
-                 */
                 error_log("Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays from employee " . $employee_id_old);
-                return FALSE;
+                $user_dialog_email = new user_dialog_email;
+                global $config;
+                $recipient = $config['contact_email'];
+                $subject = "Permission Error";
+                $message = "Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays from employee " . $employee_id_old;
+                $user_dialog_email->send_email($recipient, $subject, $message);
+                throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
             }
             $approval = "not_yet_approved";
         } else {
@@ -110,37 +112,24 @@ class collaborative_vacation {
 
          */
 
-        /**
-         * Delete old entries
-         *
-         * TODO: This probably should be solved with TRANSACTIONS
-         * What happens, if the DELETE  is successfull but the INSERT fails?
-         *
-         * $employee_id_old and $start_date_old_string are NULL for new entries. Therefore there will be no deletions.
+        database_wrapper::instance()->beginTransaction();
+        /*
+         * Delete old entries:
          */
-        $query = "DELETE FROM absence WHERE `employee_id` = :employee_id AND `start` = :start";
-        $result = \database_wrapper::instance()->run($query, array('employee_id' => $employee_id_old, 'start' => $start_date_old_string));
+        if (NULL !== $employee_id_old) {
+            absence::delete_absence($employee_id_old, $start_date_old_string);
+        }
 
         /*
-         * Insert new entry data into the table absence.
+         * Insert new entry data into the table absence:
          */
         if ("save" === $command) {
             $workforce = new \workforce();
-            $employee_object = $workforce->List_of_employees[$employee_id];
+            $employee_object = $workforce->get_employee_object($employee_id);
             $days = \absence::calculate_employee_absence_days(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
-            $query = "INSERT INTO absence (`employee_id`, `start`, `end`, `days`, `reason`, `comment`, `approval`, `user`) "
-                    . "VALUES (:employee_id, :start, :end, :days, :reason, :comment, :approval, :user)";
-            $result = \database_wrapper::instance()->run($query, array(
-                'employee_id' => $employee_id,
-                'start' => $start_date_string,
-                'end' => $end_date_string,
-                'days' => $days,
-                'reason' => $reason,
-                'comment' => $comment,
-                'approval' => $approval,
-                'user' => $_SESSION['user_object']->user_name,
-            ));
+            absence::insert_absence($employee_id, new DateTime($start_date_string), new DateTime($end_date_string), $days, $reason, $comment, $approval);
         }
+        database_wrapper::instance()->commit();
     }
 
     /**
@@ -156,17 +145,10 @@ class collaborative_vacation {
              */
             return FALSE;
         }
-
         $approval = filter_input(INPUT_POST, 'approve_absence', FILTER_SANITIZE_STRING);
         $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
         $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
-
-        /*
-         * TODO: Move this query into the absence class!
-         */
-        $query = "UPDATE `absence` SET `approval` = :approval "
-                . " WHERE `employee_id` = :employee_id AND `start` = :start";
-        $result = \database_wrapper::instance()->run($query, array('approval' => $approval, 'employee_id' => $employee_id_old, 'start' => $start_date_old_string));
+        absence::set_approval($approval, $employee_id_old, $start_date_old_string);
     }
 
     /**
@@ -189,15 +171,12 @@ class collaborative_vacation {
         $date_end_object = new \DateTime();
         $date_end_object->setDate($year, 12, 31);
         $current_month = $date_start_object->format("n");
-        /*
-         * TODO: Build a DateTime Object in \MaMaKow namespace.
-         */
         $current_year = $date_start_object->format("Y");
 
         $Absences = absence::get_all_absence_data_in_period($date_start_object->format("Y-m-d"), $date_end_object->format("Y-m-d"));
 
         $year_container_html = "<div class=year_container>\n";
-        $year_container_html .= \absence::build_html_select_year($current_year);
+        $year_container_html .= \form_element_builder::build_html_select_year($current_year);
         $month_container_html = "<div class='year_quarter_container'>";
         $month_container_html .= "<div class=month_container>";
         $month_container_html .= $this->get_month_name($date_start_object) . "<br>\n";
@@ -254,8 +233,8 @@ class collaborative_vacation {
         $Absences = absence::get_all_absence_data_in_period($start_date_object->format("Y-m-d"), $end_date_object->format("Y-m-d"));
 
         $month_container_html = "";
-        $month_container_html .= \absence::build_html_select_year($input_date_object->format('Y'));
-        $month_container_html .= \absence::build_html_select_month($input_date_object->format('n'));
+        $month_container_html .= \form_element_builder::build_html_select_year($input_date_object->format('Y'));
+        $month_container_html .= \form_element_builder::build_html_select_month($input_date_object->format('n'));
 
         $week_container_html = "<table class='month_container noselect'>"
                 . "<tr class=week_container>";
@@ -295,7 +274,7 @@ class collaborative_vacation {
                 break;
             case 'month':
             default:
-                $date_string = mb_substr(\pdr_gettext($date_object->format('l')), 0, 3);
+                $date_string = mb_substr(\localization::gettext($date_object->format('l')), 0, 3);
                 $date_string .= ' ';
                 $date_string .= $date_object->format('d.m.');
 
@@ -326,18 +305,14 @@ class collaborative_vacation {
                     . ": "
                     . $List_of_branch_objects[$having_emergency_service["branch_id"]]->short_name
                     . ", "
-                    . $workforce->List_of_employees[$having_emergency_service["employee_id"]]->last_name
+                    . $workforce->get_employee_last_name($having_emergency_service["employee_id"])
                     . "</span>\n";
         } else {
             $title = gettext("emergency service")
                     . ": ";
             $title .= $List_of_branch_objects[$having_emergency_service["branch_id"]]->short_name
                     . ", ";
-            if (isset($workforce->List_of_employees[$having_emergency_service["employee_id"]])) {
-                $title .= $workforce->List_of_employees[$having_emergency_service["employee_id"]]->last_name;
-            } else {
-                $title .= "???";
-            }
+            $title .= $workforce->get_employee_last_name($employee_id);
             $emergency_service_content .= "<span class='emergency_service' title='$title'>"
                     . mb_substr(gettext('emergency service'), 0, 2)
                     . "</span>";
@@ -381,9 +356,7 @@ class collaborative_vacation {
             $employee_long_representation = " ";
             $workforce = new workforce($date_object->format('Y-m-d'));
             $profession = "";
-            if (isset($workforce->List_of_employees[$employee_id])) {
-                $profession = $workforce->List_of_employees[$employee_id]->profession;
-            }
+            $profession = $workforce->get_employee_profession($employee_id);
             $span_class = "absent_employee_container";
             $span_class .= " " . $profession;
             $span_class .= " " . $Absence['approval'];
@@ -392,7 +365,7 @@ class collaborative_vacation {
                 /*
                  * In the year mode there is not enough space for the last names:
                  */
-                $employee_long_representation = " " . mb_substr($workforce->List_of_employees[$employee_id]->last_name, 0, 16);
+                $employee_long_representation = " " . mb_substr($workforce->get_employee_last_name($employee_id), 0, 16);
             }
 
             $absent_employees_containers .= "<span "
@@ -408,17 +381,14 @@ class collaborative_vacation {
         return $absent_employees_containers;
     }
 
-    private function build_absence_year_absent_employees_containers_title_text($workforce, $Absence) {
-        $absence_title_text = "???" . "\n";
-        if (isset($workforce->List_of_employees[$Absence['employee_id']]) and $workforce->List_of_employees[$Absence['employee_id']] instanceof employee) {
-            $absence_title_text = $workforce->List_of_employees[$Absence['employee_id']]->last_name . "\n";
-        }
-        $absence_title_text .= pdr_gettext($Absence['reason']) . "\n";
+    private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence) {
+        $absence_title_text = $workforce->get_employee_last_name($Absence['employee_id']) . "\n";
+        $absence_title_text .= localization::gettext($Absence['reason']) . "\n";
         $absence_title_text .= $Absence['comment'] . "\n";
         $absence_title_text.= gettext('from') . ' ' . strftime('%x', strtotime($Absence['start'])) . "\n";
         $absence_title_text.= gettext('to') . ' ' . strftime('%x', strtotime($Absence['end'])) . "\n";
         $absence_title_text.= sprintf(gettext('%1$s days taken'), $Absence['days']) . "\n";
-        $absence_title_text.= pdr_gettext($Absence['approval']) . "";
+        $absence_title_text.= localization::gettext($Absence['approval']) . "";
         return $absence_title_text;
     }
 
@@ -445,23 +415,9 @@ class collaborative_vacation {
      *
      * @param DateTime $date_object PHP DateTime object
      * @return string $month_name month name.
-     * @todo build a DateTime class inside the \MaMaKow\PDR namespace include this function.
      */
     private function get_month_name($date_object) {
-        $Month_names = array(
-            1 => gettext('January'),
-            2 => gettext('February'),
-            3 => gettext('March'),
-            4 => gettext('April'),
-            5 => gettext('May'),
-            6 => gettext('June'),
-            7 => gettext('July'),
-            8 => gettext('August'),
-            9 => gettext('September'),
-            10 => gettext('October'),
-            11 => gettext('November'),
-            12 => gettext('December'),
-        );
+        $Month_names = localization::get_month_names();
         return $Month_names[$date_object->format("n")];
     }
 

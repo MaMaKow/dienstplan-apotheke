@@ -34,6 +34,8 @@
  * </p>
  * @todo Notifications can also be directly printed to the user upon login.
  * @todo Make this email thing a new class. It is big enough.
+ * @todo <p>The aggregated string is not helpfull enough.
+ *    The difference should be visible. And also multiple roster items on the same day should be displayed together.</p>
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
@@ -229,6 +231,11 @@ class user_dialog_email {
              */
             return FALSE;
         }
+        $mail_success = $this->send_email($user->email, gettext('Your roster has changed.'), $message, $ics_file_string, 'iCalendar.ics');
+        return $mail_success;
+    }
+
+    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL) {
         global $config;
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
@@ -268,26 +275,30 @@ class user_dialog_email {
              * Recipients
              */
             $mail->setFrom($config['contact_email'], $config['application_name'] . ' Mailer');
-            $mail->addAddress($user->email, $user->user_name);
-            $mail->addBCC($config['contact_email'], $config['application_name'] . ' Mailer');
+            $mail->addAddress($recipient);
             /*
              * Attachments
              */
-            $mail->addStringAttachment($ics_file_string, 'iCalendar.ics');
+            if (NULL !== $attachment_string and ! empty($attachment_filename)) {
+                $mail->addStringAttachment($attachment_string, $attachment_filename);
+            }
             /*
              * Content
              */
             $mail->CharSet = 'UTF-8';
             $mail->Encoding = 'base64';
             $mail->isHTML(FALSE);
-            $mail->Subject = $config['application_name'] . ": " . gettext('Your roster has changed.');
+            $mail->Subject = $config['application_name'] . ": " . $subject;
             $mail->Body = $message;
             //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             $mail_success = $mail->send();
             return $mail_success;
-        } catch (Exception $e) {
-            print_debug_variable('Email Message could not be sent. Mailer Error: ', $mail->ErrorInfo, $e);
+        } catch (Exception $exception) {
+            print_debug_variable('Email Message could not be sent. Mailer Error: ', $mail->ErrorInfo, $exception);
+            $user_dialog = new user_dialog;
+            $user_dialog->add_message(gettext('Error while trying to send email.') . ' ' . gettext('Please see the error log for details!'));
+            return FALSE;
         }
     }
 

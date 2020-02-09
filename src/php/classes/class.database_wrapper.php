@@ -59,18 +59,17 @@ class database_wrapper {
         if (!empty($this->database_port) and 3306 != $this->database_port) {
             $port_string = 'port=' . $this->database_port . ';';
         } else {
-            /*
-             * TODO: Should we add special options for access thru the unix socket?
-             * Note: Unix only:
-             * When the host name is set to "localhost", then the connection to the server is made thru a domain socket. If PDO_MYSQL is compiled against libmysqlclient then the location of the socket file is at libmysqlclient's compiled in location. If PDO_MYSQL is compiled against mysqlnd a default socket can be set thru the pdo_mysql.default_socket setting.
-             * dsn examples:
-             * mysql:host=localhost;port=3306;dbname=testdb
-             * mysql:unix_socket=/tmp/mysql.sock;dbname=testdb
-             */
             $port_string = '';
         }
         $dsn = 'mysql:host=' . $this->database_host . ';' . $port_string . 'dbname=' . $this->database_name . ';charset=utf8';
-        $this->pdo = new PDO($dsn, $this->database_user_name, $this->database_password, $options);
+        try {
+            $this->pdo = new PDO($dsn, $this->database_user_name, $this->database_password, $options);
+        } catch (Exception $exception) {
+            print_debug_variable($exception->getTraceAsString());
+            $message = gettext('There was an error while querying the database.')
+                    . " " . gettext('Please see the error log for more details!');
+            die("<p>$message</p>");
+        }
     }
 
     /**

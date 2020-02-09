@@ -61,7 +61,7 @@ function read_file_write_db($filename) {
         echo 'The input file was deleted.<br>';
     } else {
         error_log('Error while deleting input file!');
-        echo 'Error while deleting input file!<br>';
+        echo 'Error while deleting input file.<br>';
     }
 }
 
@@ -71,20 +71,16 @@ foreach (glob(PDR_FILE_SYSTEM_APPLICATION_PATH . "upload/*_pep") as $filename) {
 }
 
 /*
- * Some sanitary work
- */
-database_wrapper::instance()->run("UPDATE `Dienstplan` set Mittagsbeginn = null WHERE Mittagsbeginn = '00:00:00'");
-database_wrapper::instance()->run("UPDATE `Dienstplan` set Mittagsende = null WHERE Mittagsende = '00:00:00'");
-/*
  * Remove old data:
  */
 database_wrapper::instance()->run("TRUNCATE `pep_weekday_time`;");
 database_wrapper::instance()->run("TRUNCATE `pep_month_day`;");
 database_wrapper::instance()->run("TRUNCATE `pep_year_month`;");
 /*
- * Ignore christmas:
+ * Ignore christmas and silvester:
  */
 database_wrapper::instance()->run("DELETE FROM `pep` WHERE DAY(`Datum`) = '24' AND MONTH(`Datum`) = '12';");
+database_wrapper::instance()->run("DELETE FROM `pep` WHERE DAY(`Datum`) = '31' AND MONTH(`Datum`) = '12';");
 
 $sql_query = "SELECT DISTINCT `Mandant` FROM pep";
 $List_of_pep_branch_ids = database_wrapper::instance()->run($sql_query)->fetchAll(PDO::FETCH_COLUMN);

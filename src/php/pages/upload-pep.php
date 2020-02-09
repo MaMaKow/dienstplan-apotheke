@@ -31,7 +31,6 @@ function handle_user_input() {
     $user_dialog = new user_dialog();
     $target_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'upload/' . uniqid() . "_pep";
     $upload_file_name = basename($_FILES['file_to_upload']['name']);
-    $upload_ok = 1;
     $file_type = pathinfo($upload_file_name, PATHINFO_EXTENSION);
 
     if (UPLOAD_ERR_OK != $_FILES['file_to_upload']['error']) {
@@ -98,14 +97,10 @@ EOT;
         $user_dialog->add_message(gettext('Sorry, only ASYS PEP files are allowed.'));
         $user_dialog->add_message(sprintf(gettext('You tried to upload: %1$s.'), $upload_file_name), E_USER_NOTICE);
         $user_dialog->add_message(gettext('Please upload a valid ASYS PEP file!'), E_USER_NOTICE);
-        $upload_ok = 0;
         return FALSE;
     }
-    if (FALSE /* Add other checks here: */) {
-        /*
-         * TODO: Check if file is in the correct format.
-         */
-        $user_dialog->add_message(gettext('Sorry, your file was not uploaded.'));
+    if (FALSE === test_file_content_pattern_asys($_FILES["file_to_upload"]["tmp_name"])) {
+        $user_dialog->add_message(gettext('Sorry, your file does not have the correct format.'));
         return FALSE;
     }
     if (!move_uploaded_file($_FILES["file_to_upload"]["tmp_name"], $target_file)) {
@@ -118,6 +113,51 @@ EOT;
     $user_dialog->add_message($message, E_USER_NOTICE);
     echo "<input hidden type=text id=filename value='upload/" . htmlentities($_FILES["file_to_upload"]["name"]) . "'>\n";
     echo "<input hidden type=text id=targetfilename value='$target_file'>\n";
+}
+
+/**
+ *
+ * Test if the file content matches the expected pattern for asys pep files.
+ *
+ * @param type $file_name
+ * @return boolean
+ */
+function test_file_content_pattern_asys($file_name) {
+    $handle = fopen($file_name, "r");
+    if ($handle) {
+
+        $number_of_matches = 0;
+        for ($index = 0; $index < 5; $index++) {
+            $line = fgets($handle);
+            /*
+             * The pattern should match against:
+             *   01.06.2019;08:14;3,95;2;1;2531
+             */
+            $pattern = '/[0-3][0-9]\.[0-1][0-9]\.[0-9][0-9][0-9][0-9];[0-2][0-9]:[0-5][0-9];[0-9]*,[0-9][0-9];[0-9]*;[0-9]*;[0-9]*/';
+
+            $matches = array();
+            if (1 === preg_match($pattern, $line, $matches)) {
+                $number_of_matches++;
+            }
+            if ($number_of_matches >= 4) {
+                /*
+                 * Allow for one line in the test set to not match the pattern.
+                 *   This might be the heading in the first line.
+                 */
+                fclose($handle);
+                return TRUE;
+            }
+        }
+        fclose($handle);
+        return FALSE;
+    } else {
+        /*
+         *  error opening the file
+         */
+        $user_dialog = new user_dialog;
+        $user_dialog->add_message(gettext('Sorry, your file could not be opened.'));
+        return FALSE;
+    }
 }
 ?>
 <p style=height:2em></p>

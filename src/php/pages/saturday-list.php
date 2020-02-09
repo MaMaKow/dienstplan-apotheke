@@ -26,13 +26,14 @@ $end_date_unix = strtotime("last sat of dec $year");
 $date_unix = $start_date_unix;
 $date_sql = date('Y-m-d', $date_unix);
 
+$List_of_branch_objects = branch::get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
 
 $saturday_rotation = new saturday_rotation($branch_id);
 
-$html_select_year = absence::build_html_select_year($year);
+$html_select_year = form_element_builder::build_html_select_year($year);
 $html_select_branch = build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
 
 $table_head = "<thead>\n";

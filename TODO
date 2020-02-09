@@ -1,3 +1,8 @@
+Build an API for android apps
+  - use a secure token for login
+  - build an android app
+
+
 fragment.principle-roster-day-history.php
     does not allways result in the chosen date. For example when the rotation weekdoes not match the chosen week.
     Perhaps more care should be given to the possible change dates?
@@ -29,6 +34,11 @@ register_approve.php; Make it something to work with.
 
 write more documenation about the "webdav" api
 also include microsoft outlook or thunderbird lightning?
+Deutsche Bilder für die deutsche Dokumentation
+
+Edit existing overtime in overtime-edit.php inside the table
+
+Is PDR_ONE_DAY_IN_SECONDS obsolete allready?
 
 Do opening times and principle roster work on single-branch setups?
 
@@ -94,6 +104,29 @@ The following line should not be shown on saturdays and sundays, if Monday until
 - database Ware-Termine / Ware-PEP
 
 
+Find a cool name?
+- schemist
+- planity
+- ScheMy
+- calenda
+- timeling
+- labgeist
+- scalendar
+- Intention-to-treat
+- FrontOffice
+- ... or something german?
+  - ApoPlan
+  - Schichthekia
+  - Apotheke-Mit-Planer
+  - Personalplaner
+  - Kollegium
+  - Masterplan
+  - Kalkül, Kalkülator
+  - Entwurf
+  - Zeit-Plan
+  - Arbeitsplan
+  - Lebens-Zeit-Plan
+
 Bring all the files into proper directories:
 https://github.com/php-pds/skeleton
 bin/              # command-line files
@@ -107,3 +140,22 @@ CHANGELOG(.*)     # change notes
 CONTRIBUTING(.*)  # contribution guidelines
 LICENSE(.*)       # licensing information
 README(.*)        # read-me-first file
+
+Organize arrays in classes as collection class:
+https://www.sitepoint.com/collection-classes-in-php/
+
+
+* Gesetz zum Elterngeld und zur Elternzeit (Bundeselterngeld- und Elternzeitgesetz - BEEG)
+* § 17 Abs. 1
+* Der Arbeitgeber kann den Erholungsurlaub, der dem Arbeitnehmer oder der Arbeitnehmerin für das Urlaubsjahr zusteht,
+* für jeden vollen Kalendermonat der Elternzeit um ein Zwölftel kürzen.
+* Dies gilt nicht, wenn der Arbeitnehmer oder die Arbeitnehmerin während der Elternzeit bei seinem oder ihrem Arbeitgeber Teilzeitarbeit leistet.
+*
+* This is facultative and to be decided by the employer.
+* Es könnte eine Datenbanktabelle geben, die überwacht, ob jeder Mitarbeiter den Urlaub so wie vereinbart genommen hat.
+* Dort könnten dann Vereinbarungen der Leitung mit dem Mitarbeiter vermerkt werden.
+
+Encapsulate class workforce
+
+
+PEP data
