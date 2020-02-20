@@ -806,6 +806,11 @@ svg.svg_img {
 svg.svg_img foreignObject p {
     margin-top: 0px;
     box-shadow: inset 0 0 0 1000px #B4B4B4;
+    /*
+     * cursor styles:
+     * TODO: These could be turned back to default in read_only views:
+     */
+    cursor: move;
 }
 svg.svg_img foreignObject p.Apotheker, svg.svg_img foreignObject p.PI {
     margin-top: 0px;
@@ -822,10 +827,29 @@ svg.svg_img foreignObject p.PKA {
 svg.svg_img foreignObject p.selected {
     color: white;
 }
+
 svg.svg_img foreignObject p span {
     float: right;
 }
 
+svg.svg_img rect {
+    fill: #FEFEFF;
+    cursor: cell;
+    stroke: black;
+    stroke-width: 0.3;
+
+}
+
+svg.svg_img line.grid_line {
+    stroke-dasharray:1, 8;
+    stroke:black;
+    stroke-width:2;
+}
+svg.svg_img line.grid_line_secondary {
+    stroke-dasharray:1, 16;
+    stroke:black;
+    stroke-width:2;
+}
 
 body table tbody tr.branch_roster_title_tr th{
     padding-top: 1em;

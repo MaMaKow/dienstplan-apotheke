@@ -16,7 +16,6 @@
  */
 
 
-/* global bar_width_factor: is a factor generated within image_dienstplan.php It describes the width of one hour in pixels. */
 
 var selectedElement = 0;
 var currentX = 0;
@@ -68,12 +67,15 @@ function deselectElement(evt) {
     if (selectedElement !== 0) {
         var svg_element = selectedElement.parentNode.parentNode;
         var box_type = selectedElement.dataset.box_type;
+        var date_unix = selectedElement.dataset.date_unix;
         var line = selectedElement.dataset.line;
+
+        var bar_width_factor = svg_element.dataset.bar_width_factor;
+
         var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
         var start_hour_float = Math.round((selectedElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
         selectedElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
         var end_hour_float = (selectedElement.x.baseVal.value - margin_before_bar + selectedElement.width.baseVal.value) / bar_width_factor;
-        var date_unix = selectedElement.dataset.date_unix;
         sync_from_bar_plot_to_roster_array_object(box_type, date_unix, line, start_hour_float, end_hour_float);
         selectedElement.parentNode.removeAttributeNS(null, "onmousemove");
         selectedElement.removeAttributeNS(null, "onmouseout");
@@ -92,7 +94,6 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     if (input_object_parent.nodeName !== "TD") {
         input_object_parent = input_object.parentNode.parentNode;
     }
-    console.log('roster_change_bar_plot_on_change_of_table');
     /*
      * Change the one directly changed column:
      */
@@ -154,11 +155,6 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     roster_item['break_end_int'] = break_end_object.getHours() * 3600 + break_end_object.getMinutes() * 60;
 
     /*
-     console.log('Roster_array[date_unix][roster_row_iterator]');
-     console.log(Roster_array[date_unix][roster_row_iterator]);
-     return false;
-     */
-    /*
      * sync the information to the bar plot:
      */
     sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_unix);
@@ -178,43 +174,9 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
          * This bar does not exist yet.
          * Most probably a new row has been inserted in the roster in the table.
          */
-        /*
-         * TODO: Give a unique id to the svg. e.g. roster_image_bar_plot_$date_unix
-         * so we do not need any first element in it anymore.
-         */
-        var first_bar_element_id = 'work_box_0_' + date_unix;
-        var first_bar_element = document.getElementById(first_bar_element_id);
-        var parent_of_bar_elements = first_bar_element.parentNode;
-        var new_foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-        /*
-         * Calculate the value of y:
-         * The formula is exactly the same as in class.roster_image_bar_plot.php
-         */
-        var y_pos = outer_margin_y + (inner_margin_y * (roster_row_iterator + 1)) + (bar_height * roster_row_iterator);
-        /*
-         * Assign all the known values and methods to the new object:
-         * TODO: Read the value 30 for height from somewhere, where the php class puts it!
-         */
-        new_foreignObject.setAttributeNS(null, 'id', bar_element_id);
-        new_foreignObject.setAttributeNS(null, 'height', 30);
-        new_foreignObject.setAttributeNS(null, 'y', y_pos);
-        new_foreignObject.dataset.date_unix = date_unix;
-        new_foreignObject.dataset.line = roster_row_iterator;
-        /*
-         * TODO: Drag and drop will only work, once there is the specified group around the foreignObject
-         new_foreignObject.setAttributeNS(null, 'onmousedown', 'roster_change_table_on_drag_of_bar_plot(evt, "group")');
-         */
-        var new_p_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
-        new_p_element.setAttributeNS(null, 'class', 'PTA');
-        var new_text_node = document.createTextNode('');
-        new_p_element.appendChild(new_text_node);
-        var new_span_in_p = document.createElementNS('http://www.w3.org/1999/xhtml', 'span');
-        new_span_in_p.innerHTML = "";
-        new_p_element.appendChild(new_span_in_p);
-        new_foreignObject.appendChild(new_p_element);
-        var new_bar_element = new_foreignObject;
-        parent_of_bar_elements.appendChild(new_foreignObject);
-        bar_element = new_bar_element;
+        var parent_of_bar_elements = document.getElementById('svg_img_g_' + date_unix);
+        bar_element = create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, parent_of_bar_elements);
+        parent_of_bar_elements.appendChild(bar_element);
     }
     var svg_element = bar_element.parentNode.parentNode;
     var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
@@ -233,39 +195,108 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
 
     bar_element.setAttributeNS(null, 'x', new_bar_x);
     bar_element.setAttributeNS(null, 'width', new_bar_width);
-    //console.log('bar_element');
-    console.log(bar_element);
+
     /*
      * lunch break:
      */
+    var new_box_x = (break_start_object.getHours() + break_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
+    var new_box_width = (
+            (break_end_object.getHours() + break_end_object.getMinutes() / 60)
+            -
+            (break_start_object.getHours() + break_start_object.getMinutes() / 60)
+            ) * bar_width_factor;
     var break_box_id = 'break_box_' + roster_row_iterator + '_' + date_unix;
     var break_box_element = document.getElementById(break_box_id);
-    if (break_box_element) {
+    if (!break_box_element) {
         /*
          * TODO: Also insert break boxes, if they are missing.
          */
-        var new_box_x = (break_start_object.getHours() + break_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
-        var new_box_width = (
-                (break_end_object.getHours() + break_end_object.getMinutes() / 60)
-                -
-                (break_start_object.getHours() + break_start_object.getMinutes() / 60)
-                ) * bar_width_factor;
-        break_box_element.x.baseVal.value = new_box_x;
-        break_box_element.width.baseVal.value = new_box_width;
+        var parent_of_bar_elements = document.getElementById('svg_img_g_' + date_unix);
+        break_box_element = create_new_break_rect(date_unix, new_box_x, new_box_width, roster_row_iterator, break_box_id, parent_of_bar_elements);
+        parent_of_bar_elements.appendChild(break_box_element);
     }
-    console.log(bar_element.childNodes[0]);
+    break_box_element.x.baseVal.value = new_box_x;
+    break_box_element.width.baseVal.value = new_box_width;
+    var employee_name_p_element = bar_element.childNodes[0];
     var employee_name_text_element = bar_element.childNodes[0].childNodes[0];
     var working_hours_span = bar_element.childNodes[0].childNodes[1];
     employee_name_text_element.nodeValue = List_of_employee_names[roster_item['employee_id']];
+    employee_name_p_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_id']]);
     working_hours_span.innerText = roster_item['working_hours'];
 }
 
-function create_new_bar_element() {
+function create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, parent_of_bar_elements) {
 
+    var svg_element = parent_of_bar_elements.parentNode;
+    var outer_margin_y = Number(svg_element.dataset.outer_margin_y);
+    var inner_margin_y = Number(svg_element.dataset.inner_margin_y);
+    var bar_height = Number(svg_element.dataset.bar_height);
+
+    var new_foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    /*
+     * Calculate the value of y:
+     * The formula is exactly the same as in class.roster_image_bar_plot.php
+     */
+    var y_pos = outer_margin_y + (inner_margin_y * (roster_row_iterator + 1)) + (bar_height * roster_row_iterator);
+    /*
+     * Assign all the known values and methods to the new object:
+     */
+    new_foreignObject.setAttributeNS(null, 'id', bar_element_id);
+    new_foreignObject.setAttributeNS(null, 'height', bar_height);
+    new_foreignObject.setAttributeNS(null, 'y', y_pos);
+    new_foreignObject.dataset.date_unix = date_unix;
+    new_foreignObject.dataset.line = roster_row_iterator;
+    new_foreignObject.dataset.box_type = 'work_box';
+    new_foreignObject.setAttributeNS(null, 'onmousedown', 'roster_change_table_on_drag_of_bar_plot(evt, "group")');
+    /*
+     * Add a paragraph (p) to the foreignObject:
+     * @type create_new_bar_element_p.new_p_element|Element
+     */
+    var new_p_element = create_new_bar_element_p();
+    new_foreignObject.appendChild(new_p_element);
+
+    /*
+     * Return the new foreignObject as the new bar element:
+     * @returns {new_foreignObject|Element}
+     */
+    return new_foreignObject;
 }
 
+function create_new_bar_element_p() {
+    var new_p_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
+    new_p_element.setAttributeNS(null, 'class', 'PTA');//TODO: Add the actual class for the specific employee!
+    var new_text_node = document.createTextNode('');
+    new_p_element.appendChild(new_text_node);
+    var new_span_in_p = document.createElementNS('http://www.w3.org/1999/xhtml', 'span');
+    new_span_in_p.innerHTML = "";
+    new_p_element.appendChild(new_span_in_p);
+    return new_p_element
+}
 
+function create_new_break_rect(date_unix, new_box_x, new_box_width, roster_row_iterator, break_box_id, parent_of_bar_elements) {
+    var svg_element = parent_of_bar_elements.parentNode;
+    var bar_height = Number(svg_element.dataset.bar_height);
+    var outer_margin_y = Number(svg_element.dataset.outer_margin_y);
+    var inner_margin_y = Number(svg_element.dataset.inner_margin_y);
 
+    /*
+     * Calculate the value of y:
+     * The formula is exactly the same as in class.roster_image_bar_plot.php
+     */
+    var y_pos = outer_margin_y + (inner_margin_y * (roster_row_iterator + 1)) + (bar_height * roster_row_iterator);
+
+    var new_rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    new_rect.setAttributeNS(null, 'id', break_box_id);
+    new_rect.setAttributeNS(null, 'x', new_box_x);
+    new_rect.setAttributeNS(null, 'y', y_pos);
+    new_rect.setAttributeNS(null, 'height', bar_height);
+    new_rect.setAttributeNS(null, 'width', new_box_width);
+    new_rect.setAttributeNS(null, 'onmousedown', 'roster_change_table_on_drag_of_bar_plot(evt, \"single\")');
+    new_rect.dataset.box_type = 'break_box';
+    new_rect.dataset.line = roster_row_iterator;
+    new_rect.dataset.date_unix = date_unix;
+    return new_rect;
+}
 function sync_from_bar_plot_to_roster_array_object(box_type, date_unix, roster_row_iterator, start_hour_float, end_hour_float) {
     var roster_item = Roster_array[date_unix][roster_row_iterator];
     switch (box_type) {

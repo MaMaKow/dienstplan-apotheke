@@ -148,6 +148,14 @@ class workforce {
         return $List_of_employee_last_names;
     }
 
+    public function get_list_of_employee_professions() {
+        $List_of_employee_professions = array();
+        foreach ($this->List_of_employees as $employee_id => $employee_object) {
+            $List_of_employee_professions[$employee_id] = $employee_object->profession;
+        }
+        return $List_of_employee_professions;
+    }
+
     public static function get_first_start_of_employment($employee_id) {
         $sql_query = "SELECT min(`start_of_employment`) as `first_start_of_employment` "
                 . " FROM `employees` "
