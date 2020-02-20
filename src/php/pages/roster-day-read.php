@@ -32,6 +32,7 @@ $user_dialog = new user_dialog();
 
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_unix = strtotime($date_sql);
+$date_object = new DateTime($date_sql);
 create_cookie("datum", $date_sql, 0.5);
 
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);

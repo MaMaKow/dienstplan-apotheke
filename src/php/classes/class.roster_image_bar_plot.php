@@ -74,6 +74,9 @@ class roster_image_bar_plot {
     private function draw_image_dienstplan($Roster, $svg_width, $svg_height) {
         $this->line = 0;
         $javascript_variables = "var bar_width_factor = $this->bar_width_factor;";
+        $javascript_variables .= " var outer_margin_y = $this->outer_margin_y;";
+        $javascript_variables .= " var inner_margin_y = $this->inner_margin_y;";
+        $javascript_variables .= " var bar_height = $this->bar_height;";
 
 
         $svg_viewBox_x_start = $this->first_start * $this->bar_width_factor;
@@ -141,7 +144,8 @@ class roster_image_bar_plot {
                 $work_box_id = "work_box_" . $this->line . '_' . $roster_item->date_unix;
                 $break_box_id = "break_box_" . $this->line . '_' . $roster_item->date_unix;
 
-                $svg_box_text .= "<foreignObject id=$work_box_id transform='matrix(1 0 0 1 0 0)' "
+                //$svg_box_text .= "<foreignObject id=$work_box_id transform='matrix(1 0 0 1 0 0)' "
+                $svg_box_text .= "<foreignObject id=$work_box_id "
                         . "onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"group\")' "
                         . "x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' "
                         . "style='cursor: $this->cursor_style_box;' "

@@ -822,6 +822,9 @@ svg.svg_img foreignObject p.PKA {
 svg.svg_img foreignObject p.selected {
     color: white;
 }
+svg.svg_img foreignObject p span {
+    float: right;
+}
 
 
 body table tbody tr.branch_roster_title_tr th{
