@@ -23,6 +23,12 @@ class roster_image_bar_plot {
     private $total_number_of_lines;
     private $first_start;
     private $last_end;
+    private $bar_width_factor;
+    private $font_size;
+    private $outer_margin_x;
+    private $outer_margin_y;
+    private $inner_margin_x;
+    private $inner_margin_y;
 
     public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
         foreach ($Roster as $Roster_day_array) {
@@ -44,6 +50,9 @@ class roster_image_bar_plot {
          * margins and default lengths:
          */
         $this->bar_height = 20;
+        /**
+         * @var bar_width_factor int describes the width of one hour in pixels.
+         */
         $this->bar_width_factor = 40;
         $this->font_size = $this->bar_height * 0.6;
         $this->outer_margin_x = 20;
@@ -55,12 +64,6 @@ class roster_image_bar_plot {
         $this->svg_outer_width = $svg_inner_width + ($this->outer_margin_x * 2);
         $this->svg_inner_height = $this->inner_margin_x * ($this->total_number_of_lines + 1) + $this->bar_height * $this->total_number_of_lines;
         $this->svg_outer_height = $this->svg_inner_height + ($this->outer_margin_y * 2);
-        /*
-         * cursor styles:
-         * TODO: These could be turned back to default in read_only views:
-         */
-        $this->cursor_style_box = 'move';
-        $this->cursor_style_break_box = 'cell';
 
         $this->svg_string = $this->draw_image_dienstplan($Roster, $svg_width, $svg_height);
     }
@@ -73,7 +76,6 @@ class roster_image_bar_plot {
      */
     private function draw_image_dienstplan($Roster, $svg_width, $svg_height) {
         $this->line = 0;
-        $javascript_variables = "var bar_width_factor = $this->bar_width_factor;";
 
 
         $svg_viewBox_x_start = $this->first_start * $this->bar_width_factor;
@@ -89,6 +91,9 @@ class roster_image_bar_plot {
                 . "viewBox='$svg_viewBox_string' "
                 . "data-inner_margin_x=$this->inner_margin_x "
                 . "data-outer_margin_x=$this->outer_margin_x "
+                . "data-inner_margin_y=$this->inner_margin_y "
+                . "data-outer_margin_y=$this->outer_margin_y "
+                . "data-bar_height=$this->bar_height "
                 . "data-bar_width_factor=$this->bar_width_factor"
                 . ">\n";
 
@@ -141,10 +146,9 @@ class roster_image_bar_plot {
                 $work_box_id = "work_box_" . $this->line . '_' . $roster_item->date_unix;
                 $break_box_id = "break_box_" . $this->line . '_' . $roster_item->date_unix;
 
-                $svg_box_text .= "<foreignObject id=$work_box_id transform='matrix(1 0 0 1 0 0)' "
+                $svg_box_text .= "<foreignObject id=$work_box_id "
                         . "onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"group\")' "
                         . "x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' "
-                        . "style='cursor: $this->cursor_style_box;' "
                         . "data-line='$this->line' "
                         . "data-date_unix='$date_unix' "
                         . "data-box_type='work_box' "
@@ -155,14 +159,14 @@ class roster_image_bar_plot {
                 } else {
                     $svg_box_text .= "Unknown employee: " . $employee_id;
                 }
-                $svg_box_text .= "<span style='float: right'>$working_hours</span>";
+                $svg_box_text .= "<span>$working_hours</span>";
                 $svg_box_text .= "</p>";
                 $svg_box_text .= "</foreignObject>";
 
-                $svg_box_text .= "<rect id='$break_box_id' transform='matrix(1 0 0 1 0 0)' "
+                $svg_box_text .= "<rect id='$break_box_id' "
                         . "onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"single\")' "
                         . "x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' "
-                        . "stroke='black' stroke-width='0.3' style='fill:#FEFEFF; cursor: $this->cursor_style_break_box;' "
+                        . " "
                         . "data-line='$this->line' "
                         . "data-box_type='break_box' "
                         . "data-date_unix=$date_unix "
@@ -174,7 +178,6 @@ class roster_image_bar_plot {
         }
         $svg_text .= $this->draw_image_dienstplan_add_axis_labeling();
         $svg_text .= "</svg>\n";
-        $svg_text .= "<script>$javascript_variables</script>";
         $svg_text .= "<script src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/js/drag-and-drop.js'></script>";
         return $svg_text;
     }
@@ -189,8 +192,8 @@ class roster_image_bar_plot {
             $y_pos_text = $this->font_size;
             $y_pos_grid_start = $this->outer_margin_y;
             $y_pos_grid_end = $this->outer_margin_y + $this->svg_inner_height;
-            $svg_grid_text .= "<line x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end' stroke-dasharray='1, 8' style='stroke:black;stroke-width:2' />\n";
-            $svg_grid_text .= "<line x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' stroke-dasharray='1, 16' style='stroke:black;stroke-width:2' />\n";
+            $svg_grid_text .= "<line class='grid_line' x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end'  />\n";
+            $svg_grid_text .= "<line class='grid_line_secondary' x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' />\n";
             $svg_grid_text .= "<text x='$this->x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
             $svg_grid_text .= "<text x='$this->x_pos_text' y='$this->svg_outer_height' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
         }

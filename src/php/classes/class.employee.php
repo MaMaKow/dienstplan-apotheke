@@ -29,6 +29,7 @@ class employee {
     public $first_name;
     public $last_name;
     public $full_name;
+    public $profession;
 
     /**
      *
