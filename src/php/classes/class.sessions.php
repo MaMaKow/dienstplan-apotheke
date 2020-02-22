@@ -287,7 +287,7 @@ class sessions {
 
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
-                . gettext("Dear User,\n\n in order to set a new password for")
+                . gettext("Dear $user_name,\n\n in order to set a new password for")
                 . " '"
                 . $application_name
                 . "' "

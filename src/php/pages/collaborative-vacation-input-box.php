@@ -109,12 +109,19 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
 <p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $Absence_details['comment'] ?>"></p>
 <?php
 if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {
-    //TODO: Remove all occurences of "disapprove" and change them to "deny".
-    if ("approved" !== $Absence_details['approval']) {
-        echo "<button type='submit' value='approved'         name='approve_absence' />" . gettext("Approve") . "</button>";
-        echo "<button type='submit' value='not_yet_approved' name='approve_absence' />" . gettext("Pending") . "</button>";
-        echo "<button type='submit' value='disapproved'      name='approve_absence' />" . gettext("Deny") . "</button>";
+    echo "<p>" . gettext("Approval") . "<br>";
+    echo "<select id='input_box_form_approval' name='approval'>";
+
+    foreach (absence::$List_of_approval_states as $approval_state) {
+        //TODO: Remove all occurences of "disapprove" and change them to "deny".
+        if ($approval_state == $Absence_details['approval']) {
+            echo "<option value='$approval_state' selected>" . localization::gettext($approval_state) . "</option>\n";
+        } else {
+            echo "<option value='$approval_state'>" . localization::gettext($approval_state) . "</option>\n";
+        }
     }
+    echo "</select>";
+    echo "</p>";
 }
 if (
         $session->user_has_privilege('create_absence')

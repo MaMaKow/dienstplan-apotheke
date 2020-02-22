@@ -63,9 +63,8 @@ class collaborative_vacation {
         if ($session->user_has_privilege('create_absence')) {
             /*
              * User is allowed to write any input to the database.
-             * But still we will turn any input into a not_yet_approved state
              */
-            $approval = "not_yet_approved";
+            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING);
         } elseif ($session->user_has_privilege('request_own_absence')) {
             /*
              * User is only allowed to ask for specific changes to the database.
@@ -90,11 +89,33 @@ class collaborative_vacation {
                 throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
             }
             $approval = "not_yet_approved";
+            global $config;
+            $recipient = $config['contact_email'];
+            $subject = "An absence for " . $_SESSION['user_object']->user_name . " was changed.";
+            $message = "Dear Admin,\n\n";
+            $message = "An absence for " . $_SESSION['user_object']->user_name . " was inserted or changed.\n";
+            $message .= "\nUser input:";
+            $message .= "$employee_id  = $employee_id
+        start_date_string = $start_date_string
+        end_date_string = $end_date_string
+        reason = $reason
+        comment = $comment
+        command = $command
+        employee_id_old = $employee_id_old
+        start_date_old_string = $start_date_old_string"; //TODO: Test this an then gettext.
+            $user_dialog_email->send_email($recipient, $subject, $message);
         } else {
             /*
              * This point should never be reached.
              */
-            return FALSE;
+            error_log("Permissions: Employee " . $_SESSION['user_object']->employee_id . " seems to misuse collaborative vacation.");
+            $user_dialog_email = new user_dialog_email;
+            global $config;
+            $recipient = $config['contact_email'];
+            $subject = "Permission Error";
+            $message = "Permissions: Employee " . $_SESSION['user_object']->employee_id . " seems to misuse collaborative vacation.";
+            $user_dialog_email->send_email($recipient, $subject, $message);
+            throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
         }
 
         //Decide on $approval state
