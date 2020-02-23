@@ -183,6 +183,9 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     var bar_width_factor = svg_element.dataset.bar_width_factor;
     var duty_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_start_sql']);
     var duty_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_end_sql']);
+    /*
+     * TODO: Insert error handling here. When the employe is changed to null and the break is edited, there is an error, which does not recover just by again adding the employee.
+     */
     var break_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_start_sql']);
     var break_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_end_sql']);
     /*var break_duration_integer = (break_end_object - break_start_object);*/
