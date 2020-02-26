@@ -149,9 +149,8 @@ function get_php_binary() {
 /**
  * Execute a shell command without waiting for it's output.
  *
- * @todo Find a better way to do this and get rid of exec!
+ * @cave Find a better way to do this and get rid of exec!
  * @param string $command
- */
 function execute_in_background(string $command) {
     $filtered_command = escapeshellcmd($command);
     unset($command);
@@ -162,3 +161,4 @@ function execute_in_background(string $command) {
         exec($filtered_command . " > $logfile 2>&1 &");
     }
 }
+ */

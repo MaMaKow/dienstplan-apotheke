@@ -222,11 +222,10 @@ class sessions {
 
             /*
              * Start another PHP process to do maintenance tasks:
+             * Obsolete: This is now done via XMLHttpRequest() from the login page.
+              $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php';
+              execute_in_background($command);
              */
-            $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php';
-            execute_in_background($command);
-            //$command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php' . ' > ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log 2>&1 &';
-            //exec($command);
 
 
             if (TRUE === $redirect) {

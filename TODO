@@ -1,3 +1,10 @@
+Restructure the menu:
+- Dienstpläne
+- Grundpläne
+- Abwesenheiten
+- Überstunden
+
+
 Build an API for android apps
   - use a secure token for login
   - build an android app
