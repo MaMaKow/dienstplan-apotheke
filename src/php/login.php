@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../default.php';
+/*
+ * TODO: send referer via session?
+ */
 $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
 
 if (filter_has_var(INPUT_GET, 'login')) {
@@ -45,5 +48,12 @@ echo "<H1>" . $application_name . "</H1>\n";
 <p class="unobtrusive"><a href="register.php"><?= gettext("Create new user account") ?></a></p>
 <p class="unobtrusive"><a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>/src/php/pages/lost_password.php"><?= gettext("Forgot password?") ?></a></p>
 </div>
+<script>
+    /*
+     * Call the maintenance script on every login:
+     * It will only execute it's code once a day.
+     */
+    query_webserver_without_response('<?= PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/background_maintenance.php' ?>');
+</script>
 </body>
 </html>
