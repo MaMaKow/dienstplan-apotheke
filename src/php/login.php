@@ -19,10 +19,12 @@ require '../../default.php';
 /*
  * TODO: send referer via session?
  */
-$referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
 
-if (filter_has_var(INPUT_GET, 'login')) {
-    $errorMessage = $session->login();
+if (filter_has_var(INPUT_POST, 'login')) {
+    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
+    $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_STRING);
+
+    $errorMessage = $session->login($user_name, $user_password, TRUE);
 }
 require "../../head.php";
 
@@ -33,15 +35,18 @@ if (isset($config['application_name'])) {
     $application_name = 'PDR';
 }
 echo "<H1>" . $application_name . "</H1>\n";
+$user_dialog = new user_dialog();
+$user_dialog->build_messages();
 ?>
 
-<form accept-charset='utf-8' action="?login=1&referrer=<?php echo $referrer; ?>" method="post">
+<form accept-charset='utf-8' action="" method="post">
+    <input type="hidden" name="login" value="1">
     <input type="text" size="25" maxlength="250" name="user_name" placeholder="Benutzername"><br>
     <input type="password" size="25" name="user_password" placeholder="Passwort"><br>
     <input type="submit"><br>
     <?php
     if (!empty($errorMessage)) {
-        echo $errorMessage;
+        echo '<p>' . $errorMessage . '</p>';
     }
     ?>
 </form>

@@ -96,10 +96,11 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        if (!isset($_SESSION['user_object']->employee_id) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
+        $List_of_pages_accessible_without_login = array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
+        if (!isset($_SESSION['user_object']->employee_id) and ! in_array(basename($script_name), $List_of_pages_accessible_without_login)) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
-            header("Location:" . $location . "?referrer=" . $request_uri);
-            die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>' . PHP_EOL);
+            header("Location:" . $location);
+            die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
         }
         $this->keep_alive();
     }
@@ -165,26 +166,11 @@ class sessions {
         }
     }
 
-    public function login($user_name = NULL, $user_password = NULL, $redirect = TRUE) {
-        global $pdo;
+    public function login($user_name, $user_password, $redirect = TRUE) {
         $user_dialog = new user_dialog;
-        /*
-         * TODO: Use user_dialog for the error messages
-         * user_dialog->add_message($text);
-         * user_dialog->build_messages();
-         */
-        $errorMessage = "";
-        /*
-         * Interpret POST data:
-         */
-        if (NULL === $user_name) {
-            $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
-        }
-        if (NULL === $user_password) {
-            $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_STRING);
-        }
         if (empty($user_password) OR empty($user_name)) {
-            exit("No login credentials were given.\n");
+            $user_dialog->add_message("No login credentials were given.", E_USER_ERROR);
+            return FALSE;
         }
         /*
          * Get user data:
@@ -201,9 +187,9 @@ class sessions {
          * The number of failed attempts is reset to 0 on every successfull login.
          */
         if (3 <= $user->failed_login_attempts and strtotime('-5min') <= strtotime($user->failed_login_attempt_time)) {
-            $errorMessage .= "<p>Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.</p>";
-            $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
-            return $errorMessage;
+            $errorMessage = "Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.";
+            $user_dialog->add_message($errorMessage, E_USER_ERROR);
+            return FALSE;
         }
 
         /*
@@ -229,13 +215,15 @@ class sessions {
 
 
             if (TRUE === $redirect) {
-                $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
+
                 if (!isset($_SESSION['number_of_times_redirected'])) {
                     $_SESSION['number_of_times_redirected'] = 0;
                 }
                 if (!empty($referrer)) {
                     if ($_SESSION['number_of_times_redirected'] < 3) {
                         $_SESSION['number_of_times_redirected'] ++;
+                        $referrer = 'pages/menu-tiles.php';
+                        //die("Location:" . $referrer);
                         header("Location:" . $referrer);
                     }
                 } else {
@@ -252,27 +240,16 @@ class sessions {
              * Register failed_login_attempts
              */
             $user->register_failed_login_attempt();
-            $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
-            $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
-            return $errorMessage;
+            $errorMessage = "Benutzername oder Passwort war ungültig.";
+            $user_dialog->add_message($errorMessage, E_USER_ERROR);
+            return FALSE;
         }
         return FALSE;
     }
 
     public static function logout() {
-        if (session_destroy()) {
-            //echo "Logout erfolgreich";
-        }
+        session_destroy();
         header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php");
-    }
-
-    public function build_logout_button() {
-        /*
-         * TODO: MOve this to build_navigation perhaps.
-         */
-        $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
-        $text_html = "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/logout.php'>" . gettext('Logout') . '</a>';
-        return $text_html;
     }
 
     function send_mail_about_lost_password($employee_id, $user_name, $recipient, $token) {

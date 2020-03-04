@@ -131,7 +131,9 @@
                     </a>
                 </li>
                 <li>
-                    <?= $session->build_logout_button(); ?>
+                    <a href='<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/logout.php'>
+                        <?= gettext('Logout') ?>
+                    </a>
                 </li>
             </ul>
 
