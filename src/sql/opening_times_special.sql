@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `opening_times_special` (
-  `Datum` date NOT NULL,
-  `Beginn` time NOT NULL,
-  `Ende` time NOT NULL,
-  `Bezeichnung` varchar(64) DEFAULT NULL,
-  PRIMARY KEY (`Datum`)
+  `date` date NOT NULL,
+  `start` time NOT NULL,
+  `end` time NOT NULL,
+  `event_name` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1

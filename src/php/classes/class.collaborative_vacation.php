@@ -54,7 +54,7 @@ class collaborative_vacation {
         $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
         $start_date_string = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
         $end_date_string = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
-        $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
+        $reason_id = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_NUMBER_INT);
         $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
         $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING);
         $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
@@ -98,7 +98,7 @@ class collaborative_vacation {
             $message .= "$employee_id  = $employee_id
         start_date_string = $start_date_string
         end_date_string = $end_date_string
-        reason = $reason
+        reason_id = $reason_id
         comment = $comment
         command = $command
         employee_id_old = $employee_id_old
@@ -118,20 +118,6 @@ class collaborative_vacation {
             throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
         }
 
-        //Decide on $approval state
-        /*
-         * Every change is put back to "not_yet_approved".
-         * Therefore we currently do not need the following block of code:
-          $query = "SELECT `approval` FROM absence WHERE `employee_id` = '$employee_id_old' AND `start` = '$start_date_old_string'";
-          $result = \database_wrapper::instance()->run($query);
-          $row = $result->fetch(PDO::FETCH_OBJ);
-          if (empty($approval) and empty($row->approval)) {
-          $approval = "not_yet_approved";
-          } elseif (empty($approval)) {
-          $approval = $row->approval;
-          }
-
-         */
 
         database_wrapper::instance()->beginTransaction();
         /*
@@ -148,7 +134,7 @@ class collaborative_vacation {
             $workforce = new \workforce();
             $employee_object = $workforce->get_employee_object($employee_id);
             $days = \absence::calculate_employee_absence_days(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
-            absence::insert_absence($employee_id, new DateTime($start_date_string), new DateTime($end_date_string), $days, $reason, $comment, $approval);
+            absence::insert_absence($employee_id, new DateTime($start_date_string), new DateTime($end_date_string), $days, $reason_id, $comment, $approval);
         }
         database_wrapper::instance()->commit();
     }
@@ -404,7 +390,7 @@ class collaborative_vacation {
 
     private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence) {
         $absence_title_text = $workforce->get_employee_last_name($Absence['employee_id']) . "\n";
-        $absence_title_text .= localization::gettext($Absence['reason']) . "\n";
+        $absence_title_text .= absence::get_reason_string_localized($Absence['reason_id']) . "\n";
         $absence_title_text .= $Absence['comment'] . "\n";
         $absence_title_text.= gettext('from') . ' ' . strftime('%x', strtotime($Absence['start'])) . "\n";
         $absence_title_text.= gettext('to') . ' ' . strftime('%x', strtotime($Absence['end'])) . "\n";
