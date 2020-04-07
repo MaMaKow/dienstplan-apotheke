@@ -47,6 +47,10 @@ echo form_element_builder::build_html_select_year($year);
         ?>
     </TR>
     <?php
+    /*
+     * TODO: Use date object
+     * TODO: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_id] equals/contains/holds a reason_id for the absence.
+     */
     for ($date_unix = $start_date_unix; $date_unix < strtotime('+ 1 month', $start_date_unix); $date_unix = $date_unix + PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date("Y-m-d", $date_unix);
         if (date('N', $date_unix) >= 6) {
@@ -61,8 +65,8 @@ echo form_element_builder::build_html_select_year($year);
             //TODO: The following part is not localized. It will not wrk in any other language:
             foreach (array_keys($workforce->List_of_employees) as $employee_id) {
                 if (isset($Absentees[$employee_id])) {
-                    $reason_short_string = mb_substr(localization::gettext($Absentees[$employee_id]), 0, 4);
-                    echo "<TD style='padding-bottom: 0' title='" . $Absentees[$employee_id] . "'>" . $reason_short_string . "</TD>";
+                    $reason_short_string = mb_substr(absence::get_reason_string_localized($Absentees[$employee_id]), 0, 4);
+                    echo "<TD style='padding-bottom: 0' title='" . absence::get_reason_string_localized($Absentees[$employee_id]) . "'>" . $reason_short_string . "</TD>";
                 } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_id'] == $employee_id) {
                     $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . gettext("emergency service") . "'>" . $reason_short_string . "</TD>";
@@ -74,8 +78,6 @@ echo form_element_builder::build_html_select_year($year);
         echo "</TR>\n";
     }
     ?>
-
-</TD>
 </TABLE>
 <?php require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php'; ?>
 </BODY>

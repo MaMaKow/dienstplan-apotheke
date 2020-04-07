@@ -28,7 +28,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>";
     $tablebody .= "<td>" . date('d.m.Y', strtotime($row->start)) . "</td>";
     $tablebody .= "<td>" . date('d.m.Y', strtotime($row->end)) . "</td>";
-    $tablebody .= "<td>" . localization::gettext($row->reason) . "</td>";
+    $tablebody .= "<td>" . absence::get_reason_string_localized($row->reason_id) . "</td>";
     $tablebody .= "<td>" . "$row->days" . "</td>";
     $tablebody .= "</tr>\n";
 }

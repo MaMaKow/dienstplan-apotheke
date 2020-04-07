@@ -24,13 +24,6 @@
  */
 class update_database {
 
-    private $pdr_list_of_refactored_tables = array(
-        'mandant' => 'branch',
-        'Mandant' => 'branch',
-        'dienstplan' => 'roster',
-        'Dienstplan' => 'roster',
-    );
-
     public function __construct() {
         /*
          * Check if update is necessary
@@ -89,10 +82,46 @@ class update_database {
 
     private function refactor_absence_table() {
         global $config;
+        if (!database_wrapper::database_table_column_exists($config['database_name'], 'absence', 'reason_id')) {
+            $Sql_query_array = array();
+            $Sql_query_array[] = "CREATE TABLE IF NOT EXISTS `absence_reasons` (
+              `id` tinyint(3) UNSIGNED NOT NULL,
+              `reason_string` varchar(32) COLLATE latin1_german1_ci NOT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;";
+            $Sql_query_array[] = "INSERT INTO `absence_reasons` (`id`, `reason_string`) VALUES
+                (1, 'vacation'),
+                (2, 'remaining vacation'),
+                (3, 'sickness'),
+                (4, 'sickness of child'),
+                (5, 'taken overtime'),
+                (6, 'paid leave of absence'),
+                (7, 'maternity leave'),
+                (8, 'parental leave');";
+            $Sql_query_array[] = "ALTER TABLE `absence` ADD `reason_id` TINYINT UNSIGNED NOT NULL AFTER `employee_id`;";
+
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '1' WHERE `absence`.`reason` = 'vacation';";
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '2' WHERE `absence`.`reason` = 'remaining holiday';";
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '3' WHERE `absence`.`reason` = 'sickness';";
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '4' WHERE `absence`.`reason` = 'sickness of child';";
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '5' WHERE `absence`.`reason` = 'unpaid leave of absence';";
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '6' WHERE `absence`.`reason` = 'paid leave of absence';";
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '7' WHERE `absence`.`reason` = 'maternity leave';";
+            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '8' WHERE `absence`.`reason` = 'parental leave';";
+            $Sql_query_array[] = "ALTER TABLE `absence` ADD FOREIGN KEY (`reason_id`) REFERENCES `absence_reasons`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;";
+            $Sql_query_array[] = "ALTER TABLE `absence` DROP `reason`;";
+            database_wrapper::instance()->beginTransaction();
+            foreach ($Sql_query_array as $sql_query) {
+                $result = database_wrapper::instance()->run($sql_query);
+                if ('00000' !== $result->errorCode()) {
+                    database_wrapper::instance()->rollBack();
+                    return FALSE;
+                }
+            }
+            database_wrapper::instance()->commit();
+        }
         if (!database_wrapper::database_table_column_exists($config['database_name'], 'absence', 'comment')) {
             $sql_query = "ALTER TABLE `absence` ADD `comment` VARCHAR(64) NULL DEFAULT NULL AFTER `days`;";
-            database_wrapper::instance()->run($sql_query);
-            $sql_query = "ALTER TABLE `absence` CHANGE `reason` `reason` ENUM('maternity leave','paid leave of absence','parental leave','remaining holiday','sickness','sickness of child','unpaid leave of absence','vacation') CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL;";
             database_wrapper::instance()->run($sql_query);
         }
     }

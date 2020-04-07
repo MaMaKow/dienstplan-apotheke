@@ -16,6 +16,8 @@ echo "We are currently on the commit $current_version.";
 echo "major: $current_version_major";
 echo "minor $current_version_minor";
 echo "patch $current_version_patch";
+echo "Writting current state of the database structure into the src/sql/ folder";
+php "tests\get-database-structure.php";
 echo "";
 read -p "Show git status? [y/n] " -N 1 decision_git_status;
 if [ "y" == "$decision_git_status" ] || [ "Y" == "$decision_git_status" ]

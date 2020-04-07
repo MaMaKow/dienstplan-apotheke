@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS `pep` (
   `Datum` date NOT NULL,
   `Zeit` time NOT NULL,
   `Anzahl` int(11) NOT NULL,
-  `Mandant` int(11) DEFAULT '1',
+  `Mandant` int(11) DEFAULT 1,
   PRIMARY KEY (`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1

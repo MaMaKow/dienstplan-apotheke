@@ -27,7 +27,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $Absence_details_unsafe = json_decode($absence_details_json_unsafe, TRUE);
     $filters = array(
         'employee_id' => FILTER_SANITIZE_NUMBER_INT,
-        'reason' => FILTER_SANITIZE_STRING,
+        'reason_id' => FILTER_SANITIZE_NUMBER_INT,
         'comment' => FILTER_SANITIZE_STRING,
         'start' => FILTER_SANITIZE_STRING,
         'end' => FILTER_SANITIZE_STRING,
@@ -51,7 +51,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
     $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
     $Absence_details['employee_id'] = $employee_id;
-    $Absence_details['reason'] = gettext('Vacation');
+    $Absence_details['reason_id'] = absence::REASON_VACATION;
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
     $Absence_details['comment'] = '';
@@ -105,7 +105,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
 -->
 <p><?= gettext("Start") ?><br><input type="date" id="input_box_form_start_date" name="start_date" value="<?= $Absence_details['start'] ?>"></p>
 <p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>"></p>
-<p><?= gettext("Reason") ?><br><?= absence::build_reason_input_select($Absence_details['reason'], NULL, 'input_box_form') ?></p>
+<p><?= gettext("Reason") ?><br><?= absence::build_reason_input_select($Absence_details['reason_id'], NULL, 'input_box_form') ?></p>
 <p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $Absence_details['comment'] ?>"></p>
 <?php
 if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {

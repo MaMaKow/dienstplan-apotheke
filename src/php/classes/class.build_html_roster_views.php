@@ -25,7 +25,7 @@ abstract class build_html_roster_views {
     /**
      * Build one table row for a daily view
      *
-     * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (string)reason_for_absence)
+     * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (int)id_of_reason_for_absence)
      *
      * @return string HTML table row
      */
@@ -43,15 +43,15 @@ abstract class build_html_roster_views {
      * Build one table column for a weekly view
      *
      * used by: src/php/pages/roster-week-table.php
-     * @param $Absentees array expects an array of absent employees in the format array(employee_id => reason_for_absence)
+     * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (int)id_of_reason_for_absence)
      *
      * @return string HTML table column
      */
     public static function build_absentees_column($Absentees) {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
-        foreach ($Absentees as $employee_id => $reason) {
-            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . localization::gettext($reason) . ")<br>";
+        foreach ($Absentees as $employee_id => $reason_id) {
+            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . absence::get_reason_string_localized($reason_id) . ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -571,10 +571,10 @@ abstract class build_html_roster_views {
             $holiday = holidays::is_holiday($date_unix);
             $Absentees = absence::read_absentees_from_database($date_sql);
             /**
-             * @var $List_of_non_respected_absence_reasons
-             * @see absence::$List_of_absence_reasons for a full list of absence reasons (paid and unpaid)
+             * @var $List_of_non_respected_absence_reason_ids
+             * @see absence::$List_of_absence_reasons for a full list of absence reason ids (paid and unpaid)
              */
-            $List_of_non_respected_absence_reasons = array('unpaid leave of absence');
+            $List_of_non_respected_absence_reason_ids = array(absence::REASON_TAKEN_OVERTIME);
 
             /*
              * Substract days, which are holidays:
@@ -589,8 +589,8 @@ abstract class build_html_roster_views {
             /*
              * Substract days, which are respected absence_days:
              */
-            foreach ($Absentees as $employee_id => $reason) {
-                if (!in_array($reason, $List_of_non_respected_absence_reasons) and FALSE === $holiday and date('N', $date_unix) < 6) {
+            foreach ($Absentees as $employee_id => $reason_id) {
+                if (!in_array($reason_id, $List_of_non_respected_absence_reason_ids) and FALSE === $holiday and date('N', $date_unix) < 6) {
                     $Working_hours_week_should[$employee_id] -= $workforce->List_of_employees[$employee_id]->working_week_hours / 5;
                 }
             }

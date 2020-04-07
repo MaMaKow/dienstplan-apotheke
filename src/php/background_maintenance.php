@@ -23,7 +23,6 @@
  * It is the responsibility of the classes to check if there is work to do and how much.
  */
 chdir(dirname(__DIR__, 2));
-session_start();
 require_once 'default.php';
 session_destroy();
 new update_database();

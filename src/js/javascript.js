@@ -317,15 +317,6 @@ function cancelEdit(beginn) {
     }
 
 
-    var list = document.getElementsByClassName('datepickershow');
-    console.log(list);
-    var i;
-    for (i = 0; i < list.length; i++) {
-        console.log(list[i].parentElement);
-        list[i].parentElement.removeChild(list[i]);
-    }
-    var list = document.getElementsByClassName('datepickershow');
-    list[0].parentElement.removeChild(list[0]); //For some reason one datepicker survives the first deletion.
     return false;
 }
 
