@@ -44,7 +44,7 @@ This project aims to follow some coding style guide.
 \item Opening braces for control structures SHOULD go on the same line, and closing
 braces MUST go on the next line after the body.
 \end{itemize}
-Disk space is not rare anymore. IDEs are helping with autocomplete. There is no need to abbreviate stuff. Please use long terms like \lstinline|user_email_notification_cache| instead of \lstinline|usr_ml_ntfcn_ca| or \lstinline|u_e_n_c|. 
+Disk space is not rare anymore. IDEs are helping with autocomplete. There is no need to abbreviate stuff. Please use long terms like \lstinline|user_email_notification_cache| instead of \lstinline|usr_ml_ntfcn_ca| or \lstinline|u_e_n_c|.
 
 \subsection{The database}
 Currently there is only MySQL supported as a database management system (DBMS).
@@ -82,8 +82,8 @@ The tables are:
 
 
 A copy of all the table structures is stored in \directory{src/sql/}.
-The directory also contains the file \directory{src/sql/database\_version\_hash.php} which holds a SHA1 hash of all 
-the structures returned by \lstinline|SHOW CREATE TABLE| and \lstinline|SHOW CREATE TRIGGER| after some modification. 
+The directory also contains the file \directory{src/sql/database\_version\_hash.php} which holds a SHA1 hash of all
+the structures returned by \lstinline|SHOW CREATE TABLE| and \lstinline|SHOW CREATE TRIGGER| after some modification.
 The hash is written by \directory{tests/get-database-structure.php}, see the details in that file.
 
 \subsubsection{Maintenance of the database}
@@ -101,6 +101,11 @@ The class \emph{database\_wrapper} has a function \emph{create\_table\_from\_tem
 \subsection{Classes}
 The classes are stored in the folder \directory{src/php/classes/} or \directory{src/php/3rdparty/}.
 The autoloader will only load classes from \directory{\lstinline|src/php/classes/class.\$class_name.php|}, every other class has to be manually included.
+
+\subsubsection{DateTime}
+\emph{Why are all the DateTime objects cloned as input into all the methods?}
+Because Objects are always passed as references to the original object.
+And modifications of the object in the method may change the dates.
 
 \subsubsection{user}
 The user class represents an employee, who has registered a user account in PDR.

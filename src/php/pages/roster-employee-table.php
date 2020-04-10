@@ -44,7 +44,7 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
     $employee_id = $_SESSION['user_object']->employee_id;
 }
 
-$roster_object = new roster($date_start_object, $date_end_object, $employee_id, NULL);
+$roster_object = new roster(clone $date_start_object, clone $date_end_object, $employee_id, NULL);
 $Roster = $roster_object->array_of_days_of_roster_items;
 $List_of_branch_objects = branch::get_list_of_branch_objects();
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {

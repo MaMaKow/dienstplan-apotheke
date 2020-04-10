@@ -458,7 +458,7 @@ abstract class build_html_roster_views {
         $date_start_object->setTimestamp(min($List_of_date_unix_in_roster));
         $date_end_object = new DateTime();
         $date_end_object->setTimestamp(max($List_of_date_unix_in_roster));
-        $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $date_start_object, $date_end_object);
+        $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $date_start_object, clone $date_end_object);
         $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Principle_roster);
 
         for ($table_row_iterator = 0; $table_row_iterator < $max_employee_count; $table_row_iterator++) {

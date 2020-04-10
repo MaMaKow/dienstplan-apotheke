@@ -141,13 +141,13 @@ if (1 === count($List_of_employee_ids)) {
      * Maybe make a foreach loop. Also try to encapsulate into some functions
      */
     $employee_id = current($List_of_employee_ids);
-    $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
+    $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, clone $date_start_object, clone $date_end_object);
     $alternating_week_id = alternating_week::get_alternating_week_for_date($date_start_object);
     $earliest_allowed_valid_from = max(principle_roster::get_list_of_employee_change_dates($employee_id, $alternating_week_id));
 } else if (1 === count($List_of_branch_ids)) {
     $referrer_url = '../pages/principle-roster-day.php';
     $branch_id = current($List_of_branch_ids);
-    $Principle_roster_old = principle_roster::read_current_principle_roster_from_database($branch_id, $date_start_object, $date_end_object);
+    $Principle_roster_old = principle_roster::read_current_principle_roster_from_database($branch_id, clone $date_start_object, clone $date_end_object);
     $alternating_week_id = alternating_week::get_alternating_week_for_date($date_start_object);
     $earliest_allowed_valid_from = max(principle_roster_history::get_list_of_change_dates($alternating_week_id));
 } else {

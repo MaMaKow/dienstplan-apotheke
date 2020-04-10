@@ -39,7 +39,7 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
         $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
         $valid_from = ( new alternating_week(
                 alternating_week::get_alternating_week_for_date($some_date_from_input))
-                )->get_monday_date_for_alternating_week($valid_from_input);
+                )->get_monday_date_for_alternating_week(clone $valid_from_input);
         principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_differences, $valid_from->format('Y-m-d'));
     }
 }
@@ -59,22 +59,21 @@ $html_text .= build_html_navigation_elements::build_select_employee($employee_id
 
 function build_change_principle_roster_employee_form(int $alternating_week_id, DateTime $date_minimum, int $employee_id, bool $hide_this_form) {
     $alternating_week = new alternating_week($alternating_week_id);
-    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week($date_minimum);
+    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week(clone $date_minimum);
     $pseudo_date_end_object = clone $pseudo_date_start_object;
     $pseudo_date_end_object->add(new DateInterval('P6D'));
 
-    $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $pseudo_date_start_object, $pseudo_date_end_object);
+    $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_id, clone $pseudo_date_start_object, clone $pseudo_date_end_object);
     /*
      * TODO: We might stop using a transfer for the lunch breaks.
      *   This means, that the breaks will not magically appear in the principle-roster-employee.php
-     *   They will however robably be automaticcaly be inserted in the daily view.
+     *   They will however probably be automaticcaly be inserted in the daily view.
      *   This might bring up some confusion. Should I give up calculating probably lunch_breaks alltogether?
      *     If so, should there be a warning/notice if the law wants a break to be given?
-     *
      */
     $workforce = new workforce($pseudo_date_start_object->format('Y-m-d'), $pseudo_date_end_object->format('Y-m-d'));
     $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
-    $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
+    $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $pseudo_date_start_object, clone $pseudo_date_end_object);
     roster::transfer_lunch_breaks($Principle_employee_roster, $Principle_roster);
     unset($Principle_roster);
 
@@ -204,7 +203,7 @@ foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
              */
             $hide_this_form = FALSE;
         }
-        $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $valid_from_object, $employee_id, $hide_this_form);
+        $html_text .= build_change_principle_roster_employee_form($alternating_week_id, clone $valid_from_object, $employee_id, $hide_this_form);
     }
     $html_text .= "</div>";
 }

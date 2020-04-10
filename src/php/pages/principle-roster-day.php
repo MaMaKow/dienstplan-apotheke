@@ -34,7 +34,7 @@ if (!in_array($alternating_week_id, alternating_week::get_alternating_week_ids()
     $alternating_week_id = alternating_week::get_min_alternating_week_id();
 }
 $alternating_week = new alternating_week($alternating_week_id);
-$date_object = $alternating_week->get_monday_date_for_alternating_week($chosen_history_date_valid_from);
+$date_object = $alternating_week->get_monday_date_for_alternating_week(clone $chosen_history_date_valid_from);
 if ($weekday > 1) {
     $date_object->add(new DateInterval('P' . ($weekday - 1) . 'D'));
 }
@@ -63,7 +63,7 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
         $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
         $valid_from = ( new alternating_week(
                 alternating_week::get_alternating_week_for_date($some_date_from_input))
-                )->get_monday_date_for_alternating_week($valid_from_input);
+                )->get_monday_date_for_alternating_week(clone $valid_from_input);
         principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_differences, $valid_from->format('Y-m-d'));
     }
 }
@@ -76,7 +76,7 @@ if (filter_has_var(INPUT_POST, 'principle_roster_delete')) {
     user_input::principle_roster_delete($principle_roster_delete);
 }
 
-$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object, $date_object);
+$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $date_object, clone $date_object);
 /*
  * TODO: Build this page for the new valid_from approach!;
  */
@@ -92,10 +92,10 @@ echo "<div id=main-area>\n";
 echo build_html_navigation_elements::build_select_branch($branch_id, $date_object->format('Y-m-d'));
 //Auswahl des Wochentages
 echo build_html_navigation_elements::build_select_weekday($weekday);
-echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday, $date_object);
+echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday, clone $date_object);
 echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
 echo build_html_navigation_elements::build_button_principle_roster_delete($alternating_week_id);
-echo build_html_navigation_elements::build_button_show_principle_roster_history($alternating_week_id, $employee_id, $weekday, $branch_id, $date_object);
+echo build_html_navigation_elements::build_button_show_principle_roster_history($alternating_week_id, $employee_id, $weekday, $branch_id, clone $date_object);
 echo "<div id=navigation_elements>";
 /*
  * TODO: Make it work:

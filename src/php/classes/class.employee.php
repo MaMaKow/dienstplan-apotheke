@@ -101,7 +101,7 @@ class employee {
          */
         $date_unix = $date_object->getTimestamp();
         if (empty($this->Principle_roster[$date_unix])) {
-            $this->Principle_roster[$date_unix] = principle_roster::read_current_principle_employee_roster_from_database($this->employee_id, $date_object, $date_object);
+            $this->Principle_roster[$date_unix] = principle_roster::read_current_principle_employee_roster_from_database($this->employee_id, clone $date_object, clone $date_object);
         }
         return $this->Principle_roster[$date_unix];
     }

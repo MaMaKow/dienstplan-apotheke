@@ -72,8 +72,10 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_day_backward(DateTime $date_object) {
-        $date_object->sub(new DateInterval('P1D'));
-        $yesterday_date_string = $date_object->format('Y-m-d');
+        $yesterday_object = (clone $date_object); //We absolutely do not want to change the content of the input object.
+        unset($date_object);
+        $yesterday_object->sub(new DateInterval('P1D'));
+        $yesterday_date_string = $yesterday_object->format('Y-m-d');
         $backward_button_img = "
             <form class='inline_form' id='button_day_backward_form'>
 		<button type='submit' class='btn-primary no_print' value='$yesterday_date_string' name='datum' id='button_day_backward' title='" . gettext('Ctrl + &#8678;') . "'>
@@ -88,8 +90,12 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_day_forward(DateTime $date_object) {
-        $date_object->add(new DateInterval('P1D'));
-        $tomorow_date_string = $date_object->format('Y-m-d');
+        print_debug_variable_to_screen($date_object);
+        $tomorrow_object = clone $date_object;
+        unset($date_object); //We absolutely do not want to change the content of the input object.
+        $tomorrow_object->add(new DateInterval('P1D'));
+        print_debug_variable_to_screen($tomorrow_object);
+        $tomorow_date_string = $tomorrow_object->format('Y-m-d');
         $forward_button_img = "
             <form class='inline_form' id='button_day_forward_form'>
 		<button type='submit' class='btn-primary no_print' value='$tomorow_date_string' name='datum' id='button_day_forward' title='" . gettext('Ctrl + &#8680;') . "'>
@@ -377,7 +383,7 @@ abstract class build_html_navigation_elements {
         $Alternating_week_ids = alternating_week::get_alternating_week_ids();
         foreach ($Alternating_week_ids as $alternating_week_id_current) {
             $alternating_week = new alternating_week($alternating_week_id_current);
-            $example_monday = $alternating_week->get_monday_date_for_alternating_week($date);
+            $example_monday = $alternating_week->get_monday_date_for_alternating_week(clone $date);
             $example_date = clone $example_monday;
             if ($weekday > 1) {
                 $example_date = $example_monday->add(new DateInterval('P' . ($weekday - 1) . 'D'));
