@@ -382,7 +382,7 @@ abstract class build_html_navigation_elements {
             if ($weekday > 1) {
                 $example_date = $example_monday->add(new DateInterval('P' . ($weekday - 1) . 'D'));
             }
-            $alternating_week_id_string = alternating_week::get_human_readably_string($alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
+            $alternating_week_id_string = alternating_week::get_human_readable_string($alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
             if ($alternating_week_id != $alternating_week_id_current) {
                 $html .= "<option value='$alternating_week_id_current'>$alternating_week_id_string</option>\n";
             } else {

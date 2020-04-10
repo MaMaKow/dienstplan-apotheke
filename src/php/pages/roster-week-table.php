@@ -70,7 +70,7 @@ $main_div_html = "<div id='main-area'>\n";
 $date_info_line_html = "<div id=date_info_line class='no_print'>"
         . gettext("calendar week")
         . strftime(' %V', $date_unix)
-        . '&nbsp' . alternating_week::get_human_readably_string(alternating_week::get_alternating_week_for_date($date_start_object))
+        . '&nbsp' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))
         . "</div>\n";
 $main_div_html .= $date_info_line_html;
 

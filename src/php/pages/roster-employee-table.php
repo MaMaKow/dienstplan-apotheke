@@ -61,7 +61,7 @@ echo "<div id=main-area>\n";
 echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> "
  . gettext("calendar week")
  . strftime(' %V', $date_unix)
- . '&nbsp' . alternating_week::get_human_readably_string(alternating_week::get_alternating_week_for_date($date_start_object))
+ . '&nbsp' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))
  . "</a><br>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);

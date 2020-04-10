@@ -92,7 +92,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, D
         $sunday_date = clone $monday_date;
         $sunday_date->add(new DateInterval('P6D'));
         $alternating_week_id_string = '<div class="inline_block_element"><p>'
-                . alternating_week::get_human_readably_string($alternating_week_id)
+                . alternating_week::get_human_readable_string($alternating_week_id)
                 . '<br> '
                 . gettext('valid from') . ' ' . $date_minimum->format('d.m.Y')
                 . '<br> '

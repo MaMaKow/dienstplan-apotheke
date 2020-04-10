@@ -165,7 +165,7 @@ $html_text .= ""
         . strftime(gettext("calendar week")
                 . ' %V', $date_unix)
         . '&nbsp'
-        . alternating_week::get_human_readably_string(alternating_week::get_alternating_week_for_date($date_object));
+        . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_object));
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {

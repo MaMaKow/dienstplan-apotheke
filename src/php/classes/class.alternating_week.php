@@ -323,12 +323,12 @@ class alternating_week {
      * @param type $alternating_week_id
      * @return boolean|string
      */
-    public static function get_human_readably_string($alternating_week_id) {
+    public static function get_human_readable_string($alternating_week_id) {
         if (!self::alternations_exist()) {
             return FALSE;
         }
-        $human_readably_string = chr(65 + $alternating_week_id) . '-' . gettext('week');
-        return $human_readably_string;
+        $human_readable_string = chr(65 + $alternating_week_id) . '-' . gettext('week');
+        return $human_readable_string;
     }
 
 }
