@@ -38,7 +38,7 @@ class roster {
             $date_end_object = clone $date_start_object;
         }
         if (NULL !== $employee_id) {
-            $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
+            $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_id, clone $date_start_object, clone $date_end_object);
             return TRUE;
         }
         throw new Exception('The object of the class ' . __CLASS__ . ' was not correctly constructed. Please check the parameters.');
@@ -247,11 +247,11 @@ class roster {
         return $Roster[$day_iterator][$roster_row_iterator]->comment;
     }
 
-    public static function get_working_hours_in_all_branches($date_object, $employee_id) {
+    public static function get_working_hours_in_all_branches(string $date_string, int $employee_id) {
         $working_hours = 0;
         $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `VK` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array(
-            'date' => $date_object->format('Y-m-d'),
+            'date' => $date_string,
             'employee_id' => $employee_id,
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {

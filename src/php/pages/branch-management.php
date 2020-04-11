@@ -61,7 +61,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         database_wrapper::instance()->run($sql_query, $new_branch_data);
-        $List_of_branch_objects = branch::read_branches_from_database();
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         $current_branch_id = $new_branch_id;
     } else {
         /*
@@ -84,7 +84,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         database_wrapper::instance()->run($sql_query, $new_branch_data);
-        $List_of_branch_objects = branch::read_branches_from_database();
+        $List_of_branch_objects = branch::get_list_of_branch_objects();
         $current_branch_id = $new_branch_id;
     }
 

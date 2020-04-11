@@ -66,7 +66,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql);
 }
 
-$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object, $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
+$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $date_object, clone $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
 /*
  * In case there is no roster scheduled yet, create a suggestion:
  */
@@ -122,8 +122,8 @@ $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
 $html_text .= "<div id=main-area>\n";
 $html_text .= "<div id=navigation_elements>";
-$html_text .= build_html_navigation_elements::build_button_day_backward($date_object);
-$html_text .= build_html_navigation_elements::build_button_day_forward($date_object);
+$html_text .= build_html_navigation_elements::build_button_day_backward(clone $date_object);
+$html_text .= build_html_navigation_elements::build_button_day_forward(clone $date_object);
 if ($session->user_has_privilege('create_roster')) {
     $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 }
@@ -165,7 +165,7 @@ $html_text .= ""
         . strftime(gettext("calendar week")
                 . ' %V', $date_unix)
         . '&nbsp'
-        . alternating_week::get_human_readably_string(alternating_week::get_alternating_week_for_date($date_object));
+        . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_object));
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {

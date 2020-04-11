@@ -134,7 +134,7 @@ class collaborative_vacation {
             $workforce = new \workforce();
             $employee_object = $workforce->get_employee_object($employee_id);
             $days = \absence::calculate_employee_absence_days(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
-            absence::insert_absence($employee_id, new DateTime($start_date_string), new DateTime($end_date_string), $days, $reason_id, $comment, $approval);
+            absence::insert_absence($employee_id, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval);
         }
         database_wrapper::instance()->commit();
     }

@@ -115,7 +115,7 @@ class principle_roster extends roster {
                  * TODO: Fix this maybe?
                  */
                 $alternating_week = new alternating_week($alternating_week_id);
-                $date_of_change = $alternating_week->get_monday_date_for_alternating_week(workforce::get_first_start_of_employment($employee_id));
+                $date_of_change = $alternating_week->get_monday_date_for_alternating_week(clone workforce::get_first_start_of_employment($employee_id));
             }
             $List_of_change_dates[] = $date_of_change;
         }
@@ -134,7 +134,7 @@ class principle_roster extends roster {
         foreach ($List_of_change_dates as $date_start_object) {
             $date_end_object = clone $date_start_object;
             $date_end_object->add(new DateInterval('P6D'));
-            $List_of_principle_employee_rosters[$date_start_object->format('Y-m-d')] = self::read_current_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
+            $List_of_principle_employee_rosters[$date_start_object->format('Y-m-d')] = self::read_current_principle_employee_roster_from_database($employee_id, clone $date_start_object, clone $date_end_object);
         }
         return $List_of_principle_employee_rosters;
     }

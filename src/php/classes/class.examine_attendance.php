@@ -112,8 +112,8 @@ abstract class examine_attendance {
      */
     private static function trim_rescheduled_employees(&$Mitarbeiter_differenz, $date_object) {
         foreach ($Mitarbeiter_differenz as $key => $employee_id) {
-            $working_hours = roster::get_working_hours_in_all_branches($date_object, $employee_id);
-            $working_hours_should = principle_roster::get_working_hours_should($date_object, $employee_id);
+            $working_hours = roster::get_working_hours_in_all_branches($date_object->format('Y-m-d'), $employee_id);
+            $working_hours_should = principle_roster::get_working_hours_should(clone $date_object, $employee_id);
             if ($working_hours >= $working_hours_should) {
                 unset($Mitarbeiter_differenz[$key]);
             }

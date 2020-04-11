@@ -54,7 +54,7 @@ class branch {
      * read the branch data from the database
      * @return array An array ob objects of the class branch
      */
-    public static function read_branches_from_database() {
+    private static function read_branches_from_database() {
         /*
          * Get a list of branches:
          * CAVE! This function is thought to be called from the outside of this class only.

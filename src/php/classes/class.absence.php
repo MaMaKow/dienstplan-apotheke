@@ -87,15 +87,15 @@ class absence {
         gettext('changed_after_approval');
     }
 
-    public static function insert_absence(int $employee_id, DateTime $date_start_object, DateTime $date_end_object, int $days, int $reason_id, string $comment, string $approval) {
+    public static function insert_absence(int $employee_id, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string $approval) {
         $sql_query = "INSERT INTO `absence` "
                 . "(employee_id, start, end, days, reason_id, comment, user, approval) "
                 . "VALUES (:employee_id, :start, :end, :days, :reason_id, :comment, :user, :approval)";
         try {
             database_wrapper::instance()->run($sql_query, array(
                 'employee_id' => $employee_id,
-                'start' => $date_start_object->format('Y-m-d'),
-                'end' => $date_end_object->format('Y-m-d'),
+                'start' => $date_start_string,
+                'end' => $date_end_string,
                 'days' => $days,
                 'reason_id' => $reason_id,
                 'comment' => $comment,
@@ -300,7 +300,7 @@ class absence {
         $date_end_object = new DateTime($ende);
         $employee_id = $employee_object->employee_id;
 
-        $days = self::calculate_employee_absence_days($date_start_object, $date_end_object, $employee_object);
+        $days = self::calculate_employee_absence_days(clone $date_start_object, clone $date_end_object, $employee_object);
         database_wrapper::instance()->beginTransaction();
         /*
          * TODO: externalize the following part out or get the $start_date_old_sql as a parameter?
@@ -309,7 +309,7 @@ class absence {
             $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
             self::delete_absence($employee_id, $start_date_old_sql);
         }
-        self::insert_absence($employee_id, $date_start_object, $date_end_object, $days, $reason_id, $comment, $approval);
+        self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
         database_wrapper::instance()->commit();
     }
 

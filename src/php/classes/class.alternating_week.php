@@ -63,7 +63,7 @@ class alternating_week {
      */
     public function get_monday_date_for_alternating_week(DateTime $date_minimum = NULL) {
         if (!isset($this->monday_date)) {
-            $this->monday_date = $this->calculate_monday_date_for_alternating_week($date_minimum);
+            $this->monday_date = $this->calculate_monday_date_for_alternating_week(clone $date_minimum);
         }
         if ($date_minimum instanceof DateTime) {
             /*
@@ -105,7 +105,7 @@ class alternating_week {
     public static function get_alternating_week_for_date(DateTime $date_object) {
         $alternation_start_date = self::get_alternation_start_date();
         $Alternating_week_ids = self::get_alternating_week_ids();
-        $date_difference_in_weeks = self::date_difference_in_weeks($alternation_start_date, $date_object);
+        $date_difference_in_weeks = self::date_difference_in_weeks(clone $alternation_start_date, clone $date_object);
         $alternating_week_id = $date_difference_in_weeks % count($Alternating_week_ids);
         return $alternating_week_id;
     }
@@ -165,7 +165,7 @@ class alternating_week {
         $first = clone $first_date;
         $second = clone $second_date;
         if ($first > $second) {
-            return self::date_difference_in_weeks($second, $first);
+            return self::date_difference_in_weeks(clone $second, clone $first);
         }
         $first->sub(new DateInterval('P' . $first->format('N') . 'D'));
         $second->sub(new DateInterval('P' . $second->format('N') . 'D'));
@@ -323,12 +323,12 @@ class alternating_week {
      * @param type $alternating_week_id
      * @return boolean|string
      */
-    public static function get_human_readably_string($alternating_week_id) {
+    public static function get_human_readable_string($alternating_week_id) {
         if (!self::alternations_exist()) {
             return FALSE;
         }
-        $human_readably_string = chr(65 + $alternating_week_id) . '-' . gettext('week');
-        return $human_readably_string;
+        $human_readable_string = chr(65 + $alternating_week_id) . '-' . gettext('week');
+        return $human_readable_string;
     }
 
 }
