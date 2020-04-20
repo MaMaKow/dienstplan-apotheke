@@ -106,12 +106,7 @@ abstract class user_input {
                     continue;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
-                try {
-                    $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
-                } catch (PDRRosterLogicException $exception) {
-                    $user_dialog = new user_dialog();
-                    $user_dialog->add_message($exception->getMessage(), E_USER_ERROR, TRUE);
-                }
+                $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
             }
         }
         return $Roster;

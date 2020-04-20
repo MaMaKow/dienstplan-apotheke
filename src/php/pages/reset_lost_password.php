@@ -83,7 +83,7 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
         $error = TRUE;
     }
     if ($password !== $password2) {
-        $user_dialog->add_message(gettext('The passwords must match.'));
+        $user_dialog->add_message(gettext('The passwords must match!'));
         $error = TRUE;
     }
 
