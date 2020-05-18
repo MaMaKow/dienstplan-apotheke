@@ -90,11 +90,9 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_day_forward(DateTime $date_object) {
-        print_debug_variable_to_screen($date_object);
         $tomorrow_object = clone $date_object;
         unset($date_object); //We absolutely do not want to change the content of the input object.
         $tomorrow_object->add(new DateInterval('P1D'));
-        print_debug_variable_to_screen($tomorrow_object);
         $tomorow_date_string = $tomorrow_object->format('Y-m-d');
         $forward_button_img = "
             <form class='inline_form' id='button_day_forward_form'>

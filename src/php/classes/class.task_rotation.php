@@ -170,6 +170,12 @@ abstract class task_rotation {
              */
             $Abwesende = absence::read_absentees_from_database($temp_date_object->format('Y-m-d'));
             $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, array_keys($Abwesende));
+            if (array() === $List_of_compounding_rotation_employees) {
+                /*
+                 * There is nobody here today to do the task.
+                 */
+                return FALSE;
+            }
             $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_object->format('Y-m-d'), $to_date_object->format('Y-m-d'));
 
             /**
