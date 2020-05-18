@@ -46,7 +46,7 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
 
 $roster_object = new roster(clone $date_start_object, clone $date_end_object, $employee_id, NULL);
 $Roster = $roster_object->array_of_days_of_roster_items;
-$List_of_branch_objects = branch::get_list_of_branch_objects();
+$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.

@@ -96,7 +96,7 @@ class user_dialog {
      * </p>
      * @param bool $allow_formatted_input If set to TRUE, the $text is not parsed by htmlentities($text), which allows it to contain HTML text formatting.
      */
-    public function add_message($text, $type = E_USER_ERROR, $allow_formatted_input = FALSE) {
+    public function add_message(string $text, int $type = E_USER_ERROR, bool $allow_formatted_input = FALSE) {
         switch ($type) {
             case E_USER_ERROR:
                 $type_string = 'error';
@@ -110,7 +110,7 @@ class user_dialog {
             default :
                 throw new Exception('$type must be E_USER_ERROR, E_USER_NOTICE or E_USER_WARNING but was: ' . $type);
         }
-        if ($allow_formatted_input) {
+        if (TRUE === $allow_formatted_input) {
             self::$Messages[] = array('text' => $text, 'type' => $type_string);
             return TRUE;
         }

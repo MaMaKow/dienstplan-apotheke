@@ -109,8 +109,6 @@ abstract class roster_headcount {
         $Opening_times['day_opening_end'] = NULL;
 
         $weekday = date('N', $date_unix);
-        $date_object = new DateTime();
-        $date_object->setTimestamp($date_unix);
         $sql_query = "SELECT * FROM `opening_times` WHERE `weekday` = :weekday AND `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
         $row = $result->fetch(PDO::FETCH_OBJ);
@@ -122,6 +120,8 @@ abstract class roster_headcount {
             $message .= " ";
             $message .= sprintf(gettext('Please %1$s configure %2$s the opening times!'), '<a href=' . PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php>', '</a>');
             $user_dialog->add_message($message, E_USER_NOTICE, TRUE);
+            $date_object = new DateTime();
+            $date_object->setTimestamp($date_unix);
             $Opening_times = principle_roster::guess_opening_times(clone $date_object, $branch_id);
         }
         return $Opening_times;

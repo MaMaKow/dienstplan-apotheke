@@ -259,7 +259,8 @@ abstract class build_html_navigation_elements {
          * TODO: Is it possible to leave out the date_sql?
          * Branch management will send NULL. Does this interrupt any cookies?
          */
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         if (1 === count($List_of_branch_objects)) {
             return FALSE;
         }
@@ -268,11 +269,11 @@ abstract class build_html_navigation_elements {
         $text .= "<form id=branch_form method=post>\n";
         //$text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
         $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
-        foreach ($List_of_branch_objects as $branch_id => $branch_object) {
-            if ($branch_id != $current_branch_id) {
-                $text .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
+        foreach ($List_of_branch_objects as $branch_object) {
+            if ($branch_object->branch_id != $current_branch_id) {
+                $text .= "<option value=" . $branch_object->branch_id . ">" . $branch_object->name . "</option>\n";
             } else {
-                $text .= "<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
+                $text .= "<option value=" . $branch_object->branch_id . " selected>" . $branch_object->name . "</option>\n";
             }
         }
         $text .= "</select>\n"

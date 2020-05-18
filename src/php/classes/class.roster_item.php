@@ -193,7 +193,7 @@ class roster_item implements \JsonSerializable {
         $message .= strftime('%x', $this->date_unix) . PHP_EOL;
         $message .= $context_string . PHP_EOL;
         $message .= gettext('You work at the following times:') . PHP_EOL;
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $message .= $List_of_branch_objects[$this->branch_id]->name . PHP_EOL;
         $message .= gettext('Start and end of duty');
         $message .= ":";
