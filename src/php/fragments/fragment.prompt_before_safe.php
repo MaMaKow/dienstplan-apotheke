@@ -107,7 +107,7 @@ function build_difference_string(array $List_of_differences, array $Principle_ro
                                 . "<br>";
                     }
                     if ($roster_item_new->branch_id !== $roster_item_old->branch_id) {
-                        $List_of_branch_objects = branch::get_list_of_branch_objects();
+                        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
                         print_debug_variable($roster_item_old->branch_id, $roster_item_new->branch_id);
                         $difference_string .= gettext("branch")
                                 . "<br>"

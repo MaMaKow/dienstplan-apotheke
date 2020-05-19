@@ -23,7 +23,7 @@ class examine_roster {
     private $Approbierten_anwesende;
     private $Wareneingang_Anwesende;
 
-    public function __construct($Roster, $date_unix, $branch_id, $workforce) {
+    public function __construct(array $Roster, int $date_unix, int $branch_id, workforce $workforce) {
 
         $this->Roster_of_all_employees = $Roster;
         $this->Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster, $workforce);

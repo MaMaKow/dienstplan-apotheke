@@ -41,72 +41,50 @@
  */
 class branch {
 
-    private static $List_of_branch_objects;
-    public $branch_id;
-    public $name;
-    public $short_name;
-    public $address;
-    public $manager;
-    public $Opening_times;
-    public $PEP;
+    private $branch_id;
+    private $name;
+    private $short_name;
+    private $address;
+    private $manager;
+    private $Opening_times;
+    private $PEP;
+
+    public function __construct($branch_id) {
+        $this->read_branch_data_from_database($branch_id);
+    }
+
+    /**
+     * @param string $variable_name
+     * @return misc Value of the variable.
+     * @todo Get rid of this! Make one function for each variable.
+     */
+    public function __get($variable_name) {
+        return $this->$variable_name;
+    }
 
     /**
      * read the branch data from the database
      * @return array An array ob objects of the class branch
      */
-    private static function read_branches_from_database() {
-        /*
-         * Get a list of branches:
-         * CAVE! This function is thought to be called from the outside of this class only.
-         */
-        $Branches = array();
+    private function read_branch_data_from_database($branch_id) {
 
-        if (!empty($this)) {
-            error_log("CAVE read_branches_from_database() is thought to be called from the outside of this class only.");
-            return FALSE;
-        }
-        $sql_query = 'SELECT *
-	FROM `branch`
-	;';
-        $result = database_wrapper::instance()->run($sql_query);
+        $sql_query = 'SELECT * FROM `branch` WHERE `branch_id` = :branch_id;';
+        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            if ($row->short_name != "") {
-                $Branches[$row->branch_id] = new branch();
-                $Branches[$row->branch_id]->branch_id = $row->branch_id;
-                $Branches[$row->branch_id]->name = $row->name;
-                $Branches[$row->branch_id]->short_name = $row->short_name;
-                $Branches[$row->branch_id]->address = $row->address;
-                $Branches[$row->branch_id]->manager = $row->manager;
-                $Branches[$row->branch_id]->PEP = $row->PEP;
-                $Branches[$row->branch_id]->read_opening_times_from_database();
+            $this->branch_id = $row->branch_id;
+            $this->name = $row->name;
+            $this->short_name = $row->short_name;
+            $this->address = $row->address;
+            $this->manager = $row->manager;
+            $this->PEP = $row->PEP;
+            $this->read_opening_times_from_database();
+            if ($this->short_name == "") {
+                $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
+                $message = sprintf(gettext('A short name for the branch should be <a href="%1$s">configured.</a>'), $location);
+                $user_dialog = new user_dialog();
+                $user_dialog->add_message($message, E_USER_NOTICE, TRUE);
             }
         }
-
-        if (empty(array_keys($Branches))) {
-            branch::redirect_to_input_form_on_missing_setup();
-        } else {
-            self::$List_of_branch_objects = $Branches;
-            return $Branches;
-        }
-    }
-
-    public static function get_list_of_branch_objects() {
-        if (empty(self::$List_of_branch_objects)) {
-            self::read_branches_from_database();
-        }
-        return self::$List_of_branch_objects;
-    }
-
-    public static function update_list_of_branch_objects() {
-        self::read_branches_from_database();
-        return self::$List_of_branch_objects;
-    }
-
-    public static function exists($branch_id) {
-        if (in_array($branch_id, array_keys(self::$List_of_branch_objects))) {
-            return TRUE;
-        }
-        return FALSE;
     }
 
     /**
@@ -118,6 +96,8 @@ class branch {
      * and
      * 13:30 - 18:00
      * This case might be supported in a later version.
+     *
+     * Weekday 1 is Monday, weekday 7 is Sunday
      *
      * @return void
      */
@@ -141,6 +121,8 @@ class branch {
      * If no branch is setup yet (e.g, directly after installation, or if all the branches have been deleted)
      * then the browser is redirected to the branch management form
      * @return void
+     * @todo Find a better name for this function! "redirect_to_branch-management_form"?
+     * @todo Move this function into the network class?
      */
     private static function redirect_to_input_form_on_missing_setup() {
         if (!isset($_SESSION['user_object']->employee_id)) {
@@ -150,13 +132,17 @@ class branch {
             return FALSE;
         }
         $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
-        if (!in_array(basename($script_name), array('branch-management.php'))) {
-            $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
-            if (++$_SESSION['number_of_times_redirected'] < 4) {
-                header('Location:' . $location);
-            }
-            die('<p><a href="' . $location . '">Please configure at least one branch first!</a></p>');
+        if (in_array(basename($script_name), array('branch-management.php'))) {
+            /*
+             * If we already on the page, then there is no sense in redirecting.
+             */
+            return FALSE;
         }
+        $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
+        if (++$_SESSION['number_of_times_redirected'] < 4) {
+            header('Location:' . $location);
+        }
+        die('<p><a href="' . $location . '">Please configure at least one branch first!</a></p>');
     }
 
 }

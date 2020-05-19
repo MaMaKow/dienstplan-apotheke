@@ -303,7 +303,8 @@ class collaborative_vacation {
         if (FALSE === $having_emergency_service) {
             return "";
         }
-        $List_of_branch_objects = \branch::get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices();
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $emergency_service_content = "";
         $workforce = new workforce($date_object->format('Y-m-d'));
         if ('month' === $mode) {

@@ -184,7 +184,9 @@ class principle_roster extends roster {
                      * In case, the employee does not exist on this day we fall back to using the first branch.
                      * This can happen if an employee will start shortly, but not on a monday.
                      */
-                    $branch_id = min(array_keys(branch::get_list_of_branch_objects()));
+                    $network_of_branch_offices = new network_of_branch_offices();
+                    $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+                    $branch_id = min(array_keys($List_of_branch_objects));
                 }
                 $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }

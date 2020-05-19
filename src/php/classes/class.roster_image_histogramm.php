@@ -183,7 +183,7 @@ abstract class roster_image_histogramm {
         $month_day = date('j', $date_unix);
         $month = date('n', $date_unix);
 
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_pep_id = $List_of_branch_objects[$branch_id]->PEP;
         if (empty($branch_pep_id)) {
             return FALSE;

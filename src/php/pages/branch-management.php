@@ -18,7 +18,8 @@
 
 require_once '../../../default.php';
 
-$current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys(branch::get_list_of_branch_objects())));
+$network_of_branch_offices = new network_of_branch_offices();
+$current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($network_of_branch_offices->get_list_of_branch_objects())));
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
     $new_branch_name = filter_input(INPUT_POST, "branch_name", FILTER_SANITIZE_STRING);
@@ -31,7 +32,9 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
         $old_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
         $sql_query = "DELETE FROM `branch` WHERE `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $old_branch_id));
-        $current_branch_id = min(array_keys(branch::update_list_of_branch_objects()));
+
+        $network_of_branch_offices->update_list_of_branch_objects();
+        $current_branch_id = min(array_keys($network_of_branch_offices->get_list_of_branch_objects()));
         /*
          * TODO: Is this still necessary?
          */
@@ -46,7 +49,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
                     . "</form>"
                     . "</div>";
         }
-    } elseif (!branch::exists($new_branch_id)) {
+    } elseif (!$network_of_branch_offices->branch_exists($new_branch_id)) {
         /*
          * This is a new branch.
          * We will simply insert it into the database table.
@@ -61,7 +64,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         database_wrapper::instance()->run($sql_query, $new_branch_data);
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $current_branch_id = $new_branch_id;
     } else {
         /*
@@ -84,7 +87,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         database_wrapper::instance()->run($sql_query, $new_branch_data);
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $current_branch_id = $new_branch_id;
     }
 
@@ -122,7 +125,8 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
 /*
  * Reload branch data:
  */
-$List_of_branch_objects = branch::update_list_of_branch_objects();
+$network_of_branch_offices->update_list_of_branch_objects();
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 if (!empty($deletion_done_div_html)) {
@@ -148,7 +152,8 @@ if (empty($List_of_branch_objects)) {
 }
 
 function build_branch_input_opening_times($branch_id) {
-    $List_of_branch_objects = (branch::get_list_of_branch_objects());
+    $network_of_branch_offices = new network_of_branch_offices();
+    $List_of_branch_objects = ($network_of_branch_offices->get_list_of_branch_objects());
     $branch_object = $List_of_branch_objects[$branch_id];
     unset($List_of_branch_objects);
 
