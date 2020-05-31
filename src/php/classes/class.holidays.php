@@ -142,7 +142,8 @@ class holidays {
      *
      * This function returns FALSE if a day is not a holiday.
      * This function returns the string $holiday if a day is a holiday.
-     *
+     * @todo Make this function return TRUE on a holiday.
+     *   Store the result of the function somewhere and make it callable fr another function.
      * @param DateTime $date_object.
      *
      * @return boolean|string FALSE or name of holiday.
@@ -156,7 +157,7 @@ class holidays {
         $year = intval($date_object->format('Y'));
         $Holidays = holidays::get_holidays($year, 'DE'); //TODO: The application is oblivious to countries right now. Use $Holidays = get_holidays($year, $country); if that value becomes available.
         foreach ($Holidays as $date => $holiday) {
-            if ($date_object->format('Y-d-m') === date('Y-d-m', $date)) {
+            if ($date_object->format('Y-m-d') === date('Y-m-d', $date)) {
                 return $holiday;
             }
         }

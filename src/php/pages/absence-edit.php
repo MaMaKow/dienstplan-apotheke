@@ -49,6 +49,10 @@ $sql_query = 'SELECT * FROM `absence` WHERE `employee_id` = :employee_id and (Ye
 $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year, 'year2' => $year));
 $tablebody = '';
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+    /*
+     * Todo: Wenn jemand kündigt, so können Abwesenheiten bleiben, die nachh der Kündigung liegen.
+     *   In dem Fall könnte man eine Warnung über user_dialog senden.
+     */
     $html_form_id = "change_absence_entry_" . $row->start;
     $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
             . "<form accept-charset='utf-8' method=POST id='$html_form_id'>"
@@ -141,7 +145,7 @@ echo "</td>\n";
 echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
 echo "</td>\n";
-echo "<td>" . absence::build_reason_input_select(NULL, NULL, 'new_absence_entry') . "</td>\n";
+echo "<td>" . absence::build_reason_input_select(absence::REASON_VACATION, NULL, 'new_absence_entry') . "</td>\n";
 echo "<td><input type='text' name='comment' form='new_absence_entry'></td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
 echo "<td>" . absence::build_approval_input_select('not_yet_approved', NULL, 'new_absence_entry') . "</td>\n";

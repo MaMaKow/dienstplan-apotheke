@@ -26,11 +26,13 @@ $end_date_unix = strtotime("last sat of dec $year");
 $date_unix = $start_date_unix;
 $date_sql = date('Y-m-d', $date_unix);
 
-$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new network_of_branch_offices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
-
+$user_dialog = new user_dialog();
+$user_dialog->add_message("Saturday rotation is a deprecated feature. This page will be removed in a later version. Please write an email to pdr-issues@martin-mandelkow.de if you depend on this feature.", E_USER_DEPRECATED);
 $saturday_rotation = new saturday_rotation($branch_id);
 
 $html_select_year = form_element_builder::build_html_select_year($year);
@@ -60,6 +62,12 @@ for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += 
     if (NULL === $saturday_rotation_team_id or FALSE === $saturday_rotation_team_id) {
         /*
          * TODO: Find a better workaround?
+         */
+        continue;
+    }
+    if (array() === $saturday_rotation->List_of_teams) {
+        /*
+         * The list of teams is empty.
          */
         continue;
     }
@@ -117,6 +125,7 @@ $table .= "</table>\n";
 $html = '';
 $html .= $html_select_year;
 $html .= $html_select_branch;
+$html .= $user_dialog->build_messages();
 $html .= $table;
 
 

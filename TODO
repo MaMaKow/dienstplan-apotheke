@@ -4,6 +4,8 @@ Restructure the menu:
 - Abwesenheiten
 - Überstunden
 
+Beim Speichern der Grundpläne erkennt das Programm nicht, wenn jemand gelöscht wurde.
+
 
 Build an API for android apps
   - use a secure token for login

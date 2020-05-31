@@ -62,7 +62,8 @@ function calculate_percentile($arr, $percentile) {
 function print_debug_variable_to_screen($variable) {
     echo "<br>"
     . "<pre>";
-    var_export($variable);
+    //var_export($variable);
+    var_dump($variable);
     echo "</pre>"
     . "<br>";
 }

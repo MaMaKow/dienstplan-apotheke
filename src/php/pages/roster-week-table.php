@@ -20,7 +20,8 @@ require_once "../../../default.php";
 $tage = 7; //One week
 $user_dialog = new user_dialog();
 
-$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new network_of_branch_offices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $mandant = $branch_id;
 create_cookie('mandant', $branch_id, 30);
@@ -44,7 +45,7 @@ for ($i = 0; $i < $tage; $i++) {
 }
 
 //Hole eine Liste aller Mitarbeiter
-$workforce = new workforce($date_sql);
+$workforce = new workforce($date_sql_start, $date_sql_end);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
@@ -59,7 +60,7 @@ $weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster
 $Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
 $duty_roster_working_hours_div = "";
 if (array() !== $Roster and isset($Working_hours_week_have)) {
-    $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster);
+    $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster, $workforce);
     $duty_roster_working_hours_div = build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should);
 }
 

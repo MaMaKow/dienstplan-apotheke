@@ -105,6 +105,7 @@ class user_dialog {
                 $type_string = 'warning';
                 break;
             case E_USER_NOTICE:
+            case E_USER_DEPRECATED:
                 $type_string = 'notification';
                 break;
             default :
@@ -174,7 +175,6 @@ class user_dialog {
         if (!isset($workforce)) {
             $workforce = new workforce();
         }
-        $trace = debug_backtrace();
         $paragraph_separator = "\n\n\n\n";
         $message = "";
         $message .= "________ " . gettext('Message') . " ________\n";
@@ -189,11 +189,12 @@ class user_dialog {
         $message .= $trace[1]['file'];
         $message .= $paragraph_separator;
 
-        /* $message .= "________ " . gettext('Trace') . " ________\n";
-         * $message .= "TRACE DEACTIVATED";
-         * //$message .= htmlentities(var_export($trace, TRUE));
-         * $message .= $paragraph_separator;
-         */
+        $message .= "________ " . gettext('Trace') . " ________\n";
+        $trace = debug_backtrace();
+        //$message .= "TRACE DEACTIVATED";
+        $message .= htmlentities(var_export($trace, TRUE));
+        $message .= $paragraph_separator;
+
         return $message;
     }
 

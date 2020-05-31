@@ -24,7 +24,7 @@
  * The rotation will use a predefined team.
  * This class does not take into consideration the absence of employees from the teams.
  * The function examine_attendance::check_for_attendant_absentees() will however create a warning/error if an absent employee is chosen to work.
- *
+ * @deprecated since version 0.14.2 <p>We do not use teams anymore. If there is no other user, depending on this feature, it will be removed or completely rewritten in a later version.</p>
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class saturday_rotation {
@@ -43,7 +43,7 @@ class saturday_rotation {
         $this->List_of_teams = $this->read_teams_from_database();
     }
 
-    public function get_participation_team_id($target_date_sql) {
+    public function get_participation_team_id(string $target_date_sql) {
         if (6 != strftime('%u', strtotime($target_date_sql))) {
             /*
              * Until now, this function is specified to only handle saturdays.

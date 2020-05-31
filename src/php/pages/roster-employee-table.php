@@ -46,7 +46,8 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
 
 $roster_object = new roster(clone $date_start_object, clone $date_end_object, $employee_id, NULL);
 $Roster = $roster_object->array_of_days_of_roster_items;
-$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new network_of_branch_offices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
@@ -101,7 +102,7 @@ echo "</table>\n";
 
 
 $Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
-$Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster);
+$Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster, $workforce);
 echo build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, array('employee_id' => $employee_id));
 echo "</div>\n";
 

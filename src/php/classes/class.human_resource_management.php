@@ -151,15 +151,21 @@ ON DUPLICATE KEY UPDATE
         }
     }
 
-    public static function make_radio_branch_list($checked_branch_id) {
+    public static function make_radio_branch_list(int $checked_branch_id) {
         $text = "";
         $text .= "<fieldset>\n";
 
         $text .= "<legend>" . gettext("Branch") . ": </legend>\n";
-        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         if (!isset($List_of_branch_objects[0])) {
-            $List_of_branch_objects[0] = new branch();
-            $List_of_branch_objects[0]->name = gettext("None");
+            $branch_id = 0;
+            $text .= "<input type='radio' name='branch' ";
+            $text .= "value='0'";
+            if ($checked_branch_id == $branch_id) {
+                $text .= " checked=checked";
+            }
+            $text .= ">&nbsp;" . gettext("None") . "<br>\n";
         }
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
             $text .= "<input type='radio' name='branch' ";
