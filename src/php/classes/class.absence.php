@@ -172,35 +172,39 @@ class absence {
      * @throws Exception
      * @throws UnexpectedValueException
      * @todo: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_id] equals/contains/holds a reason_id for the absence.
-
      */
-    public static function read_absentees_from_database($date_sql) {
+    public static function read_absentees_from_database(string $date_sql) {
 
         $Absentees = array();
-        $workforce = new workforce($date_sql);
         if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
             throw new Exception("\$date_sql has to be a string! $date_sql given.");
         }
-        /*
-         * We define a list of still existing coworkers. There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
+        /**
+         * We define a list of still existing coworkers.
+         *  There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
          */
+        $workforce = new workforce($date_sql);
         if (!isset($workforce)) {
             throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
         }
-        list($in_placeholder, $IN_employees_list) = database_wrapper::create_placeholder_for_mysql_IN_function(array_keys($workforce->List_of_employees), TRUE);
-
         $sql_query = "SELECT * FROM `absence` "
                 . "WHERE `start` <= :start "
-                . "AND `end` >= :end "
-                . "AND `employee_id` IN ($in_placeholder)"; //Employees, whose absence has started but not ended yet.
-        $result = database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array('start' => $date_sql, 'end' => $date_sql)));
+                . "AND `end` >= :end ;"; //Employees, whose absence has started but not ended yet.
+        $result = database_wrapper::instance()->run($sql_query, array('start' => $date_sql, 'end' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            if (!in_array($row->employee_id, array_keys($workforce->List_of_employees))) {
+                /**
+                 * Es werden nur Mitarbeiter ausgegeben, die auch noch arbeiten. Abwesenheiten von gekündigten Mitarbeiern werden ignoriert.
+                 */
+                continue;
+            }
             $Absentees[$row->employee_id] = $row->reason_id;
         }
         return $Absentees;
     }
 
-    public static function get_absence_data_specific($date_sql, $employee_id) {
+    public static function get_absence_data_specific(string $date_sql, int $employee_id) {
+        $Absence = array();
         $query = "SELECT *
 		FROM `absence`
 		WHERE `start` <= :start AND `end` >= :end AND `employee_id` = :employee_id";
@@ -337,7 +341,7 @@ class absence {
         $days = 0;
         for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
             $current_week_day_number = $date_object->format('N');
-            if (!roster::is_empty($employee_object->get_principle_roster_on_date($date_object))
+            if (!roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object))
                     or ( 0 === $employee_object->working_week_days and $current_week_day_number < 6)) {
                 /*
                  * The employee normally does not work on this day.

@@ -320,7 +320,7 @@ class collaborative_vacation {
                     . ": ";
             $title .= $List_of_branch_objects[$having_emergency_service["branch_id"]]->short_name
                     . ", ";
-            $title .= $workforce->get_employee_last_name($employee_id);
+            $title .= $workforce->get_employee_last_name($having_emergency_service["employee_id"]);
             $emergency_service_content .= "<span class='emergency_service' title='$title'>"
                     . mb_substr(gettext('emergency service'), 0, 2)
                     . "</span>";
@@ -363,10 +363,17 @@ class collaborative_vacation {
             $employee_id = $Absence['employee_id'];
             $employee_long_representation = " ";
             $workforce = new workforce($date_object->format('Y-m-d'));
-            $profession = "";
-            $profession = $workforce->get_employee_profession($employee_id);
+            if ($workforce->employee_exists($employee_id)) {
+                $profession = $workforce->get_employee_profession($employee_id);
+                $employee_exists = ""; //blank means existing.
+            } else {
+                $profession = "";
+                $employee_exists = "non_existing_employee";
+            }
+
             $span_class = "absent_employee_container";
             $span_class .= " " . $profession;
+            $span_class .= " " . $employee_exists;
             $span_class .= " " . $Absence['approval'];
             $span_class .= " " . $mode;
             if ('month' == $mode) {

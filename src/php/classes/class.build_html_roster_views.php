@@ -202,7 +202,8 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name) {
-        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_select = "";
         $branch_select .= "<select name='$form_input_name' >\n";
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
@@ -275,7 +276,8 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_readonly_branch_table_rows(array $Branch_roster, int $branch_id, string $date_sql_start, string $date_sql_end, $Options = NULL) {
-        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 
         $date_start_object = new DateTime($date_sql_start);
         $date_end_object = new DateTime($date_sql_end);
@@ -329,7 +331,8 @@ abstract class build_html_roster_views {
                     } else {
                         $head_table_html .= "???";
                     }
-                    $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+                    $network_of_branch_offices = new network_of_branch_offices;
+                    $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
                     $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
                 }
             }
@@ -446,7 +449,8 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+        $network_of_branch_offices = new network_of_branch_offices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 
         global $config;
         $table_html = "";
@@ -526,7 +530,7 @@ abstract class build_html_roster_views {
         $week_hours_table_html .= "<table class='tight'>";
         foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
-                continue; /* Only the specified employees is shown. */
+                continue; /* Only the specified employees are shown. */
             }
             $week_hours_table_html .= "<tr>";
             $week_hours_table_html .= "<td>";
@@ -559,41 +563,63 @@ abstract class build_html_roster_views {
         return $week_hours_table_html;
     }
 
-    public static function calculate_working_hours_week_should($Roster) {
-        global $workforce;
-        foreach ($workforce->List_of_employees as $employee_object) {
-            $Working_hours_week_should[$employee_object->employee_id] = $employee_object->working_week_hours;
-        }
+    private static function calculate_working_hours_employee_should(array $Roster, employee $employee_object) {
+        $Working_hours_day_should = 0;
         foreach (array_keys($Roster) as $date_unix) {
             $date_sql = date('Y-m-d', $date_unix);
             $date_object = new DateTime;
             $date_object->setTimestamp($date_unix);
-            $holiday = holidays::is_holiday($date_unix);
             $Absentees = absence::read_absentees_from_database($date_sql);
+            $Working_hours_day_should += self::calculate_working_hours_day_employee_should($date_object, $employee_object, $Absentees);
+        }
+        return $Working_hours_day_should;
+    }
+
+    private static function calculate_working_hours_day_employee_should(DateTime $date_object, employee $employee_object, array $Absentees) {
+        if (array_key_exists($employee_object->employee_id, $Absentees)) {
+            /*
+             * TODO: kann auch eine ebene höher
+             */
             /**
              * @var $List_of_non_respected_absence_reason_ids
              * @see absence::$List_of_absence_reasons for a full list of absence reason ids (paid and unpaid)
              */
             $List_of_non_respected_absence_reason_ids = array(absence::REASON_TAKEN_OVERTIME);
 
-            /*
-             * Substract days, which are holidays:
-             */
-            if (FALSE !== $holiday) {
-                foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-                    if (!empty($employee_object->get_principle_roster_on_date($date_object)) and ! empty($employee_object->working_week_days)) {
-                        $Working_hours_week_should[$employee_id] -= $employee_object->working_week_hours / $employee_object->working_week_days;
-                    }
-                }
+            if (!in_array($Absentees[$employee_object->employee_id], $List_of_non_respected_absence_reason_ids)) {
+                return 0;
             }
+        }
+        if (FALSE !== holidays::is_holiday($date_object)) {
             /*
-             * Substract days, which are respected absence_days:
+             * TODO: kann auch zwei ebenen höher
              */
-            foreach ($Absentees as $employee_id => $reason_id) {
-                if (!in_array($reason_id, $List_of_non_respected_absence_reason_ids) and FALSE === $holiday and date('N', $date_unix) < 6) {
-                    $Working_hours_week_should[$employee_id] -= $workforce->List_of_employees[$employee_id]->working_week_hours / 5;
-                }
-            }
+
+            return 0;
+        }
+        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and ! empty($employee_object->working_week_days)) {
+            /**
+             * Wir müssen hier noch einen Spezialfall beachten!
+             * Es gibt Leute, die an nur zwei Tagen Di/Do arbeiten.
+             * TODO: Was ist hier, wenn der Feiertag auf einen Freitag fällt?
+             */
+            return 0;
+        }
+        if (empty($employee_object->working_week_days)) {
+            /*
+             * In case we do not know the exact working_week_days we guess is must be 5.
+             * This happens, if there are no days in the principle roster for this employee.
+             */
+            return $employee_object->working_week_hours / 5;
+        }
+        return $employee_object->working_week_hours / $employee_object->working_week_days;
+    }
+
+    public static function calculate_working_hours_week_should(array $Roster, workforce $workforce) {
+
+        foreach ($workforce->List_of_employees as $employee_object) {
+            $Working_hours_employee_should = self::calculate_working_hours_employee_should($Roster, $employee_object);
+            $Working_hours_week_should[$employee_object->employee_id] = $Working_hours_employee_should;
         }
         return $Working_hours_week_should;
     }

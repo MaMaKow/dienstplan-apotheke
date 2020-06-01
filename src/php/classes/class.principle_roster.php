@@ -269,6 +269,13 @@ class principle_roster extends roster {
     }
 
     public static function get_working_week_days($employee_id) {
+        /*
+         * TODO: Die Funktion könnte in die employee Klasse übergeben werden, wenn diese einen Zugriff auf den Grundplan hätte.
+         * Sie wäre dort vermutlich private und nicht static.
+         * Ein employee Objekt enthät bereits einen Grundplan. Allerdings ist die vorhandene Instanz nur für eine Alternierung vorhanden.
+         * Sonderfall: Wenn jemand im Wechsel 2 und 3 Tage pro Woche arbeitet,
+         *   so kann nur hier mit Zugriff auf den kompletten Grundplan und den kompletten Alternierungen auch der korrekte Wert von 2,5 gefunden werden.
+         */
         $sql_query = "SELECT COUNT(*) AS `working_week_days`, COUNT(DISTINCT `alternating_week_id`) AS `alternations` FROM (SELECT `employee_id`, `alternating_week_id` FROM `principle_roster` WHERE `employee_id` = :employee_id GROUP BY `alternating_week_id`, `weekday`) AS q1;";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {

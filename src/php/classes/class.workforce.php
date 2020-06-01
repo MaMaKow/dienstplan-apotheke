@@ -45,7 +45,7 @@ class workforce {
     public $List_of_goods_receipt_employees;
     public $List_of_compounding_employees;
 
-    public function __construct($date_start_sql = NULL, $date_end_sql = NULL) {
+    public function __construct(string $date_start_sql = NULL, string $date_end_sql = NULL) {
         $this->date_start_sql = $date_start_sql;
         $this->date_end_sql = $date_end_sql;
         if (isset(self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql])) {
@@ -89,6 +89,9 @@ class workforce {
         self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql] = $this;
     }
 
+    /**
+     * @todo Get rid of this function!
+     */
     public function __set($name, $value) {
         if ('date_sql' === $name) {
             throw new Exception('$date_sql may only be given on __construct!');
@@ -103,7 +106,7 @@ class workforce {
      * @return string <p>last name of chosen employee or '???' if the employee is not known.
      * For example if an emergency service is not yet chosen ($employee_id = NULL)</p>
      */
-    public function get_employee_last_name($employee_id) {
+    public function get_employee_last_name(int $employee_id) {
         if (FALSE !== $this->get_employee_value($employee_id, 'last_name')) {
             return $this->get_employee_value($employee_id, 'last_name');
         }
@@ -131,7 +134,20 @@ class workforce {
         throw new Exception('This employee does not exist!');
     }
 
-    private function get_employee_value($employee_id, $key) {
+    public function employee_exists($employee_id) {
+        if (isset($this->List_of_employees[$employee_id]) and $this->List_of_employees[$employee_id] instanceof employee) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+    /**
+     * @todo Delete this function. We do not need it, I hope.
+     * @param int $employee_id
+     * @param string $key
+     * @return misc
+     */
+    private function get_employee_value(int $employee_id, string $key) {
         if (isset($this->List_of_employees[$employee_id])) {
             if (isset($this->List_of_employees[$employee_id]->$key)) {
                 return $this->List_of_employees[$employee_id]->$key;

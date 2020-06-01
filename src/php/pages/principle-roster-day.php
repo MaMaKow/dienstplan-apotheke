@@ -20,12 +20,13 @@
 require '../../../default.php';
 
 $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new network_of_branch_offices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = (int) user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $weekday = (int) user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
 $alternating_week_id = (int) user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT, alternating_week::get_min_alternating_week_id());
 
-$chosen_history_date_valid_from = NULL;
+$chosen_history_date_valid_from = new DateTime('Monday this week');
 if (filter_has_var(INPUT_GET, 'chosen_history_date_valid_from')) {
     $chosen_history_date_valid_from = new DateTime(filter_input(INPUT_GET, 'chosen_history_date_valid_from', FILTER_SANITIZE_STRING));
 }

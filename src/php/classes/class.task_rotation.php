@@ -170,22 +170,24 @@ abstract class task_rotation {
              */
             $Abwesende = absence::read_absentees_from_database($temp_date_object->format('Y-m-d'));
             $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, array_keys($Abwesende));
-            if (array() === $List_of_compounding_rotation_employees) {
+            if (array() === $List_of_current_compounding_rotation_employees) {
                 /*
                  * There is nobody here today to do the task.
                  */
                 return FALSE;
             }
             $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_object->format('Y-m-d'), $to_date_object->format('Y-m-d'));
-
+            if (array() === $Done_rotation_count) {
+                $next_rotation_employee_id = current($List_of_current_compounding_rotation_employees);
+            } else {
+                $next_rotation_employee_id = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
+            }
             /**
              * Take the employee, who did the task the least in the last weeks:
              * min($Done_rotation_count) is the minimum number someone did the task.
              * array_keys($Done_rotation_count, min($Done_rotation_count) is the employee_id(s) as an array of all the employees, who worked the least.
              * current() just takes one of those least task-working employees.
              */
-            $next_rotation_employee_id = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
-
             if (!empty($next_rotation_employee_id)) {
                 $rotation_employee_id = $next_rotation_employee_id;
             }
