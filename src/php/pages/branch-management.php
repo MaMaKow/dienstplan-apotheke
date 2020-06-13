@@ -19,7 +19,7 @@
 require_once '../../../default.php';
 
 $network_of_branch_offices = new network_of_branch_offices();
-$current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($network_of_branch_offices->get_list_of_branch_objects())));
+$current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
     $new_branch_name = filter_input(INPUT_POST, "branch_name", FILTER_SANITIZE_STRING);
@@ -34,7 +34,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $old_branch_id));
 
         $network_of_branch_offices->update_list_of_branch_objects();
-        $current_branch_id = min(array_keys($network_of_branch_offices->get_list_of_branch_objects()));
+        $current_branch_id = $network_of_branch_offices->get_main_branch_id();
         /*
          * TODO: Is this still necessary?
          */
@@ -97,6 +97,14 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
      * TODO: Move this into the branch class.
      */
     for ($weekday = 1; $weekday <= 7; $weekday++) {
+        /*
+         * Remove row from database if it existed
+         */
+        $sql_query = "DELETE FROM `opening_times` WHERE `branch_id` = :branch_id AND `weekday` = :weekday";
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'branch_id' => $new_branch_id,
+            'weekday' => $weekday,
+        ));
         if ('' !== $Opening_times_from[$weekday] and '' !== $Opening_times_to[$weekday]) {
             $sql_query = "INSERT INTO `opening_times` "
                     . " SET `start` = :start, `end` = :end, `branch_id` = :branch_id, `weekday` = :weekday "
@@ -108,15 +116,6 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
                 'start2' => $Opening_times_from[$weekday],
                 'end' => $Opening_times_to[$weekday],
                 'end2' => $Opening_times_to[$weekday],
-            ));
-        } else {
-            /*
-             * Remove row from database if it existed
-             */
-            $sql_query = "DELETE FROM `opening_times` WHERE `branch_id` = :branch_id AND `weekday` = :weekday";
-            $result = database_wrapper::instance()->run($sql_query, array(
-                'branch_id' => $new_branch_id,
-                'weekday' => $weekday,
             ));
         }
     }
@@ -147,15 +146,53 @@ if (empty($List_of_branch_objects)) {
     . "</p>";
     $current_branch_id = 1;
 } else {
-
+    /**
+     * @todo <p>Hier wäre es schön, wenn man die Auswahl hätte, direkt einen neuen Mandanten anzulegen.
+     * Man könnte entweder direkt im select element ein weiteres Feld einfügen.
+     * Oder man gibt direkt dahinter ein Plus.
+     * Dieses Plus (kreisförmiger button) würe dann das hinzufügen eines weiteren Mandanten triggern.</p>
+     */
     echo build_html_navigation_elements::build_select_branch($current_branch_id, NULL);
 }
 
-function build_branch_input_opening_times($branch_id) {
-    $network_of_branch_offices = new network_of_branch_offices();
-    $List_of_branch_objects = ($network_of_branch_offices->get_list_of_branch_objects());
-    $branch_object = $List_of_branch_objects[$branch_id];
-    unset($List_of_branch_objects);
+/**
+ * <p>Define the $branch_object which will be edited.
+ * In case there is no branch object yet, we will create an empty one.
+ * </p>
+ */
+if ($network_of_branch_offices->branch_exists($current_branch_id)) {
+    $branch_object = $network_of_branch_offices->get_list_of_branch_objects()[$current_branch_id];
+} else {
+    /**
+     * @todo Is there a more clean way to do this?
+     * I probably do not want to create a class branch_object_empty, do I?
+     */
+    $branch_object = new stdClass();
+    $branch_object->branch_id = $current_branch_id;
+    $branch_object->name = "";
+    $branch_object->short_name = "";
+    $branch_object->address = "";
+    $branch_object->manager = "";
+    $branch_object->PEP = "";
+
+    $branch_object->Opening_times = array(
+        1 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        2 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        3 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        4 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        5 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        6 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        7 => array('day_opening_start' => "", 'day_opening_end' => ""),
+    );
+}
+
+/**
+ * @todo <p>Perhaps make a group of builder classes.
+ * And put the html building functions inside.</p>
+ * @param int $branch_id
+ * @return string
+ */
+function build_branch_input_opening_times($branch_object) {
 
     $string = "<fieldset>";
     $string .= "<legend>"
@@ -167,9 +204,9 @@ function build_branch_input_opening_times($branch_id) {
         $string .= "<tr>";
         $string .= "<td>" . $weekday_name . "</td> ";
         $string .= "<td>" . gettext("from") . "</td> ";
-        $string .= "<td><input type = time name = opening_times_from[$weekday_number] value = '" . $branch_object->Opening_times[$weekday_number]['day_opening_start'] . "' form = 'branch_management_form' ></td> ";
+        $string .= "<td><input type=time name=opening_times_from[$weekday_number] value='" . $branch_object->Opening_times[$weekday_number]['day_opening_start'] . "' form='branch_management_form' ></td> ";
         $string .= "<td>" . gettext("to") . "</td> ";
-        $string .= "<td><input type = time name = opening_times_to[$weekday_number] value = '" . $branch_object->Opening_times[$weekday_number]['day_opening_end'] . "' form = 'branch_management_form' ></td> ";
+        $string .= "<td><input type=time name=opening_times_to[$weekday_number] value='" . $branch_object->Opening_times[$weekday_number]['day_opening_end'] . "' form='branch_management_form' ></td> ";
         $string .= "</tr>";
     }
     $string .= "</table>";
@@ -195,7 +232,7 @@ function build_branch_input_opening_times($branch_id) {
                  class="inline-image"
                  title="<?= gettext("Awinta Smart and Awinta One have an option to export PEP data. If you uploaded such PEP data, enter your PEP Id for this branch here.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $List_of_branch_objects[$current_branch_id]->PEP ?>">
+            <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $branch_object->PEP ?>">
         </p>
     </fieldset>
     <fieldset>
@@ -203,25 +240,25 @@ function build_branch_input_opening_times($branch_id) {
         <p>
             <label for="branch_name"><?= gettext('Branch name') ?>: </label>
             <br>
-            <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $List_of_branch_objects[$current_branch_id]->name ?>">
+            <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $branch_object->name ?>">
         </p><p>
             <label for="branch_short_name"><?= gettext('Branch short name') ?>: </label>
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
                  class="inline-image"
                  title="<?= gettext("This is a short unofficial nickname for your pharmacy. It is used in pages with limited space. Please choose no more than 12 letters.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $List_of_branch_objects[$current_branch_id]->short_name ?>">
+            <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $branch_object->short_name ?>">
         </p><p>
             <label for="branch_address"><?= gettext('Branch address') ?>: </label>
             <br>
-            <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" ><?= $List_of_branch_objects[$current_branch_id]->address ?></textarea>
+            <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" ><?= $branch_object->address ?></textarea>
         </p><p>
             <label for="branch_manager"><?= gettext('Branch manager') ?>: </label>
             <br>
-            <input form="branch_management_form" type='text' name='branch_manager' id="branch_manager" value="<?= $List_of_branch_objects[$current_branch_id]->manager ?>">
+            <input form="branch_management_form" type='text' name='branch_manager' id="branch_manager" value="<?= $branch_object->manager ?>">
         </p>
     </fieldset>
-    <?= build_branch_input_opening_times($current_branch_id); ?>
+    <?= build_branch_input_opening_times($branch_object); ?>
 
     <div id="form_buttons_container">
         <button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no_print">

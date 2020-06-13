@@ -528,6 +528,12 @@ abstract class build_html_roster_views {
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
         $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
         $week_hours_table_html .= "<table class='tight'>";
+        $week_hours_table_html .= "<tr>";
+        $week_hours_table_html .= "<th>" . gettext('Employee') . "</th>";
+        $week_hours_table_html .= "<th>" . gettext('Target') . "</th>";
+        $week_hours_table_html .= "<th>" . gettext('Actual') . "</th>";
+        $week_hours_table_html .= "<th>" . gettext('Deviation') . "</th>";
+        $week_hours_table_html .= "</tr>";
         foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
             if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
                 continue; /* Only the specified employees are shown. */
@@ -551,9 +557,7 @@ abstract class build_html_roster_views {
             }
             $week_hours_table_html .= "</td>\n";
             $week_hours_table_html .= "<td>\n";
-            if (abs($differenz) >= 0.25) {
-                $week_hours_table_html .= "<b>" . (round($differenz * 4, 0) / 4) . "</b>\n";
-            }
+            $week_hours_table_html .= "<b>" . (round($differenz * 4, 0) / 4) . "</b>\n";
             $week_hours_table_html .= "</td>\n";
             $week_hours_table_html .= "</tr>\n";
         }
@@ -578,7 +582,8 @@ abstract class build_html_roster_views {
     private static function calculate_working_hours_day_employee_should(DateTime $date_object, employee $employee_object, array $Absentees) {
         if (array_key_exists($employee_object->employee_id, $Absentees)) {
             /*
-             * TODO: kann auch eine ebene höher
+             * Wer Abwesend ist muss nicht arbeiten.
+             * Ausnahme: Wer Überstunden abbaut REASON_TAKEN_OVERTIME, dem werden Sollstunden angerechnet.
              */
             /**
              * @var $List_of_non_respected_absence_reason_ids
@@ -591,10 +596,9 @@ abstract class build_html_roster_views {
             }
         }
         if (FALSE !== holidays::is_holiday($date_object)) {
-            /*
-             * TODO: kann auch zwei ebenen höher
+            /**
+             * Es ist ein Feiertag. Es muss nicht gearbeitet werden.
              */
-
             return 0;
         }
         if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and ! empty($employee_object->working_week_days)) {
@@ -602,6 +606,7 @@ abstract class build_html_roster_views {
              * Wir müssen hier noch einen Spezialfall beachten!
              * Es gibt Leute, die an nur zwei Tagen Di/Do arbeiten.
              * TODO: Was ist hier, wenn der Feiertag auf einen Freitag fällt?
+             * Ist es gerecht, dass solche Mitarbeiter hier speziell behandelt werden? Was sagt das Gesetz?
              */
             return 0;
         }

@@ -61,17 +61,30 @@ class sessions {
 
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
-        if (isset($_SESSION['number_of_times_redirected'])) {
-            $_SESSION['number_of_times_redirected'] = 0;
-        }
         global $config;
         /*
          * In case there are several instances of the program on the same machine,
          * we need a specific identifier for the different instances.
          * Therefore we define a specific session_name:
          */
-        session_name('PDR' . md5($config["session_secret"]));
+        session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
         session_start();
+        if (isset($_SESSION['number_of_times_redirected'])) {
+            /*
+             * TODO: Check if this is correct!
+             * Sollte hier isset() oder !isset() stehen?
+             * Was genau wird hier getestet?
+             * Es geht sicherlich um die Nutzung von HTTPS.
+             * Um das zu testen und zu erzwingen wurden redirects angelegt.
+             * Damit diese nicht endlos laufen, werden sie in der $SESSION mitgezählt.
+             * Muss diese Prüfug nun vor oder nach session_start(); stattfinden?
+             * Vorher sollte $_SESSION in keinem Fall definiert sein. Oder?
+             * Was passiert denn, wenn die Variable bereits vorher gesetzt wird?
+             *
+             * In welchem genauen Fall soll die Bedingung jetzt wahr werden?
+             */
+            $_SESSION['number_of_times_redirected'] = 0;
+        }
 
         /*
          * Interpret $_SERVER values:
@@ -121,6 +134,10 @@ class sessions {
         }
     }
 
+    /**
+     * TODO: Move this into the user class.
+     * @return void
+     */
     private function read_Privileges_from_database() {
         $Privileges = array();
         $sql_query = "SELECT * FROM users_privileges WHERE `employee_id` = :employee_id";
@@ -180,7 +197,13 @@ class sessions {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $user = new user($row->employee_id);
         }
-
+        if (!$user instanceof user) {
+            /*
+             * In case the given username just does not exist.
+             */
+            $user_dialog->add_message("Dieser Nutzer existiert nicht.", E_USER_ERROR);
+            return FALSE;
+        }
         /*
          * Check for multiple failed login attempts
          * If a user has tried to login 3 times in a row, he is blocked for 5 minutes.
@@ -239,7 +262,9 @@ class sessions {
             /*
              * Register failed_login_attempts
              */
-            $user->register_failed_login_attempt();
+            if ($user instanceof user) {
+                $user->register_failed_login_attempt();
+            }
             $errorMessage = "Benutzername oder Passwort war ungültig.";
             $user_dialog->add_message($errorMessage, E_USER_ERROR);
             return FALSE;
@@ -281,6 +306,9 @@ class sessions {
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         $headers .= "Content-Transfer-Encoding: quoted-printable";
 
+        /*
+         * TODO: Use PDR email class
+         */
         $sent_result = mail($recipient, $message_subject, $message_text, $headers);
         if ($sent_result) {
             $message = gettext("The mail was successfully sent. Thank you!");

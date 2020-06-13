@@ -22,6 +22,7 @@ class examine_roster {
     public $Anwesende; //this will also be used by: roster_image_histogramm::draw_image_histogramm
     private $Approbierten_anwesende;
     private $Wareneingang_Anwesende;
+    private $Changing_times;
 
     public function __construct(array $Roster, int $date_unix, int $branch_id, workforce $workforce) {
 
@@ -39,7 +40,6 @@ class examine_roster {
         $Changing_times[] = $this->Opening_times['day_opening_start'];
         $Changing_times[] = $this->Opening_times['day_opening_end'];
         $this->Changing_times = roster::cleanup_changing_times($Changing_times);
-
         $this->Anwesende = roster_headcount::headcount_roster($this->Roster_of_all_employees, $this->Changing_times);
         $this->Wareneingang_Anwesende = roster_headcount::headcount_roster($this->Roster_of_goods_receipt_employees, $this->Changing_times);
         $this->Approbierten_anwesende = roster_headcount::headcount_roster($this->Roster_of_qualified_pharmacist_employees, $this->Changing_times);
