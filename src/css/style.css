@@ -490,8 +490,10 @@ button:disabled, .btn-secondary:disabled {
 div#weekly_rotation {
     font-family: monospace;
     font-size: smaller;
+    /*
     position: relative;
     float: right;
+    */
 }
 
 div#print_time_info {
@@ -507,8 +509,10 @@ div#roster_week_image_div {
 div#week_hours_table_div {
     font-family: monospace;
     font-size: smaller;
+    /*
     position: relative;
     float:     right;
+    */
 }
 
 table.tight tr td {

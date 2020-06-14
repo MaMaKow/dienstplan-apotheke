@@ -295,8 +295,8 @@ class principle_roster extends roster {
             'weekday' => $date_object->format('N'),
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Opening_times['day_opening_start'] = $row->day_opening_start;
-            $Opening_times['day_opening_end'] = $row->day_opening_end;
+            $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->day_opening_start);
+            $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->day_opening_end);
         }
         return $Opening_times;
     }

@@ -86,7 +86,7 @@ class network_of_branch_offices {
             /**
              * In the case of missing branches, those HAVE TO be created.
              */
-            branch::redirect_to_input_form_on_missing_setup();
+            $this->redirect_to_branch_management_form();
         }
 
         return $Branch_ids;
@@ -117,6 +117,26 @@ class network_of_branch_offices {
     }
 
     /**
+     * This function will guess, which branch is the main branch.
+     * It will just use the one with the lowest branch_id.
+     * @todo Should we store the official main branch information in the database?
+     *
+     * @return int The banch id of the main branch.
+     */
+    public function get_main_branch_id() {
+        if (empty(self::$List_of_branch_objects)) {
+            /*
+             * We will return the number 1.
+             * Obviously there are no branches yet.
+             * The first one will be created soon.
+             * It will most probably get the number 1.
+             */
+            return 1;
+        }
+        return min(array_keys(self::$List_of_branch_objects));
+    }
+
+    /**
      * Check if the given branch does exist.
      *
      * All existing branches are stored in the $List_of_branch_objects.
@@ -129,6 +149,34 @@ class network_of_branch_offices {
             return TRUE;
         }
         return FALSE;
+    }
+
+    /**
+     * Redirect the browser to the branch management form
+     *
+     * If no branch is setup yet (e.g, directly after installation, or if all the branches have been deleted)
+     * then the browser is redirected to the branch management form
+     * @return void
+     */
+    private function redirect_to_branch_management_form() {
+        if (!isset($_SESSION['user_object']->employee_id)) {
+            /*
+             * If we are not logged in yet, then there is no sense in redirecting.
+             */
+            return FALSE;
+        }
+        $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
+        if (in_array(basename($script_name), array('branch-management.php'))) {
+            /*
+             * If we are already on the page, then there is no sense in redirecting.
+             */
+            return FALSE;
+        }
+        $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
+        if (++$_SESSION['number_of_times_redirected'] < 4) {
+            header('Location:' . $location);
+        }
+        die('<p><a href="' . $location . '">Please configure at least one branch first!</a></p>');
     }
 
 }

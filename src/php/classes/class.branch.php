@@ -115,34 +115,4 @@ class branch {
         }
     }
 
-    /**
-     * Redirect the browser to the branch management form
-     *
-     * If no branch is setup yet (e.g, directly after installation, or if all the branches have been deleted)
-     * then the browser is redirected to the branch management form
-     * @return void
-     * @todo Find a better name for this function! "redirect_to_branch-management_form"?
-     * @todo Move this function into the network class?
-     */
-    private static function redirect_to_input_form_on_missing_setup() {
-        if (!isset($_SESSION['user_object']->employee_id)) {
-            /*
-             * If we are not logged in yet, then there is no sense in redirecting.
-             */
-            return FALSE;
-        }
-        $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
-        if (in_array(basename($script_name), array('branch-management.php'))) {
-            /*
-             * If we already on the page, then there is no sense in redirecting.
-             */
-            return FALSE;
-        }
-        $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
-        if (++$_SESSION['number_of_times_redirected'] < 4) {
-            header('Location:' . $location);
-        }
-        die('<p><a href="' . $location . '">Please configure at least one branch first!</a></p>');
-    }
-
 }
