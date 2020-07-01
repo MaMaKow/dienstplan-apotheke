@@ -49,7 +49,7 @@ class test_htaccess {
      * @param string $folder the name and position of the folder to call.
      * @return bool TRUE for blocked folders, FALSE for visible folders.
      */
-    private function secret_folder_is_secure(string $folder) {
+    private function secret_folder_is_secure($folder) { //There MUST NOT be a type hint here! Type hints only worked for objects prior to PHP7.
         $user_dialog = new user_dialog();
         $hostname = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
 
@@ -59,6 +59,20 @@ class test_htaccess {
             $protocol = 'https';
         }
         $url = $protocol . "://" . $hostname . PDR_HTTP_SERVER_APPLICATION_PATH . $folder . '/';
+	    /**
+	     * This is just a simple test. 
+             * We do not need https here. 
+             * We will enforce it on other points.
+	     */
+            $Context_options = array(
+                'ssl' => array(
+	            //'verify_peer' => false, 
+                    'verify_peer_name' => false, 
+		    'allow_self_signed' => true,
+	    ) 
+);
+	stream_context_set_default($Context_options);
+
         $Response = get_headers($url);
         $response = $Response[0];
         $response_code = substr($response, strpos($response, " "), (strrpos($response, " ") - strpos($response, " ")));
@@ -75,7 +89,11 @@ class test_htaccess {
             return TRUE;
         } else {
             $error_message = "Error! The result could not be interpreted for the directory $url. Please make sure that the directory is not accessible by the public!<br>The server returned: '$response'. <br>";
-            foreach ($Response as $key => $response_http) {
+	    if(!is_array($Response)){
+                $user_dialog->add_message($error_message, E_USER_WARNING, TRUE);
+                return FALSE;
+	    }
+	    foreach ($Response as $key => $response_http) {
                 $error_message .= $key . ": " . htmlentities($response_http) . "<br>\n";
             }
             $user_dialog->add_message($error_message, E_USER_WARNING, TRUE);
@@ -84,7 +102,6 @@ class test_htaccess {
     }
 
     private function test_folders(array $Folders) {
-
         $user_dialog = new user_dialog();
         $all_folders_are_secure = TRUE;
         foreach ($Folders as $folder) {
