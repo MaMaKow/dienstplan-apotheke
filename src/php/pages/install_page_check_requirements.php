@@ -18,7 +18,6 @@
 require_once "../classes/class.install.php";
 $install = new install;
 require_once 'install_head.php';
-
 $webserver_supports_https = $install->webserver_supports_https();
 $database_driver_is_installed = $install->database_driver_is_installed();
 $pdr_directories_are_writable = $install->pdr_directories_are_writable();
@@ -108,6 +107,16 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
+            /**
+             * @TODO 1. Test if this an apache server!
+             * @TODO 2. Use the actual folder instead of the standard directory!
+             * @TODO 3- gettext()
+             */
+            echo "\n<br>You may want to add the following lines to the bottom of the apache configuration file:";
+            echo "<pre>&lt;Directory " . PDR_FILE_SYSTEM_APPLICATION_PATH . "&gt;
+   AllowOverride Limit Options
+&lt;/Directory&gt;</pre>
+";
             echo $install->build_error_message_div();
         }
         ?>

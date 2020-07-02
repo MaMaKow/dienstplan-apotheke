@@ -37,10 +37,10 @@ class install {
     const PHP_VERSION_ID_REQUIRED = 70002;
 
     function __construct() {
-        $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
+	$this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         define('PDR_FILE_SYSTEM_APPLICATION_PATH', $this->pdr_file_system_application_path);
         $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
-        $root_folder = substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars) . "/";
+        $root_folder = dirname(dirname(dirname(substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars)))) . "/";
         define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
         /*
          * Define an autoloader:
@@ -497,7 +497,13 @@ class install {
         foreach (user_dialog::$Messages as $Message) {
             $this->Error_message[] = $Message['text'];
         }
-        unset(user_dialog::$Messages);
+        /*
+         * This is a fix for the error in PHP 5.6:
+         * PHP Fatal error:  Attempt to unset static property
+         * TODO: This fix is far from perfect. We should let the class user_dialog handle this.
+         *  Or we SHOULD just not use the user_dialog class for this task.
+         */
+        user_dialog::$Messages = array();
         return $test_htaccess->all_folders_are_secure;
     }
 
