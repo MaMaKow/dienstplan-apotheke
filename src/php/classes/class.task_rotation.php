@@ -271,6 +271,9 @@ abstract class task_rotation {
         if (is_null($task) or is_null($date_sql) or is_null($branch_id) or is_null($employee_id)) {
             return FALSE;
         }
+        if ('' === $task or '' === $date_sql or '' === $branch_id or '' === $employee_id) {
+            return FALSE;
+        }
         self::write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id);
     }
 
