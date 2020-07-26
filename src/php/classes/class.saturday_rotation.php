@@ -54,7 +54,7 @@ class saturday_rotation {
         $this->team_id = $this->read_participation_from_database();
         if (NULL === $this->team_id) {
             $this->team_id = $this->set_new_participation();
-            if (NULL !== $this->team_id) {
+            if (NULL !== $this->team_id and FALSE !== $this->team_id) {
                 $this->write_participation_to_database();
             }
         }
