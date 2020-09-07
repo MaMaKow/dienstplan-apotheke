@@ -98,20 +98,42 @@ for ($i = 1; $i <= 12; $i++) {
     $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
 }
 $Years = absence::get_rostering_years();
+$table_body_html = "<tbody>";
+for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))){
 $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
         . "FROM `Dienstplan` "
-        . "WHERE  `VK` = :employee_id AND `Datum` >= :date_start AND `Datum` <= :date_end "
+        . "WHERE  `VK` = :employee_id AND `Datum` = :date "
         . "GROUP BY `Datum`";
 
-$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'date_start' => $date_start_object->format('Y-m-d'), 'date_end' => $date_end_object->format('Y-m-d')));
-$table_body_html = "<tbody>";
-while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+$result = database_wrapper::instance()->run($sql_query, array(
+    'employee_id' => $employee_id, 
+    'date' => $date_object->format('Y-m-d')));
     $table_body_html .= "<tr>";
-    $table_body_html .= "<td>" . strftime('%a %x', strtotime($row['date'])) . "</td>";
-    $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";
-    $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['end'])) . "</td>";
-    $table_body_html .= "<td>" . round($row['hours'], 2) . "</td>";
-    $table_body_html .= "</tr>";
+    $table_body_html .= "<td>" . $date_object->format('D d.m.Y') . "</td>";
+    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        //There should only be one row here.
+        $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";
+        $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['end'])) . "</td>";
+        $table_body_html .= "<td>" . round($row['hours'], 2);
+        if (isset($workforce->List_of_employees[$employee_id])) {
+            $employee_object = $workforce->List_of_employees[$employee_id];
+            $principle_working_hours = $employee_object->get_principle_roster_on_date($date_object)[0]->working_hours;
+            $overtime_hours = $row['hours'] - $principle_working_hours;
+            $overtime_hours_round = round($overtime_hours, 2);
+            if ($overtime_hours_round > 0) {
+                $table_body_html .= "<span> (+$overtime_hours_round)</span>";
+            } elseif ($overtime_hours_round < 0) {
+                $table_body_html .= "<span> ($overtime_hours_round)</span>";
+            }
+        }
+        $table_body_html .= "</td>";
+    }
+        $Absence = absence::get_absence_data_specific($date_object->format('Y-m-d'), $employee_id);
+        if (array() !== $Absence){
+            $table_body_html .=  "<td colspan='3'>" . absence::get_reason_string_localized($Absence['reason_id']) . "</td>";
+        }
+
+        $table_body_html .= "</tr>";
 }
 $table_body_html .= "</tbody>";
 /*
