@@ -26,6 +26,10 @@ Drag and drop is somehow defective.
 The following line should not be shown on saturdays and sundays, if Monday until Friday are set.
 "The are no opening times stored inside the database for this weekday. Please configure the opening times!"
 
+There is an error message:
+"No compatible database driver found. Please install one of the following database management systems and the corresponding PHP driver!"
+But there is no list given.
+
 ### Design errors
 fragment.principle-roster-day-history.php
     does not allways result in the chosen date. For example when the rotation weekdoes not match the chosen week.
@@ -110,13 +114,13 @@ Build an API for android apps
 
 The API covers at least:
 
-* roster, 
-* absence, 
+* roster,
+* absence,
 * and overtime
 
 ##### Architecture style
 
-* event-driven (no), 
+* event-driven (no),
 * URI CRUD-based (yes?)
 * and/or a Hypermedia API (yes)?
   * http://stateless.co/hal_specification.html
@@ -125,9 +129,9 @@ The API covers at least:
 
 * media type (JSON),
 
-* the kind of authentication, 
+* the kind of authentication,
 * paginate results,
-* naming conventions, 
+* naming conventions,
 * URI formatting
 
 ##### Apache

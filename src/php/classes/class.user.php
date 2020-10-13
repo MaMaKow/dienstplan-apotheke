@@ -293,8 +293,8 @@ class user {
      * @todo should this be static? Is it working?
      */
     public function exists() {
-        $statement = $this->pdo->prepare("SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id");
-        $result = $statement->execute(array('employee_id' => $this->employee_id));
+        $sql_query = "SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             return TRUE;
         }
