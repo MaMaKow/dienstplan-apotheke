@@ -67,7 +67,8 @@ class database_wrapper {
         } catch (Exception $exception) {
             print_debug_variable($exception->getTraceAsString());
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         }
     }
@@ -257,7 +258,8 @@ class database_wrapper {
         if (TRUE === $this->pdo->inTransaction()) {
             $this->pdo->rollBack();
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         } elseif ('42S22' == $exception->getCode() and 1054 === $exception->errorInfo[1]) {
             /*
@@ -268,7 +270,8 @@ class database_wrapper {
              */
             if (3 <= self::$unknown_column_iterator++) {
                 $message = gettext('There was an error while querying the database.')
-                        . " " . gettext('Please see the error log for more details!');
+                        . " " . gettext('Please see the error log for more details!')
+                        . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
                 die("<p>$message</p>");
             }
             new update_database();
@@ -323,7 +326,8 @@ class database_wrapper {
              * print_debug_variable($exception);
              */
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         }
     }

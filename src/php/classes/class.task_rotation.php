@@ -272,12 +272,20 @@ abstract class task_rotation {
         return $employee_id;
     }
 
+    /**
+     *
+     * @todo This should probably be a part of the page, not of the class.
+     * @return boolean FALSE in case of missing data.
+     */
     public static function task_handle_user_input() {
         $task = user_input::get_variable_from_any_input('task_rotation_task', FILTER_SANITIZE_STRING);
         $date_sql = user_input::get_variable_from_any_input('task_rotation_date', FILTER_SANITIZE_STRING);
         $branch_id = user_input::get_variable_from_any_input('task_rotation_branch', FILTER_SANITIZE_NUMBER_INT);
         $employee_id = user_input::get_variable_from_any_input('task_rotation_employee', FILTER_SANITIZE_NUMBER_INT);
         if (is_null($task) or is_null($date_sql) or is_null($branch_id) or is_null($employee_id)) {
+            return FALSE;
+        }
+        if ('' === $task or '' === $date_sql or '' === $branch_id or '' === $employee_id) {
             return FALSE;
         }
         self::write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id);

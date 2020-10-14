@@ -54,7 +54,7 @@ class saturday_rotation {
         $this->team_id = $this->read_participation_from_database();
         if (NULL === $this->team_id) {
             $this->team_id = $this->set_new_participation();
-            if (NULL !== $this->team_id) {
+            if (NULL !== $this->team_id and FALSE !== $this->team_id) {
                 $this->write_participation_to_database();
             }
         }
@@ -124,6 +124,9 @@ class saturday_rotation {
     }
 
     protected function write_participation_to_database() {
+        if (FALSE === $this->team_id) {
+            return FALSE;
+        }
         $sql_query = "INSERT INTO `saturday_rotation` (`date`, `team_id`, `branch_id`) VALUES (:date, :team_id, :branch_id)";
         database_wrapper::instance()->run($sql_query, array(
             'date' => $this->target_date_sql,
