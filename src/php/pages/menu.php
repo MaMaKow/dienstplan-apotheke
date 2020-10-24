@@ -110,7 +110,6 @@
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-management.php><?= gettext("User management") ?></a></li>
                 <li><a>&nbsp;</a></li>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/configuration.php><?= gettext('Configuration') ?><img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_ic_settings_24px.svg class="inline-image" alt="configuration-button" title="Configuration"></a></li>
-                <li><a href=/phpmyadmin>PhpMyAdmin</a></li>
             </ul>
         </li>
         <li>

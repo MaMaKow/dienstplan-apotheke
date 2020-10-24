@@ -381,3 +381,21 @@ function configuration_toggle_show_smtp_options() {
         }
     }
 }
+
+function show_login_p_caps_warning(event) {
+    event = event || window.event;
+    /*
+     * Get the warning text element
+     */
+    var p_warning = document.getElementById("login_p_caps_warning");
+
+    /*
+     * If "caps lock" is pressed, display the warning text
+     */
+    if (event.getModifierState("CapsLock")) {
+        p_warning.innerHTML = gettext('Warning! Caps lock is ON.');
+    } else {
+        p_warning.innerHTML = '&nbsp';
+    }
+
+}
