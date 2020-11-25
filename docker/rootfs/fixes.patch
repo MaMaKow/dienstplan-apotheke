@@ -1,0 +1,111 @@
+diff --git a/.gitignore b/.gitignore
+index a437b33..fb9a103 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -3,6 +3,7 @@
+ #########################################################################
+ config/
+ documentation/
++.env
+ 
+ # These files are for development purposes only: #
+ ##################################################
+diff --git a/src/php/classes/class.install.php b/src/php/classes/class.install.php
+index c40e460..69d55e8 100644
+--- a/src/php/classes/class.install.php
++++ b/src/php/classes/class.install.php
+@@ -292,18 +292,26 @@ class install {
+          * This means, that only existing employes can have an account to login.
+          * It follows, that we have to create an employee first, before we can create a user:
+          */
+-        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`) VALUES (:employee_id, :last_name);");
++        $statement = $this->pdo->prepare(
++            "INSERT INTO `employees` (`id`, `last_name`, `first_name`, `profession`) VALUES (:employee_id, :last_name, :first_name, :profession);"
++        );
+         $statement->execute(array(
+             'employee_id' => $this->Config["admin"]["employee_id"],
+-            'last_name' => $this->Config["admin"]["last_name"]
++            'last_name' => $this->Config["admin"]["last_name"],
++            'first_name' => $this->Config["admin"]["user_name"],
++            'profession' => 'PI',
+         ));
++
++        $original_config = $GLOBALS['config'] ?? NULL;
++        $GLOBALS['config'] = $this->Config;
+         $user = new user($this->Config["admin"]["employee_id"]);
+-        if ($user->exists()) {
++        if (!$user->exists()) {
+             $user_creation_result = $user->create_new($this->Config["admin"]["employee_id"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
+             if (!$user_creation_result) {
+                 /*
+                  * We were not able to create the administrative user.
+                  */
++                $GLOBALS['config'] = $original_config;
+                 $this->Error_message[] = gettext("Error while trying to create administrative user.");
+                 return FALSE;
+             }
+@@ -314,6 +322,9 @@ class install {
+              */
+             $this->Error_message[] = gettext("Administrative user already exists.");
+         }
++
++        $GLOBALS['config'] = $original_config;
++
+         /*
+          * Grant all privileges to the administrative user:
+          */
+@@ -497,7 +508,9 @@ class install {
+         foreach (user_dialog::$Messages as $Message) {
+             $this->Error_message[] = $Message['text'];
+         }
+-        unset(user_dialog::$Messages);
++
++        // BUG: Attempt to unset static property
++        // unset(user_dialog::$Messages);
+         return $test_htaccess->all_folders_are_secure;
+     }
+ 
+diff --git a/src/php/classes/class.sessions.php b/src/php/classes/class.sessions.php
+index a4c9ded..11a09fc 100644
+--- a/src/php/classes/class.sessions.php
++++ b/src/php/classes/class.sessions.php
+@@ -250,7 +250,9 @@ class sessions {
+             /*
+              * Register failed_login_attempts
+              */
+-            $user->register_failed_login_attempt();
++            if ($user) {
++                $user->register_failed_login_attempt();
++            }
+             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
+             $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
+             return $errorMessage;
+diff --git a/src/php/classes/class.user.php b/src/php/classes/class.user.php
+index 8996f76..2c81396 100644
+--- a/src/php/classes/class.user.php
++++ b/src/php/classes/class.user.php
+@@ -207,10 +207,10 @@ class user {
+      * @return boolean
+      */
+     public function create_new($employee_id, $user_name, $password_hash, $email, $status) {
+-        $statement = $this->pdo->prepare("INSERT INTO"
++        $sql_query = "INSERT INTO"
+                 . " users (user_name, employee_id, password, email, status)"
+-                . " VALUES (:user_name, :employee_id, :password, :email, :status)");
+-        $result = $statement->execute(array(
++                . " VALUES (:user_name, :employee_id, :password, :email, :status)";
++        $result = database_wrapper::instance()->run($sql_query, array(
+             'user_name' => $user_name,
+             'employee_id' => $employee_id,
+             'password' => $password_hash,
+@@ -293,8 +293,8 @@ class user {
+      * @todo should this be static? Is it working?
+      */
+     public function exists() {
+-        $statement = $this->pdo->prepare("SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id");
+-        $result = $statement->execute(array('employee_id' => $this->employee_id));
++        $sql_query = "SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id";
++        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
+         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+             return TRUE;
+         }

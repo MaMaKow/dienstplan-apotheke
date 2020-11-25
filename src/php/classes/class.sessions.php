@@ -250,7 +250,9 @@ class sessions {
             /*
              * Register failed_login_attempts
              */
-            $user->register_failed_login_attempt();
+            if ($user) {
+                $user->register_failed_login_attempt();
+            }
             $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
             $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
             return $errorMessage;
