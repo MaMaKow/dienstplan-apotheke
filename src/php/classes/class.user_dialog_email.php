@@ -186,9 +186,11 @@ class user_dialog_email {
                 $aggregated_message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
                 $mail_result = $this->send_email_about_changed_roster_to_employees($employee_id, $aggregated_message, $aggregated_ics_file);
                 if (TRUE === $mail_result) {
-                    list($IN_placeholder, $IN_list_array) = database_wrapper::create_placeholder_for_mysql_IN_function($List_of_deletable_notifications);
-                    $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `notification_id` IN ($IN_placeholder)";
-                    database_wrapper::instance()->run($sql_query, $IN_list_array);
+                    $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `notification_id` = :notification_id";
+                    $statement = database_wrapper::instance()->prepare($sql_query);
+                    foreach ($List_of_deletable_notifications as $deletable_notification) {
+                        $statement->execute(array('notification_id' => $deletable_notification));
+                    }
                 }
             }
         }

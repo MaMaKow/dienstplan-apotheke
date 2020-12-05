@@ -17,8 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-
+$session->exit_on_missing_privilege(sessions::PRIVILEGE_CREATE_ROSTER);
 if (!filter_has_var(INPUT_POST, 'Roster')) {
+    /*
+     * No data has been sent.
+     * We will redirect back so somewhere.
+     */
     $url = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/principle-roster-day.php";
     /*
      * The url is a wild guess.
@@ -59,7 +63,11 @@ function get_list_of_branch_ids(array $Roster) {
     return $List_of_branch_ids;
 }
 
-function build_difference_string(array $List_of_differences, array $Principle_roster_new, array $Principle_roster_old) {
+function build_difference_string(array $List_of_differences, array $List_of_deleted_roster_primary_keys, array $Principle_roster_new, array $Principle_roster_old) {
+    /*
+     *   TODO: Also mention the deletions inside $List_of_deleted_roster_primary_keys somewhere
+     *  CAVE: Perhaps we should use another function for this. This function is already very crowded.
+     */
     $difference_string = "";
     $Weekday_names = localization::get_weekday_names();
     foreach ($List_of_differences as $date_unix => $Employee_ids) {
@@ -107,8 +115,8 @@ function build_difference_string(array $List_of_differences, array $Principle_ro
                                 . "<br>";
                     }
                     if ($roster_item_new->branch_id !== $roster_item_old->branch_id) {
-                        $network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-                        print_debug_variable($roster_item_old->branch_id, $roster_item_new->branch_id);
+                        $network_of_branch_offices = new network_of_branch_offices;
+                        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
                         $difference_string .= gettext("branch")
                                 . "<br>"
                                 . $List_of_branch_objects[$roster_item_old->branch_id]->short_name
@@ -125,6 +133,7 @@ function build_difference_string(array $List_of_differences, array $Principle_ro
 }
 
 $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+$valid_from = user_input::get_variable_from_any_input('valid_from', FILTER_SANITIZE_STRING, NULL);
 $List_of_employee_ids = get_list_of_employee_ids($Principle_roster_new);
 $List_of_branch_ids = get_list_of_branch_ids($Principle_roster_new);
 
@@ -153,8 +162,9 @@ if (1 === count($List_of_employee_ids)) {
 } else {
     throw new Exception('This case has not yet been implemented. You seem to have submitted multiple branches and multiple employees at the same time.');
 }
-$List_of_differences = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
-if (array() !== $List_of_differences) {
+$List_of_changes = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
+$List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+if (array() !== $List_of_changes or array() !== $List_of_deleted_roster_primary_keys) {
     /*
      * Something has changed between the last roster and the new roster.
      */
@@ -163,7 +173,8 @@ if (array() !== $List_of_differences) {
      * We use the session variable, so we do not have to trust user data from POST:
      */
     $_SESSION['Principle_roster_from_prompt'] = $Principle_roster_new;
-    $_SESSION['List_of_differences'] = $List_of_differences;
+    $_SESSION['List_of_changes'] = $List_of_changes;
+    $_SESSION['List_of_deleted_roster_primary_keys'] = $List_of_deleted_roster_primary_keys;
     if (alternating_week::alternations_exist()) {
         /*
          * TODO: Create an option to take the changes to other alternations:
@@ -172,7 +183,7 @@ if (array() !== $List_of_differences) {
         echo sprintf(gettext('The %1$s will be changed.'), alternating_week::get_human_readable_string($alternating_week_id));
         echo "</p>";
 
-        echo build_difference_string($List_of_differences, $Principle_roster_new, $Principle_roster_old);
+        echo \build_difference_string($List_of_changes, $List_of_deleted_roster_primary_keys, $Principle_roster_new, $Principle_roster_old);
     }
     echo "<form id='principle_roster_prompt_before_safe' method='post' action='$referrer_url'>";
     echo "</form>";

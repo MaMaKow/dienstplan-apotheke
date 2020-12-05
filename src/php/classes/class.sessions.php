@@ -170,8 +170,8 @@ class sessions {
     }
 
     public function exit_on_missing_privilege($privilege) {
-        $user_dialog = new user_dialog();
         if (!$this->user_has_privilege($privilege)) {
+            $user_dialog = new user_dialog();
             $request_uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
             $message = gettext('You are missing the necessary permission to use this page.')
                     . ' ' . gettext('Please contact the administrator if you feel this is an error.')

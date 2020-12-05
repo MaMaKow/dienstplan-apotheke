@@ -69,6 +69,66 @@ Mitarbeiter selbst tauschen -> Modul bauen
   * use an API to get the data for the emergency services
 
 - database Ware-Termine / Ware-PEP
+PSR-4:
+Die Klassen können mal sortiert und in Ordner gepackt werden. Bei der Gelegenheit kann man direkt mal in Richtung PSR-4 denken.
+https://www.php-fig.org/psr/psr-4/
+\PDR\Pharmacy\Branch.php
+\PDR\Pharmacy\NetworkOfBranchOffices.php
+\PDR\Workforce\Absence.php
+\PDR\Workforce\Overtime.php
+\PDR\Workforce\Employee.php
+\PDR\Workforce\Workforce.php
+\PDR\Workforce\HumanResourceManagement.php
+
+\PDR\Roster\Roster.php (Eine ganze Woche/Monat/beliebiger Bereich)
+\PDR\Roster\RosterDayArray.php (alle Items aus einem Tag)
+\PDR\Roster\RosterItem.php
+\PDR\Roster\RosterItemEmpty.php
+\PDR\Roster\AlternatingWeek.php
+\PDR\Roster\ExamineAttendance.php
+\PDR\Roster\RosterApproval.php
+\PDR\Roster\RosterHeadcount.php
+\PDR\Roster\ExamineRoster.php
+\PDR\Roster\PrincipleRoster.php
+\PDR\Roster\PrincipleRosterItem.php
+\PDR\Roster\PrincipleRosterHistory.php
+\PDR\Roster\RosterLogicException.php
+\PDR\Roster\SaturdayRotation.php
+\PDR\Roster\TaskRotation.php
+
+\PDR\DateTime\Holidays.php
+\PDR\DateTime\GeneralCalculations.php
+\PDR\DateTime\ValidFrom.php
+
+\PDR\Input\UserInput.php
+
+\PDR\Output\HTML\NavigationElements.php
+\PDR\Output\HTML\FormElements.php
+\PDR\Output\HTML\RosterViews.php
+\PDR\Output\HTML\CollaborativeVacation.php
+\PDR\Output\HTML\PharmacyEmergencyService.php = class.pharmacy_emergency_service_builder.php
+\PDR\Output\HTML\UserDialog.php
+\PDR\Output\ICalendar.php
+\PDR\Output\Email\Email.php
+\PDR\Output\Email\UserDialogEmail.php
+\PDR\Output\Image\RosterBarPlot.php
+\PDR\Output\Image\RosterHistogramm.php
+
+\PDR\Application\Configuration.php
+\PDR\Application\DatabaseWrapper.php
+\PDR\Application\UpdateDatabase.php
+\PDR\Application\Diff.php
+\PDR\Application\Install.php
+\PDR\Application\Users\User.php
+\PDR\Application\Users\HaveIBeenPwned.php
+\PDR\Application\Users\Sessions.php
+\PDR\Application\Localization.php
+\PDR\Application\Maintenance.php
+\PDR\Application\TestHtaccess.php
+
+
+
+
 
 ### Web
 Restructure the menu:
@@ -341,3 +401,5 @@ Halbrichtig = -1,5 == 0
 
 Dienstplan Mitarbeiteransicht mit Kommentar für Personen mit Bearbeiterprivileg
 
+play around with docker
+Post/Redirect/Get
