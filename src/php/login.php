@@ -43,7 +43,7 @@ $user_dialog->build_messages();
     <input type="hidden" name="login" value="1">
     <input type="text" size="25" maxlength="250" name="user_name" placeholder="Benutzername" id="login_input_user_name"><br>
     <input type="password" size="25" name="user_password" placeholder="Passwort" id="login_input_user_password" ><br>
-    <input type="submit">
+    <input type="submit" id="login_button_submit">
     <p class="hint" id="login_p_caps_warning" >&nbsp<!-- Warning! Caps lock is ON. --></p>
     <?php
     if (!empty($errorMessage)) {

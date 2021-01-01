@@ -4,6 +4,8 @@
 
 ### Security
 
+Wenn ein Login fehlschlägt, darf der "Angreifer" nicht erfahren, ob der Benutzer existiert!
+
 ### Failure of functions
 Beim Speichern der Grundpläne erkennt das Programm nicht, wenn jemand gelöscht wurde.
 
