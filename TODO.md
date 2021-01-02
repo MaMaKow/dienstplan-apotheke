@@ -4,6 +4,8 @@
 
 ### Security
 
+Wenn ein Login fehlschlägt, darf der "Angreifer" nicht erfahren, ob der Benutzer existiert!
+
 ### Failure of functions
 Beim Speichern der Grundpläne erkennt das Programm nicht, wenn jemand gelöscht wurde.
 
@@ -25,6 +27,10 @@ Drag and drop is somehow defective.
 ### Logical errors
 The following line should not be shown on saturdays and sundays, if Monday until Friday are set.
 "The are no opening times stored inside the database for this weekday. Please configure the opening times!"
+
+There is an error message:
+"No compatible database driver found. Please install one of the following database management systems and the corresponding PHP driver!"
+But there is no list given.
 
 ### Design errors
 fragment.principle-roster-day-history.php
@@ -65,6 +71,66 @@ Mitarbeiter selbst tauschen -> Modul bauen
   * use an API to get the data for the emergency services
 
 - database Ware-Termine / Ware-PEP
+PSR-4:
+Die Klassen können mal sortiert und in Ordner gepackt werden. Bei der Gelegenheit kann man direkt mal in Richtung PSR-4 denken.
+https://www.php-fig.org/psr/psr-4/
+\PDR\Pharmacy\Branch.php
+\PDR\Pharmacy\NetworkOfBranchOffices.php
+\PDR\Workforce\Absence.php
+\PDR\Workforce\Overtime.php
+\PDR\Workforce\Employee.php
+\PDR\Workforce\Workforce.php
+\PDR\Workforce\HumanResourceManagement.php
+
+\PDR\Roster\Roster.php (Eine ganze Woche/Monat/beliebiger Bereich)
+\PDR\Roster\RosterDayArray.php (alle Items aus einem Tag)
+\PDR\Roster\RosterItem.php
+\PDR\Roster\RosterItemEmpty.php
+\PDR\Roster\AlternatingWeek.php
+\PDR\Roster\ExamineAttendance.php
+\PDR\Roster\RosterApproval.php
+\PDR\Roster\RosterHeadcount.php
+\PDR\Roster\ExamineRoster.php
+\PDR\Roster\PrincipleRoster.php
+\PDR\Roster\PrincipleRosterItem.php
+\PDR\Roster\PrincipleRosterHistory.php
+\PDR\Roster\RosterLogicException.php
+\PDR\Roster\SaturdayRotation.php
+\PDR\Roster\TaskRotation.php
+
+\PDR\DateTime\Holidays.php
+\PDR\DateTime\GeneralCalculations.php
+\PDR\DateTime\ValidFrom.php
+
+\PDR\Input\UserInput.php
+
+\PDR\Output\HTML\NavigationElements.php
+\PDR\Output\HTML\FormElements.php
+\PDR\Output\HTML\RosterViews.php
+\PDR\Output\HTML\CollaborativeVacation.php
+\PDR\Output\HTML\PharmacyEmergencyService.php = class.pharmacy_emergency_service_builder.php
+\PDR\Output\HTML\UserDialog.php
+\PDR\Output\ICalendar.php
+\PDR\Output\Email\Email.php
+\PDR\Output\Email\UserDialogEmail.php
+\PDR\Output\Image\RosterBarPlot.php
+\PDR\Output\Image\RosterHistogramm.php
+
+\PDR\Application\Configuration.php
+\PDR\Application\DatabaseWrapper.php
+\PDR\Application\UpdateDatabase.php
+\PDR\Application\Diff.php
+\PDR\Application\Install.php
+\PDR\Application\Users\User.php
+\PDR\Application\Users\HaveIBeenPwned.php
+\PDR\Application\Users\Sessions.php
+\PDR\Application\Localization.php
+\PDR\Application\Maintenance.php
+\PDR\Application\TestHtaccess.php
+
+
+
+
 
 ### Web
 Restructure the menu:
@@ -110,13 +176,13 @@ Build an API for android apps
 
 The API covers at least:
 
-* roster, 
-* absence, 
+* roster,
+* absence,
 * and overtime
 
 ##### Architecture style
 
-* event-driven (no), 
+* event-driven (no),
 * URI CRUD-based (yes?)
 * and/or a Hypermedia API (yes)?
   * http://stateless.co/hal_specification.html
@@ -125,9 +191,9 @@ The API covers at least:
 
 * media type (JSON),
 
-* the kind of authentication, 
+* the kind of authentication,
 * paginate results,
-* naming conventions, 
+* naming conventions,
 * URI formatting
 
 ##### Apache
@@ -337,3 +403,5 @@ Halbrichtig = -1,5 == 0
 
 Dienstplan Mitarbeiteransicht mit Kommentar für Personen mit Bearbeiterprivileg
 
+play around with docker
+Post/Redirect/Get

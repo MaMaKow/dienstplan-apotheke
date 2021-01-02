@@ -23,9 +23,16 @@
  * @param int $days The number of days until expiration.
  * @return null
  */
-function create_cookie($cookie_name, $cookie_value, $days = 7) {
+function create_cookie(string $cookie_name, $cookie_value, float $days = 7) {
     if (isset($cookie_name) AND isset($cookie_value)) {
-        setcookie($cookie_name, $cookie_value, time() + (86400 * $days), "/"); // 86400 = 1 day
+        if (is_int($days)) {
+            $Expire_obj = (new DateTime())->add(new DateInterval('P' . $days . 'D'));
+        } else {
+            $minutes = round($days * 24 * 60);
+            $Expire_obj = (new DateTime())->add(new DateInterval('P' . $minutes . 'M'));
+        }
+        $expires = $Expire_obj->format('r');
+        header("Set-Cookie: $cookie_name=$cookie_value; path=" . PDR_HTTP_SERVER_APPLICATION_PATH . "; HttpOnly; Secure; SameSite=Strict; Expires=$expires;");
     }
 }
 
@@ -60,10 +67,11 @@ function calculate_percentile($arr, $percentile) {
 }
 
 function print_debug_variable_to_screen($variable) {
+    $argument_list = func_get_args();
     echo "<br>"
     . "<pre>";
     //var_export($variable);
-    var_dump($variable);
+    var_dump($argument_list);
     echo "</pre>"
     . "<br>";
 }
@@ -102,16 +110,6 @@ function print_debug_variable($variable) {
      */
 }
 
-/*
- *
-  function print_debug_backtrace() {
-  $trace = debug_backtrace();
-  $message = $trace;
-  error_log(var_export($message, TRUE));
-  return true;
-  }
- */
-
 /**
  * Test if PHP is running on a Windows machine.
  *
@@ -148,18 +146,13 @@ function get_php_binary() {
 }
 
 /**
- * Execute a shell command without waiting for it's output.
  *
- * @cave Find a better way to do this and get rid of exec!
- * @param string $command
-function execute_in_background(string $command) {
-    $filtered_command = escapeshellcmd($command);
-    unset($command);
-    $logfile = PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log';
-    if (substr(php_uname(), 0, 7) == "Windows") {
-        pclose(popen("start /B " . $filtered_command . " > $logfile", "r"));
-    } else {
-        exec($filtered_command . " > $logfile 2>&1 &");
-    }
-}
+ * @param string $date
+ * @param string $format
+ * @return bool true if the input is a date of the given format
+ * @todo Move this function into a class that extends DateTime
  */
+function validate_date(string $date, string $format = 'Y-m-d') {
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) == $date;
+}

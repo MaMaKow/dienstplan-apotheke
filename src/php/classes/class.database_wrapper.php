@@ -67,7 +67,8 @@ class database_wrapper {
         } catch (Exception $exception) {
             print_debug_variable($exception->getTraceAsString());
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         }
     }
@@ -215,33 +216,6 @@ class database_wrapper {
     }
 
     /**
-     * Enable the usage of prepared statements for IN clauses
-     *
-     * This methods helps to prevent sql injection.
-     *
-     * @param array an array of values to be queryed in an IN clause
-     * @return array the placeholders and the fitting bind array
-     * @return string $in_placeholder_trimmed the placeholder string
-     * @return array $in_parameters the array items appended with ":in_placeholder"
-     */
-    public static function create_placeholder_for_mysql_IN_function($input_array, $named_placeholders = FALSE) {
-        if (FALSE === $named_placeholders) {
-            $in_placeholder = str_repeat('?,', count($input_array) - 1) . '?';
-            return array($in_placeholder, $input_array);
-        } else {
-            $in = "";
-            $in_parameters = array();
-            foreach ($input_array as $iterator => $item) {
-                $key = ":in_placeholder" . $iterator;
-                $in .= "$key,";
-                $in_parameters[$key] = $item; // collecting values into key-value array
-            }
-            $in_placeholder_trimmed = rtrim($in, ","); // :id0,:id1,:id2
-            return array($in_placeholder_trimmed, $in_parameters);
-        }
-    }
-
-    /**
      * Handle exception thrown by self::run()
      *
      * Exceptions are supposed to be of the class PDOStatement.
@@ -257,7 +231,8 @@ class database_wrapper {
         if (TRUE === $this->pdo->inTransaction()) {
             $this->pdo->rollBack();
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         } elseif ('42S22' == $exception->getCode() and 1054 === $exception->errorInfo[1]) {
             /*
@@ -268,7 +243,8 @@ class database_wrapper {
              */
             if (3 <= self::$unknown_column_iterator++) {
                 $message = gettext('There was an error while querying the database.')
-                        . " " . gettext('Please see the error log for more details!');
+                        . " " . gettext('Please see the error log for more details!')
+                        . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
                 die("<p>$message</p>");
             }
             new update_database();
@@ -323,7 +299,8 @@ class database_wrapper {
              * print_debug_variable($exception);
              */
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         }
     }

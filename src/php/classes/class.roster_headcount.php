@@ -115,16 +115,34 @@ abstract class roster_headcount {
         if (!empty($row->start) and ! empty($row->end)) {
             $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->start);
             $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->end);
-        } else {
+            return $Opening_times;
+        }
+        $date_object = new DateTime();
+        $date_object->setTimestamp($date_unix);
+        $Opening_times = principle_roster::guess_opening_times(clone $date_object, $branch_id);
+
+        if (self::number_of_days_with_opening_times($branch_id) < 5) {
             $message = gettext("The are no opening times stored inside the database for this weekday.");
             $message .= " ";
             $message .= sprintf(gettext('Please %1$s configure %2$s the opening times!'), '<a href=' . PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php>', '</a>');
             $user_dialog->add_message($message, E_USER_NOTICE, TRUE);
-            $date_object = new DateTime();
-            $date_object->setTimestamp($date_unix);
-            $Opening_times = principle_roster::guess_opening_times(clone $date_object, $branch_id);
         }
         return $Opening_times;
+    }
+
+    /**
+     * @todo Schould there be a single class opening_times? Can it be connected to the class branch?
+     * @param int $branch_id
+     * @return int number_of_days
+     */
+    private static function number_of_days_with_opening_times($branch_id) {
+        $sql_query = "SELECT count(*) as `number_of_days` FROM `opening_times` WHERE `branch_id` = :branch_id";
+        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id));
+
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            return $row->number_of_days;
+        }
+        return 0;
     }
 
 }

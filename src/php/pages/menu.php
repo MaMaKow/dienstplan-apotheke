@@ -4,6 +4,13 @@
  * But DO NOT include it inside head.php!
  * It is not part and should not be part of e.g. install.php
  */
+/**
+ * @todo <p lang=de>
+ * Das Menü sollte einmal komplett umgebaut werden.
+ *   - Es sollte schlanker werden,
+ *   - Es sollte auf Mobilgeräten mit Touch funktionieren.
+ * </p>
+ */
 ?>
 <nav id="nav" class="no_print">
     <ul id="navigation">
@@ -110,13 +117,13 @@
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-management.php><?= gettext("User management") ?></a></li>
                 <li><a>&nbsp;</a></li>
                 <li><a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/configuration.php><?= gettext('Configuration') ?><img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_ic_settings_24px.svg class="inline-image" alt="configuration-button" title="Configuration"></a></li>
-                <li><a href=/phpmyadmin>PhpMyAdmin</a></li>
             </ul>
         </li>
-        <li>
-            <span><?= $_SESSION['user_object']->user_name; ?>&nbsp;
-                <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/user_1.svg class="inline-image" alt="user-button" title="Show user">
+        <li id="menu_listitem_user">
+            <span id="menu_listitem_user_username">
+                <?= $_SESSION['user_object']->user_name; ?>
             </span>
+            <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/user_1.svg class="inline-image" alt="user-button" title="Show user">
             <ul>
                 <li>
                     <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-page.php">
@@ -126,6 +133,10 @@
                 </li>
                 <li>
                     <a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/about.php">
+                    <!--TODO: <p lang=de>
+                        Dieses Element sollte in einen Bereich "application" umziehen.
+                        Der lohnt sich aber erst, wenn auch die Dokumentation (Anleitung) im Menü ist.
+                    </p>>
                         <?= gettext('About'); ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg class="inline-image" alt="information" title="Show user">
                     </a>

@@ -375,7 +375,9 @@ img.worker-img:hover {
 .hint {
     font-size: small;
     font-weight: lighter;
+    /*
     text-align: left;
+    */
 }
 
 .table {
@@ -900,4 +902,8 @@ img.example_artwork {
     /*Relevant for list_of_artwork.php*/
     height: 32px;
     margin-top: 1em;
+}
+
+p#hidden_on_load {
+    display: none;
 }

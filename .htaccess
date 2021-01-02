@@ -1,7 +1,10 @@
 <Files error.log>
     deny from all
 </Files>
-php_value upload_max_filesize 300M
-php_value post_max_size 300M
-#php_value max_execution_time 10
-php_value max_input_time 180
+<IfModule mod_php7.c>
+    # If PHP is not installed in the form of an Apache module, then php_value is not a valid command.
+    # TODO: Also it is considered unsafe to use php_value inside .htaccess
+    php_value upload_max_filesize 300M
+    php_value post_max_size 300M
+    php_value max_input_time 180
+</IfModule>

@@ -62,6 +62,10 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php')) {
         }
     }
 }
+
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_secure', 1);
 /*
  * Setup if errors should be reported to the user, if to log them, and where:
  */
@@ -77,6 +81,9 @@ if ($config['log_errors'] or $config['display_errors']) {
     //ini_set('zend.assertions', -1); //Assertions are not compiled.
     ini_set('assert.exception', 0); //Only warnings would be shown if assertions were to be executed and failed.
 }
+/**
+ * @todo CAVE: php-fpm might log the errors somewhere else, e.g. in /var/log/php-fpm/www-error.log
+ */
 ini_set('error_log', $config['error_log']); //Which file should errors be logged to?
 error_reporting($config['error_reporting']); //Which errors should be reported?
 

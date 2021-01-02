@@ -190,6 +190,7 @@ class install {
          * PDOStatement::execute will return TRUE on success or FALSE on failure.
          */
         if ($result) {
+            error_log("The database user " . $this->Config["database_user_self"] . " was created with the password: " . $this->Config["database_password_self"]);
             if ("localhost" !== $this->Config["database_host"]) {
                 /*
                  * Allow access from any remote.
@@ -203,9 +204,12 @@ class install {
                 /*
                  * PDOStatement::execute will return TRUE on success or FALSE on failure.
                  */
+                error_log("The database host is " . $this->Config["database_host"] . ", therefore we tried to create the user a second time with the host set to %");
+                error_log("The result was: " . $result);
                 return $result;
             }
         } else {
+            error_log("The database user " . $this->Config["database_user_self"] . " could not be created with the password: " . $this->Config["database_password_self"]);
             return FALSE;
         }
     }
@@ -228,11 +232,13 @@ class install {
             "TRIGGER",
         );
         $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@localhost");
+        error_log("GRANT all neccessary privileges to the database user.");
         if ("localhost" !== $this->Config["database_host"]) {
             /*
              * Allow access from any remote (@%).
              * TODO: Should we place a warning to the administrator?
              */
+            error_log("GRANT them also for access from remote.");
             $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@%");
         }
     }
@@ -259,6 +265,7 @@ class install {
             }
             $this->pdo->exec($sql_create_table_statement);
         }
+        error_log("The database tables were created.");
     }
 
     public function handle_user_input_administration() {
@@ -297,8 +304,20 @@ class install {
             'employee_id' => $this->Config["admin"]["employee_id"],
             'last_name' => $this->Config["admin"]["last_name"]
         ));
+        error_log("Created the employee " . $this->Config["admin"]["last_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
+        global $config;
+        $config = $config['database_host'] = $this->Config['database_host'];
+        $config['database_name'] = $this->Config['database_name'];
+        $config['database_port'] = $this->Config['database_port'];
+        $config['database_user'] = $this->Config['database_user'];
+        $config['database_password'] = $this->Config['database_password'];
+
         $user = new user($this->Config["admin"]["employee_id"]);
+        error_log("Tried to instatiate the PDR user object with the id " . $this->Config["admin"]["employee_id"]);
+        error_log("This is the user object:");
+        error_log(var_export($user, TRUE));
         if ($user->exists()) {
+            error_log("Yes, we have an object. The user exists.");
             $user_creation_result = $user->create_new($this->Config["admin"]["employee_id"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
             if (!$user_creation_result) {
                 /*
@@ -312,6 +331,7 @@ class install {
              * The administrative user already exists.
              * We will not delete it.
              */
+            error_log("No, we do not have an object.");
             $this->Error_message[] = gettext("Administrative user already exists.");
         }
         /*

@@ -57,26 +57,6 @@ abstract class user_input {
         alternating_week::delete_alternation($principle_roster_delete);
     }
 
-    public static function principle_roster_write_user_input_to_database($branch_id, $valid_from) {
-        global $session;
-        $session->exit_on_missing_privilege('create_roster');
-        $Principle_roster_new = user_input::get_Roster_from_POST_secure();
-        $pseudo_date_start_object = new DateTime();
-        $pseudo_date_start_object->setTimestamp(min(array_keys($Principle_roster_new)));
-        $pseudo_date_end_object = new DateTime();
-        $pseudo_date_end_object->setTimestamp(max(array_keys($Principle_roster_new)));
-        $Principle_roster_old = principle_roster::read_principle_roster_from_database($branch_id, $pseudo_date_start_object, $pseudo_date_end_object);
-        $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
-        $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
-        $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
-        database_wrapper::instance()->beginTransaction();
-        principle_roster::remove_changed_employee_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
-        principle_roster::remove_changed_employee_entries_from_database($branch_id, $Changed_roster_employee_id_list);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Changed_roster_employee_id_list, $valid_from);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $Inserted_roster_employee_id_list, $valid_from);
-        database_wrapper::instance()->commit();
-    }
-
     public static function get_Roster_from_POST_secure() {
         $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
         $Roster = array();
@@ -84,7 +64,13 @@ abstract class user_input {
             return FALSE;
         }
         foreach ($Roster_from_post as $date_unix => $Roster_from_post_day_array) {
+            if (!is_numeric($date_unix)) {
+                throw new Exception('$date_unix must be an integer representing a unix timestamp!');
+            }
             foreach ($Roster_from_post_day_array as $roster_row_iterator => $Roster_row_array) {
+                if (!is_numeric($roster_row_iterator)) {
+                    throw new Exception('$roster_row_iterator must be an integer!');
+                }
                 $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
                 $employee_id = filter_var($Roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT);
                 $branch_id = filter_var($Roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
@@ -93,6 +79,20 @@ abstract class user_input {
                 $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
                 $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
                 $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_STRING));
+                if (isset($Roster_row_array['primary_key'])) {
+                    /*
+                     * Dies scheint ein principle_roster zu sein:
+                     */
+                    $valid_from = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['valid_from'], FILTER_SANITIZE_STRING));
+                    $valid_until = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['valid_until'], FILTER_SANITIZE_STRING));
+                    $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
+                }
+                if (!is_numeric($branch_id)) {
+                    throw new Exception('$branch_id must be an integer!');
+                }
+                if (!validate_date($date_sql, 'Y-m-d')) {
+                    throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
+                }
                 if ('' === $employee_id) {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                     continue;
@@ -105,6 +105,15 @@ abstract class user_input {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                     continue;
                 }
+                if (!empty($primary_key) && is_numeric($primary_key)) {
+                    /*
+                     * This one is a principle roster item.
+                     * $valid_from and $valid_until are explicitly allowed to be NULL.
+                     * @todo: There will come a time, when simple roster_items will also have a numeric primary_key.
+                     */
+                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $valid_from, $valid_until, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql);
+                    continue;
+                }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
             }
@@ -113,15 +122,15 @@ abstract class user_input {
     }
 
     private static function remove_changed_entries_from_database($branch_id, $Employee_id_list) {
+        $sql_query = "DELETE FROM `Dienstplan`"
+                . " WHERE `Datum` = :date"
+                . " AND `VK` = :employee_id"
+                . " AND `Mandant` = :branch_id";
+        $statement = database_wrapper::instance()->prepare($sql_query);
         foreach ($Employee_id_list as $date_unix => $Employee_id_list_day) {
             $date_sql = date('Y-m-d', $date_unix);
-            if (!empty($Employee_id_list_day)) {
-                list($IN_placeholder, $IN_employees_list) = database_wrapper::create_placeholder_for_mysql_IN_function($Employee_id_list_day, TRUE);
-                $sql_query = "DELETE FROM `Dienstplan`"
-                        . " WHERE `Datum` = :date"
-                        . " AND `VK` IN ($IN_placeholder)"
-                        . " AND `Mandant` = :branch_id";
-                database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array('date' => $date_sql, 'branch_id' => $branch_id)));
+            foreach ($Employee_id_list_day as $employee_id) {
+                $statement->execute(array('employee_id' => $employee_id, 'date' => $date_sql, 'branch_id' => $branch_id));
             }
         }
     }
@@ -167,6 +176,19 @@ abstract class user_input {
         }
     }
 
+    /**
+     * Finde geänderte aber noch existente Einträge im neuen Plan
+     *
+     * <p lang="de">
+     * CAVE! Gelöschte Einträge fehlen hier.
+     *   Wenn ein Tag im neuen $Roster nicht mehr existiert, so wird er auch hier nicht mit erscheinen.
+     *   get_deleted_roster_employee_id_list ist für die Aufgabe gedacht.
+     * </p>
+     *
+     * @param type $Roster
+     * @param type $Roster_old
+     * @return type
+     */
     public static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
@@ -213,12 +235,20 @@ abstract class user_input {
         return TRUE;
     }
 
-    private static function get_deleted_roster_employee_id_list($Roster, $Roster_old) {
-        $List_of_employees_in_Roster = array();
+    public static function get_deleted_roster_employee_id_list($Roster, $Roster_old) {
         $Deleted_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
-            if (empty($Roster_day_array)) {
+            $List_of_employees_in_Roster = array();
+            $List_of_employees_in_Roster_old = array();
+            if (empty($Roster_day_array) or roster::is_empty_roster_day_array($Roster_day_array)) {
+                /*
+                 * Es steht kein einziger Eintrag in diesem Tag.
+                 * Alle alten Einträge sind gelöschte Einträge.
+                 */
                 foreach ($Roster_old[$date_unix] as $roster_row_object) {
+                    if (NULL === $roster_row_object->employee_id) {
+                        continue;
+                    }
                     $Deleted_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
                 }
             } else {
@@ -227,6 +257,9 @@ abstract class user_input {
                     $List_of_employees_in_Roster_old = array();
                 } else {
                     foreach ($Roster_old[$date_unix] as $roster_row_object) {
+                        if (NULL === $roster_row_object->employee_id) {
+                            continue;
+                        }
                         $List_of_employees_in_Roster_old[] = $roster_row_object->employee_id;
                     }
                 }
@@ -237,12 +270,45 @@ abstract class user_input {
                     $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
                 }
                 $Deleted_roster_employee_ids = array_diff($List_of_employees_in_Roster_old, $List_of_employees_in_Roster);
-                if (array(0 => NULL) !== $Deleted_roster_employee_ids) {
-                    $Deleted_roster_employee_id_list[$date_unix] = $Deleted_roster_employee_ids;
+                if (array(0 => NULL) === $Deleted_roster_employee_ids) {
+                    continue;
                 }
+                if (array() === $Deleted_roster_employee_ids) {
+                    continue;
+                }
+                $Deleted_roster_employee_id_list[$date_unix] = $Deleted_roster_employee_ids;
             }
         }
         return $Deleted_roster_employee_id_list;
+    }
+
+    public static function get_deleted_roster_primary_key_list(array $Roster_new, array $Roster_old) {
+        $List_of_primary_keys_in_old_roster = array();
+        $List_of_primary_keys_in_new_roster = array();
+        /*
+         * TODO: <p lang="de">Sobald es eine Klasse \PDR\Roster\Roster mit dem Inhalt \PDR\Roster\RosterDayArray gibt, sollte dies eine feste funktion werden:
+         *  function get_primary_keys() {}
+         *   Die "Mutterklasse" \PDR\Roster\Roster kann dann die gleichnamige Funktion bei ihren \PDR\Roster\RosterDayArray aufrufen.
+         *   Und die können das aus ihren items abrufen.
+         *   Die Werte in den items können private gestellt werden und zukünftig über funktionen ungleich dem magischen __get() angefordert werden.
+         * </p>
+         */
+        foreach ($Roster_old as $Roster_old_day_array) {
+            foreach ($Roster_old_day_array as $roster_old_item) {
+                if (isset($roster_old_item->employee_id)) {
+                    $List_of_primary_keys_in_old_roster[] = $roster_old_item->primary_key;
+                }
+            }
+        }
+        foreach ($Roster_new as $Roster_new_day_array) {
+            foreach ($Roster_new_day_array as $roster_new_item) {
+                if (isset($roster_new_item->employee_id)) {
+                    $List_of_primary_keys_in_new_roster[] = $roster_new_item->primary_key;
+                }
+            }
+        }
+        $Deleted_roster_primary_key_list = array_diff($List_of_primary_keys_in_old_roster, $List_of_primary_keys_in_new_roster);
+        return $Deleted_roster_primary_key_list;
     }
 
     private static function get_inserted_roster_employee_id_list($Roster, $Roster_old) {
