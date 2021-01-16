@@ -136,7 +136,7 @@
                     <!--TODO: <p lang=de>
                         Dieses Element sollte in einen Bereich "application" umziehen.
                         Der lohnt sich aber erst, wenn auch die Dokumentation (Anleitung) im Menü ist.
-                    </p>>
+                    </p>-->
                         <?= gettext('About'); ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg class="inline-image" alt="information" title="Show user">
                     </a>
