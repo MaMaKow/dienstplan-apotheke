@@ -1,0 +1,6 @@
+Selenium\TestLogin.class
+Selenium\HomePage.class
+Selenium\SignInPage.class
+Selenium\MenuFragment.class
+Selenium\RosterWeekTablePage.class
+Selenium\TestRosterWeekTablePage.class

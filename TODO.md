@@ -80,7 +80,7 @@ https://www.php-fig.org/psr/psr-4/
 \PDR\Workforce\Overtime.php
 \PDR\Workforce\Employee.php
 \PDR\Workforce\Workforce.php
-\PDR\Workforce\HumanResourceManagement.php
+\PDR\Workforce\EmployeeManagement.php instead of \PDR\Workforce\HumanResourceManagement.php
 
 \PDR\Roster\Roster.php (Eine ganze Woche/Monat/beliebiger Bereich)
 \PDR\Roster\RosterDayArray.php (alle Items aus einem Tag)
