@@ -186,13 +186,7 @@ class user_dialog {
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('File') . " ________\n";
-        $message .= $trace[1]['file'];
-        $message .= $paragraph_separator;
-
-        $message .= "________ " . gettext('Trace') . " ________\n";
-        $trace = debug_backtrace();
-        //$message .= "TRACE DEACTIVATED";
-        $message .= htmlentities(var_export($trace, TRUE));
+        $message .= filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_STRING);
         $message .= $paragraph_separator;
 
         return $message;

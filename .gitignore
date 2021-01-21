@@ -69,3 +69,7 @@ tmp/
 ehthumbs.db
 Thumbs.db
 /nbproject/private/
+
+# Selenium Java Test Output #
+######################
+surefire-reports/
