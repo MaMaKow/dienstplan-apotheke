@@ -6,6 +6,7 @@ config/
 # These files are for development purposes only: #
 ##################################################
 nbproject/
+errorScreenshots/
 
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
@@ -73,3 +74,4 @@ Thumbs.db
 # Selenium Java Test Output #
 ######################
 surefire-reports/
+tests/selenium/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst

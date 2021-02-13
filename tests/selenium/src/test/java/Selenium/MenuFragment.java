@@ -14,9 +14,9 @@ import org.openqa.selenium.interactions.Actions;
 public class MenuFragment {
 
     /**
-	 * By objects for the menu links
-	 */
-	public static final By MenuLinkToRosterWeekTable = By.id("MenuLinkToRosterWeekTable");
+     * By objects for the menu links
+     */
+    public static final By MenuLinkToRosterWeekTable = By.id("MenuLinkToRosterWeekTable");
     public static final By MenuLinkToRosterWeekImages = By.id("MenuLinkToRosterWeekImages");
     public static final By MenuLinkToRosterDayEdit = By.id("MenuLinkToRosterDayEdit");
     public static final By MenuLinkToRosterDayRead = By.id("MenuLinkToRosterDayRead");
@@ -43,8 +43,8 @@ public class MenuFragment {
     public static final By MenuLinkToLogout = By.id("MenuLinkToLogout");
 
     /**
-	 * By objects for the menu list items (=headings)
-	 */
+     * By objects for the menu list items (=headings)
+     */
     public static final By MenuListItemWeek = By.id("MenuListItemWeek");
     public static final By MenuListItemDay = By.id("MenuListItemDay"); //TODO: Implement in the menu.php
     public static final By MenuListItemEmployee = By.id("MenuListItemEmployee"); //TODO: Implement in the menu.php
@@ -64,7 +64,7 @@ public class MenuFragment {
         menuMap.put(MenuLinkToPrincipleRosterEmployee, MenuListItemEmployee);
         menuMap.put(MenuLinkToRosterHoursList, MenuListItemEmployee);
         menuMap.put(MenuLinkToOvertimeEdit, MenuListItemOvertime);
-        menuMap.put(MenuLinkToOvertimeRead, )MenuListItemOvertime;
+        menuMap.put(MenuLinkToOvertimeRead, MenuListItemOvertime);
         menuMap.put(MenuLinkToOvertimeOverview, MenuListItemOvertime);
         menuMap.put(MenuLinkToAbsenceEdit, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsenceRead, MenuListItemAbsence);

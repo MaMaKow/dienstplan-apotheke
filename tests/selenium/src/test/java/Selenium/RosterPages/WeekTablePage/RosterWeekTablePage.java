@@ -1,5 +1,6 @@
-package Selenium;
+package Selenium.rosterpages.weekTablePage;
 
+import Selenium.MenuFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -20,6 +21,11 @@ public class RosterWeekTablePage {
     private final By buttonWeekForwardBy = By.id("button_week_forward");
     private final By branchFormSelectBy = By.id("branch_form_select");
 
+    private final By dutyRosterTableBy = By.id("duty_roster_table");
+    //private final By xpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr/td/span[2]/span[2]");
+    //private final By xpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr/td/span[2]");
+    private final By xpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr[3]/td[2]/span[@class=\'employee_and_hours_and_duty_time\']/span[@class=\'duty_time\']/span[2]");
+
     public RosterWeekTablePage(WebDriver driver) {
         this.driver = driver;
 
@@ -27,9 +33,7 @@ public class RosterWeekTablePage {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
-        System.out.println("before navigation with menu");
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToRosterWeekTable);
-        System.out.println("after navigation with menu");
     }
 
     /**
@@ -83,4 +87,11 @@ public class RosterWeekTablePage {
         return branchId;
     }
 
+    public By getXpathBy() {
+        return xpathBy;
+    }
+
+    public WebElement getXpathElement() {
+        return driver.findElement(xpathBy);
+    }
 }
