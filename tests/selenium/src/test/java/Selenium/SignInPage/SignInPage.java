@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Selenium;
+package Selenium.signinpage;
 
+import Selenium.HomePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -40,7 +40,6 @@ public class SignInPage {
      * @return HomePage object
      */
     public HomePage loginValidUser(String userName, String password) {
-        System.out.println(usernameBy);
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login_button_submit")));
         driver.findElement(usernameBy).sendKeys(userName);
