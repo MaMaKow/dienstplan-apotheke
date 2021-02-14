@@ -55,7 +55,7 @@ class network_of_branch_offices {
     private function read_branch_data_from_database(array $Branch_ids) {
         $List_of_branch_objects = array();
         foreach ($Branch_ids as $branch_id) {
-            $List_of_branch_objects[$branch_id] = new branch($branch_id);
+            $List_of_branch_objects[$branch_id] = new \PDR\Pharmacy\Branch($branch_id);
         }
         return $List_of_branch_objects;
     }
@@ -77,8 +77,8 @@ class network_of_branch_offices {
         $Branch_ids = array();
 
         $sql_query = 'SELECT branch_id FROM `branch`;';
-        $result = database_wrapper::instance()->run($sql_query);
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+        $result = \database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $Branch_ids[] = $row->branch_id;
         }
 
@@ -99,7 +99,7 @@ class network_of_branch_offices {
      */
     public function get_list_of_branch_objects() {
         if (empty(self::$List_of_branch_objects)) {
-            new network_of_branch_offices();
+            new \network_of_branch_offices();
         }
         return self::$List_of_branch_objects;
     }
@@ -165,7 +165,7 @@ class network_of_branch_offices {
              */
             return FALSE;
         }
-        $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
+        $script_name = \filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
         if (in_array(basename($script_name), array('branch-management.php'))) {
             /*
              * If we are already on the page, then there is no sense in redirecting.

@@ -38,7 +38,25 @@ define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
  * Define an autoloader:
  */
 spl_autoload_register(function ($class_name) {
-    include_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.' . $class_name . '.php';
+    //error_log("Trying to load a class:");
+    $base_dir = PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/classes/';
+    $file = $base_dir . 'class.' . $class_name . '.php';
+    //error_log($file);
+    if (file_exists($file)) {
+        include_once $file;
+    }
+    /**
+     * <p lang="de">
+     * Wir wollen die Files der Klassen besser sortieren.
+     * Der Autoloader muss so lange bis das abgeschlossen ist, beide Varianten beherrschen.
+     * </p>
+     */
+    $file = $base_dir . str_replace('\\', '/', $class_name) . '.php';
+    //error_log($file);
+    if (file_exists($file)) {
+        include_once $file;
+    }
+    //error_log("");
 });
 
 
@@ -85,6 +103,7 @@ if ($config['log_errors'] or $config['display_errors']) {
  * @todo CAVE: php-fpm might log the errors somewhere else, e.g. in /var/log/php-fpm/www-error.log
  */
 ini_set('error_log', $config['error_log']); //Which file should errors be logged to?
+//echo ini_get('error_log'); //Which file should errors be logged to?
 error_reporting($config['error_reporting']); //Which errors should be reported?
 
 /*
