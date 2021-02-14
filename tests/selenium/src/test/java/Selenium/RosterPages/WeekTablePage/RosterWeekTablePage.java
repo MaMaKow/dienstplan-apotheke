@@ -1,6 +1,8 @@
 package Selenium.rosterpages.weekTablePage;
 
 import Selenium.MenuFragment;
+import Selenium.RosterItem;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -21,11 +23,7 @@ public class RosterWeekTablePage {
     private final By buttonWeekForwardBy = By.id("button_week_forward");
     private final By branchFormSelectBy = By.id("branch_form_select");
 
-    private final By dutyRosterTableBy = By.id("duty_roster_table");
-    //private final By xpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr/td/span[2]/span[2]");
-    //private final By xpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr/td/span[2]");
-    private final By xpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr[3]/td[2]/span[@class=\'employee_and_hours_and_duty_time\']/span[@class=\'duty_time\']/span[2]");
-
+    //private final By dutyRosterTableBy = By.id("duty_roster_table");
     public RosterWeekTablePage(WebDriver driver) {
         this.driver = driver;
 
@@ -87,11 +85,52 @@ public class RosterWeekTablePage {
         return branchId;
     }
 
-    public By getXpathBy() {
-        return xpathBy;
+    private By getRosterItemEmployeeIdXpathBy(int column, int row) {
+        By rosterItemEmployeeIdXpathBy = By.xpath("/html/body/div[4]/div[4]/table/tbody/tr[" + row + "]/td[" + column + "]/span[1]/span[1]/b/a");
+        return rosterItemEmployeeIdXpathBy;
     }
 
-    public WebElement getXpathElement() {
-        return driver.findElement(xpathBy);
+    private By getRosterItemDateXpathBy(int column) {
+        By rosterItemEmployeeIdXpathBy = By.xpath("/html/body/div[4]/div[4]/table/thead/tr/td[" + column + "]/a");
+        return rosterItemEmployeeIdXpathBy;
+    }
+
+    private By getRosterItemDutyStartXpathBy(int column, int row) {
+        By rosterItemDutyStartXpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'employee_and_hours_and_duty_time\']/span[@class=\'duty_time\']/span[1]");
+        return rosterItemDutyStartXpathBy;
+    }
+
+    private By getRosterItemDutyEndXpathBy(int column, int row) {
+        By rosterItemDutyEndXpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'employee_and_hours_and_duty_time\']/span[@class=\'duty_time\']/span[2]");
+        return rosterItemDutyEndXpathBy;
+    }
+
+    private By getRosterItemBreakStartXpathBy(int column, int row) {
+        By rosterItemBreakStartXpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'break_time\']/span[1]");
+        return rosterItemBreakStartXpathBy;
+    }
+
+    private By getRosterItemBreakEndXpathBy(int column, int row) {
+        By rosterItemBreakEndXpathBy = By.xpath("//table[@id=\'duty_roster_table\']/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'break_time\']/span[2]");
+        return rosterItemBreakEndXpathBy;
+    }
+
+    /*
+    public WebElement getRosterItemDutyEndElement() {
+        return driver.findElement(this.getRosterItemDutyEndXpathBy());
+    }
+     */
+    public RosterItem getRosterItem(int column, int row) {
+
+        String employeeName = driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getText();
+        String date = driver.findElement(getRosterItemDateXpathBy(column)).getText();
+        String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(column, row)).getText();
+        String dutyEnd = driver.findElement(getRosterItemDutyEndXpathBy(column, row)).getText();
+        String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();
+        String breakEnd = driver.findElement(getRosterItemBreakEndXpathBy(column, row)).getText();
+        //comment = "";
+
+        RosterItem rosterItem = new Selenium.RosterItem(employeeName, date, dutyStart, dutyEnd, breakStart, breakEnd);
+        return rosterItem;
     }
 }

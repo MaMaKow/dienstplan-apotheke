@@ -1,7 +1,8 @@
-package Selenium;
+package Selenium.signinpage;
 
 //import Selenium.SignInPage.SignInPage;
 //import static Selenium.SignInPage.SignInPage.driver;
+import Selenium.HomePage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -23,10 +24,7 @@ public class TestLogin {
 
     @Test
     public void testLogin() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\chromedriver_87_win32\\chromedriver.exe");
-        ChromeDriver driver = new ChromeDriver();
-
-        WebDriver driver2 = Selenium.driver.Wrapper.getDriver();
+        WebDriver driver = Selenium.driver.Wrapper.getDriver();
 
         driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
 
