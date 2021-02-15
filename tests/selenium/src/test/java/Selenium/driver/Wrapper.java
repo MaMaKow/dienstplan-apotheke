@@ -34,26 +34,21 @@ public class Wrapper {
         System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\chromedriver_87_win32\\chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("ignore-certificate-errors");
-        //options.addArguments("headless");
+        // Setting headless argument
+        options.addArguments("--headless");
         driver = new ChromeDriver(options);
 
     }
 
     public static WebDriver getDriver() {
-        System.out.println("getDriver");
         if (null == driver) {
-            System.out.println("We need a new driver");
             new Wrapper();
         }
-        System.out.println(driver);
         return driver;
     }
 
     public static WebDriver createNewDriver() {
-        System.out.println("createDriver");
-        System.out.println("We create a new driver");
         new Wrapper();
-        System.out.println(driver);
         return driver;
     }
 

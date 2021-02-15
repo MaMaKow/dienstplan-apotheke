@@ -1,15 +1,20 @@
-package Selenium;
+package Selenium.rosterpages.weekTablePage;
 
-import Selenium.rosterpages.weekTablePage.RosterWeekTablePage;
+import Selenium.HomePage;
+import Selenium.RosterItem;
 import Selenium.signinpage.SignInPage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.assertEquals;
 //import org.junit.Test;
@@ -19,12 +24,9 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 
 /**
  *
@@ -45,7 +47,7 @@ public class TestRosterWeekTablePage {
             SignInPage signInPage = new SignInPage(driver);
             String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
             String pdr_user_name = "selenium_test_user";
-            HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+            signInPage.loginValidUser(pdr_user_name, pdr_user_password);
             RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
             assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
             /**
@@ -103,9 +105,17 @@ public class TestRosterWeekTablePage {
              * notwendigen Funktionen/Klassen bekommen.
              * </p>
              */
-            WebElement duty_roter_table_fooElement = rosterWeekTablePage.getXpathElement();
-            assertEquals(duty_roter_table_fooElement.getText(), "16:30");
-            throw new Exception("Not implemented yet");
+            RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
+            String hash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
+            assertEquals(hash, "7224dea417825343c5645dd5c6f2cde8");
+            assertEquals(rosterItem.getDateString(), "Tuesday 30.06.");
+            assertEquals(rosterItem.getDate().get(Calendar.DAY_OF_MONTH), 30);
+            assertEquals(rosterItem.getDate().get(Calendar.MONTH), 5); //5 is June, 0 is January
+            assertEquals(rosterItem.getDutyStart(), "08:00");
+            assertEquals(rosterItem.getDutyEnd(), "16:30");
+            assertEquals(rosterItem.getBreakStart(), "11:30");
+            assertEquals(rosterItem.getBreakEnd(), "12:00");
+            //TODO: Also test other roster items?
         }
         catch (MalformedURLException exception) {
             Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
@@ -123,14 +133,11 @@ public class TestRosterWeekTablePage {
     @AfterMethod
     public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
         WebDriver driver = Selenium.driver.Wrapper.getDriver();
-        System.out.println(driver);
         if (testResult.getStatus() == ITestResult.FAILURE) {
             File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(scrFile, new File("errorScreenshots\\" + testResult.getName() + "-"
                     + Arrays.toString(testResult.getParameters()) + ".jpg"));
         }
-        System.out.println(driver);
         driver.quit();
     }
 }
-//
