@@ -220,7 +220,7 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name) {
-        $network_of_branch_offices = new network_of_branch_offices;
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_select = "";
         $branch_select .= "<select name='$form_input_name' >\n";
@@ -294,7 +294,7 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_readonly_branch_table_rows(array $Branch_roster, int $branch_id, string $date_sql_start, string $date_sql_end, $Options = NULL) {
-        $network_of_branch_offices = new network_of_branch_offices;
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 
         $date_start_object = new DateTime($date_sql_start);
@@ -349,7 +349,7 @@ abstract class build_html_roster_views {
                     } else {
                         $head_table_html .= "???";
                     }
-                    $network_of_branch_offices = new network_of_branch_offices;
+                    $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
                     $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
                     $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
                 }
@@ -467,7 +467,7 @@ abstract class build_html_roster_views {
         if (array() === $Roster) {
             return FALSE;
         }
-        $network_of_branch_offices = new network_of_branch_offices;
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 
         global $config;

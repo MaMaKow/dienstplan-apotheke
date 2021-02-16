@@ -17,7 +17,7 @@
  */
 require '../../../default.php';
 
-$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y', strtotime($date_sql)));

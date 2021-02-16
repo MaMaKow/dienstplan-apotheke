@@ -115,7 +115,7 @@ function build_difference_string(array $List_of_differences, array $List_of_dele
                                 . "<br>";
                     }
                     if ($roster_item_new->branch_id !== $roster_item_old->branch_id) {
-                        $network_of_branch_offices = new network_of_branch_offices;
+                        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
                         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
                         $difference_string .= gettext("branch")
                                 . "<br>"

@@ -156,7 +156,7 @@ ON DUPLICATE KEY UPDATE
         $text .= "<fieldset>\n";
 
         $text .= "<legend>" . gettext("Branch") . ": </legend>\n";
-        $network_of_branch_offices = new network_of_branch_offices;
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         if (!isset($List_of_branch_objects[0])) {
             $branch_id = 0;
