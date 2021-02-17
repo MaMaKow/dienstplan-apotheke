@@ -20,7 +20,7 @@ require_once '../../../default.php';
  * @var $branch_id int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
  */
-$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie('mandant', $branch_id, 30);
 /*

@@ -225,7 +225,7 @@ class principle_roster extends roster {
                      * In case, the employee does not exist on this day we fall back to using the first branch.
                      * This can happen if an employee will start shortly, but not on a monday.
                      */
-                    $network_of_branch_offices = new network_of_branch_offices();
+                    $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
                     $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
                     $branch_id = min(array_keys($List_of_branch_objects));
                 }

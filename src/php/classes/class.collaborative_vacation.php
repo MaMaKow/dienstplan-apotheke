@@ -25,7 +25,7 @@ class collaborative_vacation {
      * @return void
      */
     public function handle_user_data_input($session) {
-        if (!$session->user_has_privilege('request_own_absence') and ! $session->user_has_privilege('create_absence')) {
+        if (!$session->user_has_privilege('request_own_absence') and!$session->user_has_privilege('create_absence')) {
             return FALSE;
         }
 
@@ -299,30 +299,32 @@ class collaborative_vacation {
     }
 
     private function build_absence_month_paragraph_add_emergency_service($date_object, $mode) {
-        $having_emergency_service = \pharmacy_emergency_service::having_emergency_service($date_object->format("Y-m-d"));
-        if (FALSE === $having_emergency_service) {
+        if (!\PDR\Roster\EmergencyService::is_our_service_day($date_object)) {
             return "";
         }
-        $network_of_branch_offices = new network_of_branch_offices();
-        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+        $emergency_service = new \PDR\Roster\EmergencyService($date_object);
         $emergency_service_content = "";
-        $workforce = new workforce($date_object->format('Y-m-d'));
         if ('month' === $mode) {
             $emergency_service_content .= "<span class='emergency_service'>"
                     . gettext("emergency service")
                     . ": "
-                    . $List_of_branch_objects[$having_emergency_service["branch_id"]]->short_name
+                    . $emergency_service->get_branch_name_short()
                     . ", "
-                    . $workforce->get_employee_last_name($having_emergency_service["employee_id"])
+                    . $emergency_service->get_employee_name()
                     . "</span>\n";
         } else {
             $title = gettext("emergency service")
                     . ": ";
-            $title .= $List_of_branch_objects[$having_emergency_service["branch_id"]]->short_name
+            $title .= $emergency_service->get_branch_name_short()
                     . ", ";
-            $title .= $workforce->get_employee_last_name($having_emergency_service["employee_id"]);
+            $title .= $emergency_service->get_employee_name();
             $emergency_service_content .= "<span class='emergency_service' title='$title'>"
                     . mb_substr(gettext('emergency service'), 0, 2)
+                    . "<sub>"
+                    . $emergency_service->get_employee_id()
+                    . ", &rarr;"
+                    . $emergency_service->get_branch_id()
+                    . "</sub>"
                     . "</span>";
         }
         return $emergency_service_content;
@@ -400,17 +402,17 @@ class collaborative_vacation {
         $absence_title_text = $workforce->get_employee_last_name($Absence['employee_id']) . "\n";
         $absence_title_text .= absence::get_reason_string_localized($Absence['reason_id']) . "\n";
         $absence_title_text .= $Absence['comment'] . "\n";
-        $absence_title_text.= gettext('from') . ' ' . strftime('%x', strtotime($Absence['start'])) . "\n";
-        $absence_title_text.= gettext('to') . ' ' . strftime('%x', strtotime($Absence['end'])) . "\n";
-        $absence_title_text.= sprintf(gettext('%1$s days taken'), $Absence['days']) . "\n";
-        $absence_title_text.= localization::gettext($Absence['approval']) . "";
+        $absence_title_text .= gettext('from') . ' ' . strftime('%x', strtotime($Absence['start'])) . "\n";
+        $absence_title_text .= gettext('to') . ' ' . strftime('%x', strtotime($Absence['end'])) . "\n";
+        $absence_title_text .= sprintf(gettext('%1$s days taken'), $Absence['days']) . "\n";
+        $absence_title_text .= localization::gettext($Absence['approval']) . "";
         return $absence_title_text;
     }
 
     private function get_classes_of_day_paragraph($date_object, $is_holiday, $input_date_object) {
 
         $Paragraph_class = array('day_paragraph');
-        if ($date_object->format('N') < 6 and ! $is_holiday) {
+        if ($date_object->format('N') < 6 and!$is_holiday) {
             $Paragraph_class[] = 'weekday';
         } else {
             $Paragraph_class[] = 'weekend';

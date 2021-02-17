@@ -24,7 +24,10 @@
  * @see class branch
  * @author Mandelkow <netbeans@martin-mandelkow.de>
  */
-class network_of_branch_offices {
+
+namespace PDR\Pharmacy;
+
+class NetworkOfBranchOffices {
 
     /**
      *
@@ -55,7 +58,7 @@ class network_of_branch_offices {
     private function read_branch_data_from_database(array $Branch_ids) {
         $List_of_branch_objects = array();
         foreach ($Branch_ids as $branch_id) {
-            $List_of_branch_objects[$branch_id] = new branch($branch_id);
+            $List_of_branch_objects[$branch_id] = new \PDR\Pharmacy\Branch($branch_id);
         }
         return $List_of_branch_objects;
     }
@@ -77,12 +80,12 @@ class network_of_branch_offices {
         $Branch_ids = array();
 
         $sql_query = 'SELECT branch_id FROM `branch`;';
-        $result = database_wrapper::instance()->run($sql_query);
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+        $result = \database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $Branch_ids[] = $row->branch_id;
         }
 
-        if (empty(array_keys($Branch_ids))) {
+        if (empty(\array_keys($Branch_ids))) {
             /**
              * In the case of missing branches, those HAVE TO be created.
              */
@@ -99,7 +102,7 @@ class network_of_branch_offices {
      */
     public function get_list_of_branch_objects() {
         if (empty(self::$List_of_branch_objects)) {
-            new network_of_branch_offices();
+            new \network_of_branch_offices();
         }
         return self::$List_of_branch_objects;
     }
@@ -133,7 +136,7 @@ class network_of_branch_offices {
              */
             return 1;
         }
-        return min(array_keys(self::$List_of_branch_objects));
+        return \min(\array_keys(self::$List_of_branch_objects));
     }
 
     /**
@@ -145,7 +148,7 @@ class network_of_branch_offices {
      * @return boolean True if the branch does exist.
      */
     public function branch_exists(int $branch_id) {
-        if (in_array($branch_id, array_keys(self::$List_of_branch_objects))) {
+        if (\in_array($branch_id, \array_keys(self::$List_of_branch_objects))) {
             return TRUE;
         }
         return FALSE;
@@ -165,7 +168,7 @@ class network_of_branch_offices {
              */
             return FALSE;
         }
-        $script_name = filter_input(INPUT_SERVER, 'SCRIPT_NAME', FILTER_SANITIZE_STRING);
+        $script_name = \filter_input(\INPUT_SERVER, 'SCRIPT_NAME', \FILTER_SANITIZE_STRING);
         if (in_array(basename($script_name), array('branch-management.php'))) {
             /*
              * If we are already on the page, then there is no sense in redirecting.

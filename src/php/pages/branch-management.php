@@ -18,7 +18,7 @@
 
 require_once '../../../default.php';
 
-$network_of_branch_offices = new network_of_branch_offices();
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
 $current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);

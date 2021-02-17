@@ -97,7 +97,7 @@ class iCalendar {
         $duty_end_string = self::time_int_to_utc_string($roster_object->duty_end_int);
 
         $branch_id = $roster_object->branch_id;
-        $network_of_branch_offices = new network_of_branch_offices;
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_name = $List_of_branch_objects[$branch_id]->name;
         $branch_address = $List_of_branch_objects[$branch_id]->address;
@@ -129,7 +129,7 @@ class iCalendar {
         $date_unix = $roster_object->date_unix;
         $workforce = new workforce($roster_object->date_sql);
         $branch_id = $roster_object->branch_id;
-        $network_of_branch_offices = new network_of_branch_offices();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_name = $List_of_branch_objects[$branch_id]->name;
         $date_weekday_name = strftime('%A', $date_unix);
