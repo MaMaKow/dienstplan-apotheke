@@ -260,7 +260,7 @@ class absence {
         $days = 0;
         for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
             $current_week_day_number = $date_object->format('N');
-            if (!roster::is_empty($employee_object->get_principle_roster_on_date($date_object))
+            if (!roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object))
                     or ( 0 === $employee_object->working_week_days and $current_week_day_number < 6)) {
                 /*
                  * The employee normally does not work on this day.
