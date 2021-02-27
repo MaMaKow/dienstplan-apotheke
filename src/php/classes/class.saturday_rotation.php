@@ -33,8 +33,8 @@ class saturday_rotation {
      * Also a function to setup the necessary database tables might be needed.
      */
 
-    protected $target_date_sql;
-    protected $branch_id;
+    private $target_date_object;
+    private $branch_id;
     public $List_of_teams;
     public $team_id;
 
@@ -43,14 +43,21 @@ class saturday_rotation {
         $this->List_of_teams = $this->read_teams_from_database();
     }
 
-    public function get_participation_team_id(string $target_date_sql) {
-        if (6 != strftime('%u', strtotime($target_date_sql))) {
+    public function get_participation_team_id(DateTime $target_date_object) {
+        if (6 != $target_date_object->format('N')) {
             /*
              * Until now, this function is specified to only handle saturdays.
              */
             throw new Exception("saturday_rotation->__construct only accepts saturdays as input.");
         }
-        $this->target_date_sql = $target_date_sql;
+        $holiday = holidays::is_holiday($target_date_object);
+        if (FALSE !== $holiday) {
+            /*
+             * <p lang=DE>An Feiertagen findet kein Samstagsdienst statt.</p>
+             */
+            return FALSE;
+        }
+        $this->target_date_object = $target_date_object;
         $this->team_id = $this->read_participation_from_database();
         if (NULL === $this->team_id) {
             $this->team_id = $this->set_new_participation();
@@ -64,7 +71,7 @@ class saturday_rotation {
     protected function read_participation_from_database() {
         $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `date` = :date and `branch_id` = :branch_id';
         $result = database_wrapper::instance()->run($sql_query, array(
-            'date' => $this->target_date_sql,
+            'date' => $this->target_date_object->format('Y-m-d'),
             'branch_id' => $this->branch_id
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -86,10 +93,14 @@ class saturday_rotation {
     protected function set_new_participation() {
         $last_team_id = NULL;
         $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `branch_id` = :branch_id and `date` <= :date ORDER BY `date` DESC LIMIT 1';
-        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id, 'date' => $this->target_date_sql));
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'branch_id' => $this->branch_id,
+            'date' => $this->target_date_object->format('Y-m-d')
+        ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $last_team_id = (int) $row->team_id;
             $last_date_sql = $row->date;
+            $last_date_object = new DateTime($last_date_sql);
         }
         if (NULL === $last_team_id) {
             return FALSE;
@@ -111,11 +122,21 @@ class saturday_rotation {
                 return FALSE;
             }
         }
-        for ($date_unix = strtotime('+ 7 days', strtotime($last_date_sql)); $date_unix <= strtotime($this->target_date_sql); $date_unix = strtotime('+ 7 days', $date_unix)) {
+
+        for ($date_object = (clone $last_date_object)->add(new DateInterval('P7D')); $date_object <= $this->target_date_object; $date_object->add(new DateInterval('P7D'))) {
             /*
              * move the pointer in $this->List_of_teams to next()
              * In case, we meet the end, just start at the first item again.
              */
+            $holiday = holidays::is_holiday($date_object);
+
+            if (FALSE !== $holiday) {
+                /*
+                 * <p lang=DE>An Feiertagen findet kein Samstagsdienst statt.</p>
+                 */
+                continue;
+            }
+
             if (FALSE === next($this->List_of_teams)) {
                 reset($this->List_of_teams);
             }
@@ -129,7 +150,7 @@ class saturday_rotation {
         }
         $sql_query = "INSERT INTO `saturday_rotation` (`date`, `team_id`, `branch_id`) VALUES (:date, :team_id, :branch_id)";
         database_wrapper::instance()->run($sql_query, array(
-            'date' => $this->target_date_sql,
+            'date' => $this->target_date_object->format('Y-m-d'),
             'team_id' => $this->team_id,
             'branch_id' => $this->branch_id
         ));
@@ -146,18 +167,18 @@ class saturday_rotation {
     protected function cleanup_database_table_saturday_rotation() {
         $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 12 month";
         database_wrapper::instance()->run($sql_query);
-        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` >= now()+interval 3 month";
+        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` >= now()+interval 2 month";
         database_wrapper::instance()->run($sql_query);
     }
 
     public function fill_roster($team_id = NULL) {
         $Roster = array();
-        $date_unix = strtotime($this->target_date_sql);
+        $date_unix = $this->target_date_object->getTimestamp();
         if (NULL === $team_id) {
             $team_id = $this->team_id;
         }
         if (!isset($this->List_of_teams[$team_id])) {
-            $Roster[$date_unix][] = new roster_item_empty($this->target_date_sql, $this->branch_id);
+            $Roster[$date_unix][] = new roster_item_empty($this->target_date_object->format('Y-m-d'), $this->branch_id);
             return $Roster;
         }
         $comment = "";
@@ -167,7 +188,7 @@ class saturday_rotation {
          */
 
         $duty_start = '10:00';
-        $duty_end = '18:00';
+        $duty_end = '16:00';
         $Opening_times = roster_headcount::read_opening_hours_from_database($date_unix, $this->branch_id);
         if (NULL !== $Opening_times['day_opening_start']) {
             $duty_start = roster_item::format_time_integer_to_string($Opening_times['day_opening_start']);
@@ -180,7 +201,7 @@ class saturday_rotation {
 
 
         foreach ($this->List_of_teams[$team_id] as $employee_id) {
-            $Roster[$date_unix][] = new roster_item($this->target_date_sql, $employee_id, $this->branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
+            $Roster[$date_unix][] = new roster_item($this->target_date_object->format('Y-m-d'), $employee_id, $this->branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
         }
         return $Roster;
     }

@@ -23,3 +23,6 @@ table#saturday_list tr td span.absent {
     color: red;
     text-decoration: underline;
 }
+table#saturday_list tr.saturday_list_row_holiday {
+    font-style: italic;
+}
