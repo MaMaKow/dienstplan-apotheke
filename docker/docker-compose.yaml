@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        # Use a specific tag/commit
+        # TAG: 0.14.0
+        # Configure the PHP version to use
+        PHP_VERSION: 7.4
+    depends_on:
+      - db
+    env_file:
+      - .env
+    image: pdr
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "${LOG_SIZE:-1g}"
+        max-file: "${LOG_COUNT:-5}"
+    ports:
+      - ${HTTP_PORT:-127.0.0.1:8080}:80
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_PASSWORD: $DB_PASS
+      MYSQL_USER: $DB_USER
+    shm_size: 512mb
+    volumes:
+      - db:/var/lib/mysql:z
+
+volumes:
+  db:

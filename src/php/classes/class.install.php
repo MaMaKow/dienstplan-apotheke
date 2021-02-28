@@ -292,18 +292,26 @@ class install {
          * This means, that only existing employes can have an account to login.
          * It follows, that we have to create an employee first, before we can create a user:
          */
-        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`) VALUES (:employee_id, :last_name);");
+        $statement = $this->pdo->prepare(
+            "INSERT INTO `employees` (`id`, `last_name`, `first_name`, `profession`) VALUES (:employee_id, :last_name, :first_name, :profession);"
+        );
         $statement->execute(array(
             'employee_id' => $this->Config["admin"]["employee_id"],
-            'last_name' => $this->Config["admin"]["last_name"]
+            'last_name' => $this->Config["admin"]["last_name"],
+            'first_name' => $this->Config["admin"]["user_name"],
+            'profession' => 'PI',
         ));
+
+        $original_config = $GLOBALS['config'] ?? NULL;
+        $GLOBALS['config'] = $this->Config;
         $user = new user($this->Config["admin"]["employee_id"]);
-        if ($user->exists()) {
+        if (!$user->exists()) {
             $user_creation_result = $user->create_new($this->Config["admin"]["employee_id"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
             if (!$user_creation_result) {
                 /*
                  * We were not able to create the administrative user.
                  */
+                $GLOBALS['config'] = $original_config;
                 $this->Error_message[] = gettext("Error while trying to create administrative user.");
                 return FALSE;
             }
@@ -314,6 +322,9 @@ class install {
              */
             $this->Error_message[] = gettext("Administrative user already exists.");
         }
+
+        $GLOBALS['config'] = $original_config;
+
         /*
          * Grant all privileges to the administrative user:
          */
@@ -497,7 +508,9 @@ class install {
         foreach (user_dialog::$Messages as $Message) {
             $this->Error_message[] = $Message['text'];
         }
-        unset(user_dialog::$Messages);
+
+        // BUG: Attempt to unset static property
+        // unset(user_dialog::$Messages);
         return $test_htaccess->all_folders_are_secure;
     }
 
