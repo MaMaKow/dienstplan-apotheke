@@ -1,10 +1,11 @@
-package Selenium.rosterpages.weekTablePage;
+package Selenium.rosterpages.dayEditPage;
 
 import Selenium.HomePage;
 import Selenium.RosterItem;
 import Selenium.signinpage.SignInPage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,7 +30,7 @@ import org.testng.annotations.BeforeMethod;
  *
  * @author Mandelkow
  */
-public class TestRosterWeekTablePage {
+public class TestRosterDayEditPage {
 
     @Test
     public void testDateNavigation() {
@@ -45,26 +46,26 @@ public class TestRosterWeekTablePage {
             String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
             String pdr_user_name = "selenium_test_user";
             signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-            RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
+            RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
             assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
             /**
              * Move to specific date and go foreward and backward from there:
              */
             rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-            assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
-            rosterWeekTablePage.moveWeekBackward();
-            assertEquals(rosterWeekTablePage.getDate(), "2020-06-22"); //This is the corresponding monday.
-            rosterWeekTablePage.moveWeekForward();
-            assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+            assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            rosterWeekTablePage.moveDayBackward();
+            assertEquals("2020-06-30", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            rosterWeekTablePage.moveDayForward();
+            assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
         }
         catch (MalformedURLException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
         catch (IOException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
         catch (Exception exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
     }
 
@@ -83,31 +84,39 @@ public class TestRosterWeekTablePage {
             String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
             String pdr_user_name = "selenium_test_user";
             HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-            RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
+            RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
             assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
             /**
              * Move to specific date to get a specific roster:
              */
-            rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-            assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+            rosterWeekTablePage.goToDate("02.07.2020"); //This date is a wednesday.
+            assertEquals("2020-07-02", rosterWeekTablePage.getDate()); //This is the corresponding monday.
             /**
              * Get roster items and compare to assertions:
              */
-            RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
+            RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2);
+            //assertEquals("Tuesday 30.06.", rosterItem.getDateString());
+            System.out.println(rosterItem);
+            for (Field field : rosterItem.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                String name = field.getName();
+                Object value = field.get(rosterItem);
+                System.out.printf("%s: %s%n", name, value);
+            }
             String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
-            assertEquals(employeeNameHash, "7224dea417825343c5645dd5c6f2cde8");
-            assertEquals(1, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-            assertEquals(6, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+            assertEquals("3013ebe621dbc5e7f4791d17913f0950", employeeNameHash);
+            assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
+            assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
             assertEquals("08:00", rosterItem.getDutyStart());
-            assertEquals("14:00", rosterItem.getDutyEnd());
+            assertEquals("15:00", rosterItem.getDutyEnd());
             assertEquals("11:30", rosterItem.getBreakStart());
             assertEquals("12:00", rosterItem.getBreakEnd());
         }
         catch (MalformedURLException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
         catch (IOException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
     }
 

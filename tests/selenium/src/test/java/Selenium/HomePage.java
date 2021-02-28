@@ -19,7 +19,7 @@ public class HomePage {
     protected static WebDriver driver;
 
     // <h1>Hello userName</h1>
-    private By user_name_spanBy = By.id("menu_listitem_user_username");
+    private By user_name_spanBy = By.id("MenuListItemApplicationUsername");
 
     public HomePage(WebDriver driver) {
         this.driver = driver;

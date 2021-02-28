@@ -2,6 +2,13 @@ package Selenium.rosterpages.weekTablePage;
 
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -17,7 +24,7 @@ public class RosterWeekTablePage {
 
     protected static WebDriver driver;
 
-    private final By userNameSpanBy = By.id("menu_listitem_user_username");
+    private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
     private final By dateChooserInputBy = By.id("date_chooser_input");
     private final By buttonWeekBackwardBy = By.id("button_week_backward");
     private final By buttonWeekForwardBy = By.id("button_week_forward");
@@ -120,17 +127,20 @@ public class RosterWeekTablePage {
         return driver.findElement(this.getRosterItemDutyEndXpathBy());
     }
      */
-    public RosterItem getRosterItem(int column, int row) {
+    public RosterItem getRosterItem(int column, int row) throws ParseException {
 
         String employeeName = driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getText();
-        String date = driver.findElement(getRosterItemDateXpathBy(column)).getText();
+        String dateString = driver.findElement(getRosterItemDateXpathBy(column)).getText();
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(column, row)).getText();
         String dutyEnd = driver.findElement(getRosterItemDutyEndXpathBy(column, row)).getText();
         String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();
         String breakEnd = driver.findElement(getRosterItemBreakEndXpathBy(column, row)).getText();
         //comment = "";
+        Date dateParsed = new SimpleDateFormat("EE dd.MM.", Locale.ENGLISH).parse(dateString);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateParsed);
 
-        RosterItem rosterItem = new Selenium.RosterItem(employeeName, date, dutyStart, dutyEnd, breakStart, breakEnd);
+        RosterItem rosterItem = new Selenium.RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd);
         return rosterItem;
     }
 }
