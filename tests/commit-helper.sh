@@ -57,3 +57,7 @@ fi
 new_version=$new_version_major.$new_version_minor.$new_version_patch;
 echo "";
 echo "The new version number will be $new_version";
+
+# git commit --gpg-sign
+# git tag -s $new_version
+# git push origin --tags

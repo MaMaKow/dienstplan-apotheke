@@ -2,26 +2,21 @@ package Selenium.rosterpages.dayEditPage;
 
 import Selenium.HomePage;
 import Selenium.RosterItem;
+import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import static org.junit.Assert.assertEquals;
-//import org.junit.Test;
 import org.testng.annotations.Test;
 
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import static org.testng.Assert.assertEquals;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -32,7 +27,7 @@ import org.testng.annotations.BeforeMethod;
  */
 public class TestRosterDayEditPage {
 
-    @Test
+    @Test(enabled = false)
     public void testDateNavigation() {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();
@@ -69,7 +64,7 @@ public class TestRosterDayEditPage {
         }
     }
 
-    @Test
+    @Test(enabled = true)
     public void testRosterDisplay() throws Exception {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();
@@ -89,13 +84,15 @@ public class TestRosterDayEditPage {
             /**
              * Move to specific date to get a specific roster:
              */
-            rosterWeekTablePage.goToDate("02.07.2020"); //This date is a wednesday.
-            assertEquals("2020-07-02", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
+            assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
             /**
              * Get roster items and compare to assertions:
              */
             RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2);
+
             //assertEquals("Tuesday 30.06.", rosterItem.getDateString());
+            /*
             System.out.println(rosterItem);
             for (Field field : rosterItem.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
@@ -103,10 +100,10 @@ public class TestRosterDayEditPage {
                 Object value = field.get(rosterItem);
                 System.out.printf("%s: %s%n", name, value);
             }
-            String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
+             */ String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
             assertEquals("3013ebe621dbc5e7f4791d17913f0950", employeeNameHash);
-            assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-            assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+            assertEquals(1, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
+            assertEquals(6, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
             assertEquals("08:00", rosterItem.getDutyStart());
             assertEquals("15:00", rosterItem.getDutyEnd());
             assertEquals("11:30", rosterItem.getBreakStart());
@@ -126,13 +123,10 @@ public class TestRosterDayEditPage {
     }
 
     @AfterMethod
-    public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
+    public void tearDown(ITestResult testResult) {
         WebDriver driver = Selenium.driver.Wrapper.getDriver();
-        if (testResult.getStatus() == ITestResult.FAILURE) {
-            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-            FileUtils.copyFile(scrFile, new File("errorScreenshots\\" + testResult.getName() + "-"
-                    + Arrays.toString(testResult.getParameters()) + ".jpg"));
-        }
+        new ScreenShot(testResult);
         driver.quit();
+
     }
 }

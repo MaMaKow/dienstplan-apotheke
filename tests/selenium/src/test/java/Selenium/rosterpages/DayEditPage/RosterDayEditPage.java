@@ -7,8 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -252,7 +250,7 @@ public class RosterDayEditPage {
 
     public RosterItem getRosterItem(int iterator) throws ParseException {
         String dateSql = this.getRosterValueDateString(iterator);
-        Date dateParsed = new SimpleDateFormat("YY-MM-dd", Locale.ENGLISH).parse(dateSql);
+        Date dateParsed = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateSql);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 

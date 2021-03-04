@@ -36,8 +36,10 @@ public class Wrapper {
         options.addArguments("ignore-certificate-errors");
         // Setting headless argument
         options.addArguments("--headless");
+        options.addArguments("window-size=1920,1080");
+        options.addArguments("--start-maximized");
         driver = new ChromeDriver(options);
-
+        //driver.manage().window().maximize();
     }
 
     public static WebDriver getDriver() {

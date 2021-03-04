@@ -5,10 +5,8 @@
  */
 package Selenium;
 
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 /**
  *
@@ -19,7 +17,7 @@ public class HomePage {
     protected static WebDriver driver;
 
     // <h1>Hello userName</h1>
-    private By user_name_spanBy = By.id("MenuListItemApplicationUsername");
+    private final By user_name_spanBy = By.id("MenuListItemApplicationUsername");
 
     public HomePage(WebDriver driver) {
         this.driver = driver;

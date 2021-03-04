@@ -2,6 +2,7 @@ package Selenium.rosterpages.weekTablePage;
 
 import Selenium.HomePage;
 import Selenium.RosterItem;
+import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import org.testng.annotations.BeforeMethod;
  */
 public class TestRosterWeekTablePage {
 
-    @Test
+    @Test(enabled = false)
     public void testDateNavigation() {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();
@@ -68,7 +69,7 @@ public class TestRosterWeekTablePage {
         }
     }
 
-    @Test
+    @Test(enabled = false)
     public void testRosterDisplay() throws Exception {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();
@@ -96,10 +97,10 @@ public class TestRosterWeekTablePage {
             RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
             String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
             assertEquals(employeeNameHash, "7224dea417825343c5645dd5c6f2cde8");
-            assertEquals(1, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-            assertEquals(6, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+            assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
+            assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
             assertEquals("08:00", rosterItem.getDutyStart());
-            assertEquals("14:00", rosterItem.getDutyEnd());
+            assertEquals("16:30", rosterItem.getDutyEnd());
             assertEquals("11:30", rosterItem.getBreakStart());
             assertEquals("12:00", rosterItem.getBreakEnd());
         }
@@ -117,13 +118,11 @@ public class TestRosterWeekTablePage {
     }
 
     @AfterMethod
-    public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
+    public void tearDown(ITestResult testResult) {
         WebDriver driver = Selenium.driver.Wrapper.getDriver();
-        if (testResult.getStatus() == ITestResult.FAILURE) {
-            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-            FileUtils.copyFile(scrFile, new File("errorScreenshots\\" + testResult.getName() + "-"
-                    + Arrays.toString(testResult.getParameters()) + ".jpg"));
-        }
+        new ScreenShot(testResult);
         driver.quit();
+
     }
+
 }
