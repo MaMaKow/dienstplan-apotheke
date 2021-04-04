@@ -37,7 +37,7 @@ class install {
     const PHP_VERSION_ID_REQUIRED = 70002;
 
     function __construct() {
-	$this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
+        $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         define('PDR_FILE_SYSTEM_APPLICATION_PATH', $this->pdr_file_system_application_path);
         $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
         $root_folder = dirname(dirname(dirname(substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars)))) . "/";
@@ -46,7 +46,21 @@ class install {
          * Define an autoloader:
          */
         spl_autoload_register(function ($class_name) {
-            include_once $this->pdr_file_system_application_path . 'src/php/classes/class.' . $class_name . '.php';
+            $base_dir = $this->pdr_file_system_application_path . '/src/php/classes/';
+            $file = $base_dir . 'class.' . $class_name . '.php';
+            if (file_exists($file)) {
+                include_once $file;
+            }
+            /**
+             * <p lang="de">
+             * Wir wollen die Files der Klassen besser sortieren.
+             * Der Autoloader muss so lange bis das abgeschlossen ist, beide Varianten beherrschen.
+             * </p>
+             */
+            $file = $base_dir . str_replace('\\', '/', $class_name) . '.php';
+            if (file_exists($file)) {
+                include_once $file;
+            }
         });
         $this->pdr_supported_database_management_systems = array("mysql");
         ini_set('log_errors', 1);

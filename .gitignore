@@ -76,3 +76,4 @@ Thumbs.db
 surefire-reports/
 tests/selenium/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 *.lst
+tests/selenium/src/test/config.properties

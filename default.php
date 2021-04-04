@@ -38,10 +38,8 @@ define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
  * Define an autoloader:
  */
 spl_autoload_register(function ($class_name) {
-    //error_log("Trying to load a class:");
     $base_dir = PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/classes/';
     $file = $base_dir . 'class.' . $class_name . '.php';
-    //error_log($file);
     if (file_exists($file)) {
         include_once $file;
     }
@@ -52,11 +50,9 @@ spl_autoload_register(function ($class_name) {
      * </p>
      */
     $file = $base_dir . str_replace('\\', '/', $class_name) . '.php';
-    //error_log($file);
     if (file_exists($file)) {
         include_once $file;
     }
-    //error_log("");
 });
 
 
