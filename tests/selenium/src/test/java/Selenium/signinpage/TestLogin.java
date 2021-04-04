@@ -21,12 +21,12 @@ import org.testng.annotations.Test;
 public class TestLogin {
 
     // static WebDriver driver;
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testLogin() {
         WebDriver driver = Selenium.driver.Wrapper.getDriver();
 
-        //driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
-        driver.get("https://localhost/dienstplan/");
+        driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
+        //driver.get("https://localhost/dienstplan/");
 
         try {
             Selenium.signinpage.SignInPage signInPage = new Selenium.signinpage.SignInPage(driver);
@@ -34,11 +34,9 @@ public class TestLogin {
             String pdr_user_name = "selenium_test_user";
             HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
             assertEquals(pdr_user_name, homePage.getUserNameText());
-        }
-        catch (MalformedURLException exception) {
+        } catch (MalformedURLException exception) {
             Logger.getLogger(TestLogin.class.getName()).log(Level.SEVERE, null, exception);
-        }
-        catch (IOException exception) {
+        } catch (IOException exception) {
             Logger.getLogger(TestLogin.class.getName()).log(Level.SEVERE, null, exception);
         }
     }

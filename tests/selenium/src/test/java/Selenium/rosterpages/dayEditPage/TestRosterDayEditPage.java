@@ -5,7 +5,6 @@ import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,18 +26,18 @@ import org.testng.annotations.BeforeMethod;
  */
 public class TestRosterDayEditPage {
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testDateNavigation() {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();
-            //driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
-            driver.get("https://localhost/dienstplan/");
+            driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
+            //driver.get("https://localhost/dienstplan/");
 
             /**
              * Sign in:
              */
             SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\VerschlÃ¼sselung\\pdr_user_password_selenium")).get(0);
+            String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
             String pdr_user_name = "selenium_test_user";
             signInPage.loginValidUser(pdr_user_name, pdr_user_password);
             RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
@@ -52,14 +51,11 @@ public class TestRosterDayEditPage {
             assertEquals("2020-06-30", rosterWeekTablePage.getDate()); //This is the corresponding monday.
             rosterWeekTablePage.moveDayForward();
             assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
-        }
-        catch (MalformedURLException exception) {
+        } catch (MalformedURLException exception) {
             Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
-        }
-        catch (IOException exception) {
+        } catch (IOException exception) {
             Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
     }
@@ -68,15 +64,14 @@ public class TestRosterDayEditPage {
     public void testRosterDisplay() throws Exception {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();
-            //driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
+            driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
 
-            driver.get("https://localhost/dienstplan/");
-
+            //driver.get("https://localhost/dienstplan/");
             /**
              * Sign in:
              */
             SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\VerschlÃ¼sselung\\pdr_user_password_selenium")).get(0);
+            String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
             String pdr_user_name = "selenium_test_user";
             HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
             RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
@@ -100,7 +95,8 @@ public class TestRosterDayEditPage {
                 Object value = field.get(rosterItem);
                 System.out.printf("%s: %s%n", name, value);
             }
-             */ String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
+             */
+            String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
             assertEquals("3013ebe621dbc5e7f4791d17913f0950", employeeNameHash);
             assertEquals(1, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
             assertEquals(6, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
@@ -108,11 +104,9 @@ public class TestRosterDayEditPage {
             assertEquals("15:00", rosterItem.getDutyEnd());
             assertEquals("11:30", rosterItem.getBreakStart());
             assertEquals("12:00", rosterItem.getBreakEnd());
-        }
-        catch (MalformedURLException exception) {
+        } catch (MalformedURLException exception) {
             Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
-        }
-        catch (IOException exception) {
+        } catch (IOException exception) {
             Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
     }
