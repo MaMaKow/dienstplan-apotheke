@@ -33,6 +33,7 @@
 
     To read the PDR license or learn about obtaining support and our stance on it, please select the respective options from the side menu. To continue, please select the appropriate tab above.
 </p>
+
 <form action="install_page_welcome.php" method="post">
-    <input type="submit" value="<?= gettext("Next") ?>">
+    <input type="submit" id="InstallPageIntroFormButton" value="<?= gettext("Next") ?>">
 </form>

@@ -20,7 +20,7 @@
 require '../../../default.php';
 
 $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-$network_of_branch_offices = new network_of_branch_offices;
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = (int) user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $weekday = (int) user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
@@ -53,12 +53,11 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
 
     if (isset($_SESSION['Principle_roster_from_prompt'])) {
         $Principle_roster_new = $_SESSION['Principle_roster_from_prompt'];
-        unset($_SESSION['Principle_roster_from_prompt']);
-        $List_of_deletions = $_SESSION['List_of_deletions'];
+        $List_of_deleted_roster_primary_keys = $_SESSION['List_of_deleted_roster_primary_keys'];
         $List_of_changes = $_SESSION['List_of_changes'];
         unset($_SESSION['Principle_roster_from_prompt']);
-        unset($_SESSION['List_of_deletions']);
         unset($_SESSION['List_of_changes']);
+        unset($_SESSION['List_of_deleted_roster_primary_keys']);
 
         $valid_from_input = new DateTime(filter_input(INPUT_POST, 'valid_from', FILTER_SANITIZE_STRING));
         /*
@@ -67,10 +66,10 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
          */
         $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
         $valid_from = ( new alternating_week(
-                alternating_week::get_alternating_week_for_date($some_date_from_input))
+                        alternating_week::get_alternating_week_for_date($some_date_from_input))
                 )->get_monday_date_for_alternating_week(clone $valid_from_input);
         principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes, $valid_from->format('Y-m-d'));
-        principle_roster::invalidate_removed_entries_in_database($List_of_deletions, $valid_from->format('Y-m-d'));
+        principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys, $valid_from->format('Y-m-d'));
     }
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {

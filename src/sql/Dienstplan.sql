@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `dienstplan` (
   `Stunden` float DEFAULT NULL,
   `Mandant` int(11) NOT NULL DEFAULT 1,
   `user` varchar(64) CHARACTER SET latin1 NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`VK`,`Datum`,`Dienstbeginn`),
   CONSTRAINT `Dienstplan_ibfk_1` FOREIGN KEY (`VK`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci

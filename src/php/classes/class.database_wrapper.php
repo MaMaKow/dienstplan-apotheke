@@ -63,9 +63,15 @@ class database_wrapper {
         }
         $dsn = 'mysql:host=' . $this->database_host . ';' . $port_string . 'dbname=' . $this->database_name . ';charset=utf8';
         try {
-            $this->pdo = new PDO($dsn, $this->database_user_name, $this->database_password, $options);
+            $this->pdo = new \PDO($dsn, $this->database_user_name, $this->database_password, $options);
+        } catch (PDOException $exception) {
+            print_debug_variable($exception);
+            $message = gettext('There was an error while querying the database.')
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+            die("<p>$message</p>");
         } catch (Exception $exception) {
-            print_debug_variable($exception->getTraceAsString());
+            print_debug_variable($exception);
             $message = gettext('There was an error while querying the database.')
                     . " " . gettext('Please see the error log for more details!')
                     . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));

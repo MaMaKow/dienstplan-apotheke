@@ -12,19 +12,9 @@
 
 </ul>
 
-<del>Note: if you are installing using SQLite, you should enter the full path to your database file in the DSN field and leave the username and password fields blank. For security reasons, you should make sure that the database file is not stored in a location accessible from the web.</del>
-
-<p>PDR supports the following databases:
+<p>PDR currently only supports the following database system:
 <ul>
     <li>MySQL 3.23 or above (MySQLi supported)</li>
-    <del>
-        <li>PostgreSQL 8.3+</li>
-        <li>SQLite 3.6.15+</li>
-        <li>MS SQL Server 2000 or above (directly or via ODBC)</li>
-        <li>MS SQL Server 2005 or above (native)</li>
-        <li>Oracle</li>
-    </del>
-
 </ul>
 
 </p>
@@ -39,5 +29,5 @@
     This user might have more than the necessary privileges.
 </p>
 <form action="install_page_check_requirements.php" method="post">
-    <input type="submit" value="<?= gettext("Next") ?>">
+    <input type="submit" id="InstallPageWelcomeFormButton" value="<?= gettext("Next") ?>">
 </form>

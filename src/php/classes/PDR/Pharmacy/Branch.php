@@ -39,7 +39,10 @@
  *
  * @author Martin Mandelkow
  */
-class branch {
+
+namespace PDR\Pharmacy;
+
+class Branch {
 
     private $branch_id;
     private $name;
@@ -69,8 +72,8 @@ class branch {
     private function read_branch_data_from_database($branch_id) {
 
         $sql_query = 'SELECT * FROM `branch` WHERE `branch_id` = :branch_id;';
-        $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+        $result = \database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id));
+        while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $this->branch_id = $row->branch_id;
             $this->name = $row->name;
             $this->short_name = $row->short_name;
@@ -78,11 +81,11 @@ class branch {
             $this->manager = $row->manager;
             $this->PEP = $row->PEP;
             $this->read_opening_times_from_database();
-            if ($this->short_name == "") {
-                $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
-                $message = sprintf(gettext('A short name for the branch should be <a href="%1$s">configured.</a>'), $location);
-                $user_dialog = new user_dialog();
-                $user_dialog->add_message($message, E_USER_NOTICE, TRUE);
+            if ($this->short_name === "") {
+                $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
+                $message = \sprintf(\gettext('A short name for the branch should be <a href="%1$s">configured.</a>'), $location);
+                $user_dialog = new \user_dialog();
+                $user_dialog->add_message($message, \E_USER_NOTICE, TRUE);
             }
         }
     }
@@ -106,12 +109,12 @@ class branch {
         for ($weekday = 1; $weekday <= 7; $weekday++) {
 
             $sql_query = "SELECT * FROM `opening_times` WHERE `branch_id` = :branch_id AND `weekday` = :weekday";
-            $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id, 'weekday' => $weekday));
-            $row = $result->fetch(PDO::FETCH_OBJ);
+            $result = \database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id, 'weekday' => $weekday));
+            $row = $result->fetch(\PDO::FETCH_OBJ);
             $day_opening_start = isset($row->start) ? $row->start : NULL;
             $day_opening_end = isset($row->end) ? $row->end : NULL;
-            $this->Opening_times[$weekday]['day_opening_start'] = roster_item::format_time_string_correct($day_opening_start);
-            $this->Opening_times[$weekday]['day_opening_end'] = roster_item::format_time_string_correct($day_opening_end);
+            $this->Opening_times[$weekday]['day_opening_start'] = \roster_item::format_time_string_correct($day_opening_start);
+            $this->Opening_times[$weekday]['day_opening_end'] = \roster_item::format_time_string_correct($day_opening_end);
         }
     }
 

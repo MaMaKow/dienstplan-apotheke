@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
   `branch` int(11) NOT NULL DEFAULT 1,
   `start_of_employment` date DEFAULT NULL,
   `end_of_employment` date DEFAULT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `pseudo` (`pseudo_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci

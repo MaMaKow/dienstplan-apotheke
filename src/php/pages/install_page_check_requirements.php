@@ -126,7 +126,7 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
 if ($all_requirements_are_satisfied) {
     ?>
     <form action="install_page_database.php" method="post">
-        <input type="submit" value="<?= gettext("Next") ?>">
+        <input type="submit" id="InstallPageCheckRequirementsFormButton" value="<?= gettext("Next") ?>">
     </form>
 <?php } else { ?>
     <form action="install_page_check_requirements.php" method="post">

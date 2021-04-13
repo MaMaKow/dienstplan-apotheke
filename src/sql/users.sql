@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `failed_login_attempt_time` timestamp NULL DEFAULT NULL,
   `receive_emails_on_changed_roster` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`employee_id`),
   UNIQUE KEY `user_name` (`user_name`),
   UNIQUE KEY `email` (`email`),

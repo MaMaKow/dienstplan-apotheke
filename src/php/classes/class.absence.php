@@ -396,9 +396,7 @@ class absence {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Years[] = $row->year;
         }
-        if (array() === $Years) {
-            $Years = array(0 => (int) (new DateTime())->format('Y'));
-        }
+        $Years[] = (int) (new DateTime())->format('Y');
         $Years[] = max($Years) + 1;
         sort($Years);
         return array_unique($Years);

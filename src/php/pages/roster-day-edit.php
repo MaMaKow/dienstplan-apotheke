@@ -22,7 +22,8 @@
  */
 require '../../../default.php';
 
-$network_of_branch_offices = new network_of_branch_offices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
@@ -81,7 +82,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     } elseif (6 == strftime('%u', $date_unix)) {
         try {
             $saturday_rotation = new saturday_rotation($branch_id);
-            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
+            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_object);
             $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
             if (!roster::is_empty($Roster)) {
                 $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
@@ -95,7 +96,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
 /*
  * Examine roster for errors and irregularities:
  */
-if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
+if ("7" !== date('N', $date_unix) and!holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     $examine_roster->check_for_overlap($date_sql, $List_of_branch_objects, $workforce);
     $examine_roster->check_for_sufficient_employee_count();
