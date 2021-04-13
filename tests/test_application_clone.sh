@@ -16,3 +16,4 @@ git -C dienstplan-apotheke/ pull origin development # get the newest commits fro
 versionString=`git -C dienstplan-apotheke describe --tags --long --abbrev=40 | tr '.-' '_'`
 
 cp -r dienstplan-apotheke dienstplan-test-$versionString
+sudo chown -R apache:apache dienstplan-test-$versionString

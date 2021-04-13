@@ -26,18 +26,17 @@ import org.openqa.selenium.WebElement;
  *
  * @author Mandelkow
  */
-public class InstallationPageWelcome {
+public class InstallationPageRequirements {
 
-    By InstallPageWelcomeFormButtonBy;
+    By InstallPageRequirementsFormButtonBy;
 
     WebDriver driver;
-    WebElement InstallPageWelcomeFormButtonElement;
+    WebElement InstallPageRequirementsFormButtonElement;
 
-    public InstallationPageRequirements moveToRequirementsPage() {
+    public void moveToDatabasePage() {
         driver = Selenium.driver.Wrapper.getDriver();
-        InstallPageWelcomeFormButtonBy = By.id("InstallPageWelcomeFormButton");
-        InstallPageWelcomeFormButtonElement = driver.findElement(InstallPageWelcomeFormButtonBy);
-        InstallPageWelcomeFormButtonElement.click();
-        return new InstallationPageRequirements();
+        InstallPageRequirementsFormButtonBy = By.id("InstallPageRequirementsFormButton");
+        InstallPageRequirementsFormButtonElement = driver.findElement(InstallPageRequirementsFormButtonBy);
+        InstallPageRequirementsFormButtonElement.click();
     }
 }
