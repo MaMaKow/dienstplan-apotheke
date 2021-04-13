@@ -44,5 +44,7 @@ public class TestInstallation {
         testPageLink.click();
         InstallationPageIntro installationPageIntro = new InstallationPageIntro();
         InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
+        InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
+        installationPageRequirements.moveToDatabasePage();
     }
 }
