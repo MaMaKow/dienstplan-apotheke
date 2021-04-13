@@ -27,7 +27,7 @@ import org.testng.annotations.BeforeMethod;
  */
 public class TestRosterWeekTablePage {
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testDateNavigation() {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();
@@ -61,7 +61,7 @@ public class TestRosterWeekTablePage {
         }
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testRosterDisplay() throws Exception {
         try {
             WebDriver driver = Selenium.driver.Wrapper.getDriver();

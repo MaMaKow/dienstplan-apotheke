@@ -441,9 +441,13 @@ class install {
          * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
          */
         $Loaded_extensions = get_loaded_extensions();
+        /**
+         * 'posix' is not required.
+         * Windows does not and can not have it. Linux has it by default.
+         */
         $Required_extensions = array(
             'Core', 'PDO', 'calendar', 'date', 'filter', 'gettext', 'hash', 'iconv', 'json', 'mbstring',
-            'openssl', 'pcre', 'posix', 'session', 'standard', 'xml',
+            'openssl', 'pcre', 'session', 'standard', 'xml',
         );
         $success = TRUE;
         foreach ($Required_extensions as $required_extension) {
@@ -516,7 +520,17 @@ class install {
             $this->Error_message[] = sprintf(ngettext('The directory %1$s is not writable.', 'The directories %1$s are not writable.', count($List_of_non_writable_directories)), $this->fancy_implode($List_of_non_writable_directories, ", "));
 
             $this->Error_message[] = gettext("Make sure that the directories are writable by pdr!");
-            $current_www_user = posix_getpwuid(posix_geteuid())["name"];
+            if (function_exists('posix_getpwuid')) {
+                /*
+                 * Unix / Linux / MacOS:
+                 */
+                $current_www_user = posix_getpwuid(posix_geteuid())["name"];
+            } else {
+                /*
+                 * Windows:
+                 */
+                $current_www_user = getenv('USERNAME');
+            }
             $this->Error_message[] = "<pre class='install_cli'>sudo chown -R " . $current_www_user . ":" . $current_www_user . " " . $this->pdr_file_system_application_path . "</pre>\n";
             //$this->Error_message[] = gettext("Adapt the above code to the user and folder of your webserver!");
             return FALSE;

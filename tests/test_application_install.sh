@@ -2,7 +2,7 @@
 # Dienstplan Auto Installer
 scriptPath=`dirname $(realpath $0)`
 # read the passwords from the config directory
-# provides $pdrDbUserPassword 
+# provides $pdrDbUserPassword
 source $scriptPath/config/pdrDbUser.password
 source $scriptPath/config/selenium_test_user.password
 
@@ -10,13 +10,7 @@ testDirectory=/var/www/html/development/testing/
 mkdir -p $testDirectory
 cd $testDirectory
 
-rm -r --force $testDirectory/dienstplan-apotheke/
-git clone --branch testing https://github.com/MaMaKow/dienstplan-apotheke.git
-git -C dienstplan-apotheke/ pull origin development # get the newest commits from the development branch from github.
 versionString=`git -C dienstplan-apotheke describe --tags --long --abbrev=40 | tr '.-' '_'`
-
-mv dienstplan-apotheke dienstplan-test-$versionString
-#cp -r dienstplan-apotheke dienstplan-test-$versionString
 
 mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest_$versionString;"
 mysql -u pdrDbUser -p$pdrDbUserPassword -e "CREATE DATABASE pdrTest_$versionString;"
@@ -58,14 +52,3 @@ echo "\$config['hide_disapproved'] = false;"                                  >>
 selenium_test_userPasswordHash=`php -r "echo password_hash('$selenium_test_userPassword', PASSWORD_DEFAULT);"`
 mysql -u pdrDbUser -p$pdrDbUserPassword pdrTest_$versionString -e 'INSERT INTO `employees` (`id`, `last_name`, `first_name`, `profession`)'" VALUES ('5', 'Mandelkow', 'Martin', 'Apotheker'); "
 mysql -u pdrDbUser -p$pdrDbUserPassword pdrTest_$versionString -e 'INSERT INTO `users` (`employee_id`, `user_name`, `email`, `password`, `status`, `receive_emails_on_changed_roster`)'" VALUES ('5', 'selenium_test_user', 'selenium_test_user@martin-mandelkow.de', '$selenium_test_userPasswordHash', 'active', '1');"
-
-# RUN SOME TESTS
-
-# Commit the results and push
-#git -C $testDirectory/dienstplan-test-$versionString/ add .
-#git -C $testDirectory/dienstplan-test-$versionString/ commit -m "There have been automated tests."
-#git -C $testDirectory/dienstplan-test-$versionString/ push
-
-# CLEAN UP
-#mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest_$versionString;"
-#rm -rf $testDirectory/dienstplan-test-$versionString

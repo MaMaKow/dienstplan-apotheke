@@ -37,13 +37,14 @@ public class Wrapper {
     protected static WebDriver driver;
 
     public Wrapper() {
+        driver = createLocalChromeWebDriver();
+        /*
         try {
-            //driver = createLocalChromeWebDriver();
-            driver = createRemoteWebDriver();
-        }
-        catch (MalformedURLException ex) {
+            //driver = createRemoteWebDriver();
+        } catch (MalformedURLException ex) {
             Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
+         */
     }
 
     public static WebDriver getDriver() {
@@ -70,7 +71,7 @@ public class Wrapper {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("ignore-certificate-errors");
         // Setting headless argument
-        options.addArguments("--headless");
+        //options.addArguments("--headless");
         options.addArguments("window-size=1920,1080");
         options.addArguments("--start-maximized");
         driver = new ChromeDriver(options);
