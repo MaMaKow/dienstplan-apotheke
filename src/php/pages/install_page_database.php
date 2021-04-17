@@ -38,23 +38,23 @@ require_once 'install_head.php'
 
         <LABEL for="database_port">Database server port:</LABEL><br>
         <input type="text" id="database_port" name="database_port" value="<?= $_SESSION["Config"]["database_port"] ? $_SESSION["Config"]["database_port"] : "" ?>" /><!--standard value 3306-->
-        <br>Leave this blank unless you know the server operates on a non-standard port.
-    </p><p>
+        <br><span class="hint">Leave this blank unless you know the server operates on a non-standard port.<span>
+            </p><p>
 
-        <LABEL for="database_user">Database username:</LABEL><br>
-        <input type="text" id="database_user" name="database_user" value="<?= $_SESSION["Config"]["database_user"] ? $_SESSION["Config"]["database_user"] : "" ?>" />
-    </p><p>
+            <LABEL for="database_user">Database username:</LABEL><br>
+            <input type="text" id="database_user" name="database_user" value="<?= $_SESSION["Config"]["database_user"] ? $_SESSION["Config"]["database_user"] : "" ?>" />
+        </p><p>
 
-        <LABEL for="database_password">Database password:</LABEL><br>
-        <input type="password" id="database_password" name="database_password" value="" />
-    </p><p>
+            <LABEL for="database_password">Database password:</LABEL><br>
+            <input type="password" id="database_password" name="database_password" value="" />
+        </p><p>
 
-        <LABEL for="database_name">Database name:</LABEL><br>
-        <input type="text" id="database_name" name="database_name" value="<?= $_SESSION["Config"]["database_name"] ? $_SESSION["Config"]["database_name"] : "pharmacy_duty_roster" ?>" />
-    </p><p>
-        <?php
-        echo $install->build_error_message_div();
-        ?>
-    </p><p>
-        <input type="submit" id="InstallPageDatabaseFormButton" />
-    </p>
+            <LABEL for="database_name">Database name:</LABEL><br>
+            <input type="text" id="database_name" name="database_name" value="<?= $_SESSION["Config"]["database_name"] ? $_SESSION["Config"]["database_name"] : "pharmacy_duty_roster" ?>" />
+        </p><p>
+            <?php
+            echo $install->build_error_message_div();
+            ?>
+        </p><p>
+            <input type="submit" id="InstallPageDatabaseFormButton" />
+        </p>

@@ -42,6 +42,7 @@ class install {
         $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
         $root_folder = dirname(dirname(dirname(substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars)))) . "/";
         define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'funktionen.php';
         /*
          * Define an autoloader:
          */

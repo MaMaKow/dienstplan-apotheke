@@ -53,7 +53,7 @@ require_once 'install_head.php'
         <input type="password" name="password2" minlength="8" placeholder="Confirm administrator password:" required />
     </p>
 
-    <input type="submit" />
+    <input type="submit" id="InstallPageAdministratorFormButton"/>
 </form>
 <?php
 echo $install->build_error_message_div();

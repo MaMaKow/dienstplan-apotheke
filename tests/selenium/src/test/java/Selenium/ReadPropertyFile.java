@@ -82,4 +82,60 @@ public class ReadPropertyFile {
         throw new RuntimeException("urlInstallTest not specified in the Configuration.properties file.");
     }
 
+    public String getDatabaseUserName() {
+        String property = properties.getProperty("databaseUserName");
+        if (null != property) {
+            return property;
+        }
+        return null;
+    }
+
+    public String getDatabasePassword() {
+        String property = properties.getProperty("databasePassword");
+        if (null != property) {
+            return property;
+        }
+        return null;
+    }
+
+    public String getDatabaseName() {
+        String property = properties.getProperty("databaseName");
+        if (null != property) {
+            return property;
+        }
+        return null;
+    }
+
+    public String getAdministratorUserName() {
+        return getPdrUserName();
+    }
+
+    public String getAdministratorLastName() {
+        String property = properties.getProperty("administratorLastName");
+        if (null != property) {
+            return property;
+        }
+        return getPdrUserName();
+    }
+
+    public String getAdministratorEmployeeId() {
+        String property = properties.getProperty("administratorEmployeeId");
+        if (null != property) {
+            return property;
+        }
+        return null;
+    }
+
+    public String getAdministratorEmail() {
+        String property = properties.getProperty("administratorEmail");
+        if (null != property) {
+            return property;
+        }
+        return null;
+    }
+
+    public String getAdministratorPassword() {
+        return getPdrUserPassword();
+    }
+
 }

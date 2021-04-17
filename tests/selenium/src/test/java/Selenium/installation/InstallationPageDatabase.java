@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2021 Mandelkow
+ *
+ * Dienstplan Apotheke
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package Selenium.installation;
+
+import Selenium.ReadPropertyFile;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+/**
+ *
+ * @author Mandelkow
+ */
+public class InstallationPageDatabase {
+
+    By InstallationPageDatabaseFormButtonBy;
+
+    WebDriver driver;
+    WebElement InstallationPageDatabaseFormButtonElement;
+
+    public void fillForm() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        //WebElement databaseManagementSystemFormElement = driver.findElement(By.id("database_management_system"));
+        WebElement databaseHostFormElement = driver.findElement(By.id("database_host"));
+        //WebElement databasePortFormElement = driver.findElement(By.id("database_port"));
+        WebElement databaseUserFormElement = driver.findElement(By.id("database_user"));
+        WebElement databasePasswordFormElement = driver.findElement(By.id("database_password"));
+        WebElement databaseNameFormElement = driver.findElement(By.id("database_name"));
+
+        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
+        String databaseUserName = readPropertyFile.getDatabaseUserName();
+        String databasePassword = readPropertyFile.getDatabasePassword();
+        String databaseName = readPropertyFile.getDatabaseName();
+
+        databaseHostFormElement.clear();
+        databaseHostFormElement.sendKeys("localhost");
+        //databasePortFormElement.clear();
+        //databasePortFormElement.sendKeys("3306");
+        databaseUserFormElement.clear();
+        databaseUserFormElement.sendKeys(databaseUserName);
+        databasePasswordFormElement.clear();
+        databasePasswordFormElement.sendKeys(databasePassword);
+        databaseNameFormElement.clear();
+        databaseNameFormElement.sendKeys(databaseName);
+    }
+
+    public InstallationPageAdministrator moveToAdminPage() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        InstallationPageDatabaseFormButtonBy = By.id("InstallPageDatabaseFormButton");
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
+        InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
+        InstallationPageDatabaseFormButtonElement.click();
+        return new InstallationPageAdministrator();
+    }
+}

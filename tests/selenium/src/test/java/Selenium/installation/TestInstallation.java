@@ -19,7 +19,6 @@
 package Selenium.installation;
 
 import Selenium.driver.Wrapper;
-import Selenium.signinpage.SignInPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -45,6 +44,10 @@ public class TestInstallation {
         InstallationPageIntro installationPageIntro = new InstallationPageIntro();
         InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
         InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
-        installationPageRequirements.moveToDatabasePage();
+        InstallationPageDatabase installationPageDatabase = installationPageRequirements.moveToDatabasePage();
+        installationPageDatabase.fillForm();
+        InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
+        installationPageAdministrator.fillForm();
+        installationPageAdministrator.moveFromAdminPage();
     }
 }

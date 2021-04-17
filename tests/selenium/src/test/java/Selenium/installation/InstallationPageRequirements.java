@@ -21,6 +21,8 @@ package Selenium.installation;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -33,10 +35,13 @@ public class InstallationPageRequirements {
     WebDriver driver;
     WebElement InstallPageRequirementsFormButtonElement;
 
-    public void moveToDatabasePage() {
+    public InstallationPageDatabase moveToDatabasePage() {
         driver = Selenium.driver.Wrapper.getDriver();
-        InstallPageRequirementsFormButtonBy = By.id("InstallPageRequirementsFormButton");
+        InstallPageRequirementsFormButtonBy = By.id("InstallPageCheckRequirementsFormButton");
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(InstallPageRequirementsFormButtonBy));
         InstallPageRequirementsFormButtonElement = driver.findElement(InstallPageRequirementsFormButtonBy);
         InstallPageRequirementsFormButtonElement.click();
+        return new InstallationPageDatabase();
     }
 }
