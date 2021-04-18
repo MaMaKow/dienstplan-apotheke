@@ -321,12 +321,12 @@ class install {
         ));
         error_log("Created the employee " . $this->Config["admin"]["last_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
         global $config;
-        $config = $config['database_host'] = $this->Config['database_host'];
+        $config['database_host'] = $this->Config['database_host'];
         $config['database_name'] = $this->Config['database_name'];
         $config['database_port'] = $this->Config['database_port'];
         $config['database_user'] = $this->Config['database_user'];
         $config['database_password'] = $this->Config['database_password'];
-
+        print_debug_variable($config);
         $user = new user($this->Config["admin"]["employee_id"]);
         error_log("Tried to instatiate the PDR user object with the id " . $this->Config["admin"]["employee_id"]);
         error_log("This is the user object:");

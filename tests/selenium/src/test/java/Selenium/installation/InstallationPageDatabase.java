@@ -31,13 +31,22 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class InstallationPageDatabase {
 
-    By InstallationPageDatabaseFormButtonBy;
+    By InstallationPageDatabaseFormButtonBy = By.id("InstallPageDatabaseFormButton");
 
-    WebDriver driver;
+    WebDriver driver = Selenium.driver.Wrapper.getDriver();
     WebElement InstallationPageDatabaseFormButtonElement;
 
+    public InstallationPageDatabase() {
+        InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
+        if (!InstallationPageDatabaseFormButtonElement.isDisplayed()) {
+            throw new IllegalStateException("This is not InstallPageDatabase,"
+                    + " current page is: " + driver.getCurrentUrl());
+
+        }
+    }
+
     public void fillForm() {
-        driver = Selenium.driver.Wrapper.getDriver();
+
         //WebElement databaseManagementSystemFormElement = driver.findElement(By.id("database_management_system"));
         WebElement databaseHostFormElement = driver.findElement(By.id("database_host"));
         //WebElement databasePortFormElement = driver.findElement(By.id("database_port"));
@@ -63,8 +72,6 @@ public class InstallationPageDatabase {
     }
 
     public InstallationPageAdministrator moveToAdminPage() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        InstallationPageDatabaseFormButtonBy = By.id("InstallPageDatabaseFormButton");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
         InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);

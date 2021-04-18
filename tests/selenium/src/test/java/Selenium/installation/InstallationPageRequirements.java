@@ -18,6 +18,8 @@
  */
 package Selenium.installation;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,12 +37,25 @@ public class InstallationPageRequirements {
     WebDriver driver;
     WebElement InstallPageRequirementsFormButtonElement;
 
+    public InstallationPageRequirements() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        System.out.println(this.getClass());
+        System.out.println(driver.getCurrentUrl());
+
+    }
+
     public InstallationPageDatabase moveToDatabasePage() {
         driver = Selenium.driver.Wrapper.getDriver();
         InstallPageRequirementsFormButtonBy = By.id("InstallPageCheckRequirementsFormButton");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallPageRequirementsFormButtonBy));
         InstallPageRequirementsFormButtonElement = driver.findElement(InstallPageRequirementsFormButtonBy);
+        wait.until(ExpectedConditions.elementToBeClickable(InstallPageRequirementsFormButtonElement));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(InstallationPageRequirements.class.getName()).log(Level.SEVERE, null, ex);
+        }
         InstallPageRequirementsFormButtonElement.click();
         return new InstallationPageDatabase();
     }

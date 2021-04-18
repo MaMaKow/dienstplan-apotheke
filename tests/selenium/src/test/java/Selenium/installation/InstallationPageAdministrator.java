@@ -36,6 +36,13 @@ public class InstallationPageAdministrator {
     WebDriver driver;
     WebElement InstallationPageAdminFormButtonElement;
 
+    public InstallationPageAdministrator() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        System.out.println(this.getClass());
+        System.out.println(driver.getCurrentUrl());
+
+    }
+
     public void fillForm() {
         driver = Selenium.driver.Wrapper.getDriver();
         WebElement administratorUserNameFormElement = driver.findElement(By.name("user_name"));
@@ -68,7 +75,7 @@ public class InstallationPageAdministrator {
 
     public void moveFromAdminPage() {
         driver = Selenium.driver.Wrapper.getDriver();
-        InstallationPageAdminFormButtonBy = By.id("InstallPageDatabaseFormButton");
+        InstallationPageAdminFormButtonBy = By.id("InstallPageAdministratorFormButton");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
         InstallationPageAdminFormButtonElement = driver.findElement(InstallationPageAdminFormButtonBy);
