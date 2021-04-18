@@ -40,11 +40,17 @@ public class InstallationPageAdministrator {
         driver = Selenium.driver.Wrapper.getDriver();
         System.out.println(this.getClass());
         System.out.println(driver.getCurrentUrl());
+        InstallationPageAdminFormButtonBy = By.id("InstallPageAdministratorFormButton");
 
     }
 
     public void fillForm() {
         driver = Selenium.driver.Wrapper.getDriver();
+
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.name("user_name")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
+
         WebElement administratorUserNameFormElement = driver.findElement(By.name("user_name"));
         WebElement administratorLastNameFormElement = driver.findElement(By.name("last_name"));
         WebElement administratorEmployeeIdFormElement = driver.findElement(By.name("employee_id"));
@@ -54,6 +60,7 @@ public class InstallationPageAdministrator {
 
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
         String administratorUserName = readPropertyFile.getAdministratorUserName();
+        System.out.println(administratorUserName);
         String administratorLastName = readPropertyFile.getAdministratorLastName();
         String administratorEmployeeId = readPropertyFile.getAdministratorEmployeeId();
         String administratorEmail = readPropertyFile.getAdministratorEmail();
@@ -75,7 +82,6 @@ public class InstallationPageAdministrator {
 
     public void moveFromAdminPage() {
         driver = Selenium.driver.Wrapper.getDriver();
-        InstallationPageAdminFormButtonBy = By.id("InstallPageAdministratorFormButton");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
         InstallationPageAdminFormButtonElement = driver.findElement(InstallationPageAdminFormButtonBy);

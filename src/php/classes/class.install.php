@@ -262,9 +262,41 @@ class install {
         /*
          * TODO: Do we need a specific order of table creation?
          * Some tables have contraints. Do we have to create the referenced tables first?
+         * For now i will just invoke the loop multiple times. This is a dirty workaround.
          */
         $this->connect_to_database();
         $sql_files = glob($this->pdr_file_system_application_path . "src/sql/*.sql");
+        foreach ($sql_files as $sql_file_name) {
+            $sql_create_table_statement = file_get_contents($sql_file_name);
+            $pattern = "/^.*TRIGGER.*\$/m";
+            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
+                /*
+                 * This file contains a CREATE TRIGGER clause.
+                 */
+                /*
+                 * Remove DEFINER clause. MySQL will automatically add the current user.
+                 */
+                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
+                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
+            }
+            error_log($sql_create_table_statement);
+            $this->pdo->exec($sql_create_table_statement);
+        }
+        foreach ($sql_files as $sql_file_name) {
+            $sql_create_table_statement = file_get_contents($sql_file_name);
+            $pattern = "/^.*TRIGGER.*\$/m";
+            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
+                /*
+                 * This file contains a CREATE TRIGGER clause.
+                 */
+                /*
+                 * Remove DEFINER clause. MySQL will automatically add the current user.
+                 */
+                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
+                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
+            }
+            $this->pdo->exec($sql_create_table_statement);
+        }
         foreach ($sql_files as $sql_file_name) {
             $sql_create_table_statement = file_get_contents($sql_file_name);
             $pattern = "/^.*TRIGGER.*\$/m";
@@ -326,7 +358,7 @@ class install {
         $config['database_port'] = $this->Config['database_port'];
         $config['database_user'] = $this->Config['database_user'];
         $config['database_password'] = $this->Config['database_password'];
-        print_debug_variable($config);
+        //print_debug_variable($config);
         $user = new user($this->Config["admin"]["employee_id"]);
         error_log("Tried to instatiate the PDR user object with the id " . $this->Config["admin"]["employee_id"]);
         error_log("This is the user object:");

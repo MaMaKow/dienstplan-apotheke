@@ -46,6 +46,8 @@ public class InstallationPageDatabase {
     }
 
     public void fillForm() {
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("database_host")));
 
         //WebElement databaseManagementSystemFormElement = driver.findElement(By.id("database_management_system"));
         WebElement databaseHostFormElement = driver.findElement(By.id("database_host"));

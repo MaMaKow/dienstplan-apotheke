@@ -18,10 +18,14 @@
  */
 package Selenium.installation;
 
+import Selenium.HomePage;
+import Selenium.ReadPropertyFile;
 import Selenium.driver.Wrapper;
+import Selenium.signinpage.SignInPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 /**
@@ -34,10 +38,11 @@ public class TestInstallation {
 
     @Test(enabled = true)
     public void testInstallation() {
+        driver = Wrapper.getDriver();
+        driver.get("https://martin-mandelkow.de/development/testing/selenium-clone.php");
         String testPageFolderPath = "https://martin-mandelkow.de/development/testing/";
         String testPageUrlXPath = "/html/body/table/tbody/tr[5]/td[2]/a";
         By testPageUrlBy = By.xpath(testPageUrlXPath);
-        driver = Wrapper.getDriver();
         driver.get(testPageFolderPath);
         WebElement testPageLink = driver.findElement(testPageUrlBy);
         testPageLink.click();
@@ -49,5 +54,19 @@ public class TestInstallation {
         InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
         installationPageAdministrator.fillForm();
         installationPageAdministrator.moveFromAdminPage();
+
+        /*
+         * <p lang=de>
+         * Die Anwendung ist installiert.
+         * Jetzt ist es Zeit, sie zu konfigurieren:
+         * </p>
+         */
+        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = readPropertyFile.getPdrUserPassword();
+        String pdr_user_name = readPropertyFile.getPdrUserName();
+        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        assertEquals(pdr_user_name, homePage.getUserNameText());
+
     }
 }
