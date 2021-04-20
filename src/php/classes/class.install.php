@@ -246,16 +246,19 @@ class install {
             "ALTER",
             "TRIGGER",
         );
-        $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@localhost");
-        error_log("GRANT all neccessary privileges to the database user.");
-        if ("localhost" !== $this->Config["database_host"]) {
-            /*
-             * Allow access from any remote (@%).
-             * TODO: Should we place a warning to the administrator?
-             */
-            error_log("GRANT them also for access from remote.");
-            $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@%");
+        $client_host = "localhost";
+        if ("localhost" !== $this->Config["database_host"] and "127.0.0.1" !== $this->Config["database_host"] and "::1" !== $this->Config["database_host"]) {
+            $client_host = "%";
         }
+        $statement = $this->pdo->prepare("GRANT " . implode(", ", $Privileges) . " ON `:database_name`.* TO :database_user@:client_host");
+        $result = $statement->execute(array(
+            'database_name' => $this->Config["database_name"],
+            'database_user' => $this->Config["database_user_self"],
+            'client_host' => $client_host,
+        ));
+
+        error_log("GRANT all neccessary privileges to the database user on the client host: $client_host.");
+        return $result;
     }
 
     private function setup_mysql_database_tables() {
