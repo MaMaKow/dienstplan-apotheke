@@ -667,7 +667,6 @@ class install {
         return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
     }
 
-
     private function setup_mysql_database_tables() {
         /**
          * Some tables have contraints.
@@ -686,11 +685,11 @@ class install {
             $pattern = "/^.*TRIGGER.*\$/m";
             if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
                 /*
-                * This file contains a CREATE TRIGGER clause.
-                */
+                 * This file contains a CREATE TRIGGER clause.
+                 */
                 /*
-                * Remove DEFINER clause. MySQL will automatically add the current user.
-                */
+                 * Remove DEFINER clause. MySQL will automatically add the current user.
+                 */
                 $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
                 $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
             }
@@ -701,23 +700,24 @@ class install {
                 $list_of_failed_statements[] = $statement;
             }
         }
-        while(array() !== $list_of_failed_statements){
-            if(5 <= $number_of_executions++){
+        while (array() !== $list_of_failed_statements) {
+            if (5 <= $number_of_executions++) {
                 /*
-                * This loop will try to install all the tables.
-                * But it will only try 5 iterations of the whole array.
-                */
-                error_log(print_r($statement->->errorInfo();, TRUE));
+                 * This loop will try to install all the tables.
+                 * But it will only try 5 iterations of the whole array.
+                 */
+                error_log(print_r($statement->errorInfo(), TRUE));
                 error_log("Error while creating the database tables. Not all tables could be created.");
                 //TODO: Report also to the administrator on the screen.
                 break;
             }
-            foreach($list_of_failed_statements as $key => $failed_statement){
-                $result = $statement->execute();
-                if(TRUE === $result){
+            foreach ($list_of_failed_statements as $key => $failed_statement) {
+                $result = $failed_statement->execute();
+                if (TRUE === $result) {
                     unset($list_of_failed_statements[$key]);
                 }
             }
         }
     }
+
 }
