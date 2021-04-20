@@ -261,63 +261,6 @@ class install {
         return $result;
     }
 
-    private function setup_mysql_database_tables() {
-        /*
-         * TODO: Do we need a specific order of table creation?
-         * Some tables have contraints. Do we have to create the referenced tables first?
-         * For now i will just invoke the loop multiple times. This is a dirty workaround.
-         */
-        $this->connect_to_database();
-        $sql_files = glob($this->pdr_file_system_application_path . "src/sql/*.sql");
-        foreach ($sql_files as $sql_file_name) {
-            $sql_create_table_statement = file_get_contents($sql_file_name);
-            $pattern = "/^.*TRIGGER.*\$/m";
-            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
-                /*
-                 * This file contains a CREATE TRIGGER clause.
-                 */
-                /*
-                 * Remove DEFINER clause. MySQL will automatically add the current user.
-                 */
-                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
-                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
-            }
-            error_log($sql_create_table_statement);
-            $this->pdo->exec($sql_create_table_statement);
-        }
-        foreach ($sql_files as $sql_file_name) {
-            $sql_create_table_statement = file_get_contents($sql_file_name);
-            $pattern = "/^.*TRIGGER.*\$/m";
-            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
-                /*
-                 * This file contains a CREATE TRIGGER clause.
-                 */
-                /*
-                 * Remove DEFINER clause. MySQL will automatically add the current user.
-                 */
-                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
-                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
-            }
-            $this->pdo->exec($sql_create_table_statement);
-        }
-        foreach ($sql_files as $sql_file_name) {
-            $sql_create_table_statement = file_get_contents($sql_file_name);
-            $pattern = "/^.*TRIGGER.*\$/m";
-            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
-                /*
-                 * This file contains a CREATE TRIGGER clause.
-                 */
-                /*
-                 * Remove DEFINER clause. MySQL will automatically add the current user.
-                 */
-                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
-                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
-            }
-            $this->pdo->exec($sql_create_table_statement);
-        }
-        error_log("The database tables were created.");
-    }
-
     public function handle_user_input_administration() {
 
         $this->Config["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_STRING, $options = null);
@@ -723,4 +666,57 @@ class install {
         return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
     }
 
+
+    private function setup_mysql_database_tables() {
+        /**
+         * Some tables have contraints.
+         * In theory there would be a specific perfect order of table creation.
+         * The referenced tables have to be created first.
+         * As a workaround we store the tables, which could not be created.
+         * After all tables have been tried to create the array of failed statements is executed again.
+         * This is repeated, until no failed statements are left.
+         */
+        $this->connect_to_database();
+        $sql_files = glob($this->pdr_file_system_application_path . "src/sql/*.sql");
+        $list_of_failed_statements = array();
+        $number_of_executions = 0;
+        foreach ($sql_files as $sql_file_name) {
+            $sql_create_table_statement = file_get_contents($sql_file_name);
+            $pattern = "/^.*TRIGGER.*\$/m";
+            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
+                /*
+                * This file contains a CREATE TRIGGER clause.
+                */
+                /*
+                * Remove DEFINER clause. MySQL will automatically add the current user.
+                */
+                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
+                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
+            }
+            error_log($sql_create_table_statement);
+            $statement = $this->pdo->prepare($sql_create_table_statement);
+            $result = $statement->execute();
+            if (TRUE !== $result) {
+                $list_of_failed_statements[] = $statement;
+            }
+        }
+        while(array() !== $list_of_failed_statements){
+            if(5 <= $number_of_executions++){
+                /*
+                * This loop will try to install all the tables.
+                * But it will only try 5 iterations of the whole array.
+                */
+                error_log(print_r($statement->->errorInfo();, TRUE));
+                error_log("Error while creating the database tables. Not all tables could be created.");
+                //TODO: Report also to the administrator on the screen.
+                break;
+            }
+            foreach($list_of_failed_statements as $key => $failed_statement){
+                $result = $statement->execute();
+                if(TRUE === $result){
+                    unset($list_of_failed_statements[$key]);
+                }
+            }
+        }
+    }
 }
