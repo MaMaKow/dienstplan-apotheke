@@ -293,10 +293,11 @@ class install {
          * It follows, that we have to create an employee first, before we can create a user:
          */
         $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`) VALUES (:employee_id, :last_name);");
-        $statement->execute(array(
+        $result = $statement->execute(array(
             'employee_id' => $this->Config["admin"]["employee_id"],
             'last_name' => $this->Config["admin"]["last_name"]
         ));
+        print_debug_variable($result);
         error_log("Created the employee " . $this->Config["admin"]["last_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
         global $config;
         $config['database_host'] = $this->Config['database_host'];

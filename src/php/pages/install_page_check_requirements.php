@@ -15,6 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FILTER_SANITIZE_STRING)) {
+    /*
+     * https://de.wikipedia.org/wiki/Post/Redirect/Get
+     */
+    header("Location: install_page_database.php");
+}
 require_once "../classes/class.install.php";
 $install = new install;
 require_once 'install_head.php';
@@ -108,9 +115,8 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
         } else {
             echo "<em class='install_info_negative'>failed</em>";
             /**
-             * @TODO 1. Test if this an apache server!
-             * @TODO 2. Use the actual folder instead of the standard directory!
-             * @TODO 3- gettext()
+             * @TODO 1. Test if this is an apache server!
+             * @TODO 2. gettext()
              */
             echo "\n<br>You may want to add the following lines to the bottom of the apache configuration file:";
             echo "<pre>&lt;Directory " . PDR_FILE_SYSTEM_APPLICATION_PATH . "&gt;
@@ -125,8 +131,8 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
 <?php
 if ($all_requirements_are_satisfied) {
     ?>
-    <form action="install_page_database.php" method="post">
-        <input type="submit" id="InstallPageCheckRequirementsFormButton" value="<?= gettext("Next") ?>">
+    <form action="install_page_check_requirements.php" method="post">
+        <input type="submit" id="InstallPageCheckRequirementsFormButton" name="InstallPageCheckRequirementsFormButton" value="<?= gettext("Next") ?>">
     </form>
 <?php } else { ?>
     <form action="install_page_check_requirements.php" method="post">
