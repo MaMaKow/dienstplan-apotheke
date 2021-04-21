@@ -18,9 +18,13 @@
 require_once "../classes/class.install.php";
 $install = new install;
 if (filter_has_var(INPUT_POST, "database_user")) {
-    $install->handle_user_input_database();
+    if (FALSE === $install->handle_user_input_database()){
+        $install->Error_message[] = gettext("There was an error while trying to create the database.");
+        $install->Error_message[] = gettext("Please see the error log for details.");
+    }
 }
 require_once 'install_head.php'
+$install->build_error_message_div()
 ?>
 <H1>Database configuration</H1>
 

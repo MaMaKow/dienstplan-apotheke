@@ -26,6 +26,8 @@ class install {
     private $pdo;
     private $Config;
     private $pdr_supported_database_management_systems;
+    private $database_existed_before_installation;
+    private $database_user_self_existed_before_installation;
     public $Error_message;
     public $pdr_file_system_application_path;
 
@@ -127,56 +129,81 @@ class install {
     private function setup_mysql_database() {
         if (FALSE === $this->setup_mysql_database_create_database()) {
             /*
-             * We could not create the database.
-             * This function is only called by handle_user_input_database(), if the database did not exist. So there is nothing we can do.
-             */
+            * We could not create the database.
+            * This function is only called by handle_user_input_database(), if the database did not exist. So there is nothing we can do.
+            */
             $this->Error_message[] = "Could not connect to the database. Please check the configuration!";
             return FALSE;
         }
-        if (FALSE === $this->setup_mysql_database_create_user()) {
-            /*
-             * We could not create our own user. So we just keep the old one.
-             * TODO: We might give a warning to the administrator?
-             */
-            unset($this->Config["database_user_self"]);
-            unset($this->Config["database_password_self"]);
-        } else {
+        $this->database_user_self_existed_before_installation = database_user_exists($this->Config["database_user_self"]);
+        if (TRUE === $this->database_user_self_existed_before_installation or TRUE === $this->setup_mysql_database_create_user()) {
             /*
              * We created our own user.
              * It should have a small set of privileges at only the pdr database:
              */
-            if (FALSE === $this->setup_mysql_database_grant_privileges()) {
-                /*
-                 * That is too bad. We have to go back to the given user.
-                 * TODO: We should DROP USER the created user. If we do not use it, we should delete it.
-                 * But before we have to be sure, that the user did not exist in the first place.
-                 * It would be a bad idea to delete some pre-existing user.
-                 */
-                unset($this->Config["database_user_self"]);
-                unset($this->Config["database_password_self"]);
-            } else {
+            if (TRUE === $this->setup_mysql_database_grant_privileges()){
                 /*
                  * Change the configuration to the new database user:
                  */
+                $this->pdo->exec("FLUSH PRIVILEGES");
                 $this->Config["database_user"] = $this->Config["database_user_self"];
                 $this->Config["database_password"] = $this->Config["database_password_self"];
                 unset($this->Config["database_user_self"]);
                 unset($this->Config["database_password_self"]);
                 return TRUE;
+            } else {
+                /*
+                 * We created our own user. But we could not grant privileges to it.
+                 * Therefore we will delete the user now.
+                 * But only, if it did not exist in the first place.
+                 */
+                if (FALSE === $this->database_user_self_existed_before_installation) {
+                    $statement = $this->pdo->prepare("DROP USER :database_user");
+                    $result = $statement->execute(array(
+                        "database_user" => $this->Config["database_user_self"],
+                    ));
+                }
+                /*
+                 * That is too bad. We have to go back to the given user.
+                 */
+                unset($this->Config["database_user_self"]);
+                unset($this->Config["database_password_self"]);
             }
+        } else {
+            /*
+             * The user could not be created.
+             */
+            unset($this->Config["database_user_self"]);
+            unset($this->Config["database_password_self"]);
+            /*
+             * We still return TRUE.
+             * This user is not the ideal case. But it will work.
+             * At least it was able to create the database and the tables.
+             */
+            return TRUE;
         }
-        /*
-         * Reload the privileges:
-         */
-        $this->pdo->exec("FLUSH PRIVILEGES");
-        return TRUE; //TODO Check if the GRANT did work!
+
     }
 
     private function setup_mysql_database_create_database() {
-        /*
+        /**
+         * Test if the database exists:
+         */
+        $this->database_existed_before_installation = database_exists($this->Config["database_name"]);
+        if(TRUE === $this->database_existed_before_installation){
+            /*
+             * The database already exists.
+             * There is nothing more to do here.
+             */
+            return TRUE;
+        }
+        /**
          * Create the database:
          */
-        $result = $this->pdo->exec("CREATE DATABASE " . $this->Config["database_name"]);
+        $statement = $this->pdo->prepare("CREATE DATABASE :database_name");
+        $result = $statement->execute(array(
+            "database_name" => $this->Config["database_name"],
+        ));
         if (FALSE === $result) {
             /*
              * CAVE: Avoid $this->pdo->errorInfo()[3] in order to allow PHP below 5.4 to at least see, that the minimum version of PHP required is above 7.0.
@@ -357,7 +384,6 @@ class install {
                 /*
                  * We were not able to create the administrative user.
                  */
-
                 $this->Error_message[] = gettext("Error while trying to create administrative user privileges.");
                 print_r($statement->ErrorInfo());
                 echo "<br>\n";
@@ -718,6 +744,58 @@ class install {
                 }
             }
         }
+        return $result;
     }
+
+    /**
+     * <p lang=de>
+     * Wenn die Datenbank nicht korrekt erstellt werden konnte, so sollte sie m�glichst wieder entfernt werden.
+     * Das sollte aber nur passieren, wenn es sie vorher noch nicht gegeben hat.
+     * </p>
+     */
+    public function remove_database(){
+        throw new Exception("Not implemented yet!");
+        if (TRUE === $this->database_existed_before_installation) {
+            return FALSE;
+        }
+        $statement = $this->pdo->prepare("DROP DATABASE :database_name");
+        $result = $statement->execute(array(
+            "database_name" => $this->Config["database_name"],
+        ));
+        return $result;
+    }
+
+    /**
+     * Test if the database exists:
+     */
+    private function database_exists($database_name){
+        $statement = $this->pdo->prepare("SHOW DATABASES LIKE :database_name;");
+        $result = $statement->execute(array(
+            "database_name" => $database_name,
+        ));
+        while ($row = $result->fetch(PDO::FETCH_NUM)) {
+            if(!empty($row[0])){
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
+    /**
+     * Test if some database user exists:
+     */
+    private function database_user_exists($database_user_name) {
+        $statement = $this->pdo->prepare("SELECT EXISTS (SELECT 1 FROM mysql.user WHERE user = :database_user_name) AS `exists`");
+        $result = $statement->execute(array(
+            "database_user_name" => $database_user_name,
+        ));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            if (1 == $row->exists) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
 
 }
