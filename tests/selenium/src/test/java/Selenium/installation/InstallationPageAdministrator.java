@@ -38,10 +38,9 @@ public class InstallationPageAdministrator {
 
     public InstallationPageAdministrator() {
         driver = Selenium.driver.Wrapper.getDriver();
-        System.out.println(this.getClass());
-        System.out.println(driver.getCurrentUrl());
         InstallationPageAdminFormButtonBy = By.id("InstallPageAdministratorFormButton");
-
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
     }
 
     public void fillForm() {
@@ -53,6 +52,7 @@ public class InstallationPageAdministrator {
 
         WebElement administratorUserNameFormElement = driver.findElement(By.name("user_name"));
         WebElement administratorLastNameFormElement = driver.findElement(By.name("last_name"));
+        WebElement administratorFirstNameFormElement = driver.findElement(By.name("first_name"));
         WebElement administratorEmployeeIdFormElement = driver.findElement(By.name("employee_id"));
         WebElement administratorEmailFormElement = driver.findElement(By.name("email"));
         WebElement administratorPasswordFormElement = driver.findElement(By.name("password"));
@@ -60,16 +60,20 @@ public class InstallationPageAdministrator {
 
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
         String administratorUserName = readPropertyFile.getAdministratorUserName();
-        System.out.println(administratorUserName);
         String administratorLastName = readPropertyFile.getAdministratorLastName();
+        String administratorFirstName = readPropertyFile.getAdministratorFirstName();
         String administratorEmployeeId = readPropertyFile.getAdministratorEmployeeId();
         String administratorEmail = readPropertyFile.getAdministratorEmail();
         String administratorPassword = readPropertyFile.getAdministratorPassword();
 
         administratorUserNameFormElement.clear();
-        administratorUserNameFormElement.sendKeys(administratorUserName);
+        //administratorUserNameFormElement.sendKeys(administratorUserName);
+        Selenium.driver.Wrapper.CustomSendKeysIE(administratorUserNameFormElement, administratorUserName);
+
         administratorLastNameFormElement.clear();
         administratorLastNameFormElement.sendKeys(administratorLastName);
+        administratorFirstNameFormElement.clear();
+        administratorFirstNameFormElement.sendKeys(administratorFirstName);
         administratorEmployeeIdFormElement.clear();
         administratorEmployeeIdFormElement.sendKeys(administratorEmployeeId);
         administratorEmailFormElement.clear();

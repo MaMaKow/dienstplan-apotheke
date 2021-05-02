@@ -31,6 +31,9 @@ require_once 'install_head.php'
     <p>Last name:<br>
         <input type="text" name="last_name" placeholder="Last name" required value="<?= (!empty($_SESSION["Config"]["user_name"])) ? $_SESSION["Config"]["last_name"] : "" ?>" />
     </p>
+    <p>First name:<br>
+        <input type="text" name="first_name" placeholder="First name" required value="<?= (!empty($_SESSION["Config"]["first_name"])) ? $_SESSION["Config"]["first_name"] : "" ?>" />
+    </p>
     <p title="<?= gettext("Every user in the roster will be identified by a unique id.") ?>">
         Employee id:<br>
         <input type="text" name="employee_id" placeholder="Employee id" required value="<?= (!empty($_SESSION["Config"]["employee_id"])) ? $_SESSION["Config"]["employee_id"] : "" ?>" />

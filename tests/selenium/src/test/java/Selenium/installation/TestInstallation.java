@@ -25,6 +25,8 @@ import Selenium.signinpage.SignInPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
@@ -39,13 +41,26 @@ public class TestInstallation {
     @Test(enabled = true)
     public void testInstallation() {
         driver = Wrapper.getDriver();
-        driver.get("https://martin-mandelkow.de/development/testing/selenium-clone.php");
         String testPageFolderPath = "https://martin-mandelkow.de/development/testing/";
+        /**
+         * Visit the page script selenium-copy.php. This script will copy a
+         * fresh pdr instance into testPageFolderPath. The state will be exactly
+         * like in the nextcloud.
+         */
+        driver.get("https://martin-mandelkow.de/development/testing/selenium-copy.php");
+        String seleniumCopyDoneXPath = "//*[@id=\"span_done\"]";
+        By seleniumCopyDoneBy = By.xpath(seleniumCopyDoneXPath);
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
+
+        driver.get(testPageFolderPath);
         String testPageUrlXPath = "/html/body/table/tbody/tr[5]/td[2]/a";
         By testPageUrlBy = By.xpath(testPageUrlXPath);
-        driver.get(testPageFolderPath);
         WebElement testPageLink = driver.findElement(testPageUrlBy);
         testPageLink.click();
+        /**
+         * Start the actual installation process:
+         */
         InstallationPageIntro installationPageIntro = new InstallationPageIntro();
         InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
         InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();

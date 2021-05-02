@@ -12,4 +12,6 @@ versionString=`git -C dienstplan-apotheke describe --tags --long --abbrev=40 | t
 
 # CLEAN UP
 mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest_$versionString;"
+mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest;"
 rm -rf $testDirectory/dienstplan-test-$versionString
+rm -rf $testDirectory/dienstplan-test*

@@ -11,11 +11,16 @@ mkdir -p $testDirectory
 cd $testDirectory
 
 rm -r --force $testDirectory/dienstplan-apotheke/
-rm -r --force $testDirectory/dienstplan-test*
-git clone --branch testing https://github.com/MaMaKow/dienstplan-apotheke.git
-git -C dienstplan-apotheke/ pull --rebase origin development # get the newest commits from the development branch from github.
+sourcePath=/var/www/html/nextcloud/data/Martin/files/Dokumente/Freizeit/Programmierung/git/dienstplan-apotheke
+destinationPath=/var/www/html/development/testing/
+
+echo Source:
+echo $sourcePath
+echo Destination:
+echo $destinationPath
+rsync -av --exclude='config/config.php' --exclude='error.log'  $sourcePath $destinationPath
+
 versionString=`git -C dienstplan-apotheke describe --tags --long --abbrev=40 | tr '.-' '_'`
 
 cp -r dienstplan-apotheke dienstplan-test-$versionString
-chown -R apache:apache dienstplan-apotheke
-chown -R apache:apache dienstplan-test-$versionString
+sudo chown -R apache:apache dienstplan-test-$versionString
