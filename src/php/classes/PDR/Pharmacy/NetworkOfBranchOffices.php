@@ -102,7 +102,7 @@ class NetworkOfBranchOffices {
      */
     public function get_list_of_branch_objects() {
         if (empty(self::$List_of_branch_objects)) {
-            new \NetworkOfBranchOffices();
+            new \PDR\Pharmacy\NetworkOfBranchOffices();
         }
         return self::$List_of_branch_objects;
     }

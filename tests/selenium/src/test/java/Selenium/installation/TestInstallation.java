@@ -37,17 +37,19 @@ import org.testng.annotations.Test;
 public class TestInstallation {
 
     WebDriver driver;
+    ReadPropertyFile readPropertyFile;
 
     @Test(enabled = true)
     public void testInstallation() {
         driver = Wrapper.getDriver();
-        String testPageFolderPath = "https://martin-mandelkow.de/development/testing/";
+        readPropertyFile = new ReadPropertyFile();
+        String testPageFolderPath = readPropertyFile.getUrlInstallTest();
         /**
          * Visit the page script selenium-copy.php. This script will copy a
          * fresh pdr instance into testPageFolderPath. The state will be exactly
          * like in the nextcloud.
          */
-        driver.get("https://martin-mandelkow.de/development/testing/selenium-copy.php");
+        driver.get(testPageFolderPath + "selenium-copy.php");
         String seleniumCopyDoneXPath = "//*[@id=\"span_done\"]";
         By seleniumCopyDoneBy = By.xpath(seleniumCopyDoneXPath);
         WebDriverWait wait = new WebDriverWait(driver, 20);
@@ -76,7 +78,6 @@ public class TestInstallation {
          * Jetzt ist es Zeit, sie zu konfigurieren:
          * </p>
          */
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
         SignInPage signInPage = new SignInPage(driver);
         String pdr_user_password = readPropertyFile.getPdrUserPassword();
         String pdr_user_name = readPropertyFile.getPdrUserName();

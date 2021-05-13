@@ -49,7 +49,7 @@ public class InstallationPageRequirements {
         InstallPageRequirementsFormButtonElement = driver.findElement(InstallPageRequirementsFormButtonBy);
         wait.until(ExpectedConditions.elementToBeClickable(InstallPageRequirementsFormButtonElement));
         try {
-            Thread.sleep(5000);
+            Thread.sleep(500);
         } catch (InterruptedException ex) {
             Logger.getLogger(InstallationPageRequirements.class.getName()).log(Level.SEVERE, null, ex);
         }

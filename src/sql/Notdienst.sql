@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `notdienst` (
+CREATE TABLE IF NOT EXISTS `Notdienst` (
   `VK` int(11) DEFAULT NULL,
   `Datum` date NOT NULL,
   `Mandant` int(11) NOT NULL DEFAULT 1,

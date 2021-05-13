@@ -330,7 +330,7 @@ class install {
             $this->Error_message[] = gettext("Error while trying to create employee.");
             return false;
         }
-        error_log("Created the employee " . $this->Config["admin"]["last_name"] . ", " . $this->Config["admin"]["first_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
+        //error_log("Created the employee " . $this->Config["admin"]["last_name"] . ", " . $this->Config["admin"]["first_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
         global $config;
         $config['database_host'] = $this->Config['database_host'];
         $config['database_name'] = $this->Config['database_name'];
@@ -338,11 +338,7 @@ class install {
         $config['database_user'] = $this->Config['database_user'];
         $config['database_password'] = $this->Config['database_password'];
         $user = new user($this->Config["admin"]["employee_id"]);
-        error_log("Tried to instatiate the PDR user object with the id " . $this->Config["admin"]["employee_id"]);
-        error_log("This is the user object:");
-        error_log(var_export($user, TRUE));
         if (!$user->exists()) {
-            error_log("User not found in database yet.");
             $user_creation_result = $user->create_new($this->Config["admin"]["employee_id"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
             if (FALSE === $user_creation_result) {
                 /*
@@ -357,7 +353,7 @@ class install {
              * The administrative user already exists.
              * We will not delete it.
              */
-            error_log("Yes, we have an object. The user exists in the database.");
+            error_log("Administrative user already exists.");
             $this->Error_message[] = gettext("Administrative user already exists.");
         }
         /*
@@ -627,7 +623,7 @@ class install {
         /*
          * Just in case we are interrupted and/or the session is lost, we write the values to a temporary installation file:
          */
-        file_put_contents($this->pdr_file_system_application_path . 'config/config_temp_install.php', '<?php' . PHP_EOL . '$config =' . var_export($this->Config, true) . ';');
+        file_put_contents($this->pdr_file_system_application_path . 'config/config_temp_install.php', '<?php' . PHP_EOL . '$config =' . var_export($this->Config, true) . ';' . "\n");
     }
 
     private function read_config_from_session() {
@@ -733,7 +729,6 @@ class install {
                 $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
                 $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
             }
-            error_log($sql_create_table_statement);
             $statement = $this->pdo->prepare($sql_create_table_statement);
             $result = $statement->execute();
             if (TRUE !== $result) {

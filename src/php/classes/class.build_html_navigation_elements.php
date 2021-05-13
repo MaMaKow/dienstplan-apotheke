@@ -224,13 +224,13 @@ abstract class build_html_navigation_elements {
      * @param int $employee_id
      * @return string HTML element
      */
-    public static function build_select_employee($employee_id, $Employee_object_list) {
+    public static function build_select_employee(int $employee_id = null, array $Employee_object_list = array()) {
         $text = "<!-- employee select form-->\n";
         $text .= "<form method='POST' id='select_employee' class='inline_form'>\n";
         $text .= "<select name=employee_id class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_object_list as $employee_object) {
-            if ($employee_object->employee_id == $employee_id) {
-                $text .= "<option value=$employee_object->employee_id selected>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
+            if ($employee_object->employee_id === $employee_id) {
+                $text .= "<option selected value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
             } else {
                 $text .= "<option value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
             }

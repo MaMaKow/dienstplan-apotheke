@@ -26,7 +26,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
     $new_branch_short_name = filter_input(INPUT_POST, "branch_short_name", FILTER_SANITIZE_STRING);
     $new_branch_address = filter_input(INPUT_POST, "branch_address", FILTER_SANITIZE_STRING);
     $new_branch_manager = filter_input(INPUT_POST, "branch_manager", FILTER_SANITIZE_STRING);
-    $new_branch_pep_id = filter_input(INPUT_POST, "branch_pep_id", FILTER_SANITIZE_NUMBER_INT);
+    $new_branch_pep_id = user_input::convert_post_empty_to_php_null(filter_input(INPUT_POST, "branch_pep_id", FILTER_SANITIZE_NUMBER_INT));
 
     if (filter_has_var(INPUT_POST, 'remove_branch')) {
         $old_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);

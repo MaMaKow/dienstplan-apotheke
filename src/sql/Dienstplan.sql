@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dienstplan` (
+CREATE TABLE IF NOT EXISTS `Dienstplan` (
   `VK` tinyint(3) unsigned NOT NULL,
   `Datum` date NOT NULL,
   `Dienstbeginn` time NOT NULL DEFAULT '00:00:00',
