@@ -18,3 +18,6 @@
 
 #Use pdfdiff to show differences in pdf files:
 *.pdf diff=pdfdiff
+
+# Do not include the tests/ directory in project tarballs:
+tests/ export-ignore

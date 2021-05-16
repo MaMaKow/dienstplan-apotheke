@@ -20,6 +20,7 @@ package Selenium.installation;
 
 import Selenium.HomePage;
 import Selenium.ReadPropertyFile;
+import Selenium.administrationpages.BranchAdministrationPage;
 import Selenium.driver.Wrapper;
 import Selenium.signinpage.SignInPage;
 import org.openqa.selenium.By;
@@ -29,6 +30,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+import java.util.HashMap;
 
 /**
  *
@@ -38,6 +40,14 @@ public class TestInstallation {
 
     WebDriver driver;
     ReadPropertyFile readPropertyFile;
+    /**
+     * <p lang=de>
+     * Diese URL wird aus der apache Seite für Ordner ohne index.html
+     * ausgelesen. z.B.
+     * https://your-host.com/development/testing/dienstplan-test-0_14_0_899_gba26b727b1e29aede593fa5066b003982bc19c16/
+     * </p>
+     */
+    String testPageUrl;
 
     @Test(enabled = true)
     public void testInstallation() {
@@ -59,6 +69,7 @@ public class TestInstallation {
         String testPageUrlXPath = "/html/body/table/tbody/tr[5]/td[2]/a";
         By testPageUrlBy = By.xpath(testPageUrlXPath);
         WebElement testPageLink = driver.findElement(testPageUrlBy);
+        testPageUrl = testPageLink.getAttribute("href");
         testPageLink.click();
         /**
          * Start the actual installation process:
@@ -72,10 +83,10 @@ public class TestInstallation {
         installationPageAdministrator.fillForm();
         installationPageAdministrator.moveFromAdminPage();
 
-        /*
+        /**
          * <p lang=de>
-         * Die Anwendung ist installiert.
-         * Jetzt ist es Zeit, sie zu konfigurieren:
+         * Die Anwendung ist installiert. Jetzt ist es Zeit, sie zu
+         * konfigurieren:
          * </p>
          */
         SignInPage signInPage = new SignInPage(driver);
@@ -83,6 +94,23 @@ public class TestInstallation {
         String pdr_user_name = readPropertyFile.getPdrUserName();
         HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         assertEquals(pdr_user_name, homePage.getUserNameText());
-
+        /**
+         * <p lang=de>
+         * Jetzt ist es Zeit, die Filialen zu konfigurieren. Es braucht
+         * mindestens eine Hauptapotheke.
+         * </p>
+         */
+        driver.get(this.testPageUrl + "src/php/pages/branch-management.php");
+        BranchAdministrationPage branchAdministrationPage = new BranchAdministrationPage();
+        HashMap<Integer, String[]> openingTimes = new HashMap<>();
+        String[] openingTimeWeekdays = {"08:00", "18:00"};
+        String[] openingTimeSaturday = {"10:00", "16:00"};
+        openingTimes.put(1, openingTimeWeekdays);
+        openingTimes.put(2, openingTimeWeekdays);
+        openingTimes.put(3, openingTimeWeekdays);
+        openingTimes.put(4, openingTimeWeekdays);
+        openingTimes.put(5, openingTimeWeekdays);
+        openingTimes.put(6, openingTimeSaturday);
+        branchAdministrationPage.createNewBranch(5, 5, "Neue Filiale", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
     }
 }

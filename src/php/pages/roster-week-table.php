@@ -77,7 +77,7 @@ $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
 $main_div_html .= "<div class='no_print'>";
-$main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+$main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 $main_div_html .= "</div>";
 
 $duty_roster_form_html = "";

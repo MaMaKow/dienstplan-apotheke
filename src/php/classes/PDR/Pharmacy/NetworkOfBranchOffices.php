@@ -147,7 +147,7 @@ class NetworkOfBranchOffices {
      * @param int $branch_id
      * @return boolean True if the branch does exist.
      */
-    public function branch_exists(int $branch_id) {
+    public function branch_exists(int $branch_id = null) {
         if (\in_array($branch_id, \array_keys(self::$List_of_branch_objects))) {
             return TRUE;
         }
