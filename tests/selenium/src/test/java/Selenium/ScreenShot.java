@@ -35,6 +35,8 @@ import org.testng.ITestResult;
  */
 public class ScreenShot {
 
+    WebDriver driver;
+
     public ScreenShot(ITestResult testResult) {
         takeScreenShot(testResult);
     }
@@ -45,7 +47,7 @@ public class ScreenShot {
          * Die verschiedenen Klassen haben Testnamen mit den gleichen methods.
          * Daher überschreiben die Bilder der einen Klasse die Bilder der anderen Klasse.</p>
          */
-        WebDriver driver = Selenium.driver.Wrapper.getDriver();
+        driver = Selenium.driver.Wrapper.getDriver();
         File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         try {
             FileUtils.copyFile(scrFile, new File(

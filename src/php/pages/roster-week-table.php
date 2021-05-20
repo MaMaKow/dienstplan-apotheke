@@ -61,7 +61,7 @@ $Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_ro
 $duty_roster_working_hours_div = "";
 if (array() !== $Roster and isset($Working_hours_week_have)) {
     $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster, $workforce);
-    $duty_roster_working_hours_div = build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should);
+    $duty_roster_working_hours_div = build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $workforce);
 }
 
 //Produziere die Ausgabe

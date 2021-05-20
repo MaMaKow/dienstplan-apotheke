@@ -20,6 +20,7 @@ package Selenium.installation;
 
 import Selenium.HomePage;
 import Selenium.ReadPropertyFile;
+import Selenium.ScreenShot;
 import Selenium.administrationpages.BranchAdministrationPage;
 import Selenium.driver.Wrapper;
 import Selenium.signinpage.SignInPage;
@@ -31,6 +32,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import java.util.HashMap;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 
 /**
  *
@@ -49,7 +52,7 @@ public class TestInstallation {
      */
     String testPageUrl;
 
-    @Test(enabled = true)
+    @Test(enabled = false)/*passed*/
     public void testInstallation() {
         driver = Wrapper.getDriver();
         readPropertyFile = new ReadPropertyFile();
@@ -112,5 +115,13 @@ public class TestInstallation {
         openingTimes.put(5, openingTimeWeekdays);
         openingTimes.put(6, openingTimeSaturday);
         branchAdministrationPage.createNewBranch(5, 5, "Neue Filiale", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
+    }
+
+    @AfterMethod
+    public void tearDown(ITestResult testResult) {
+        driver = Selenium.driver.Wrapper.getDriver();
+        new ScreenShot(testResult);
+        driver.quit();
+
     }
 }

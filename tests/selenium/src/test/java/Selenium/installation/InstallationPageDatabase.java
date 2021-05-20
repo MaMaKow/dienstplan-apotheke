@@ -34,11 +34,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class InstallationPageDatabase {
 
     By InstallationPageDatabaseFormButtonBy = By.id("InstallPageDatabaseFormButton");
+    WebDriver driver;
 
-    WebDriver driver = Selenium.driver.Wrapper.getDriver();
     WebElement InstallationPageDatabaseFormButtonElement;
 
     public InstallationPageDatabase() {
+        this.driver = Selenium.driver.Wrapper.getDriver();
         InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
         if (!InstallationPageDatabaseFormButtonElement.isDisplayed()) {
             throw new IllegalStateException("This is not InstallPageDatabase,"

@@ -166,22 +166,14 @@ public class BranchAdministrationPage {
          * formElementOpeningTimesSundayTo.sendKeys("16:00");
          */
 
-        System.out.println("Es gibt eine openingTimesMap.");
-        System.out.println(openingTimesMap);
-        System.out.println("Es gibt eine openingTimeElements.");
-        System.out.println(openingTimeElements);
         int openingTimesMapSize = openingTimesMap.size();
-        System.out.println("Jetzt schauen wir uns die Zeilen an.");
-        System.out.println("Öffnungszeiten von Montag=1");
         for (int row = 1; row <= openingTimesMapSize; row++) {
-            System.out.println(row);
             /**
              * Get the time input elements:
              */
             WebElement[] timeElementsFromTo = openingTimeElements.get(row - 1);
             WebElement timeElementFrom = timeElementsFromTo[0];
             WebElement timeElementTo = timeElementsFromTo[1];
-            System.out.println(timeElementFrom.getAttribute("name"));
             /**
              * Fill them with time data:
              */

@@ -1,13 +1,28 @@
+/*
+ * Copyright (C) 2021 Mandelkow
+ *
+ * Dienstplan Apotheke
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package Selenium.rosterpages.weekTablePage;
 
 import Selenium.HomePage;
+import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,19 +42,22 @@ import org.testng.annotations.BeforeMethod;
  */
 public class TestRosterWeekTablePage {
 
-    @Test(enabled = false)
+    WebDriver driver;
+
+    @Test(enabled = false)/*passed*/
     public void testDateNavigation() {
         try {
-            WebDriver driver = Selenium.driver.Wrapper.getDriver();
-            driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
-            //driver.get("https://localhost/dienstplan/");
+            driver = Selenium.driver.Wrapper.getDriver();
+            ReadPropertyFile readPropertyFile = new ReadPropertyFile();
+            String urlPageTest = readPropertyFile.getUrlPageTest();
+            driver.get(urlPageTest);
 
             /**
              * Sign in:
              */
             SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
-            String pdr_user_name = "selenium_test_user";
+            String pdr_user_password = readPropertyFile.getPdrUserPassword();
+            String pdr_user_name = readPropertyFile.getPdrUserName();
             signInPage.loginValidUser(pdr_user_name, pdr_user_password);
             RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
             Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
@@ -52,53 +70,43 @@ public class TestRosterWeekTablePage {
             Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-22"); //This is the corresponding monday.
             rosterWeekTablePage.moveWeekForward();
             Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
-        } catch (MalformedURLException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
-        } catch (IOException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
         } catch (Exception exception) {
             Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
         }
     }
 
-    @Test(enabled = false)
+    @Test(enabled = false)/*passed*/
     public void testRosterDisplay() throws Exception {
-        try {
-            WebDriver driver = Selenium.driver.Wrapper.getDriver();
-            driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
-            //driver.get("https://localhost/dienstplan/");
-
-            /**
-             * Sign in:
-             */
-            SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
-            String pdr_user_name = "selenium_test_user";
-            HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-            RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
-            Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
-            /**
-             * Move to specific date to get a specific roster:
-             */
-            rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-            Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
-            /**
-             * Get roster items and compare to assertions:
-             */
-            RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
-            String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
-            Assert.assertEquals(employeeNameHash, "7224dea417825343c5645dd5c6f2cde8");
-            Assert.assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-            Assert.assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
-            Assert.assertEquals("08:00", rosterItem.getDutyStart());
-            Assert.assertEquals("16:30", rosterItem.getDutyEnd());
-            Assert.assertEquals("11:30", rosterItem.getBreakStart());
-            Assert.assertEquals("12:00", rosterItem.getBreakEnd());
-        } catch (MalformedURLException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
-        } catch (IOException exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
-        }
+        driver = Selenium.driver.Wrapper.getDriver();
+        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
+        String urlPageTest = readPropertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = readPropertyFile.getPdrUserPassword();
+        String pdr_user_name = readPropertyFile.getPdrUserName();
+        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
+        Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
+        /**
+         * Move to specific date to get a specific roster:
+         */
+        rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
+        Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+        /**
+         * Get roster items and compare to assertions:
+         */
+        RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
+        String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
+        Assert.assertEquals(employeeNameHash, "3208b225b142f12b1f380b488837505f");
+        Assert.assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
+        Assert.assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+        Assert.assertEquals("08:00", rosterItem.getDutyStart());
+        Assert.assertEquals("16:30", rosterItem.getDutyEnd());
+        Assert.assertEquals("12:00", rosterItem.getBreakStart());
+        Assert.assertEquals("12:30", rosterItem.getBreakEnd());
     }
 
     @BeforeMethod
@@ -108,7 +116,7 @@ public class TestRosterWeekTablePage {
 
     @AfterMethod
     public void tearDown(ITestResult testResult) {
-        WebDriver driver = Selenium.driver.Wrapper.getDriver();
+        driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
         driver.quit();
 

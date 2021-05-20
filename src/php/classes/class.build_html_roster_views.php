@@ -58,7 +58,7 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id, $Options = array()) {
-        if (!isset($Roster[$day_iterator]) or ! isset($Roster[$day_iterator][$roster_row_iterator])) {
+        if (!isset($Roster[$day_iterator]) or!isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
              * It contains a valid date and branch.
@@ -249,7 +249,7 @@ abstract class build_html_roster_views {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name) or ! isset($roster_employee_id)) {
+        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name) or!isset($roster_employee_id)) {
             foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
                 if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
                     $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
@@ -538,11 +538,10 @@ abstract class build_html_roster_views {
         return $table_html;
     }
 
-    public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $Options = NULL) {
+    public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $workforce, $Options = NULL) {
         if (array() === $Working_hours_week_have) {
             return FALSE;
         }
-        global $workforce, $List_of_employee_working_week_hours;
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
         $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
         $week_hours_table_html .= "<table class='tight'>";
@@ -570,8 +569,13 @@ abstract class build_html_roster_views {
                 $week_hours_table_html .= round($Working_hours_week_should[$employee_id], 1) . "\n";
                 $differenz = $working_hours_have - $Working_hours_week_should[$employee_id];
             } else {
-                $week_hours_table_html .= $List_of_employee_working_week_hours[$employee_id] . "\n";
-                $differenz = $working_hours_have - $List_of_employee_working_week_hours[$employee_id];
+                /**
+                 * TODO: Dieser Teil ist komplett kaputt!
+                 * $List_of_employee_working_week_hours wird nirgendwo definiert.
+                 * Der Array existiert gar nicht.
+                 */
+                $week_hours_table_html .= "???" . "\n";
+                $differenz = 0;
             }
             $week_hours_table_html .= "</td>\n";
             $week_hours_table_html .= "<td>\n";
@@ -599,9 +603,11 @@ abstract class build_html_roster_views {
 
     private static function calculate_working_hours_day_employee_should(DateTime $date_object, employee $employee_object, array $Absentees) {
         if (array_key_exists($employee_object->employee_id, $Absentees)) {
-            /*
+            /**
+             * <p lang=de>
              * Wer Abwesend ist muss nicht arbeiten.
              * Ausnahme: Wer Überstunden abbaut REASON_TAKEN_OVERTIME, dem werden Sollstunden angerechnet.
+             * </p>
              */
             /**
              * @var $List_of_non_respected_absence_reason_ids
@@ -615,16 +621,20 @@ abstract class build_html_roster_views {
         }
         if (FALSE !== holidays::is_holiday($date_object)) {
             /**
+             * <p lang=de>
              * Es ist ein Feiertag. Es muss nicht gearbeitet werden.
+             * </p>
              */
             return 0;
         }
-        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and ! empty($employee_object->working_week_days)) {
+        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and!empty($employee_object->working_week_days)) {
             /**
+             * <p lang=de>
              * Wir müssen hier noch einen Spezialfall beachten!
              * Es gibt Leute, die an nur zwei Tagen Di/Do arbeiten.
              * TODO: Was ist hier, wenn der Feiertag auf einen Freitag fällt?
              * Ist es gerecht, dass solche Mitarbeiter hier speziell behandelt werden? Was sagt das Gesetz?
+             * </p>
              */
             return 0;
         }

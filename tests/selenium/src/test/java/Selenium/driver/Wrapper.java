@@ -50,7 +50,7 @@ public class Wrapper {
     }
 
     public static WebDriver getDriver() {
-        if (null == driver) {
+        if (null == driver || driver.toString().contains("(null)")) {
             new Wrapper();
         }
         return driver;
