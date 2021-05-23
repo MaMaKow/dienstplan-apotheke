@@ -16,22 +16,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.rosterpages.weekTablePage;
+package Selenium.rosterpages;
 
 import Selenium.HomePage;
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
-//import org.junit.Test;
 import org.testng.annotations.Test;
-import org.testng.Assert;
 
 import org.openqa.selenium.WebDriver;
+import static org.testng.Assert.assertEquals;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -40,7 +43,7 @@ import org.testng.annotations.BeforeMethod;
  *
  * @author Mandelkow
  */
-public class TestRosterWeekTablePage {
+public class TestRosterDayEditPage {
 
     WebDriver driver;
 
@@ -59,23 +62,23 @@ public class TestRosterWeekTablePage {
             String pdr_user_password = readPropertyFile.getPdrUserPassword();
             String pdr_user_name = readPropertyFile.getPdrUserName();
             signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-            RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
-            Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
+            RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
+            assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
             /**
              * Move to specific date and go foreward and backward from there:
              */
             rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-            Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
-            rosterWeekTablePage.moveWeekBackward();
-            Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-22"); //This is the corresponding monday.
-            rosterWeekTablePage.moveWeekForward();
-            Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+            assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            rosterWeekTablePage.moveDayBackward();
+            assertEquals("2020-06-30", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            rosterWeekTablePage.moveDayForward();
+            assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
         } catch (Exception exception) {
-            Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
     }
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
@@ -88,29 +91,31 @@ public class TestRosterWeekTablePage {
         String pdr_user_password = readPropertyFile.getPdrUserPassword();
         String pdr_user_name = readPropertyFile.getPdrUserName();
         HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-        RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
-        Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
+        RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
+        assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
         /**
          * Move to specific date to get a specific roster:
          */
         rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-        Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+        assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
         /**
          * Get roster items and compare to assertions:
          */
-        RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
+        RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2);
+        //assertEquals("Tuesday 30.06.", rosterItem.getDateString());
         String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
-        Assert.assertEquals(employeeNameHash, "3208b225b142f12b1f380b488837505f");
-        Assert.assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-        Assert.assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
-        Assert.assertEquals("08:00", rosterItem.getDutyStart());
-        Assert.assertEquals("16:30", rosterItem.getDutyEnd());
-        Assert.assertEquals("12:00", rosterItem.getBreakStart());
-        Assert.assertEquals("12:30", rosterItem.getBreakEnd());
+        assertEquals("74f66fde3d90d47d20c8402fec499fb8", employeeNameHash);
+        assertEquals(1, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
+        assertEquals(6, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+        assertEquals("08:00", rosterItem.getDutyStart());
+        assertEquals("16:30", rosterItem.getDutyEnd());
+        assertEquals("12:00", rosterItem.getBreakStart());
+        assertEquals("12:30", rosterItem.getBreakEnd());
     }
 
     @BeforeMethod
     public void setUp() {
+        /*driver = */
         Selenium.driver.Wrapper.createNewDriver();
     }
 
@@ -121,5 +126,4 @@ public class TestRosterWeekTablePage {
         driver.quit();
 
     }
-
 }
