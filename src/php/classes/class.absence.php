@@ -20,8 +20,9 @@
 /**
  * TODO: An absence could be a real object of one absence.
  * What would in that case be the name for the list of all (or some) absences?
- *
+ * <p lang=de>
  * TODO: Finde Überlappungen zwischen Abwesenheiten der gleichen Person. Zeige dies als Warnung oder Fehler an.
+ * </p>
  */
 class absence {
 
