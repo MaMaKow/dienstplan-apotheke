@@ -20,7 +20,6 @@ package Selenium.absencepages;
 
 import Selenium.Absence;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.Alert;
@@ -213,7 +212,7 @@ public class AbsenceEmployeePage {
 
     }
 
-    public Absence getExistingAbsence(String startDate) {
+    public Absence getExistingAbsence(String startDate, int employeeId) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
             WebElement startDateElement = absenceRowElement.findElement(By.tagName("/td[1]/div"));
             String startDateString = startDateElement.getText();
@@ -230,7 +229,7 @@ public class AbsenceEmployeePage {
             String durationString = durationElement.getText();
             WebElement approvalElement = absenceRowElement.findElement(By.xpath("/td[6]/span"));
             String approvalString = approvalElement.getText();
-            Absence absence = new Absence(startDateString, endDateString, reasonString, commentString, durationString, approvalString);
+            Absence absence = new Absence(employeeId, startDateString, endDateString, reasonString, commentString, durationString, approvalString);
             return absence;
         }
         return null;

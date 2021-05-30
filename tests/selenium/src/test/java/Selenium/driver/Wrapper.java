@@ -69,7 +69,10 @@ public class Wrapper {
     }
 
     private WebDriver createLocalChromeWebDriver() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\chromedriver_89_win32\\chromedriver.exe");
+        /**
+         * TODO: put this into the configuration file!
+         */
+        System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\chromedriver_91_win32\\chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("ignore-certificate-errors");
         // Setting headless argument

@@ -18,6 +18,9 @@
  */
 package Selenium;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
+
 /**
  *
  * @author Mandelkow
@@ -30,14 +33,32 @@ public class Absence {
     private final String commentString;
     private final String durationString;
     private final String approvalString;
+    private final int employeeId;
 
-    public Absence(String startDateString, String endDateString, String reasonString, String commentString, String durationString, String approvalString) {
+    public static Map<Integer, String> absenceReasonsMap = ImmutableMap.<Integer, String>builder()
+            .put(1, "Urlaub")
+            .put(2, "Resturlaub")
+            .put(3, "Krankheit")
+            .put(4, "Krankheit des Kindes")
+            .put(5, "Überstunden genommen")
+            .put(6, "bezahlte Freistellung")
+            .put(7, "Mutterschutz")
+            .put(8, "Elternzeit")
+            .build();
+
+    public Absence(int employeeId, String startDateString, String endDateString, String reasonString, String commentString, String durationString, String approvalString) {
+        this.employeeId = employeeId;
         this.startDateString = startDateString;
         this.endDateString = endDateString;
         this.reasonString = reasonString;
         this.commentString = commentString;
         this.durationString = durationString;
         this.approvalString = approvalString;
+
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
     }
 
     public String getStartDateString() {
