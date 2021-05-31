@@ -66,7 +66,7 @@ class EmergencyService {
     }
 
     public function get_branch_name_short(): string {
-        $network_of_branch_offices = new \network_of_branch_offices();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         if (is_integer($this->branch_id) and isset($List_of_branch_objects[$this->branch_id])) {
             $branch_name_short = $List_of_branch_objects[$this->branch_id]->short_name;
