@@ -25,14 +25,17 @@
  */
 function create_cookie(string $cookie_name, $cookie_value, float $days = 7) {
     if (isset($cookie_name) AND isset($cookie_value)) {
-        if (is_int($days)) {
-            $Expire_obj = (new DateTime())->add(new DateInterval('P' . $days . 'D'));
-        } else {
-            $minutes = round($days * 24 * 60);
-            $Expire_obj = (new DateTime())->add(new DateInterval('P' . $minutes . 'M'));
-        }
-        $expires = $Expire_obj->format('r');
-        header("Set-Cookie: $cookie_name=$cookie_value; path=" . PDR_HTTP_SERVER_APPLICATION_PATH . "; HttpOnly; Secure; SameSite=Strict; Expires=$expires;");
+        $minutes = round($days * 24 * 60);
+        $Expire_obj = (new DateTime())->add(new DateInterval('PT' . $minutes . 'M'));
+        //function setcookie(string $name, string $value = "", int $expires = 0, string $path = "", string $domain = "", bool $secure = FALSE, bool $httponly = FALSE): bool {}
+        $name = $cookie_name;
+        $value = $cookie_value;
+        $expires = $Expire_obj->getTimestamp();
+        $path = PDR_HTTP_SERVER_APPLICATION_PATH;
+        $domain = "." . PDR_HTTP_SERVER_DOMAIN; //The dot is necessary for all domains, which are no subdomains, at least for some browsers.
+        $secure = true;
+        $httponly = true;
+        setcookie($name, $value, $expires, $path, $domain, $secure, $httponly);
     }
 }
 

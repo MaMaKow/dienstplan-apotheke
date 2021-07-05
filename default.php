@@ -27,7 +27,9 @@ define('PDR_FILE_SYSTEM_APPLICATION_PATH', __DIR__ . '/');
  *
  */
 $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
+$domain = $_SERVER['SERVER_NAME'];
 $root_folder = substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars) . "/";
+define('PDR_HTTP_SERVER_DOMAIN', $domain);
 define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
 /**
  * @var PDR_ONE_DAY_IN_SECONDS The amount of seconds in one day.

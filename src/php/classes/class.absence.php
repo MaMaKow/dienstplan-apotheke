@@ -306,16 +306,19 @@ class absence {
         $employee_id = $employee_object->employee_id;
 
         $days = self::calculate_employee_absence_days(clone $date_start_object, clone $date_end_object, $employee_object);
-        database_wrapper::instance()->beginTransaction();
         /*
          * TODO: externalize the following part out or get the $start_date_old_sql as a parameter?
          */
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
+            database_wrapper::instance()->beginTransaction();
             $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
             self::delete_absence($employee_id, $start_date_old_sql);
+            self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
+            database_wrapper::instance()->commit();
+            return true;
         }
         self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
-        database_wrapper::instance()->commit();
+        return true;
     }
 
     public static function set_approval(string $approval, int $employee_id, string $start_date) {
