@@ -29,6 +29,7 @@ public class Absence {
 
     private final String startDateString;
     private final String endDateString;
+    private final int reasonId;
     private final String reasonString;
     private final String commentString;
     private final String durationString;
@@ -46,15 +47,15 @@ public class Absence {
             .put(8, "Elternzeit")
             .build();
 
-    public Absence(int employeeId, String startDateString, String endDateString, String reasonString, String commentString, String durationString, String approvalString) {
+    public Absence(int employeeId, String startDateString, String endDateString, int reasonId, String commentString, String durationString, String approvalString) {
         this.employeeId = employeeId;
         this.startDateString = startDateString;
         this.endDateString = endDateString;
-        this.reasonString = reasonString;
         this.commentString = commentString;
         this.durationString = durationString;
         this.approvalString = approvalString;
-
+        this.reasonId = reasonId;
+        this.reasonString = absenceReasonsMap.get(this.reasonId);
     }
 
     public int getEmployeeId() {
@@ -71,6 +72,10 @@ public class Absence {
 
     public String getReasonString() {
         return reasonString;
+    }
+
+    public int getReasonId() {
+        return reasonId;
     }
 
     public String getCommentString() {

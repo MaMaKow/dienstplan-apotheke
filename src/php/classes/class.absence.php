@@ -108,6 +108,12 @@ class absence {
                 $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
                 $user_dialog = new user_dialog();
                 $user_dialog->add_message($message, E_USER_ERROR);
+            } elseif ('23000' == $exception->getCode() and 1062 === $exception->errorInfo[1]) {
+                $user_dialog = new user_dialog();
+                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+                $user_dialog->add_message($message, E_USER_ERROR);
+                $message = gettext("The transaction was rolled back.");
+                $user_dialog->add_message($message, E_USER_NOTICE);
             } else {
                 print_debug_variable($exception);
                 $message = gettext('There was an error while querying the database.')
@@ -314,6 +320,10 @@ class absence {
             $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
             self::delete_absence($employee_id, $start_date_old_sql);
             self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
+
+            if (!database_wrapper::instance()->inTransaction()) {
+                return false;
+            }
             database_wrapper::instance()->commit();
             return true;
         }

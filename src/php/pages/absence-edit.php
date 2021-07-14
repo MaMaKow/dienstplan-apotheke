@@ -75,7 +75,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     /*
      * reason
      */
-    $tablebody .= "<td><div id=reason_out_$row->start>" . absence::get_reason_string_localized($row->reason_id) . "</div>";
+    $tablebody .= "<td><div id='reason_out_$row->start' data-reason_id='$row->reason_id'>" . absence::get_reason_string_localized($row->reason_id) . "</div>";
     $html_id = "reason_in_$row->start";
     $tablebody .= absence::build_reason_input_select($row->reason_id, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
@@ -90,7 +90,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
      * days
      */
     $tablebody .= "<td>$row->days</td>\n";
-    $tablebody .= "<td><span id=absence_out_$row->start>" . localization::gettext($row->approval) . "</span>";
+    $tablebody .= "<td><span id=absence_out_$row->start data-absence_approval=$row->approval>" . localization::gettext($row->approval) . "</span>";
     $html_id = "absence_in_$row->start";
     $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form_id);
     $tablebody .= "</td>\n";

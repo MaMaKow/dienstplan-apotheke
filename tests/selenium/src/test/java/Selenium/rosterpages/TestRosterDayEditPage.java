@@ -23,10 +23,6 @@ import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,7 +74,7 @@ public class TestRosterDayEditPage {
         }
     }
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = false)/*passed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();

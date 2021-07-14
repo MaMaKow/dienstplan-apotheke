@@ -64,12 +64,12 @@ public class MenuFragment {
      * By objects for the menu list items (=headings)
      */
     public static final By MenuListItemWeek = By.id("MenuListItemWeek");
-    public static final By MenuListItemDay = By.id("MenuListItemDay"); //TODO: Implement in the menu.php
-    public static final By MenuListItemEmployee = By.id("MenuListItemEmployee"); //TODO: Implement in the menu.php
-    public static final By MenuListItemOvertime = By.id("MenuListItemOvertime"); //TODO: Implement in the menu.php
-    public static final By MenuListItemAbsence = By.id("MenuListItemAbsence"); //TODO: Implement in the menu.php
-    public static final By MenuListItemAdministration = By.id("MenuListItemAdministration"); //TODO: Implement in the menu.php
-    public static final By MenuListItemApplication = By.id("MenuListItemApplication"); //TODO: Implement in the menu.php
+    public static final By MenuListItemDay = By.id("MenuListItemDay");
+    public static final By MenuListItemEmployee = By.id("MenuListItemEmployee");
+    public static final By MenuListItemOvertime = By.id("MenuListItemOvertime");
+    public static final By MenuListItemAbsence = By.id("MenuListItemAbsence");
+    public static final By MenuListItemAdministration = By.id("MenuListItemAdministration");
+    public static final By MenuListItemApplication = By.id("MenuListItemApplication");
     public static Map<By, By> menuMap = new HashMap<By, By>();
 
     public static void navigateTo(WebDriver driver, By target) {

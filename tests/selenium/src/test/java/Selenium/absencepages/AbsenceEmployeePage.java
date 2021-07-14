@@ -40,33 +40,38 @@ public class AbsenceEmployeePage {
      * Basic navigation:
      */
     private final By goToYearSelectBy;
-    private final WebElement goToYearSelectElement;
-    private final Select yearFormSelect;
+    private WebElement goToYearSelectElement;
+    private Select yearFormSelect;
     private final By goToEmployeeSelectBy;
-    private final WebElement goToEmployeeSelectElement;
-    private final Select employeeFormSelect;
+    private WebElement goToEmployeeSelectElement;
+    private Select employeeFormSelect;
     /**
      * Create new absence:
      */
     private final By startDateInputBy;
-    private final WebElement startDateInputElement;
+    private WebElement startDateInputElement;
     private final By endDateInputBy;
-    private final WebElement endDateInputElement;
+    private WebElement endDateInputElement;
     private final By commentInputBy;
-    private final WebElement commentInputElement;
+    private WebElement commentInputElement;
     private final By reasonIdInputSelectBy;
-    private final Select reasonIdInputSelectByElement;
+    private Select reasonIdInputSelectByElement;
     private final By durationOutputBy;
-    private final WebElement durationOutpuElement;
+    private WebElement durationOutputElement;
     private final By approvalInputSelectBy;
-    private final Select approvalInputSelectElement;
+    private Select approvalInputSelectElement;
     private final By createNewAbsenceSubmitButtonBy;
-    private final WebElement createNewAbsenceSubmitButtonElement;
+    private WebElement createNewAbsenceSubmitButtonElement;
     /**
      * Edit or delete existing absence:
      */
     private By absenceRowsBy;
     private List<WebElement> listOfAbsenceRowElements;
+
+    private final By deleteButtonBy = By.xpath(".//td[7]/button[1]");
+    private final By cancelButtonBy = By.xpath(".//td[7]/button[2]");
+    private final By editButtonBy = By.xpath(".//td[7]/button[3]");
+    private final By saveButtonBy = By.xpath(".//td[7]/button[4]");
 
     public AbsenceEmployeePage() {
 
@@ -93,33 +98,35 @@ public class AbsenceEmployeePage {
         goToEmployeeSelectBy = By.xpath("/html/body/div[2]/form[@id=\"select_employee\"]/select");
         goToEmployeeSelectElement = driver.findElement(goToEmployeeSelectBy);
         employeeFormSelect = new Select(goToEmployeeSelectElement);
+
         /**
          * Create new absence:
          */
         startDateInputBy = By.xpath("//*[@id=\"beginn\"]");
-        startDateInputElement = driver.findElement(startDateInputBy);
         endDateInputBy = By.xpath("//*[@id=\"ende\"]");
-        endDateInputElement = driver.findElement(endDateInputBy);
         reasonIdInputSelectBy = By.xpath("//*[@id=\"input_line_new\"]/td[3]/select[@id=\"new_absence_reason_id_select\"]");
-        reasonIdInputSelectByElement = (Select) driver.findElement(reasonIdInputSelectBy);
-        commentInputBy = By.xpath("//*[@id=\"input_line_new\"]/td[4]/input[@id=\"new_absence_input_comment\"]");
-        commentInputElement = driver.findElement(commentInputBy);
-        durationOutputBy = By.xpath("/html/body/div[2]/table/thead/tr[2]/td[@id=\"tage\"]");
-        durationOutpuElement = driver.findElement(durationOutputBy);
         approvalInputSelectBy = By.xpath("//*[@id=\"new_absence_approval_select\"]");
-        approvalInputSelectElement = (Select) driver.findElement(approvalInputSelectBy);
+        commentInputBy = By.xpath("//*[@id=\"input_line_new\"]/td[4]/input[@id=\"new_absence_input_comment\"]");
+        durationOutputBy = By.xpath("/html/body/div[2]/table/thead/tr[2]/td[@id=\"tage\"]");
         createNewAbsenceSubmitButtonBy = By.xpath("//*[@id=\"save_new\"]");
-        createNewAbsenceSubmitButtonElement = driver.findElement(createNewAbsenceSubmitButtonBy);
+
         /**
          * Edit or delete old entries:
          */
         absenceRowsBy = By.xpath("/html/body/div[2]/table/tbody/tr");
         listOfAbsenceRowElements = driver.findElements(absenceRowsBy);
-
+        /*
+         * <p lang=de>
+         * TODO: Wir können auch die Fehleroptionen noch mit testen.
+         * </p>
+         */
+        By userDialogErrorParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'error')]/p/");
+        By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'notification')]/p/");
     }
 
-    public void goToYear(int year) {
+    public AbsenceEmployeePage goToYear(int year) {
         yearFormSelect.selectByValue(String.valueOf(year));
+        return new AbsenceEmployeePage();
     }
 
     public int getYear() {
@@ -128,8 +135,9 @@ public class AbsenceEmployeePage {
         return Integer.parseInt(year);
     }
 
-    public void goToEmployee(int employeeId) {
+    public AbsenceEmployeePage goToEmployee(int employeeId) {
         employeeFormSelect.selectByValue(String.valueOf(employeeId));
+        return new AbsenceEmployeePage();
     }
 
     public int getEmployeeId() {
@@ -138,7 +146,15 @@ public class AbsenceEmployeePage {
         return Integer.parseInt(employeeId);
     }
 
-    public void createNewAbsence(String startDate, String endDate, int reasonId, String comment, String approval) {
+    public AbsenceEmployeePage createNewAbsence(String startDate, String endDate, int reasonId, String comment, String approval) {
+        startDateInputElement = driver.findElement(startDateInputBy);
+        endDateInputElement = driver.findElement(endDateInputBy);
+        reasonIdInputSelectByElement = new Select(driver.findElement(reasonIdInputSelectBy));
+        commentInputElement = driver.findElement(commentInputBy);
+        durationOutputElement = driver.findElement(durationOutputBy);
+        approvalInputSelectElement = new Select(driver.findElement(approvalInputSelectBy));
+        createNewAbsenceSubmitButtonElement = driver.findElement(createNewAbsenceSubmitButtonBy);
+
         startDateInputElement.clear();
         startDateInputElement.sendKeys(startDate);
         endDateInputElement.clear();
@@ -148,7 +164,8 @@ public class AbsenceEmployeePage {
         commentInputElement.sendKeys(comment);
         approvalInputSelectElement.selectByValue(approval);
         createNewAbsenceSubmitButtonElement.click();
-        // String durationString = durationOutpuElement.getText();
+        return new AbsenceEmployeePage();
+        // String durationString = durationOutputElement.getText();
         //int duration = Integer.parseInt(durationString);
 
     }
@@ -157,14 +174,14 @@ public class AbsenceEmployeePage {
         this.createNewAbsence(startDate, endDate, reasonId, "", "not_yet_approved");
     }
 
-    public boolean deleteExistingAbsence(String startDate) {
+    public AbsenceEmployeePage deleteExistingAbsence(String startDate) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
-            WebElement absenceOutDiv = absenceRowElement.findElement(By.tagName("/td[1]/div"));
+            WebElement absenceOutDiv = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String dateString = absenceOutDiv.getText();
             if (!startDate.equals(dateString)) {
                 continue;
             }
-            WebElement deleteButton = absenceRowElement.findElement(By.tagName("/td[7]/button[1]"));
+            WebElement deleteButton = absenceRowElement.findElement(deleteButtonBy);
             deleteButton.click();
             /**
              * Alert will display: "Really delete this dataset?"
@@ -174,62 +191,68 @@ public class AbsenceEmployeePage {
              * Press the OK button:
              */
             alert.accept();
-            return true;
+            return new AbsenceEmployeePage();
         }
-        return false;
+        return new AbsenceEmployeePage();
 
     }
 
-    public boolean editExistingAbsence(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
+    public AbsenceEmployeePage editExistingAbsence(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
-            WebElement absenceOutDiv = absenceRowElement.findElement(By.tagName("/td[1]/div"));
+            WebElement absenceOutDiv = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String dateString = absenceOutDiv.getText();
-            if (!startDate.equals(dateString)) {
+            if (!startDateOld.equals(dateString)) {
                 continue;
             }
-            WebElement editButton = absenceRowElement.findElement(By.tagName("/td[7]/button[1]"));
+            WebElement editButton = absenceRowElement.findElement(editButtonBy);
+            System.out.println(editButton.getAttribute("innerHTML"));
             editButton.click();
-            WebElement startDateElement = absenceRowElement.findElement(By.xpath("/td[1]/input[1]"));
+            WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/input[1]"));
             startDateElement.clear();
             startDateElement.sendKeys(startDate);
-            WebElement endDateElement = absenceRowElement.findElement(By.xpath("/td[2]/input[1]"));
+            WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/input[1]"));
             endDateElement.clear();
             endDateElement.sendKeys(endDate);
-            Select reasonSelectElement = (Select) absenceRowElement.findElement(By.xpath("/td[3]/select"));
+            System.out.println(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
+            Select reasonSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             reasonSelectElement.selectByValue(String.valueOf(reasonId));
-            WebElement commentElement = absenceRowElement.findElement(By.xpath("/td[4]/input"));
+            WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/input"));
             commentElement.clear();
             commentElement.sendKeys(comment);
             //WebElement durationElement = absenceRowElement.findElement(By.xpath("/td[5]"));
             //String durationString = durationElement.getText();
-            Select approvalSelectElement = (Select) absenceRowElement.findElement(By.xpath("/td[6]/select"));
+            System.out.println(absenceRowElement.findElement(By.xpath(".//td[6]/select")));
+            Select approvalSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[6]/select")));
             approvalSelectElement.selectByValue(approval);
-            WebElement submitButtonElement = absenceRowElement.findElement(By.xpath("/td[7]/button[4]"));
+            WebElement submitButtonElement = absenceRowElement.findElement(saveButtonBy);
             submitButtonElement.click();
-            return true;
+            return new AbsenceEmployeePage();
+
         }
-        return false;
+        return new AbsenceEmployeePage();
 
     }
 
     public Absence getExistingAbsence(String startDate, int employeeId) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
-            WebElement startDateElement = absenceRowElement.findElement(By.tagName("/td[1]/div"));
+            WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String startDateString = startDateElement.getText();
             if (!startDate.equals(startDateString)) {
                 continue;
             }
-            WebElement endDateElement = absenceRowElement.findElement(By.xpath("/td[2]/div"));
+            WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/div"));
             String endDateString = endDateElement.getText();
-            WebElement reasonElement = absenceRowElement.findElement(By.xpath("/td[3]/div"));
-            String reasonString = reasonElement.getText();
-            WebElement commentElement = absenceRowElement.findElement(By.xpath("/td[4]/div"));
+            WebElement reasonElement = absenceRowElement.findElement(By.xpath(".//td[3]/div"));
+            //String reasonString = reasonElement.getText();
+            int reasonId = Integer.valueOf(reasonElement.getAttribute("data-reason_id"));
+            WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/div"));
             String commentString = commentElement.getText();
-            WebElement durationElement = absenceRowElement.findElement(By.xpath("/td[5]"));
+            WebElement durationElement = absenceRowElement.findElement(By.xpath(".//td[5]"));
             String durationString = durationElement.getText();
-            WebElement approvalElement = absenceRowElement.findElement(By.xpath("/td[6]/span"));
-            String approvalString = approvalElement.getText();
-            Absence absence = new Absence(employeeId, startDateString, endDateString, reasonString, commentString, durationString, approvalString);
+            WebElement approvalElement = absenceRowElement.findElement(By.xpath(".//td[6]/span"));
+            String approvalString = approvalElement.getAttribute("data-absence_approval");
+            //String approvalStringLocalized = approvalElement.getText();
+            Absence absence = new Absence(employeeId, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
             return absence;
         }
         return null;
@@ -249,35 +272,36 @@ public class AbsenceEmployeePage {
      * TODO: Should the date be a dateObject in order to make sure that there is
      * no problem with formatting?
      */
-    public boolean editExistingAbsenceNot(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
+    public AbsenceEmployeePage editExistingAbsenceNot(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
-            WebElement absenceOutDiv = absenceRowElement.findElement(By.tagName("/td[1]/div"));
+            WebElement absenceOutDiv = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String dateString = absenceOutDiv.getText();
             if (!startDate.equals(dateString)) {
                 continue;
             }
-            WebElement editButton = absenceRowElement.findElement(By.tagName("/td[7]/button[1]"));
+            WebElement editButton = absenceRowElement.findElement(editButtonBy);
             editButton.click();
-            WebElement startDateElement = absenceRowElement.findElement(By.xpath("/td[1]/input[1]"));
+            WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/input[1]"));
             startDateElement.clear();
             startDateElement.sendKeys(startDate);
-            WebElement endDateElement = absenceRowElement.findElement(By.xpath("/td[2]/input[1]"));
+            WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/input[1]"));
             endDateElement.clear();
             endDateElement.sendKeys(endDate);
-            Select reasonSelectElement = (Select) absenceRowElement.findElement(By.xpath("/td[3]/select"));
+            Select reasonSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             reasonSelectElement.selectByValue(String.valueOf(reasonId));
-            WebElement commentElement = absenceRowElement.findElement(By.xpath("/td[4]/input"));
+            WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/input"));
             commentElement.clear();
             commentElement.sendKeys(comment);
             //WebElement durationElement = absenceRowElement.findElement(By.xpath("/td[5]"));
             //String durationString = durationElement.getText();
-            Select approvalSelectElement = (Select) absenceRowElement.findElement(By.xpath("/td[6]/select"));
+            Select approvalSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[6]/select")));
             approvalSelectElement.selectByValue(approval);
-            WebElement cancelButtonElement = absenceRowElement.findElement(By.xpath("/td[7]/button[2]"));
+            WebElement cancelButtonElement = absenceRowElement.findElement(cancelButtonBy);
             cancelButtonElement.click();
-            return true;
+            return new AbsenceEmployeePage();
+
         }
-        return false;
+        return new AbsenceEmployeePage();
 
     }
 

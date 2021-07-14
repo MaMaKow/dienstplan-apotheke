@@ -239,7 +239,9 @@ class database_wrapper {
             $message = gettext('There was an error while querying the database.')
                     . " " . gettext('Please see the error log for more details!')
                     . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
-            die("<p>$message</p>");
+            $user_dialog = new user_dialog();
+            $user_dialog->add_message($message, E_USER_ERROR);
+            throw $exception;
         } elseif ('42S22' == $exception->getCode() and 1054 === $exception->errorInfo[1]) {
             /*
              * Unknown column ... in field list

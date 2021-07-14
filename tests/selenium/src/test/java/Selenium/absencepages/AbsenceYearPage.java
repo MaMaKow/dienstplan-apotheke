@@ -40,7 +40,7 @@ public class AbsenceYearPage {
     private final By yearSelectBy;
     private Select yearSelectElement;
 
-    public AbsenceMonthPage() {
+    public AbsenceYearPage() {
         yearSelectBy = By.xpath("/html/body/form[@id=\"select_year\"]/select");
         driver = Selenium.driver.Wrapper.getDriver();
 
@@ -90,11 +90,11 @@ public class AbsenceYearPage {
             //String startDateString = (String) jsonObject.get("start");
             String endDateString = (String) jsonObject.get("end");
             int reasonId = (int) jsonObject.get("reason_id");
-            String reasonString = Absence.absenceReasonsMap.get(reasonId);
+            //String reasonString = Absence.absenceReasonsMap.get(reasonId);
             String comment = (String) jsonObject.get("comment");
             String duration = (String) jsonObject.get("days");
             String approvalString = (String) jsonObject.get("approval");
-            return new Absence(employeeId, startDateString, endDateString, reasonString, comment, duration, approvalString);
+            return new Absence(employeeId, startDateString, endDateString, reasonId, comment, duration, approvalString);
         }
         return null;
     }

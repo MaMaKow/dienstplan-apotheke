@@ -98,7 +98,7 @@ public class AbsenceMonthPage {
             String comment = (String) jsonObject.get("comment");
             String duration = (String) jsonObject.get("days");
             String approvalString = (String) jsonObject.get("approval");
-            return new Absence(employeeId, startDateString, endDateString, reasonString, comment, duration, approvalString);
+            return new Absence(employeeId, startDateString, endDateString, reasonId, comment, duration, approvalString);
         }
         return null;
     }
