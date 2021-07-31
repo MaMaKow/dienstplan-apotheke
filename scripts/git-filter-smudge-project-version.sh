@@ -1,0 +1,1 @@
+sed -i -e 's/<span id="pdrVersionSpan">.*<\/span>/currentVersionString/ /src/php/pages/about.php

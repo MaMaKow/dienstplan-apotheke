@@ -28,9 +28,9 @@ import org.openqa.selenium.WebElement;
  */
 public class AboutPage {
 
-    WebDriver driver;
+    private WebDriver driver;
 
-    By pdrVersionSpanBy = By.id("pdrVersionSpan");
+    private final By pdrVersionSpanBy = By.id("pdrVersionSpan");
 
     public String getVersion() {
         driver = Selenium.driver.Wrapper.getDriver();
