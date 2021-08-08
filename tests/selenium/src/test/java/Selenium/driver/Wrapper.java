@@ -20,6 +20,8 @@ package Selenium.driver;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.Keys;
@@ -79,6 +81,18 @@ public class Wrapper {
         //options.addArguments("--headless");
         options.addArguments("window-size=1920,1080");
         options.addArguments("--start-maximized");
+        //Dateien herunterladen statt anzeigen:
+        HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
+        chromePrefs.put("profile.default_content_settings.popups", 0);
+        String downloadFilepath = Paths.get("").toAbsolutePath().toString();
+        System.out.println("downloadFilepath");
+        System.out.println(downloadFilepath);
+        chromePrefs.put("download.default_directory", downloadFilepath); // Bypass default download directory in Chrome
+        //chromePrefs.put("safebrowsing.enabled", "false"); // Bypass warning message, keep file anyway (for .exe, .jar, etc.)
+        //chromePrefs.put("plugins.always_open_pdf_externally", true);
+
+        options.setExperimentalOption("prefs", chromePrefs);
+
         driver = new ChromeDriver(options);
         return driver;
     }

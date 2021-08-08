@@ -30,8 +30,10 @@ create_cookie('datum', $date_sql, 1);
 $workforce = new workforce($date_sql_start, $date_sql_end);
 
 $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+if (!$workforce->employee_exists($employee_id)) {
+    $_SESSION['user_object']->employee_id;
+}
 create_cookie('employee_id', $employee_id, 1);
-
 /*
  * Get a list of employees:
  */
@@ -71,6 +73,8 @@ echo build_html_navigation_elements::build_select_employee($employee_id, $workfo
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
 echo build_html_navigation_elements::build_button_link_download_ics_file($date_sql, $employee_id);
+echo build_html_navigation_elements::build_input_date($date_sql);
+echo "<br>";
 
 echo "<table>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME));

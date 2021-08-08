@@ -501,33 +501,40 @@ abstract class build_html_roster_views {
                     $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
                 }
-                $table_html .= "<td>";
+                $table_html .= "<td class=roster_employee_table_cell>";
                 $zeile = "";
 
-                if (isset($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_item->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
-                    $emphasis_start = "<strong>"; //Significant emphasis
-                    $emphasis_end = "</strong>"; //Significant emphasis
-                } else {
-                    $emphasis_start = ""; //No emphasis
-                    $emphasis_end = ""; //No emphasis
-                }
-                $zeile .= "$emphasis_start";
-                $zeile .= htmlentities($roster_item->duty_start_sql);
+
+
+                $zeile .= "<span class='duty_time'>";
+                $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_start_sql');
                 $zeile .= " - ";
-                $zeile .= htmlentities($roster_item->duty_end_sql);
-                $zeile .= " / ";
+                $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_end_sql');
+                $zeile .= " / <span class='roster_working_hours'>";
                 $zeile .= htmlentities($roster_item->working_hours);
-                $zeile .= "&nbsp;h";
+                $zeile .= "&nbsp;h</span><!-- roster_working_hours -->";
+
+                if (!empty($roster_item->comment)) {
+                    /*
+                     * In case, there is a comment available, add a hint in form of a single letter.
+                     * That single letter is the first letter of the word Comment (in the chosen language).
+                     */
+                    $zeile .= '&nbsp;' . '<sup>' . mb_substr(gettext('Comment'), 0, 1) . '</sup>';
+                }
+                $zeile .= "</span><!-- class='duty_time'--></span><!-- employee_and_hours_and_duty_time -->";
                 $zeile .= "<br>\n";
                 if ($roster_item->break_start_int > 0) {
+                    $zeile .= "<span class='break_time'>";
                     $zeile .= " " . gettext("break") . ": ";
-                    $zeile .= htmlentities($roster_item->break_start_sql);
+                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_start_sql) . "</span>";
                     $zeile .= " - ";
-                    $zeile .= htmlentities($roster_item->break_end_sql);
+                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_end_sql) . "</span>";
+                    $zeile .= "</span><!-- class='break_time' -->";
                 }
-                $zeile .= "$emphasis_end";
                 $zeile .= "<br>";
+                $zeile .= "<span class='branch_name'>";
                 $zeile .= htmlentities($List_of_branch_objects[$roster_item->branch_id]->short_name);
+                $zeile .= "</span>";
                 $table_html .= $zeile;
                 $table_html .= "</td>\n";
             }
