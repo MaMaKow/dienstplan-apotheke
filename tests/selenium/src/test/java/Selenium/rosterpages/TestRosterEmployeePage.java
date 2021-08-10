@@ -63,7 +63,7 @@ public class TestRosterEmployeePage {
     WebDriver driver;
     String iCalendarFileName = "Calendar.ics";
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = false)/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
@@ -91,7 +91,7 @@ public class TestRosterEmployeePage {
         Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-29"); //This is the corresponding monday.
     }
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = false)/*passed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
@@ -126,7 +126,7 @@ public class TestRosterEmployeePage {
         Assert.assertEquals("12:30", rosterItem.getBreakEnd());
     }
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = false)/*passed*/
     public void testDownloadICSFile() throws IOException, ParseException {
 
         driver = Selenium.driver.Wrapper.getDriver();
