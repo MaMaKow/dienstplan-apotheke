@@ -85,8 +85,6 @@ public class Wrapper {
         HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
         chromePrefs.put("profile.default_content_settings.popups", 0);
         String downloadFilepath = Paths.get("").toAbsolutePath().toString();
-        System.out.println("downloadFilepath");
-        System.out.println(downloadFilepath);
         chromePrefs.put("download.default_directory", downloadFilepath); // Bypass default download directory in Chrome
         //chromePrefs.put("safebrowsing.enabled", "false"); // Bypass warning message, keep file anyway (for .exe, .jar, etc.)
         //chromePrefs.put("plugins.always_open_pdf_externally", true);
