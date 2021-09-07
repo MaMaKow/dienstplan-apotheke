@@ -118,6 +118,14 @@ public class ReadPropertyFile {
         return getPdrUserName();
     }
 
+    public String getAdministratorFirstName() {
+        String property = properties.getProperty("administratorFirstName");
+        if (null != property) {
+            return property;
+        }
+        return getPdrUserName();
+    }
+
     public String getAdministratorEmployeeId() {
         String property = properties.getProperty("administratorEmployeeId");
         if (null != property) {

@@ -52,8 +52,22 @@ class Branch {
     private $Opening_times;
     private $PEP;
 
-    public function __construct($branch_id) {
-        $this->read_branch_data_from_database($branch_id);
+    public function __construct(int $branch_id = null) {
+        if (null !== $branch_id) {
+            $this->read_branch_data_from_database($branch_id);
+            return;
+        }
+        /**
+         * In case, the object is constructed with the branch_id NULL, we build an empty branch.
+         * This is used in branch-management.php to create a new branch.
+         */
+        $this->branch_id = "";
+        $this->name = "create new branch";
+        $this->short_name = "";
+        $this->address = "";
+        $this->manager = "";
+        $this->Opening_times = array();
+        $this->PEP = "";
     }
 
     /**
@@ -81,7 +95,7 @@ class Branch {
             $this->manager = $row->manager;
             $this->PEP = $row->PEP;
             $this->read_opening_times_from_database();
-            if ($this->short_name === "") {
+            if ("" === $this->short_name) {
                 $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
                 $message = \sprintf(\gettext('A short name for the branch should be <a href="%1$s">configured.</a>'), $location);
                 $user_dialog = new \user_dialog();

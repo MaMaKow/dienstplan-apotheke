@@ -133,6 +133,10 @@ https://www.php-fig.org/psr/psr-4/
 
 
 ### Web
+Use smudge / clean in git to
+Insert the version in about.php
+Version: 0.14.1
+
 Restructure the menu:
 - Dienstpläne
 - Grundpläne

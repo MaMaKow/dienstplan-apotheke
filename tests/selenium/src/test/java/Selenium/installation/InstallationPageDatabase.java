@@ -19,6 +19,8 @@
 package Selenium.installation;
 
 import Selenium.ReadPropertyFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,11 +34,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class InstallationPageDatabase {
 
     By InstallationPageDatabaseFormButtonBy = By.id("InstallPageDatabaseFormButton");
+    WebDriver driver;
 
-    WebDriver driver = Selenium.driver.Wrapper.getDriver();
     WebElement InstallationPageDatabaseFormButtonElement;
 
     public InstallationPageDatabase() {
+        this.driver = Selenium.driver.Wrapper.getDriver();
         InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
         if (!InstallationPageDatabaseFormButtonElement.isDisplayed()) {
             throw new IllegalStateException("This is not InstallPageDatabase,"
@@ -63,7 +66,8 @@ public class InstallationPageDatabase {
         String databaseName = readPropertyFile.getDatabaseName();
 
         databaseHostFormElement.clear();
-        databaseHostFormElement.sendKeys("localhost");
+        //databaseHostFormElement.sendKeys("localhost");
+        Selenium.driver.Wrapper.CustomSendKeysIE(databaseHostFormElement, "localhost");
         //databasePortFormElement.clear();
         //databasePortFormElement.sendKeys("3306");
         databaseUserFormElement.clear();
@@ -78,6 +82,11 @@ public class InstallationPageDatabase {
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
         InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(InstallationPageDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
         InstallationPageDatabaseFormButtonElement.click();
         return new InstallationPageAdministrator();
     }

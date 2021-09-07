@@ -94,7 +94,7 @@ echo $user_dialog->build_messages();
 //Hier beginnt die Normale Ausgabe.
 echo "<H1>" . gettext('Principle roster daily') . "</H1>\n";
 echo "<div id=main-area>\n";
-echo build_html_navigation_elements::build_select_branch($branch_id, $date_object->format('Y-m-d'));
+echo build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_object->format('Y-m-d'));
 //Auswahl des Wochentages
 echo build_html_navigation_elements::build_select_weekday($weekday);
 echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday, clone $date_object);

@@ -32,7 +32,8 @@ $user_dialog = new user_dialog();
 $user_dialog->add_message("Saturday rotation is a deprecated feature. This page will be removed in a later version. Please write an email to pdr-issues@martin-mandelkow.de if you depend on this feature.", E_USER_DEPRECATED);
 
 $html_select_year = form_element_builder::build_html_select_year($year);
-$html_select_branch = build_html_navigation_elements::build_select_branch($branch_id);
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$html_select_branch = build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects);
 
 $table_head = "<thead>\n";
 $table_head .= "<tr>";

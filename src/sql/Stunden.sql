@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `stunden` (
+CREATE TABLE IF NOT EXISTS `Stunden` (
   `VK` int(11) NOT NULL,
   `Datum` date NOT NULL,
   `Stunden` float DEFAULT NULL,

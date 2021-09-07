@@ -18,8 +18,8 @@
 require '../../../default.php';
 $workforce = new workforce();
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
-create_cookie('year', $year, 1);
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+create_cookie('year', $year, 1);
 create_cookie('employee_id', $employee_id, 30);
 absence::handle_user_input();
 
@@ -75,7 +75,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     /*
      * reason
      */
-    $tablebody .= "<td><div id=reason_out_$row->start>" . absence::get_reason_string_localized($row->reason_id) . "</div>";
+    $tablebody .= "<td><div id='reason_out_$row->start' data-reason_id='$row->reason_id'>" . absence::get_reason_string_localized($row->reason_id) . "</div>";
     $html_id = "reason_in_$row->start";
     $tablebody .= absence::build_reason_input_select($row->reason_id, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
@@ -90,7 +90,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
      * days
      */
     $tablebody .= "<td>$row->days</td>\n";
-    $tablebody .= "<td><span id=absence_out_$row->start>" . localization::gettext($row->approval) . "</span>";
+    $tablebody .= "<td><span id=absence_out_$row->start data-absence_approval=$row->approval>" . localization::gettext($row->approval) . "</span>";
     $html_id = "absence_in_$row->start";
     $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
@@ -145,10 +145,10 @@ echo "</td>\n";
 echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
 echo "</td>\n";
-echo "<td>" . absence::build_reason_input_select(absence::REASON_VACATION, NULL, 'new_absence_entry') . "</td>\n";
-echo "<td><input type='text' name='comment' form='new_absence_entry'></td>\n";
+echo "<td>" . absence::build_reason_input_select(absence::REASON_VACATION, 'new_absence_reason_id_select', 'new_absence_entry') . "</td>\n";
+echo "<td><input type='text' id='new_absence_input_comment' name='comment' form='new_absence_entry'></td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
-echo "<td>" . absence::build_approval_input_select('not_yet_approved', NULL, 'new_absence_entry') . "</td>\n";
+echo "<td>" . absence::build_approval_input_select('not_yet_approved', 'new_absence_approval_select', 'new_absence_entry') . "</td>\n";
 echo "<td>\n";
 echo "<button type=submit id=save_new class=no_print name=command value='insert_new' form='new_absence_entry'>" . gettext('Save') . "</button>";
 echo "</td>\n";

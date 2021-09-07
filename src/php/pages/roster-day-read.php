@@ -20,7 +20,8 @@ require_once '../../../default.php';
  * @var $branch_id int the id of the active branch.
  * CAVE: Be aware, that the PEP part has its own branch id, coming from the cash register program
  */
-$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie('mandant', $branch_id, 30);
 /*
@@ -89,7 +90,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 
 echo $user_dialog->build_messages();
-echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+echo build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 echo "<div id=navigation_form_div class=no_print>\n";
 echo build_html_navigation_elements::build_button_day_backward(clone $date_object);
 echo build_html_navigation_elements::build_button_day_forward(clone $date_object);

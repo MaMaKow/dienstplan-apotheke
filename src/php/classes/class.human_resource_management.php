@@ -19,9 +19,36 @@
 
 abstract class human_resource_management {
 
-    public static function read_employee_data_from_database($employee_id) {
+    private static function create_empty_employee(int $employee_id = null) {
+        $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+
+        $Worker["employee_id"] = $employee_id;
+        $Worker["first_name"] = null;
+        $Worker["last_name"] = null;
+        $Worker["profession"] = null;
+        $Worker["working_hours"] = 40;
+        $Worker["working_week_hours"] = 40;
+        $Worker["holidays"] = 28;
+        $Worker["lunch_break_minutes"] = 30;
+        $Worker["goods_receipt"] = null;
+        $Worker["compounding"] = null;
+        $Worker["branch"] = $networkOfBranchOffices->get_main_branch_id();
+        $Worker["start_of_employment"] = null;
+        $Worker["end_of_employment"] = null;
+        return $Worker;
+    }
+
+    /**
+     * <p lang=de>
+     * TODO: Warum erschaffen wir hier einen array? Können wir nicht einfach mit einem Objekt arbeiten?
+     * </p>
+     * @param int $employee_id
+     * @return array
+     */
+    public static function read_employee_data_from_database(int $employee_id = null) {
         $sql_query = "SELECT * FROM `employees` WHERE `id` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        $Worker = self::create_empty_employee($employee_id);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Worker["employee_id"] = $row->id;
             $Worker["first_name"] = $row->first_name;

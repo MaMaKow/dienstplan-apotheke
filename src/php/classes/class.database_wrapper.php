@@ -66,13 +66,13 @@ class database_wrapper {
             $this->pdo = new \PDO($dsn, $this->database_user_name, $this->database_password, $options);
         } catch (PDOException $exception) {
             print_debug_variable($exception);
-            $message = gettext('There was an error while querying the database.')
+            $message = gettext('There was an error while connecting to the database.')
                     . " " . gettext('Please see the error log for more details!')
                     . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         } catch (Exception $exception) {
             print_debug_variable($exception);
-            $message = gettext('There was an error while querying the database.')
+            $message = gettext('There was an error while connecting to the database.')
                     . " " . gettext('Please see the error log for more details!')
                     . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
@@ -239,7 +239,9 @@ class database_wrapper {
             $message = gettext('There was an error while querying the database.')
                     . " " . gettext('Please see the error log for more details!')
                     . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
-            die("<p>$message</p>");
+            $user_dialog = new user_dialog();
+            $user_dialog->add_message($message, E_USER_ERROR);
+            throw $exception;
         } elseif ('42S22' == $exception->getCode() and 1054 === $exception->errorInfo[1]) {
             /*
              * Unknown column ... in field list
