@@ -31,11 +31,11 @@ class principle_roster_item extends roster_item {
      *
      * @var int <p>primary key in the database</p>
      * @todo <p>The class roster_item might get a primary_key too.
-     *     When that happens, this declaration is probably not neccessary anymore.</p>
+     *     When that happens, this declaration is probably not neccessary anymore.
+     * Also valid_from might not be needed anymore, does it?</p>
      */
     public $primary_key;
     public $valid_from;
-    public $valid_until;
 
     /**
      *
@@ -49,16 +49,14 @@ class principle_roster_item extends roster_item {
      * @param string $comment
      * @param int $primary_key
      * @param string $valid_from
-     * @param string $valid_until
      * @throws \InvalidArgumentException
      */
-    public function __construct(int $primary_key, $valid_from, $valid_until, string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
+    public function __construct(int $primary_key, $valid_from, string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         if (NULL === $primary_key) {
             throw new \InvalidArgumentException('$primary_key MUST NOT be NULL');
         }
         $this->primary_key = $primary_key;
         $this->valid_from = $valid_from;
-        $this->valid_until = $valid_until;
         parent::__construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
     }
 

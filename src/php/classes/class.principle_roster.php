@@ -40,7 +40,7 @@ class principle_roster extends roster {
         if (NULL === $date_end_object) {
             $date_end_object = $date_start_object;
         }
-        if (array() !== $Options and ! is_array($Options)) {
+        if (array() !== $Options and!is_array($Options)) {
             $Options = (array) $Options;
         }
         $Roster = array();
@@ -78,7 +78,7 @@ class principle_roster extends roster {
                     continue 1;
                 }
                 try {
-                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $row->valid_from, $row->valid_until, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $row->valid_from, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
                 } catch (Exception $exception) {
                     error_log($exception->getTraceAsString());
                     throw new Exception('There was an error while reading the current principle roster from the database. Please see the error log file for details!');
@@ -191,26 +191,22 @@ class principle_roster extends roster {
                     . " WHERE `weekday` = :weekday "
                     . " AND `employee_id` = :employee_id "
                     . " AND `alternating_week_id` = :alternating_week_id "
-                    . " AND (`valid_from` <= :date1 OR ISNULL(`valid_from`))"
-                    . " AND (`valid_until` >= :date2 OR ISNULL(`valid_until`)) "
                     . " ORDER BY `duty_start` + `duty_end`, `duty_start`";
 
             $result = database_wrapper::instance()->run($sql_query, array(
                 'weekday' => $weekday,
                 'employee_id' => $employee_id,
                 'alternating_week_id' => $alternating_week_id,
-                'date1' => $date_sql,
-                'date2' => $date_sql,
             ));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 try {
-                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $row->valid_from, $row->valid_until, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $row->valid_from, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $roster_row_iterator++;
                 } catch (Exception $exception) {
                     error_log($exception->getTraceAsString());
                     throw new Exception('There was an error while reading the current principle employee roster from the database. Please see the error log file for details!');
                 }
-                $roster_row_iterator++;
             }
             if (0 === $roster_row_iterator) {
                 /*
@@ -256,7 +252,7 @@ class principle_roster extends roster {
             $lunch_break_start = roster_item::convert_time_to_seconds('11:30:00');
             foreach ($Roster[$date_unix] as $roster_item_object) {
                 $employee_id = $roster_item_object->employee_id;
-                if (!empty($workforce->List_of_employees[$employee_id]->lunch_break_minutes) AND ! ($roster_item_object->break_start_int > 0) AND ! ($roster_item_object->break_end_int > 0)) {
+                if (!empty($workforce->List_of_employees[$employee_id]->lunch_break_minutes) AND!($roster_item_object->break_start_int > 0) AND!($roster_item_object->break_end_int > 0)) {
                     /* <p lang="de">Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.</p> */
                     $duty_seconds_with_a_break = $roster_item_object->duty_end_int - $roster_item_object->duty_start_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes * 60;
                     if ($duty_seconds_with_a_break >= 6 * 3600) {
@@ -281,10 +277,10 @@ class principle_roster extends roster {
                          */
                         $lunch_break_start = $lunch_break_end;
                     }
-                } elseif (!empty($employee_id) AND ! empty($roster_item_object->break_start_int) AND empty($roster_item_object->break_end_int)) {
+                } elseif (!empty($employee_id) AND!empty($roster_item_object->break_start_int) AND empty($roster_item_object->break_end_int)) {
                     $roster_item_object->break_end_int = $roster_item_object->break_start_int + $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
                     $roster_item_object->break_end_sql = roster_item::format_time_integer_to_string($roster_item_object->break_end_int);
-                } elseif (!empty($employee_id) AND empty($roster_item_object->break_start_int) AND ! empty($roster_item_object->break_end_int)) {
+                } elseif (!empty($employee_id) AND empty($roster_item_object->break_start_int) AND!empty($roster_item_object->break_end_int)) {
                     $roster_item_object->break_start_int = $roster_item_object->break_end_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
                     $roster_item_object->break_start_sql = roster_item::format_time_integer_to_string($roster_item_object->break_start_int);
                 }
@@ -341,10 +337,17 @@ class principle_roster extends roster {
         return $Opening_times;
     }
 
-    public static function invalidate_removed_entries_in_database(array $List_of_deleted_roster_primary_keys, string $valid_from_new) {
-        $valid_from_new_object = new DateTimeImmutable($valid_from_new);
-        $valid_until_old_object = $valid_from_new_object->sub(new DateInterval('P1D'));
-        $sql_query = "UPDATE `principle_roster` SET `valid_until` = :valid_until WHERE `primary_key` = :primary_key";
+    /**
+     *
+     * <p lang=de>TODO: Diese Funktion wird so nicht mehr benötigt. Enweder sie wird zum archivieren benutzt, oder sie wird komplett gelöscht.</p>
+     *
+     * @param array $List_of_deleted_roster_primary_keys
+     * @param string $valid_from_new
+     * @return void
+     * @deprecated since version 1.0
+     */
+    public static function invalidate_removed_entries_in_database(array $List_of_deleted_roster_primary_keys) {
+        $sql_query = "INSERT INTO `principle_roster_archive` INSERT (SELECT * FROM `principle_roster` WHERE `primary_key` = :primary_key)";
         /*
          * We could reuse this query in a statement.
          * But we wont.
@@ -352,7 +355,6 @@ class principle_roster extends roster {
          */
         foreach ($List_of_deleted_roster_primary_keys as $primary_key) {
             database_wrapper::instance()->run($sql_query, array(
-                'valid_until' => $valid_until_old_object->format('Y-m-d'),
                 'primary_key' => $primary_key,
                     )
             );
