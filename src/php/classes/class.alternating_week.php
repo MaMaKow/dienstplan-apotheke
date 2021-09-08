@@ -91,7 +91,7 @@ class alternating_week {
         $difference = $this->alternating_week_id - $today_alternating_week_id;
         $number_of_alternations = count(self::get_alternating_week_ids());
         if ($difference < 0) {
-            $difference+=$number_of_alternations;
+            $difference += $number_of_alternations;
         }
         $date_object->add(new DateInterval('P' . $difference . 'W'));
         return $date_object;
@@ -251,18 +251,6 @@ class alternating_week {
             }
         }
         self::read_alternating_week_ids_from_database();
-    }
-
-    public static function get_list_of_principle_rosters($employee_id) {
-        $List_of_principle_rosters = array();
-        foreach (self::get_alternating_week_ids() as $alternating_week_id) {
-            $alternating_week = new alternating_week($alternating_week_id);
-            $date_start_object = $alternating_week->get_monday_date_for_alternating_week();
-            $date_end_object = clone $date_start_object;
-            $date_end_object->add(new DateInterval('P6D'));
-            $List_of_principle_rosters[$alternating_week_id] = principle_roster::read_all_principle_employee_rosters_from_database($employee_id, $alternating_week_id);
-        }
-        return $List_of_principle_rosters;
     }
 
     public static function find_differences_between_principle_rosters(array $List_of_principle_rosters, int $alternating_week_id) {

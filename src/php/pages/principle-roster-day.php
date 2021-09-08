@@ -26,16 +26,11 @@ $branch_id = (int) user_input::get_variable_from_any_input('mandant', FILTER_SAN
 $weekday = (int) user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
 $alternating_week_id = (int) user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT, alternating_week::get_min_alternating_week_id());
 
-$chosen_history_date_valid_from = new DateTime('Monday this week');
-if (filter_has_var(INPUT_GET, 'chosen_history_date_valid_from')) {
-    $chosen_history_date_valid_from = new DateTime(filter_input(INPUT_GET, 'chosen_history_date_valid_from', FILTER_SANITIZE_STRING));
-}
-
-if (!in_array($alternating_week_id, alternating_week::get_alternating_week_ids())) {
+if (!in_array($alternating_week_id, alternating_week::get_alternating_week_ids(new DateTime('Monday this week')))) {
     $alternating_week_id = alternating_week::get_min_alternating_week_id();
 }
 $alternating_week = new alternating_week($alternating_week_id);
-$date_object = $alternating_week->get_monday_date_for_alternating_week(clone $chosen_history_date_valid_from);
+$date_object = $alternating_week->get_monday_date_for_alternating_week();
 if ($weekday > 1) {
     $date_object->add(new DateInterval('P' . ($weekday - 1) . 'D'));
 }
@@ -59,24 +54,21 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
         unset($_SESSION['List_of_changes']);
         unset($_SESSION['List_of_deleted_roster_primary_keys']);
 
-        $valid_from_input = new DateTime(filter_input(INPUT_POST, 'valid_from', FILTER_SANITIZE_STRING));
-        /*
-         * Find a correct date for the change:
-         *     It should be the first monday in the relevant alternating_week_id week, after the given date.
-         */
-        $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
-        $valid_from = ( new alternating_week(
-                        alternating_week::get_alternating_week_for_date($some_date_from_input))
-                )->get_monday_date_for_alternating_week(clone $valid_from_input);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes, $valid_from->format('Y-m-d'));
-        principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys, $valid_from->format('Y-m-d'));
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
+        principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
     }
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
+    if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+        return FALSE;
+    }
     $principle_roster_copy_from = filter_input(INPUT_POST, 'principle_roster_copy_from', FILTER_SANITIZE_STRING);
     user_input::principle_roster_copy_from($principle_roster_copy_from);
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_delete')) {
+    if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+        return FALSE;
+    }
     $principle_roster_delete = filter_input(INPUT_POST, 'principle_roster_delete', FILTER_SANITIZE_STRING);
     user_input::principle_roster_delete($principle_roster_delete);
 }
@@ -100,7 +92,6 @@ echo build_html_navigation_elements::build_select_weekday($weekday);
 echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday, clone $date_object);
 echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
 echo build_html_navigation_elements::build_button_principle_roster_delete($alternating_week_id);
-echo build_html_navigation_elements::build_button_show_principle_roster_history($alternating_week_id, $employee_id, $weekday, $branch_id, clone $date_object);
 echo "<div id=navigation_elements>";
 /*
  * TODO: Make it work:

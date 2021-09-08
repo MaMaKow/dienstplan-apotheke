@@ -47,9 +47,9 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
          */
         $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
         $valid_from = ( new alternating_week(
-                alternating_week::get_alternating_week_for_date($some_date_from_input))
+                        alternating_week::get_alternating_week_for_date($some_date_from_input))
                 )->get_monday_date_for_alternating_week(clone $valid_from_input);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes, $valid_from->format('Y-m-d'));
+        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
         principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys, $valid_from->format('Y-m-d'));
     }
 }
