@@ -30,7 +30,7 @@ if (!in_array($alternating_week_id, alternating_week::get_alternating_week_ids(n
     $alternating_week_id = alternating_week::get_min_alternating_week_id();
 }
 $alternating_week = new alternating_week($alternating_week_id);
-$date_object = $alternating_week->get_monday_date_for_alternating_week();
+$date_object = $alternating_week->get_monday_date_for_alternating_week(new DateTime('Monday this week'));
 if ($weekday > 1) {
     $date_object->add(new DateInterval('P' . ($weekday - 1) . 'D'));
 }
@@ -41,22 +41,19 @@ create_cookie('mandant', $branch_id, 30);
 create_cookie('alternating_week_id', $alternating_week_id, 1);
 create_cookie('weekday', $weekday, 1);
 $workforce = new workforce($date_object->format('Y-m-d'));
+echo "HERE";
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;
     }
 
-    if (isset($_SESSION['Principle_roster_from_prompt'])) {
-        $Principle_roster_new = $_SESSION['Principle_roster_from_prompt'];
-        $List_of_deleted_roster_primary_keys = $_SESSION['List_of_deleted_roster_primary_keys'];
-        $List_of_changes = $_SESSION['List_of_changes'];
-        unset($_SESSION['Principle_roster_from_prompt']);
-        unset($_SESSION['List_of_changes']);
-        unset($_SESSION['List_of_deleted_roster_primary_keys']);
-
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
-        principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
-    }
+    echo "inside if";
+    $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+    $List_of_changes = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
+    $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
+    principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
+    echo "THERE";
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
@@ -74,10 +71,6 @@ if (filter_has_var(INPUT_POST, 'principle_roster_delete')) {
 }
 
 $Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $date_object, clone $date_object);
-/*
- * TODO: Build this page for the new valid_from approach!;
- */
-
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -100,7 +93,7 @@ echo "<div id=navigation_elements>";
 echo build_html_navigation_elements::build_button_submit('principle_roster_form');
 echo "</div>\n";
 $html_text = '';
-$html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post action='../fragments/fragment.prompt_before_safe.php'>\n";
+$html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
 $html_text .= "<script> "
         . " var Roster_array = " . json_encode($Principle_roster) . ";\n"
         . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"

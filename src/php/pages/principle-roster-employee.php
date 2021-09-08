@@ -33,25 +33,11 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
         return FALSE;
     }
 
-    if (isset($_SESSION['Principle_roster_from_prompt'])) {
-        $Principle_roster_new = $_SESSION['Principle_roster_from_prompt'];
-        $List_of_deleted_roster_primary_keys = $_SESSION['List_of_deleted_roster_primary_keys'];
-        $List_of_changes = $_SESSION['List_of_changes'];
-        unset($_SESSION['Principle_roster_from_prompt']);
-        unset($_SESSION['List_of_deleted_roster_primary_keys']);
-        unset($_SESSION['List_of_changes']);
-        $valid_from_input = new DateTime(filter_input(INPUT_POST, 'valid_from', FILTER_SANITIZE_STRING));
-        /*
-         * Find a correct date for the change.
-         * It should be the first monday in the relevant alternating_week_id week, after the given date.
-         */
-        $some_date_from_input = (new DateTime())->setTimestamp(min(array_keys($Principle_roster_new))); //This should probably be a monday.
-        $valid_from = ( new alternating_week(
-                        alternating_week::get_alternating_week_for_date($some_date_from_input))
-                )->get_monday_date_for_alternating_week(clone $valid_from_input);
-        principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
-        principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys, $valid_from->format('Y-m-d'));
-    }
+    $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+    $List_of_changes = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
+    $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
+    principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
 }
 
 
@@ -67,18 +53,9 @@ $html_text .= "<div id=main-area>\n";
 //TODO: find out how to respect the lunch breaks!
 $html_text .= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
-function build_change_principle_roster_employee_form(int $alternating_week_id, string $date_minimum = NULL, int $employee_id, bool $hide_this_form) {
+function build_change_principle_roster_employee_form(int $alternating_week_id, int $employee_id) {
     $alternating_week = new alternating_week($alternating_week_id);
-    if (NULL !== $date_minimum) {
-        $valid_from_object = new DateTime($date_minimum);
-        $valid_from_string_sql = $valid_from_object->format('Y-m-d');
-        $valid_from_string_human = $valid_from_object->format('d.m.Y');
-    } else {
-        $valid_from_object = workforce::get_first_start_of_employment($employee_id);
-        $valid_from_string_sql = $valid_from_object->format('Y-m-d');
-        $valid_from_string_human = gettext('Start of employment');
-    }
-    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week(clone $valid_from_object);
+    $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week(new DateTime('Monday this week'));
     $pseudo_date_end_object = clone $pseudo_date_start_object;
     $pseudo_date_end_object->add(new DateInterval('P6D'));
 
@@ -97,31 +74,20 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, s
      */
     $form_id = 'change_principle_roster_employee_form_' . $alternating_week_id . '_' . $pseudo_date_start_object->format('Y-m-d');
     $html_text = '';
-    $form_is_hidden_string = '';
-    if (TRUE === $hide_this_form) {
-        $form_is_hidden_string = "hidden";
-    }
-    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form $form_is_hidden_string' action='../fragments/fragment.prompt_before_safe.php'>";
-    $html_text .= "<input type=hidden name='valid_from' value='" . $valid_from_string_sql . "'>";
+
+    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form'>";
     $html_text .= build_html_navigation_elements::build_button_submit($form_id);
     if (alternating_week::alternations_exist()) {
-        $monday_date = clone $alternating_week->get_monday_date_for_alternating_week();
+        $monday_date = clone $alternating_week->get_monday_date_for_alternating_week(new DateTime('Monday this week'));
         $sunday_date = clone $monday_date;
         $sunday_date->add(new DateInterval('P6D'));
         $alternating_week_id_string = '<div class="inline_block_element"><p>'
                 . alternating_week::get_human_readable_string($alternating_week_id)
                 . '<br> '
-                . gettext('valid from') . ' ' . $valid_from_string_human
-                . '<br> '
                 . gettext('e.g.') . ' '
                 . gettext('calendar week') . ' ' . $monday_date->format('W')
                 . '<br> '
                 . $monday_date->format('d.m.Y') . ' - ' . $sunday_date->format('d.m.Y')
-                . '</p></div>';
-        $html_text .= $alternating_week_id_string;
-    } else {
-        $alternating_week_id_string = '<div class="inline_block_element"><p>'
-                . gettext('valid from') . ' ' . $valid_from_string_human
                 . '</p></div>';
         $html_text .= $alternating_week_id_string;
     }
@@ -202,31 +168,8 @@ function calculate_list_of_working_hours($Roster_array) {
 }
 
 foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
-    $List_of_change_dates = principle_roster::get_list_of_employee_change_dates($employee_id, $alternating_week_id);
     $html_text .= "<div class=principle_roster_alternation_container>";
-    if (1 !== count($List_of_change_dates)) {
-        $html_text .= "<label for='toggle_$alternating_week_id' id='toggle_label_$alternating_week_id'>";
-        $html_text .= gettext('Show older versions?') . "</label>";
-        $html_text .= "<input type='checkbox' class='toggle_switch' id='toggle_$alternating_week_id'/>";
-    }
-    foreach ($List_of_change_dates as $valid_from_string) {
-        /*
-          @todo CAVE!Die Einträge, die NULL sein sollten, sind statt dessen mit dem aktuellen Datum versehen!
-         *
-         */
-        $hide_this_form = TRUE;
-        if ($valid_from_string === max($List_of_change_dates)) {
-            /*
-             * This is the actually relevant and current principle roster for this alternation.
-             * All the others are just history.
-             *  CAVE: This might be a change far in the future.
-             *   Actually one of the history entries might be for today and the next months.
-             *   TODO: How do we deal with sudden changes before the last valid_until?
-             */
-            $hide_this_form = FALSE;
-        }
-        $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $valid_from_string, $employee_id, $hide_this_form);
-    }
+    $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $employee_id);
     $html_text .= "</div>";
 }
 

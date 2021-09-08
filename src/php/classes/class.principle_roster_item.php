@@ -20,8 +20,7 @@
 /**
  * A principle roster item is similar to a roster_item.
  *
- * <p>The difference is, that a principle_roster_item is not bound to a specific date.
- * It is valid in a range of time from -> until</p>
+ * <p>The difference is, that a principle_roster_item is not bound to a specific date.</p>
  *
  * @author Mandelkow <netbeans@martin-mandelkow.de>
  */
@@ -31,14 +30,13 @@ class principle_roster_item extends roster_item {
      *
      * @var int <p>primary key in the database</p>
      * @todo <p>The class roster_item might get a primary_key too.
-     *     When that happens, this declaration is probably not neccessary anymore.
-     * Also valid_from might not be needed anymore, does it?</p>
+     *     When that happens, this declaration is probably not neccessary anymore.</p>
      */
     public $primary_key;
-    public $valid_from;
 
     /**
      *
+     * @param int $primary_key
      * @param string $date_sql
      * @param int $employee_id
      * @param int $branch_id
@@ -47,16 +45,13 @@ class principle_roster_item extends roster_item {
      * @param string $break_start
      * @param string $break_end
      * @param string $comment
-     * @param int $primary_key
-     * @param string $valid_from
      * @throws \InvalidArgumentException
      */
-    public function __construct(int $primary_key, $valid_from, string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
+    public function __construct(int $primary_key, string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         if (NULL === $primary_key) {
             throw new \InvalidArgumentException('$primary_key MUST NOT be NULL');
         }
         $this->primary_key = $primary_key;
-        $this->valid_from = $valid_from;
         parent::__construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
     }
 

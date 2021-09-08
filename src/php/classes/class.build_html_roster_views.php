@@ -76,21 +76,8 @@ abstract class build_html_roster_views {
                 . ">\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
         if ($Roster[$day_iterator][$roster_row_iterator] instanceof principle_roster_item) {
-            /*
-             * Dies ist ein Grundplan. Wir füllen valid_from und valid_until auch dann ein, wenn sie NULL sind. Denn auch das sind mögliche Werte. Wir verwenden '', den empty string.
-             */
             if (isset($Roster[$day_iterator][$roster_row_iterator]->primary_key)) {
                 $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][primary_key] value=" . $Roster[$day_iterator][$roster_row_iterator]->primary_key . ">\n";
-            }
-            if (isset($Roster[$day_iterator][$roster_row_iterator]->valid_from)) {
-                $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][valid_from] value=" . $Roster[$day_iterator][$roster_row_iterator]->valid_from . ">\n";
-            } else {
-                $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][valid_from] value=''>\n";
-            }
-            if (isset($Roster[$day_iterator][$roster_row_iterator]->valid_until)) {
-                $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][valid_until] value=" . $Roster[$day_iterator][$roster_row_iterator]->valid_until . ">\n";
-            } else {
-                $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][valid_until] value=''>\n";
             }
         }
 

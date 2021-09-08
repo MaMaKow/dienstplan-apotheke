@@ -80,8 +80,6 @@ abstract class user_input {
                     /*
                      * Dies scheint ein principle_roster zu sein:
                      */
-                    $valid_from = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['valid_from'], FILTER_SANITIZE_STRING));
-                    $valid_until = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['valid_until'], FILTER_SANITIZE_STRING));
                     $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
                 }
                 if (!is_numeric($branch_id)) {
@@ -105,10 +103,9 @@ abstract class user_input {
                 if (!empty($primary_key) && is_numeric($primary_key)) {
                     /*
                      * This one is a principle roster item.
-                     * $valid_from is explicitly allowed to be NULL.
                      * @todo: There will come a time, when simple roster_items will also have a numeric primary_key.
                      */
-                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $valid_from, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql);
+                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql);
                     continue;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);

@@ -74,7 +74,7 @@ class principle_roster extends roster {
                     continue 1;
                 }
                 try {
-                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $row->valid_from, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
                 } catch (Exception $exception) {
                     error_log($exception->getTraceAsString());
                     throw new Exception('There was an error while reading the current principle roster from the database. Please see the error log file for details!');
@@ -88,74 +88,6 @@ class principle_roster extends roster {
          */
         //self::determine_lunch_breaks($Roster);
         return $Roster;
-    }
-
-    /**
-     * Diese Funktion wird nicht mehr benötigt.
-     *
-     * @param int $employee_id
-     * @param int $alternating_week_id
-     * @return type
-     * @deprecated since version 1.0
-     */
-    public static function get_list_of_employee_change_dates(int $employee_id, int $alternating_week_id) {
-        $List_of_change_dates = array();
-        /*
-         * Define a valid_from for all the entries in the database. 1970-01-01
-         * Read all the valid_until values.
-         * Make an array of those values.
-         * Make a list of weeks.
-         * Make an array of Rosters in those weeks, with the valid_from as key
-         */
-        $sql_query = "SELECT `valid_from` "
-                . " FROM `principle_roster`"
-                . " WHERE `employee_id` = :employee_id AND `alternating_week_id` = :alternating_week_id"
-                . " UNION DISTINCT "
-                /*
-                 * <p lang="de">
-                 * Wir nutzen hier UNION um das Ergebnis aus zwei Querys zu einem zusammenzufassen.
-                 * Das hat den Zweck einen Sonderfall zu erfassen.
-                 * Wenn ich für einen Mitarbeiter einen Tag aus dem Plan lösche, wie zum Beispiel den Montag, so wird das korrekt in der Datenbank gespeichert.
-                 * Aber die Anzeige funktioniert nicht.
-                 * Denn bei valid_from erscheint dabei kein neuer Tag mit neuer Gültigkeit.
-                 * Denn es gibt keinen neuen Montag. Es gibt nur das Ende valid_until, an dem eine Änderung passiert.
-                 * Die Änderung wird spürbar erst am darauf folgenden Tag [DATE_ADD(`valid_until`, INTERVAL 1 DAY)].
-                 * Es existiert also ein virtuelles valid_from.
-                 * Ab diesem Tag wird der Mitarbeiter dann montags nicht mehr arbeiten.
-                 * </p>
-                 */
-                . " SELECT DATE_ADD(`valid_until`, INTERVAL 1 DAY) "
-                . " FROM `principle_roster` "
-                . " WHERE `employee_id` = :employee_id2 AND `alternating_week_id` = :alternating_week_id2 "
-                . " ORDER BY `valid_from` ";
-
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $employee_id,
-            'alternating_week_id' => $alternating_week_id,
-            'employee_id2' => $employee_id,
-            'alternating_week_id2' => $alternating_week_id,
-        ));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $date_of_change = $row->valid_from;
-
-            /*
-             * CAVE: $date_of_change MUST be a string. It MUST NOT be converted to DateTime!
-             * $date_of_change is allowed to contain NULL values.
-             * If NULL is converted to DateTime it will return now().
-             * But NULL allways means an unknown time in the far forgotten past.
-             * It is never now()!
-             */
-            $List_of_change_dates[] = $date_of_change;
-        }
-        if (array() === $List_of_change_dates) {
-            /*
-             * There has to be at least one entry in the list:
-             * If there is no known start of validity for one entry, we just take the start of employment for this employee.
-             */
-            $date_of_change = workforce::get_first_start_of_employment($employee_id);
-            return array($date_of_change);
-        }
-        return $List_of_change_dates;
     }
 
     public static function read_current_principle_employee_roster_from_database(int $employee_id, DateTime $date_start_object, DateTime $date_end_object = NULL) {
@@ -184,7 +116,7 @@ class principle_roster extends roster {
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 try {
-                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $row->valid_from, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
                     $roster_row_iterator++;
                 } catch (Exception $exception) {
                     error_log($exception->getTraceAsString());
@@ -325,11 +257,11 @@ class principle_roster extends roster {
      * <p lang=de>TODO: Diese Funktion wird so nicht mehr benötigt. Enweder sie wird zum archivieren benutzt, oder sie wird komplett gelöscht.</p>
      *
      * @param array $List_of_deleted_roster_primary_keys
-     * @param string $valid_from_new
      * @return void
      * @deprecated since version 1.0
      */
     public static function invalidate_removed_entries_in_database(array $List_of_deleted_roster_primary_keys) {
+        print_debug_variable_to_screen(__METHOD__);
         $sql_query = "INSERT INTO `principle_roster_archive` INSERT (SELECT * FROM `principle_roster` WHERE `primary_key` = :primary_key)";
         /*
          * We could reuse this query in a statement.
@@ -346,9 +278,12 @@ class principle_roster extends roster {
     }
 
     public static function insert_changed_entries_into_database(array $Roster, array $Changed_roster_employee_id_list) {
+        print_debug_variable_to_screen(__METHOD__);
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_id_list[$date_unix])) {
-                /* There are no changes. */
+                /**
+                 * There are no changes.
+                 */
                 continue;
             }
             $date_object = new DateTime;
@@ -363,64 +298,18 @@ class principle_roster extends roster {
                     continue;
                 }
                 database_wrapper::instance()->beginTransaction();
-
                 /*
                  * TODO: Do we also have to delete entries in some cases?
-                 *     Or do we at least have to end their validity?
                  */
                 $primary_key_of_existing_entry = self::find_existing_entry_in_db($roster_item, $alternating_week_id);
                 if (FALSE !== $primary_key_of_existing_entry) {
+                    print_debug_variable($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
                     self::update_old_entry_into_db($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
                 } else {
-                    self::insert_new_entry_into_db($roster_item, $alternating_week_id, $valid_from);
+                    self::insert_new_entry_into_db($roster_item, $alternating_week_id);
                 }
-
                 database_wrapper::instance()->commit();
             }
-        }
-    }
-
-    /**
-     *
-     * @param int $employee_id
-     * @param int $branch_id
-     * @param int $weekday
-     * @param int $alternating_week_id
-     * @deprecated since version 1.0
-     * @todo <p lang=de>Diese Funktion wird vermutlich nicht mehr benötigt.</p>
-     */
-    private static function update_valid_until_values(int $employee_id, int $branch_id, int $weekday, int $alternating_week_id) {
-        $sql_query = "SELECT * FROM `principle_roster`"
-                . " WHERE "
-                . " `employee_id` = :employee_id AND "
-                . " `branch_id` = :branch_id AND "
-                . " `weekday` = :weekday AND "
-                . " `alternating_week_id` = :alternating_week_id"
-                . " ORDER BY ISNULL(`valid_from`) ASC, `valid_from` DESC";
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $employee_id,
-            'branch_id' => $branch_id,
-            'weekday' => $weekday,
-            'alternating_week_id' => $alternating_week_id,
-        ));
-        $valid_until_date = NULL;
-        $valid_until_sql = $valid_until_date;
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $table_row_identifier = (int) $row->primary_key;
-            if (NULL !== $valid_until_date) {
-                $valid_until_sql = $valid_until_date->format('Y-m-d');
-            }
-            $update_result = self::write_valid_until_value_into_db($table_row_identifier, $valid_until_sql);
-            if (FALSE === $update_result) {
-                database_wrapper::instance()->rollBack();
-            }
-
-            /*
-             * now set the $valid_until_date for the next iteration:
-             */
-            $valid_from_date = new DateTime($row->valid_from);
-            $valid_until_date = clone $valid_from_date;
-            $valid_until_date->sub(new DateInterval('P1D'));
         }
     }
 
@@ -462,7 +351,6 @@ class principle_roster extends roster {
      *
      * @param roster_item $roster_item
      * @param int $alternating_week_id
-     * @param string $valid_from
      * @return boolean
      * <p>TODO: Es sollte möglichst immer der primary_key übergeben werden.
      * Der sollte Bestandteil des roster_item werden!
@@ -490,29 +378,6 @@ class principle_roster extends roster {
         return FALSE;
     }
 
-    public static function guess_existing_entry_in_db(roster_item $roster_item, int $alternating_week_id) {
-        $possiblePrimaryKeys = array();
-        $sql_query = "SELECT * FROM `principle_roster` "
-                . " WHERE "
-                . " `employee_id` = :employee_id AND "
-                . " `branch_id` = :branch_id AND "
-                . " `alternating_week_id` = :alternating_week_id AND "
-                . " `weekday` = :weekday "
-                . " ORDER BY `valid_from` DESC";
-
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $roster_item->employee_id,
-            'weekday' => date('w', $roster_item->date_unix),
-            'alternating_week_id' => $alternating_week_id,
-            'branch_id' => $roster_item->branch_id,
-        ));
-
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $possiblePrimaryKeys[] = (int) $row->primary_key;
-        }
-        return $possiblePrimaryKeys;
-    }
-
     private static function insert_new_entry_into_db(roster_item $roster_item, int $alternating_week_id) {
         $sql_query = "INSERT INTO `principle_roster` "
                 . " SET `employee_id` = :employee_id, "
@@ -535,22 +400,6 @@ class principle_roster extends roster {
             'comment' => $roster_item->comment,
         ));
 
-        return '00000' === $result->errorCode();
-    }
-
-    /**
-     *
-     * @param int $table_row_identifier
-     * @param string $valid_until
-     * @return type@deprecated since version 1.0
-     */
-    private static function write_valid_until_value_into_db(int $table_row_identifier, string $valid_until = NULL) {
-        $sql_query = "UPDATE `principle_roster` SET `valid_until` = :valid_until"
-                . " WHERE `primary_key` = :primary_key";
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'valid_until' => $valid_until,
-            'primary_key' => $table_row_identifier,
-        ));
         return '00000' === $result->errorCode();
     }
 
