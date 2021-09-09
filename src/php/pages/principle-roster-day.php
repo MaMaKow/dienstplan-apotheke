@@ -41,19 +41,17 @@ create_cookie('mandant', $branch_id, 30);
 create_cookie('alternating_week_id', $alternating_week_id, 1);
 create_cookie('weekday', $weekday, 1);
 $workforce = new workforce($date_object->format('Y-m-d'));
-echo "HERE";
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;
     }
 
-    echo "inside if";
+    $Principle_roster_old = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object);
     $Principle_roster_new = user_input::get_Roster_from_POST_secure();
     $List_of_changes = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
     $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
     principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
-    echo "THERE";
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {

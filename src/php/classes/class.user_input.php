@@ -187,21 +187,31 @@ abstract class user_input {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Roster_old[$date_unix]) or roster::is_empty_roster_day_array($Roster_old[$date_unix])) {
-                /*
+                /**
                  * There is no old roster. Every entry is new:
                  */
+                print_debug_variable_to_screen("There is no old roster. Every entry is new:");
                 foreach ($Roster_day_array as $roster_item) {
                     if (NULL === $roster_item->employee_id) {
+                        print_debug_variable_to_screen("roster_item is NULL");
                         continue;
                     }
+//                    print_debug_variable_to_screen("on date " . $date_unix);
+//                    print_debug_variable_to_screen("employee_id " . $roster_item->employee_id);
+//                    print_debug_variable_to_screen("added to Changed_roster_employee_id_list");
                     $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                 }
             } else {
                 foreach ($Roster_day_array as $roster_item) {
                     if (NULL === $roster_item->employee_id) {
+//                        print_debug_variable_to_screen("roster_item is NULL");
                         continue;
                     }
                     if (self::roster_item_has_changed($roster_item, $Roster_old)) {
+                        /**
+                         * The roster for the employee has changed for this day.
+                         * The employee_id will be added to Changed_roster_employee_id_list
+                         */
                         $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                     }
                 }
@@ -219,13 +229,19 @@ abstract class user_input {
      * @param type $Roster_old
      * @return boolean
      */
-    private static function roster_item_has_changed($roster_item, $Roster_old) {
+    private static function roster_item_has_changed(roster_item $roster_item, array $Roster_old) {
 
+        /**
+         * Searching for the same roster item in the old roster:
+         */
         foreach ($Roster_old[$roster_item->date_unix] as $roster_item_old) {
             if ($roster_item == $roster_item_old) {
                 return FALSE;
             }
         }
+        /**
+         * We found none. return true because the item was changed:
+         */
         return TRUE;
     }
 

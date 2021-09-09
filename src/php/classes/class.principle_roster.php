@@ -36,10 +36,10 @@ class principle_roster extends roster {
     public $alternating_week_id;
 
     public static function read_current_principle_roster_from_database(int $branch_id, DateTime $date_start_object, DateTime $date_end_object = NULL, array $Options = array()) {
-        $workforce = new workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
         if (NULL === $date_end_object) {
             $date_end_object = $date_start_object;
         }
+        $workforce = new workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
         if (array() !== $Options and!is_array($Options)) {
             $Options = (array) $Options;
         }
@@ -261,24 +261,21 @@ class principle_roster extends roster {
      * @deprecated since version 1.0
      */
     public static function invalidate_removed_entries_in_database(array $List_of_deleted_roster_primary_keys) {
-        print_debug_variable_to_screen(__METHOD__);
-        $sql_query = "INSERT INTO `principle_roster_archive` INSERT (SELECT * FROM `principle_roster` WHERE `primary_key` = :primary_key)";
-        /*
-         * We could reuse this query in a statement.
-         * But we wont.
-         * It is a seldom task and oftentimes the array will have only one element.
-         */
+        $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT *, NOW() FROM `principle_roster` WHERE `primary_key` = :primary_key)";
+        $sql_query_delete = "DELETE FROM `principle_roster` WHERE `primary_key` = :primary_key";
+        database_wrapper::instance()->beginTransaction();
+        $statement_insert = database_wrapper::instance()->prepare($sql_query_insert);
+        $statement_delete = database_wrapper::instance()->prepare($sql_query_delete);
         foreach ($List_of_deleted_roster_primary_keys as $primary_key) {
-            database_wrapper::instance()->run($sql_query, array(
-                'primary_key' => $primary_key,
-                    )
-            );
+            $arguments = array('primary_key' => $primary_key);
+            $statement_delete->execute($arguments);
+            $statement_insert->execute($arguments);
         }
+        database_wrapper::instance()->commit();
         return;
     }
 
     public static function insert_changed_entries_into_database(array $Roster, array $Changed_roster_employee_id_list) {
-        print_debug_variable_to_screen(__METHOD__);
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_id_list[$date_unix])) {
                 /**
@@ -286,15 +283,26 @@ class principle_roster extends roster {
                  */
                 continue;
             }
+            /**
+             * There is some change on $date_unix
+             */
             $date_object = new DateTime;
             $date_object->setTimestamp($date_unix);
             $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
 
             foreach ($Roster_day_array as $roster_item) {
                 if (!in_array($roster_item->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                    /**
+                     * <p lang=de>Dieser Mitarbeiter wurde nicht geändert.</p>
+                     */
                     continue;
                 }
                 if (NULL === $roster_item->employee_id) {
+                    /**
+                     * <p lang=de>Dies ist der Pseudomitarbeiter.
+                     * Er wird nur aus optischen/technischen Gründen mitgeführt.
+                     * </p>
+                     */
                     continue;
                 }
                 database_wrapper::instance()->beginTransaction();
@@ -303,9 +311,14 @@ class principle_roster extends roster {
                  */
                 $primary_key_of_existing_entry = self::find_existing_entry_in_db($roster_item, $alternating_week_id);
                 if (FALSE !== $primary_key_of_existing_entry) {
-                    print_debug_variable($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
+                    /**
+                     * <p lang=de>Diesen Eintrag gibt es schon so ähnlich:</p>
+                     */
                     self::update_old_entry_into_db($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
                 } else {
+                    /**
+                     * <p lang=de>Dieser Eintrag ist komplett neu:</p>
+                     */
                     self::insert_new_entry_into_db($roster_item, $alternating_week_id);
                 }
                 database_wrapper::instance()->commit();
