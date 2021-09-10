@@ -23,9 +23,6 @@
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 abstract class user_input {
-    /*
-     * TODO: all methods in this class which start with "old_" have to be reviewed.
-     */
 
     public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_STRING, $default_value = null) {
         $List_of_input_sources = array(INPUT_POST, INPUT_GET, INPUT_COOKIE);

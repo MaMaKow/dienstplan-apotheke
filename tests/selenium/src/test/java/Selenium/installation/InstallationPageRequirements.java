@@ -18,9 +18,13 @@
  */
 package Selenium.installation;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -28,15 +32,28 @@ import org.openqa.selenium.WebElement;
  */
 public class InstallationPageRequirements {
 
-    By InstallPageRequirementsFormButtonBy;
-
     WebDriver driver;
+    By InstallPageRequirementsFormButtonBy = By.id("InstallPageCheckRequirementsFormButton");
     WebElement InstallPageRequirementsFormButtonElement;
 
-    public void moveToDatabasePage() {
+    public InstallationPageRequirements() {
         driver = Selenium.driver.Wrapper.getDriver();
-        InstallPageRequirementsFormButtonBy = By.id("InstallPageRequirementsFormButton");
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(InstallPageRequirementsFormButtonBy));
+    }
+
+    public InstallationPageDatabase moveToDatabasePage() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(InstallPageRequirementsFormButtonBy));
         InstallPageRequirementsFormButtonElement = driver.findElement(InstallPageRequirementsFormButtonBy);
+        wait.until(ExpectedConditions.elementToBeClickable(InstallPageRequirementsFormButtonElement));
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(InstallationPageRequirements.class.getName()).log(Level.SEVERE, null, ex);
+        }
         InstallPageRequirementsFormButtonElement.click();
+        return new InstallationPageDatabase();
     }
 }

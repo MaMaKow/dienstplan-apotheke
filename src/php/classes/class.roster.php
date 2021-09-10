@@ -84,7 +84,7 @@ class roster {
      * @param $start_date_sql string A string representation in the form of 'Y-m-d'. The first day, that is to be read.
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
-    public static function read_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
+    public static function read_roster_from_database(int $branch_id, string $date_sql_start, string $date_sql_end = NULL) {
         /*
          * TODO: unify this with read_branch_roster_from_database
          * Make them both one function perhaps.

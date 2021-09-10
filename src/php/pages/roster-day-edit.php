@@ -136,7 +136,7 @@ if ($session->user_has_privilege('approve_roster')) {
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
 $html_text .= "</div><!-- id=navigation_elements -->\n";
-$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 /*
  * Here we put the output of errors and warnings.

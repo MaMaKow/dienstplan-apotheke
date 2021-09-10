@@ -17,7 +17,8 @@
  */
 require '../../../default.php';
 
-$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y', strtotime($date_sql)));
@@ -66,7 +67,8 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main_area_centered>";
 echo "<H1 class='left_float_pool size_medium'>";
 echo "<span class='large'>" . gettext('emergency service') . "</span>";
-echo build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+
+echo build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 echo form_element_builder::build_html_select_year($year);
 echo "</H1>";
 ?>

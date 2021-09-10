@@ -11,9 +11,11 @@ mkdir -p $testDirectory
 cd $testDirectory
 
 rm -r --force $testDirectory/dienstplan-apotheke/
+rm -r --force $testDirectory/dienstplan-test*
 git clone --branch testing https://github.com/MaMaKow/dienstplan-apotheke.git
-git -C dienstplan-apotheke/ pull origin development # get the newest commits from the development branch from github.
+git -C dienstplan-apotheke/ pull --rebase origin development # get the newest commits from the development branch from github.
 versionString=`git -C dienstplan-apotheke describe --tags --long --abbrev=40 | tr '.-' '_'`
 
 cp -r dienstplan-apotheke dienstplan-test-$versionString
-sudo chown -R apache:apache dienstplan-test-$versionString
+chown -R apache:apache dienstplan-apotheke
+chown -R apache:apache dienstplan-test-$versionString

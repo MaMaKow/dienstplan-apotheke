@@ -20,8 +20,9 @@
 /**
  * TODO: An absence could be a real object of one absence.
  * What would in that case be the name for the list of all (or some) absences?
- *
+ * <p lang=de>
  * TODO: Finde Überlappungen zwischen Abwesenheiten der gleichen Person. Zeige dies als Warnung oder Fehler an.
+ * </p>
  */
 class absence {
 
@@ -107,6 +108,12 @@ class absence {
                 $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
                 $user_dialog = new user_dialog();
                 $user_dialog->add_message($message, E_USER_ERROR);
+            } elseif ('23000' == $exception->getCode() and 1062 === $exception->errorInfo[1]) {
+                $user_dialog = new user_dialog();
+                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
+                $user_dialog->add_message($message, E_USER_ERROR);
+                $message = gettext("The transaction was rolled back.");
+                $user_dialog->add_message($message, E_USER_NOTICE);
             } else {
                 print_debug_variable($exception);
                 $message = gettext('There was an error while querying the database.')
@@ -305,16 +312,23 @@ class absence {
         $employee_id = $employee_object->employee_id;
 
         $days = self::calculate_employee_absence_days(clone $date_start_object, clone $date_end_object, $employee_object);
-        database_wrapper::instance()->beginTransaction();
         /*
          * TODO: externalize the following part out or get the $start_date_old_sql as a parameter?
          */
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
+            database_wrapper::instance()->beginTransaction();
             $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
             self::delete_absence($employee_id, $start_date_old_sql);
+            self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
+
+            if (!database_wrapper::instance()->inTransaction()) {
+                return false;
+            }
+            database_wrapper::instance()->commit();
+            return true;
         }
         self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
-        database_wrapper::instance()->commit();
+        return true;
     }
 
     public static function set_approval(string $approval, int $employee_id, string $start_date) {

@@ -26,6 +26,8 @@ class install {
     private $pdo;
     private $Config;
     private $pdr_supported_database_management_systems;
+    private $database_existed_before_installation;
+    private $database_user_self_existed_before_installation;
     public $Error_message;
     public $pdr_file_system_application_path;
 
@@ -37,11 +39,16 @@ class install {
     const PHP_VERSION_ID_REQUIRED = 70002;
 
     function __construct() {
+        $this->Error_message = array();
+        $this->Config["database_user_self"] = "pdr"; //The user name must not be longer than 16 chars in mysql.
+        $this->Config["database_password_self"] = bin2hex(openssl_random_pseudo_bytes(16));
+
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         define('PDR_FILE_SYSTEM_APPLICATION_PATH', $this->pdr_file_system_application_path);
         $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
         $root_folder = dirname(dirname(dirname(substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars)))) . "/";
         define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'funktionen.php';
         /*
          * Define an autoloader:
          */
@@ -117,6 +124,7 @@ class install {
             error_log("Error!: " . $e->getMessage() . " in file:" . __FILE__ . " on line:" . __LINE__);
             $this->Error_message = "<p>There was an error while connecting to the database. Please see the error log for more details!</p>";
             echo $this->build_error_message_div();
+            die("Could not connect to the database.");
         }
 
         $this->pdo->exec("USE " . $this->Config["database_name"]);
@@ -132,56 +140,78 @@ class install {
             $this->Error_message[] = "Could not connect to the database. Please check the configuration!";
             return FALSE;
         }
-        if (FALSE === $this->setup_mysql_database_create_user()) {
-            /*
-             * We could not create our own user. So we just keep the old one.
-             * TODO: We might give a warning to the administrator?
-             */
-            unset($this->Config["database_user_self"]);
-            unset($this->Config["database_password_self"]);
-        } else {
+        $this->database_user_self_existed_before_installation = $this->database_user_exists($this->Config["database_user_self"]);
+        if (TRUE === $this->database_user_self_existed_before_installation or TRUE === $this->setup_mysql_database_create_user()) {
             /*
              * We created our own user.
              * It should have a small set of privileges at only the pdr database:
              */
-            if (FALSE === $this->setup_mysql_database_grant_privileges()) {
-                /*
-                 * That is too bad. We have to go back to the given user.
-                 * TODO: We should DROP USER the created user. If we do not use it, we should delete it.
-                 * But before we have to be sure, that the user did not exist in the first place.
-                 * It would be a bad idea to delete some pre-existing user.
-                 */
-                unset($this->Config["database_user_self"]);
-                unset($this->Config["database_password_self"]);
-            } else {
+            if (TRUE === $this->setup_mysql_database_grant_privileges()) {
                 /*
                  * Change the configuration to the new database user:
                  */
+                $this->pdo->exec("FLUSH PRIVILEGES");
                 $this->Config["database_user"] = $this->Config["database_user_self"];
                 $this->Config["database_password"] = $this->Config["database_password_self"];
                 unset($this->Config["database_user_self"]);
                 unset($this->Config["database_password_self"]);
                 return TRUE;
+            } else {
+                /*
+                 * We created our own user. But we could not grant privileges to it.
+                 * Therefore we will delete the user now.
+                 * But only, if it did not exist in the first place.
+                 */
+                if (FALSE === $this->database_user_self_existed_before_installation) {
+                    $statement = $this->pdo->prepare("DROP USER :database_user");
+                    $result = $statement->execute(array(
+                        "database_user" => $this->Config["database_user_self"],
+                    ));
+                }
+                /*
+                 * That is too bad. We have to go back to the given user.
+                 */
+                unset($this->Config["database_user_self"]);
+                unset($this->Config["database_password_self"]);
             }
+        } else {
+            /*
+             * The user could not be created.
+             */
+            unset($this->Config["database_user_self"]);
+            unset($this->Config["database_password_self"]);
+            /*
+             * We still return TRUE.
+             * This user is not the ideal case. But it will work.
+             * At least it was able to create the database and the tables.
+             */
+            return TRUE;
         }
-        /*
-         * Reload the privileges:
-         */
-        $this->pdo->exec("FLUSH PRIVILEGES");
-        return TRUE; //TODO Check if the GRANT did work!
     }
 
     private function setup_mysql_database_create_database() {
-        /*
+        /**
+         * Test if the database exists:
+         */
+        $this->database_existed_before_installation = $this->database_exists($this->Config["database_name"]);
+        if (TRUE === $this->database_existed_before_installation) {
+            /*
+             * The database already exists.
+             * There is nothing more to do here.
+             */
+            return TRUE;
+        }
+        /**
          * Create the database:
          */
-        $result = $this->pdo->exec("CREATE DATABASE " . $this->Config["database_name"]);
+        $statement = $this->pdo->prepare("CREATE DATABASE " . database_wrapper::quote_identifier($this->Config["database_name"]) . ";");
+        $result = $statement->execute();
         if (FALSE === $result) {
             /*
              * CAVE: Avoid $this->pdo->errorInfo()[3] in order to allow PHP below 5.4 to at least see, that the minimum version of PHP required is above 7.0.
              */
-            $Error_array = $this->pdo->errorInfo();
-            error_log($Error_array[3] . " on line " . __LINE__ . " in method " . __METHOD__ . ".");
+            error_log("Could not CREATE DATABASE with name:");
+            error_log($this->Config["database_name"]);
             return FALSE;
         } else {
             return TRUE;
@@ -192,8 +222,6 @@ class install {
         /*
          * Create the user:
          */
-        $this->Config["database_user_self"] = "pdr"; //The user name must not be longer than 16 chars in mysql.
-        $this->Config["database_password_self"] = bin2hex(openssl_random_pseudo_bytes(16));
         $statement = $this->pdo->prepare("CREATE USER :database_user@:database_host IDENTIFIED BY :database_password");
         $result = $statement->execute(array(
             'database_user' => $this->Config["database_user_self"],
@@ -245,47 +273,26 @@ class install {
             "ALTER",
             "TRIGGER",
         );
-        $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@localhost");
-        error_log("GRANT all neccessary privileges to the database user.");
-        if ("localhost" !== $this->Config["database_host"]) {
-            /*
-             * Allow access from any remote (@%).
-             * TODO: Should we place a warning to the administrator?
-             */
-            error_log("GRANT them also for access from remote.");
-            $this->pdo->exec("GRANT " . implode(", ", $Privileges) . " ON `" . $this->Config["database_name"] . "`.* TO " . $this->Config["database_user_self"] . "@%");
+        $client_host = "localhost";
+        if ("localhost" !== $this->Config["database_host"] and "127.0.0.1" !== $this->Config["database_host"] and "::1" !== $this->Config["database_host"]) {
+            $client_host = "%";
         }
-    }
+        $statement = $this->pdo->prepare("GRANT " . implode(", ", $Privileges) . " ON `:database_name`.* TO :database_user@:client_host");
+        $result = $statement->execute(array(
+            'database_name' => $this->Config["database_name"],
+            'database_user' => $this->Config["database_user_self"],
+            'client_host' => $client_host,
+        ));
 
-    private function setup_mysql_database_tables() {
-        /*
-         * TODO: Do we need a specific order of table creation?
-         * Some tables have contraints. Do we have to create the referenced tables first?
-         */
-        $this->connect_to_database();
-        $sql_files = glob($this->pdr_file_system_application_path . "src/sql/*.sql");
-        foreach ($sql_files as $sql_file_name) {
-            $sql_create_table_statement = file_get_contents($sql_file_name);
-            $pattern = "/^.*TRIGGER.*\$/m";
-            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
-                /*
-                 * This file contains a CREATE TRIGGER clause.
-                 */
-                /*
-                 * Remove DEFINER clause. MySQL will automatically add the current user.
-                 */
-                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
-                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
-            }
-            $this->pdo->exec($sql_create_table_statement);
-        }
-        error_log("The database tables were created.");
+        error_log("GRANT all neccessary privileges to the database user on the client host: $client_host.");
+        return $result;
     }
 
     public function handle_user_input_administration() {
 
         $this->Config["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["admin"]["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING, $options = null);
+        $this->Config["admin"]["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["admin"]["employee_id"] = filter_input(INPUT_POST, "employee_id", FILTER_SANITIZE_NUMBER_INT, $options = null);
         $this->Config["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, $options = null);
         $this->Config["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_STRING, $options = null);
@@ -313,30 +320,31 @@ class install {
          * This means, that only existing employes can have an account to login.
          * It follows, that we have to create an employee first, before we can create a user:
          */
-        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`) VALUES (:employee_id, :last_name);");
-        $statement->execute(array(
+        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`, `first_name`) VALUES (:employee_id, :last_name, :first_name);");
+        $result = $statement->execute(array(
             'employee_id' => $this->Config["admin"]["employee_id"],
-            'last_name' => $this->Config["admin"]["last_name"]
+            'last_name' => $this->Config["admin"]["last_name"],
+            'first_name' => $this->Config["admin"]["first_name"],
         ));
-        error_log("Created the employee " . $this->Config["admin"]["last_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
+        if (false === $result) {
+            $this->Error_message[] = gettext("Error while trying to create employee.");
+            return false;
+        }
+        //error_log("Created the employee " . $this->Config["admin"]["last_name"] . ", " . $this->Config["admin"]["first_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
         global $config;
-        $config = $config['database_host'] = $this->Config['database_host'];
+        $config['database_host'] = $this->Config['database_host'];
         $config['database_name'] = $this->Config['database_name'];
         $config['database_port'] = $this->Config['database_port'];
         $config['database_user'] = $this->Config['database_user'];
         $config['database_password'] = $this->Config['database_password'];
-
         $user = new user($this->Config["admin"]["employee_id"]);
-        error_log("Tried to instatiate the PDR user object with the id " . $this->Config["admin"]["employee_id"]);
-        error_log("This is the user object:");
-        error_log(var_export($user, TRUE));
-        if ($user->exists()) {
-            error_log("Yes, we have an object. The user exists.");
+        if (!$user->exists()) {
             $user_creation_result = $user->create_new($this->Config["admin"]["employee_id"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
-            if (!$user_creation_result) {
+            if (FALSE === $user_creation_result) {
                 /*
                  * We were not able to create the administrative user.
                  */
+                error_log("Error while trying to create administrative user.");
                 $this->Error_message[] = gettext("Error while trying to create administrative user.");
                 return FALSE;
             }
@@ -345,7 +353,7 @@ class install {
              * The administrative user already exists.
              * We will not delete it.
              */
-            error_log("No, we do not have an object.");
+            error_log("Administrative user already exists.");
             $this->Error_message[] = gettext("Administrative user already exists.");
         }
         /*
@@ -373,11 +381,10 @@ class install {
                 "employee_id" => $this->Config["admin"]["employee_id"],
                 "privilege" => $privilege
             ));
-            if (!$result) {
+            if (FALSE === $result) {
                 /*
                  * We were not able to create the administrative user.
                  */
-
                 $this->Error_message[] = gettext("Error while trying to create administrative user privileges.");
                 print_r($statement->ErrorInfo());
                 echo "<br>\n";
@@ -590,13 +597,22 @@ class install {
             $this->Error_message[] = gettext("Error while trying to create the database tables.");
             return FALSE;
         }
+        /**
+         * After creating all the tables, we store the state of the table structure in form of a hash inside the database:
+         */
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/database_version_hash.php';
+        $statement = $this->pdo->prepare("REPLACE INTO `pdr_self` (`pdr_database_version_hash`) VALUES (:pdr_database_version_hash);");
+        $result = $statement->execute(array(
+            'pdr_database_version_hash' => PDR_DATABASE_VERSION_HASH
+        ));
+
         if (empty($this->Error_message)) {
             $this->write_config_to_session();
             /*
              * Success, we move to the next page.
              */
             header("Location: install_page_admin.php");
-            die();
+            die("<a href='install_page_admin.php'>Please move on to administrative user configuration!</a>");
         } else {
             return FALSE;
         }
@@ -607,7 +623,7 @@ class install {
         /*
          * Just in case we are interrupted and/or the session is lost, we write the values to a temporary installation file:
          */
-        file_put_contents($this->pdr_file_system_application_path . 'config/config_temp_install.php', '<?php' . PHP_EOL . '$config =' . var_export($this->Config, true) . ';');
+        file_put_contents($this->pdr_file_system_application_path . 'config/config_temp_install.php', '<?php' . PHP_EOL . '$config =' . var_export($this->Config, true) . ';' . "\n");
     }
 
     private function read_config_from_session() {
@@ -675,7 +691,7 @@ class install {
             $text_html .= "<p>" . $error_message . "</p>\n";
         }
         $text_html .= "</div>\n";
-        unset($this->Error_message); //Unsetting makes it possible to refill the array and build the new contents in another place.
+        $this->Error_message = array(); //Unsetting makes it possible to refill the array and build the new contents in another place.
         return $text_html;
     }
 
@@ -685,6 +701,109 @@ class install {
          */
         $last = array_pop($input_array);
         return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
+    }
+
+    private function setup_mysql_database_tables() {
+        /**
+         * Some tables have contraints.
+         * In theory there would be a specific perfect order of table creation.
+         * The referenced tables have to be created first.
+         * As a workaround we store the tables, which could not be created.
+         * After all tables have been tried to create the array of failed statements is executed again.
+         * This is repeated, until no failed statements are left.
+         */
+        $this->connect_to_database();
+        $sql_files = glob($this->pdr_file_system_application_path . "src/sql/*.sql");
+        $list_of_failed_statements = array();
+        $number_of_executions = 0;
+        foreach ($sql_files as $sql_file_name) {
+            $sql_create_table_statement = file_get_contents($sql_file_name);
+            $pattern = "/^.*TRIGGER.*\$/m";
+            if (preg_match_all($pattern, $sql_create_table_statement, $matches)) {
+                /*
+                 * This file contains a CREATE TRIGGER clause.
+                 */
+                /*
+                 * Remove DEFINER clause. MySQL will automatically add the current user.
+                 */
+                $pattern = "/^(.*)DEFINER[^@][^\s]*(.*)\$/m";
+                $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
+            }
+            $statement = $this->pdo->prepare($sql_create_table_statement);
+            $result = $statement->execute();
+            if (TRUE !== $result) {
+                $list_of_failed_statements[] = $statement;
+            }
+        }
+        while (array() !== $list_of_failed_statements) {
+            if (5 <= $number_of_executions++) {
+                /*
+                 * This loop will try to install all the tables.
+                 * But it will only try 5 iterations of the whole array.
+                 */
+                error_log(print_r($statement->errorInfo(), TRUE));
+                error_log("Error while creating the database tables. Not all tables could be created.");
+                //TODO: Report also to the administrator on the screen.
+                break;
+            }
+            foreach ($list_of_failed_statements as $key => $failed_statement) {
+                $result = $failed_statement->execute();
+                if (TRUE === $result) {
+                    unset($list_of_failed_statements[$key]);
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * <p lang=de>
+     * Wenn die Datenbank nicht korrekt erstellt werden konnte, so sollte sie m�glichst wieder entfernt werden.
+     * Das sollte aber nur passieren, wenn es sie vorher noch nicht gegeben hat.
+     * </p>
+     */
+    public function remove_database() {
+        throw new Exception("Not implemented yet!");
+        if (TRUE === $this->database_existed_before_installation) {
+            return FALSE;
+        }
+        $statement = $this->pdo->prepare("DROP DATABASE :database_name");
+        $result = $statement->execute(array(
+            "database_name" => $this->Config["database_name"],
+        ));
+        return $result;
+    }
+
+    /**
+     * Test if the database exists:
+     */
+    private function database_exists($database_name) {
+        $statement = $this->pdo->prepare("SHOW DATABASES LIKE :database_name;");
+        $result = $statement->execute(array(
+            "database_name" => $database_name,
+        ));
+        while ($row = $statement->fetch(PDO::FETCH_NUM)) {
+            if (!empty($row[0])) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
+    /**
+     * Test if some database user exists:
+     */
+    private function database_user_exists($database_user_name) {
+        $statement = $this->pdo->prepare("SELECT EXISTS (SELECT 1 FROM mysql.user WHERE user = :database_user_name) AS `exists`");
+        $result = $statement->execute(array(
+            "database_user_name" => $database_user_name,
+        ));
+        while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
+            if (1 == $row->exists) {
+                return TRUE;
+            }
+        }
+        return FALSE;
     }
 
 }

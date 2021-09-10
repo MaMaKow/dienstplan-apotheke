@@ -61,7 +61,7 @@ $Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_ro
 $duty_roster_working_hours_div = "";
 if (array() !== $Roster and isset($Working_hours_week_have)) {
     $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster, $workforce);
-    $duty_roster_working_hours_div = build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should);
+    $duty_roster_working_hours_div = build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $workforce);
 }
 
 //Produziere die Ausgabe
@@ -77,7 +77,7 @@ $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
 $main_div_html .= "<div class='no_print'>";
-$main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+$main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 $main_div_html .= "</div>";
 
 $duty_roster_form_html = "";

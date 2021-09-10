@@ -19,35 +19,27 @@
 require_once '../../../default.php';
 
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
-$current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
+$current_branch_id = user_input::convert_post_empty_to_php_null(user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id()));
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
     $new_branch_name = filter_input(INPUT_POST, "branch_name", FILTER_SANITIZE_STRING);
     $new_branch_short_name = filter_input(INPUT_POST, "branch_short_name", FILTER_SANITIZE_STRING);
     $new_branch_address = filter_input(INPUT_POST, "branch_address", FILTER_SANITIZE_STRING);
     $new_branch_manager = filter_input(INPUT_POST, "branch_manager", FILTER_SANITIZE_STRING);
-    $new_branch_pep_id = filter_input(INPUT_POST, "branch_pep_id", FILTER_SANITIZE_NUMBER_INT);
+    $new_branch_pep_id = user_input::convert_post_empty_to_php_null(filter_input(INPUT_POST, "branch_pep_id", FILTER_SANITIZE_NUMBER_INT));
 
     if (filter_has_var(INPUT_POST, 'remove_branch')) {
         $old_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
         $sql_query = "DELETE FROM `branch` WHERE `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $old_branch_id));
-
-        $network_of_branch_offices->update_list_of_branch_objects();
-        $current_branch_id = $network_of_branch_offices->get_main_branch_id();
-        /*
-         * TODO: Is this still necessary?
-         */
         if ('00000' === $result->errorCode()) {
-            $deletion_done_div_html = "<div class=overlay_top>"
-                    . "<form id='branch_deletion_done_confirmation_form'>"
-                    . "<p>The branch was successfully deleted.</p>"
-                    . "<button type='submit' form='branch_deletion_done_confirmation_form' class='form_button' name='deletion_done_confirmation_button' id='deletion_done_confirmation_button'>"
-                    . "<img src=" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_up-24px.svg>"
-                    . "<p>Continue</p>"
-                    . "</button>"
-                    . "</form>"
-                    . "</div>";
+            $message = "The branch was successfully deleted.";
+            $user_dialog = new \user_dialog();
+            $user_dialog->add_message($message, E_USER_NOTICE);
+        } else {
+            $message = "Error while trying to delete the branch.";
+            $user_dialog = new \user_dialog();
+            $user_dialog->add_message($message, E_USER_ERROR);
         }
     } elseif (!$network_of_branch_offices->branch_exists($new_branch_id)) {
         /*
@@ -121,20 +113,13 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
     }
 }
 
-/*
+/**
  * Reload branch data:
  */
 $network_of_branch_offices->update_list_of_branch_objects();
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-if (!empty($deletion_done_div_html)) {
-    echo "$deletion_done_div_html";
-    /*
-     * TODO: This would not be necessary if I had a solution to the deletion being to late for the next query.
-     * https://stackoverflow.com/questions/48491976/how-can-one-prevent-php-reading-mysql-before-deletion-success
-     */
-}
 
 $session->exit_on_missing_privilege('administration');
 
@@ -145,15 +130,13 @@ if (empty($List_of_branch_objects)) {
     . gettext("No pharmacy and no branches have been configured. Please setup at least one pharmacy!")
     . "</p>";
     $current_branch_id = 1;
-} else {
-    /**
-     * @todo <p>Hier wäre es schön, wenn man die Auswahl hätte, direkt einen neuen Mandanten anzulegen.
-     * Man könnte entweder direkt im select element ein weiteres Feld einfügen.
-     * Oder man gibt direkt dahinter ein Plus.
-     * Dieses Plus (kreisförmiger button) würe dann das hinzufügen eines weiteren Mandanten triggern.</p>
-     */
-    echo build_html_navigation_elements::build_select_branch($current_branch_id, NULL);
 }
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$new_branch = new \PDR\Pharmacy\Branch(null);
+$List_of_branch_objects[] = $new_branch;
+echo build_html_navigation_elements::build_select_branch($current_branch_id, $List_of_branch_objects, NULL);
+
 
 /**
  * <p>Define the $branch_object which will be edited.
@@ -265,18 +248,17 @@ function build_branch_input_opening_times($branch_object) {
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/save.png">
             <p> <?= gettext("Save") ?>  </p>
         </button>
-        <button type='reset' form='branch_management_form' class="form_button no_print" onclick='clear_form(getElementById("branch_management_form")); getElementById("branch_form_select").selectedIndex = -1'>
-            <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/edit-icon.svg">
-            <p> <?= gettext("Clear form data") ?>  </p>
-        </button>
-        <button type='submit' name="remove_branch" form='branch_management_form' class="form_button no_print" onclick='return confirmDelete()'>
-            <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
-            <p> <?= gettext("Remove branch") ?>  </p>
-        </button>
+        <?php if (null !== $current_branch_id) { ?>
+            <button type='submit' name="remove_branch" form='branch_management_form' id="branch_form_button_remove" class="form_button no_print" onclick='return confirmDelete()'>
+                <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
+                <p> <?= gettext("Remove branch") ?>  </p>
+            </button>
+        <?php } ?>
     </div>
-    <p class="hint"><?= gettext('Use "Clear form data" to enter data for a new branch') ?></p>
 </div>
 </div><!--id = 'branch_management_main' -->
+
+<?php require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php'; ?>
 
 </body>
 </html>

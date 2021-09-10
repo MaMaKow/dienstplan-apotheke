@@ -58,6 +58,18 @@ new_version=$new_version_major.$new_version_minor.$new_version_patch;
 echo "";
 echo "The new version number will be $new_version";
 
+# TODO: <p lang=de>Ich würde hier sehr gerne das script Tests\get-database-structure.php laufen lassen.
+# Dabei gibt es allerdings ein Problem.
+# Eine Entwicklungsumgebung hat nicht zwingend Zugriff auf eine Datenbank. Sie kann also nicht immer ihre eigene Datenbankstruktur besitzen.
+# Um die Datebankstruktur als Datei zu speichern und auch den PDR_DATABASE_VERSION_HASH upzudaten, muss ich aber Zugriff auf die "aktuelle" Datanbank haben.
+# Als workaround könnte man vielleicht den hash über die vorhandenen *.sql files machen.
+# Funktioniert das?
+# Auf jeden Fall müssten die folgenden Zeilen berücksichtigt werden:
+# $table_structure_create_with_increment = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
+# $table_structure_create = preg_replace('/AUTO_INCREMENT=[0-9]*/', '', $table_structure_create_with_increment);
+# </p>
+php tests\calculate_database_version_hash.php
+
 # git commit --gpg-sign
 # git tag -s $new_version
 # git push origin --tags

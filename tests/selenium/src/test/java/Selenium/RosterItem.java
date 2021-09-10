@@ -34,6 +34,7 @@ public class RosterItem {
     private String dutyEnd;
     private String breakStart;
     private String breakEnd;
+    private String branchName;
     private String comment;
 
     public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd) {
@@ -46,7 +47,19 @@ public class RosterItem {
         this.comment = "";
     }
 
-    public RosterItem(String employeeName, String date, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment) throws Exception {
+    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String branchName) {
+        this.employeeName = employeeName;
+        this.date = calendar;
+        this.dutyStart = dutyStart;
+        this.dutyEnd = dutyEnd;
+        this.breakStart = breakStart;
+        this.breakEnd = breakEnd;
+        this.branchName = branchName;
+        this.comment = "";
+
+    }
+
+    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String branchString, String comment) throws Exception {
         throw new Exception("We do not work with comments, yet.");
     }
 
@@ -76,6 +89,16 @@ public class RosterItem {
 
     public String getBreakEnd() {
         return this.breakEnd;
+    }
+
+    public String getBranchName() {
+        return this.branchName;
+    }
+
+    public String getComment() throws Exception {
+        throw new Exception("We do not work with comments, yet.");
+
+        //return this.comment;
     }
 
 }

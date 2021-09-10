@@ -1,4 +1,22 @@
-package Selenium.rosterpages.weekTablePage;
+/*
+ * Copyright (C) 2021 Mandelkow
+ *
+ * Dienstplan Apotheke
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package Selenium.rosterpages;
 
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
@@ -11,7 +29,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -44,6 +64,8 @@ public class RosterWeekTablePage {
      * @return String user_name text
      */
     public String getUserNameText() {
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
         return driver.findElement(userNameSpanBy).getText();
     }
 
@@ -133,7 +155,13 @@ public class RosterWeekTablePage {
         String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();
         String breakEnd = driver.findElement(getRosterItemBreakEndXpathBy(column, row)).getText();
         //comment = "";
-        Date dateParsed = new SimpleDateFormat("EE dd.MM.", Locale.ENGLISH).parse(dateString);
+        /**
+         * <p>
+         * TODO: Die Locale könnte auch eine Konfigurationsvariable sein.
+         * Locale.GERMANY <-> Locale.ENGLISH
+         * </p>
+         */
+        Date dateParsed = new SimpleDateFormat("EE dd.MM.", Locale.GERMANY).parse(dateString);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 

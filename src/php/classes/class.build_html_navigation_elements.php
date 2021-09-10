@@ -224,13 +224,13 @@ abstract class build_html_navigation_elements {
      * @param int $employee_id
      * @return string HTML element
      */
-    public static function build_select_employee($employee_id, $Employee_object_list) {
+    public static function build_select_employee(int $employee_id = null, array $Employee_object_list = array()) {
         $text = "<!-- employee select form-->\n";
         $text .= "<form method='POST' id='select_employee' class='inline_form'>\n";
         $text .= "<select name=employee_id class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_object_list as $employee_object) {
-            if ($employee_object->employee_id == $employee_id) {
-                $text .= "<option value=$employee_object->employee_id selected>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
+            if ($employee_object->employee_id === $employee_id) {
+                $text .= "<option selected value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
             } else {
                 $text .= "<option value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
             }
@@ -249,31 +249,22 @@ abstract class build_html_navigation_elements {
      * Support for various branch clients.
      *
      * @param int $current_branch
-
-
      * @return string HTML element
      */
 
-    public static function build_select_branch(int $current_branch_id, string $date_sql = NULL) {
-        /*
-         * TODO: Is it possible to leave out the date_sql?
-         * Branch management will send NULL. Does this interrupt any cookies?
-         */
-        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
-        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-        if (1 === count($List_of_branch_objects)) {
-            return FALSE;
-        }
+    public static function build_select_branch(int $current_branch_id = null, array $List_of_branch_objects = array(), string $date_sql = NULL) {
         $text = "<!-- branch select form-->\n";
         $text .= "<div id='branch_form_div' class='inline_element'>\n";
-        $text .= "<form id=branch_form method=post>\n";
-        //$text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
+        $text .= "<form id=branch_form method=get>\n";
+        if (null !== $date_sql) {
+            $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
+        }
         $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
         foreach ($List_of_branch_objects as $branch_object) {
             if ($branch_object->branch_id != $current_branch_id) {
                 $text .= "<option value=" . $branch_object->branch_id . ">" . $branch_object->name . "</option>\n";
             } else {
-                $text .= "<option value=" . $branch_object->branch_id . " selected>" . $branch_object->name . "</option>\n";
+                $text .= "<option selected value=" . $branch_object->branch_id . ">" . $branch_object->name . "</option>\n";
             }
         }
         $text .= "</select>\n"
