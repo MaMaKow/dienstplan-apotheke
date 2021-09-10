@@ -1,6 +1,12 @@
 package Selenium.rosterpages.dayEditPage;
 
 import Selenium.MenuFragment;
+import Selenium.RosterItem;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -30,7 +36,7 @@ public class RosterDayEditPage {
     private final By buttonDayBackwardBy = By.id("button_day_backward");
     private final By buttonDayForwardBy = By.id("button_day_forward");
     private final By branchFormSelectBy = By.id("branch_form_select");
-    private final By userNameSpanBy = By.id("menu_listitem_user_username");
+    private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
     private final By buttonRosterInputAddRowBy = By.id("roster_input_add_row_button");
 
     public RosterDayEditPage(WebDriver driver) {
@@ -103,6 +109,14 @@ public class RosterDayEditPage {
          */
         throw new Exception("Not implemented yet");
         //return branchId;
+    }
+
+    private WebElement findRosterTableRow(int iterator) {
+        int rowInTable = iterator + 2;
+        String rowXPath = "/html/body/div[2]/form/table/tbody/tr[" + rowInTable + "]/td";
+        By rowBy = By.xpath(rowXPath);
+        WebElement rosterTableRowElement = driver.findElement(rowBy);
+        return rosterTableRowElement;
     }
 
     private WebElement findRosterInputEmployee(int unixDate, int iterator) {
@@ -182,6 +196,34 @@ public class RosterDayEditPage {
         buttonRosterInputAddRowElement.click();
     }
 
+    public int getRosterValueUnixDate(int iterator) {
+        WebElement rosterTableRow = this.findRosterTableRow(iterator);
+        int rosterValue = Integer.parseInt(rosterTableRow.getAttribute("data-date_unix"));
+        return rosterValue;
+    }
+
+    public String getRosterValueDateString(int iterator) {
+        WebElement rosterTableRow = this.findRosterTableRow(iterator);
+        String rosterValue = rosterTableRow.getAttribute("data-date_sql");
+        return rosterValue;
+    }
+
+    public int getRosterValueEmployeeId(int unixDate, int iterator) {
+        WebElement rosterInputElement = findRosterInputEmployee(unixDate, iterator);
+        //Select inputElementSelect = new Select(rosterInputElement);
+        int rosterValue = Integer.parseInt(rosterInputElement.getAttribute("value"));
+        return rosterValue;
+    }
+
+    public String getRosterValueEmployeeName(int unixDate, int iterator) {
+        WebElement rosterInputElement = findRosterInputEmployee(unixDate, iterator);
+        Select inputElementSelect = new Select(rosterInputElement);
+        WebElement selectedOption = inputElementSelect.getFirstSelectedOption();
+        String selectedoption = selectedOption.getText();
+        //String rosterValue = rosterInputElement.getAttribute("value");
+        return selectedoption;
+    }
+
     public String getRosterValueDutyStart(int unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputDutyStart(unixDate, iterator);
         String rosterValue = rosterInputElement.getAttribute("value");
@@ -204,6 +246,22 @@ public class RosterDayEditPage {
         WebElement rosterInputElement = findRosterInputBreakEnd(unixDate, iterator);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
+    }
+
+    public RosterItem getRosterItem(int iterator) throws ParseException {
+        String dateSql = this.getRosterValueDateString(iterator);
+        Date dateParsed = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateSql);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateParsed);
+
+        int unixDate = getRosterValueUnixDate(iterator);
+        String employeeName = this.getRosterValueEmployeeName(unixDate, iterator);
+        String dutyStart = getRosterValueDutyStart(unixDate, iterator);
+        String dutyEnd = getRosterValueDutyEnd(unixDate, iterator);
+        String breakStart = getRosterValueBreakStart(unixDate, iterator);
+        String breakEnd = getRosterValueBreakEnd(unixDate, iterator);
+        RosterItem rosterItem = new RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd);
+        return rosterItem;
     }
 
 }

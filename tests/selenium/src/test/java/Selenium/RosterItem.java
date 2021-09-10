@@ -18,13 +18,7 @@
  */
 package Selenium;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -42,18 +36,9 @@ public class RosterItem {
     private String breakEnd;
     private String comment;
 
-    public RosterItem(String employeeName, String date, String dutyStart, String dutyEnd, String breakStart, String breakEnd) {
+    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd) {
         this.employeeName = employeeName;
-        this.dateString = date;
-        try {
-            Date dateParsed = new SimpleDateFormat("EE dd.MM.", Locale.ENGLISH).parse(this.dateString);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(dateParsed);
-            this.date = calendar;
-        }
-        catch (ParseException exception) {
-            Logger.getLogger(RosterItem.class.getName()).log(Level.SEVERE, null, exception);
-        }
+        this.date = calendar;
         this.dutyStart = dutyStart;
         this.dutyEnd = dutyEnd;
         this.breakStart = breakStart;

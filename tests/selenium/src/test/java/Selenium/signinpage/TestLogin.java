@@ -1,18 +1,13 @@
 package Selenium.signinpage;
 
-//import Selenium.SignInPage.SignInPage;
-//import static Selenium.SignInPage.SignInPage.driver;
 import Selenium.HomePage;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import Selenium.ReadPropertyFile;
+import Selenium.ScreenShot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import static org.testng.Assert.assertEquals;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 
 /**
  *
@@ -20,31 +15,32 @@ import org.openqa.selenium.chrome.ChromeDriver;
  */
 public class TestLogin {
 
-    static WebDriver driver;
-
-    @Test
+    // static WebDriver driver;
+    @Test(enabled = false)
     public void testLogin() {
         WebDriver driver = Selenium.driver.Wrapper.getDriver();
 
-        driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
+        //driver.get("https://martin-mandelkow.de/apotheke/dienstplan-test/");
+        //driver.get("https://localhost/dienstplan/");
+        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
+        String urlPageTest = readPropertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
 
-        try {
-            Selenium.signinpage.SignInPage signInPage = new Selenium.signinpage.SignInPage(driver);
-            String pdr_user_password = Files.readAllLines(Paths.get("C:\\Users\\Mandelkow\\Nextcloud\\Dokumente\\Freizeit\\Verschlüsselung\\pdr_user_password_selenium")).get(0);
-            String pdr_user_name = "selenium_test_user";
-            HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-            assertEquals(homePage.getUserNameText(), pdr_user_name);
-            driver.quit();
-        }
-        catch (MalformedURLException exception) {
-            Logger.getLogger(TestLogin.class.getName()).log(Level.SEVERE, null, exception);
-        }
-        catch (IOException exception) {
-            Logger.getLogger(TestLogin.class.getName()).log(Level.SEVERE, null, exception);
-        }
-        finally {
-            driver.quit();
-        }
+        Selenium.signinpage.SignInPage signInPage = new Selenium.signinpage.SignInPage(driver);
+        String pdr_user_password = readPropertyFile.getPdrUserPassword();
+        //String pdr_user_name = "selenium_test_user";
+        String pdr_user_name = readPropertyFile.getPdrUserName();
+        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        assertEquals(pdr_user_name, homePage.getUserNameText());
     }
+
+    @AfterMethod
+    public void tearDown(ITestResult testResult) {
+        WebDriver driver = Selenium.driver.Wrapper.getDriver();
+        new ScreenShot(testResult);
+        driver.quit();
+
+    }
+
 }
 //

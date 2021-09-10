@@ -18,9 +18,15 @@
  */
 package Selenium.driver;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  *
@@ -31,13 +37,14 @@ public class Wrapper {
     protected static WebDriver driver;
 
     public Wrapper() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\chromedriver_87_win32\\chromedriver.exe");
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("ignore-certificate-errors");
-        // Setting headless argument
-        options.addArguments("--headless");
-        driver = new ChromeDriver(options);
-
+        driver = createLocalChromeWebDriver();
+        /*
+        try {
+            //driver = createRemoteWebDriver();
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         */
     }
 
     public static WebDriver getDriver() {
@@ -49,6 +56,25 @@ public class Wrapper {
 
     public static WebDriver createNewDriver() {
         new Wrapper();
+        return driver;
+    }
+
+    private WebDriver createRemoteWebDriver() throws MalformedURLException {
+        DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+
+        driver = new RemoteWebDriver(new URL("http://docker.martin-mandelkow.de:4444/wd/hub"), capabilities);
+        return driver;
+    }
+
+    private WebDriver createLocalChromeWebDriver() {
+        System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\chromedriver_89_win32\\chromedriver.exe");
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("ignore-certificate-errors");
+        // Setting headless argument
+        //options.addArguments("--headless");
+        options.addArguments("window-size=1920,1080");
+        options.addArguments("--start-maximized");
+        driver = new ChromeDriver(options);
         return driver;
     }
 

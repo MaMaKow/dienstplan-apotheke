@@ -33,7 +33,7 @@
                 </li>
             </ul>
         </li>
-        <li>
+        <li id="MenuListItemDay">
             <span><?= gettext("Daily view") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_today-24px.svg class="inline-image" alt="day-button" title="Show day">
             </span>
@@ -53,7 +53,7 @@
                 </li>
             </ul>
         </li>
-        <li>
+        <li id="MenuListItemEmployee">
             <span><?= gettext("Employee") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/employee_2.svg class="inline-image" alt="employee-button" title="Show employee">
             </span>
@@ -78,7 +78,7 @@
 
             </ul>
         </li>
-        <li>
+        <li id="MenuListItemOvertime">
             <span><?= gettext("Overtime") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/watch_overtime.svg class="inline-image" alt="overtime-button" title="Show overtime">
             </span>
@@ -97,7 +97,7 @@
                 </li>
             </ul>
         </li>
-        <li>
+        <li id="MenuListItemAbsence">
             <span><?= gettext("Absence") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg class="inline-image" alt="absence-button" title="Show absence">
             </span>
@@ -122,7 +122,8 @@
                 </li>
             </ul>
         </li>
-        <li><span>
+        <li id="MenuListItemAdministration">
+            <span>
                 <?= gettext("Administration") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_ic_settings_24px.svg class="inline-image" alt="settings-button" title="Show settings">
             </span>
@@ -176,8 +177,8 @@
                 </li>
             </ul>
         </li>
-        <li id="menu_listitem_user">
-            <span id="menu_listitem_user_username">
+        <li id="MenuListItemApplication">
+            <span id="MenuListItemApplicationUsername">
                 <?= $_SESSION['user_object']->user_name; ?>
             </span>
             <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/user_1.svg class="inline-image" alt="user-button" title="Show user">

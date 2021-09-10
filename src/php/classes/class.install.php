@@ -37,7 +37,7 @@ class install {
     const PHP_VERSION_ID_REQUIRED = 70002;
 
     function __construct() {
-	$this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
+        $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         define('PDR_FILE_SYSTEM_APPLICATION_PATH', $this->pdr_file_system_application_path);
         $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
         $root_folder = dirname(dirname(dirname(substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars)))) . "/";
@@ -46,7 +46,21 @@ class install {
          * Define an autoloader:
          */
         spl_autoload_register(function ($class_name) {
-            include_once $this->pdr_file_system_application_path . 'src/php/classes/class.' . $class_name . '.php';
+            $base_dir = $this->pdr_file_system_application_path . '/src/php/classes/';
+            $file = $base_dir . 'class.' . $class_name . '.php';
+            if (file_exists($file)) {
+                include_once $file;
+            }
+            /**
+             * <p lang="de">
+             * Wir wollen die Files der Klassen besser sortieren.
+             * Der Autoloader muss so lange bis das abgeschlossen ist, beide Varianten beherrschen.
+             * </p>
+             */
+            $file = $base_dir . str_replace('\\', '/', $class_name) . '.php';
+            if (file_exists($file)) {
+                include_once $file;
+            }
         });
         $this->pdr_supported_database_management_systems = array("mysql");
         ini_set('log_errors', 1);
@@ -427,9 +441,13 @@ class install {
          * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
          */
         $Loaded_extensions = get_loaded_extensions();
+        /**
+         * 'posix' is not required.
+         * Windows does not and can not have it. Linux has it by default.
+         */
         $Required_extensions = array(
             'Core', 'PDO', 'calendar', 'date', 'filter', 'gettext', 'hash', 'iconv', 'json', 'mbstring',
-            'openssl', 'pcre', 'posix', 'session', 'standard', 'xml',
+            'openssl', 'pcre', 'session', 'standard', 'xml',
         );
         $success = TRUE;
         foreach ($Required_extensions as $required_extension) {
@@ -502,7 +520,17 @@ class install {
             $this->Error_message[] = sprintf(ngettext('The directory %1$s is not writable.', 'The directories %1$s are not writable.', count($List_of_non_writable_directories)), $this->fancy_implode($List_of_non_writable_directories, ", "));
 
             $this->Error_message[] = gettext("Make sure that the directories are writable by pdr!");
-            $current_www_user = posix_getpwuid(posix_geteuid())["name"];
+            if (function_exists('posix_getpwuid')) {
+                /*
+                 * Unix / Linux / MacOS:
+                 */
+                $current_www_user = posix_getpwuid(posix_geteuid())["name"];
+            } else {
+                /*
+                 * Windows:
+                 */
+                $current_www_user = getenv('USERNAME');
+            }
             $this->Error_message[] = "<pre class='install_cli'>sudo chown -R " . $current_www_user . ":" . $current_www_user . " " . $this->pdr_file_system_application_path . "</pre>\n";
             //$this->Error_message[] = gettext("Adapt the above code to the user and folder of your webserver!");
             return FALSE;
