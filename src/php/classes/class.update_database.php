@@ -44,14 +44,16 @@ class update_database {
         }
         $message = date('Y-m-d') . ': ' . 'Performing update of the database.' . PHP_EOL;
         error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
-        //$this->refactor_opening_times_special_table();
-        //$this->refactor_absence_table();
+        $this->refactor_opening_times_special_table();
+        $this->refactor_absence_table();
         //$this->refactor_duty_roster_table();
-        //$this->refactor_receive_emails_on_changed_roster();
-        //$this->refactor_user_email_notification_cache();
-        //$this->refactor_pdr_self();
+        $this->refactor_receive_emails_on_changed_roster();
+        $this->refactor_user_email_notification_cache();
+        $this->refactor_pdr_self();
         //$this->refactor_principle_roster();
-        $this->refactor_principle_roster2();
+        if (FALSE === $this->refactor_principle_roster2()) {
+            return FALSE;
+        }
         /*
          * Write new pdr_database_version_hash into the database:
          */
@@ -129,19 +131,28 @@ class update_database {
 
     private function refactor_duty_roster_table() {
         if (database_wrapper::database_table_exists('Dienstplan') and!database_wrapper::database_table_exists('roster')) {
-            $sql_query = "ALTER TABLE `Dienstplan` "
-                    . "CHANGE `VK` `employee_id` TINYINT UNSIGNED NOT NULL, "
-                    . "CHANGE `Datum` `date` DATE NOT NULL, "
-                    . "CHANGE `Dienstbeginn` `start_of_shift` TIME NOT NULL DEFAULT '00:00:00', "
-                    . "CHANGE `Dienstende` `end_of_shift` TIME NULL DEFAULT NULL, "
-                    . "CHANGE `Mittagsbeginn` `start_of_lunch_break` TIME NULL DEFAULT NULL, "
-                    . "CHANGE `Mittagsende` `end_of_lunch_break` TIME NULL DEFAULT NULL, "
-                    . "CHANGE `Kommentar` `comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL, "
-                    . "CHANGE `Stunden` `working_hours` FLOAT NULL DEFAULT NULL, "
-                    . "CHANGE `Mandant` `branch` TINYINT UNSIGNED NOT NULL DEFAULT '1', "
-                    . "CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
-            database_wrapper::instance()->run($sql_query);
+            database_wrapper::instance()->beginTransaction();
+            $sql_query_list = array();
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `VK` `employee_id` TINYINT UNSIGNED NOT NULL ";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Datum` `date` DATE NOT NULL";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Dienstbeginn` `start_of_shift` TIME NOT NULL DEFAULT '00:00:00'";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Dienstende` `end_of_shift` TIME NULL DEFAULT NULL";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Mittagsbeginn` `start_of_lunch_break` TIME NULL DEFAULT NULL";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Mittagsende` `end_of_lunch_break` TIME NULL DEFAULT NULL";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Kommentar` `comment` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Stunden` `working_hours` FLOAT NULL DEFAULT NULL";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Mandant` `branch` TINYINT UNSIGNED NOT NULL DEFAULT '1'";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
+            foreach ($sql_query_list as $sql_query) {
+                error_log($sql_query);
+                $result = database_wrapper::instance()->run($sql_query);
+                if ('00000' !== $result->errorCode()) {
+                    database_wrapper::instance()->rollBack();
+                    return FALSE;
+                }
+            }
             database_wrapper::instance()->run("RENAME TABLE `Dienstplan` TO `roster`;");
+            database_wrapper::instance()->commit();
         }
     }
 
@@ -198,12 +209,13 @@ class update_database {
     }
 
     private function refactor_principle_roster2() {
+        global $config;
         if (!database_wrapper::database_table_exists('principle_roster_archive')) {
             $sql_query = file_get_contents(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/principle_roster_archive.sql');
             database_wrapper::instance()->run($sql_query);
         }
 
-        if (!database_wrapper::database_table_column_exists($config['database_name'], `principle_roster`, "valid_until")) {
+        if (!database_wrapper::database_table_column_exists($config['database_name'], "principle_roster", "valid_until")) {
             /**
              * <p lang=de>Die Tabelle ist bereits auf dem aktuellen Stand (1.0.0)</p>
              */
@@ -236,6 +248,7 @@ class update_database {
             return FALSE;
         }
         database_wrapper::instance()->commit();
+        return TRUE;
     }
 
 }
