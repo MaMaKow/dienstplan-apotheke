@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.rosterpages;
+package Selenium.RosterPages;
 
 import Selenium.HomePage;
 import Selenium.ReadPropertyFile;
@@ -30,6 +30,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.testng.annotations.Test;
 
 import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -107,6 +108,14 @@ public class TestRosterDayEditPage {
         assertEquals("16:30", rosterItem.getDutyEnd());
         assertEquals("12:00", rosterItem.getBreakStart());
         assertEquals("12:30", rosterItem.getBreakEnd());
+    }
+
+    @Test(enabled = true)/*new*/
+    public void testRosterEdit() {
+        /**
+         * Diese Funktion muss noch implementiert werden.
+         */
+        Assert.assertEquals(false, true);
     }
 
     @BeforeMethod
