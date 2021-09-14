@@ -190,21 +190,15 @@ abstract class user_input {
                 /**
                  * There is no old roster. Every entry is new:
                  */
-                print_debug_variable_to_screen("There is no old roster. Every entry is new:");
                 foreach ($Roster_day_array as $roster_item) {
                     if (NULL === $roster_item->employee_id) {
-                        print_debug_variable_to_screen("roster_item is NULL");
                         continue;
                     }
-//                    print_debug_variable_to_screen("on date " . $date_unix);
-//                    print_debug_variable_to_screen("employee_id " . $roster_item->employee_id);
-//                    print_debug_variable_to_screen("added to Changed_roster_employee_id_list");
                     $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                 }
             } else {
                 foreach ($Roster_day_array as $roster_item) {
                     if (NULL === $roster_item->employee_id) {
-//                        print_debug_variable_to_screen("roster_item is NULL");
                         continue;
                     }
                     if (self::roster_item_has_changed($roster_item, $Roster_old)) {
@@ -290,6 +284,38 @@ abstract class user_input {
             }
         }
         return $Deleted_roster_employee_id_list;
+    }
+
+    /**
+     * <p lang=de>
+     * Wenn im Grundplan mit dem SELECT ein anderer Mitarbeiter ausgewählt wird,
+     * dann muss man dies feststellen.
+     * Es gibt zwei Funktionen, die Änderungen am Grundplan finden sollen:
+     * - get_deleted_roster_primary_key_list()
+     * - roster_item_has_changed()
+     * Diese beiden Funktionen können diesen Fall aber nicht erkennen.
+     * Der primary_key wird vom alten employee übertragen.
+     * Der alte employee taucht aber nicht mehr auf, um ihn mit dem alten Plan zu vergleichen.
+     * </p>
+     * @param array $Roster_new The newly submitted roster
+     * @param array $Roster_old The old roster stored in the database
+     */
+    public static function get_changed_roster_item_list(array $Roster_new, array $Roster_old) {
+        $Changed_roster_item_list = array();
+        foreach ($Roster_old as $date_unix => $Roster_day_array_old) {
+            foreach ($Roster_day_array_old as $roster_row_iterator => $roster_item) {
+                if ($Roster_new[$date_unix][$roster_row_iterator] instanceof roster_item_empty) {
+                    continue;
+                }
+                if ($roster_item->primary_key !== $Roster_new[$date_unix][$roster_row_iterator]->primary_key) {
+                    throw new Exception("<p lang=de>Ich erwarte, dass der primary key zwischen den Plänen unverändert bleibt.</p>");
+                }
+                if ($roster_item->employee_id !== $Roster_new[$date_unix][$roster_row_iterator]->employee_id) {
+                    $Changed_roster_item_list[] = $roster_item->primary_key;
+                }
+            }
+        }
+        return $Changed_roster_item_list;
     }
 
     public static function get_deleted_roster_primary_key_list(array $Roster_new, array $Roster_old) {

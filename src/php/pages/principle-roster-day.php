@@ -52,6 +52,19 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
     $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
     principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
+    /**
+     * <p lang=de>Dies sind roster_items, bei denen per SELECT der employee geändert wurde:<p>
+     */
+    $Changed_roster_item_list = user_input::get_changed_roster_item_list($Principle_roster_new, $Principle_roster_old);
+    principle_roster::invalidate_removed_entries_in_database($Changed_roster_item_list);
+
+    /**
+     * @todo   <p lang=de> TODO:
+     * Wir müssen auch die Einträge entfernen/ändern, die durch "Mitarbeitertausch" geändert wurden.
+      Momentan wird einfach ein neuer Mitarbeiter eingefügt.
+      Wird das eine neue Funktion?
+      Oder kann einer der beiden hier drüber das übernehmen?
+     */
 }
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
