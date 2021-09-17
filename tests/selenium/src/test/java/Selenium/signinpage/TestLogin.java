@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.signinpage;
+package Selenium.SignInPage;
 
 import Selenium.HomePage;
 import Selenium.ReadPropertyFile;
@@ -43,7 +43,7 @@ public class TestLogin {
         String urlPageTest = readPropertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
-        Selenium.signinpage.SignInPage signInPage = new Selenium.signinpage.SignInPage(driver);
+        Selenium.SignInPage.SignInPage signInPage = new Selenium.SignInPage.SignInPage(driver);
         String pdr_user_password = readPropertyFile.getPdrUserPassword();
         String pdr_user_name = readPropertyFile.getPdrUserName();
         HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);

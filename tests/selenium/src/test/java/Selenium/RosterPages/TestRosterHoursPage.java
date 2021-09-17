@@ -21,7 +21,7 @@ package Selenium.RosterPages;
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.SignInPage.SignInPage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

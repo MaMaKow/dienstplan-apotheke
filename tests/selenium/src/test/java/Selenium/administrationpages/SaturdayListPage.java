@@ -121,7 +121,7 @@ public class SaturdayListPage {
         }
     }
 
-    public ArrayList getTeamMembersOnDate(Date targetDate) {
+    public ArrayList<String> getTeamMembersOnDate(Date targetDate) {
         ArrayList<String> teamMembers = new ArrayList<>();
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement teamMembersWebElement = saturdayRowElement.findElement(saturdayRowTeamMembersBy);
@@ -134,7 +134,7 @@ public class SaturdayListPage {
         return teamMembers;
     }
 
-    public ArrayList getScheduledEmployeesOnDate(Date targetDate) {
+    public ArrayList<String> getScheduledEmployeesOnDate(Date targetDate) {
         ArrayList<String> scheduledEmployees = new ArrayList<>();
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement scheduledEmployeesWebElement = saturdayRowElement.findElement(saturdayRowScheduledEmployeesBy);

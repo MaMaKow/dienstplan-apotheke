@@ -27,6 +27,7 @@ import java.util.Locale;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -43,15 +44,19 @@ public class DayPage {
     private final By alternationChooserInputBy = By.xpath("//*[@id=\"alternating_week_form\"]/select");
     private final By branchChooserInputBy = By.xpath("//*[@id=\"branch_form_select\"]");
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-    private final By addRosterRowButtonBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr[]/td/button/"); //TODO: Change the PHP to make the button more specific via class or id.
+    private final By addRosterRowButtonBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr[]/td/button/");
+    /**
+     * TODO: Change the PHP to make the button more specific via class or id.
+     *
+     */
     private final By buttonSubmitBy = By.id("submit_button");
 
     public DayPage(WebDriver driver) {
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {
-            throw new IllegalStateException("This is not a logged in state,"
-                    + " current page is: " + driver.getCurrentUrl());
+            throw new IllegalStateException(
+                    "This is not a logged in state," + " current page is: " + driver.getCurrentUrl());
         }
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToPrincipleRosterDay);
     }
@@ -122,8 +127,8 @@ public class DayPage {
     public int getUnixTime() {
         /**
          * <p lang=de>
-         * Es wird nur ein Tag dargestellt. Es ist daher egal, welcher <td>
-         * ausgewählt wird. Das data-date_unix ist immer identisch.
+         * Es wird nur ein Tag dargestellt. Es ist daher egal, welcher
+         * <td>ausgewählt wird. Das data-date_unix ist immer identisch.
          * </p>
          */
         By rosterTableColumnBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td");
@@ -132,13 +137,6 @@ public class DayPage {
         return Integer.valueOf(unixTimeString);
     }
 
-    /*
-    public RosterItem getRosterItem(int rowIndex) {
-        int unixTime = getUnixTime();
-        ////*[@id="principle_roster_form"]/table/tbody/tr[3]/td/span/select
-        return new RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd, branchString, comment);
-    }
-     */
     public int getRosterValueUnixDate(int iterator) {
         WebElement rosterTableRow = this.findRosterTableRow(iterator);
         int rosterValue = Integer.parseInt(rosterTableRow.getAttribute("data-date_unix"));
@@ -153,7 +151,7 @@ public class DayPage {
 
     public int getRosterValueEmployeeId(int unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputEmployee(unixDate, iterator);
-        //Select inputElementSelect = new Select(rosterInputElement);
+        // Select inputElementSelect = new Select(rosterInputElement);
         int rosterValue = Integer.parseInt(rosterInputElement.getAttribute("value"));
         return rosterValue;
     }
@@ -163,7 +161,7 @@ public class DayPage {
         Select inputElementSelect = new Select(rosterInputElement);
         WebElement selectedOption = inputElementSelect.getFirstSelectedOption();
         String selectedoption = selectedOption.getText();
-        //String rosterValue = rosterInputElement.getAttribute("value");
+        // String rosterValue = rosterInputElement.getAttribute("value");
         return selectedoption;
     }
 
@@ -196,7 +194,6 @@ public class DayPage {
         Date dateParsed = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateSql);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
-
         int unixDate = getRosterValueUnixDate(iterator);
         String employeeName = this.getRosterValueEmployeeName(unixDate, iterator);
         String dutyStart = getRosterValueDutyStart(unixDate, iterator);
@@ -208,7 +205,7 @@ public class DayPage {
     }
 
     private WebElement findRosterTableRow(int iterator) {
-        int rowInTable = iterator + 2;
+        int rowInTable = iterator + 1;
         String rowXPath = "//*[@id=\"principle_roster_form\"]/table/tbody/tr[" + rowInTable + "]/td";
         By rowBy = By.xpath(rowXPath);
         WebElement rosterTableRowElement = driver.findElement(rowBy);
@@ -281,4 +278,61 @@ public class DayPage {
         buttonSubmitElement.click();
     }
 
+    private WebElement getRosterPlotDutyElement(int rowIndex, int unixTime) {
+        By elementBy = By.xpath("//*[@id=\"work_box_" + String.valueOf(rowIndex) + "_" + String.valueOf(unixTime) + "\"]/p");
+        WebElement element = driver.findElement(elementBy);
+        return element;
+    }
+
+    private WebElement getRosterPlotBreakElement(int rowIndex, int unixTime) {
+        By elementBy = By.id("break_box_" + String.valueOf(rowIndex) + "_" + String.valueOf(unixTime));
+        WebElement element = driver.findElement(elementBy);
+        return element;
+    }
+
+    public void changeRosterByDragAndDrop(int unixTime, int rowIndex, double offsetMinutes, String dutyOrBreak) throws Exception {
+        /**
+         * @todo
+         * <p lang=de>
+         * Ich bin nicht sicher, wie man am besten den Zusammenhang zwischen
+         * Pixel und Minuten regeln sollte.
+         * </p>
+         */
+        WebElement rosterPlotElement;
+        double barWidthFactor = getPlotDataBarWidthFactor();
+        double offsetPixelsDouble = ((offsetMinutes / 60) * barWidthFactor * 1.30);
+        int offsetPixels = (int) Math.round(offsetPixelsDouble);
+        if ("duty" == dutyOrBreak) {
+            rosterPlotElement = getRosterPlotDutyElement(rowIndex, unixTime);
+
+        } else if ("break" == dutyOrBreak) {
+
+            rosterPlotElement = getRosterPlotBreakElement(rowIndex, unixTime);
+
+        } else {
+            String message = "dutyOrBreak must be duty or break" + dutyOrBreak + "given.";
+            throw new Exception(message);
+        }
+        Actions actions = new Actions(driver);
+        /**
+         * The factor 0.9 is experimental. An element of width 400 was only
+         * 377,91 px.
+         */
+        double elementOffsetDouble = -1 * ((rosterPlotElement.getSize().getWidth() - 5) / 2) * 0.9;
+        int elementOffset = (int) Math.round(elementOffsetDouble);
+        actions.moveToElement(rosterPlotElement, elementOffset, 0).build().perform();
+        actions.clickAndHold().build().perform();
+        actions.moveByOffset(offsetPixels, 0).build().perform();
+        actions.release().build().perform();
+    }
+
+    private int getPlotDataBarWidthFactor() {
+        By svgImageBy = By.xpath("//*[@id=\"main-area\"]/div/div/*[name()=\"svg\"]");
+        //By svgImageBy = By.xpath("/html/body/div[3]/div[3]/div/svg");
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(svgImageBy));
+        WebElement svgImageElement = driver.findElement(svgImageBy);
+        String barWidthFactorString = svgImageElement.getAttribute("data-bar_width_factor");
+        return Integer.valueOf(barWidthFactorString);
+    }
 }

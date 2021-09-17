@@ -18,7 +18,6 @@
  */
 package Selenium.administrationpages;
 
-import com.sun.tools.javac.comp.Todo;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

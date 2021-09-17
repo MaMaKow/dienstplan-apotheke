@@ -19,7 +19,7 @@ package Selenium.PrincipleRosterPages;
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.SignInPage.SignInPage;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,7 +107,7 @@ public class TestDayPage {
         }
     }
 
-    @Test(enabled = true)/*new*/
+    @Test(enabled = false)/*new*/
     public void testRosterChange() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
@@ -135,7 +135,7 @@ public class TestDayPage {
         dayPage.changeRosterInputDutyEnd(dayPage.getUnixTime(), 2, "16:00");
         dayPage.changeRosterInputBreakStart(dayPage.getUnixTime(), 2, "12:30");
         dayPage.changeRosterInputBreakEnd(dayPage.getUnixTime(), 2, "13:00");
-        dayPage.changeRosterInputEmployee(dayPage.getUnixTime(), 2, 9);
+        dayPage.changeRosterInputEmployee(dayPage.getUnixTime(), 2, 11);
         dayPage.rosterFormSubmit();
         try {
             RosterItem rosterItem = dayPage.getRosterItem(2);
@@ -143,10 +143,76 @@ public class TestDayPage {
             Assert.assertEquals(rosterItem.getDutyEnd(), "16:00");
             Assert.assertEquals(rosterItem.getBreakStart(), "12:30");
             Assert.assertEquals(rosterItem.getBreakEnd(), "13:00");
-            Assert.assertEquals(rosterItem.getEmployeeName().length(), 12);
+            Assert.assertEquals(rosterItem.getEmployeeName().length(), 9);
         } catch (ParseException ex) {
             Logger.getLogger(TestDayPage.class.getName()).log(Level.SEVERE, null, ex);
         }
+        /**
+         * Revert the changes for the next test:
+         */
+        dayPage.changeRosterInputDutyStart(dayPage.getUnixTime(), 2, "08:00");
+        dayPage.changeRosterInputDutyEnd(dayPage.getUnixTime(), 2, "18:00");
+        dayPage.changeRosterInputBreakStart(dayPage.getUnixTime(), 2, "11:30");
+        dayPage.changeRosterInputBreakEnd(dayPage.getUnixTime(), 2, "12:00");
+        dayPage.changeRosterInputEmployee(dayPage.getUnixTime(), 2, 12);
+        dayPage.rosterFormSubmit();
+    }
+
+    @Test(enabled = true)/*new*/
+    public void testRosterChangeDragAndDrop() throws Exception {
+        driver = Selenium.driver.Wrapper.getDriver();
+        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
+        String urlPageTest = readPropertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = readPropertyFile.getPdrUserPassword();
+        String pdr_user_name = readPropertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        DayPage dayPage = new DayPage(driver);
+        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
+
+        /**
+         * Move to specific month:
+         */
+        dayPage.goToBranch(1);
+        dayPage.goToAlternation(0);
+        dayPage.goToWeekday(1);
+
+        try {
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 30, "duty");
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -30, "duty");
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 360, "duty");
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 90, "break");
+            Thread.sleep(500);
+            dayPage.rosterFormSubmit();
+            RosterItem rosterItem = dayPage.getRosterItem(1);
+            System.out.println(rosterItem.getDutyStart());
+            System.out.println(rosterItem.getBreakStart());
+            /**
+             * Revert the changes for the next test:
+             */
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -360, "duty");
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -90, "break");
+            dayPage.rosterFormSubmit();
+            /**
+             * <p lang=en>CAVE: rosterItem is read after the forst dragAndDrop.
+             * Those changes are reverted afterwards. The Assertions work on the
+             * firstly changed values.</p>
+             */
+            Assert.assertEquals(rosterItem.getDutyStart(), "09:00");
+            Assert.assertEquals(rosterItem.getDutyEnd(), "19:00");
+            Assert.assertEquals(rosterItem.getBreakStart(), "13:00");
+            Assert.assertEquals(rosterItem.getBreakEnd(), "13:30");
+        } catch (ParseException ex) {
+            Logger.getLogger(TestDayPage.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TestDayPage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     @BeforeMethod

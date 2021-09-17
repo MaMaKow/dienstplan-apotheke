@@ -24,6 +24,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -113,7 +115,11 @@ public class MenuFragment {
          * </p>
          */
         By menuListItemBy = menuMap.get(target);
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(menuListItemBy));
+
         WebElement menuListItem = driver.findElement(menuListItemBy);
+        wait.until(ExpectedConditions.presenceOfElementLocated(target));
         actions.moveToElement(menuListItem).perform();
         linkElement.click();
 
