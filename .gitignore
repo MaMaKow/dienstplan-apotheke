@@ -78,3 +78,8 @@ tests/selenium/target/maven-status/maven-compiler-plugin/compile/default-compile
 *.lst
 tests/selenium/src/test/config.properties
 tests/selenium/src/test/Configuration.properties
+*.properties
+.vs/
+tests/selenium/.project_old
+tests/selenium/.classpath_old
+*.prefs
