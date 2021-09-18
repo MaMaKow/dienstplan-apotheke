@@ -58,6 +58,7 @@ public class MenuFragment {
     public static final By MenuLinkToManageUser = By.id("MenuLinkToManageUser");
     public static final By MenuLinkToManageAccount = By.id("MenuLinkToManageAccount");
     public static final By MenuLinkToApplicationAbout = By.id("MenuLinkToApplicationAbout");
+    public static final By MenuLinkToConfiguration = By.id("MenuLinkToConfiguration");
     public static final By MenuLinkToLogout = By.id("MenuLinkToLogout");
 
     /**
@@ -94,6 +95,7 @@ public class MenuFragment {
         menuMap.put(MenuLinkToPharmacyUploadPep, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageEmployee, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageBranch, MenuListItemAdministration);
+        menuMap.put(MenuLinkToConfiguration, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageUser, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageAccount, MenuListItemApplication);
         menuMap.put(MenuLinkToApplicationAbout, MenuListItemApplication);
