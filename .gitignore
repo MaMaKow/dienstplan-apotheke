@@ -83,3 +83,8 @@ tests/selenium/src/test/Configuration.properties
 tests/selenium/.project_old
 tests/selenium/.classpath_old
 *.prefs
+target/
+tests/selenium/nb-configuration.xml
+tests/selenium/.project
+tests/selenium/.classpath
+tests/selenium/test-output/

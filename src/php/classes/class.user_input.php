@@ -80,8 +80,6 @@ abstract class user_input {
                     /*
                      * Dies scheint ein principle_roster zu sein:
                      */
-                    $valid_from = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['valid_from'], FILTER_SANITIZE_STRING));
-                    $valid_until = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['valid_until'], FILTER_SANITIZE_STRING));
                     $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
                 }
                 if (!is_numeric($branch_id)) {
@@ -105,10 +103,9 @@ abstract class user_input {
                 if (!empty($primary_key) && is_numeric($primary_key)) {
                     /*
                      * This one is a principle roster item.
-                     * $valid_from and $valid_until are explicitly allowed to be NULL.
                      * @todo: There will come a time, when simple roster_items will also have a numeric primary_key.
                      */
-                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $valid_from, $valid_until, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql);
+                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql);
                     continue;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
@@ -190,7 +187,7 @@ abstract class user_input {
         $Changed_roster_employee_id_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Roster_old[$date_unix]) or roster::is_empty_roster_day_array($Roster_old[$date_unix])) {
-                /*
+                /**
                  * There is no old roster. Every entry is new:
                  */
                 foreach ($Roster_day_array as $roster_item) {
@@ -205,6 +202,10 @@ abstract class user_input {
                         continue;
                     }
                     if (self::roster_item_has_changed($roster_item, $Roster_old)) {
+                        /**
+                         * The roster for the employee has changed for this day.
+                         * The employee_id will be added to Changed_roster_employee_id_list
+                         */
                         $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
                     }
                 }
@@ -222,13 +223,19 @@ abstract class user_input {
      * @param type $Roster_old
      * @return boolean
      */
-    private static function roster_item_has_changed($roster_item, $Roster_old) {
+    private static function roster_item_has_changed(roster_item $roster_item, array $Roster_old) {
 
+        /**
+         * Searching for the same roster item in the old roster:
+         */
         foreach ($Roster_old[$roster_item->date_unix] as $roster_item_old) {
             if ($roster_item == $roster_item_old) {
                 return FALSE;
             }
         }
+        /**
+         * We found none. return true because the item was changed:
+         */
         return TRUE;
     }
 
@@ -277,6 +284,38 @@ abstract class user_input {
             }
         }
         return $Deleted_roster_employee_id_list;
+    }
+
+    /**
+     * <p lang=de>
+     * Wenn im Grundplan mit dem SELECT ein anderer Mitarbeiter ausgewählt wird,
+     * dann muss man dies feststellen.
+     * Es gibt zwei Funktionen, die Änderungen am Grundplan finden sollen:
+     * - get_deleted_roster_primary_key_list()
+     * - roster_item_has_changed()
+     * Diese beiden Funktionen können diesen Fall aber nicht erkennen.
+     * Der primary_key wird vom alten employee übertragen.
+     * Der alte employee taucht aber nicht mehr auf, um ihn mit dem alten Plan zu vergleichen.
+     * </p>
+     * @param array $Roster_new The newly submitted roster
+     * @param array $Roster_old The old roster stored in the database
+     */
+    public static function get_changed_roster_item_list(array $Roster_new, array $Roster_old) {
+        $Changed_roster_item_list = array();
+        foreach ($Roster_old as $date_unix => $Roster_day_array_old) {
+            foreach ($Roster_day_array_old as $roster_row_iterator => $roster_item) {
+                if ($Roster_new[$date_unix][$roster_row_iterator] instanceof roster_item_empty) {
+                    continue;
+                }
+                if ($roster_item->primary_key !== $Roster_new[$date_unix][$roster_row_iterator]->primary_key) {
+                    throw new Exception("<p lang=de>Ich erwarte, dass der primary key zwischen den Plänen unverändert bleibt.</p>");
+                }
+                if ($roster_item->employee_id !== $Roster_new[$date_unix][$roster_row_iterator]->employee_id) {
+                    $Changed_roster_item_list[] = $roster_item->primary_key;
+                }
+            }
+        }
+        return $Changed_roster_item_list;
     }
 
     public static function get_deleted_roster_primary_key_list(array $Roster_new, array $Roster_old) {

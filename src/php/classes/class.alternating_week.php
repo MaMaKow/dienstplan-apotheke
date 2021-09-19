@@ -61,21 +61,19 @@ class alternating_week {
      * @return DateTime $this->monday_date
      * @throws Exception
      */
-    public function get_monday_date_for_alternating_week(DateTime $date_minimum = NULL) {
+    public function get_monday_date_for_alternating_week(DateTime $date_minimum) {
         if (!isset($this->monday_date)) {
             $this->monday_date = $this->calculate_monday_date_for_alternating_week(clone $date_minimum);
         }
-        if ($date_minimum instanceof DateTime) {
-            /*
-             * The date_minimum is the first date on which an alternation becomes valid.
-             * There are edge cases, where this date is not a monday.
-             *   e.g. if no valid_from date is set, the `start_of_employment` of some current or former employee will be chosen.
-             *     Such a $date_minimum would not have to be a monday. Therefore we convert to monday before comparison.
-             */
-            $date_compare = clone $date_minimum;
-            if ($this->monday_date < $date_compare->modify('Monday this week')) {
-                throw new Exception('A date minimum was given. But the monday_date was already set to an earlier value.');
-            }
+        /**
+         * The date_minimum is the first date on which an alternation becomes valid.
+         * There are edge cases, where this date is not a monday.
+         *   e.g. if no $date_minimum is set, the `start_of_employment` of some current or former employee will be chosen.
+         *     Such a $date_minimum would not have to be a monday. Therefore we convert to monday before comparison.
+         */
+        $date_compare = clone $date_minimum;
+        if ($this->monday_date < $date_compare->modify('Monday this week')) {
+            throw new Exception('A date minimum was given. But the monday_date was already set to an earlier value.');
         }
         return $this->monday_date;
     }
@@ -91,7 +89,7 @@ class alternating_week {
         $difference = $this->alternating_week_id - $today_alternating_week_id;
         $number_of_alternations = count(self::get_alternating_week_ids());
         if ($difference < 0) {
-            $difference+=$number_of_alternations;
+            $difference += $number_of_alternations;
         }
         $date_object->add(new DateInterval('P' . $difference . 'W'));
         return $date_object;
@@ -194,9 +192,7 @@ class alternating_week {
                 . "(SELECT NULL, :new_alternating_week_id, `employee_id`, `weekday`, "
                 . "`duty_start`, `duty_end`, `break_start`, `break_end`, "
                 . "`comment`, `working_hours`, "
-                . "`branch_id`, "
-                . "`valid_from`, "
-                . "`valid_until` "
+                . "`branch_id` "
                 . "FROM `principle_roster` WHERE `alternating_week_id` = :alternating_week_id);";
         database_wrapper::instance()->run(
                 $sql_query, array(
@@ -251,68 +247,6 @@ class alternating_week {
             }
         }
         self::read_alternating_week_ids_from_database();
-    }
-
-    public static function get_list_of_principle_rosters($employee_id) {
-        $List_of_principle_rosters = array();
-        foreach (self::get_alternating_week_ids() as $alternating_week_id) {
-            $alternating_week = new alternating_week($alternating_week_id);
-            $date_start_object = $alternating_week->get_monday_date_for_alternating_week();
-            $date_end_object = clone $date_start_object;
-            $date_end_object->add(new DateInterval('P6D'));
-            $List_of_principle_rosters[$alternating_week_id] = principle_roster::read_all_principle_employee_rosters_from_database($employee_id, $alternating_week_id);
-        }
-        return $List_of_principle_rosters;
-    }
-
-    public static function find_differences_between_principle_rosters(array $List_of_principle_rosters, int $alternating_week_id) {
-        //throw new Exception('The format of $List_of_principle_rosters has changed. This is not implemented yet.');
-        $Differences_between_principle_rosters = array();
-        $latest_comparison_date = max(array_keys($List_of_principle_rosters[$alternating_week_id]));
-        $Comparison_roster = $List_of_principle_rosters[$alternating_week_id][$latest_comparison_date];
-        foreach ($List_of_principle_rosters as $alternating_week_id_current => $Principle_rosters_list) {
-            if ($alternating_week_id === $alternating_week_id_current) {
-                continue;
-            }
-            foreach ($Principle_rosters_list as $valid_from => $Principle_roster_current) {
-                /*
-                 * only compare with the latest version:
-                 */
-                if ($valid_from !== max(array_keys($Principle_rosters_list))) {
-                    continue;
-                }
-                foreach ($Principle_roster_current as $date_unix_current => $roster_day_array) {
-                    foreach ($roster_day_array as $roster_row_iterator => $roster_item) {
-                        /*
-                         * Compare to the comparson roster:
-                         */
-                        foreach ($Comparison_roster as $date_unix_compare => $roster_day_array_compare) {
-                            if (date('w', $date_unix_current) !== date('w', $date_unix_compare)) {
-                                continue;
-                            }
-                            foreach ($roster_day_array_compare as $roster_row_iterator_compare => $roster_item_compare) {
-                                if ($roster_row_iterator !== $roster_row_iterator_compare) {
-                                    continue;
-                                }
-                                if ($roster_item->duty_start_int != $roster_item_compare->duty_start_int) {
-                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_start_int';
-                                }
-                                if ($roster_item->duty_end_int != $roster_item_compare->duty_end_int) {
-                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'duty_end_int';
-                                }
-                                if ($roster_item->break_start_int != $roster_item_compare->break_start_int) {
-                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'break_start_int';
-                                }
-                                if ($roster_item->break_end_int != $roster_item_compare->break_end_int) {
-                                    $Differences_between_principle_rosters[$alternating_week_id_current][$date_unix_current][$roster_row_iterator][] = 'break_end_int';
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $Differences_between_principle_rosters;
     }
 
     /**

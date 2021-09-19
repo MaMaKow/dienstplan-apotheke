@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.rosterpages;
+package Selenium.RosterPages;
 
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.SignInPage.SignInPage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -118,13 +118,6 @@ public class TestRosterHoursPage {
 
     @BeforeMethod
     public void setUp() {
-        try {
-            File file = new File("Calendar.ics");
-            Files.deleteIfExists(file.toPath());
-        } catch (IOException ex) {
-            Logger.getLogger(TestRosterEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         Selenium.driver.Wrapper.createNewDriver();
     }
 
