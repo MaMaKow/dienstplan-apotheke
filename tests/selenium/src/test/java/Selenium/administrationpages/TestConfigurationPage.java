@@ -21,8 +21,6 @@ package Selenium.administrationpages;
 import Selenium.ReadPropertyFile;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
-import java.util.Calendar;
-import java.util.Locale;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -38,8 +36,8 @@ public class TestConfigurationPage {
 
     WebDriver driver;
 
-    @Test(enabled = true)/*new*/
-    public void testDateNavigation() {
+    @Test(enabled = false)/*passed*/
+    public void testReadInputFields() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
         String urlPageTest = readPropertyFile.getUrlPageTest();
@@ -52,12 +50,46 @@ public class TestConfigurationPage {
         String pdr_user_password = readPropertyFile.getPdrUserPassword();
         String pdr_user_name = readPropertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        /**
+         * Go to page:
+         */
         ConfigurationPage configurationPage = new ConfigurationPage(driver);
         Assert.assertEquals(configurationPage.getUserNameText(), pdr_user_name);
+        /**
+         * Check the expected values:
+         */
         Assert.assertEquals(configurationPage.getApplicationName(), "Local Development Roster");
         Assert.assertEquals(configurationPage.getDatabaseName(), "Apotheke_development");
+        /**
+         * The password MUST NOT be visible!
+         */
         Assert.assertEquals(configurationPage.getDatabasePassword(), "");
-        Assert.assertEquals(true, false);
+        /**
+         * Contact email
+         */
+        Assert.assertTrue(configurationPage.getContactEmail().contains("dienstplan@"));
+        /**
+         * Language and encoding
+         */
+        Assert.assertEquals(configurationPage.getLanguage(), "Deutsch");
+        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        Assert.assertEquals(configurationPage.getEncoding(), "UTF-8");
+        /**
+         * Error log verbosity:
+         */
+        Assert.assertEquals(configurationPage.getErrorReporting(), null);
+        /**
+         * Approval:
+         */
+        Assert.assertEquals(configurationPage.getHideDisapproved(), false);
+        /**
+         * Sending emails:
+         */
+        Assert.assertEquals(configurationPage.getEmailMethod(), "mail");
+        /**
+         * @todo: <p lang=de>Es fehen noch die Methoden zum Ändern der
+         * Konfiguration.</p>
+         */
     }
 
     @BeforeMethod

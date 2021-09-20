@@ -50,6 +50,14 @@ public class ReadPropertyFile {
 
     }
 
+    public String getDriverPath() {
+        String driverPath = properties.getProperty("driverPath");
+        if (null != driverPath) {
+            return driverPath;
+        }
+        throw new RuntimeException("driverPath not specified in the Configuration.properties file.");
+    }
+
     public String getPdrUserPassword() {
         String pdrUserPassword = properties.getProperty("pdrUserPassword");
         if (null != pdrUserPassword) {
