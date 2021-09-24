@@ -399,3 +399,7 @@ function show_login_p_caps_warning(event) {
     }
 
 }
+
+function isValidDate(date) {
+    return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
+}
