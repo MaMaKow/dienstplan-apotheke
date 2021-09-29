@@ -187,7 +187,6 @@ public class TestDayPage {
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -30, "duty");
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 360, "duty");
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 90, "break");
-            Thread.sleep(500);
             dayPage.rosterFormSubmit();
             RosterItem rosterItem = dayPage.getRosterItem(1);
             System.out.println(rosterItem.getDutyStart());
