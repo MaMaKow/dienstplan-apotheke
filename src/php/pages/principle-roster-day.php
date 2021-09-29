@@ -18,7 +18,6 @@
  */
 
 require '../../../default.php';
-
 $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
@@ -41,13 +40,34 @@ create_cookie('mandant', $branch_id, 30);
 create_cookie('alternating_week_id', $alternating_week_id, 1);
 create_cookie('weekday', $weekday, 1);
 $workforce = new workforce($date_object->format('Y-m-d'));
-if (filter_has_var(INPUT_POST, 'submit_roster')) {
+
+function handle_roster_input($branch_id, $date_object, $session) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;
     }
-
     $Principle_roster_old = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object);
-    $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+    try {
+        $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+    } catch (\Exception $exception) {
+        $user_dialog = new $user_dialog();
+        if (user_input::EXCEPTION_CODE_DUTY_START_INVALID === $exception->getCode()) {
+            $message = gettext("An invalid data record was transmitted.") . " " . gettext("Duty start MUST be a valid time!");
+            $user_dialog->add_message($message, E_USER_ERROR);
+            return false;
+        } elseif (user_input::EXCEPTION_CODE_DUTY_END_INVALID === $exception->getCode()) {
+            $message = gettext("An invalid data record was transmitted.") . " " . gettext("Duty end MUST be a valid time!");
+            $user_dialog->add_message($message, E_USER_ERROR);
+            return false;
+        } else {
+            /**
+             * <p lang=en>
+             * This is not an exception, which can be handled here.
+             * Just throw that same exception again.
+             * </p>
+             */
+            throw $exception;
+        }
+    }
     $List_of_changes = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
     $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
@@ -57,15 +77,12 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
      */
     $Changed_roster_item_list = user_input::get_changed_roster_item_list($Principle_roster_new, $Principle_roster_old);
     principle_roster::invalidate_removed_entries_in_database($Changed_roster_item_list);
-
-    /**
-     * @todo   <p lang=de> TODO:
-     * Wir müssen auch die Einträge entfernen/ändern, die durch "Mitarbeitertausch" geändert wurden.
-      Momentan wird einfach ein neuer Mitarbeiter eingefügt.
-      Wird das eine neue Funktion?
-      Oder kann einer der beiden hier drüber das übernehmen?
-     */
 }
+
+if (filter_has_var(INPUT_POST, 'submit_roster')) {
+    handle_roster_input($branch_id, $date_object, $session);
+}
+
 if (filter_has_var(INPUT_POST, 'principle_roster_copy_from')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;

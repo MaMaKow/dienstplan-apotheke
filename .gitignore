@@ -80,6 +80,7 @@ tests/selenium/src/test/config.properties
 tests/selenium/src/test/Configuration.properties
 *.properties
 .vs/
+.vscode/
 tests/selenium/.project_old
 tests/selenium/.classpath_old
 *.prefs
