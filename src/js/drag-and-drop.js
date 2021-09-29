@@ -167,8 +167,11 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     var duty_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_end_sql']);
     var break_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_start_sql']);
     var break_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_end_sql']);
-    var break_duration_integer = (break_end_object - break_start_object);
-
+    if (isValidDate(break_end_object) && isValidDate(break_start_object)) {
+        var break_duration_integer = (break_end_object - break_start_object);
+    } else {
+        var break_duration_integer = 0;
+    }
     var working_hours = (duty_end_object - duty_start_object - break_duration_integer) / 3600 / 1000;
 
     roster_item['working_hours'] = Math.round(working_hours * 4, 0) / 4;//round to quarter hours
@@ -228,7 +231,7 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     /*
      * lunch break:
      */
-    if (isValidDate(break_start_object)) {
+    if (isValidDate(break_start_object) && isValidDate(break_end_object)) {
         var new_box_x = (break_start_object.getHours() + break_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
         var new_box_width = (
                 (break_end_object.getHours() + break_end_object.getMinutes() / 60)

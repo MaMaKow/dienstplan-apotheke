@@ -49,7 +49,7 @@ function handle_roster_input($branch_id, $date_object, $session) {
     try {
         $Principle_roster_new = user_input::get_Roster_from_POST_secure();
     } catch (\Exception $exception) {
-        $user_dialog = new $user_dialog();
+        $user_dialog = new user_dialog();
         if (user_input::EXCEPTION_CODE_DUTY_START_INVALID === $exception->getCode()) {
             $message = gettext("An invalid data record was transmitted.") . " " . gettext("Duty start MUST be a valid time!");
             $user_dialog->add_message($message, E_USER_ERROR);
