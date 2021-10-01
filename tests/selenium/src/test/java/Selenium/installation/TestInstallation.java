@@ -52,7 +52,7 @@ public class TestInstallation {
      */
     String testPageUrl;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testInstallation() {
         driver = Wrapper.getDriver();
         readPropertyFile = new ReadPropertyFile();
@@ -121,7 +121,8 @@ public class TestInstallation {
     public void tearDown(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
-        driver.quit();
-
+        if (testResult.getStatus() != ITestResult.FAILURE) {
+            driver.quit();
+        }
     }
 }

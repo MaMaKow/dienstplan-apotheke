@@ -320,11 +320,12 @@ class install {
          * This means, that only existing employes can have an account to login.
          * It follows, that we have to create an employee first, before we can create a user:
          */
-        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`, `first_name`) VALUES (:employee_id, :last_name, :first_name);");
+        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`, `first_name`, `profession`) VALUES (:employee_id, :last_name, :first_name, :profession);");
         $result = $statement->execute(array(
             'employee_id' => $this->Config["admin"]["employee_id"],
             'last_name' => $this->Config["admin"]["last_name"],
             'first_name' => $this->Config["admin"]["first_name"],
+            'profession' => "Apotheker", //Employees need a profession. We just take "Apotheker". The user can change this later on, if necessary.
         ));
         if (false === $result) {
             $this->Error_message[] = gettext("Error while trying to create employee.");
