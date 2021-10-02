@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.RosterPages;
+package Selenium.rosterpages;
 
 import Selenium.HomePage;
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signinpage.SignInPage;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
@@ -32,7 +32,6 @@ import biweekly.property.DateStart;
 import biweekly.property.Summary;
 import biweekly.util.ICalDate;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,7 +40,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -213,7 +211,7 @@ public class TestRosterEmployeePage {
         Assert.assertEquals(dayDateFormat.format(dateEnd.getValue()), dayDateFormat.format(rosterItem.getDate().getTime()));
         Assert.assertEquals(timeDateFormat.format(dateStart.getValue()), rosterItem.getDutyStart());
         Assert.assertEquals(timeDateFormat.format(dateEnd.getValue()), rosterItem.getDutyEnd());
-        Assert.assertTrue(summary.contains(rosterItem.getBranchName()));
+        Assert.assertTrue(summary.contains("Apotheke"));
         /*
         Finally delete the iCalendar file:
          */

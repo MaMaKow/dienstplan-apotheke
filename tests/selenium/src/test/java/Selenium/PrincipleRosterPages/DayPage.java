@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package Selenium.PrincipleRosterPages;
+package Selenium.principlerosterpages;
 
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
-import Selenium.RosterPages.RosterDayEditPage;
+import Selenium.rosterpages.RosterDayEditPage;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -76,9 +76,9 @@ public class DayPage {
         return driver.findElement(userNameSpanBy).getText();
     }
 
-    public RosterDayEditPage manageProfile() {
+    public DayPage manageProfile() {
         // Page encapsulation to manage profile functionality
-        return new RosterDayEditPage(driver);
+        return new DayPage(driver);
     }
 
     public void goToWeekday(int weekdayIndex) {

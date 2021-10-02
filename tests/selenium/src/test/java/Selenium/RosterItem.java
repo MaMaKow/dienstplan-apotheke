@@ -34,7 +34,8 @@ public class RosterItem {
     private String dutyEnd;
     private String breakStart;
     private String breakEnd;
-    private String branchName;
+    //private String branchName;
+    private int branchId;
     private String comment;
 
     public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd) {
@@ -47,14 +48,15 @@ public class RosterItem {
         this.comment = "";
     }
 
-    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String branchName) {
+    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, int branchId) {
         this.employeeName = employeeName;
         this.date = calendar;
         this.dutyStart = dutyStart;
         this.dutyEnd = dutyEnd;
         this.breakStart = breakStart;
         this.breakEnd = breakEnd;
-        this.branchName = branchName;
+        //this.branchName = branchName;
+        this.branchId = branchId;
         this.comment = "";
 
     }
@@ -91,8 +93,8 @@ public class RosterItem {
         return this.breakEnd;
     }
 
-    public String getBranchName() {
-        return this.branchName;
+    public int getBranchId() {
+        return this.branchId;
     }
 
     public String getComment() throws Exception {

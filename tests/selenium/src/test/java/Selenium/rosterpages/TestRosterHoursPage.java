@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.RosterPages;
+package Selenium.rosterpages;
 
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signinpage.SignInPage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package Selenium.PrincipleRosterPages;
+package Selenium.principlerosterpages;
 
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signinpage.SignInPage;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,7 +95,7 @@ public class TestDayPage {
         dayPage.goToWeekday(1);
         try {
             RosterItem rosterItem = dayPage.getRosterItem(2);
-            //Assert.assertEquals(rosterItem.getBranchName(),"Apotheke");
+            Assert.assertEquals(rosterItem.getBranchId(), 1);
             Assert.assertEquals(rosterItem.getDutyStart(), "08:00");
             Assert.assertEquals(rosterItem.getDutyEnd(), "18:00");
             Assert.assertEquals(rosterItem.getBreakStart(), "11:30");
@@ -158,7 +158,7 @@ public class TestDayPage {
         dayPage.rosterFormSubmit();
     }
 
-    @Test(enabled = true)/*new*/
+    @Test(enabled = false)/*new*/
     public void testRosterChangeDragAndDrop() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();

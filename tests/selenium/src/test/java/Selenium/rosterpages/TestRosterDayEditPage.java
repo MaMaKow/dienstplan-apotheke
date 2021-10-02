@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.RosterPages;
+package Selenium.rosterpages;
 
 import Selenium.HomePage;
 import Selenium.ReadPropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signinpage.SignInPage;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -110,7 +110,7 @@ public class TestRosterDayEditPage {
         assertEquals("12:30", rosterItem.getBreakEnd());
     }
 
-    @Test(enabled = true)/*new*/
+    @Test(enabled = false)/*new*/
     public void testRosterEdit() {
         /**
          * Diese Funktion muss noch implementiert werden.

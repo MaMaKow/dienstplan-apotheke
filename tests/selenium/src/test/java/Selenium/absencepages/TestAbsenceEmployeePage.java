@@ -22,7 +22,7 @@ import Selenium.Absence;
 import Selenium.MenuFragment;
 import Selenium.ReadPropertyFile;
 import Selenium.ScreenShot;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signinpage.SignInPage;
 import org.openqa.selenium.WebDriver;
 import static org.testng.Assert.assertEquals;
 import org.testng.ITestResult;

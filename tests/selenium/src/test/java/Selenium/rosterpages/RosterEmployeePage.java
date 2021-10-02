@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.RosterPages;
+package Selenium.rosterpages;
 
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
@@ -158,6 +158,9 @@ public class RosterEmployeePage {
         String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();
         String breakEnd = driver.findElement(getRosterItemBreakEndXpathBy(column, row)).getText();
         String branchName = driver.findElement(getRosterItemBranchNameXpathBy(column, row)).getText();
+        int branchId;
+        branchId = Integer.valueOf(driver.findElement(getRosterItemBranchNameXpathBy(column, row)).getAttribute("data-branch_id"));
+
         //comment = "";
         /**
          * <p>
@@ -169,7 +172,7 @@ public class RosterEmployeePage {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 
-        RosterItem rosterItem = new Selenium.RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd, branchName);
+        RosterItem rosterItem = new Selenium.RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd, branchId);
         return rosterItem;
     }
 

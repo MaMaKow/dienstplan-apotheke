@@ -23,7 +23,7 @@ import Selenium.ReadPropertyFile;
 import Selenium.ScreenShot;
 import Selenium.administrationpages.BranchAdministrationPage;
 import Selenium.driver.Wrapper;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signinpage.SignInPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

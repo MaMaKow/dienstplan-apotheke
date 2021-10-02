@@ -519,7 +519,7 @@ abstract class build_html_roster_views {
                     $zeile .= "</span><!-- class='break_time' -->";
                 }
                 $zeile .= "<br>";
-                $zeile .= "<span class='branch_name'>";
+                $zeile .= "<span class='branch_name' data-branch_id='" . $roster_item->branch_id . "'>";
                 $zeile .= htmlentities($List_of_branch_objects[$roster_item->branch_id]->short_name);
                 $zeile .= "</span>";
                 $table_html .= $zeile;
