@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="PDR Selenium Tests" verbose="1" >
+    <test name="Roster Pages" >
+        <classes>
+            <class name="Selenium.PrincipleRosterPages.TestDayPage" />
+            <class name="Selenium.RosterPages.TestRosterDayEditPage" />
+            <class name="Selenium.RosterPages.TestRosterDayEditPage" />
+            <class name="Selenium.RosterPages.TestRosterEmployeePage" />
+            <class name="Selenium.RosterPages.TestRosterHoursPage" />
+        </classes>
+    </test>
+    <test name="Application Pages" >
+        <classes>
+            <class name="Selenium.TestAboutPage" />
+        </classes>
+    </test>
+</suite>

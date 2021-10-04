@@ -20,7 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.ReadPropertyFile;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.SignInPage.SignInPage;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -36,7 +36,7 @@ public class TestConfigurationPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testReadInputFields() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();

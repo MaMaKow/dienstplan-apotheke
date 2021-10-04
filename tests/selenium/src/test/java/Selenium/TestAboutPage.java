@@ -39,7 +39,7 @@ public class TestAboutPage {
     WebDriver driver;
     private ReadPropertyFile readPropertyFile;
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testGetVersion() {
         driver = Selenium.driver.Wrapper.getDriver();
         readPropertyFile = new ReadPropertyFile();

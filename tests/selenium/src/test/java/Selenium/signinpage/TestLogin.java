@@ -36,7 +36,7 @@ public class TestLogin {
     WebDriver driver;
 
     // static WebDriver driver;
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testLogin() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();

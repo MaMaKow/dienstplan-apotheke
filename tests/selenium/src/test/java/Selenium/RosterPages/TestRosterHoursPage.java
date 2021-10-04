@@ -45,7 +45,7 @@ public class TestRosterHoursPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
@@ -73,7 +73,7 @@ public class TestRosterHoursPage {
         Assert.assertEquals("Mandelkow", rosterHoursPage.getEmployee());
     }
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testRosterDispay() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();

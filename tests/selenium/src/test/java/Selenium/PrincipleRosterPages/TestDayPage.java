@@ -38,7 +38,7 @@ public class TestDayPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
@@ -70,8 +70,8 @@ public class TestDayPage {
         Assert.assertEquals(1, dayPage.getBranchId());
     }
 
-    @Test(enabled = false)/*passed*/
-    public void testRosterDispay() {
+    @Test(enabled = true)/*passed*/
+    public void testRosterDisplay() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
         String urlPageTest = readPropertyFile.getUrlPageTest();
@@ -107,7 +107,7 @@ public class TestDayPage {
         }
     }
 
-    @Test(enabled = false)/*new*/
+    @Test(enabled = true)/*new*/
     public void testRosterChange() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
@@ -156,6 +156,44 @@ public class TestDayPage {
         dayPage.changeRosterInputBreakEnd(dayPage.getUnixTime(), 2, "12:00");
         dayPage.changeRosterInputEmployee(dayPage.getUnixTime(), 2, 12);
         dayPage.rosterFormSubmit();
+    }
+
+    @Test(enabled = true)/*new*/
+    public void testRosterChangePlotErrors() throws ParseException {
+        driver = Selenium.driver.Wrapper.getDriver();
+        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
+        String urlPageTest = readPropertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = readPropertyFile.getPdrUserPassword();
+        String pdr_user_name = readPropertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        DayPage dayPage = new DayPage(driver);
+        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
+
+        /**
+         * Move to specific month:
+         */
+        dayPage.goToBranch(1);
+        dayPage.goToAlternation(0);
+        dayPage.goToWeekday(1);
+
+        /**
+         * <p lang=de>
+         * Teste die Reaktion auf fehlenden Dienststart
+         * </p>
+         */
+        dayPage.changeRosterInputDutyStart(dayPage.getUnixTime(), 2, "");
+        dayPage.rosterFormSubmit();
+
+        RosterItem rosterItem = dayPage.getRosterItem(2);
+        Assert.assertEquals(rosterItem.getDutyStart(), "11:00");
+        Assert.assertEquals(rosterItem.getEmployeeName().length(), 9);
+
     }
 
     @Test(enabled = true)/*new*/

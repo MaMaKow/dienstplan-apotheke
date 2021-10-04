@@ -44,7 +44,7 @@ public class TestRosterDayEditPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         try {
             driver = Selenium.driver.Wrapper.getDriver();
@@ -75,7 +75,7 @@ public class TestRosterDayEditPage {
         }
     }
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
