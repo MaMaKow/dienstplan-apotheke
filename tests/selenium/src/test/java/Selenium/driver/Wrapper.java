@@ -18,7 +18,7 @@
  */
 package Selenium.driver;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -72,8 +72,8 @@ public class Wrapper {
     }
 
     private WebDriver createLocalChromeWebDriver() {
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        System.setProperty("webdriver.chrome.driver", readPropertyFile.getDriverPath());
+        PropertyFile propertyFile = new PropertyFile();
+        System.setProperty("webdriver.chrome.driver", propertyFile.getDriverPath());
         ChromeOptions options = new ChromeOptions();
         options.addArguments("ignore-certificate-errors");
         // Setting headless argument

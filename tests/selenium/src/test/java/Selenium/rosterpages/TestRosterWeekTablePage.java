@@ -19,7 +19,7 @@
 package Selenium.RosterPages;
 
 import Selenium.HomePage;
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.SignInPage.SignInPage;
@@ -48,16 +48,16 @@ public class TestRosterWeekTablePage {
     public void testDateNavigation() {
         try {
             driver = Selenium.driver.Wrapper.getDriver();
-            ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-            String urlPageTest = readPropertyFile.getUrlPageTest();
+            PropertyFile propertyFile = new PropertyFile();
+            String urlPageTest = propertyFile.getUrlPageTest();
             driver.get(urlPageTest);
 
             /**
              * Sign in:
              */
             SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = readPropertyFile.getPdrUserPassword();
-            String pdr_user_name = readPropertyFile.getPdrUserName();
+            String pdr_user_password = propertyFile.getPdrUserPassword();
+            String pdr_user_name = propertyFile.getPdrUserName();
             signInPage.loginValidUser(pdr_user_name, pdr_user_password);
             RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
             Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
@@ -78,15 +78,15 @@ public class TestRosterWeekTablePage {
     @Test(enabled = true)/*passed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
         Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);

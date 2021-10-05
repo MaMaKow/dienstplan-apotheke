@@ -18,7 +18,7 @@
  */
 package Selenium.installation;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
@@ -60,10 +60,10 @@ public class InstallationPageDatabase {
         WebElement databasePasswordFormElement = driver.findElement(By.id("database_password"));
         WebElement databaseNameFormElement = driver.findElement(By.id("database_name"));
 
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String databaseUserName = readPropertyFile.getDatabaseUserName();
-        String databasePassword = readPropertyFile.getDatabasePassword();
-        String databaseName = readPropertyFile.getDatabaseName();
+        PropertyFile propertyFile = new PropertyFile();
+        String databaseUserName = propertyFile.getDatabaseUserName();
+        String databasePassword = propertyFile.getDatabasePassword();
+        String databaseName = propertyFile.getDatabaseName();
 
         databaseHostFormElement.clear();
         //databaseHostFormElement.sendKeys("localhost");

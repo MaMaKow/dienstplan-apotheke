@@ -28,12 +28,12 @@ import Selenium.SignInPage.SignInPage;
 public class LogoutPage {
 
     WebDriver driver;
-    ReadPropertyFile readPropertyFile;
+    PropertyFile propertyFile;
 
     public SignInPage logout() {
         driver = Selenium.driver.Wrapper.getDriver();
-        readPropertyFile = new ReadPropertyFile();
-        driver.get(readPropertyFile.getUrlPageTest() + "/src/php/logout.php");
+        propertyFile = new PropertyFile();
+        driver.get(propertyFile.getUrlPageTest() + "/src/php/logout.php");
         return new SignInPage(driver);
     }
 }

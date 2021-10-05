@@ -18,7 +18,7 @@
  */
 package Selenium.installation;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -58,13 +58,13 @@ public class InstallationPageAdministrator {
         WebElement administratorPasswordFormElement = driver.findElement(By.name("password"));
         WebElement administratorPassword2FormElement = driver.findElement(By.name("password2"));
 
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String administratorUserName = readPropertyFile.getAdministratorUserName();
-        String administratorLastName = readPropertyFile.getAdministratorLastName();
-        String administratorFirstName = readPropertyFile.getAdministratorFirstName();
-        String administratorEmployeeId = readPropertyFile.getAdministratorEmployeeId();
-        String administratorEmail = readPropertyFile.getAdministratorEmail();
-        String administratorPassword = readPropertyFile.getAdministratorPassword();
+        PropertyFile propertyFile = new PropertyFile();
+        String administratorUserName = propertyFile.getAdministratorUserName();
+        String administratorLastName = propertyFile.getAdministratorLastName();
+        String administratorFirstName = propertyFile.getAdministratorFirstName();
+        String administratorEmployeeId = propertyFile.getAdministratorEmployeeId();
+        String administratorEmail = propertyFile.getAdministratorEmail();
+        String administratorPassword = propertyFile.getAdministratorPassword();
 
         administratorUserNameFormElement.clear();
         //administratorUserNameFormElement.sendKeys(administratorUserName);

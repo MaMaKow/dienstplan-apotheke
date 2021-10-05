@@ -37,20 +37,20 @@ import org.testng.annotations.Test;
 public class TestAboutPage {
 
     WebDriver driver;
-    private ReadPropertyFile readPropertyFile;
+    private PropertyFile propertyFile;
 
     @Test(enabled = true)
     public void testGetVersion() {
         driver = Selenium.driver.Wrapper.getDriver();
-        readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
         Selenium.SignInPage.SignInPage signInPage = new Selenium.SignInPage.SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToApplicationAbout);
-        //driver.get(readPropertyFile.getUrlPageTest() + "src/php/pages/about.php");
+        //driver.get(propertyFile.getUrlPageTest() + "src/php/pages/about.php");
         AboutPage aboutPage = new AboutPage();
         String versionString = aboutPage.getVersion();
         Assert.assertEquals(versionString, getVersionStingShould());

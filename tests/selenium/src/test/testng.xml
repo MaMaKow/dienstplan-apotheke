@@ -1,18 +1,38 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="PDR Selenium Tests" verbose="1" >
-    <test name="Roster Pages" >
+    <test name="Installation Pages" >
         <classes>
-            <class name="Selenium.PrincipleRosterPages.TestDayPage" />
-            <class name="Selenium.RosterPages.TestRosterDayEditPage" />
-            <class name="Selenium.RosterPages.TestRosterDayEditPage" />
-            <class name="Selenium.RosterPages.TestRosterEmployeePage" />
-            <class name="Selenium.RosterPages.TestRosterHoursPage" />
+            <class name="Selenium.installation.TestInstallation" />
         </classes>
     </test>
-    <test name="Application Pages" >
+    <test name="Application Pages">
         <classes>
+            <class name="Selenium.SignInPage.TestLogin" />
             <class name="Selenium.TestAboutPage" />
+            <class name="Selenium.administrationpages.TestConfigurationPage" />
+            <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
+            <class name="Selenium.administrationpages.TestSaturdayListPage" />
         </classes>
     </test>
+    <!--
+<test name="Absence Pages" >
+    <classes>
+        <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
+    </classes>
+</test>
+<test name="Principle Roster Pages" >
+    <classes>
+        <class name="Selenium.PrincipleRosterPages.TestDayPage" />
+    </classes>
+</test>
+<test name="Roster Pages" >
+    <classes>
+        <class name="Selenium.RosterPages.TestRosterDayEditPage" />
+        <class name="Selenium.RosterPages.TestRosterDayEditPage" />
+        <class name="Selenium.RosterPages.TestRosterEmployeePage" />
+        <class name="Selenium.RosterPages.TestRosterHoursPage" />
+    </classes>
+</test>
+    -->
 </suite>

@@ -34,7 +34,7 @@ import org.testng.Assert;
 public class UserPage {
 
     private final WebDriver driver;
-    private final ReadPropertyFile readPropertyFile;
+    private final PropertyFile propertyFile;
     /**
      * Form to give consent into receiving emails on roster change:
      */
@@ -73,7 +73,7 @@ public class UserPage {
 
     public UserPage() {
         this.driver = Selenium.driver.Wrapper.getDriver();
-        this.readPropertyFile = new ReadPropertyFile();
+        this.propertyFile = new PropertyFile();
         /**
          * Form to give consent into receiving emails on roster change:
          */
@@ -122,7 +122,7 @@ public class UserPage {
 
     public void setNewPassword(String newPassword) {
         this.oldPasswordInputElement.clear();
-        this.oldPasswordInputElement.sendKeys(this.readPropertyFile.getPdrUserPassword());
+        this.oldPasswordInputElement.sendKeys(this.propertyFile.getPdrUserPassword());
         this.newPasswordInput1Element.clear();
         this.newPasswordInput1Element.sendKeys(newPassword);
         this.newPasswordInput2Element.clear();

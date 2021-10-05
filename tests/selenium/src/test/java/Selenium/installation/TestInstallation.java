@@ -19,7 +19,7 @@
 package Selenium.installation;
 
 import Selenium.HomePage;
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.administrationpages.BranchAdministrationPage;
 import Selenium.driver.Wrapper;
@@ -42,7 +42,7 @@ import org.testng.annotations.AfterMethod;
 public class TestInstallation {
 
     WebDriver driver;
-    ReadPropertyFile readPropertyFile;
+    PropertyFile propertyFile;
     /**
      * <p lang=de>
      * Diese URL wird aus der apache Seite für Ordner ohne index.html
@@ -55,8 +55,8 @@ public class TestInstallation {
     @Test(enabled = true)/*passed*/
     public void testInstallation() {
         driver = Wrapper.getDriver();
-        readPropertyFile = new ReadPropertyFile();
-        String testPageFolderPath = readPropertyFile.getUrlInstallTest();
+        propertyFile = new PropertyFile();
+        String testPageFolderPath = propertyFile.getUrlInstallTest();
         /**
          * Visit the page script selenium-copy.php. This script will copy a
          * fresh pdr instance into testPageFolderPath. The state will be exactly
@@ -73,10 +73,12 @@ public class TestInstallation {
         By testPageUrlBy = By.xpath(testPageUrlXPath);
         WebElement testPageLink = driver.findElement(testPageUrlBy);
         testPageUrl = testPageLink.getAttribute("href");
+        propertyFile.setTestPageUrl(testPageUrl);
         testPageLink.click();
         /**
          * Start the actual installation process:
          */
+
         InstallationPageIntro installationPageIntro = new InstallationPageIntro();
         InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
         InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
@@ -93,8 +95,8 @@ public class TestInstallation {
          * </p>
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         assertEquals(pdr_user_name, homePage.getUserNameText());
         /**

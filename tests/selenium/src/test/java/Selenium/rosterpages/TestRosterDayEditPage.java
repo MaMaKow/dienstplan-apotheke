@@ -18,8 +18,7 @@
  */
 package Selenium.RosterPages;
 
-import Selenium.HomePage;
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.SignInPage.SignInPage;
@@ -48,16 +47,16 @@ public class TestRosterDayEditPage {
     public void testDateNavigation() {
         try {
             driver = Selenium.driver.Wrapper.getDriver();
-            ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-            String urlPageTest = readPropertyFile.getUrlPageTest();
+            PropertyFile propertyFile = new PropertyFile();
+            String urlPageTest = propertyFile.getUrlPageTest();
             driver.get(urlPageTest);
 
             /**
              * Sign in:
              */
             SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = readPropertyFile.getPdrUserPassword();
-            String pdr_user_name = readPropertyFile.getPdrUserName();
+            String pdr_user_password = propertyFile.getPdrUserPassword();
+            String pdr_user_name = propertyFile.getPdrUserName();
             signInPage.loginValidUser(pdr_user_name, pdr_user_password);
             RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
             assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
@@ -78,23 +77,23 @@ public class TestRosterDayEditPage {
     @Test(enabled = true)/*passed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
-        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
         assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
         /**
          * Move to specific date to get a specific roster:
          */
         rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-        assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+        assertEquals("2020-07-01", rosterWeekTablePage.getDate());
         /**
          * Get roster items and compare to assertions:
          */
