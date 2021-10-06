@@ -58,8 +58,8 @@ public class TestConfigurationPage {
         /**
          * Check the expected values:
          */
-        Assert.assertEquals(configurationPage.getApplicationName(), "Local Development Roster");
-        Assert.assertEquals(configurationPage.getDatabaseName(), "Apotheke_development");
+        Assert.assertEquals(configurationPage.getApplicationName(), "PDR");
+        Assert.assertEquals(configurationPage.getDatabaseName(), "pdrTest");
         /**
          * The password MUST NOT be visible!
          */
@@ -67,12 +67,12 @@ public class TestConfigurationPage {
         /**
          * Contact email
          */
-        Assert.assertTrue(configurationPage.getContactEmail().contains("dienstplan@"));
+        Assert.assertTrue(configurationPage.getContactEmail().contains("selenium@"));
         /**
          * Language and encoding
          */
         Assert.assertEquals(configurationPage.getLanguage(), "Deutsch");
-        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        Assert.assertEquals(configurationPage.getLocales(), "C");
         Assert.assertEquals(configurationPage.getEncoding(), "UTF-8");
         /**
          * Error log verbosity:

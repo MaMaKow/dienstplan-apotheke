@@ -63,8 +63,7 @@ public class TestInstallation {
          * like in the nextcloud.
          */
         driver.get(testPageFolderPath + "selenium-copy.php");
-        String seleniumCopyDoneXPath = "//*[@id=\"span_done\"]";
-        By seleniumCopyDoneBy = By.xpath(seleniumCopyDoneXPath);
+        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
 
@@ -116,7 +115,9 @@ public class TestInstallation {
         openingTimes.put(4, openingTimeWeekdays);
         openingTimes.put(5, openingTimeWeekdays);
         openingTimes.put(6, openingTimeSaturday);
-        branchAdministrationPage.createNewBranch(5, 5, "Neue Filiale", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
+        branchAdministrationPage = branchAdministrationPage.createNewBranch(1, 1, "Hauptapotheke am großen Platz", "Hauptapotheke", "Hauptplatz 4\n12345 Berlin", pdr_user_name, openingTimes);
+        openingTimes.remove(6);
+        branchAdministrationPage = branchAdministrationPage.createNewBranch(5, 5, "Filiale in der Nebenstraße", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
     }
 
     @AfterMethod

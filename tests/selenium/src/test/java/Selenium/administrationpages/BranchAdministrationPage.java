@@ -48,48 +48,28 @@ public class BranchAdministrationPage {
     private final By formElementBranchShortNameBy = By.xpath("//*[@id=\"branch_short_name\"]");
     private final By formElementBranchAddressBy = By.xpath("//*[@id=\"branch_address\"]");
     private final By formElementBranchManagerBy = By.xpath("//*[@id=\"branch_manager\"]");
-    private final By formElementOpeningTimesMondayFromBy = By.xpath("//*[@id=\"branch_input_opening_times_fieldset_table\"]/tbody/tr[1]/td[3]/input");
-    private final By formElementOpeningTimesMondayToBy = By.xpath("//*[@id=\"branch_input_opening_times_fieldset_table\"]/tbody/tr[1]/td[5]/input");
-    private final By formElementOpeningTimesSundayFromBy = By.xpath("//*[@id=\"branch_input_opening_times_fieldset_table\"]/tbody/tr[7]/td[3]/input");
-    private final By formElementOpeningTimesSundayToBy = By.xpath("//*[@id=\"branch_input_opening_times_fieldset_table\"]/tbody/tr[7]/td[3]/input");
-
-    private WebElement formElementBranchId;
-    private WebElement formElementBranchPepId;
-    private WebElement formElementBranchName;
-    private WebElement formElementBranchShortName;
-    private WebElement formElementBranchAddress;
-    private WebElement formElementBranchManager;
 
     /**
      * Buttons:
      */
     private final By formElementSubmitBy = By.xpath("//*[@id=\"submit_branch_data\"]");
     private final By formElementRemoveBranchBy = By.xpath("//*[@id=\"form_buttons_container\"]/button[@id=\"branch_form_button_remove\"]");
-    private WebElement formElementSubmit;
-    private WebElement formElementRemoveBranch;
+
     /**
      * opening times stored in input elements of type time
      */
-    HashMap<Integer, WebElement[]> openingTimeElements;
-
     public BranchAdministrationPage() {
         driver = Selenium.driver.Wrapper.getDriver();
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(formElementSubmitBy));
 
-        /**
-         * Form elements:
-         */
-        formElementBranchId = driver.findElement(formElementBranchIdBy);
-        formElementBranchPepId = driver.findElement(formElementBranchPepIdBy);
-        formElementBranchName = driver.findElement(formElementBranchNameBy);
-        formElementBranchShortName = driver.findElement(formElementBranchShortNameBy);
-        formElementBranchAddress = driver.findElement(formElementBranchAddressBy);
-        formElementBranchManager = driver.findElement(formElementBranchManagerBy);
-        /**
-         * Form elements for the opening times:
-         */
+    }
 
+    /**
+     * Form elements for the opening times:
+     */
+    private HashMap getOpeningTimeElements() {
+        HashMap<Integer, WebElement[]> openingTimeElements;
         By openingTimesTableBy = By.xpath("//*[@id=\"branch_input_opening_times_fieldset_table\"]");
         By timeInputsBy = By.xpath("//input[@type='time']");
 
@@ -105,13 +85,7 @@ public class BranchAdministrationPage {
             openingTimeElements.put(row, timeElementsFromTo);
             row++;
         }
-
-        /**
-         * Buttons:
-         */
-        formElementSubmit = driver.findElement(formElementSubmitBy);
-        formElementRemoveBranch = driver.findElement(formElementRemoveBranchBy);
-
+        return openingTimeElements;
     }
 
     /**
@@ -128,7 +102,7 @@ public class BranchAdministrationPage {
      * @param branchManager
      * @param openingTimesMap
      */
-    public void createNewBranch(int branchId,
+    public BranchAdministrationPage createNewBranch(int branchId,
             int branchPepId,
             String branchName,
             String branchShortName,
@@ -141,6 +115,15 @@ public class BranchAdministrationPage {
          */
         Select branchFormSelect = new Select(driver.findElement(formElementBranchSelectBy));
         branchFormSelect.selectByVisibleText("create new branch");
+        /**
+         * Form elements:
+         */
+        WebElement formElementBranchId = driver.findElement(formElementBranchIdBy);
+        WebElement formElementBranchPepId = driver.findElement(formElementBranchPepIdBy);
+        WebElement formElementBranchName = driver.findElement(formElementBranchNameBy);
+        WebElement formElementBranchShortName = driver.findElement(formElementBranchShortNameBy);
+        WebElement formElementBranchAddress = driver.findElement(formElementBranchAddressBy);
+        WebElement formElementBranchManager = driver.findElement(formElementBranchManagerBy);
         /**
          * Fill the form:
          */
@@ -171,6 +154,7 @@ public class BranchAdministrationPage {
             /**
              * Get the time input elements:
              */
+            HashMap<Integer, WebElement[]> openingTimeElements = getOpeningTimeElements();
             WebElement[] timeElementsFromTo = openingTimeElements.get(row - 1);
             WebElement timeElementFrom = timeElementsFromTo[0];
             WebElement timeElementTo = timeElementsFromTo[1];
@@ -184,7 +168,11 @@ public class BranchAdministrationPage {
         /**
          * submit:
          */
+        WebElement formElementSubmit;
+
+        formElementSubmit = driver.findElement(formElementSubmitBy);
         formElementSubmit.click();
+        return new BranchAdministrationPage();
     }
 
     /**
@@ -202,6 +190,8 @@ public class BranchAdministrationPage {
         /**
          * submit removal:
          */
+        WebElement formElementRemoveBranch;
+        formElementRemoveBranch = driver.findElement(formElementRemoveBranchBy);
         formElementRemoveBranch.click();
     }
 }

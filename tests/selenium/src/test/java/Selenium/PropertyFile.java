@@ -107,7 +107,8 @@ public class PropertyFile {
     }
 
     public String getUrlPageTest() {
-        String urlPageTest = properties.getProperty("urlPageTest");
+        String urlPageTest = getTestPageUrl();
+        //String urlPageTest = properties.getProperty("urlPageTest");
         if (null != urlPageTest) {
             return urlPageTest;
         }
