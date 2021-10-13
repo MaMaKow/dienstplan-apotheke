@@ -19,6 +19,7 @@
 package Selenium.overtimepages;
 
 import Selenium.MenuFragment;
+import Selenium.Overtime;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -47,8 +48,10 @@ public class OvertimeEmployeePage {
     private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
     private final By reasonInputBy = By.xpath("//*[@id=\"grund\"]");
     private final By submitButtonBy = By.xpath("/html/body/div/table/tbody/tr/td/input[@name=\"submitStunden\"]");
+    private final SimpleDateFormat simpleDateFormat;
 
     public OvertimeEmployeePage(WebDriver driver) {
+        this.simpleDateFormat = new SimpleDateFormat("dd.mm.YYYY");
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {
@@ -94,14 +97,13 @@ public class OvertimeEmployeePage {
         return listOfOvertimeRowElements;
     }
 
-    public WebElement findOvertimeRowByIndex(int index) {
+    private WebElement findOvertimeRowByIndex(int index) {
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         return listOfOvertimeRows.get(index);
     }
 
-    public WebElement findOvertimeRowByDate(Calendar calendar) {
+    private WebElement findOvertimeRowByDate(Calendar calendar) {
         By dateBy = By.xpath(".//td/form");
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.mm.YYYY");
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
@@ -110,6 +112,16 @@ public class OvertimeEmployeePage {
             }
         }
         return null;
+    }
+
+    public Overtime getOvertimeByCalendar(Calendar calendar) {
+        WebElement overtimeRow = findOvertimeRowByDate(calendar);
+        //String dateString = overtimeRow.findElement(By.xpath(".//td[1]/form")).getText();
+        //simpleDateFormat.format(dateString);
+        float hours = Integer.valueOf(overtimeRow.findElement(By.xpath(".//td[2]")).getText());
+        float balance = Integer.valueOf(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
+        String reason = overtimeRow.findElement(By.xpath(".//td[3]")).getText();
+        return new Overtime(calendar, hours, balance, reason);
     }
 
     public OvertimeEmployeePage addNewOvertime(Calendar calendar, float hours, String reason) {
