@@ -42,11 +42,11 @@ public class Overtime {
         return calendar;
     }
 
-    public float getHours() {
+    public Float getHours() {
         return hours;
     }
 
-    public float getBalance() {
+    public Float getBalance() {
         return balance;
     }
 

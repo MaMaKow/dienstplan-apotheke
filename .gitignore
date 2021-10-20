@@ -80,12 +80,11 @@ tests/selenium/src/test/config.properties
 tests/selenium/src/test/Configuration.properties
 *.properties
 .vs/
-tests/selenium/.project_old
-tests/selenium/.classpath_old
 *.prefs
 target/
+tests/selenium/.project_old
+tests/selenium/.classpath_old
 tests/selenium/nb-configuration.xml
 tests/selenium/.project
 tests/selenium/.classpath
 tests/selenium/test-output/
-tests/selenium/nb-configuration.xml

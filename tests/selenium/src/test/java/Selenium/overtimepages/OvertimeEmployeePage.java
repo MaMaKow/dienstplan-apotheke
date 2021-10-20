@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -51,7 +53,7 @@ public class OvertimeEmployeePage {
     private final SimpleDateFormat simpleDateFormat;
 
     public OvertimeEmployeePage(WebDriver driver) {
-        this.simpleDateFormat = new SimpleDateFormat("dd.mm.YYYY");
+        this.simpleDateFormat = new SimpleDateFormat("dd.MM.YYYY");
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {
@@ -107,9 +109,12 @@ public class OvertimeEmployeePage {
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
-            if (simpleDateFormat.format(calendar).equals(dateElement.getText())) {
+            System.out.println(dateElement.getAttribute("outerHTML"));
+            if (simpleDateFormat.format(calendar.getTime()).equals(dateElement.getText())) {
+                System.out.println("yes");
                 return overtimeRowElement;
             }
+            System.out.println("no");
         }
         return null;
     }
@@ -118,37 +123,80 @@ public class OvertimeEmployeePage {
         WebElement overtimeRow = findOvertimeRowByDate(calendar);
         //String dateString = overtimeRow.findElement(By.xpath(".//td[1]/form")).getText();
         //simpleDateFormat.format(dateString);
-        float hours = Integer.valueOf(overtimeRow.findElement(By.xpath(".//td[2]")).getText());
-        float balance = Integer.valueOf(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
-        String reason = overtimeRow.findElement(By.xpath(".//td[3]")).getText();
+        float hours = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[2]")).getText());
+        float balance = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
+        String reason = overtimeRow.findElement(By.xpath(".//td[4]")).getText();
         return new Overtime(calendar, hours, balance, reason);
     }
 
     public OvertimeEmployeePage addNewOvertime(Calendar calendar, float hours, String reason) {
-        /**
-         * date:
-         */
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.mm.YYYY");
-        String dateString = simpleDateFormat.format(calendar);
-        WebElement dateInputElement = driver.findElement(dateInputBy);
-        dateInputElement.sendKeys(dateString);
-        /**
-         * hours:
-         */
-        WebElement hoursInputElement = driver.findElement(hoursInputBy);
-        hoursInputElement.sendKeys(String.valueOf(hours));
-        /**
-         * reason:
-         */
-        WebElement reasonInputElement = driver.findElement(reasonInputBy);
-        reasonInputElement.sendKeys(reason);
-        /**
-         * submit:
-         */
-        WebElement submitButtonElement = driver.findElement(submitButtonBy);
-        submitButtonElement.click();
+        try {
+            /**
+             * date:
+             */
+            System.out.println("calendar");
+            System.out.println(calendar);
+            System.out.println(calendar.getTime());
+            System.out.println(calendar.getTimeInMillis());
+            String dateString = simpleDateFormat.format(calendar.getTime());
+            WebElement dateInputElement = driver.findElement(dateInputBy);
+            dateInputElement.clear();
+            System.out.println("Sending dateString to dateInputElement:");
+            System.out.println(dateString);
+            dateInputElement.sendKeys(dateString);
+            Thread.sleep(5000);
+            /**
+             * hours:
+             */
+            WebElement hoursInputElement = driver.findElement(hoursInputBy);
+            hoursInputElement.sendKeys(String.valueOf(hours));
+            Thread.sleep(5000);
+            /**
+             * reason:
+             */
+            WebElement reasonInputElement = driver.findElement(reasonInputBy);
+            reasonInputElement.sendKeys(reason);
+            Thread.sleep(5000);
+            /**
+             * submit:
+             */
+            WebElement submitButtonElement = driver.findElement(submitButtonBy);
+            submitButtonElement.click();
+            /**
+             * <p lang=de>
+             * Mitunter werden Warnmeldungen angezeigt z.B. "Das Datum des
+             * Eintrages liegt vor dem letzten vorhandenen Datum. Sind Sie
+             * sicher, dass die Daten korrekt sind?" Wir akzeptieren hier
+             * einfach die Abfrage.
+             * </p>
+             */
+            Thread.sleep(5000);
+            System.out.println("Gibt es vielleicht einen alert?");
+            System.out.println(driver.switchTo().alert().getText());
+            driver.switchTo().alert().accept();
+            Thread.sleep(5000);
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(OvertimeEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return new OvertimeEmployeePage(driver);
 
+    }
+
+    public OvertimeEmployeePage removeOvertimeByCalendar(Calendar calendar) {
+        WebElement overtimeRow = findOvertimeRowByDate(calendar);
+        By removeButtonBy = By.xpath(".//input");
+        WebElement removeButtonElement = overtimeRow.findElement(removeButtonBy);
+        removeButtonElement.click();
+        /**
+         * <p lang=de>
+         * Vor dem Löschen erscheint ein alert mit dem Text: "Really delete this
+         * data set?" Wir bestätigen diese Anfrage mit OK.
+         * </p>
+         *
+         */
+        driver.switchTo().alert().accept();
+        return new OvertimeEmployeePage(driver);
     }
 
 }
