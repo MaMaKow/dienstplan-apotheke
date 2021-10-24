@@ -22,10 +22,7 @@ import Selenium.MenuFragment;
 import Selenium.Overtime;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
@@ -130,55 +127,39 @@ public class OvertimeEmployeePage {
     }
 
     public OvertimeEmployeePage addNewOvertime(Calendar calendar, float hours, String reason) {
-        try {
-            /**
-             * date:
-             */
-            System.out.println("calendar");
-            System.out.println(calendar);
-            System.out.println(calendar.getTime());
-            System.out.println(calendar.getTimeInMillis());
-            String dateString = simpleDateFormat.format(calendar.getTime());
-            WebElement dateInputElement = driver.findElement(dateInputBy);
-            dateInputElement.clear();
-            System.out.println("Sending dateString to dateInputElement:");
-            System.out.println(dateString);
-            dateInputElement.sendKeys(dateString);
-            Thread.sleep(5000);
-            /**
-             * hours:
-             */
-            WebElement hoursInputElement = driver.findElement(hoursInputBy);
-            hoursInputElement.sendKeys(String.valueOf(hours));
-            Thread.sleep(5000);
-            /**
-             * reason:
-             */
-            WebElement reasonInputElement = driver.findElement(reasonInputBy);
-            reasonInputElement.sendKeys(reason);
-            Thread.sleep(5000);
-            /**
-             * submit:
-             */
-            WebElement submitButtonElement = driver.findElement(submitButtonBy);
-            submitButtonElement.click();
-            /**
-             * <p lang=de>
-             * Mitunter werden Warnmeldungen angezeigt z.B. "Das Datum des
-             * Eintrages liegt vor dem letzten vorhandenen Datum. Sind Sie
-             * sicher, dass die Daten korrekt sind?" Wir akzeptieren hier
-             * einfach die Abfrage.
-             * </p>
-             */
-            Thread.sleep(5000);
-            System.out.println("Gibt es vielleicht einen alert?");
-            System.out.println(driver.switchTo().alert().getText());
-            driver.switchTo().alert().accept();
-            Thread.sleep(5000);
+        /**
+         * date:
+         */
+        String dateString = simpleDateFormat.format(calendar.getTime());
+        WebElement dateInputElement = driver.findElement(dateInputBy);
+        dateInputElement.clear();
+        dateInputElement.sendKeys(dateString);
+        /**
+         * hours:
+         */
+        WebElement hoursInputElement = driver.findElement(hoursInputBy);
+        hoursInputElement.sendKeys(String.valueOf(hours));
+        /**
+         * reason:
+         */
+        WebElement reasonInputElement = driver.findElement(reasonInputBy);
+        reasonInputElement.sendKeys(reason);
+        /**
+         * submit:
+         */
+        WebElement submitButtonElement = driver.findElement(submitButtonBy);
+        submitButtonElement.click();
+        /**
+         * <p lang=de>
+         * Mitunter werden Warnmeldungen angezeigt z.B. "Das Datum des Eintrages
+         * liegt vor dem letzten vorhandenen Datum. Sind Sie sicher, dass die
+         * Daten korrekt sind?" Wir akzeptieren hier einfach die Abfrage.
+         * </p>
+         */
+        System.out.println("Gibt es vielleicht einen alert?");
+        System.out.println(driver.switchTo().alert().getText());
+        driver.switchTo().alert().accept();
 
-        } catch (InterruptedException ex) {
-            Logger.getLogger(OvertimeEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return new OvertimeEmployeePage(driver);
 
     }
