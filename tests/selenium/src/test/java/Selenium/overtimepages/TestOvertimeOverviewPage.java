@@ -40,7 +40,7 @@ public class TestOvertimeOverviewPage {
 
     WebDriver driver;
 
-    @Test(enabled = true)/*new*/
+    @Test(enabled = false)/*passed*/
     public void testDisplay() {
         driver = Selenium.driver.Wrapper.getDriver();
         ReadPropertyFile readPropertyFile = new ReadPropertyFile();
