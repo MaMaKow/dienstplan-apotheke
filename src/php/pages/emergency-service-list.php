@@ -58,6 +58,9 @@ function handle_user_input() {
             'date_new' => $date_new,
         ));
     } else if ("replace" === $command) {
+        /**
+         * <p lang=de>Vorhandenen Eintrag ändern</p>
+         */
         $sql_query = "UPDATE Notdienst SET `VK` = :employee_id, `Datum` = :date_new WHERE `Datum` = :date_old AND Mandant = :branch_id";
         database_wrapper::instance()->run($sql_query, array(
             'employee_id' => user_input::convert_post_empty_to_php_null($employee_id),
@@ -66,6 +69,9 @@ function handle_user_input() {
             'date_old' => $date_old,
         ));
     } else if ("delete" === $command) {
+        /**
+         * <p lang=de>Vorhandenen Eintrag löschen</p>
+         */
         $sql_query = "DELETE FROM Notdienst WHERE `Datum` = :date_old AND Mandant = :branch_id";
         database_wrapper::instance()->run($sql_query, array(
             'branch_id' => $branch_id,

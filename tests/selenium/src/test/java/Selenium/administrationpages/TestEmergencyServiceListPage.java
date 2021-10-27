@@ -39,7 +39,7 @@ public class TestEmergencyServiceListPage {
 
     WebDriver driver;
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = true)/*new*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -62,15 +62,24 @@ public class TestEmergencyServiceListPage {
         Assert.assertEquals(emergencyServiceListPage.getYear(), 2019);
         Assert.assertEquals(emergencyServiceListPage.getBranchId(), 1);
         /**
-         *
+         * <p lang=de>Daten einfügen:</p>
          */
         Calendar targetDate = Calendar.getInstance(Locale.GERMANY);
         targetDate.set(2019, Calendar.AUGUST, 8);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), 5);
-        emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 9);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), 9);
-        emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 5);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), 5);
+        emergencyServiceListPage = emergencyServiceListPage.addLineForDate(targetDate);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 9);
+        /**
+         * <p lang=de>Daten abfragen:</p>
+         */
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), (Integer) 9);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 5);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), (Integer) 5);
+        /**
+         * <p lang=de>Zeilen wieder entfernen</p>
+         */
+        emergencyServiceListPage.doNotRemoveLineByDate(targetDate);
+        emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(targetDate);
+        Assert.assertNull(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()));
     }
 
     @BeforeMethod

@@ -117,7 +117,8 @@ public class TestInstallation {
         openingTimes.put(6, openingTimeSaturday);
         branchAdministrationPage = branchAdministrationPage.createNewBranch(1, 1, "Hauptapotheke am großen Platz", "Hauptapotheke", "Hauptplatz 4\n12345 Berlin", pdr_user_name, openingTimes);
         openingTimes.remove(6);
-        branchAdministrationPage = branchAdministrationPage.createNewBranch(5, 5, "Filiale in der Nebenstraße", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
+        branchAdministrationPage = branchAdministrationPage.createNewBranch(2, 2, "Filiale in der Nebenstraße", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
+        branchAdministrationPage = branchAdministrationPage.createNewBranch(99, 99, "Unterwegs im Außendienst", "Außendienst", "Überall\nim Umkreis", pdr_user_name, new HashMap<>());
     }
 
     @AfterMethod

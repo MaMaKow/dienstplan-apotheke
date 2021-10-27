@@ -80,6 +80,7 @@ public class Wrapper {
         //options.addArguments("--headless");
         options.addArguments("window-size=1920,1080");
         options.addArguments("--start-maximized");
+        options.addArguments("--lang=de-DE");
         //Dateien herunterladen statt anzeigen:
         HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
         chromePrefs.put("profile.default_content_settings.popups", 0);
@@ -111,7 +112,7 @@ public class Wrapper {
         for (int i = 0; i < charsToEnter.length; i++) {
             try {
                 //Adding a sleep of 500 milliseconds to handle any sync issues
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);
             }
