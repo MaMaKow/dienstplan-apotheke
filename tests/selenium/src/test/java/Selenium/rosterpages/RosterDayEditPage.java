@@ -95,6 +95,14 @@ public class RosterDayEditPage {
         dateChooserInput.sendKeys(Keys.ENTER);
     }
 
+    public void goToDate(Calendar calendar) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.YYYY");
+        String dateString = simpleDateFormat.format(calendar.getTime());
+        WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
+        dateChooserInput.sendKeys(dateString);
+        dateChooserInput.sendKeys(Keys.ENTER);
+    }
+
     public String getDate() {
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         String date_value = dateChooserInput.getAttribute("value");
@@ -142,36 +150,50 @@ public class RosterDayEditPage {
         return rosterTableRowElement;
     }
 
-    private WebElement findRosterInputEmployee(int unixDate, int iterator) {
+    private WebElement findRosterInputEmployee(long unixDate, int iterator) {
         String inputName = "Roster[" + unixDate + "][" + iterator + "][employee_id]";
         By inputBy = By.name(inputName);
         WebElement rosterInputElement = driver.findElement(inputBy);
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputDutyStart(int unixDate, int iterator) {
+    private WebElement findRosterInputDutyStart(Long unixDate, int iterator) {
         String inputName = "Roster[" + unixDate + "][" + iterator + "][duty_start_sql]";
         By inputBy = By.name(inputName);
         WebElement rosterInputElement = driver.findElement(inputBy);
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputDutyEnd(int unixDate, int iterator) {
+    private WebElement findRosterInputDutyEnd(Long unixDate, int iterator) {
         String inputName = "Roster[" + unixDate + "][" + iterator + "][duty_end_sql]";
         By inputBy = By.name(inputName);
         WebElement rosterInputElement = driver.findElement(inputBy);
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputBreakStart(int unixDate, int iterator) {
+    private WebElement findRosterInputBreakStart(Long unixDate, int iterator) {
         String inputName = "Roster[" + unixDate + "][" + iterator + "][break_start_sql]";
         By inputBy = By.name(inputName);
         WebElement rosterInputElement = driver.findElement(inputBy);
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputBreakEnd(int unixDate, int iterator) {
+    private WebElement findRosterInputBreakEnd(Long unixDate, int iterator) {
         String inputName = "Roster[" + unixDate + "][" + iterator + "][break_end_sql]";
+        By inputBy = By.name(inputName);
+        WebElement rosterInputElement = driver.findElement(inputBy);
+        return rosterInputElement;
+    }
+
+    private WebElement findRosterInputComment(Long unixDate, int iterator) {
+        String inputName = "Roster[" + unixDate + "][" + iterator + "][comment]";
+        By inputBy = By.name(inputName);
+        WebElement rosterInputElement = driver.findElement(inputBy);
+        return rosterInputElement;
+    }
+
+    private WebElement findRosterInputCommentActivator(Long unixDate, int iterator) {
+        String inputName = "//*[@id=\"roster_input_row_comment_input_" + unixDate + "_" + iterator + "_link_div_show\"]/a";
         By inputBy = By.name(inputName);
         WebElement rosterInputElement = driver.findElement(inputBy);
         return rosterInputElement;
@@ -183,30 +205,53 @@ public class RosterDayEditPage {
      * abgesendet werden!
      * </p>
      */
-    public void changeRosterInputEmployee(int unixDate, int iterator, int employeeId) {
+    public void changeRosterInputEmployee(Long unixDate, int iterator, int employeeId) {
         WebElement rosterInputEmployeeElement = findRosterInputEmployee(unixDate, iterator);
         Select inputElementSelect = new Select(rosterInputEmployeeElement);
         inputElementSelect.selectByValue(String.valueOf(employeeId));
     }
 
-    public void changeRosterInputDutyStart(int unixDate, int iterator, String time) {
+    public void changeRosterInputDutyStart(Long unixDate, int iterator, String time) {
         WebElement rosterInputElement = findRosterInputDutyStart(unixDate, iterator);
         rosterInputElement.sendKeys(time);
     }
 
-    public void changeRosterInputDutyEnd(int unixDate, int iterator, String time) {
+    public void changeRosterInputDutyEnd(Long unixDate, int iterator, String time) {
         WebElement rosterInputElement = findRosterInputDutyEnd(unixDate, iterator);
         rosterInputElement.sendKeys(time);
     }
 
-    public void changeRosterInputBreakStart(int unixDate, int iterator, String time) {
+    public void changeRosterInputBreakStart(Long unixDate, int iterator, String time) {
         WebElement rosterInputElement = findRosterInputBreakStart(unixDate, iterator);
         rosterInputElement.sendKeys(time);
     }
 
-    public void changeRosterInputBreakEnd(int unixDate, int iterator, String time) {
+    public void changeRosterInputBreakEnd(Long unixDate, int iterator, String time) {
         WebElement rosterInputElement = findRosterInputBreakEnd(unixDate, iterator);
         rosterInputElement.sendKeys(time);
+    }
+
+    public void changeRosterInputComment(Long unixDate, int iterator, String comment) {
+        try {
+            /**
+             * <p lang=de>Wenn kein Kommentar vorhanden ist, dann muss das
+             * Kommentarfeld erst durch klick auf "K+" sichtbar gemacht
+             * werden.</p>
+             */
+            WebElement rosterInputCommentActivatorElement = findRosterInputComment(unixDate, iterator);
+            rosterInputCommentActivatorElement.click();
+        } catch (Exception e) {
+            /**
+             * <p lang=de>Dann war das Kommentarfeld wohl schon sichtbar. Es ist
+             * nichts zu tun.</p>
+             */
+        }
+        WebElement rosterInputElement = findRosterInputComment(unixDate, iterator);
+        if (rosterInputElement.isEnabled()) {
+            rosterInputElement.clear();
+            rosterInputElement.sendKeys(comment);
+        }
+        System.err.println("Das Setzen des Kommentars hat nicht funktioniert.");
     }
 
     public void rosterFormSubmit() {
@@ -219,7 +264,22 @@ public class RosterDayEditPage {
         buttonRosterInputAddRowElement.click();
     }
 
-    public int getRosterValueUnixDate(int iterator) {
+    public void rosterInputAddRow(RosterItem rosterItem) {
+        WebElement buttonRosterInputAddRowElement = driver.findElement(buttonRosterInputAddRowBy);
+        Long unixDate = Long.valueOf(buttonRosterInputAddRowElement.getAttribute("data-day_iterator"));
+        int rosterRowIterator = Integer.valueOf(buttonRosterInputAddRowElement.getAttribute("data-roster_row_iterator"));
+        buttonRosterInputAddRowElement.click();
+        this.changeRosterInputDutyStart(unixDate, rosterRowIterator, rosterItem.getDutyStart());
+        this.changeRosterInputDutyEnd(unixDate, rosterRowIterator, rosterItem.getDutyEnd());
+        this.changeRosterInputBreakStart(unixDate, rosterRowIterator, rosterItem.getBreakStart());
+        this.changeRosterInputBreakEnd(unixDate, rosterRowIterator, rosterItem.getBreakEnd());
+        this.changeRosterInputComment(unixDate, rosterRowIterator, rosterItem.getComment());
+        /**
+         * TODO: Comment is not implemented yet.
+         */
+    }
+
+    public Integer getRosterValueUnixDate(int iterator) {
         WebElement rosterTableRow = this.findRosterTableRow(iterator);
         int rosterValue = Integer.parseInt(rosterTableRow.getAttribute("data-date_unix"));
         return rosterValue;
@@ -231,14 +291,14 @@ public class RosterDayEditPage {
         return rosterValue;
     }
 
-    public int getRosterValueEmployeeId(int unixDate, int iterator) {
+    public int getRosterValueEmployeeId(Long unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputEmployee(unixDate, iterator);
         //Select inputElementSelect = new Select(rosterInputElement);
         int rosterValue = Integer.parseInt(rosterInputElement.getAttribute("value"));
         return rosterValue;
     }
 
-    public String getRosterValueEmployeeName(int unixDate, int iterator) {
+    public String getRosterValueEmployeeName(Long unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputEmployee(unixDate, iterator);
         Select inputElementSelect = new Select(rosterInputElement);
         WebElement selectedOption = inputElementSelect.getFirstSelectedOption();
@@ -247,25 +307,25 @@ public class RosterDayEditPage {
         return selectedoption;
     }
 
-    public String getRosterValueDutyStart(int unixDate, int iterator) {
+    public String getRosterValueDutyStart(Long unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputDutyStart(unixDate, iterator);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    public String getRosterValueDutyEnd(int unixDate, int iterator) {
+    public String getRosterValueDutyEnd(Long unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputDutyEnd(unixDate, iterator);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    public String getRosterValueBreakStart(int unixDate, int iterator) {
+    public String getRosterValueBreakStart(Long unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputBreakStart(unixDate, iterator);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    public String getRosterValueBreakEnd(int unixDate, int iterator) {
+    public String getRosterValueBreakEnd(Long unixDate, int iterator) {
         WebElement rosterInputElement = findRosterInputBreakEnd(unixDate, iterator);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
@@ -277,7 +337,7 @@ public class RosterDayEditPage {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 
-        int unixDate = getRosterValueUnixDate(iterator);
+        Long unixDate = getRosterValueUnixDate(iterator).longValue();
         String employeeName = this.getRosterValueEmployeeName(unixDate, iterator);
         String dutyStart = getRosterValueDutyStart(unixDate, iterator);
         String dutyEnd = getRosterValueDutyEnd(unixDate, iterator);

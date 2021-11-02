@@ -6,33 +6,37 @@
             <class name="Selenium.installation.TestInstallation" />
         </classes>
     </test>
+    <!--
+    <test name="Absence Pages" >
+        <classes>
+            <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
+        </classes>
+    </test>
+    <test name="Principle Roster Pages" >
+        <classes>
+            <class name="Selenium.PrincipleRosterPages.TestDayPage" />
+        </classes>
+    </test>
+    -->
+    <test name="Roster Pages" >
+        <classes>
+            <class name="Selenium.RosterPages.TestRosterDayEditPage" />
+            <!--
+            <class name="Selenium.RosterPages.TestRosterWeekTablePage" />
+            <class name="Selenium.RosterPages.TestRosterEmployeePage" />
+            <class name="Selenium.RosterPages.TestRosterHoursPage" />
+            -->
+        </classes>
+    </test>
     <test name="Application Pages">
         <classes>
+            <!--
+            <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
             <class name="Selenium.SignInPage.TestLogin" />
             <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestConfigurationPage" />
-            <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
-            <class name="Selenium.administrationpages.TestSaturdayListPage" />
+                    <class name="Selenium.administrationpages.TestSaturdayListPage" />
+            -->
         </classes>
     </test>
-    <!--
-<test name="Absence Pages" >
-    <classes>
-        <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
-    </classes>
-</test>
-<test name="Principle Roster Pages" >
-    <classes>
-        <class name="Selenium.PrincipleRosterPages.TestDayPage" />
-    </classes>
-</test>
-<test name="Roster Pages" >
-    <classes>
-        <class name="Selenium.RosterPages.TestRosterDayEditPage" />
-        <class name="Selenium.RosterPages.TestRosterDayEditPage" />
-        <class name="Selenium.RosterPages.TestRosterEmployeePage" />
-        <class name="Selenium.RosterPages.TestRosterHoursPage" />
-    </classes>
-</test>
-    -->
 </suite>
