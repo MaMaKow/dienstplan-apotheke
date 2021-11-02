@@ -18,9 +18,9 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.SignInPage.SignInPage;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -36,19 +36,19 @@ public class TestConfigurationPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testReadInputFields() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         /**
          * Go to page:
@@ -58,8 +58,8 @@ public class TestConfigurationPage {
         /**
          * Check the expected values:
          */
-        Assert.assertEquals(configurationPage.getApplicationName(), "Local Development Roster");
-        Assert.assertEquals(configurationPage.getDatabaseName(), "Apotheke_development");
+        Assert.assertEquals(configurationPage.getApplicationName(), "PDR");
+        Assert.assertEquals(configurationPage.getDatabaseName(), "pdrTest");
         /**
          * The password MUST NOT be visible!
          */
@@ -67,12 +67,12 @@ public class TestConfigurationPage {
         /**
          * Contact email
          */
-        Assert.assertTrue(configurationPage.getContactEmail().contains("dienstplan@"));
+        Assert.assertTrue(configurationPage.getContactEmail().contains("selenium@"));
         /**
          * Language and encoding
          */
         Assert.assertEquals(configurationPage.getLanguage(), "Deutsch");
-        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        Assert.assertEquals(configurationPage.getLocales(), "C");
         Assert.assertEquals(configurationPage.getEncoding(), "UTF-8");
         /**
          * Error log verbosity:

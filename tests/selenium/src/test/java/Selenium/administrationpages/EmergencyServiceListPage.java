@@ -20,9 +20,11 @@ package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Date;
 import java.util.Locale;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -31,13 +33,6 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
- * <p lang=de>
- * TODO: Es muss auf Feiertage geachtet werden. Am Sa 01.05.2021 war Tag der
- * Arbeit. Das hat den Samstagsplaner damals durcheinander gebracht. Das sollte
- * nun gefixt sein.
- * </p>
- *
- *
  * @author Mandelkow
  */
 public class EmergencyServiceListPage {
@@ -91,8 +86,6 @@ public class EmergencyServiceListPage {
         List<WebElement> emergencyRowListElements = driver.findElements(emergencyRowListBy);
         emergencyRowListElements.remove(0); //The first element is the heading <th></th>
         for (WebElement emergencyRowElement : emergencyRowListElements) {
-            System.out.println("emergencyRowElement.getAttribute(\"innerHTML\")");
-            System.out.println(emergencyRowElement.getAttribute("innerHTML"));
             WebElement emergencyRowDateElement = emergencyRowElement.findElement(emergencyRowDateBy);
             String emergencyRowDateString = emergencyRowDateElement.getText().substring(3, 13);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
@@ -104,19 +97,58 @@ public class EmergencyServiceListPage {
         return null;
     }
 
-    public int getEmployeeIdOnDate(Date targetDate) {
+    public Integer getEmployeeIdOnDate(Date targetDate) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(targetDate);
+        if (null == emergencyRowElement) {
+            return null;
+        }
         WebElement employeeIdWebElement = emergencyRowElement.findElement(emergencyRowEmployeeIdBy);
         Select employeeIdSelect = new Select(employeeIdWebElement);
         WebElement selectedOption = employeeIdSelect.getFirstSelectedOption();
         return Integer.valueOf(selectedOption.getAttribute("value"));
     }
 
-    public void setEmployeeIdOnDate(Date targetDate, int employeeId) {
+    public EmergencyServiceListPage setEmployeeIdOnDate(Date targetDate, int employeeId) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(targetDate);
         WebElement employeeIdWebElement = emergencyRowElement.findElement(emergencyRowEmployeeIdBy);
         Select employeeIdSelect = new Select(employeeIdWebElement);
         employeeIdSelect.selectByValue(String.valueOf(employeeId));
+        return new EmergencyServiceListPage(driver);
+    }
+
+    public EmergencyServiceListPage addLineForDate(Calendar calendar) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.", Locale.GERMANY);
+        WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
+        dateInputElement.sendKeys(simpleDateFormat.format(calendar));
+        WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
+        submitButton.click();
+        return new EmergencyServiceListPage(driver);
+    }
+
+    public EmergencyServiceListPage removeLineByDate(Calendar calendar) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(calendar.getTime());
+        WebElement deleteButton = emergencyRowElement.findElement(By.xpath(".//button[contains(@id, \'delete\')]"));
+        deleteButton.click();
+        /**
+         * Alert will display: "Really delete this dataset?" Press the OK
+         * button:
+         */
+        Alert alert = driver.switchTo().alert();
+        alert.accept();
+        return new EmergencyServiceListPage(driver);
+    }
+
+    public EmergencyServiceListPage doNotRemoveLineByDate(Calendar calendar) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(calendar.getTime());
+        WebElement deleteButton = emergencyRowElement.findElement(By.xpath(".//button[contains(@id, \'delete\')]"));
+        deleteButton.click();
+        /**
+         * Alert will display: "Really delete this dataset?" Press the Cancel
+         * button:
+         */
+        Alert alert = driver.switchTo().alert();
+        alert.dismiss();
+        return new EmergencyServiceListPage(driver);
     }
 
     /**

@@ -18,7 +18,7 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
 import java.util.Calendar;
@@ -39,19 +39,19 @@ public class TestEmergencyServiceListPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*new*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         EmergencyServiceListPage emergencyServiceListPage = new EmergencyServiceListPage(driver);
         Assert.assertEquals(emergencyServiceListPage.getUserNameText(), pdr_user_name);
@@ -62,15 +62,24 @@ public class TestEmergencyServiceListPage {
         Assert.assertEquals(emergencyServiceListPage.getYear(), 2019);
         Assert.assertEquals(emergencyServiceListPage.getBranchId(), 1);
         /**
-         *
+         * <p lang=de>Daten einfügen:</p>
          */
         Calendar targetDate = Calendar.getInstance(Locale.GERMANY);
         targetDate.set(2019, Calendar.AUGUST, 8);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), 5);
-        emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 9);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), 9);
-        emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 5);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), 5);
+        emergencyServiceListPage = emergencyServiceListPage.addLineForDate(targetDate);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 9);
+        /**
+         * <p lang=de>Daten abfragen:</p>
+         */
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), (Integer) 9);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 5);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), (Integer) 5);
+        /**
+         * <p lang=de>Zeilen wieder entfernen</p>
+         */
+        emergencyServiceListPage.doNotRemoveLineByDate(targetDate);
+        emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(targetDate);
+        Assert.assertNull(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()));
     }
 
     @BeforeMethod

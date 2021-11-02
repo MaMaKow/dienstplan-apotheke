@@ -24,6 +24,9 @@
  */
 abstract class user_input {
 
+    const EXCEPTION_CODE_DUTY_START_INVALID = 1001;
+    const EXCEPTION_CODE_DUTY_END_INVALID = 1002;
+
     public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_STRING, $default_value = null) {
         $List_of_input_sources = array(INPUT_POST, INPUT_GET, INPUT_COOKIE);
         foreach ($List_of_input_sources as $input_source) {
@@ -92,13 +95,18 @@ abstract class user_input {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                     continue;
                 }
-                if (NULL === $duty_start_sql) {
-                    $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
-                    continue;
+                if (NULL === $duty_start_sql OR!validate_date($duty_start_sql, 'H:i')) {
+                    /**
+                     * <p lang=de>
+                     * Bei der Übertragung von roster items können leere Items übertragen werden.
+                     * Diese haben aber IMMER eine leere employee_id.
+                     * Daher wird diese Zeile in diesem Fall nicht erreicht.
+                     * </p>
+                     */
+                    throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql) {
-                    $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
-                    continue;
+                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                    throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 if (!empty($primary_key) && is_numeric($primary_key)) {
                     /*

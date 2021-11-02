@@ -18,7 +18,7 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
 import java.util.Calendar;
@@ -39,19 +39,19 @@ public class TestSaturdayListPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         SaturdayListPage saturdayListPage = new SaturdayListPage(driver);
         Assert.assertEquals(saturdayListPage.getUserNameText(), pdr_user_name);

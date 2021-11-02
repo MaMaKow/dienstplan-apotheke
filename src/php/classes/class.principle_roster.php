@@ -254,11 +254,8 @@ class principle_roster extends roster {
 
     /**
      *
-     * <p lang=de>TODO: Diese Funktion wird so nicht mehr benötigt. Enweder sie wird zum archivieren benutzt, oder sie wird komplett gelöscht.</p>
-     *
      * @param array $List_of_deleted_roster_primary_keys
      * @return void
-     * @deprecated since version 1.0
      */
     public static function invalidate_removed_entries_in_database(array $List_of_deleted_roster_primary_keys) {
         $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT *, NOW() FROM `principle_roster` WHERE `primary_key` = :primary_key)";

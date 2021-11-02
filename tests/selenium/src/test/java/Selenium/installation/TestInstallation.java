@@ -19,7 +19,7 @@
 package Selenium.installation;
 
 import Selenium.HomePage;
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.administrationpages.BranchAdministrationPage;
 import Selenium.driver.Wrapper;
@@ -42,7 +42,7 @@ import org.testng.annotations.AfterMethod;
 public class TestInstallation {
 
     WebDriver driver;
-    ReadPropertyFile readPropertyFile;
+    PropertyFile propertyFile;
     /**
      * <p lang=de>
      * Diese URL wird aus der apache Seite für Ordner ohne index.html
@@ -52,19 +52,18 @@ public class TestInstallation {
      */
     String testPageUrl;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testInstallation() {
         driver = Wrapper.getDriver();
-        readPropertyFile = new ReadPropertyFile();
-        String testPageFolderPath = readPropertyFile.getUrlInstallTest();
+        propertyFile = new PropertyFile();
+        String testPageFolderPath = propertyFile.getUrlInstallTest();
         /**
          * Visit the page script selenium-copy.php. This script will copy a
          * fresh pdr instance into testPageFolderPath. The state will be exactly
          * like in the nextcloud.
          */
         driver.get(testPageFolderPath + "selenium-copy.php");
-        String seleniumCopyDoneXPath = "//*[@id=\"span_done\"]";
-        By seleniumCopyDoneBy = By.xpath(seleniumCopyDoneXPath);
+        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
 
@@ -73,10 +72,12 @@ public class TestInstallation {
         By testPageUrlBy = By.xpath(testPageUrlXPath);
         WebElement testPageLink = driver.findElement(testPageUrlBy);
         testPageUrl = testPageLink.getAttribute("href");
+        propertyFile.setTestPageUrl(testPageUrl);
         testPageLink.click();
         /**
          * Start the actual installation process:
          */
+
         InstallationPageIntro installationPageIntro = new InstallationPageIntro();
         InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
         InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
@@ -93,8 +94,8 @@ public class TestInstallation {
          * </p>
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         assertEquals(pdr_user_name, homePage.getUserNameText());
         /**
@@ -114,14 +115,18 @@ public class TestInstallation {
         openingTimes.put(4, openingTimeWeekdays);
         openingTimes.put(5, openingTimeWeekdays);
         openingTimes.put(6, openingTimeSaturday);
-        branchAdministrationPage.createNewBranch(5, 5, "Neue Filiale", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
+        branchAdministrationPage = branchAdministrationPage.createNewBranch(1, 1, "Hauptapotheke am großen Platz", "Hauptapotheke", "Hauptplatz 4\n12345 Berlin", pdr_user_name, openingTimes);
+        openingTimes.remove(6);
+        branchAdministrationPage = branchAdministrationPage.createNewBranch(2, 2, "Filiale in der Nebenstraße", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
+        branchAdministrationPage = branchAdministrationPage.createNewBranch(99, 99, "Unterwegs im Außendienst", "Außendienst", "Überall\nim Umkreis", pdr_user_name, new HashMap<>());
     }
 
     @AfterMethod
     public void tearDown(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
-        driver.quit();
-
+        if (testResult.getStatus() != ITestResult.FAILURE) {
+            driver.quit();
+        }
     }
 }

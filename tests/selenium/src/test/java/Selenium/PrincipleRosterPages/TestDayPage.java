@@ -16,7 +16,7 @@
  */
 package Selenium.principlerosterpages;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signinpage.SignInPage;
@@ -38,19 +38,19 @@ public class TestDayPage {
 
     WebDriver driver;
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         DayPage dayPage = new DayPage(driver);
         Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
@@ -70,19 +70,19 @@ public class TestDayPage {
         Assert.assertEquals(1, dayPage.getBranchId());
     }
 
-    @Test(enabled = false)/*passed*/
-    public void testRosterDispay() {
+    @Test(enabled = true)/*passed*/
+    public void testRosterDisplay() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         DayPage dayPage = new DayPage(driver);
         Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
@@ -107,19 +107,19 @@ public class TestDayPage {
         }
     }
 
-    @Test(enabled = false)/*new*/
+    @Test(enabled = true)/*new*/
     public void testRosterChange() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         DayPage dayPage = new DayPage(driver);
         Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
@@ -158,19 +158,57 @@ public class TestDayPage {
         dayPage.rosterFormSubmit();
     }
 
-    @Test(enabled = false)/*new*/
-    public void testRosterChangeDragAndDrop() throws Exception {
+    @Test(enabled = true)/*new*/
+    public void testRosterChangePlotErrors() throws ParseException {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        DayPage dayPage = new DayPage(driver);
+        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
+
+        /**
+         * Move to specific month:
+         */
+        dayPage.goToBranch(1);
+        dayPage.goToAlternation(0);
+        dayPage.goToWeekday(1);
+
+        /**
+         * <p lang=de>
+         * Teste die Reaktion auf fehlenden Dienststart
+         * </p>
+         */
+        dayPage.changeRosterInputDutyStart(dayPage.getUnixTime(), 2, "");
+        dayPage.rosterFormSubmit();
+
+        RosterItem rosterItem = dayPage.getRosterItem(2);
+        Assert.assertEquals(rosterItem.getDutyStart(), "11:00");
+        Assert.assertEquals(rosterItem.getEmployeeName().length(), 9);
+
+    }
+
+    @Test(enabled = true)/*new*/
+    public void testRosterChangeDragAndDrop() throws Exception {
+        driver = Selenium.driver.Wrapper.getDriver();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         DayPage dayPage = new DayPage(driver);
         Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
@@ -187,7 +225,6 @@ public class TestDayPage {
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -30, "duty");
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 360, "duty");
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 90, "break");
-            Thread.sleep(500);
             dayPage.rosterFormSubmit();
             RosterItem rosterItem = dayPage.getRosterItem(1);
             System.out.println(rosterItem.getDutyStart());

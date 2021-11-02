@@ -80,6 +80,7 @@ tests/selenium/src/test/config.properties
 tests/selenium/src/test/Configuration.properties
 *.properties
 .vs/
+.vscode/
 *.prefs
 target/
 tests/selenium/.project_old
@@ -88,5 +89,4 @@ tests/selenium/nb-configuration.xml
 tests/selenium/.project
 tests/selenium/.classpath
 tests/selenium/test-output/
-.vscode/
 .project

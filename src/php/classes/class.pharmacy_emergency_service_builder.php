@@ -30,21 +30,20 @@ class pharmacy_emergency_service_builder {
             $workforce = new workforce();
         }
         $table_employee_select = "";
-        $table_employee_select = "<form method='post'>";
         $table_employee_select .= "<input type='hidden' name=emergency_service_branch value='$branch_id'>";
-        $table_employee_select .= "<input type='hidden' name=emergency_service_date value='$date_sql'>";
-        $table_employee_select .= "<select name=emergency_service_employee onChange='this.form.submit()'>";
+        $table_employee_select .= "<input type='hidden' name=emergency_service_date_old value='$date_sql'>";
+        $table_employee_select .= "<select name=emergency_service_employee onChange='unhideButtonOnChange(this)'>";
         /*
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $table_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$employee_id_selected]->last_name) or ! isset($employee_id_selected)) {
+        if (isset($workforce->List_of_employees[$employee_id_selected]->last_name) or!isset($employee_id_selected)) {
             foreach ($workforce->List_of_qualified_pharmacist_employees as $employee_id) {
                 $employee_object = $workforce->List_of_employees[$employee_id];
                 if ($employee_id_selected == $employee_id and NULL !== $employee_id_selected) {
                     $table_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
                 } else {
-                    $table_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                    $table_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>\n";
                 }
             }
         } else {
@@ -54,7 +53,7 @@ class pharmacy_emergency_service_builder {
             $table_employee_select .= "<option value=$employee_id_selected selected>" . $employee_id_selected . " Unknown employee" . "</option>";
         }
         $table_employee_select .= "</select>";
-        $table_employee_select .= "</form>\n";
+        $table_employee_select .= "";
         return $table_employee_select;
     }
 

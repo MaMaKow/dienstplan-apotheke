@@ -64,6 +64,7 @@ function moveElement(evt) {
     return true;
 }
 function deselectElement(evt) {
+    var result = null;
     if (selectedElement !== 0) {
         var svg_element = selectedElement.parentNode.parentNode;
         var box_type = selectedElement.dataset.box_type;
@@ -76,7 +77,31 @@ function deselectElement(evt) {
         var start_hour_float = Math.round((selectedElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
         selectedElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
         var end_hour_float = (selectedElement.x.baseVal.value - margin_before_bar + selectedElement.width.baseVal.value) / bar_width_factor;
-        sync_from_bar_plot_to_roster_array_object(box_type, date_unix, line, start_hour_float, end_hour_float);
+        if (start_hour_float < 0 || end_hour_float >= 24) {
+            /**
+             * <p lang=de>
+             * Momentan kann das Programm nur Werte zwischen 0:00 und 23:59 Uhr verarbeiten.
+             * Wenn der Balken weiter vor oder zurück verschoben wird, so werden fehlerhafte Daten (null für duty_start oder duty_end) übertragen.
+             * Auf Serverseite (PHP) führt das zum Verwerfen des Eintrages. Der Mitarbeiter wird aus dem Dienstplan gelöscht.
+             * </p>
+             */
+            writeErrorToUserDialogContainer("Achtung beim Verschieben! Es sind nur Werte zwischen 0:00 und 23:59 Uhr erlaubt.", "dragAndDropOutOfRangeError");
+            sync_from_roster_array_object_to_bar_plot(line, date_unix);
+            result = false;
+        } else {
+            /**
+             * <p lang=de>Der Input ist jetzt korrekt.
+             * Vielleicht war er vorher mal kaputt.
+             * Wir entfernen eventuelle Fehlermeldungen.
+             * </p>
+             */
+            removeErrorFromUserDialogContainer("dragAndDropOutOfRangeError");
+            /**
+             * <p lang=de>Jetzt können wir den Dienstplan in der Tabelle ändern:</p>
+             */
+            sync_from_bar_plot_to_roster_array_object(box_type, date_unix, line, start_hour_float, end_hour_float);
+            result = true;
+        }
         selectedElement.parentNode.removeAttributeNS(null, "onmousemove");
         selectedElement.removeAttributeNS(null, "onmouseout");
         selectedElement.removeAttributeNS(null, "onmouseup");
@@ -85,6 +110,7 @@ function deselectElement(evt) {
             selectedElement.firstChild.classList.remove("selected");
         }
         selectedElement = 0;
+        return result;
     }
 }
 
@@ -141,8 +167,11 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     var duty_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_end_sql']);
     var break_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_start_sql']);
     var break_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_end_sql']);
-    var break_duration_integer = (break_end_object - break_start_object);
-
+    if (isValidDate(break_end_object) && isValidDate(break_start_object)) {
+        var break_duration_integer = (break_end_object - break_start_object);
+    } else {
+        var break_duration_integer = 0;
+    }
     var working_hours = (duty_end_object - duty_start_object - break_duration_integer) / 3600 / 1000;
 
     roster_item['working_hours'] = Math.round(working_hours * 4, 0) / 4;//round to quarter hours
@@ -202,24 +231,26 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     /*
      * lunch break:
      */
-    var new_box_x = (break_start_object.getHours() + break_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
-    var new_box_width = (
-            (break_end_object.getHours() + break_end_object.getMinutes() / 60)
-            -
-            (break_start_object.getHours() + break_start_object.getMinutes() / 60)
-            ) * bar_width_factor;
-    var break_box_id = 'break_box_' + roster_row_iterator + '_' + date_unix;
-    var break_box_element = document.getElementById(break_box_id);
-    if (!break_box_element) {
-        /*
-         * TODO: Also insert break boxes, if they are missing.
-         */
-        var parent_of_bar_elements = document.getElementById('svg_img_g_' + date_unix);
-        break_box_element = create_new_break_rect(date_unix, new_box_x, new_box_width, roster_row_iterator, break_box_id, parent_of_bar_elements);
-        parent_of_bar_elements.appendChild(break_box_element);
+    if (isValidDate(break_start_object) && isValidDate(break_end_object)) {
+        var new_box_x = (break_start_object.getHours() + break_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
+        var new_box_width = (
+                (break_end_object.getHours() + break_end_object.getMinutes() / 60)
+                -
+                (break_start_object.getHours() + break_start_object.getMinutes() / 60)
+                ) * bar_width_factor;
+        var break_box_id = 'break_box_' + roster_row_iterator + '_' + date_unix;
+        var break_box_element = document.getElementById(break_box_id);
+        if (!break_box_element) {
+            /*
+             * TODO: Also insert break boxes, if they are missing.
+             */
+            var parent_of_bar_elements = document.getElementById('svg_img_g_' + date_unix);
+            break_box_element = create_new_break_rect(date_unix, new_box_x, new_box_width, roster_row_iterator, break_box_id, parent_of_bar_elements);
+            parent_of_bar_elements.appendChild(break_box_element);
+        }
+        break_box_element.x.baseVal.value = new_box_x;
+        break_box_element.width.baseVal.value = new_box_width;
     }
-    break_box_element.x.baseVal.value = new_box_x;
-    break_box_element.width.baseVal.value = new_box_width;
     var employee_name_p_element = bar_element.childNodes[0];
     var employee_name_text_element = bar_element.childNodes[0].childNodes[0];
     var working_hours_span = bar_element.childNodes[0].childNodes[1];
@@ -346,4 +377,3 @@ function format_time_int_to_string(time_int) {
     var time_string = pad(hour_int, 2) + ':' + pad(minute_int, 2);
     return time_string;
 }
-

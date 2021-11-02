@@ -20,6 +20,7 @@ package Selenium;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -32,22 +33,53 @@ import java.util.logging.Logger;
  * https://medium.com/@sonaldwivedi/how-to-read-config-properties-file-in-java-6a501dc96b25
  * https://www.toolsqa.com/selenium-cucumber-framework/read-configurations-from-property-file/
  */
-public class ReadPropertyFile {
+public class PropertyFile {
 
     private Properties properties;
     private final String propertyFilePath = "src/test/Configuration.properties";
 
-    public ReadPropertyFile() {
+    public PropertyFile() {
         properties = new Properties();
         try {
             FileInputStream fileInputStream = new FileInputStream(propertyFilePath);
             properties.load(fileInputStream);
         } catch (FileNotFoundException exception) {
-            Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, exception);
         } catch (IOException exception) {
-            Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, exception);
         }
 
+    }
+
+    public void setTestPageUrl(String testPageUrl) {
+        setProperty("testPageUrl", testPageUrl);
+    }
+
+    public String getTestPageUrl() {
+        String testPageUrl = properties.getProperty("testPageUrl");
+        if (null != testPageUrl) {
+            return testPageUrl;
+        }
+        throw new RuntimeException("testPageUrl not specified in the Configuration.properties file.");
+    }
+
+    private void setProperty(String propertyName, String propertyValue) {
+        FileOutputStream fileOutputStream = null;
+        try {
+            properties.setProperty(propertyName, propertyValue);
+            fileOutputStream = new FileOutputStream(propertyFilePath);
+            properties.store(fileOutputStream, "some random comment");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fileOutputStream.close();
+            } catch (IOException ex) {
+                Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     public String getDriverPath() {
@@ -75,7 +107,8 @@ public class ReadPropertyFile {
     }
 
     public String getUrlPageTest() {
-        String urlPageTest = properties.getProperty("urlPageTest");
+        String urlPageTest = getTestPageUrl();
+        //String urlPageTest = properties.getProperty("urlPageTest");
         if (null != urlPageTest) {
             return urlPageTest;
         }
