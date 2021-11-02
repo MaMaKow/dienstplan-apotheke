@@ -36,17 +36,27 @@ import java.util.logging.Logger;
 public class PropertyFile {
 
     private Properties properties;
-    private final String propertyFilePath = "src/test/Configuration.properties";
+    private final String propertyFilePath = "./Configuration.properties";
 
     public PropertyFile() {
-        properties = new Properties();
+        FileInputStream fileInputStream = null;
         try {
-            FileInputStream fileInputStream = new FileInputStream(propertyFilePath);
+            properties = new Properties();
+            fileInputStream = new FileInputStream(propertyFilePath);
             properties.load(fileInputStream);
-        } catch (FileNotFoundException exception) {
-            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, exception);
-        } catch (IOException exception) {
-            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, exception);
+            fileInputStream.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (null != fileInputStream) {
+                    fileInputStream.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }
