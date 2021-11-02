@@ -88,3 +88,5 @@ tests/selenium/nb-configuration.xml
 tests/selenium/.project
 tests/selenium/.classpath
 tests/selenium/test-output/
+.vscode/
+.project
