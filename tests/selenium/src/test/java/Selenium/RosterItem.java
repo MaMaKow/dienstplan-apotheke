@@ -34,7 +34,7 @@ public class RosterItem {
     private String dutyEnd;
     private String breakStart;
     private String breakEnd;
-    //private String branchName;
+    private String branchName;
     private int branchId;
     private String comment;
 
@@ -104,7 +104,7 @@ public class RosterItem {
         return this.branchId;
     }
 
-    public String getComment() throws Exception {
+    public String getComment() {
         return this.comment;
     }
 

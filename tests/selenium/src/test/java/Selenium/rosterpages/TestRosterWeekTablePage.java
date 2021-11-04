@@ -22,7 +22,7 @@ import Selenium.HomePage;
 import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.signin.SignInPage;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;

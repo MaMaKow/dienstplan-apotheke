@@ -22,7 +22,7 @@ import Selenium.Absence;
 import Selenium.MenuFragment;
 import Selenium.PropertyFile;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.signin.SignInPage;
 import org.openqa.selenium.WebDriver;
 import static org.testng.Assert.assertEquals;
 import org.testng.ITestResult;
@@ -36,7 +36,7 @@ public class TestAbsenceEmployeePage {
 
     WebDriver driver;
 
-    @org.testng.annotations.Test(enabled = false)/*passed*/
+    @org.testng.annotations.Test(enabled = true)/*passed*/
     public void testCreateAbsence() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();

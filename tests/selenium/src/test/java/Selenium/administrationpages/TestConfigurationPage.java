@@ -20,7 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.PropertyFile;
 import Selenium.ScreenShot;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signin.SignInPage;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;

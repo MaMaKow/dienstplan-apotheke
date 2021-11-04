@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package Selenium.principlerosterpages;
+package Selenium.PrincipleRosterPages;
 
 import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.signin.SignInPage;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

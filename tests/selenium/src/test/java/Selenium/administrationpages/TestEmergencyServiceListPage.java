@@ -20,7 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.PropertyFile;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.signin.SignInPage;
 import java.util.Calendar;
 import java.util.Locale;
 import org.testng.annotations.Test;

@@ -21,7 +21,7 @@ package Selenium.rosterpages;
 import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.SignInPage.SignInPage;
+import Selenium.signin.SignInPage;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -111,7 +111,7 @@ public class TestRosterDayEditPage {
         assertEquals("12:30", rosterItem.getBreakEnd());
     }
 
-    @Test(enabled = false)/*new*/
+    @Test(enabled = true)/*new*/
     public void testRosterEdit() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -148,9 +148,9 @@ public class TestRosterDayEditPage {
         rosterDayEditPage.changeRosterInputBreakStart(calendar.getTimeInMillis() / 1000, 0, rosterItem.getBreakStart());
         rosterDayEditPage.changeRosterInputBreakEnd(calendar.getTimeInMillis() / 1000, 0, rosterItem.getBreakEnd());
         rosterDayEditPage.rosterFormSubmit();
-        RosterItem rosterItem2 = new RosterItem("Albrecht", calendar, "08:00", "16:30", "12:00", "12:30", "Hauptapotheke");
-        RosterItem rosterItem3 = new RosterItem("Lange", calendar, "09:00", "18:00", "12:30", "13:00", "Hauptapotheke");
-        RosterItem rosterItem4 = new RosterItem("Zander", calendar, "09:30", "18:00", "13:00", "13:30", "Hauptapotheke");
+        RosterItem rosterItem2 = new RosterItem("Albrecht", calendar, "08:00", "16:30", "12:00", "12:30", "Hauptapotheke", "");
+        RosterItem rosterItem3 = new RosterItem("Lange", calendar, "09:00", "18:00", "12:30", "13:00", "Hauptapotheke", "");
+        RosterItem rosterItem4 = new RosterItem("Zander", calendar, "09:30", "18:00", "13:00", "13:30", "Hauptapotheke", "");
         rosterDayEditPage.rosterInputAddRow(rosterItem2);
         rosterDayEditPage.rosterInputAddRow(rosterItem3);
         rosterDayEditPage.rosterInputAddRow(rosterItem4);

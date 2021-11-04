@@ -20,7 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.ReadPropertyFile;
 import Selenium.ScreenShot;
-import Selenium.signinpage.SignInPage;
+import Selenium.signin.SignInPage;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 

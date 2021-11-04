@@ -45,7 +45,7 @@ public class TestAboutPage {
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
-        Selenium.SignInPage.SignInPage signInPage = new Selenium.SignInPage.SignInPage(driver);
+        Selenium.signin.SignInPage signInPage = new Selenium.signin.SignInPage(driver);
         String pdr_user_password = propertyFile.getPdrUserPassword();
         String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);

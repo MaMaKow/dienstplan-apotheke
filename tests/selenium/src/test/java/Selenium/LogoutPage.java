@@ -19,7 +19,7 @@
 package Selenium;
 
 import org.openqa.selenium.WebDriver;
-import Selenium.signinpage.SignInPage;
+import Selenium.signin.SignInPage;
 
 /**
  *
