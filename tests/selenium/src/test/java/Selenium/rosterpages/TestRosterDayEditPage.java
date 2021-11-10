@@ -129,7 +129,7 @@ public class TestRosterDayEditPage {
         /**
          * Move to specific date to get a specific roster:
          */
-        SimpleDateFormat sqlDateFormat = new SimpleDateFormat("YYYY-MM-dd", Locale.GERMANY);
+        SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY);
         Calendar calendar = Calendar.getInstance(Locale.GERMANY);
         calendar.set(2020, Calendar.JULY, 1, 0, 0, 0);//Time incl. seconds must be set to 0:00:00 to match the timestamp in the page src.
         rosterDayEditPage.goToDate(calendar); //This date is a wednesday.

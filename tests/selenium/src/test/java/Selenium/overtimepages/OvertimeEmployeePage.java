@@ -50,7 +50,7 @@ public class OvertimeEmployeePage {
     private final SimpleDateFormat simpleDateFormat;
 
     public OvertimeEmployeePage(WebDriver driver) {
-        this.simpleDateFormat = new SimpleDateFormat("dd.MM.YYYY");
+        this.simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {

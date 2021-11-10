@@ -96,7 +96,7 @@ public class RosterDayEditPage {
     }
 
     public void goToDate(Calendar calendar) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.YYYY");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         String dateString = simpleDateFormat.format(calendar.getTime());
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         dateChooserInput.sendKeys(dateString);

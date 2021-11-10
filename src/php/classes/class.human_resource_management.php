@@ -159,13 +159,14 @@ ON DUPLICATE KEY UPDATE
             //$text .= "<label for='profession'>Ausbildung: </label>\n";
 
             foreach ($Professions as $profession) {
+                $text .= "<label>";
                 $text .= "<input type='radio' name='profession' required ";
                 $text .= "value='$profession'";
                 if ($checked == $profession) {
                     $text .= " checked=checked";
                 }
                 $text .= ">&nbsp;$profession\n";
-                $text .= "<br>";
+                $text .= "</span></label><br>";
             }
             //$text .= "&nbsp;<a title='Einen weiteren Beruf hinzufügen' id=button_new_profession>[Neu]</a>";
             $text .= "</fieldset>\n";
@@ -187,20 +188,22 @@ ON DUPLICATE KEY UPDATE
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         if (!isset($List_of_branch_objects[0])) {
             $branch_id = 0;
+            $text .= "<label>";
             $text .= "<input type='radio' name='branch' ";
             $text .= "value='0'";
             if ($checked_branch_id == $branch_id) {
                 $text .= " checked=checked";
             }
-            $text .= ">&nbsp;" . gettext("None") . "<br>\n";
+            $text .= ">&nbsp;<span>" . gettext("None") . "</span></label><br>\n";
         }
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
+            $text .= "<label>";
             $text .= "<input type='radio' name='branch' ";
             $text .= "value='$branch_id'";
             if ($checked_branch_id == $branch_id) {
                 $text .= " checked=checked";
             }
-            $text .= ">&nbsp;$branch_object->name<br>\n";
+            $text .= ">&nbsp;<span>$branch_object->name</span></label><br>\n";
         }
         $text .= "</fieldset>\n";
 
