@@ -18,7 +18,7 @@
  */
 package Selenium.overtimepages;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
 import org.openqa.selenium.WebDriver;
@@ -43,16 +43,16 @@ public class TestOvertimeOverviewPage {
     @Test(enabled = true)/*passed*/
     public void testDisplay() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         OvertimeOverviewPage overtimeOverviewPage = new OvertimeOverviewPage(driver);
         Assert.assertEquals(overtimeOverviewPage.getUserNameText(), pdr_user_name);

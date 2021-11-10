@@ -18,7 +18,7 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
 import org.testng.annotations.Test;
@@ -40,16 +40,16 @@ public class TestUploadPepPage {
     @Test(enabled = true)/*new*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         UploadPepPage uploadPepPage = new UploadPepPage(driver);
         Assert.assertEquals(uploadPepPage.getUserNameText(), pdr_user_name);

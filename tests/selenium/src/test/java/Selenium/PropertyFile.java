@@ -46,16 +46,16 @@ public class PropertyFile {
             properties.load(fileInputStream);
             fileInputStream.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 if (null != fileInputStream) {
                     fileInputStream.close();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(ReadPropertyFile.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PropertyFile.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 

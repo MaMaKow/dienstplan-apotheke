@@ -16,7 +16,7 @@
  */
 package Selenium.principlerosterpages;
 
-import Selenium.ReadPropertyFile;
+import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
@@ -46,16 +46,16 @@ public class TestEmployeePage {
     @Test(enabled = true)/*new*/
     public void testEmployeePageRead() {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         EmployeePage employeePage = new EmployeePage(driver);
         Assert.assertEquals(employeePage.getUserNameText(), pdr_user_name);
@@ -83,16 +83,16 @@ public class TestEmployeePage {
     @Test(dependsOnMethods = {"testEmployeePageRead"}, enabled = true)/*new*/
     public void testEmployeePageWrite() throws ParseException {
         driver = Selenium.driver.Wrapper.getDriver();
-        ReadPropertyFile readPropertyFile = new ReadPropertyFile();
-        String urlPageTest = readPropertyFile.getUrlPageTest();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
         /**
          * Sign in:
          */
         SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = readPropertyFile.getPdrUserPassword();
-        String pdr_user_name = readPropertyFile.getPdrUserName();
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         EmployeePage employeePage = new EmployeePage(driver);
         Assert.assertEquals(employeePage.getUserNameText(), pdr_user_name);
@@ -105,7 +105,7 @@ public class TestEmployeePage {
         /**
          * Set a new roster item:
          */
-        Date dateParsed = new SimpleDateFormat("YYYY-MM-dd", Locale.GERMANY).parse("2021-09-21");
+        Date dateParsed = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY).parse("2021-09-21");
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 
