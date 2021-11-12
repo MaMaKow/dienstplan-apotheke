@@ -76,12 +76,9 @@ public class Employee {
         this.employeeEndOfEmployment = null;
         try {
             this.employeeStartOfEmployment = simpleDateFormat.parse(employeeStartOfEmployment);
-            System.out.println("HERE");
-            System.out.println(employeeStartOfEmployment);
-            System.out.println(simpleDateFormat.parse(employeeStartOfEmployment));
             this.employeeEndOfEmployment = simpleDateFormat.parse(employeeEndOfEmployment);
         } catch (ParseException ex) {
-            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
