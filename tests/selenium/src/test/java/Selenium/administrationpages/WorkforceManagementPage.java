@@ -20,12 +20,10 @@ package Selenium.administrationpages;
 
 import Selenium.Employee;
 import Selenium.MenuFragment;
-import Selenium.driver.Wrapper;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -99,7 +97,7 @@ public class WorkforceManagementPage {
         /**
          * profession: One of the radio buttons should be checked.
          */
-        By employeeProfessionBy = By.xpath("/html/body/div[2]/form[2]/fieldset[2]/input[@name=\"profession\" and @value=\"" + employeeObject.getProfession() + "\"]");
+        By employeeProfessionBy = By.xpath("/html/body/div[2]/form[2]/fieldset[2]/label/input[@name=\"profession\" and @value=\"" + employeeObject.getProfession() + "\"]");
         WebElement employeeProfessionElement = driver.findElement(employeeProfessionBy);
         employeeProfessionElement.click();
         /**
@@ -166,11 +164,7 @@ public class WorkforceManagementPage {
         String dateStartString = "";
         if (null != dateThing) {
             dateStartString = simpleDateFormat.format(dateThing);
-            System.out.println("dateThing.toString()");
-            System.out.println(dateThing.toString());
         }
-        System.out.println("dateStartString");
-        System.out.println(dateStartString);
         employeeStartOfEmploymentElement.sendKeys(dateStartString);
 
         By employeeEndOfEmploymentBy = By.xpath("//*[@id=\"end_of_employment\"]");
@@ -218,7 +212,7 @@ public class WorkforceManagementPage {
         /**
          * profession: One of the radio buttons is checked.
          */
-        By employeeProfessionBy = By.xpath("/html/body/div[2]/form[2]/fieldset[2]/input[@name=\"profession\" and @checked]");
+        By employeeProfessionBy = By.xpath("/html/body/div[2]/form[2]/fieldset[2]/label/input[@name=\"profession\" and @checked]");
         WebElement employeeProfessionElement = driver.findElement(employeeProfessionBy);
         employeeData.put("employeeProfession", employeeProfessionElement.getAttribute("value"));
         /**
@@ -241,7 +235,10 @@ public class WorkforceManagementPage {
          */
         By employeeBranchBy = By.xpath("/html/body/div[2]/form[2]/fieldset[4]/label/input[@name=\"branch\" and @checked]");
         WebElement employeeBranchElement = driver.findElement(employeeBranchBy);
-        employeeData.put("employeeBranch", employeeBranchElement.getAttribute("value"));
+        employeeData.put("employeeBranchId", employeeBranchElement.getAttribute("value"));
+        By employeeBranchLabelBy = By.xpath("/html/body/div[2]/form[2]/fieldset[4]/label/input[@name=\"branch\" and @checked]/parent::label");
+        WebElement employeeBranchLabelElement = driver.findElement(employeeBranchLabelBy);
+        employeeData.put("employeeBranchName", employeeBranchLabelElement.getText());
 
         /**
          * abilities:
@@ -259,6 +256,10 @@ public class WorkforceManagementPage {
          */
         By employeeStartOfEmploymentBy = By.xpath("//*[@id=\"start_of_employment\"]");
         WebElement employeeStartOfEmploymentElement = driver.findElement(employeeStartOfEmploymentBy);
+        System.out.println("employeeStartOfEmploymentElement.getAttribute(\"outerHTML\")");
+        System.out.println(employeeStartOfEmploymentElement.getAttribute("outerHTML"));
+        System.out.println("employeeStartOfEmploymentElement.getAttribute(\"value\")");
+        System.out.println(employeeStartOfEmploymentElement.getAttribute("value"));
         employeeData.put("employeeStartOfEmployment", employeeStartOfEmploymentElement.getAttribute("value"));
 
         By employeeEndOfEmploymentBy = By.xpath("//*[@id=\"end_of_employment\"]");

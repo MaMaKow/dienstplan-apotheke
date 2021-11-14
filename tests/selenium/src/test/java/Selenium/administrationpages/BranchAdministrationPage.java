@@ -18,6 +18,7 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.Branch;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -88,6 +89,17 @@ public class BranchAdministrationPage {
         return openingTimeElements;
     }
 
+    public BranchAdministrationPage createNewBranch(Branch branch) {
+        int branchId = branch.getBranchId();
+        int branchPepId = branch.getBranchPepId();
+        String branchName = branch.getBranchName();
+        String branchShortName = branch.getBranchShortName();
+        String branchAddress = branch.getBranchAddress();
+        String branchManager = branch.getBranchManager();
+        HashMap<Integer, String[]> openingTimesMap = branch.getOpeningTimesMap();
+        return createNewBranch(branchId, branchPepId, branchName, branchShortName, branchAddress, branchManager, openingTimesMap);
+    }
+
     /**
      * <p lang=de>
      * TODO: Bitte hier noch parametriesieren! Die Funktion muss auch mit
@@ -101,8 +113,9 @@ public class BranchAdministrationPage {
      * @param branchAddress
      * @param branchManager
      * @param openingTimesMap
+     * @return new page after reload
      */
-    public BranchAdministrationPage createNewBranch(int branchId,
+    private BranchAdministrationPage createNewBranch(int branchId,
             int branchPepId,
             String branchName,
             String branchShortName,

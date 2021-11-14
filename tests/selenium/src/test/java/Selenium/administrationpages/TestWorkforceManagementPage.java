@@ -72,7 +72,7 @@ public class TestWorkforceManagementPage {
         Assert.assertEquals(employeeObject.getWorkingHours(), employeeObjectShould.getWorkingHours());
         Assert.assertEquals(employeeObject.getLunchBreakMinutes(), employeeObjectShould.getLunchBreakMinutes());
         Assert.assertEquals(employeeObject.getHolidays(), employeeObjectShould.getHolidays());
-        Assert.assertEquals(employeeObject.getBranchString(), employeeObjectShould.getBranchString());//TODO: probably wrong
+        Assert.assertEquals(employeeObject.getBranchString(), employeeObjectShould.getBranchString());
         Assert.assertEquals(employeeObject.getAbilitiesGoodsReceipt(), employeeObjectShould.getAbilitiesGoodsReceipt());
         Assert.assertEquals(employeeObject.getAbilitiesCompounding(), employeeObjectShould.getAbilitiesCompounding());
         Assert.assertEquals(employeeObject.getStartOfEmployment(), employeeObjectShould.getStartOfEmployment());

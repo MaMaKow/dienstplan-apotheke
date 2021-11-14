@@ -27,8 +27,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +47,7 @@ public class Workforce {
             // create a reader
             reader = Files.newBufferedReader(Paths.get("workforce.json"));
             // convert JSON string to Employee object
-            List<Employee> employees = new Gson().fromJson(reader, new TypeToken<List<Employee>>() {
+            ArrayList<Employee> employees = new Gson().fromJson(reader, new TypeToken<ArrayList<Employee>>() {
             }.getType());
             employees.forEach(employee -> {
                 listOfEmployees.put(employee.getEmployeeId(), employee);
@@ -64,7 +64,7 @@ public class Workforce {
         return listOfEmployees;
     }
 
-    public void writeToFile(List<Employee> listOfEmployees) {
+    public void writeToFile(ArrayList<Employee> listOfEmployees) {
         Writer writer = null;
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();

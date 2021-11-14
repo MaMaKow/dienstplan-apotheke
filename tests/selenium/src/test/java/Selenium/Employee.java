@@ -40,6 +40,7 @@ public class Employee {
     private int employeeLunchBreakMinutes;
     private int employeeHolidays;
     private String employeeBranchString;
+    private int employeeBranchId;
     private boolean employeeAbilitiesGoodsReceipt;
     private boolean employeeAbilitiesCompounding;
     private Date employeeStartOfEmployment;
@@ -65,7 +66,10 @@ public class Employee {
         this.employeeWorkingHours = Float.valueOf(employeeWorkingHours);
         this.employeeLunchBreakMinutes = Integer.valueOf(employeeLunchBreakMinutes);
         this.employeeHolidays = Integer.valueOf(employeeHolidays);
-        this.employeeBranchString = employeeBranch;
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        Branch branch = networkOfBranchOffices.getBranchByName(employeeBranch);
+        this.employeeBranchString = branch.getBranchName();
+        this.employeeBranchId = branch.getBranchId();
         this.employeeAbilitiesGoodsReceipt = Boolean.parseBoolean(employeeAbilitiesGoodsReceipt);
         this.employeeAbilitiesCompounding = Boolean.parseBoolean(employeeAbilitiesCompounding);
         /**
@@ -114,6 +118,10 @@ public class Employee {
         return employeeBranchString;
     }
 
+    public int getBranchId() {
+        return employeeBranchId;
+    }
+
     public boolean getAbilitiesCompounding() {
         return employeeAbilitiesCompounding;
     }
@@ -138,13 +146,21 @@ public class Employee {
         this.employeeWorkingHours = Float.valueOf(employeeHashMap.get("employeeWorkingHours"));
         this.employeeLunchBreakMinutes = Integer.valueOf(employeeHashMap.get("employeeLunchBreakMinutes"));
         this.employeeHolidays = Integer.valueOf(employeeHashMap.get("employeeHolidays"));
-        this.employeeBranchString = employeeHashMap.get("employeeBranch");
+
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        if (employeeHashMap.containsKey("employeeBranchId")) {
+            String employeeBranchIdString = employeeHashMap.get("employeeBranchId");
+            int branchId = Integer.valueOf(employeeBranchIdString);
+            Branch branch = networkOfBranchOffices.getBranchById(branchId);
+            this.employeeBranchString = branch.getBranchName();
+        }
+
         this.employeeAbilitiesGoodsReceipt = Boolean.parseBoolean(employeeHashMap.get("employeeAbilitiesGoodsReceipt"));
         this.employeeAbilitiesCompounding = Boolean.parseBoolean(employeeHashMap.get("employeeAbilitiesCompounding"));
         /**
          * Employment:
          */
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY);
         this.employeeStartOfEmployment = null;
         this.employeeEndOfEmployment = null;
         try {

@@ -18,7 +18,9 @@
  */
 package Selenium.installation;
 
+import Selenium.Branch;
 import Selenium.HomePage;
+import Selenium.NetworkOfBranchOffices;
 import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.administrationpages.BranchAdministrationPage;
@@ -32,6 +34,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import java.util.HashMap;
+import java.util.Map;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 
@@ -106,19 +109,14 @@ public class TestInstallation {
          */
         driver.get(this.testPageUrl + "src/php/pages/branch-management.php");
         BranchAdministrationPage branchAdministrationPage = new BranchAdministrationPage();
-        HashMap<Integer, String[]> openingTimes = new HashMap<>();
-        String[] openingTimeWeekdays = {"08:00", "18:00"};
-        String[] openingTimeSaturday = {"10:00", "16:00"};
-        openingTimes.put(1, openingTimeWeekdays);
-        openingTimes.put(2, openingTimeWeekdays);
-        openingTimes.put(3, openingTimeWeekdays);
-        openingTimes.put(4, openingTimeWeekdays);
-        openingTimes.put(5, openingTimeWeekdays);
-        openingTimes.put(6, openingTimeSaturday);
-        branchAdministrationPage = branchAdministrationPage.createNewBranch(1, 1, "Hauptapotheke am großen Platz", "Hauptapotheke", "Hauptplatz 4\n12345 Berlin", pdr_user_name, openingTimes);
-        openingTimes.remove(6);
-        branchAdministrationPage = branchAdministrationPage.createNewBranch(2, 2, "Filiale in der Nebenstraße", "Filiale", "Nebenstraße 5\n12345 Berlin", pdr_user_name, openingTimes);
-        branchAdministrationPage = branchAdministrationPage.createNewBranch(99, 99, "Unterwegs im Außendienst", "Außendienst", "Überall\nim Umkreis", pdr_user_name, new HashMap<>());
+
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        Map<Integer, Branch> listOfBranches = networkOfBranchOffices.getListOfBranches();
+        final BranchAdministrationPage branchAdministrationPageForLambda = branchAdministrationPage;
+        listOfBranches.forEach((branchId, branchObject) -> {
+            branchAdministrationPageForLambda.createNewBranch(branchObject);
+        });
+
     }
 
     @AfterMethod
