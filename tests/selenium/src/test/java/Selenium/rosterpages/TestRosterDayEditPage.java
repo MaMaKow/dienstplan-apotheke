@@ -134,7 +134,7 @@ public class TestRosterDayEditPage {
         calendar.set(2020, Calendar.JULY, 1, 0, 0, 0);//Time incl. seconds must be set to 0:00:00 to match the timestamp in the page src.
         rosterDayEditPage.goToDate(calendar); //This date is a wednesday.
         assertEquals(sqlDateFormat.format(calendar.getTime()), rosterDayEditPage.getDate());
-        RosterItem rosterItem = new RosterItem("Mandelkow", calendar, "08:00", "16:30", "11:30", "12:00", "Hauptapotheke", "Dies ist ein Kommentar");
+        RosterItem rosterItem = new RosterItem(5, calendar, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1);
         /**
          * <p lang=de>TODO: Das RosterItem enthält den Namen als String.
          * rosterDayEditPage.changeRosterInputEmployee braucht die EmployeeId
@@ -148,9 +148,9 @@ public class TestRosterDayEditPage {
         rosterDayEditPage.changeRosterInputBreakStart(calendar.getTimeInMillis() / 1000, 0, rosterItem.getBreakStart());
         rosterDayEditPage.changeRosterInputBreakEnd(calendar.getTimeInMillis() / 1000, 0, rosterItem.getBreakEnd());
         rosterDayEditPage.rosterFormSubmit();
-        RosterItem rosterItem2 = new RosterItem("Albrecht", calendar, "08:00", "16:30", "12:00", "12:30", "Hauptapotheke", "");
-        RosterItem rosterItem3 = new RosterItem("Lange", calendar, "09:00", "18:00", "12:30", "13:00", "Hauptapotheke", "");
-        RosterItem rosterItem4 = new RosterItem("Zander", calendar, "09:30", "18:00", "13:00", "13:30", "Hauptapotheke", "");
+        RosterItem rosterItem2 = new RosterItem(2, calendar, "08:00", "16:30", "12:00", "12:30", null, 1);
+        RosterItem rosterItem3 = new RosterItem(3, calendar, "09:00", "18:00", "12:30", "13:00", null, 1);
+        RosterItem rosterItem4 = new RosterItem(4, calendar, "09:30", "18:00", "13:00", "13:30", null, 1);
         rosterDayEditPage.rosterInputAddRow(rosterItem2);
         rosterDayEditPage.rosterInputAddRow(rosterItem3);
         rosterDayEditPage.rosterInputAddRow(rosterItem4);

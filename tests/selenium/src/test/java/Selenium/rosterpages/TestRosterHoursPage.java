@@ -64,7 +64,7 @@ public class TestRosterHoursPage {
         rosterHoursPage.selectEmployee("Mandelkow");
         Assert.assertEquals("Juni", rosterHoursPage.getMonth());
         Assert.assertEquals("2020", rosterHoursPage.getYear());
-        Assert.assertEquals("Mandelkow", rosterHoursPage.getEmployee());
+        Assert.assertEquals("Mandelkow", rosterHoursPage.getEmployeeName());
     }
 
     @Test(enabled = true)/*passed*/
@@ -92,7 +92,7 @@ public class TestRosterHoursPage {
         rosterHoursPage.selectEmployee("Mandelkow");
         Assert.assertEquals("Juni", rosterHoursPage.getMonth());
         Assert.assertEquals("2020", rosterHoursPage.getYear());
-        Assert.assertEquals("Mandelkow", rosterHoursPage.getEmployee());
+        Assert.assertEquals("Mandelkow", rosterHoursPage.getEmployeeName());
         /*
         Test if the correct roster information is displayed:
          */

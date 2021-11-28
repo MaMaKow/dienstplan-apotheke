@@ -109,7 +109,7 @@ public class TestEmployeePage {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 
-        RosterItem rosterItemNew = new RosterItem("Mandelkow", calendar, "10:30", "19:00", "12:30", "13:30", 2);
+        RosterItem rosterItemNew = new RosterItem(5, calendar, "10:30", "19:00", "12:30", "13:30", null, 2);
         RosterItem rosterItemOld = employeePage.getRosterItem(1, 1, 1);
         RosterItem rosterItemChanged;
         employeePage.setRosterItem(1, 1, 1, rosterItemNew);

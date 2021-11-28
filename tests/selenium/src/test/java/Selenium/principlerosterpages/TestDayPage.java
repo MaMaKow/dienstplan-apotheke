@@ -16,11 +16,18 @@
  */
 package Selenium.PrincipleRosterPages;
 
+import Selenium.Employee;
 import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
+import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
@@ -38,7 +45,7 @@ public class TestDayPage {
 
     WebDriver driver;
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -70,7 +77,7 @@ public class TestDayPage {
         Assert.assertEquals(1, dayPage.getBranchId());
     }
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*passed*/
     public void testRosterDisplay() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -107,7 +114,7 @@ public class TestDayPage {
         }
     }
 
-    @Test(enabled = true)/*new*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
     public void testRosterChange() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -159,6 +166,59 @@ public class TestDayPage {
     }
 
     @Test(enabled = true)/*new*/
+    public void testRosterCreate() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        DayPage dayPage = new DayPage(driver);
+        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
+
+        /**
+         * Move to specific month:
+         */
+        dayPage.goToBranch(1);
+        //dayPage.goToAlternation(0);
+        dayPage.goToWeekday(1);
+
+        Workforce workforce = new Workforce();
+        HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
+
+        dayPage.addRosterRow();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CEST"), Locale.GERMANY);
+        //calendar.set(2019, Calendar.JUNE, 1, 0, 0, 0);
+        calendar.setTimeInMillis((long) dayPage.getUnixTime() * 1000);
+        RosterItem rosterItem0 = new RosterItem(1, calendar, "08:00", "16:30", "12:00", "12:30", null, 1);
+        RosterItem rosterItem1 = new RosterItem(2, calendar, "08:00", "16:30", "12:30", "13:00", null, 1);
+        RosterItem rosterItem2 = new RosterItem(3, calendar, "09:30", "18:00", "13:00", "13:30", null, 1);
+        RosterItem rosterItem3 = new RosterItem(4, calendar, "09:30", "18:00", "13:30", "14:00", null, 1);
+        RosterItem rosterItem4 = new RosterItem(5, calendar, "08:00", "16:30", "11:30", "12:00", null, 1);
+        dayPage.createNewRosterItem(rosterItem0);
+        dayPage.createNewRosterItem(rosterItem1);
+        dayPage.createNewRosterItem(rosterItem2);
+        dayPage.createNewRosterItem(rosterItem3);
+        dayPage.createNewRosterItem(rosterItem4);
+        try {
+            RosterItem rosterItem = dayPage.getRosterItem(0);
+            Assert.assertEquals(rosterItem.getDutyStart(), "08:00");
+            Assert.assertEquals(rosterItem.getDutyEnd(), "16:30");
+            Assert.assertEquals(rosterItem.getBreakStart(), "11:30");
+            Assert.assertEquals(rosterItem.getBreakEnd(), "12:00");
+            Assert.assertEquals(rosterItem.getEmployeeName(), listOfEmployees.get(5).getLastName());
+        } catch (ParseException ex) {
+            Logger.getLogger(TestDayPage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
     public void testRosterChangePlotErrors() throws ParseException {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -196,7 +256,7 @@ public class TestDayPage {
 
     }
 
-    @Test(enabled = true)/*new*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
     public void testRosterChangeDragAndDrop() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -227,8 +287,6 @@ public class TestDayPage {
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 90, "break");
             dayPage.rosterFormSubmit();
             RosterItem rosterItem = dayPage.getRosterItem(1);
-            System.out.println(rosterItem.getDutyStart());
-            System.out.println(rosterItem.getBreakStart());
             /**
              * Revert the changes for the next test:
              */

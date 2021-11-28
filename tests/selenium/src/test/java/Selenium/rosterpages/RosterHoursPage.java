@@ -95,15 +95,17 @@ public class RosterHoursPage {
         return selectedOption;
     }
 
-    public String getEmployee() {
+    public String getEmployeeName() {
         WebElement selectEmployeeSelectElement = driver.findElement(selectEmployeeSelectBy);
         Select selectEmployeeSelect = new Select(selectEmployeeSelectElement);
-        String selectedOption = selectEmployeeSelect.getFirstSelectedOption().getText();
-        return selectedOption;
+        String selectedOptionText = selectEmployeeSelect.getFirstSelectedOption().getText();
+        return selectedOptionText;
     }
 
     public RosterItem getRosterOnDate(Calendar targetCalendar) {
-        String employeeName = getEmployee();
+        String employeeName = getEmployeeName();
+        Workforce workforce = new Workforce();
+        workforce.getListOfEmployees();
         WebElement rowElement = getRowElement(targetCalendar);
 
         By rosterItemStartBy = By.xpath(".//td[2]");
@@ -115,7 +117,7 @@ public class RosterHoursPage {
         String dutyEnd = rosterItemEndElement.getText();
 
         System.out.println(employeeName + ", " + targetCalendar + ", " + dutyStart + ", " + dutyEnd + ", " + "null" + ", " + "null");
-        RosterItem rosterItem = new RosterItem(employeeName, targetCalendar, dutyStart, dutyEnd, null, null);
+        RosterItem rosterItem = new RosterItem(0, targetCalendar, dutyStart, dutyEnd, dutyStart, null, null, null);
         return rosterItem;
     }
 

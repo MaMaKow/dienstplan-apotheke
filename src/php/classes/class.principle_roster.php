@@ -52,7 +52,7 @@ class principle_roster extends roster {
                     . " WHERE `weekday` = :weekday "
                     . " AND `branch_id` = :branch_id "
                     . " AND `alternating_week_id` = :alternating_week_id "
-                    . " ORDER BY `duty_start` + `duty_end`, `duty_start`";
+                    . " ORDER BY `duty_start` + `duty_end`, `break_start`";
             $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
             $result = database_wrapper::instance()->run($sql_query, array(
                 'weekday' => $weekday,

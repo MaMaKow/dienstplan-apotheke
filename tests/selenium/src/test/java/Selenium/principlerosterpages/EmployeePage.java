@@ -142,7 +142,7 @@ public class EmployeePage {
 
     public RosterItem getRosterItem(int alternationId, int column, int row) throws ParseException {
 
-        String employeeName = getEmployeeName();
+        int employeeId = getEmployeeId();
         WebElement rosterItemColumn = driver.findElement(getRosterItemColumnXpathBy(alternationId, column));
         String dateString = rosterItemColumn.getAttribute("data-date_sql");
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(alternationId, column, row)).getAttribute("value");
@@ -152,7 +152,7 @@ public class EmployeePage {
         Select branchNameSelect = new Select(driver.findElement(getRosterItemBranchNameXpathBy(alternationId, column, row)));
         //String branchName = branchNameSelect.getFirstSelectedOption().getText();
         int branchId = Integer.valueOf(branchNameSelect.getFirstSelectedOption().getAttribute("value"));
-        //comment = "";
+        String comment = null; //TODO: add comment
         /**
          * <p>
          * TODO: Die Locale könnte auch eine Konfigurationsvariable sein.
@@ -163,7 +163,7 @@ public class EmployeePage {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 
-        RosterItem rosterItem = new Selenium.RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd, branchId);
+        RosterItem rosterItem = new Selenium.RosterItem(employeeId, calendar, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 

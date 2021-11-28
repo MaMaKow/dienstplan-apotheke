@@ -285,6 +285,12 @@ public class RosterDayEditPage {
         return rosterValue;
     }
 
+    public Integer getRosterValueBranchId(int iterator) {
+        WebElement rosterTableRow = this.findRosterTableRow(iterator);
+        int rosterValue = Integer.parseInt(rosterTableRow.getAttribute("data-branch_id"));
+        return rosterValue;
+    }
+
     public String getRosterValueDateString(int iterator) {
         WebElement rosterTableRow = this.findRosterTableRow(iterator);
         String rosterValue = rosterTableRow.getAttribute("data-date_sql");
@@ -338,12 +344,14 @@ public class RosterDayEditPage {
         calendar.setTime(dateParsed);
 
         Long unixDate = getRosterValueUnixDate(iterator).longValue();
-        String employeeName = this.getRosterValueEmployeeName(unixDate, iterator);
+        int employeeId = getRosterValueEmployeeId(unixDate, iterator);
         String dutyStart = getRosterValueDutyStart(unixDate, iterator);
         String dutyEnd = getRosterValueDutyEnd(unixDate, iterator);
         String breakStart = getRosterValueBreakStart(unixDate, iterator);
         String breakEnd = getRosterValueBreakEnd(unixDate, iterator);
-        RosterItem rosterItem = new RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd);
+        int branchId = getRosterValueBranchId(iterator);
+        String comment = null;//TODO; add comment
+        RosterItem rosterItem = new RosterItem(employeeId, calendar, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 

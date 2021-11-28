@@ -39,9 +39,28 @@ import java.util.logging.Logger;
  */
 public class Workforce {
 
-    public Map readFromFile() {
-        Map listOfEmployees;
-        listOfEmployees = new HashMap<Integer, Employee>();
+    private HashMap<Integer, Employee> listOfEmployees = new HashMap<>();
+
+    ;
+
+    public Workforce() {
+        listOfEmployees = readJsonFile();
+    }
+
+    public HashMap<Integer, Employee> getListOfEmployees() {
+        return listOfEmployees;
+    }
+
+    public Employee getEmployeeById(int employeeId) {
+        return listOfEmployees.get(employeeId);
+    }
+
+    public String getEmployeeNameById(int employeeId) {
+        return listOfEmployees.get(employeeId).getLastName();
+    }
+
+    public final HashMap<Integer, Employee> readJsonFile() {
+        HashMap<Integer, Employee> readListOfEmployees = new HashMap<>();
         Reader reader = null;
         try {
             // create a reader
@@ -50,7 +69,7 @@ public class Workforce {
             ArrayList<Employee> employees = new Gson().fromJson(reader, new TypeToken<ArrayList<Employee>>() {
             }.getType());
             employees.forEach(employee -> {
-                listOfEmployees.put(employee.getEmployeeId(), employee);
+                readListOfEmployees.put(employee.getEmployeeId(), employee);
             });
         } catch (IOException ex) {
             Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
@@ -61,7 +80,7 @@ public class Workforce {
                 Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return listOfEmployees;
+        return readListOfEmployees;
     }
 
     public void writeToFile(ArrayList<Employee> listOfEmployees) {

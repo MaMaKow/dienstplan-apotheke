@@ -195,7 +195,7 @@ abstract class build_html_roster_views {
         $id = "roster_input_row_add_row_target_" . $day_iterator . "_" . $roster_row_iterator;
 
         $roster_input_row_add_row = "<tr>\n";
-        $roster_input_row_add_row .= "<td>";
+        $roster_input_row_add_row .= "<td data-date_unix=$day_iterator>";
 
         $roster_input_row_add_row .= "<button type='button' id='$id' data-id=$id data-day_iterator=$day_iterator data-roster_row_iterator=$roster_row_iterator data-maximum_number_of_rows=$maximum_number_of_rows data-branch_id=$branch_id onclick='roster_input_row_add($id);'>";
         $roster_input_row_add_row .= "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/add.svg' class='roster_input_row_add_row_image' alt='Add one row'>";
@@ -385,7 +385,7 @@ abstract class build_html_roster_views {
 
                 $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlentities($roster_item->date_sql)
-                        . "&employee_id=" . htmlentities($roster_item->employee_id) . "'>";
+                        . "&employee_id=" . htmlentities($roster_item->employee_id) . "' data-employee_id='" . htmlentities($roster_item->employee_id) . "' data-branch_id='" . htmlentities($roster_item->branch_id) . "'>";
                 if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
                     $zeile .= $workforce->List_of_employees[$roster_item->employee_id]->last_name;
                 } else {

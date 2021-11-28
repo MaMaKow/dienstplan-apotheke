@@ -148,13 +148,14 @@ public class RosterWeekTablePage {
      */
     public RosterItem getRosterItem(int column, int row) throws ParseException {
 
-        String employeeName = driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getText();
+        int employeeId = Integer.valueOf(driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getAttribute("data-employee_id"));
+        int branchId = Integer.valueOf(driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getAttribute("data-branch_id"));
         String dateString = driver.findElement(getRosterItemDateXpathBy(column)).getText();
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(column, row)).getText();
         String dutyEnd = driver.findElement(getRosterItemDutyEndXpathBy(column, row)).getText();
         String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();
         String breakEnd = driver.findElement(getRosterItemBreakEndXpathBy(column, row)).getText();
-        //comment = "";
+        String comment = null;//TODO: add comment
         /**
          * <p>
          * TODO: Die Locale könnte auch eine Konfigurationsvariable sein.
@@ -165,7 +166,7 @@ public class RosterWeekTablePage {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateParsed);
 
-        RosterItem rosterItem = new Selenium.RosterItem(employeeName, calendar, dutyStart, dutyEnd, breakStart, breakEnd);
+        RosterItem rosterItem = new Selenium.RosterItem(employeeId, calendar, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 }

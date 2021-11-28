@@ -59,7 +59,7 @@ public class TestWorkforceManagementPage {
         workforceManagementPage.selectEmployee(1);
 
         Workforce workforce = new Workforce();
-        Map<Integer, Employee> listOfEmployeesMap = workforce.readFromFile();
+        Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
         Employee employeeObjectShould = listOfEmployeesMap.get(5);
 
         workforceManagementPage.selectEmployee(employeeObjectShould.getEmployeeId());
@@ -84,7 +84,7 @@ public class TestWorkforceManagementPage {
 
         Workforce workforce = new Workforce();
         //workforce.writeToFile(listOfEmployees);
-        Map<Integer, Employee> listOfEmployeesMap = workforce.readFromFile();
+        Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();

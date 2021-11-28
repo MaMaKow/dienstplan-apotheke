@@ -1,0 +1,81 @@
+[
+    {
+        "employeeId": 0,
+        "employeeLastName": "Arnold",
+        "employeeFirstName": "Valentina",
+        "employeeProfession": "Zugehfrau",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": "Jan 1, 2001, 12:00:00 AM",
+        "employeeEndOfEmployment": "Jun 30, 2021, 12:00:00 AM"
+    },
+    {
+        "employeeId": 1,
+        "employeeLastName": "Probst",
+        "employeeFirstName": "Alexandra",
+        "employeeProfession": "PI",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": "Jan 1, 2002, 12:00:00 AM"
+    },
+    {
+        "employeeId": 2,
+        "employeeLastName": "Neuhaus",
+        "employeeFirstName": "Anabell",
+        "employeeProfession": "Apotheker",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": "Jan 1, 2003, 12:00:00 AM"
+    },
+    {
+        "employeeId": 3,
+        "employeeLastName": "Lehmann",
+        "employeeFirstName": "Elisabeth",
+        "employeeProfession": "Apotheker",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeAbilitiesGoodsReceipt": true,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": "Jan 1, 2004, 12:00:00 AM"
+    },
+    {
+        "employeeId": 4,
+        "employeeLastName": "Baumann",
+        "employeeFirstName": "Albert",
+        "employeeProfession": "Apotheker",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Filiale in der Nebenstraße",
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": "Jan 1, 2005, 12:00:00 AM"
+    },
+    {
+        "employeeId": 5,
+        "employeeLastName": "Kremer",
+        "employeeFirstName": "Albert",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": "Jan 1, 2006, 12:00:00 AM"
+    }
+]

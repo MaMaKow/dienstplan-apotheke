@@ -18,7 +18,9 @@
  */
 package Selenium;
 
+import Selenium.rosterpages.Workforce;
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  *
@@ -27,53 +29,38 @@ import java.util.Calendar;
 public class RosterItem {
 
     //private int employeeId;
-    private String employeeName;
+    private final Employee employeeObject;
     private String dateString;
-    private Calendar date;
-    private String dutyStart;
-    private String dutyEnd;
-    private String breakStart;
-    private String breakEnd;
-    private String branchName;
-    private int branchId;
-    private String comment;
+    private final Calendar date;
+    private final String dutyStart;
+    private final String dutyEnd;
+    private final String breakStart;
+    private final String breakEnd;
+    private final Branch branchObject;
+    private final String comment;
 
-    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd) {
-        this.employeeName = employeeName;
+    public RosterItem(int employeeId, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
+        Workforce workforce = new Workforce();
+        HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
+        Employee employee = listOfEmployees.get(employeeId);
+        this.employeeObject = employee;
         this.date = calendar;
         this.dutyStart = dutyStart;
         this.dutyEnd = dutyEnd;
         this.breakStart = breakStart;
         this.breakEnd = breakEnd;
-        this.comment = "";
-    }
-
-    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, int branchId) {
-        this.employeeName = employeeName;
-        this.date = calendar;
-        this.dutyStart = dutyStart;
-        this.dutyEnd = dutyEnd;
-        this.breakStart = breakStart;
-        this.breakEnd = breakEnd;
-        //this.branchName = branchName;
-        this.branchId = branchId;
-        this.comment = "";
-
-    }
-
-    public RosterItem(String employeeName, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String branchString, String comment) {
-        this.employeeName = employeeName;
-        this.date = calendar;
-        this.dutyStart = dutyStart;
-        this.dutyEnd = dutyEnd;
-        this.breakStart = breakStart;
-        this.breakEnd = breakEnd;
-        this.branchName = branchName;
         this.comment = comment;
+
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        this.branchObject = networkOfBranchOffices.getBranchById(branchId);
     }
 
     public String getEmployeeName() {
-        return this.employeeName;
+        return this.employeeObject.getLastName();
+    }
+
+    public int getEmployeeId() {
+        return this.employeeObject.getEmployeeId();
     }
 
     public String getDateString() {
@@ -101,7 +88,7 @@ public class RosterItem {
     }
 
     public int getBranchId() {
-        return this.branchId;
+        return this.branchObject.getBranchId();
     }
 
     public String getComment() {
