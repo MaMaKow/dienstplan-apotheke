@@ -19,6 +19,7 @@
 package Selenium.rosterpages;
 
 import Selenium.HomePage;
+import Selenium.NetworkOfBranchOffices;
 import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
@@ -39,6 +40,8 @@ import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -116,8 +119,10 @@ public class TestRosterEmployeePage {
         RosterItem rosterItem = rosterEmployeePage.getRosterItem(2, 1);
         String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
         Assert.assertEquals(employeeNameHash, "d41d8cd98f00b204e9800998ecf8427e");
-        Assert.assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-        Assert.assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+        //Assert.assertEquals(30, rosterItem.getDateCalendar().get(Calendar.DAY_OF_MONTH));
+        Assert.assertEquals(30, rosterItem.getLocalDate().getDayOfMonth());
+        //Assert.assertEquals(5, rosterItem.getDateCalendar().get(Calendar.MONTH)); //5 is June, 0 is January
+        Assert.assertEquals(5, rosterItem.getLocalDate().getMonth());
         Assert.assertEquals("08:00", rosterItem.getDutyStart());
         Assert.assertEquals("16:30", rosterItem.getDutyEnd());
         Assert.assertEquals("12:00", rosterItem.getBreakStart());
@@ -200,18 +205,22 @@ public class TestRosterEmployeePage {
         ICalendar ical = Biweekly.parse(iCalendarString).first();
         VEvent event = ical.getEvents().get(1);
 
-        DateFormat timeDateFormat = new SimpleDateFormat("HH:mm");
-        DateFormat dayDateFormat = new SimpleDateFormat("dd.MM.");
-
+        DateFormat dateFormatHourColonMinute = new SimpleDateFormat("HH:mm");
+        DateFormat dateFormatDayDotMonth = new SimpleDateFormat("dd.MM.");
+        DateTimeFormatter dateTimeFormatterDayDotMonth = DateTimeFormatter.ofPattern("dd.MM.");
         String summary = event.getSummary().getValue();
         DateStart dateStart = event.getDateStart();
         DateEnd dateEnd = event.getDateEnd();
 
-        Assert.assertEquals(dayDateFormat.format(dateStart.getValue()), dayDateFormat.format(rosterItem.getDate().getTime()));
-        Assert.assertEquals(dayDateFormat.format(dateEnd.getValue()), dayDateFormat.format(rosterItem.getDate().getTime()));
-        Assert.assertEquals(timeDateFormat.format(dateStart.getValue()), rosterItem.getDutyStart());
-        Assert.assertEquals(timeDateFormat.format(dateEnd.getValue()), rosterItem.getDutyEnd());
-        Assert.assertTrue(summary.contains("Apotheke"));
+        //Assert.assertEquals(dayDateFormat.format(dateStart.getValue()), dayDateFormat.format(rosterItem.getDateCalendar().getTime()));
+        Assert.assertEquals(dateFormatDayDotMonth.format(dateStart.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
+        //Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), dateFormatDayDotMonth.format(rosterItem.getDateCalendar().getTime()));
+        Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
+        Assert.assertEquals(dateFormatHourColonMinute.format(dateStart.getValue()), rosterItem.getDutyStart());
+        Assert.assertEquals(dateFormatHourColonMinute.format(dateEnd.getValue()), rosterItem.getDutyEnd());
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        String branchName = networkOfBranchOffices.getBranchById(rosterItem.getBranchId()).getBranchName();
+        Assert.assertTrue(summary.contains(branchName));
         /*
         Finally delete the iCalendar file:
          */

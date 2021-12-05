@@ -22,9 +22,11 @@ import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -66,11 +68,11 @@ public class TestRosterDayEditPage {
              * Move to specific date and go foreward and backward from there:
              */
             rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-            assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            assertEquals("2020-07-01", rosterWeekTablePage.getDateString()); //This is the corresponding monday.
             rosterWeekTablePage.moveDayBackward();
-            assertEquals("2020-06-30", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            assertEquals("2020-06-30", rosterWeekTablePage.getDateString()); //This is the corresponding monday.
             rosterWeekTablePage.moveDayForward();
-            assertEquals("2020-07-01", rosterWeekTablePage.getDate()); //This is the corresponding monday.
+            assertEquals("2020-07-01", rosterWeekTablePage.getDateString()); //This is the corresponding monday.
         } catch (Exception exception) {
             Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
@@ -95,16 +97,15 @@ public class TestRosterDayEditPage {
          * Move to specific date to get a specific roster:
          */
         rosterDayEditPage.goToDate("01.07.2020"); //This date is a wednesday.
-        assertEquals("2020-07-01", rosterDayEditPage.getDate());
+        assertEquals("2020-07-01", rosterDayEditPage.getDateString());
         /**
          * Get roster items and compare to assertions:
          */
         RosterItem rosterItem = rosterDayEditPage.getRosterItem(2);
-        //assertEquals("Tuesday 30.06.", rosterItem.getDateString());
         String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
         assertEquals("74f66fde3d90d47d20c8402fec499fb8", employeeNameHash);
-        assertEquals(1, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-        assertEquals(6, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+        assertEquals(1, rosterItem.getLocalDate().getDayOfMonth());
+        assertEquals(7, rosterItem.getLocalDate().getMonth());
         assertEquals("08:00", rosterItem.getDutyStart());
         assertEquals("16:30", rosterItem.getDutyEnd());
         assertEquals("12:00", rosterItem.getBreakStart());
@@ -129,28 +130,22 @@ public class TestRosterDayEditPage {
         /**
          * Move to specific date to get a specific roster:
          */
-        SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY);
-        Calendar calendar = Calendar.getInstance(Locale.GERMANY);
-        calendar.set(2020, Calendar.JULY, 1, 0, 0, 0);//Time incl. seconds must be set to 0:00:00 to match the timestamp in the page src.
-        rosterDayEditPage.goToDate(calendar); //This date is a wednesday.
-        assertEquals(sqlDateFormat.format(calendar.getTime()), rosterDayEditPage.getDate());
-        RosterItem rosterItem = new RosterItem(5, calendar, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1);
-        /**
-         * <p lang=de>TODO: Das RosterItem enthält den Namen als String.
-         * rosterDayEditPage.changeRosterInputEmployee braucht die EmployeeId
-         * als int. RosterItem bräuchte eine Funktion um das intern selbst
-         * bestimmen zu können.
-         * </p>
-         */
-        rosterDayEditPage.changeRosterInputEmployee(calendar.getTimeInMillis() / 1000, 0, 5);
-        rosterDayEditPage.changeRosterInputDutyStart(calendar.getTimeInMillis() / 1000, 0, rosterItem.getDutyStart());
-        rosterDayEditPage.changeRosterInputDutyEnd(calendar.getTimeInMillis() / 1000, 0, rosterItem.getDutyEnd());
-        rosterDayEditPage.changeRosterInputBreakStart(calendar.getTimeInMillis() / 1000, 0, rosterItem.getBreakStart());
-        rosterDayEditPage.changeRosterInputBreakEnd(calendar.getTimeInMillis() / 1000, 0, rosterItem.getBreakEnd());
+        DateTimeFormatter dateTimeFormatterSql = DateTimeFormatter.ISO_LOCAL_DATE;
+        LocalDate localDate = LocalDate.of(2020, Month.JULY, 1);
+        rosterDayEditPage.goToDate(localDate); //This date is a wednesday.
+        assertEquals(localDate.format(dateTimeFormatterSql), rosterDayEditPage.getDateString());
+        RosterItem rosterItem = new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1);
+        Instant instant = localDate.atStartOfDay().atZone(ZoneId.of("Europe/Berlin")).toInstant();
+        long unixDate = instant.getEpochSecond();
+        rosterDayEditPage.changeRosterInputEmployee(unixDate, 0, rosterItem.getEmployeeId());
+        rosterDayEditPage.changeRosterInputDutyStart(unixDate, 0, rosterItem.getDutyStart());
+        rosterDayEditPage.changeRosterInputDutyEnd(unixDate, 0, rosterItem.getDutyEnd());
+        rosterDayEditPage.changeRosterInputBreakStart(unixDate, 0, rosterItem.getBreakStart());
+        rosterDayEditPage.changeRosterInputBreakEnd(unixDate, 0, rosterItem.getBreakEnd());
         rosterDayEditPage.rosterFormSubmit();
-        RosterItem rosterItem2 = new RosterItem(2, calendar, "08:00", "16:30", "12:00", "12:30", null, 1);
-        RosterItem rosterItem3 = new RosterItem(3, calendar, "09:00", "18:00", "12:30", "13:00", null, 1);
-        RosterItem rosterItem4 = new RosterItem(4, calendar, "09:30", "18:00", "13:00", "13:30", null, 1);
+        RosterItem rosterItem2 = new RosterItem(2, localDate, "08:00", "16:30", "12:00", "12:30", null, 1);
+        RosterItem rosterItem3 = new RosterItem(3, localDate, "09:00", "18:00", "12:30", "13:00", null, 1);
+        RosterItem rosterItem4 = new RosterItem(4, localDate, "09:30", "18:00", "13:00", "13:30", null, 1);
         rosterDayEditPage.rosterInputAddRow(rosterItem2);
         rosterDayEditPage.rosterInputAddRow(rosterItem3);
         rosterDayEditPage.rosterInputAddRow(rosterItem4);

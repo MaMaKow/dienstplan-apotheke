@@ -23,7 +23,6 @@ import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -101,8 +100,8 @@ public class TestRosterWeekTablePage {
         RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
         String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
         Assert.assertEquals(employeeNameHash, "3208b225b142f12b1f380b488837505f");
-        Assert.assertEquals(30, rosterItem.getDate().get(Calendar.DAY_OF_MONTH));
-        Assert.assertEquals(5, rosterItem.getDate().get(Calendar.MONTH)); //5 is June, 0 is January
+        Assert.assertEquals(30, rosterItem.getLocalDate().getDayOfMonth());
+        Assert.assertEquals(6, rosterItem.getLocalDate().getMonth());
         Assert.assertEquals("08:00", rosterItem.getDutyStart());
         Assert.assertEquals("16:30", rosterItem.getDutyEnd());
         Assert.assertEquals("12:00", rosterItem.getBreakStart());

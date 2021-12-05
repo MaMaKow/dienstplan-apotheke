@@ -22,6 +22,8 @@ import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -162,11 +164,9 @@ public class RosterWeekTablePage {
          * Locale.GERMANY <-> Locale.ENGLISH
          * </p>
          */
-        Date dateParsed = new SimpleDateFormat("EE dd.MM.", Locale.GERMANY).parse(dateString);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateParsed);
-
-        RosterItem rosterItem = new Selenium.RosterItem(employeeId, calendar, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EE dd.MM.", Locale.GERMANY);
+        LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
+        RosterItem rosterItem = new Selenium.RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 }

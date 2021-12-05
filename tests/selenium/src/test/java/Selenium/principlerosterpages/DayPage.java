@@ -19,15 +19,17 @@ package Selenium.PrincipleRosterPages;
 import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
-import Selenium.rosterpages.RosterDayEditPage;
 import Selenium.rosterpages.Workforce;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import net.bytebuddy.matcher.NullMatcher;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -49,6 +51,7 @@ public class DayPage {
     private final By branchChooserInputBy = By.xpath("//*[@id=\"branch_form_select\"]");
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
     private final By addRosterRowButtonBy = By.xpath("//*[contains(@id, \'roster_input_row_add_row_target_\')]");
+    private final By copyAltenationButton = By.xpath("//form[@id=\"principle_roster_copy_form\"]/button");
 
     /**
      * TODO: Change the PHP to make the button more specific via class or id.
@@ -204,9 +207,8 @@ public class DayPage {
 
     public RosterItem getRosterItem(int iterator) throws ParseException {
         String dateSql = this.getRosterValueDateString(iterator);
-        Date dateParsed = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateSql);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateParsed);
+        DateTimeFormatter dateTimeFormatterSql = DateTimeFormatter.ISO_LOCAL_DATE;
+        LocalDate localDate = LocalDate.parse(dateSql, dateTimeFormatterSql);
         int unixDate = getRosterValueUnixDate(iterator);
         int employeeId = getRosterValueEmployeeId(unixDate, iterator);
         String dutyStart = getRosterValueDutyStart(unixDate, iterator);
@@ -215,7 +217,7 @@ public class DayPage {
         String breakEnd = getRosterValueBreakEnd(unixDate, iterator);
         int branchId = getRosterValueBranchId(iterator);
         String comment = null; //TODO; add comment
-        RosterItem rosterItem = new RosterItem(employeeId, calendar, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 
@@ -294,7 +296,8 @@ public class DayPage {
         addRosterRow();
         WebElement addRosterRowButtonElement = driver.findElement(addRosterRowButtonBy);
         Integer iterator = Integer.valueOf(addRosterRowButtonElement.getAttribute("data-roster_row_iterator"));
-        int unixDate = (int) (rosterItem.getDate().getTimeInMillis() / 1000);
+        //int unixDate = (int) (rosterItem.getDateCalendar().getTimeInMillis() / 1000);
+        int unixDate = (int) rosterItem.getLocalDate().atStartOfDay().toEpochSecond(ZoneOffset.from(ZonedDateTime.now()));
         changeRosterInputEmployee(unixDate, iterator, rosterItem.getEmployeeId());
         changeRosterInputDutyStart(unixDate, iterator, rosterItem.getDutyStart());
         changeRosterInputDutyEnd(unixDate, iterator, rosterItem.getDutyEnd());
@@ -364,5 +367,10 @@ public class DayPage {
         WebElement svgImageElement = driver.findElement(svgImageBy);
         String barWidthFactorString = svgImageElement.getAttribute("data-bar_width_factor");
         return Integer.valueOf(barWidthFactorString);
+    }
+
+    public void copyAlternation() {
+        WebElement copyAlternationButtonElement = driver.findElement(copyAltenationButton);
+        copyAlternationButtonElement.click();
     }
 }

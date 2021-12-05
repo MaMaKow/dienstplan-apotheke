@@ -21,6 +21,8 @@ package Selenium.rosterpages;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -102,11 +104,11 @@ public class RosterHoursPage {
         return selectedOptionText;
     }
 
-    public RosterItem getRosterOnDate(Calendar targetCalendar) {
+    public RosterItem getRosterOnDate(LocalDate targetLocalDate) {
         String employeeName = getEmployeeName();
         Workforce workforce = new Workforce();
         workforce.getListOfEmployees();
-        WebElement rowElement = getRowElement(targetCalendar);
+        WebElement rowElement = getRowElement(targetLocalDate);
 
         By rosterItemStartBy = By.xpath(".//td[2]");
         WebElement rosterItemStartElement = rowElement.findElement(rosterItemStartBy);
@@ -116,12 +118,31 @@ public class RosterHoursPage {
         WebElement rosterItemEndElement = rowElement.findElement(rosterItemEndBy);
         String dutyEnd = rosterItemEndElement.getText();
 
-        System.out.println(employeeName + ", " + targetCalendar + ", " + dutyStart + ", " + dutyEnd + ", " + "null" + ", " + "null");
-        RosterItem rosterItem = new RosterItem(0, targetCalendar, dutyStart, dutyEnd, dutyStart, null, null, null);
+        System.out.println(employeeName + ", " + targetLocalDate + ", " + dutyStart + ", " + dutyEnd + ", " + "null" + ", " + "null");
+        RosterItem rosterItem = new RosterItem(0, targetLocalDate, dutyStart, dutyEnd, dutyStart, null, null, null);
         return rosterItem;
     }
 
-    public WebElement getRowElement(Calendar targetDateCalendar) {
+    public RosterItem getRosterOnLocalDate(LocalDate targetLocalDate) {
+        String employeeName = getEmployeeName();
+        Workforce workforce = new Workforce();
+        workforce.getListOfEmployees();
+        WebElement rowElement = getRowElement(targetLocalDate);
+
+        By rosterItemStartBy = By.xpath(".//td[2]");
+        WebElement rosterItemStartElement = rowElement.findElement(rosterItemStartBy);
+        String dutyStart = rosterItemStartElement.getText();
+
+        By rosterItemEndBy = By.xpath(".//td[3]");
+        WebElement rosterItemEndElement = rowElement.findElement(rosterItemEndBy);
+        String dutyEnd = rosterItemEndElement.getText();
+
+        System.out.println(employeeName + ", " + targetLocalDate + ", " + dutyStart + ", " + dutyEnd + ", " + "null" + ", " + "null");
+        RosterItem rosterItem = new RosterItem(0, targetLocalDate, dutyStart, dutyEnd, dutyStart, null, null, null);
+        return rosterItem;
+    }
+
+    public WebElement getRowElement(LocalDate targetLocalDate) {
 
         By listOfRowsBy = By.xpath("//*[@id=\"marginal_employment_hours_list_table\"]/tbody/tr");
         By rosterItemDateBy = By.xpath(".//td[1]");
@@ -132,8 +153,8 @@ public class RosterHoursPage {
             rosterItemDateElement = rowElement.findElement(rosterItemDateBy);
             dateString = rosterItemDateElement.getText();
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE dd.MM.yyyy", Locale.ENGLISH);
-            String targetDateCalendarString = simpleDateFormat.format(targetDateCalendar.getTime());
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd.MM.yyyy", Locale.ENGLISH);
+            String targetDateCalendarString = targetLocalDate.format(dateTimeFormatter);
             if (!dateString.equals(targetDateCalendarString)) {
                 continue;
             }
@@ -142,8 +163,8 @@ public class RosterHoursPage {
         return null;
     }
 
-    public String getAbsenceStringOnDate(Calendar targetCalendar) {
-        WebElement rowElement = getRowElement(targetCalendar);
+    public String getAbsenceStringOnLocalDate(LocalDate targetLocalDate) {
+        WebElement rowElement = getRowElement(targetLocalDate);
         By absenceCellBy = By.xpath(".//td[2]");
         WebElement absenceCellElement = rowElement.findElement(absenceCellBy);
         String absenceString = absenceCellElement.getText();

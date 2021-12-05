@@ -22,6 +22,8 @@ import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Calendar;
 import org.testng.annotations.Test;
 import org.testng.Assert;
@@ -96,17 +98,16 @@ public class TestRosterHoursPage {
         /*
         Test if the correct roster information is displayed:
          */
-        Calendar targetCalendar = Calendar.getInstance();
-        targetCalendar.set(2020, Calendar.JUNE, 29);
-        RosterItem actualRosterItem = rosterHoursPage.getRosterOnDate(targetCalendar);
-        Assert.assertEquals(actualRosterItem.getDate(), targetCalendar);
+        LocalDate targetLocalDate = LocalDate.of(2020, Month.JUNE, 29);
+        RosterItem actualRosterItem = rosterHoursPage.getRosterOnDate(targetLocalDate);
+        //Assert.assertEquals(actualRosterItem.getDateCalendar(), targetCalendar);
+        Assert.assertEquals(actualRosterItem.getLocalDate(), targetLocalDate);
         Assert.assertEquals(actualRosterItem.getDutyStart(), "09:30");
         Assert.assertEquals(actualRosterItem.getDutyEnd(), "18:00");
         /*
         Test if absence information is displayed:
          */
-        targetCalendar.set(2020, Calendar.JUNE, 19);
-        String absenceString = rosterHoursPage.getAbsenceStringOnDate(targetCalendar);
+        String absenceString = rosterHoursPage.getAbsenceStringOnLocalDate(LocalDate.of(2020, Month.JUNE, 19));
         Assert.assertEquals(absenceString, "Elternzeit");
     }
 

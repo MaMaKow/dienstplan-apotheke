@@ -19,7 +19,7 @@
 package Selenium;
 
 import Selenium.rosterpages.Workforce;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.HashMap;
 
 /**
@@ -30,8 +30,7 @@ public class RosterItem {
 
     //private int employeeId;
     private final Employee employeeObject;
-    private String dateString;
-    private final Calendar date;
+    private final LocalDate localDate;
     private final String dutyStart;
     private final String dutyEnd;
     private final String breakStart;
@@ -39,12 +38,12 @@ public class RosterItem {
     private final Branch branchObject;
     private final String comment;
 
-    public RosterItem(int employeeId, Calendar calendar, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
+    public RosterItem(int employeeId, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
         Workforce workforce = new Workforce();
         HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
         Employee employee = listOfEmployees.get(employeeId);
         this.employeeObject = employee;
-        this.date = calendar;
+        this.localDate = localDate;
         this.dutyStart = dutyStart;
         this.dutyEnd = dutyEnd;
         this.breakStart = breakStart;
@@ -63,12 +62,8 @@ public class RosterItem {
         return this.employeeObject.getEmployeeId();
     }
 
-    public String getDateString() {
-        return this.dateString;
-    }
-
-    public Calendar getDate() {
-        return this.date;
+    public LocalDate getLocalDate() {
+        return this.localDate;
     }
 
     public String getDutyStart() {

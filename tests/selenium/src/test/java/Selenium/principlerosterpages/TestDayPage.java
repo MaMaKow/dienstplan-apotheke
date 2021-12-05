@@ -23,10 +23,15 @@ import Selenium.ScreenShot;
 import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +50,7 @@ public class TestDayPage {
 
     WebDriver driver;
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*passed*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -77,7 +82,7 @@ public class TestDayPage {
         Assert.assertEquals(1, dayPage.getBranchId());
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*passed*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
     public void testRosterDisplay() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -114,7 +119,7 @@ public class TestDayPage {
         }
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
     public void testRosterChange() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -165,6 +170,29 @@ public class TestDayPage {
         dayPage.rosterFormSubmit();
     }
 
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
+    public void testRosterCopyAlternation() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        DayPage dayPage = new DayPage(driver);
+        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
+
+        /**
+         * Copy the alternation:
+         */
+        dayPage.copyAlternation();
+    }
+
     @Test(enabled = true)/*new*/
     public void testRosterCreate() {
         driver = Selenium.driver.Wrapper.getDriver();
@@ -193,14 +221,13 @@ public class TestDayPage {
         HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
 
         dayPage.addRosterRow();
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CEST"), Locale.GERMANY);
-        //calendar.set(2019, Calendar.JUNE, 1, 0, 0, 0);
-        calendar.setTimeInMillis((long) dayPage.getUnixTime() * 1000);
-        RosterItem rosterItem0 = new RosterItem(1, calendar, "08:00", "16:30", "12:00", "12:30", null, 1);
-        RosterItem rosterItem1 = new RosterItem(2, calendar, "08:00", "16:30", "12:30", "13:00", null, 1);
-        RosterItem rosterItem2 = new RosterItem(3, calendar, "09:30", "18:00", "13:00", "13:30", null, 1);
-        RosterItem rosterItem3 = new RosterItem(4, calendar, "09:30", "18:00", "13:30", "14:00", null, 1);
-        RosterItem rosterItem4 = new RosterItem(5, calendar, "08:00", "16:30", "11:30", "12:00", null, 1);
+        Instant instant = Instant.ofEpochSecond(dayPage.getUnixTime());
+        LocalDate localDate = LocalDate.ofInstant(instant, ZoneId.of("Europe/Berlin"));
+        RosterItem rosterItem0 = new RosterItem(1, localDate, "08:00", "16:30", "12:00", "12:30", null, 1);
+        RosterItem rosterItem1 = new RosterItem(2, localDate, "08:00", "16:30", "12:30", "13:00", null, 1);
+        RosterItem rosterItem2 = new RosterItem(3, localDate, "09:30", "18:00", "13:00", "13:30", null, 1);
+        RosterItem rosterItem3 = new RosterItem(4, localDate, "09:30", "18:00", "13:30", "14:00", null, 1);
+        RosterItem rosterItem4 = new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", null, 1);
         dayPage.createNewRosterItem(rosterItem0);
         dayPage.createNewRosterItem(rosterItem1);
         dayPage.createNewRosterItem(rosterItem2);
@@ -218,7 +245,7 @@ public class TestDayPage {
         }
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
     public void testRosterChangePlotErrors() throws ParseException {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -256,7 +283,7 @@ public class TestDayPage {
 
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
     public void testRosterChangeDragAndDrop() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();

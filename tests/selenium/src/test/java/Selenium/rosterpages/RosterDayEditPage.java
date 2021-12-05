@@ -21,10 +21,8 @@ package Selenium.rosterpages;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -95,15 +93,15 @@ public class RosterDayEditPage {
         dateChooserInput.sendKeys(Keys.ENTER);
     }
 
-    public void goToDate(Calendar calendar) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        String dateString = simpleDateFormat.format(calendar.getTime());
+    public void goToDate(LocalDate localDate) {
+        DateTimeFormatter dateTimeFormatterDayDotMonthDotYear = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String dateString = localDate.format(dateTimeFormatterDayDotMonthDotYear);
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         dateChooserInput.sendKeys(dateString);
         dateChooserInput.sendKeys(Keys.ENTER);
     }
 
-    public String getDate() {
+    public String getDateString() {
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         String date_value = dateChooserInput.getAttribute("value");
         return date_value;
@@ -338,11 +336,9 @@ public class RosterDayEditPage {
     }
 
     public RosterItem getRosterItem(int iterator) throws ParseException {
+        DateTimeFormatter dateTimeFormatterSql = DateTimeFormatter.ISO_LOCAL_DATE;
         String dateSql = this.getRosterValueDateString(iterator);
-        Date dateParsed = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateSql);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateParsed);
-
+        LocalDate localDateParsed = LocalDate.parse(dateSql, dateTimeFormatterSql);
         Long unixDate = getRosterValueUnixDate(iterator).longValue();
         int employeeId = getRosterValueEmployeeId(unixDate, iterator);
         String dutyStart = getRosterValueDutyStart(unixDate, iterator);
@@ -351,7 +347,7 @@ public class RosterDayEditPage {
         String breakEnd = getRosterValueBreakEnd(unixDate, iterator);
         int branchId = getRosterValueBranchId(iterator);
         String comment = null;//TODO; add comment
-        RosterItem rosterItem = new RosterItem(employeeId, calendar, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new RosterItem(employeeId, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 

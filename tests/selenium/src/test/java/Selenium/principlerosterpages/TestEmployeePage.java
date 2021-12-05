@@ -23,6 +23,9 @@ import Selenium.signin.SignInPage;
 import Selenium.principlerosterpages.EmployeePage;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -105,11 +108,9 @@ public class TestEmployeePage {
         /**
          * Set a new roster item:
          */
-        Date dateParsed = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY).parse("2021-09-21");
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateParsed);
 
-        RosterItem rosterItemNew = new RosterItem(5, calendar, "10:30", "19:00", "12:30", "13:30", null, 2);
+        LocalDate localDate = LocalDate.of(2021, Month.SEPTEMBER, 21);
+        RosterItem rosterItemNew = new RosterItem(5, localDate, "10:30", "19:00", "12:30", "13:30", null, 2);
         RosterItem rosterItemOld = employeePage.getRosterItem(1, 1, 1);
         RosterItem rosterItemChanged;
         employeePage.setRosterItem(1, 1, 1, rosterItemNew);
