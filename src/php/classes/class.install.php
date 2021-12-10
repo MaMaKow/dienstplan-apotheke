@@ -598,6 +598,13 @@ class install {
             $this->Error_message[] = gettext("Error while trying to create the database tables.");
             return FALSE;
         }
+        if (FALSE === $this->fill_mysql_database_tables()) {
+            /*
+             * There was a serious error while trying to fill the database tables.
+             */
+            $this->Error_message[] = gettext("Error while trying to fill the database tables.");
+            return FALSE;
+        }
         /**
          * After creating all the tables, we store the state of the table structure in form of a hash inside the database:
          */
@@ -755,6 +762,28 @@ class install {
             }
         }
         return $result;
+    }
+
+    private function fill_mysql_database_tables() {
+        /**
+         * Fill some tables with necessary data:
+         */
+        $Sql_query_array[] = "INSERT INTO `absence_reasons` (`id`, `reason_string`) VALUES
+                (1, 'vacation'),
+                (2, 'remaining vacation'),
+                (3, 'sickness'),
+                (4, 'sickness of child'),
+                (5, 'taken overtime'),
+                (6, 'paid leave of absence'),
+                (7, 'maternity leave'),
+                (8, 'parental leave');";
+        foreach ($Sql_query_array as $sql_query) {
+            $result = database_wrapper::instance()->run($sql_query);
+            if ('00000' !== $result->errorCode()) {
+                database_wrapper::instance()->rollBack();
+                return FALSE;
+            }
+        }
     }
 
     /**
