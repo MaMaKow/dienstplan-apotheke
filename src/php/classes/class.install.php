@@ -40,7 +40,7 @@ class install {
 
     function __construct() {
         $this->Error_message = array();
-        $this->Config["database_user_self"] = "pdr"; //The user name must not be longer than 16 chars in mysql.
+        $this->Config["database_user_self"] = "pdr_" + bin2hex(openssl_random_pseudo_bytes(5)); //The user name must not be longer than 16 chars in mysql.
         $this->Config["database_password_self"] = bin2hex(openssl_random_pseudo_bytes(16));
 
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
