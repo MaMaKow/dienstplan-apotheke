@@ -61,6 +61,9 @@ class database_wrapper {
         } else {
             $port_string = '';
         }
+        if (null == $this->database_host) {
+            die("database_host ist not set inside the configuration!");
+        }
         $dsn = 'mysql:host=' . $this->database_host . ';' . $port_string . 'dbname=' . $this->database_name . ';charset=utf8';
         try {
             $this->pdo = new \PDO($dsn, $this->database_user_name, $this->database_password, $options);

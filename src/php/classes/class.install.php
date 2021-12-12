@@ -40,9 +40,8 @@ class install {
 
     function __construct() {
         $this->Error_message = array();
-        $this->Config["database_user_self"] = "pdr_" + bin2hex(openssl_random_pseudo_bytes(5)); //The user name must not be longer than 16 chars in mysql.
+        $this->Config["database_user_self"] = "pdr_" . bin2hex(openssl_random_pseudo_bytes(5)); //The user name must not be longer than 16 chars in mysql.
         $this->Config["database_password_self"] = bin2hex(openssl_random_pseudo_bytes(16));
-
         $this->pdr_file_system_application_path = dirname(dirname(dirname(__DIR__))) . "/";
         define('PDR_FILE_SYSTEM_APPLICATION_PATH', $this->pdr_file_system_application_path);
         $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
@@ -100,8 +99,6 @@ class install {
             }
 
         }
-
-
         $this->read_config_from_session();
     }
 
@@ -141,6 +138,7 @@ class install {
             return FALSE;
         }
         $this->database_user_self_existed_before_installation = $this->database_user_exists($this->Config["database_user_self"]);
+
         if (TRUE === $this->database_user_self_existed_before_installation or TRUE === $this->setup_mysql_database_create_user()) {
             /*
              * We created our own user.
@@ -250,6 +248,7 @@ class install {
                 error_log("The result was: " . $result);
                 return $result;
             }
+            return TRUE;
         } else {
             error_log("The database user " . $this->Config["database_user_self"] . " could not be created with the password: " . $this->Config["database_password_self"]);
             return FALSE;
@@ -277,9 +276,8 @@ class install {
         if ("localhost" !== $this->Config["database_host"] and "127.0.0.1" !== $this->Config["database_host"] and "::1" !== $this->Config["database_host"]) {
             $client_host = "%";
         }
-        $statement = $this->pdo->prepare("GRANT " . implode(", ", $Privileges) . " ON `:database_name`.* TO :database_user@:client_host");
+        $statement = $this->pdo->prepare("GRANT " . implode(", ", $Privileges) . " ON " . database_wrapper::quote_identifier($this->Config["database_name"]) . ".* TO :database_user@:client_host");
         $result = $statement->execute(array(
-            'database_name' => $this->Config["database_name"],
             'database_user' => $this->Config["database_user_self"],
             'client_host' => $client_host,
         ));
@@ -635,9 +633,15 @@ class install {
     }
 
     private function read_config_from_session() {
+
         if (!empty($_SESSION["Config"])) {
-            $this->Config = $_SESSION["Config"];
+            foreach ($_SESSION["Config"] as $key => $value) {
+                if (!isset($this->Config[$key])) {
+                    $this->Config[$key] = $value;
+                }
+            }
         }
+
         /*
          * Just in case we are interrupted and/or the session is lost, we read the values from a temporary installation file:
          */
@@ -778,9 +782,9 @@ class install {
                 (7, 'maternity leave'),
                 (8, 'parental leave');";
         foreach ($Sql_query_array as $sql_query) {
-            $result = database_wrapper::instance()->run($sql_query);
+            $result = $this->pdo->query($sql_query);
             if ('00000' !== $result->errorCode()) {
-                database_wrapper::instance()->rollBack();
+                $this->pdo->rollBack();
                 return FALSE;
             }
         }
