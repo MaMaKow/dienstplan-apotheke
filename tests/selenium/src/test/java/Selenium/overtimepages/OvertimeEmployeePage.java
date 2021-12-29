@@ -106,12 +106,9 @@ public class OvertimeEmployeePage {
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
-            System.out.println(dateElement.getAttribute("outerHTML"));
             if (simpleDateFormat.format(calendar.getTime()).equals(dateElement.getText())) {
-                System.out.println("yes");
                 return overtimeRowElement;
             }
-            System.out.println("no");
         }
         return null;
     }
@@ -156,8 +153,6 @@ public class OvertimeEmployeePage {
          * Daten korrekt sind?" Wir akzeptieren hier einfach die Abfrage.
          * </p>
          */
-        System.out.println("Gibt es vielleicht einen alert?");
-        System.out.println(driver.switchTo().alert().getText());
         driver.switchTo().alert().accept();
 
         return new OvertimeEmployeePage(driver);

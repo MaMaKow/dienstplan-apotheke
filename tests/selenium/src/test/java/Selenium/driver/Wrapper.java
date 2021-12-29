@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.Keys;
@@ -30,6 +31,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -131,7 +135,7 @@ public class Wrapper {
                     if (!element.getAttribute("value").equals(stringToEnter.substring(0, i + 1))) {
 
                         //use throws or similar statement to throw an exception instead of syso based on your test case requirement
-                        System.out.println("Throw Exception");
+                        System.err.println("Throw Exception");
                     }
                 } //If text length matches, it indicates that an invalid character was entered
                 else if (element.getAttribute("value").length() == (i + 1)) {
@@ -146,7 +150,7 @@ public class Wrapper {
                     if (!element.getAttribute("value").equals(stringToEnter.substring(0, i + 1))) {
 
                         //use throws or similar statement to throw an exception instead of syso based on your test case requirement
-                        System.out.println("Throw Exception");
+                        System.err.println("Throw Exception");
                         //throw new InterruptedException("Bam");
                     }
                 }
@@ -154,4 +158,18 @@ public class Wrapper {
         }
     }
 
+    public static void printBrowserConsole() {
+        System.out.println("printBrowserConsole():");
+        /**
+         * Get log from console.log() inside the browser: Mentioning type of Log
+         */
+        LogEntries entry = driver.manage().logs().get(LogType.BROWSER);
+        // Retrieving all log
+        List<LogEntry> logs = entry.getAll();
+        // Print one by one
+        for (LogEntry e : logs) {
+            System.out.println(e);
+        }
+
+    }
 }

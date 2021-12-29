@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +60,7 @@ public class Workforce {
         return listOfEmployees.get(employeeId).getLastName();
     }
 
-    public final HashMap<Integer, Employee> readJsonFile() {
+    private final HashMap<Integer, Employee> readJsonFile() {
         HashMap<Integer, Employee> readListOfEmployees = new HashMap<>();
         Reader reader = null;
         try {
@@ -83,12 +84,12 @@ public class Workforce {
         return readListOfEmployees;
     }
 
-    public void writeToFile(ArrayList<Employee> listOfEmployees) {
+    final public void writeToFile(ArrayList<Employee> listOfEmployees) {
         Writer writer = null;
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             // create a writer
-            writer = Files.newBufferedWriter(Paths.get("workforce.json"));
+            writer = Files.newBufferedWriter(Paths.get("workforce2.json"));
             // convert book object to JSON file
             gson.toJson(listOfEmployees, writer);
         } catch (IOException ex) {
@@ -101,4 +102,24 @@ public class Workforce {
             }
         }
     }
+    /*
+    public void writeToFile(HashMap<Integer, Employee> listOfEmployees) {
+        Writer writer = null;
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            // create a writer
+            writer = Files.newBufferedWriter(Paths.get("workforce2.json"));
+            // convert book object to JSON file
+            gson.toJson(listOfEmployees, writer);
+        } catch (IOException ex) {
+            Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+     */
 }

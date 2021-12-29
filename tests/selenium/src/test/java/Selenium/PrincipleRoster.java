@@ -41,10 +41,10 @@ public class PrincipleRoster {
     private void setPrincipleRoster() {
         principleRoster = new HashMap<>();
         PrincipleRosterDay principleMonday = new PrincipleRosterDay();
-        PrincipleRosterItem principleRosterItem0 = new PrincipleRosterItem(1, DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(16, 30), LocalTime.of(11, 30), LocalTime.of(12, 0), null, 1);
-        PrincipleRosterItem principleRosterItem1 = new PrincipleRosterItem(2, DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(16, 30), LocalTime.of(12, 0), LocalTime.of(12, 30), null, 1);
-        PrincipleRosterItem principleRosterItem2 = new PrincipleRosterItem(3, DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(16, 30), LocalTime.of(12, 30), LocalTime.of(13, 0), null, 1);
-        PrincipleRosterItem principleRosterItem3 = new PrincipleRosterItem(4, DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(16, 30), LocalTime.of(13, 0), LocalTime.of(13, 30), null, 1);
+        PrincipleRosterItem principleRosterItem0 = new PrincipleRosterItem(1, DayOfWeek.MONDAY, LocalTime.of(8, 00), LocalTime.of(16, 30), LocalTime.of(11, 30), LocalTime.of(12, 0), null, 1);
+        PrincipleRosterItem principleRosterItem1 = new PrincipleRosterItem(2, DayOfWeek.MONDAY, LocalTime.of(8, 00), LocalTime.of(17, 00), LocalTime.of(12, 0), LocalTime.of(12, 30), null, 1);
+        PrincipleRosterItem principleRosterItem2 = new PrincipleRosterItem(3, DayOfWeek.MONDAY, LocalTime.of(9, 00), LocalTime.of(18, 00), LocalTime.of(12, 30), LocalTime.of(13, 0), null, 1);
+        PrincipleRosterItem principleRosterItem3 = new PrincipleRosterItem(4, DayOfWeek.MONDAY, LocalTime.of(9, 30), LocalTime.of(18, 00), LocalTime.of(13, 0), LocalTime.of(13, 30), null, 1);
         principleMonday.put(principleRosterItem0);
         principleMonday.put(principleRosterItem1);
         principleMonday.put(principleRosterItem2);

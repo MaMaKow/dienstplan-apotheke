@@ -55,7 +55,8 @@ public class RosterDayEditPage {
     private final By buttonDayForwardBy = By.id("button_day_forward");
     private final By branchFormSelectBy = By.id("branch_form_select");
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-    private final By buttonRosterInputAddRowBy = By.id("roster_input_add_row_button");
+    //private final By buttonRosterInputAddRowBy = By.id("roster_input_add_row_button");
+    private final By buttonRosterInputAddRowBy = By.xpath("//*[contains(@id, \'roster_input_row_add_row_target_\')]");
 
     public RosterDayEditPage(WebDriver driver) {
         this.driver = driver;

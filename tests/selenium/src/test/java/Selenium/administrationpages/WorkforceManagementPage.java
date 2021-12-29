@@ -21,6 +21,8 @@ package Selenium.administrationpages;
 import Selenium.Employee;
 import Selenium.MenuFragment;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -121,7 +123,6 @@ public class WorkforceManagementPage {
         /**
          * main branch:
          */
-        System.out.println(employeeObject.getEmployeeId());
         By employeeBranchBy = By.xpath("//*[@id=\"human_resource_management\"]/fieldset[4]/label/span[contains(text(), '" + employeeObject.getBranchString() + "')]");
         WebElement employeeBranchElement = driver.findElement(employeeBranchBy);
         employeeBranchElement.click();
@@ -156,24 +157,23 @@ public class WorkforceManagementPage {
         /**
          * employment:
          */
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
         By employeeStartOfEmploymentBy = By.xpath("//*[@id=\"start_of_employment\"]");
         WebElement employeeStartOfEmploymentElement = driver.findElement(employeeStartOfEmploymentBy);
         employeeStartOfEmploymentElement.clear();
-        Date dateThing = employeeObject.getStartOfEmployment();
+        LocalDate dateThing = employeeObject.getStartOfEmployment();
         String dateStartString = "";
         if (null != dateThing) {
-            dateStartString = simpleDateFormat.format(dateThing);
+            dateStartString = dateThing.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         }
         employeeStartOfEmploymentElement.sendKeys(dateStartString);
 
         By employeeEndOfEmploymentBy = By.xpath("//*[@id=\"end_of_employment\"]");
         WebElement employeeEndOfEmploymentElement = driver.findElement(employeeEndOfEmploymentBy);
         employeeEndOfEmploymentElement.clear();
-        Date dateEndThing = employeeObject.getEndOfEmployment();
+        LocalDate dateEndThing = employeeObject.getEndOfEmployment();
         String dateEndString = "";
         if (null != dateEndThing) {
-            dateEndString = simpleDateFormat.format(employeeObject.getEndOfEmployment());
+            dateEndString = employeeObject.getEndOfEmployment().format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         }
         employeeEndOfEmploymentElement.sendKeys(dateEndString);
 
@@ -256,10 +256,6 @@ public class WorkforceManagementPage {
          */
         By employeeStartOfEmploymentBy = By.xpath("//*[@id=\"start_of_employment\"]");
         WebElement employeeStartOfEmploymentElement = driver.findElement(employeeStartOfEmploymentBy);
-        System.out.println("employeeStartOfEmploymentElement.getAttribute(\"outerHTML\")");
-        System.out.println(employeeStartOfEmploymentElement.getAttribute("outerHTML"));
-        System.out.println("employeeStartOfEmploymentElement.getAttribute(\"value\")");
-        System.out.println(employeeStartOfEmploymentElement.getAttribute("value"));
         employeeData.put("employeeStartOfEmployment", employeeStartOfEmploymentElement.getAttribute("value"));
 
         By employeeEndOfEmploymentBy = By.xpath("//*[@id=\"end_of_employment\"]");

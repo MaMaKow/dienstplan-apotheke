@@ -205,7 +205,6 @@ public class AbsenceEmployeePage {
                 continue;
             }
             WebElement editButton = absenceRowElement.findElement(editButtonBy);
-            System.out.println(editButton.getAttribute("innerHTML"));
             editButton.click();
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/input[1]"));
             startDateElement.clear();
@@ -213,7 +212,6 @@ public class AbsenceEmployeePage {
             WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/input[1]"));
             endDateElement.clear();
             endDateElement.sendKeys(endDate);
-            System.out.println(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             Select reasonSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             reasonSelectElement.selectByValue(String.valueOf(reasonId));
             WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/input"));
@@ -221,7 +219,6 @@ public class AbsenceEmployeePage {
             commentElement.sendKeys(comment);
             //WebElement durationElement = absenceRowElement.findElement(By.xpath("/td[5]"));
             //String durationString = durationElement.getText();
-            System.out.println(absenceRowElement.findElement(By.xpath(".//td[6]/select")));
             Select approvalSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[6]/select")));
             approvalSelectElement.selectByValue(approval);
             WebElement submitButtonElement = absenceRowElement.findElement(saveButtonBy);

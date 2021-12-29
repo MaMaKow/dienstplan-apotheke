@@ -84,21 +84,13 @@ public class Roster {
             rosterJson = Files.readString(Paths.get("roster.json"));
             //rosterJson = new String(Files.readAllBytes(Paths.get("roster.json")));
             JsonElement jsonFoo = (new JsonParser()).parse(rosterJson);
-            System.out.println("printing jsonFoo:");
-            System.out.println(jsonFoo);
-            System.out.println("after printing jsonFoo");
             JsonObject jsonObject = jsonFoo.getAsJsonObject();
-            System.out.println("after setting jsonObject");
             Set<Map.Entry<String, JsonElement>> jsonEntrySet = jsonObject.entrySet();
 
             //JsonObject jsonObject = jsonArray.getAsJsonObject();
-            System.out.println("Before for loop");
             int dayNumber = 0;
 
             for (Map.Entry<String, JsonElement> jsonDayEntry : jsonEntrySet) {
-                System.out.println("dayNumber:");
-                System.out.println(dayNumber++);
-                System.out.println(jsonDayEntry);
                 String dateString = jsonDayEntry.getKey();
                 JsonElement jsonRosterDay = jsonDayEntry.getValue();
                 listOfRosterItems.clear();
@@ -109,16 +101,12 @@ public class Roster {
                     int rowNumber = Integer.valueOf(jsonDayRosterEntry.getKey());
                     JsonElement entryValue = jsonDayRosterEntry.getValue();
                     RosterItem rosterItem = gson.fromJson(entryValue, RosterItem.class);
-                    System.out.println("EmployeeName:");
-                    System.out.println(rosterItem.getEmployeeName());
                     listOfRosterItems.put(rowNumber, rosterItem);
                 }
                 listOfRosterDays.put(localDate, listOfRosterItems);
 
             }
 
-            System.out.println("before exit");
-            //System.exit(1);
             //JsonArray array = JsonParser.parse(rosterJson).getAsJsonArray();
             /*
             Roster rosterDays = new Gson().fromJson(reader, new TypeToken<Roster>() {

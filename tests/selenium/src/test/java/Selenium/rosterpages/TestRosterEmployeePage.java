@@ -176,17 +176,14 @@ public class TestRosterEmployeePage {
                         String summaryStr = (summary == null) ? null : summary.getValue();
 
                         if (summaryStr != null && dateStartStr != null) {
-                            System.out.println(dateStartStr + " - " + dateEndStr + ": " + summaryStr);
                             continue;
                         }
 
                         if (summaryStr != null) {
-                            System.out.println(summaryStr);
                             continue;
                         }
 
                         if (dateStartStr != null) {
-                            System.out.println(dateStartStr);
                             continue;
                         }
                     }

@@ -63,8 +63,6 @@ public class UploadPepPage {
         } catch (URISyntaxException ex) {
             Logger.getLogger(UploadPepPage.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("jarPath");
-        System.out.println(jarPath);
         selectFileElement.sendKeys("filePath");
     }
 

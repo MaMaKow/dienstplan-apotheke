@@ -38,7 +38,7 @@ function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
     } else if (moveType === 'group') {
         selectedElement = evt.target.parentNode;
     } else {
-        console.log('Error: roster_change_table_on_drag_of_bar_plot() has to be called with a moveType of either "single" or "group"!' + evt + ", " + moveType);
+        console.error('Error: roster_change_table_on_drag_of_bar_plot() has to be called with a moveType of either "single" or "group"!' + evt + ", " + moveType);
     }
     firstX = evt.clientX;
     firstY = evt.clientY;
@@ -115,7 +115,6 @@ function deselectElement(evt) {
 }
 
 function roster_change_bar_plot_on_change_of_table(input_object) {
-
     var input_object_parent = input_object.parentNode;
     if (input_object_parent.nodeName !== "TD") {
         input_object_parent = input_object.parentNode.parentNode;
@@ -260,7 +259,6 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
 }
 
 function create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, parent_of_bar_elements) {
-
     var svg_element = parent_of_bar_elements.parentNode;
     var outer_margin_y = Number(svg_element.dataset.outer_margin_y);
     var inner_margin_y = Number(svg_element.dataset.inner_margin_y);
@@ -304,7 +302,7 @@ function create_new_bar_element_p() {
     var new_span_in_p = document.createElementNS('http://www.w3.org/1999/xhtml', 'span');
     new_span_in_p.innerHTML = "";
     new_p_element.appendChild(new_span_in_p);
-    return new_p_element
+    return new_p_element;
 }
 
 function create_new_break_rect(date_unix, new_box_x, new_box_width, roster_row_iterator, break_box_id, parent_of_bar_elements) {
@@ -339,19 +337,19 @@ function sync_from_bar_plot_to_roster_array_object(box_type, date_unix, roster_r
             roster_item['duty_end_int'] = end_hour_float * 3600;
             roster_item['duty_start_sql'] = format_time_int_to_string(start_hour_float * 3600);
             roster_item['duty_end_sql'] = format_time_int_to_string(end_hour_float * 3600);
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstbeginn', roster_item['duty_start_sql'])
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstende', roster_item['duty_end_sql'])
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstbeginn', roster_item['duty_start_sql']);
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstende', roster_item['duty_end_sql']);
             break;
         case 'break_box':
             roster_item['break_start_int'] = start_hour_float * 3600;
             roster_item['break_start_sql'] = format_time_int_to_string(start_hour_float * 3600);
             roster_item['break_end_int'] = end_hour_float * 3600;
             roster_item['break_end_sql'] = format_time_int_to_string(end_hour_float * 3600);
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsbeginn', roster_item['break_start_sql'])
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsende', roster_item['break_end_sql'])
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsbeginn', roster_item['break_start_sql']);
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsende', roster_item['break_end_sql']);
             break;
         default:
-            console.log('Error: sync_from_bar_plot_to_roster_array_object() only works on the "break_box" and on the "work_box"!' + box_type);
+            console.error('Error: sync_from_bar_plot_to_roster_array_object() only works on the "break_box" and on the "work_box"!' + box_type);
             break;
 
     }

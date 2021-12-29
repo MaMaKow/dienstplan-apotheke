@@ -122,7 +122,6 @@ public class SaturdayListPage {
         ArrayList<String> teamMembers = new ArrayList<>();
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement teamMembersWebElement = saturdayRowElement.findElement(saturdayRowTeamMembersBy);
-        //System.out.println(teamMembersWebElement.getAttribute("innerHTML"));
         By listOfMembersBy = By.xpath(".//span");
         List<WebElement> listOfMemberElements = teamMembersWebElement.findElements(listOfMembersBy);
         listOfMemberElements.forEach(memberElement -> {
@@ -135,7 +134,6 @@ public class SaturdayListPage {
         ArrayList<String> scheduledEmployees = new ArrayList<>();
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement scheduledEmployeesWebElement = saturdayRowElement.findElement(saturdayRowScheduledEmployeesBy);
-        //System.out.println(scheduledEmployeesWebElement.getAttribute("innerHTML"));
         By listOfMembersBy = By.xpath(".//span");
         List<WebElement> listOfMemberElements = scheduledEmployeesWebElement.findElements(listOfMembersBy);
         listOfMemberElements.forEach(memberElement -> {

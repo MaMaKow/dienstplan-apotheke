@@ -71,12 +71,6 @@ public class TestEmployeePage {
         RosterItem rosterItem;
         try {
             rosterItem = employeePage.getRosterItem(1, 1, 1);
-            System.out.println(rosterItem.getEmployeeName());
-            System.out.println(rosterItem.getDutyStart());
-            System.out.println(rosterItem.getDutyEnd());
-            System.out.println(rosterItem.getBreakStart());
-            System.out.println(rosterItem.getBreakEnd());
-            System.out.println(rosterItem.getBranchId());
         } catch (ParseException ex) {
             Logger.getLogger(TestEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
         }

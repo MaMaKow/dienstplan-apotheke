@@ -16,23 +16,15 @@
  */
 package Selenium.PrincipleRosterPages;
 
-import Selenium.Employee;
 import Selenium.PrincipleRoster;
 import Selenium.PrincipleRosterDay;
 import Selenium.PrincipleRosterItem;
 import Selenium.PropertyFile;
-import Selenium.RosterItem;
 import Selenium.ScreenShot;
-import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
 import java.text.ParseException;
 import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
@@ -41,6 +33,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 /**
  *
@@ -49,6 +42,7 @@ import org.testng.annotations.Test;
 public class TestDayPage {
 
     WebDriver driver;
+    SoftAssert softAssert = new SoftAssert();
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
     public void testDateNavigation() {
@@ -82,7 +76,7 @@ public class TestDayPage {
         Assert.assertEquals(1, dayPage.getBranchId());
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*passed*/
     public void testRosterDisplay() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -106,21 +100,22 @@ public class TestDayPage {
         int alternationId = 0;
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
         int employeeId = 2; //TODO: Hier könnte eine for-Schleife stehen. Die geht dann alle employees in principleRosterMonday durch.
-
         PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
         PrincipleRosterDay principleRosterMonday = principleRoster.getPrincipleRosterDay(dayOfWeek);
+        PrincipleRosterItem principleRosterItem = principleRosterMonday.getPrincipleRosterItemByEmployeeId(employeeId);
+
         dayPage.goToBranch(branchId);
         dayPage.goToAlternation(alternationId);
         dayPage.goToWeekday(dayOfWeek);
         PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeId(employeeId);
-        PrincipleRosterItem principleRosterItem = principleRosterMonday.getPrincipleRosterItemByEmployeeId(employeeId);
-        Assert.assertEquals(rosterItemRead.getBranchId(), principleRosterItem.getBranchId());
-        Assert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
-        Assert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
-        Assert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
-        Assert.assertEquals(rosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
+        softAssert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+        softAssert.assertEquals(rosterItemRead.getBranchId(), principleRosterItem.getBranchId());
+        softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
+        softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
+        softAssert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
+        softAssert.assertEquals(rosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
         //Assert.assertEquals("", rosterItem.getComment(),); //TODO: Kommentare
-        Assert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+        softAssert.assertAll();
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
@@ -146,34 +141,45 @@ public class TestDayPage {
         int branchId = 1;
         int alternationId = 0;
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-        int employeeId = 2; //TODO: Hier könnte eine for-Schleife stehen. Die geht dann alle employees in principleRosterMonday durch.
+        int employeeId = 2;
 
         dayPage.goToBranch(branchId);
         dayPage.goToAlternation(alternationId);
         dayPage.goToWeekday(dayOfWeek);
 
-        dayPage.changeRosterInputDutyStart(employeeId, LocalTime.of(11, 0));
-        dayPage.changeRosterInputDutyEnd(employeeId, LocalTime.of(16, 0));
-        dayPage.changeRosterInputBreakStart(employeeId, LocalTime.of(12, 30));
-        dayPage.changeRosterInputBreakEnd(employeeId, LocalTime.of(13, 0));
-        dayPage.changeRosterInputEmployee(employeeId, 11);
+        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRosterDay principleRosterMonday = principleRoster.getPrincipleRosterDay(dayOfWeek);
+        PrincipleRosterItem principleRosterItem = principleRosterMonday.getPrincipleRosterItemByEmployeeId(employeeId);
+        /**
+         * principleRosterItemChanged holds the values, into which the
+         * principleRosterItem will be changed.
+         */
+        int employeeIdChanged = 11;
+        PrincipleRosterItem principleRosterItemChanged = new PrincipleRosterItem(employeeIdChanged, dayOfWeek, LocalTime.of(11, 05), LocalTime.of(16, 10), LocalTime.of(12, 35), LocalTime.of(13, 10), null, branchId);
+
+        dayPage.changeRosterInputDutyStart(employeeId, principleRosterItemChanged.getDutyStart());
+        dayPage.changeRosterInputDutyEnd(employeeId, principleRosterItemChanged.getDutyEnd());
+        dayPage.changeRosterInputBreakStart(employeeId, principleRosterItemChanged.getBreakStart());
+        dayPage.changeRosterInputBreakEnd(employeeId, principleRosterItemChanged.getBreakEnd());
+        dayPage.changeRosterInputEmployee(employeeId, principleRosterItemChanged.getEmployeeId());
         dayPage.rosterFormSubmit();
-        PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeId(employeeId);
-        Assert.assertEquals(rosterItemRead.getDutyStart(), LocalTime.of(11, 0));
-        Assert.assertEquals(rosterItemRead.getDutyEnd(), LocalTime.of(16, 0));
-        Assert.assertEquals(rosterItemRead.getBreakStart(), LocalTime.of(12, 30));
-        Assert.assertEquals(rosterItemRead.getBreakEnd(), LocalTime.of(13, 0));
-        Assert.assertEquals(rosterItemRead.getEmployeeId(), 11);
+        PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeId(employeeIdChanged);
+        softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItemChanged.getDutyStart());
+        softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItemChanged.getDutyEnd());
+        softAssert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItemChanged.getBreakStart());
+        softAssert.assertEquals(rosterItemRead.getBreakEnd(), principleRosterItemChanged.getBreakEnd());
+        softAssert.assertEquals(rosterItemRead.getEmployeeId(), principleRosterItemChanged.getEmployeeId());
 
         /**
          * Revert the changes for the next test:
          */
-        dayPage.changeRosterInputDutyStart(employeeId, LocalTime.of(8, 0));
-        dayPage.changeRosterInputDutyEnd(employeeId, LocalTime.of(18, 0));
-        dayPage.changeRosterInputBreakStart(employeeId, LocalTime.of(11, 30));
-        dayPage.changeRosterInputBreakEnd(employeeId, LocalTime.of(12, 0));
-        dayPage.changeRosterInputEmployee(employeeId, 12);
+        dayPage.changeRosterInputDutyStart(employeeIdChanged, principleRosterItem.getDutyStart());
+        dayPage.changeRosterInputDutyEnd(employeeIdChanged, principleRosterItem.getDutyEnd());
+        dayPage.changeRosterInputBreakStart(employeeIdChanged, principleRosterItem.getBreakStart());
+        dayPage.changeRosterInputBreakEnd(employeeIdChanged, principleRosterItem.getBreakEnd());
+        dayPage.changeRosterInputEmployee(employeeIdChanged, employeeId);
         dayPage.rosterFormSubmit();
+        softAssert.assertAll();
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
@@ -221,7 +227,6 @@ public class TestDayPage {
          */
         int branchId = 1;
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-        int employeeId = 2; //TODO: Hier könnte eine for-Schleife stehen. Die geht dann alle employees in principleRosterMonday durch.
         dayPage.goToBranch(branchId);
         /**
          * alternationId MUST be 0! There is no other alternation yet. Therefore
@@ -233,21 +238,27 @@ public class TestDayPage {
         //dayPage.goToAlternation(0);
         dayPage.goToWeekday(dayOfWeek);
         PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
 
         dayPage.addRosterRow();
-        PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
         for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
             dayPage.createNewRosterItem(principleRosterItem);
-            PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeId(employeeId);
-            Assert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
-            Assert.assertEquals(principleRosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
-            Assert.assertEquals(principleRosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
-            Assert.assertEquals(principleRosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
-            Assert.assertEquals(principleRosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+        }
+        for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
+            PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeId(principleRosterItem.getEmployeeId());
+            System.out.print("Testing principle roster for employee: " + principleRosterItem.getEmployeeName());
+            System.out.println(" with duty end: " + principleRosterItem.getDutyEnd());
+            softAssert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
+            softAssert.assertEquals(principleRosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+            //System.out.println("principleRosterItemRead.getDutyEnd() is " + principleRosterItemRead.getDutyEnd() + " and " + "principleRosterItem.getDutyEnd() is " + principleRosterItem.getDutyEnd());
+            softAssert.assertEquals(principleRosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
+            softAssert.assertEquals(principleRosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
+            softAssert.assertEquals(principleRosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
+            softAssert.assertAll();
         }
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*new*/
     public void testRosterChangePlotErrors() throws ParseException {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -271,6 +282,9 @@ public class TestDayPage {
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
         int employeeId = 2; //TODO: Hier könnte eine for-Schleife stehen. Die geht dann alle employees in principleRosterMonday durch.
         int alternationId = 0;
+        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
+        PrincipleRosterItem principleRosterItem = principleRosterDay.getPrincipleRosterItemByEmployeeId(employeeId);
 
         dayPage.goToBranch(branchId);
         dayPage.goToAlternation(alternationId);
@@ -285,9 +299,9 @@ public class TestDayPage {
         dayPage.rosterFormSubmit();
 
         PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeId(employeeId);
-        Assert.assertEquals(rosterItemRead.getDutyStart(), "11:00");
-        Assert.assertEquals(rosterItemRead.getEmployeeName().length(), 9);
-
+        softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
+        softAssert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+        softAssert.assertAll();
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
@@ -318,29 +332,33 @@ public class TestDayPage {
         dayPage.goToBranch(branchId);
         dayPage.goToAlternation(alternationId);
         dayPage.goToWeekday(dayOfWeek);
-
+        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
+        PrincipleRosterItem principleRosterItem = principleRosterDay.getPrincipleRosterItemByEmployeeId(employeeId);
         try {
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 30, "duty");
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -30, "duty");
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 360, "duty");
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, 90, "break");
+            int dutyOffset = 90;
+            int breakOffset = 120;
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeId, dutyOffset, "duty");
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeId, breakOffset, "break");
             dayPage.rosterFormSubmit();
             PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeId(employeeId);
-            /**
-             * Revert the changes for the next test:
-             */
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -360, "duty");
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), 1, -90, "break");
-            dayPage.rosterFormSubmit();
             /**
              * <p lang=en>CAVE: rosterItem is read after the first dragAndDrop.
              * Those changes are reverted afterwards. The Assertions work on the
              * firstly changed values.</p>
              */
-            Assert.assertEquals(rosterItemRead.getDutyStart(), "09:00");
-            Assert.assertEquals(rosterItemRead.getDutyEnd(), "19:00");
-            Assert.assertEquals(rosterItemRead.getBreakStart(), "13:00");
-            Assert.assertEquals(rosterItemRead.getBreakEnd(), "13:30");
+            softAssert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+            softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart().plusMinutes(dutyOffset));
+            softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd().plusMinutes(dutyOffset));
+            softAssert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItem.getBreakStart().plusMinutes(breakOffset));
+            softAssert.assertEquals(rosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd().plusMinutes(breakOffset));
+            /**
+             * Revert the changes for the next test:
+             */
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeId, -dutyOffset, "duty");
+            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeId, -breakOffset, "break");
+            dayPage.rosterFormSubmit();
+            softAssert.assertAll();
         } catch (ParseException ex) {
             Logger.getLogger(TestDayPage.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {

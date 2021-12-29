@@ -8,8 +8,8 @@
             <class name="Selenium.administrationpages.TestWorkforceManagementPage" />
             <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
             <class name="Selenium.PrincipleRosterPages.TestDayPage" />
-            <class name="Selenium.rosterpages.TestRosterDayEditPage" />
             <!--
+            <class name="Selenium.rosterpages.TestRosterDayEditPage" />
             -->
         </classes>
     </test>

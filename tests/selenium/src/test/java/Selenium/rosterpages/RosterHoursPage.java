@@ -118,7 +118,6 @@ public class RosterHoursPage {
         WebElement rosterItemEndElement = rowElement.findElement(rosterItemEndBy);
         String dutyEnd = rosterItemEndElement.getText();
 
-        System.out.println(employeeName + ", " + targetLocalDate + ", " + dutyStart + ", " + dutyEnd + ", " + "null" + ", " + "null");
         RosterItem rosterItem = new RosterItem(0, targetLocalDate, dutyStart, dutyEnd, dutyStart, null, null, null);
         return rosterItem;
     }
@@ -137,7 +136,6 @@ public class RosterHoursPage {
         WebElement rosterItemEndElement = rowElement.findElement(rosterItemEndBy);
         String dutyEnd = rosterItemEndElement.getText();
 
-        System.out.println(employeeName + ", " + targetLocalDate + ", " + dutyStart + ", " + dutyEnd + ", " + "null" + ", " + "null");
         RosterItem rosterItem = new RosterItem(0, targetLocalDate, dutyStart, dutyEnd, dutyStart, null, null, null);
         return rosterItem;
     }

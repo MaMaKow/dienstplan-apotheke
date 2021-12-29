@@ -32,10 +32,10 @@ class roster_image_bar_plot {
 
     public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
         foreach ($Roster as $Roster_day_array) {
-            $this->total_number_of_lines ++;
+            $this->total_number_of_lines++;
             foreach ($Roster_day_array as $roster_item) {
                 if ($roster_item->employee_id !== NULL) {
-                    $this->total_number_of_lines ++;
+                    $this->total_number_of_lines++;
                 }
             }
         }
@@ -151,6 +151,7 @@ class roster_image_bar_plot {
                         . "x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' "
                         . "data-line='$this->line' "
                         . "data-date_unix='$date_unix' "
+                        . "data-employee_id='$employee_id' "
                         . "data-box_type='work_box' "
                         . ">";
                 $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' class='$employee_style_class'>";
@@ -169,6 +170,7 @@ class roster_image_bar_plot {
                         . " "
                         . "data-line='$this->line' "
                         . "data-box_type='break_box' "
+                        . "data-employee_id=$employee_id "
                         . "data-date_unix=$date_unix "
                         . "/>\n";
                 $this->line++;

@@ -18,19 +18,19 @@
  */
 package Selenium;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Mandelkow
  */
 public class Employee {
+
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY);
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_YEAR_MONTH_DAY = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY);
 
     private int employeeId;
     private String employeeLastName;
@@ -43,8 +43,8 @@ public class Employee {
     private int employeeBranchId;
     private boolean employeeAbilitiesGoodsReceipt;
     private boolean employeeAbilitiesCompounding;
-    private Date employeeStartOfEmployment;
-    private Date employeeEndOfEmployment;
+    private LocalDate employeeStartOfEmployment;
+    private LocalDate employeeEndOfEmployment;
 
     public Employee(String employeeId,
             String employeeLastName,
@@ -75,15 +75,10 @@ public class Employee {
         /**
          * Employment:
          */
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
         this.employeeStartOfEmployment = null;
         this.employeeEndOfEmployment = null;
-        try {
-            this.employeeStartOfEmployment = simpleDateFormat.parse(employeeStartOfEmployment);
-            this.employeeEndOfEmployment = simpleDateFormat.parse(employeeEndOfEmployment);
-        } catch (ParseException ex) {
-            //Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.employeeStartOfEmployment = LocalDate.parse(employeeStartOfEmployment, DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        this.employeeEndOfEmployment = LocalDate.parse(employeeEndOfEmployment, DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
     }
 
     public int getEmployeeId() {
@@ -130,11 +125,11 @@ public class Employee {
         return employeeAbilitiesGoodsReceipt;
     }
 
-    public Date getStartOfEmployment() {
+    public LocalDate getStartOfEmployment() {
         return employeeStartOfEmployment;
     }
 
-    public Date getEndOfEmployment() {
+    public LocalDate getEndOfEmployment() {
         return employeeEndOfEmployment;
     }
 
@@ -160,16 +155,14 @@ public class Employee {
         /**
          * Employment:
          */
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY);
         this.employeeStartOfEmployment = null;
         this.employeeEndOfEmployment = null;
-        try {
-            this.employeeStartOfEmployment = simpleDateFormat.parse(employeeHashMap.get("employeeStartOfEmployment"));
-            this.employeeEndOfEmployment = simpleDateFormat.parse(employeeHashMap.get("employeeEndOfEmployment"));
-        } catch (ParseException ex) {
-            Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
+        if (!"".equals(employeeHashMap.get("employeeStartOfEmployment"))) {
+            this.employeeStartOfEmployment = LocalDate.parse(employeeHashMap.get("employeeStartOfEmployment"), DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+        }
+        if (!"".equals(employeeHashMap.get("employeeEndOfEmployment"))) {
+            this.employeeEndOfEmployment = LocalDate.parse(employeeHashMap.get("employeeEndOfEmployment"), DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
         }
 
     }
-
 }
