@@ -165,7 +165,7 @@ $html_text .= "<br>";
 $html_text .= ""
         . strftime(gettext("calendar week")
                 . ' %V', $date_unix)
-        . '&nbsp'
+        . '&nbsp;'
         . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_object));
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
@@ -181,7 +181,7 @@ $max_employee_count = roster::calculate_max_employee_count($Roster);
 $day_iterator = $date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 if (array() !== $Roster) {
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
-        $html_text .= "<tr>\n";
+        $html_text .= "<tr data-branch_id=" . $branch_id . " data-date_sql=" . $Roster[$day_iterator][$table_input_row_iterator]->date_sql . " data-roster_row_iterator='$table_input_row_iterator'>\n";
         foreach (array_keys($Roster) as $day_iterator) {
             $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_employee'));
         }
@@ -191,10 +191,10 @@ if (array() !== $Roster) {
     /*
      * Write an empty line in case the roster is empty:
      */
-    $html_text .= "<tr>\n";
+    $html_text .= "<tr data-branch_id=" . $branch_id . " data-date_sql=" . $Roster[$day_iterator][$table_input_row_iterator]->date_sql . " data-roster_row_iterator='0'>\n";
     $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
-    $html_text .= "<tr>\n";
+    $html_text .= "<tr data-branch_id=" . $branch_id . " data-date_sql=" . $Roster[$day_iterator][$table_input_row_iterator]->date_sql . " data-roster_row_iterator='1'>\n";
     $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
 }

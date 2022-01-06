@@ -246,11 +246,8 @@ public class TestDayPage {
         }
         for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
             PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeId(principleRosterItem.getEmployeeId());
-            System.out.print("Testing principle roster for employee: " + principleRosterItem.getEmployeeName());
-            System.out.println(" with duty end: " + principleRosterItem.getDutyEnd());
             softAssert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
             softAssert.assertEquals(principleRosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
-            //System.out.println("principleRosterItemRead.getDutyEnd() is " + principleRosterItemRead.getDutyEnd() + " and " + "principleRosterItem.getDutyEnd() is " + principleRosterItem.getDutyEnd());
             softAssert.assertEquals(principleRosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
             softAssert.assertEquals(principleRosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
             softAssert.assertEquals(principleRosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());

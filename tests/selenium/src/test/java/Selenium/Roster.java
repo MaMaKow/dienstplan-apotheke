@@ -44,11 +44,15 @@ import java.util.logging.Logger;
 public class Roster {
 
     private HashMap<Integer, RosterItem> listOfRosterItems = new HashMap(); //Diese sind die Items in einem Tag.
-    private HashMap<LocalDate, HashMap> listOfRosterDays = new HashMap();
+    private final HashMap<LocalDate, HashMap> listOfRosterDays = new HashMap();
 
     public Roster() {
         readRosterFromFile();
 
+    }
+
+    public HashMap<LocalDate, HashMap> getListOfRosterDays() {
+        return listOfRosterDays;
     }
 
     public RosterItem getRosterItem(LocalDate localDate, int rowNumber) {
@@ -61,6 +65,20 @@ public class Roster {
         }
         RosterItem rosterItem = listOfRosterItems.get(rowNumber);
         return rosterItem;
+    }
+
+    public RosterItem getRosterItemByEmployeeId(LocalDate localDate, int employeeId) {
+        if (!listOfRosterDays.containsKey(localDate)) {
+            return null;
+        }
+        listOfRosterItems = listOfRosterDays.get(localDate);
+        for (RosterItem rosterItem : listOfRosterItems.values()) {
+            if (rosterItem.getEmployeeId() == employeeId) {
+                return rosterItem;
+
+            }
+        }
+        return null;
     }
 
     //public static void main(String args[]) {
@@ -79,16 +97,11 @@ public class Roster {
             // create a reader
             reader = Files.newBufferedReader(Paths.get("roster.json"));
             // convert JSON string to Roster object
-            //HashMap<LocalDate, HashMap<Integer, RosterItem>> rosterDays = new Gson().fromJson(reader, new TypeToken<HashMap<LocalDate, HashMap<Integer, RosterItem>>>() {
             String rosterJson;
             rosterJson = Files.readString(Paths.get("roster.json"));
-            //rosterJson = new String(Files.readAllBytes(Paths.get("roster.json")));
             JsonElement jsonFoo = (new JsonParser()).parse(rosterJson);
             JsonObject jsonObject = jsonFoo.getAsJsonObject();
             Set<Map.Entry<String, JsonElement>> jsonEntrySet = jsonObject.entrySet();
-
-            //JsonObject jsonObject = jsonArray.getAsJsonObject();
-            int dayNumber = 0;
 
             for (Map.Entry<String, JsonElement> jsonDayEntry : jsonEntrySet) {
                 String dateString = jsonDayEntry.getKey();
@@ -100,28 +113,29 @@ public class Roster {
                 for (Map.Entry<String, JsonElement> jsonDayRosterEntry : jsonDayRosterEntrySet) {
                     int rowNumber = Integer.valueOf(jsonDayRosterEntry.getKey());
                     JsonElement entryValue = jsonDayRosterEntry.getValue();
-                    RosterItem rosterItem = gson.fromJson(entryValue, RosterItem.class);
+                    String dutyStart = entryValue.getAsJsonObject().get("dutyStart").getAsString();
+                    String dutyEnd = entryValue.getAsJsonObject().get("dutyEnd").getAsString();
+                    String breakStart = entryValue.getAsJsonObject().get("breakStart").getAsString();
+                    String breakEnd = entryValue.getAsJsonObject().get("breakEnd").getAsString();
+                    String comment = null;
+                    try {
+                        comment = entryValue.getAsJsonObject().get("comment").getAsString();
+                    } catch (Exception e) {
+                        /**
+                         * comment was not set. Nothing to do here.
+                         */
+                    }
+                    JsonObject entryValueJsonObject = entryValue.getAsJsonObject();
+                    JsonElement employeeJsonElement = entryValueJsonObject.get("employeeObject");
+                    JsonObject employeeJsonObject = employeeJsonElement.getAsJsonObject();
+                    int employeeId = employeeJsonObject.get("employeeId").getAsInt();
+                    Branch BranchObject = gson.fromJson(entryValue.getAsJsonObject().get("branchObject"), Branch.class);
+                    RosterItem rosterItem = new RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, BranchObject.getBranchId());
                     listOfRosterItems.put(rowNumber, rosterItem);
                 }
                 listOfRosterDays.put(localDate, listOfRosterItems);
-
             }
 
-            //JsonArray array = JsonParser.parse(rosterJson).getAsJsonArray();
-            /*
-            Roster rosterDays = new Gson().fromJson(reader, new TypeToken<Roster>() {
-            }.getType());
-             */
-            int rowNumber = 0;
-            LocalDate localDate = null;
-            /*            for (HashMap<Integer, RosterItem> rosterDay : rosterDays.values()) {
-                for (RosterItem rosterItem : rosterDay.values()) {
-                    listOfRosterItems.put(rowNumber++, rosterItem);
-                    localDate = rosterItem.getLocalDate();
-                }
-                roster.put(localDate, listOfRosterItems);
-            }
-             */
         } catch (IOException ex) {
             Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -189,7 +203,6 @@ public class Roster {
                         .getName()).log(Level.SEVERE, null, ex);
             }
         }
-
     }
 
 }

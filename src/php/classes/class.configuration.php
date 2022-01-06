@@ -46,7 +46,7 @@ class configuration {
         'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
         'LC_TIME' => 'C',
         'timezone' => 'Europe/Berlin',
-        'language' => 'de_DE',
+        'language' => 'de-DE',
         'mb_internal_encoding' => 'UTF-8',
         'contact_email' => '',
         'hide_disapproved' => FALSE, //We set it up to false in order not to disconcert new administrators.
@@ -90,8 +90,8 @@ class configuration {
      *
      */
     public static $List_of_supported_languages = array(
-        'en_GB' => 'English',
-        'de_DE' => 'Deutsch',
+        'en-GB' => 'English',
+        'de-DE' => 'Deutsch',
     );
 
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
