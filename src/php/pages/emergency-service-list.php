@@ -122,7 +122,6 @@ echo "</H1>";
                         $holiday_class .= " holiday ";
                     }
                     echo "\n<tr data-iterator=$key><form method='post'>";
-                    echo "\n<td class='$holiday_class'>" . strftime('%a&nbsp;', $date_unix) . $holiday_string . "</td>";
                     if ($session->user_has_privilege('create_roster')) {
                         /**
                          * Date:
@@ -130,6 +129,10 @@ echo "</H1>";
                         echo "\n<td>\n"
                         . "<input type='date' name='emergency_service_date' value='$date_sql' min='$year-01-01' max='$year-12-31' onChange='unhideButtonOnChange(this)'>"
                         . "</td>\n";
+                        /**
+                         * Weekday:
+                         */
+                        echo "\n<td class='$holiday_class'>" . strftime('%a&nbsp;', $date_unix) . $holiday_string . "</td>";
                         /**
                          * Employee:
                          */

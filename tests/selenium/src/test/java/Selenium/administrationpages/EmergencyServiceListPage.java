@@ -18,12 +18,11 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.Employee;
 import Selenium.MenuFragment;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Date;
-import java.util.Locale;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -44,8 +43,7 @@ public class EmergencyServiceListPage {
     //By selectYearSelectBy = By.xpath("/html/body/form/select[@name='year']");
     By emergencyRowListBy = By.xpath("//*[@id=\"emergency_service_table\"]/tbody/tr");
     //By emergencyRowListBy = By.xpath("/html/body/table/tbody/tr");
-    By emergencyRowDateBy = By.xpath(".//td[1]");
-    By emergencyRowEmployeeIdBy = By.xpath(".//td[2]/form/select");
+    By emergencyRowEmployeeIdBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
 
     public EmergencyServiceListPage(WebDriver driver) {
         this.driver = driver;
@@ -82,14 +80,19 @@ public class EmergencyServiceListPage {
         return branchId;
     }
 
-    private WebElement getEmergencyRowElementByDate(Date targetDate) {
+    private WebElement getEmergencyRowElementByDate(LocalDate localDate) {
         List<WebElement> emergencyRowListElements = driver.findElements(emergencyRowListBy);
+        By emergencyRowDateBy = By.xpath(".//td[1]/input[@name=\"emergency_service_date\"]");
+
         emergencyRowListElements.remove(0); //The first element is the heading <th></th>
         for (WebElement emergencyRowElement : emergencyRowListElements) {
+            List<WebElement> emergencyRowDateElementList = emergencyRowElement.findElements(emergencyRowDateBy);
+            if (emergencyRowDateElementList.isEmpty()) {
+                continue;
+            }
             WebElement emergencyRowDateElement = emergencyRowElement.findElement(emergencyRowDateBy);
-            String emergencyRowDateString = emergencyRowDateElement.getText().substring(3, 13);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
-            if (simpleDateFormat.format(targetDate).equals(emergencyRowDateString)) {
+            String emergencyRowDateString = emergencyRowDateElement.getAttribute("value");
+            if (localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY).equals(emergencyRowDateString)) {
                 return emergencyRowElement;
             }
         }
@@ -97,8 +100,8 @@ public class EmergencyServiceListPage {
         return null;
     }
 
-    public Integer getEmployeeIdOnDate(Date targetDate) {
-        WebElement emergencyRowElement = getEmergencyRowElementByDate(targetDate);
+    public Integer getEmployeeIdOnDate(LocalDate localDate) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         if (null == emergencyRowElement) {
             return null;
         }
@@ -108,25 +111,26 @@ public class EmergencyServiceListPage {
         return Integer.valueOf(selectedOption.getAttribute("value"));
     }
 
-    public EmergencyServiceListPage setEmployeeIdOnDate(Date targetDate, int employeeId) {
-        WebElement emergencyRowElement = getEmergencyRowElementByDate(targetDate);
+    public EmergencyServiceListPage setEmployeeIdOnDate(LocalDate localDate, int employeeId) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         WebElement employeeIdWebElement = emergencyRowElement.findElement(emergencyRowEmployeeIdBy);
+        WebElement submitButtonElement = emergencyRowElement.findElement(By.xpath(".//td/button[contains(@id, \"save_\")]"));
         Select employeeIdSelect = new Select(employeeIdWebElement);
         employeeIdSelect.selectByValue(String.valueOf(employeeId));
+        submitButtonElement.click();
         return new EmergencyServiceListPage(driver);
     }
 
-    public EmergencyServiceListPage addLineForDate(Calendar calendar) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.", Locale.GERMANY);
+    public EmergencyServiceListPage addLineForDate(LocalDate localDate) {
         WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
-        dateInputElement.sendKeys(simpleDateFormat.format(calendar));
+        dateInputElement.sendKeys(localDate.format(DateTimeFormatter.ofPattern("dd.MM")));
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
         submitButton.click();
         return new EmergencyServiceListPage(driver);
     }
 
-    public EmergencyServiceListPage removeLineByDate(Calendar calendar) {
-        WebElement emergencyRowElement = getEmergencyRowElementByDate(calendar.getTime());
+    public EmergencyServiceListPage removeLineByDate(LocalDate localDate) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         WebElement deleteButton = emergencyRowElement.findElement(By.xpath(".//button[contains(@id, \'delete\')]"));
         deleteButton.click();
         /**
@@ -138,8 +142,8 @@ public class EmergencyServiceListPage {
         return new EmergencyServiceListPage(driver);
     }
 
-    public EmergencyServiceListPage doNotRemoveLineByDate(Calendar calendar) {
-        WebElement emergencyRowElement = getEmergencyRowElementByDate(calendar.getTime());
+    public EmergencyServiceListPage doNotRemoveLineByDate(LocalDate localDate) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         WebElement deleteButton = emergencyRowElement.findElement(By.xpath(".//button[contains(@id, \'delete\')]"));
         deleteButton.click();
         /**

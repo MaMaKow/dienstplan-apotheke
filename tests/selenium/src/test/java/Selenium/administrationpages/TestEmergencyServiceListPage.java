@@ -20,9 +20,10 @@ package Selenium.administrationpages;
 
 import Selenium.PropertyFile;
 import Selenium.ScreenShot;
+import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
-import java.util.Calendar;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.Month;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -40,7 +41,7 @@ public class TestEmergencyServiceListPage {
     WebDriver driver;
 
     @Test(enabled = true)/*new*/
-    public void testDateNavigation() {
+    public void testEmergencyService() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -64,22 +65,31 @@ public class TestEmergencyServiceListPage {
         /**
          * <p lang=de>Daten einfügen:</p>
          */
-        Calendar targetDate = Calendar.getInstance(Locale.GERMANY);
-        targetDate.set(2019, Calendar.AUGUST, 8);
-        emergencyServiceListPage = emergencyServiceListPage.addLineForDate(targetDate);
-        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 9);
+        Integer employeeIdInsert = 2;
+        Integer employeeIdChange = 4;
+        Workforce workforce = new Workforce();
+        /**
+         * <p lang=de>Nur Apotheker (und PI) können allein im Notdienst
+         * einhesetzt werden.</p>
+         */
+        Assert.assertEquals("Apotheker", workforce.getEmployeeById(employeeIdInsert).getProfession());
+        Assert.assertEquals("Apotheker", workforce.getEmployeeById(employeeIdChange).getProfession());
+        LocalDate localDate = LocalDate.of(2019, Month.AUGUST, 8);
+        emergencyServiceListPage = emergencyServiceListPage.addLineForDate(localDate);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(localDate, employeeIdInsert);
         /**
          * <p lang=de>Daten abfragen:</p>
          */
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), (Integer) 9);
-        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(targetDate.getTime(), 5);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()), (Integer) 5);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(localDate), employeeIdInsert);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(localDate, employeeIdChange);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(localDate), employeeIdChange);
         /**
          * <p lang=de>Zeilen wieder entfernen</p>
          */
-        emergencyServiceListPage.doNotRemoveLineByDate(targetDate);
-        emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(targetDate);
-        Assert.assertNull(emergencyServiceListPage.getEmployeeIdOnDate(targetDate.getTime()));
+        emergencyServiceListPage.doNotRemoveLineByDate(localDate);
+        Assert.assertNotNull(emergencyServiceListPage.getEmployeeIdOnDate(localDate));
+        emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(localDate);
+        Assert.assertNull(emergencyServiceListPage.getEmployeeIdOnDate(localDate));
     }
 
     @BeforeMethod

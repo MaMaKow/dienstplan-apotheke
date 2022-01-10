@@ -15,8 +15,8 @@
     </test>
     <test name="Application Pages">
         <classes>
-            <!--
             <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
+            <!--
             <class name="Selenium.administrationpages.TestUploadPepPage" />
             <class name="Selenium.administrationpages.TestSaturdayListPage" />
             <class name="Selenium.signin.TestLogin" />
