@@ -43,12 +43,11 @@ import java.util.logging.Logger;
  */
 public class Roster {
 
-    private HashMap<Integer, RosterItem> listOfRosterItems = new HashMap(); //Diese sind die Items in einem Tag.
-    private final HashMap<LocalDate, HashMap> listOfRosterDays = new HashMap();
+    private HashMap<Integer, RosterItem> listOfRosterItems; //Diese sind die Items in einem Tag.
+    private HashMap<LocalDate, HashMap> listOfRosterDays;
 
     public Roster() {
         readRosterFromFile();
-
     }
 
     public HashMap<LocalDate, HashMap> getListOfRosterDays() {
@@ -81,19 +80,19 @@ public class Roster {
         return null;
     }
 
-    //public static void main(String args[]) {
+    /*
     public static void main(String args[]) {
         Roster roster = new Roster();
-        roster.writeRosterToFile();
+        //roster.writeRosterToFile();
     }
-
+     */
     //private Roster readRosterFromFile(Date dateFrom, Date dateUntil) {
     //private HashMap<LocalDate, HashMap> readRosterFromFile() {
     private void readRosterFromFile() {
 
         Reader reader = null;
         try {
-            Gson gson = new Gson();
+            RosterItem rosterItem;
             // create a reader
             reader = Files.newBufferedReader(Paths.get("roster.json"));
             // convert JSON string to Roster object
@@ -103,13 +102,13 @@ public class Roster {
             JsonObject jsonObject = jsonFoo.getAsJsonObject();
             Set<Map.Entry<String, JsonElement>> jsonEntrySet = jsonObject.entrySet();
 
+            listOfRosterDays = new HashMap<>();
             for (Map.Entry<String, JsonElement> jsonDayEntry : jsonEntrySet) {
                 String dateString = jsonDayEntry.getKey();
                 JsonElement jsonRosterDay = jsonDayEntry.getValue();
-                listOfRosterItems.clear();
                 LocalDate localDate = LocalDate.parse(dateString);
-
                 Set<Map.Entry<String, JsonElement>> jsonDayRosterEntrySet = jsonRosterDay.getAsJsonObject().entrySet();
+                listOfRosterItems = new HashMap<>();
                 for (Map.Entry<String, JsonElement> jsonDayRosterEntry : jsonDayRosterEntrySet) {
                     int rowNumber = Integer.valueOf(jsonDayRosterEntry.getKey());
                     JsonElement entryValue = jsonDayRosterEntry.getValue();
@@ -117,6 +116,8 @@ public class Roster {
                     String dutyEnd = entryValue.getAsJsonObject().get("dutyEnd").getAsString();
                     String breakStart = entryValue.getAsJsonObject().get("breakStart").getAsString();
                     String breakEnd = entryValue.getAsJsonObject().get("breakEnd").getAsString();
+                    int employeeId = entryValue.getAsJsonObject().get("employeeId").getAsInt();
+                    int branchId = entryValue.getAsJsonObject().get("branchId").getAsInt();
                     String comment = null;
                     try {
                         comment = entryValue.getAsJsonObject().get("comment").getAsString();
@@ -125,12 +126,7 @@ public class Roster {
                          * comment was not set. Nothing to do here.
                          */
                     }
-                    JsonObject entryValueJsonObject = entryValue.getAsJsonObject();
-                    JsonElement employeeJsonElement = entryValueJsonObject.get("employeeObject");
-                    JsonObject employeeJsonObject = employeeJsonElement.getAsJsonObject();
-                    int employeeId = employeeJsonObject.get("employeeId").getAsInt();
-                    Branch BranchObject = gson.fromJson(entryValue.getAsJsonObject().get("branchObject"), Branch.class);
-                    RosterItem rosterItem = new RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, BranchObject.getBranchId());
+                    rosterItem = new RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
                     listOfRosterItems.put(rowNumber, rosterItem);
                 }
                 listOfRosterDays.put(localDate, listOfRosterItems);
@@ -180,6 +176,26 @@ public class Roster {
         listOfRosterItems.put(2, new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
         listOfRosterItems.put(3, new RosterItem(2, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
+        /**
+         * Add another day in 2021:
+         */
+        listOfRosterItems.clear();
+        localDate = LocalDate.of(2021, Month.JANUARY, 4);
+        listOfRosterItems.put(0, new RosterItem(4, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem(3, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem(2, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterDays.put(localDate, listOfRosterItems);
+        /**
+         * Add another day in 2019:
+         */
+        listOfRosterItems.clear();
+        localDate = LocalDate.of(2019, Month.DECEMBER, 30);
+        listOfRosterItems.put(0, new RosterItem(4, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem(3, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem(2, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterDays.put(localDate, listOfRosterItems);
 
         /**
          * Write to JSON file
@@ -190,7 +206,6 @@ public class Roster {
             // create a writer:
             writer = Files.newBufferedWriter(Paths.get("roster.json"));
             gson.toJson(listOfRosterDays, writer);
-
         } catch (IOException ex) {
             Logger.getLogger(Workforce.class
                     .getName()).log(Level.SEVERE, null, ex);

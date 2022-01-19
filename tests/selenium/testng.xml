@@ -7,10 +7,11 @@
             <!-- Mitarbeiter müssen eingetragen werden, bevor die Dienstpläne erstellt werden können: -->
             <class name="Selenium.administrationpages.TestWorkforceManagementPage" />
             <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
-            <class name="Selenium.PrincipleRosterPages.TestDayPage" />
             <class name="Selenium.rosterpages.TestRosterDayEditPage" />
-            <!--
+            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne:
+
             -->
+            <class name="Selenium.PrincipleRosterPages.TestDayPage" />
         </classes>
     </test>
     <test name="Application Pages">

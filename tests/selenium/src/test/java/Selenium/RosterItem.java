@@ -20,7 +20,6 @@ package Selenium;
 
 import Selenium.rosterpages.Workforce;
 import java.time.LocalDate;
-import java.util.HashMap;
 
 /**
  *
@@ -28,38 +27,34 @@ import java.util.HashMap;
  */
 public class RosterItem {
 
-    //private int employeeId;
-    private final Employee employeeObject;
+    private final int employeeId;
     private final LocalDate localDate;
     private final String dutyStart;
     private final String dutyEnd;
     private final String breakStart;
     private final String breakEnd;
-    private final Branch branchObject;
+    private final int branchId;
     private final String comment;
 
     public RosterItem(int employeeId, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
-        Workforce workforce = new Workforce();
-        HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
-        Employee employee = listOfEmployees.get(employeeId);
-        this.employeeObject = employee;
-        this.localDate = localDate;
+        this.employeeId = employeeId;
+        this.localDate = LocalDate.from(localDate);
         this.dutyStart = dutyStart;
         this.dutyEnd = dutyEnd;
         this.breakStart = breakStart;
         this.breakEnd = breakEnd;
         this.comment = comment;
-
-        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
-        this.branchObject = networkOfBranchOffices.getBranchById(branchId);
+        this.branchId = branchId;
     }
 
     public String getEmployeeName() {
-        return this.employeeObject.getLastName();
+        Workforce workforce = new Workforce();
+        Employee employeeObject = workforce.getEmployeeById(employeeId);
+        return employeeObject.getLastName();
     }
 
     public int getEmployeeId() {
-        return this.employeeObject.getEmployeeId();
+        return this.employeeId;
     }
 
     public LocalDate getLocalDate() {
@@ -83,7 +78,7 @@ public class RosterItem {
     }
 
     public int getBranchId() {
-        return this.branchObject.getBranchId();
+        return this.branchId;
     }
 
     public String getComment() {

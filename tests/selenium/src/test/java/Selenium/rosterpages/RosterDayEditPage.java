@@ -18,6 +18,7 @@
  */
 package Selenium.rosterpages;
 
+import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import java.text.ParseException;
@@ -31,6 +32,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
 
 /**
  *
@@ -89,18 +92,15 @@ public class RosterDayEditPage {
         return new RosterDayEditPage(driver);
     }
 
-    public void goToDate(String date) {
-        WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
-        dateChooserInput.sendKeys(date);
-        dateChooserInput.sendKeys(Keys.ENTER);
-    }
-
     public void goToDate(LocalDate localDate) {
-        DateTimeFormatter dateTimeFormatterDayDotMonthDotYear = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String dateString = localDate.format(dateTimeFormatterDayDotMonthDotYear);
-        WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
-        dateChooserInput.sendKeys(dateString);
+        WebElement dateChooserInput;
+        dateChooserInput = driver.findElement(dateChooserInputBy);
+        dateChooserInput.sendKeys(localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR));
         dateChooserInput.sendKeys(Keys.ENTER);
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(dateChooserInputBy));
+        dateChooserInput = driver.findElement(dateChooserInputBy);
+        assertEquals(dateChooserInput.getAttribute("value"), localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY));
     }
 
     public String getDateString() {

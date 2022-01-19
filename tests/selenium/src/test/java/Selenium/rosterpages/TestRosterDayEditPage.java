@@ -26,8 +26,8 @@ import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,17 +63,19 @@ public class TestRosterDayEditPage {
             String pdr_user_password = propertyFile.getPdrUserPassword();
             String pdr_user_name = propertyFile.getPdrUserName();
             signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-            RosterDayEditPage rosterWeekTablePage = new RosterDayEditPage(driver);
-            assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
+            RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
+            assertEquals(rosterDayEditPage.getUserNameText(), pdr_user_name);
             /**
              * Move to specific date and go foreward and backward from there:
              */
-            rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-            assertEquals("2020-07-01", rosterWeekTablePage.getDateString()); //This is the corresponding monday.
-            rosterWeekTablePage.moveDayBackward();
-            assertEquals("2020-06-30", rosterWeekTablePage.getDateString()); //This is the corresponding monday.
-            rosterWeekTablePage.moveDayForward();
-            assertEquals("2020-07-01", rosterWeekTablePage.getDateString()); //This is the corresponding monday.
+            LocalDate localDate = LocalDate.of(2020, Month.JULY, 1);
+            rosterDayEditPage.goToDate(localDate); //This date is a wednesday.
+            assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
+            rosterDayEditPage.moveDayBackward();
+            LocalDate dayBackward = localDate.minusDays(1);
+            assertEquals(dayBackward.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
+            rosterDayEditPage.moveDayForward();
+            assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
         } catch (Exception exception) {
             Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
         }
@@ -95,26 +97,27 @@ public class TestRosterDayEditPage {
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
         assertEquals(rosterDayEditPage.getUserNameText(), pdr_user_name);
         /**
-         * Move to specific date to get a specific roster:
-         */
-        LocalDate localDate = LocalDate.of(2020, Month.JULY, 1);
-        rosterDayEditPage.goToDate(localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR)); //This date is a wednesday.
-        assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString());
-        int employeeId = 2;//TODO: Use employees in the roster.
-        /**
          * Get roster items and compare to assertions:
          */
         Roster roster = new Roster();
-        RosterItem rosterItemFromPrediction = roster.getRosterItemByEmployeeId(localDate, employeeId);
-        RosterItem rosterItemReadOnPage = rosterDayEditPage.getRosterItem(employeeId);
+        HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
+        for (HashMap<Integer, RosterItem> listOfRosterItems : listOfRosterDays.values()) {
+            for (RosterItem rosterItemFromPrediction : listOfRosterItems.values()) {
+                /**
+                 * Move to specific date to get a specific roster:
+                 */
+                rosterDayEditPage.goToDate(rosterItemFromPrediction.getLocalDate());
+                RosterItem rosterItemReadOnPage = rosterDayEditPage.getRosterItem(rosterItemFromPrediction.getEmployeeId());
 
-        softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(), rosterItemReadOnPage.getEmployeeName());
-        softAssert.assertEquals(rosterItemFromPrediction.getLocalDate(), rosterItemReadOnPage.getLocalDate());
-        softAssert.assertEquals(rosterItemFromPrediction.getDutyStart(), rosterItemReadOnPage.getDutyStart());
-        softAssert.assertEquals(rosterItemFromPrediction.getDutyEnd(), rosterItemReadOnPage.getDutyEnd());
-        softAssert.assertEquals(rosterItemFromPrediction.getBreakStart(), rosterItemReadOnPage.getBreakStart());
-        softAssert.assertEquals(rosterItemFromPrediction.getBreakEnd(), rosterItemReadOnPage.getBreakEnd());
-        softAssert.assertAll();
+                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(), rosterItemReadOnPage.getEmployeeName());
+                softAssert.assertEquals(rosterItemFromPrediction.getLocalDate(), rosterItemReadOnPage.getLocalDate());
+                softAssert.assertEquals(rosterItemFromPrediction.getDutyStart(), rosterItemReadOnPage.getDutyStart());
+                softAssert.assertEquals(rosterItemFromPrediction.getDutyEnd(), rosterItemReadOnPage.getDutyEnd());
+                softAssert.assertEquals(rosterItemFromPrediction.getBreakStart(), rosterItemReadOnPage.getBreakStart());
+                softAssert.assertEquals(rosterItemFromPrediction.getBreakEnd(), rosterItemReadOnPage.getBreakEnd());
+                softAssert.assertAll();
+            }
+        }
     }
 
     @Test(enabled = true)/*new*/
@@ -135,13 +138,12 @@ public class TestRosterDayEditPage {
         /**
          * Move to specific date to get a specific roster:
          */
-        DateTimeFormatter dateTimeFormatterSql = DateTimeFormatter.ISO_LOCAL_DATE;
         Roster roster = new Roster();
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (Map.Entry<LocalDate, HashMap> listOfRosterDaysEntrySet : listOfRosterDays.entrySet()) {
             LocalDate localDate = listOfRosterDaysEntrySet.getKey();
             rosterDayEditPage.goToDate(localDate);
-            assertEquals(localDate.format(dateTimeFormatterSql), rosterDayEditPage.getDateString());
+            assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString());
             HashMap<Integer, RosterItem> listOfRosterItems = listOfRosterDaysEntrySet.getValue();
             listOfRosterItems.values().forEach(rosterItem -> {
                 rosterDayEditPage.rosterInputAddRow(rosterItem);
