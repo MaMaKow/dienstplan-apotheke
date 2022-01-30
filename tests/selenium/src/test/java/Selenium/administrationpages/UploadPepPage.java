@@ -20,6 +20,8 @@ package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
@@ -51,19 +53,8 @@ public class UploadPepPage {
     public void uploadFile() {
         By selectFileBy = By.xpath("//*[@id=\"file_to_upload\"]");
         WebElement selectFileElement = driver.findElement(selectFileBy);
-
-        String jarPath = "";
-        try {
-            jarPath = this.getClass()
-                    .getProtectionDomain()
-                    .getCodeSource()
-                    .getLocation()
-                    .toURI()
-                    .getPath();
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(UploadPepPage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        selectFileElement.sendKeys("filePath");
+        Path filePath = Paths.get("PepData.asy").toAbsolutePath();
+        selectFileElement.sendKeys(filePath.toString());
     }
 
     /**

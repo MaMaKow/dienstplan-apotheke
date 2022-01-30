@@ -199,6 +199,7 @@ div.user_dialog_container {
     float: right;
     top:0;
     max-width: 650px;
+    margin: 1em;
 }
 div.user_dialog_container div {
     /*

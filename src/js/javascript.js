@@ -260,7 +260,6 @@ function reset_update_pep() {
     console.log('reset_update_pep');
     /*
      document.getElementById("xmlhttpresult").innerHTML = "";
-     document.getElementById("javascriptmessage").innerHTML = "";
      document.getElementById("phpscriptmessages").innerHTML = "";
      */
     console.log(document.getElementById("pep_upload_form"));

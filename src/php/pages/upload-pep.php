@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+//TODO: drei Graphen mit den jeweils aktuellen pep Zahlen .;
 require "../../../default.php";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -166,16 +168,26 @@ function test_file_content_pattern_asys($file_name) {
         <label for="file_to_upload">Eine PEP-Datei zum Hochladen auswählen:</label><br>
         <input type="file" name="file_to_upload" id="file_to_upload" onchange="this.form.submit()" ><br>
     </form>
+    <?php
+    echo $user_dialog->build_messages();
+    $histogramm = new \pep_histogramm();
+    $Expectation_javascripft_object = $histogramm->get_expectation_javascript_object(1);
+    echo "<div id='expectation' data-expectation='$Expectation_javascripft_object'>";
+    echo "</div>";
+    $canvas_width = 650;
+    $canvas_height = 300;
+    echo "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height'>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
+    echo $histogramm->get_last_update_of_pep_data_date_string();
+    ?>
+    <script src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/draw_canvas_histogram.js" ></script>
+
+    <div><p id=xmlhttpresult class=day_paragraph></p></div>
 </div>
 <?php
-echo $user_dialog->build_messages();
-
-echo "<p id=xmlhttpresult></p>\n";
-echo "<p id=javascriptmessage></p>\n";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 <script type="text/javascript">
-    update_pep();
+            update_pep();
 </script>
 </body>
 </html>
