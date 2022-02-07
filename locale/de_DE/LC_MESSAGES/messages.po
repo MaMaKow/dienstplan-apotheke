@@ -1,17 +1,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2021-10-08 11:01+0200\n"
-"PO-Revision-Date: 2021-10-08 11:08+0200\n"
+"POT-Creation-Date: 2022-02-07 23:11+0100\n"
+"PO-Revision-Date: 2022-02-07 23:13+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0\n"
-"X-Poedit-Basepath: ../../..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: pdr_gettext\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -20,34 +20,34 @@ msgstr ""
 msgid "Working on input file."
 msgstr "Die Datei wird verarbeitet."
 
-#: src/js/javascript.js:101 src/php/classes/class.absence.php:119
-#: src/php/classes/class.database_wrapper.php:239
-#: src/php/classes/class.database_wrapper.php:253
-#: src/php/classes/class.database_wrapper.php:309
+#: src/js/javascript.js:118 src/php/classes/class.absence.php:119
+#: src/php/classes/class.database_wrapper.php:242
+#: src/php/classes/class.database_wrapper.php:256
+#: src/php/classes/class.database_wrapper.php:312
 #: src/php/classes/class.overtime.php:77
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/js/javascript.js:102 src/php/classes/class.absence.php:120
-#: src/php/classes/class.database_wrapper.php:70
-#: src/php/classes/class.database_wrapper.php:76
-#: src/php/classes/class.database_wrapper.php:240
-#: src/php/classes/class.database_wrapper.php:254
-#: src/php/classes/class.database_wrapper.php:310
+#: src/js/javascript.js:119 src/php/classes/class.absence.php:120
+#: src/php/classes/class.database_wrapper.php:73
+#: src/php/classes/class.database_wrapper.php:79
+#: src/php/classes/class.database_wrapper.php:243
+#: src/php/classes/class.database_wrapper.php:257
+#: src/php/classes/class.database_wrapper.php:313
 #: src/php/classes/class.overtime.php:78
 #: src/php/pages/reset_lost_password.php:108
 msgid "Please see the error log for more details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
-#: src/js/javascript.js:142
+#: src/js/javascript.js:159
 msgid "Really delete this data set?"
 msgstr "Dieses Datum tatsächlich löschen?"
 
-#: src/js/javascript.js:182
+#: src/js/javascript.js:199
 msgid "The end date is before the start date."
 msgstr "Das End-Datum liegt vor dem Start-Datum."
 
-#: src/js/javascript.js:396
+#: src/js/javascript.js:418
 msgid "Warning! Caps lock is ON."
 msgstr "Achtung! Großschreibung ist aktiviert."
 
@@ -242,20 +242,20 @@ msgid "to"
 msgstr "bis"
 
 #: src/php/classes/class.build_html_roster_views.php:138
-#: src/php/classes/class.build_html_roster_views.php:428
-#: src/php/classes/class.build_html_roster_views.php:515
+#: src/php/classes/class.build_html_roster_views.php:427
+#: src/php/classes/class.build_html_roster_views.php:514
 msgid "break"
 msgstr "Pause"
 
-#: src/php/classes/class.build_html_roster_views.php:279
-#: src/php/classes/class.build_html_roster_views.php:415
-#: src/php/classes/class.build_html_roster_views.php:509
+#: src/php/classes/class.build_html_roster_views.php:278
+#: src/php/classes/class.build_html_roster_views.php:414
+#: src/php/classes/class.build_html_roster_views.php:508
 #: src/php/pages/absence-edit.php:135
 #: src/php/pages/collaborative-vacation-input-box.php:109
 msgid "Comment"
 msgstr "Kommentar"
 
-#: src/php/classes/class.build_html_roster_views.php:326
+#: src/php/classes/class.build_html_roster_views.php:325
 #: src/php/pages/principle-roster-employee.php:88
 #: src/php/pages/roster-day-edit.php:166
 #: src/php/pages/roster-employee-table.php:65
@@ -263,17 +263,17 @@ msgstr "Kommentar"
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
-#: src/php/classes/class.build_html_roster_views.php:331
+#: src/php/classes/class.build_html_roster_views.php:330
 #: src/php/pages/roster-day-edit.php:173 src/php/pages/roster-day-edit.php:175
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
-#: src/php/classes/class.build_html_roster_views.php:540
+#: src/php/classes/class.build_html_roster_views.php:539
 #: src/php/pages/principle-roster-employee.php:145
 msgid "Hours per week"
 msgstr "Wochenstunden"
 
-#: src/php/classes/class.build_html_roster_views.php:543
+#: src/php/classes/class.build_html_roster_views.php:542
 #: src/php/classes/class.overtime.php:190
 #: src/php/pages/collaborative-vacation-input-box.php:64
 #: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:57
@@ -281,17 +281,17 @@ msgid "Employee"
 msgstr "Mitarbeiter"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:544
+#: src/php/classes/class.build_html_roster_views.php:543
 msgid "Target"
 msgstr "Soll"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:545
+#: src/php/classes/class.build_html_roster_views.php:544
 msgid "Actual"
 msgstr "Ist"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:546
+#: src/php/classes/class.build_html_roster_views.php:545
 msgid "Deviation"
 msgstr "Differenz"
 
@@ -305,6 +305,7 @@ msgstr "Berechtigungsfehler."
 #: src/php/classes/class.collaborative_vacation.php:89
 #: src/php/classes/class.collaborative_vacation.php:118
 #: src/php/classes/class.user_dialog_email.php:302
+#: src/php/pages/install_page_database.php:23
 msgid "Please see the error log for details!"
 msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
@@ -312,7 +313,7 @@ msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 #: src/php/classes/class.collaborative_vacation.php:316
 #: src/php/classes/class.collaborative_vacation.php:322
 #: src/php/pages/attendance-list.php:71 src/php/pages/attendance-list.php:72
-#: src/php/pages/emergency-service-list.php:75
+#: src/php/pages/emergency-service-list.php:94
 msgid "emergency service"
 msgstr "Notdienst"
 
@@ -330,16 +331,16 @@ msgstr "%1$s Tage genommen"
 msgid "The passwords do not match."
 msgstr "Die Passwörter stimmen nicht überein."
 
-#: src/php/classes/class.database_wrapper.php:69
-#: src/php/classes/class.database_wrapper.php:75
+#: src/php/classes/class.database_wrapper.php:72
+#: src/php/classes/class.database_wrapper.php:78
 msgid "There was an error while connecting to the database."
 msgstr "Bei der Verbindung zur Datenbank trat ein Fehler auf."
 
-#: src/php/classes/class.database_wrapper.php:71
-#: src/php/classes/class.database_wrapper.php:77
-#: src/php/classes/class.database_wrapper.php:241
-#: src/php/classes/class.database_wrapper.php:255
-#: src/php/classes/class.database_wrapper.php:311
+#: src/php/classes/class.database_wrapper.php:74
+#: src/php/classes/class.database_wrapper.php:80
+#: src/php/classes/class.database_wrapper.php:244
+#: src/php/classes/class.database_wrapper.php:258
+#: src/php/classes/class.database_wrapper.php:314
 #, php-format
 msgid "The error log resides in: %1$s"
 msgstr "Das Fehlerprotokoll befindet sich in: %1$s"
@@ -397,11 +398,11 @@ msgstr ""
 msgid "Profession"
 msgstr "Beruf"
 
-#: src/php/classes/class.human_resource_management.php:185
+#: src/php/classes/class.human_resource_management.php:186
 msgid "Branch"
 msgstr "Filiale"
 
-#: src/php/classes/class.human_resource_management.php:195
+#: src/php/classes/class.human_resource_management.php:197
 msgid "None"
 msgstr "Kein"
 
@@ -414,7 +415,7 @@ msgid "contains the roster for"
 msgstr "enthält den Dienstplan für"
 
 #: src/php/classes/class.iCalendar.php:144
-#: src/php/pages/emergency-service-list.php:82
+#: src/php/pages/emergency-service-list.php:101
 msgid "Weekday"
 msgstr "Wochentag"
 
@@ -439,55 +440,59 @@ msgstr "Es ist Zeit für eine Pause."
 msgid "The Lunch break ends now."
 msgstr "Die Pause endet jetzt."
 
-#: src/php/classes/class.install.php:79
+#: src/php/classes/class.install.php:78
 msgid "There already is a configuration file."
 msgstr "Es existiert bereits eine Konfigurationsdatei."
 
-#: src/php/classes/class.install.php:301
+#: src/php/classes/class.install.php:299
 msgid "The passwords aren't the same."
 msgstr "Die Passwörter sind nicht identisch."
 
-#: src/php/classes/class.install.php:331
+#: src/php/classes/class.install.php:329
 msgid "Error while trying to create employee."
 msgstr "Fehler beim Erstellen des Mitarbeiters."
 
-#: src/php/classes/class.install.php:349
+#: src/php/classes/class.install.php:347
 msgid "Error while trying to create administrative user."
 msgstr "Fehler beim Erstellen des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:358
+#: src/php/classes/class.install.php:356
 msgid "Administrative user already exists."
 msgstr "Der administrative Benutzer existiert bereits."
 
-#: src/php/classes/class.install.php:389
+#: src/php/classes/class.install.php:387
 msgid "Error while trying to create administrative user privileges."
 msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
 
-#: src/php/classes/class.install.php:528
+#: src/php/classes/class.install.php:526
 #, php-format
 msgid "The directory %1$s is not writable."
 msgid_plural "The directories %1$s are not writable."
 msgstr[0] "Das Verzeichnis %1$s ist nicht beschreibbar."
 msgstr[1] "Die Verzeichnisse %1s sind nicht beschreibbar."
 
-#: src/php/classes/class.install.php:530
+#: src/php/classes/class.install.php:528
 msgid "Make sure that the directories are writable by pdr!"
 msgstr "Stellen Sie sicher, dass die Verzeichnisse durch pdr schreibbar sind!"
 
-#: src/php/classes/class.install.php:590
+#: src/php/classes/class.install.php:588
 msgid "Error while trying to create the database."
 msgstr "Fehler beim Erstellen der Datenbank."
 
-#: src/php/classes/class.install.php:598
+#: src/php/classes/class.install.php:596
 msgid "Error while trying to create the database tables."
 msgstr "Fehler beim Erstellen der Datenbank-Tabellen."
 
-#: src/php/classes/class.install.php:658
+#: src/php/classes/class.install.php:603
+msgid "Error while trying to fill the database tables."
+msgstr "Fehler beim Befüllen der Datenbank-Tabellen."
+
+#: src/php/classes/class.install.php:669
 msgid "Error while writing the configuration to the filesystem."
 msgstr "Fehler beim Schreiben der Konfigurationsdatei."
 
 # Listing elements one two AND three
-#: src/php/classes/class.install.php:704
+#: src/php/classes/class.install.php:715
 msgid "and"
 msgstr "und"
 
@@ -590,10 +595,18 @@ msgstr "Saldo"
 
 #: src/php/classes/class.overtime.php:192
 #: src/php/classes/class.roster_item.php:190
-#: src/php/pages/emergency-service-list.php:82
+#: src/php/pages/emergency-service-list.php:101
 #: src/php/pages/overtime-read.php:51 src/php/pages/saturday-list.php:40
 msgid "Date"
 msgstr "Datum"
+
+#: src/php/classes/class.pep_histogramm.php:106
+msgid "There are no entries yet."
+msgstr "Es gibt bisher keine Einträge."
+
+#: src/php/classes/class.pep_histogramm.php:108
+msgid "Last entry"
+msgstr "Letzter Eintrag"
 
 #: src/php/classes/class.roster_headcount.php:125
 msgid "The are no opening times stored inside the database for this weekday."
@@ -1089,20 +1102,26 @@ msgstr "SMTP"
 msgid "SMTP settings"
 msgstr "SMTP Einstellungen"
 
-#: src/php/pages/emergency-service-list.php:82
+#: src/php/pages/emergency-service-list.php:101
 msgid "Name"
 msgstr "Name"
 
-#: src/php/pages/emergency-service-list.php:82
+#: src/php/pages/emergency-service-list.php:101
 msgid "Replacement"
 msgstr "Ersatz"
 
-#: src/php/pages/emergency-service-list.php:114
+#: src/php/pages/emergency-service-list.php:146
+#: src/php/pages/emergency-service-list.php:147
 msgid "Save changes to this line"
 msgstr "Änderungen an dieser Zeile speichern"
 
-#: src/php/pages/emergency-service-list.php:129
-#: src/php/pages/emergency-service-list.php:133
+#: src/php/pages/emergency-service-list.php:149
+#: src/php/pages/emergency-service-list.php:150
+msgid "Remove this line"
+msgstr "Diese Zeile entfernen"
+
+#: src/php/pages/emergency-service-list.php:164
+#: src/php/pages/emergency-service-list.php:168
 msgid "Add line"
 msgstr "Zeile hinzufügen"
 
@@ -1189,10 +1208,6 @@ msgstr "Wiederholen"
 #: src/php/pages/install_page_database.php:22
 msgid "There was an error while trying to create the database."
 msgstr "Bei der Erstellung der Datenbank trat ein Fehler auf."
-
-#: src/php/pages/install_page_database.php:23
-msgid "Please see the error log for details."
-msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 
 #: src/php/pages/list_of_artwork.php:23
 msgid ""
@@ -1458,11 +1473,11 @@ msgstr "Team Mitglieder"
 msgid "Scheduled in roster"
 msgstr "Im Dienstplan eingetragen"
 
-#: src/php/pages/upload-pep.php:37
+#: src/php/pages/upload-pep.php:39
 msgid "There was an error while trying to upload the file."
 msgstr "Beim Hochladen der Datei trat ein Fehler auf."
 
-#: src/php/pages/upload-pep.php:48
+#: src/php/pages/upload-pep.php:50
 msgid ""
 "UPLOAD_ERR_INI_SIZE: The uploaded file exceeds the upload_max_filesize "
 "directive in php.ini:"
@@ -1470,7 +1485,7 @@ msgstr ""
 "UPLOAD_ERR_INI_SIZE: Die hochgeladene Datei übersteigt die "
 "upload_max_filesize Regel in der php.ini:"
 
-#: src/php/pages/upload-pep.php:51
+#: src/php/pages/upload-pep.php:53
 msgid ""
 "Make sure, that your webserver allows overwriting of settings and reads ."
 "htaccess files!"
@@ -1478,18 +1493,18 @@ msgstr ""
 "Stellen Sie sicher, dass der Webserver das Überschreiben von Richtlinien "
 "per .htaccess Datei erlaubt!"
 
-#: src/php/pages/upload-pep.php:53
+#: src/php/pages/upload-pep.php:55
 msgid ""
 "For apache2 locate the apache configuration file e.g. /etc/apache2/apache2."
 "conf"
 msgstr ""
 "Für apache2 finden Sie die Konfigurationsdatei z.B. /etc/apache2/apache2.conf"
 
-#: src/php/pages/upload-pep.php:55
+#: src/php/pages/upload-pep.php:57
 msgid "Insert the following ruleset:"
 msgstr "Fügen Sie folgende Regel ein:"
 
-#: src/php/pages/upload-pep.php:61
+#: src/php/pages/upload-pep.php:63
 msgid ""
 "UPLOAD_ERR_FORM_SIZE: The uploaded file exceeds the MAX_FILE_SIZE directive "
 "that was specified in the HTML form."
@@ -1497,64 +1512,64 @@ msgstr ""
 "UPLOAD_ERR_FORM_SIZE: Die hochgeladene Datei übersteigt die MAX_FILE_SIZE "
 "Regel, welche im HTML Formular vorgegeben wurde."
 
-#: src/php/pages/upload-pep.php:65
+#: src/php/pages/upload-pep.php:67
 msgid "UPLOAD_ERR_PARTIAL: The uploaded file was only partially uploaded."
 msgstr "UPLOAD_ERR_PARTIAL: Die Datei wurde nur teilweise hochgeladen."
 
-#: src/php/pages/upload-pep.php:69
+#: src/php/pages/upload-pep.php:71
 msgid "UPLOAD_ERR_NO_FILE: No file was uploaded."
 msgstr "UPLOAD_ERR_NO_FILE: Es wurde keine Datei hochgeladen."
 
-#: src/php/pages/upload-pep.php:73
+#: src/php/pages/upload-pep.php:75
 msgid "UPLOAD_ERR_NO_TMP_DIR: Missing a temporary folder."
 msgstr "UPLOAD_ERR_NO_TMP_DIR: Ein temporärer Ordner fehlt."
 
-#: src/php/pages/upload-pep.php:77
+#: src/php/pages/upload-pep.php:79
 msgid "UPLOAD_ERR_CANT_WRITE: Failed to write file to disk"
 msgstr ""
 "UPLOAD_ERR_CANT_WRITE: Fehler beim Schreiben der Datei auf die Festplatte"
 
-#: src/php/pages/upload-pep.php:81
+#: src/php/pages/upload-pep.php:83
 msgid "UPLOAD_ERR_EXTENSION: A PHP extension stopped the file upload."
 msgstr ""
 "UPLOAD_ERR_EXTENSION: Eine PHP Erweiterung hat das Hochladen der Datei "
 "gestoppt."
 
-#: src/php/pages/upload-pep.php:85
+#: src/php/pages/upload-pep.php:87
 msgid "Unknown upload error."
 msgstr "Unbekannter Fehler beim Hochladen."
 
-#: src/php/pages/upload-pep.php:97
+#: src/php/pages/upload-pep.php:99
 msgid "Sorry, only ASYS PEP files are allowed."
 msgstr "Leider sind nur ASYS PEP-Dateien erlaubt."
 
-#: src/php/pages/upload-pep.php:98
+#: src/php/pages/upload-pep.php:100
 #, php-format
 msgid "You tried to upload: %1$s."
 msgstr "Sie haben versucht %1$s hochzuladen."
 
-#: src/php/pages/upload-pep.php:99
+#: src/php/pages/upload-pep.php:101
 msgid "Please upload a valid ASYS PEP file!"
 msgstr "Bitte eine korrekt formatierte ASYS PEP Datei hochladen!"
 
-#: src/php/pages/upload-pep.php:103
+#: src/php/pages/upload-pep.php:105
 msgid "Sorry, your file does not have the correct format."
 msgstr "Entschuldigung, Ihre Datei hat nicht das korrekte Format."
 
-#: src/php/pages/upload-pep.php:107
+#: src/php/pages/upload-pep.php:109
 msgid "Sorry, there was an error uploading your file."
 msgstr "Beim Hochladen Ihrer Datei ist ein Fehler aufgetreten."
 
-#: src/php/pages/upload-pep.php:111
+#: src/php/pages/upload-pep.php:113
 #, php-format
 msgid "The file %1$s has been uploaded."
 msgstr "Die Datei %1$s wurde hochgeladen."
 
-#: src/php/pages/upload-pep.php:112
+#: src/php/pages/upload-pep.php:114
 msgid "It will be processed in the background."
 msgstr "Sie wird im Hintergrund verarbeitet."
 
-#: src/php/pages/upload-pep.php:158
+#: src/php/pages/upload-pep.php:160
 msgid "Sorry, your file could not be opened."
 msgstr "Entschuldigung, Ihre Datei konnte nicht geöffnet werden.."
 
@@ -1658,6 +1673,14 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
 
+#, fuzzy
+#~| msgid "Es gibt keine Änderungen."
+#~ msgid "Es gibt bisher keine Einträge."
+#~ msgstr "Es gibt keine Änderungen."
+
+#~ msgid "Please see the error log for details."
+#~ msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
+
 #, php-format
 #~ msgid ""
 #~ "Dieser Grundplan gilt ab dem %2$s.\n"
@@ -1714,9 +1737,6 @@ msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
 
 #~ msgid "When should the changes come into force?"
 #~ msgstr "Wann sollen die Änderungen in Kraft treten?"
-
-#~ msgid "There are no changes."
-#~ msgstr "Es gibt keine Änderungen."
 
 #~ msgid "You will be sent <a href=\"javascript:history.back()\">back</a>."
 #~ msgstr ""
@@ -1784,9 +1804,6 @@ msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
 
 #~ msgid "Es gibt Änderungen an der %1s."
 #~ msgstr "Es gibt Änderungen an der %1s."
-
-#~ msgid "Es gibt keine Änderungen."
-#~ msgstr "Es gibt keine Änderungen."
 
 #~ msgid "Technical details"
 #~ msgstr "Technische Details"

@@ -251,6 +251,12 @@ function update_pep() {
             //document.getElementById("xmlhttpresult").innerHTML = this.responseText;
         }
         document.getElementById("xmlhttpresult").innerHTML = this.responseText;
+        //let user_dialog_container = document.getElementsByClassName("user_dialog_container");
+        //user_dialog_container[0].innerHTML = this.responseText;
+        /*
+         * CAVE: We want to reload. But we do not want to POST again. Therefore we will not use: window.location.reload(true);
+         */
+        window.location.href = window.location.href;
     };
     xml_http_request.open("GET", http_server_application_path + "pep.php?filename=" + targetfilename, true);
     console.log('opening pep.php?filename=' + targetfilename);

@@ -183,7 +183,8 @@ abstract class roster_image_histogramm {
         $month_day = date('j', $date_unix);
         $month = date('n', $date_unix);
 
-        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_pep_id = $List_of_branch_objects[$branch_id]->PEP;
         if (empty($branch_pep_id)) {
             return FALSE;
@@ -206,24 +207,6 @@ abstract class roster_image_histogramm {
         }
         return $Expectation;
     }
-
-    /*
-      private static function check_timeliness_of_pep_data() {
-      //Check if the PEP information is still up-to-date:
-      $sql_query = "SELECT max(Datum) as Datum FROM `pep`";
-      $result = database_wrapper::instance()->run($sql_query);
-      $row = $result->fetch(PDO::FETCH_OBJ);
-      $newest_pep_date = strtotime($row->Datum);
-      $today = time();
-      $seconds_since_last_update = $today - $newest_pep_date;
-      if ($seconds_since_last_update >= 60 * 60 * 24 * 30 * 3) { //3 months
-      $timeliness_warning_html = "<br><div class=warningmsg>Die PEP Information ist veraltet. <br>"
-      . "Letzter Eintrag " . date('d.m.Y', strtotime($row->Datum)) . ". <br>"
-      . "Bitte neue PEP-Datei <a href=upload-pep.php>hochladen</a>!</div><br>\n";
-      return $timeliness_warning_html;
-      }
-      }
-     */
 
     private static function hex2rgb($hexstring) {
         $hex = str_replace("#", "", $hexstring);

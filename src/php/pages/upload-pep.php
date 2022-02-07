@@ -166,8 +166,9 @@ function test_file_content_pattern_asys($file_name) {
 <div id=main-area>
     <form method="post" id='pep_upload_form' enctype="multipart/form-data">
         <label for="file_to_upload">Eine PEP-Datei zum Hochladen auswählen:</label><br>
-        <input type="file" name="file_to_upload" id="file_to_upload" onchange="this.form.submit()" ><br>
+        <input type="file" name="file_to_upload" id="file_to_upload" onchange=" this.form.submit(); document.body.style.cursor = 'wait';" ><br>
     </form>
+    <p id=xmlhttpresult class=day_paragraph></p>
     <?php
     echo $user_dialog->build_messages();
     $histogramm = new \pep_histogramm();
@@ -176,12 +177,11 @@ function test_file_content_pattern_asys($file_name) {
     echo "</div>";
     $canvas_width = 650;
     $canvas_height = 300;
-    echo "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height'>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
     echo $histogramm->get_last_update_of_pep_data_date_string();
+    echo "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height'>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
     ?>
     <script src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/draw_canvas_histogram.js" ></script>
 
-    <div><p id=xmlhttpresult class=day_paragraph></p></div>
 </div>
 <?php
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';

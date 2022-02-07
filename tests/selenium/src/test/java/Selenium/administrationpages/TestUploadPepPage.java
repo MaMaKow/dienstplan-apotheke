@@ -28,6 +28,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.asserts.SoftAssert;
 
 /**
  *
@@ -36,6 +37,7 @@ import org.testng.annotations.BeforeMethod;
 public class TestUploadPepPage {
 
     WebDriver driver;
+    SoftAssert softAssert = new SoftAssert();
 
     @Test(enabled = true)/*new*/
     public void testDateNavigation() {
@@ -53,11 +55,20 @@ public class TestUploadPepPage {
         signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         UploadPepPage uploadPepPage = new UploadPepPage(driver);
         Assert.assertEquals(uploadPepPage.getUserNameText(), pdr_user_name);
+        softAssert.assertEquals(false, uploadPepPage.expectationIsPresent());
         /**
          * Find a file to upload:
          */
         uploadPepPage.uploadFile();
-        Assert.assertEquals(true, false);
+        /**
+         * <p lang=de>Nach 5 Versuchen (=etwa 5 Sekunden) ist die expectation
+         * vermutlich noch nicht fertig berechnet. Nach weiteren 30 Sekunden
+         * sollte die Berechnung aber fertig sein.</p>
+         */
+        softAssert.assertEquals(false, uploadPepPage.expectationIsPresentAfterWaiting(5));
+        softAssert.assertEquals(true, uploadPepPage.expectationIsPresentAfterWaiting(30));
+        softAssert.assertAll();
+
     }
 
     @BeforeMethod

@@ -92,13 +92,20 @@ class pep_histogramm {
         $sql_query = "SELECT max(Datum) as Datum FROM `pep`";
         $result = database_wrapper::instance()->run($sql_query);
         $row = $result->fetch(PDO::FETCH_OBJ);
+        if (empty($row->Datum)) {
+            return null;
+        }
+
         $date_object = new DateTime($row->Datum);
         return $date_object;
     }
 
     public function get_last_update_of_pep_data_date_string() {
         $newest_pep_date = $this->get_last_update_of_pep_data();
-        $date_string = "<p>" . gettext("Letzter Eintrag") . " " . $newest_pep_date->format('d.m.Y') . "</p>\n";
+        if (null == $newest_pep_date) {
+            return "<p>" . gettext("There are no entries yet.") . "</p>\n";
+        }
+        $date_string = "<p>" . gettext("Last entry") . " " . $newest_pep_date->format('d.m.Y') . "</p>\n";
         return $date_string;
     }
 

@@ -22,6 +22,7 @@ import Selenium.MenuFragment;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
@@ -69,4 +70,32 @@ public class UploadPepPage {
 
         return driver.findElement(user_name_spanBy).getText();
     }
+
+    public boolean expectationIsPresent() {
+        WebElement expectationElement = driver.findElement(By.xpath("//div[@id=\"expectation\"]"));
+        String expectationString = expectationElement.getAttribute("data-expectation");
+        /**
+         * The expectation is filled with something other than "[]":
+         */
+        return !expectationString.equals("[]");
+    }
+
+    public boolean expectationIsPresentAfterWaiting(int maximumReloads) {
+        int refreshCount = maximumReloads;
+        for (int i = 0; i < refreshCount; i++) {
+            if (expectationIsPresent()) {
+                System.out.println("Success after " + refreshCount + " tries.");
+                return true;
+            } else {
+                try {
+                    Thread.sleep(1000);
+                    driver.navigate().refresh();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(UploadPepPage.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return false;
+    }
+
 }
