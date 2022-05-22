@@ -110,7 +110,7 @@ class sessions {
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
         $List_of_pages_accessible_without_login = array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
-        if (!isset($_SESSION['user_object']->employee_id) and ! in_array(basename($script_name), $List_of_pages_accessible_without_login)) {
+        if (!isset($_SESSION['user_object']->employee_id) and!in_array(basename($script_name), $List_of_pages_accessible_without_login)) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location);
             die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
@@ -183,6 +183,17 @@ class sessions {
         }
     }
 
+    public function create_message_on_missing_privilege($privilege, $error_type = E_USER_ERROR) {
+        if (!$this->user_has_privilege($privilege)) {
+            $user_dialog = new user_dialog();
+            $message = gettext('You are missing the necessary permission to perform this action.')
+                    . ' ' . gettext('Please contact the administrator if you feel this is an error.')
+                    . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
+                    . '" ' . gettext('is required.') . ')';
+            $user_dialog->add_message($message, $error_type);
+        }
+    }
+
     public function login($user_name, $user_password, $redirect = TRUE) {
         $user_dialog = new user_dialog;
         if (empty($user_password) OR empty($user_name)) {
@@ -244,14 +255,14 @@ class sessions {
                 }
                 if (!empty($referrer)) {
                     if ($_SESSION['number_of_times_redirected'] < 3) {
-                        $_SESSION['number_of_times_redirected'] ++;
+                        $_SESSION['number_of_times_redirected']++;
                         $referrer = 'pages/menu-tiles.php';
                         //die("Location:" . $referrer);
                         header("Location:" . $referrer);
                     }
                 } else {
                     if ($_SESSION['number_of_times_redirected'] < 3) {
-                        $_SESSION['number_of_times_redirected'] ++;
+                        $_SESSION['number_of_times_redirected']++;
 
                         header("Location:" . PDR_HTTP_SERVER_APPLICATION_PATH);
                     }
@@ -320,7 +331,7 @@ class sessions {
     }
 
     public function write_lost_password_token_to_database($employee_id, $token) {
-        if (!is_null($employee_id) and ! is_null($token)) {
+        if (!is_null($employee_id) and!is_null($token)) {
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
             $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES (:employee_id, UNHEX(:token))";
             database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
@@ -336,14 +347,14 @@ class sessions {
             }
             $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             if (!headers_sent() and ( $_SESSION['number_of_times_redirected'] ) < 3) {
-                $_SESSION['number_of_times_redirected'] ++;
+                $_SESSION['number_of_times_redirected']++;
                 header("Status: 301 Moved Permanently");
                 header("Location: $https_url");
                 die("<p>Dieses Programm erfordert die Nutzung von "
                         . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
                         . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
             } elseif (( $_SESSION['number_of_times_redirected'] ) < 3) {
-                $_SESSION['number_of_times_redirected'] ++;
+                $_SESSION['number_of_times_redirected']++;
                 die('<script type="javascript">document.location.href="' . $https_url . '";</script>');
             } else {
                 die("<p>Dieses Programm erfordert die Nutzung von "

@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/user_dialog.js"></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/collaborative-vacation.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/emergency-service-list.js" ></SCRIPT>
+        <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/saturday-rotation.js" ></SCRIPT>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/style.css" media="all">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/print.css" media="print">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/overtime.css" media="all">

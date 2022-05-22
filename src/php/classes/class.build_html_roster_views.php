@@ -247,7 +247,7 @@ abstract class build_html_roster_views {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $roster_input_row_employee_select .= "<option value=$roster_employee_id selected>" . $roster_employee_id . " Unknown employee" . "</option>";
+            $roster_input_row_employee_select .= "<option value=$roster_employee_id selected>" . $roster_employee_id . " " . gettext("Unknown employee") . "</option>";
         }
 
         $roster_input_row_employee_select .= "</select>\n";
@@ -389,7 +389,7 @@ abstract class build_html_roster_views {
                 if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
                     $zeile .= $workforce->List_of_employees[$roster_item->employee_id]->last_name;
                 } else {
-                    $zeile .= "Unknown employee: " . $roster_item->employee_id;
+                    $zeile .= gettext("Unknown employee") . ":" . $roster_item->employee_id;
                 }
                 $zeile .= "</a></b> / <span class='roster_working_hours'>";
                 $zeile .= htmlentities($roster_item->working_hours);
@@ -553,7 +553,7 @@ abstract class build_html_roster_views {
             if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
                 $week_hours_table_html .= $workforce->List_of_employees[$employee_id]->last_name;
             } else {
-                $week_hours_table_html .= "Unknown employee: " . $employee_id;
+                $week_hours_table_html .= gettext("Unknown employee") . ":" . $employee_id;
             }
             $week_hours_table_html .= "</td>";
             $week_hours_table_html .= "<td>" . round($working_hours_have * 4, 0) / 4;

@@ -158,7 +158,7 @@ class roster_image_bar_plot {
                 if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
                     $svg_box_text .= $workforce->List_of_employees[$employee_id]->last_name;
                 } else {
-                    $svg_box_text .= "Unknown employee: " . $employee_id;
+                    $svg_box_text .= gettext("Unknown employee") . ":" . $employee_id;
                 }
                 $svg_box_text .= "<span>$working_hours</span>";
                 $svg_box_text .= "</p>";

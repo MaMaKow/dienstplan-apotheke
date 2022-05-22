@@ -127,6 +127,11 @@ class database_wrapper {
     public function run($sql_query, $arguments = []) {
         try {
             $statement = $this->pdo->prepare($sql_query);
+            /*
+              if (false !== strpos($sql_query, "DELETE FROM `saturday_rotation_teams`")) {
+              print_debug_variable($sql_query, $arguments);
+              }
+             */
             $statement->execute($arguments);
             return $statement;
         } catch (Exception $exception) {

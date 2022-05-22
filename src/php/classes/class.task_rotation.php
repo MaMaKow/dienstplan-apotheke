@@ -239,7 +239,7 @@ abstract class task_rotation {
          * The empty option is necessary to enable the deletion of employees:
          */
         $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$task_employee_id]->last_name) or ! isset($task_employee_id)) {
+        if (isset($workforce->List_of_employees[$task_employee_id]->last_name) or!isset($task_employee_id)) {
             foreach ($workforce->List_of_compounding_employees as $employee_id) {
                 $employee_object = $workforce->List_of_employees[$employee_id];
                 if ($task_employee_id == $employee_id and NULL !== $task_employee_id) {
@@ -252,7 +252,7 @@ abstract class task_rotation {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $task_rotation_select_html .= "<option value=$task_employee_id selected>" . $task_employee_id . " Unknown employee" . "</option>";
+            $task_rotation_select_html .= "<option value=$task_employee_id selected>" . $task_employee_id . " " . gettext("Unknown employee") . "</option>";
         }
 
         $task_rotation_select_html .= "</select>\n";

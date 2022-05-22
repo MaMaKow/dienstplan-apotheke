@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2022-02-07 23:11+0100\n"
-"PO-Revision-Date: 2022-02-07 23:13+0100\n"
+"POT-Creation-Date: 2022-05-22 22:35+0200\n"
+"PO-Revision-Date: 2022-05-22 22:35+0200\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -21,9 +21,9 @@ msgid "Working on input file."
 msgstr "Die Datei wird verarbeitet."
 
 #: src/js/javascript.js:118 src/php/classes/class.absence.php:119
-#: src/php/classes/class.database_wrapper.php:242
-#: src/php/classes/class.database_wrapper.php:256
-#: src/php/classes/class.database_wrapper.php:312
+#: src/php/classes/class.database_wrapper.php:247
+#: src/php/classes/class.database_wrapper.php:261
+#: src/php/classes/class.database_wrapper.php:317
 #: src/php/classes/class.overtime.php:77
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
@@ -31,9 +31,9 @@ msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 #: src/js/javascript.js:119 src/php/classes/class.absence.php:120
 #: src/php/classes/class.database_wrapper.php:73
 #: src/php/classes/class.database_wrapper.php:79
-#: src/php/classes/class.database_wrapper.php:243
-#: src/php/classes/class.database_wrapper.php:257
-#: src/php/classes/class.database_wrapper.php:313
+#: src/php/classes/class.database_wrapper.php:248
+#: src/php/classes/class.database_wrapper.php:262
+#: src/php/classes/class.database_wrapper.php:318
 #: src/php/classes/class.overtime.php:78
 #: src/php/pages/reset_lost_password.php:108
 msgid "Please see the error log for more details!"
@@ -247,6 +247,16 @@ msgstr "bis"
 msgid "break"
 msgstr "Pause"
 
+#: src/php/classes/class.build_html_roster_views.php:250
+#: src/php/classes/class.build_html_roster_views.php:392
+#: src/php/classes/class.build_html_roster_views.php:556
+#: src/php/classes/class.pharmacy_emergency_service_builder.php:53
+#: src/php/classes/class.roster_image_bar_plot.php:161
+#: src/php/classes/class.saturday_rotation.php:237
+#: src/php/classes/class.task_rotation.php:255
+msgid "Unknown employee"
+msgstr "Unbekannte*r Mitarbeiter*in"
+
 #: src/php/classes/class.build_html_roster_views.php:278
 #: src/php/classes/class.build_html_roster_views.php:414
 #: src/php/classes/class.build_html_roster_views.php:508
@@ -338,9 +348,9 @@ msgstr "Bei der Verbindung zur Datenbank trat ein Fehler auf."
 
 #: src/php/classes/class.database_wrapper.php:74
 #: src/php/classes/class.database_wrapper.php:80
-#: src/php/classes/class.database_wrapper.php:244
-#: src/php/classes/class.database_wrapper.php:258
-#: src/php/classes/class.database_wrapper.php:314
+#: src/php/classes/class.database_wrapper.php:249
+#: src/php/classes/class.database_wrapper.php:263
+#: src/php/classes/class.database_wrapper.php:319
 #, php-format
 msgid "The error log resides in: %1$s"
 msgstr "Das Fehlerprotokoll befindet sich in: %1$s"
@@ -703,6 +713,7 @@ msgid "You are missing the necessary permission to use this page."
 msgstr "Ihnen fehlt die notwendige Berechtigung für diese Seite."
 
 #: src/php/classes/class.sessions.php:177
+#: src/php/classes/class.sessions.php:190
 msgid "Please contact the administrator if you feel this is an error."
 msgstr ""
 "Wenden Sie sich an den Administrator, wenn Sie meinen, dass dies ein Fehler "
@@ -712,32 +723,40 @@ msgstr ""
 msgid "is required for"
 msgstr "wird benötigt für"
 
-#: src/php/classes/class.sessions.php:289
+#: src/php/classes/class.sessions.php:189
+msgid "You are missing the necessary permission to perform this action."
+msgstr "Ihnen fehlt die notwendige Berechtigung für diese Aktion."
+
+#: src/php/classes/class.sessions.php:192
+msgid "is required."
+msgstr "wird benötigt."
+
+#: src/php/classes/class.sessions.php:300
 msgid "Lost password"
 msgstr "Passwort vergessen"
 
-#: src/php/classes/class.sessions.php:295 src/php/register_approve.php:42
+#: src/php/classes/class.sessions.php:306 src/php/register_approve.php:42
 msgid "user name"
-msgstr "Benutzer"
+msgstr "Benutzer*in"
 
-#: src/php/classes/class.sessions.php:296
+#: src/php/classes/class.sessions.php:307
 msgid "please visit"
 msgstr "besuchen Sie bitte"
 
-#: src/php/classes/class.sessions.php:299
+#: src/php/classes/class.sessions.php:310
 msgid "this address"
 msgstr "diese Adresse"
 
-#: src/php/classes/class.sessions.php:301
+#: src/php/classes/class.sessions.php:312
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/classes/class.sessions.php:314
+#: src/php/classes/class.sessions.php:325
 #: src/php/classes/class.user_dialog.php:159
 msgid "The mail was successfully sent. Thank you!"
 msgstr "Die Mail wurde erfolgreich versendet. Vielen Dank!"
 
-#: src/php/classes/class.sessions.php:317
+#: src/php/classes/class.sessions.php:328
 msgid "An error occured while sending the mail. I am sorry."
 msgstr "Beim Versender der Mail trat ein Fehler auf. Es tut mir leid."
 
@@ -777,7 +796,7 @@ msgstr "Beim Versenden der Mail trat ein Fehler auf. Es tut mir leid."
 
 #: src/php/classes/class.user_dialog.php:184
 msgid "Sender"
-msgstr "Absender"
+msgstr "Absender*in"
 
 #: src/php/classes/class.user_dialog.php:188
 msgid "File"
@@ -842,7 +861,8 @@ msgstr "Dienstplan Apotheke"
 #, php-format
 msgid ""
 "The employee is entitled to %2$s of %3$s vacation days in the year %1$s."
-msgstr "Dem Mitarbeiter stehen %2$s von %3$s Urlaubstagen im Jahr %1$s zu."
+msgstr ""
+"Dem/Der Mitarbeiter*in stehen %2$s von %3$s Urlaubstagen im Jahr %1$s zu."
 
 #: src/php/pages/absence-edit.php:39
 #, php-format
@@ -962,7 +982,7 @@ msgid ""
 "All the information about the duty rosters will be stored password protected "
 "in this database."
 msgstr ""
-"Alle Informationen zum Dienstplan werden Passwort-gesichert in dieser  "
+"Alle Informationen zum Dienstplan werden Passwort-gesichert in dieser "
 "Datenbank gespeichert."
 
 #: src/php/pages/configuration.php:80
@@ -975,11 +995,11 @@ msgstr "Datenbank Name"
 
 #: src/php/pages/configuration.php:86
 msgid "Database user"
-msgstr "Datenbank Benutzer"
+msgstr "Datenbank Benutzer*in"
 
 #: src/php/pages/configuration.php:89
 msgid "Database user password"
-msgstr "Datenbank Benutzer Passwort"
+msgstr "Datenbank Benutzer*in Passwort"
 
 #: src/php/pages/configuration.php:105
 msgid "Repeat password"
@@ -1362,11 +1382,11 @@ msgstr "Mandantenverwaltung"
 
 #: src/php/pages/menu.php:167
 msgid "User management"
-msgstr "Benutzerverwaltung"
+msgstr "Benutzer*innenverwaltung"
 
 #: src/php/pages/menu.php:188
 msgid "Account page"
-msgstr "Benutzerkonto"
+msgstr "Benutzer*innenkonto"
 
 #: src/php/pages/menu.php:204
 msgid "Logout"
@@ -1472,6 +1492,28 @@ msgstr "Team Mitglieder"
 #: src/php/pages/saturday-list.php:43
 msgid "Scheduled in roster"
 msgstr "Im Dienstplan eingetragen"
+
+#: src/php/pages/saturday-rotation-teams.php:89
+#, php-format
+msgid "This Saturday is %1$s."
+msgstr "Dieser Samstag ist der %1$s."
+
+#: src/php/pages/saturday-rotation-teams.php:92
+#, php-format
+msgid "It will be team %1$ss turn."
+msgstr "Es wird das Team %1$s dran sein."
+
+#: src/php/pages/saturday-rotation-teams.php:108
+msgid "Remove team"
+msgstr "Team entfernen"
+
+#: src/php/pages/saturday-rotation-teams.php:124
+msgid "Add another employee"
+msgstr "Mitarbeiter hinzufügen"
+
+#: src/php/pages/saturday-rotation-teams.php:140
+msgid "Add another team"
+msgstr "Team hinzufügen"
 
 #: src/php/pages/upload-pep.php:39
 msgid "There was an error while trying to upload the file."
@@ -1580,7 +1622,7 @@ msgstr "Ihr Passwort wurde erfolgreich geändert."
 #: src/php/pages/user-page.php:78
 #, php-format
 msgid "User page for user %1$s"
-msgstr "Benutzerseite für Benutzer %1$s"
+msgstr "Benutzerseite für Benutzer*in %1$s"
 
 #: src/php/pages/user-page.php:82
 msgid "Receive emails when the roster is changed"

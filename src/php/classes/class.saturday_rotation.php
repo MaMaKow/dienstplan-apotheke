@@ -24,7 +24,6 @@
  * The rotation will use a predefined team.
  * This class does not take into consideration the absence of employees from the teams.
  * The function examine_attendance::check_for_attendant_absentees() will however create a warning/error if an absent employee is chosen to work.
- * @deprecated since version 0.14.2 <p>We do not use teams anymore. If there is no other user, depending on this feature, it will be removed or completely rewritten in a later version.</p>
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class saturday_rotation {
@@ -81,9 +80,16 @@ class saturday_rotation {
     }
 
     protected function read_teams_from_database() {
+        $this->adjust_team_ids();
         $List_of_teams = array();
-        $sql_query = 'SELECT `team_id`, `employee_id` FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id';
+        $sql_query = 'SELECT `team_id`, `employee_id` FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id ORDER BY `team_id`';
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id));
+        /**
+         * <p lang=de>
+         * Die Team_ids sollten bei 0 beginnen und fortlaufend ohne Lücken sein.
+         * Daher werden die Team_ids hier bei jedem Lesen aufgeräumt.
+         * </p>
+         */
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $List_of_teams[$row->team_id][] = $row->employee_id;
         }
@@ -204,6 +210,127 @@ class saturday_rotation {
             $Roster[$date_unix][] = new roster_item($this->target_date_object->format('Y-m-d'), $employee_id, $this->branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
         }
         return $Roster;
+    }
+
+    public function build_input_row_employee_select($roster_employee_id, $team_id, $roster_row_iterator, $session) {
+        $workforce = new workforce();
+        $option_set_select_disabled_for_unprivileged_user = "";
+        if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+            $option_set_select_disabled_for_unprivileged_user = "disabled";
+        }
+
+        $roster_input_row_employee_select = "<select "
+                . " $option_set_select_disabled_for_unprivileged_user "
+                . " name=Saturday_rotation_team[" . $team_id . "][" . $roster_row_iterator . "][employee_id] "
+                . " data-team_id='$team_id' "
+                . " onChange='this.form.submit();' "
+                . ">";
+        /**
+         * The empty option is necessary to enable the deletion of employees from the roster:
+         */
+        $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
+        foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
+            if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
+                $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+            } else {
+                $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+            }
+        }
+        if (!isset($workforce->List_of_employees[$roster_employee_id]->last_name)) {
+            /*
+             * Unknown employee, probably someone from the past.
+             */
+            $roster_input_row_employee_select .= "<option value=$roster_employee_id selected>" . $roster_employee_id . " " . gettext("Unknown employee") . "</option>";
+        }
+
+        $roster_input_row_employee_select .= "</select>\n";
+        return $roster_input_row_employee_select;
+    }
+
+    public function update_team_to_database(int $branch_id = null, int $team_id = null, $team_array = array()) {
+        database_wrapper::instance()->beginTransaction();
+        $sql_query_remove = "DELETE FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id AND `team_id` = :team_id";
+        database_wrapper::instance()->run($sql_query_remove, array(
+            'team_id' => $team_id,
+            'branch_id' => $branch_id,
+        ));
+        foreach ($team_array as $roster_row) {
+            $employee_id = $roster_row["employee_id"];
+            if ("" == $employee_id) {
+                continue;
+            }
+            $sql_query_insert = "INSERT INTO `saturday_rotation_teams` (`branch_id`, `team_id`, `employee_id`) VALUES (:branch_id, :team_id, :employee_id)";
+            database_wrapper::instance()->run($sql_query_insert, array(
+                'branch_id' => $branch_id,
+                'team_id' => $team_id,
+                'employee_id' => $employee_id,
+            ));
+        }
+        database_wrapper::instance()->commit();
+        /*
+         * Finally read the new data from the database into the current memory:
+         */
+        $this->List_of_teams = $this->read_teams_from_database();
+    }
+
+    public function remove_team_from_database(int $branch_id, int $team_id) {
+        $sql_query_remove = "DELETE FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id AND `team_id` = :team_id";
+        database_wrapper::instance()->run($sql_query_remove, array(
+            'team_id' => $team_id,
+            'branch_id' => $branch_id,
+        ));
+        /*
+         * Finally read the new data from the database into the current memory:
+         */
+        $this->List_of_teams = $this->read_teams_from_database();
+    }
+
+    public function get_maximum_team_id() {
+        if (array() === $this->List_of_teams) {
+            /**
+             * If exactly one team exists. Than the maximum will be "0".
+             * In case there is no team at all, we will write "-1".
+             * This is important for the JavaScript function
+             * "saturdayRotationTeamsAddTeam" to differentiate between these two
+             * situations.
+             */
+            return -1;
+        }
+        return max(array_keys($this->List_of_teams));
+    }
+
+    private function adjust_team_ids() {
+        $sql_query_count = 'SELECT count(DISTINCT `team_id`) AS `number_of_teams`, max(`team_id`) AS `max_team_id` FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id';
+        $result_count = database_wrapper::instance()->run($sql_query_count, array('branch_id' => $this->branch_id));
+        while ($row = $result_count->fetch(PDO::FETCH_OBJ)) {
+            if ($row->number_of_teams == ($row->max_team_id + 1)) {
+                /**
+                 * It seems, that the order of the team_ids is correct and continuous.
+                 * There is nothing to do here.
+                 */
+                return null;
+            }
+        }
+        $sql_query_update = "UPDATE `saturday_rotation_teams` SET `team_id` = :team_id_new WHERE `team_id` = :team_id_old";
+        $prepared_statement_update = database_wrapper::instance()->prepare($sql_query_update);
+        $sql_query_select = 'SELECT DISTINCT `team_id` FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id ORDER BY `team_id`';
+        $result_select = database_wrapper::instance()->run($sql_query_select, array('branch_id' => $this->branch_id));
+        /**
+         * <p lang=de>
+         * Die Team_ids sollten bei 0 beginnen und fortlaufend ohne Lücken sein.
+         * Daher werden die Team_ids hier bei jedem Lesen aufgeräumt.
+         * </p>
+         */
+        $team_id_should = 0;
+        while ($row = $result_select->fetch(PDO::FETCH_OBJ)) {
+            if ($row->team_id != $team_id_should) {
+                error_log("setting the old team_id " . $row->team_id . " with the new id $team_id_should");
+                $prepared_statement_update->bindValue("team_id_old", $row->team_id);
+                $prepared_statement_update->bindValue("team_id_new", $team_id_should);
+                $prepared_statement_update->execute();
+            }
+            $team_id_should++;
+        }
     }
 
 }

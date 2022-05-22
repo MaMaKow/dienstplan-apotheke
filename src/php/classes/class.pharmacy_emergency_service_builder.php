@@ -50,7 +50,7 @@ class pharmacy_emergency_service_builder {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $table_employee_select .= "<option value=$employee_id_selected selected>" . $employee_id_selected . " Unknown employee" . "</option>";
+            $table_employee_select .= "<option value=$employee_id_selected selected>" . $employee_id_selected . " " . gettext("Unknown employee") . "</option>";
         }
         $table_employee_select .= "</select>";
         $table_employee_select .= "";

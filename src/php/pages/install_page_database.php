@@ -25,6 +25,27 @@ if (filter_has_var(INPUT_POST, "database_user")) {
 }
 require_once 'install_head.php';
 $install->build_error_message_div();
+
+if (isset($_SESSION["Config"]["database_host"])) {
+    $database_host = $_SESSION["Config"]["database_host"];
+} else {
+    $database_host = "localhost";
+}
+if (isset($_SESSION["Config"]["database_port"])) {
+    $database_port = $_SESSION["Config"]["database_port"];
+} else {
+    $database_port = "";
+}
+if (isset($_SESSION["Config"]["database_user"])) {
+    $database_user = $_SESSION["Config"]["database_user"];
+} else {
+    $database_user = "";
+}
+if (isset($_SESSION["Config"]["database_name"])) {
+    $database_name = $_SESSION["Config"]["database_name"];
+} else {
+    $database_name = "";
+}
 ?>
 <H1>Database configuration</H1>
 
@@ -36,17 +57,17 @@ $install->build_error_message_div();
         </select>
     </p><p>
         <LABEL for="database_host">Database server hostname:</LABEL><br>
-        <input type="text" id="database_host" name="database_host" value="<?= $_SESSION["Config"]["database_host"] ? $_SESSION["Config"]["database_host"] : "localhost" ?>" />
+        <input type="text" id="database_host" name="database_host" value="<?= htmlentities($database_host) ?>" />
         <BR>
     </p><p>
 
         <LABEL for="database_port">Database server port:</LABEL><br>
-        <input type="text" id="database_port" name="database_port" value="<?= $_SESSION["Config"]["database_port"] ? $_SESSION["Config"]["database_port"] : "" ?>" /><!--standard value 3306-->
+        <input type="text" id="database_port" name="database_port" value="<?= htmlentities($database_port) ?>" /><!--standard value 3306-->
         <br><span class="hint">Leave this blank unless you know the server operates on a non-standard port.<span>
             </p><p>
 
             <LABEL for="database_user">Database username:</LABEL><br>
-            <input type="text" id="database_user" name="database_user" value="<?= $_SESSION["Config"]["database_user"] ? $_SESSION["Config"]["database_user"] : "" ?>" />
+            <input type="text" id="database_user" name="database_user" value="<?= htmlentities($database_user) ?>" />
         </p><p>
 
             <LABEL for="database_password">Database password:</LABEL><br>
@@ -54,7 +75,7 @@ $install->build_error_message_div();
         </p><p>
 
             <LABEL for="database_name">Database name:</LABEL><br>
-            <input type="text" id="database_name" name="database_name" value="<?= $_SESSION["Config"]["database_name"] ? $_SESSION["Config"]["database_name"] : "pharmacy_duty_roster" ?>" />
+            <input type="text" id="database_name" name="database_name" value="<?= htmlentities($database_name) ?>" />
         </p><p>
             <?php
             echo $install->build_error_message_div();

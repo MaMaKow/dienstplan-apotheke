@@ -60,6 +60,7 @@ td {
 
 th {
     text-align: left;
+    border-bottom: solid black;
 }
 
 td.absentees_column {
