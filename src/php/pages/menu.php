@@ -139,6 +139,11 @@
                     </a>
                 </li>
                 <li>
+                    <a id="MenuLinkToSaturdayRotationTeams" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/saturday-rotation-teams.php>
+                        <?= gettext("Saturday rotation teams") ?>
+                    </a>
+                </li>
+                <li>
                     <a id="MenuLinkToEmergencyServiceList" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/emergency-service-list.php>
                         <?= gettext("Emergency service list") ?>
                     </a>

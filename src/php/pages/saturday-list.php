@@ -29,7 +29,6 @@ $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_
 create_cookie("mandant", $branch_id, 30);
 
 $user_dialog = new user_dialog();
-$user_dialog->add_message("Saturday rotation is a deprecated feature. This page will be removed in a later version. Please write an email to pdr-issues@martin-mandelkow.de if you depend on this feature.", E_USER_DEPRECATED);
 
 $html_select_year = form_element_builder::build_html_select_year($year);
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();

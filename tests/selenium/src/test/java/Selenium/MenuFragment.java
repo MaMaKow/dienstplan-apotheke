@@ -53,6 +53,7 @@ public class MenuFragment {
     public static final By MenuLinkToAbsencYear = By.id("MenuLinkToAbsenceYear");
     public static final By MenuLinkToAttendanceList = By.id("MenuLinkToAttendanceList");
     public static final By MenuLinkToSaturdayList = By.id("MenuLinkToSaturdayList");
+    public static final By MenuLinkToSaturdayRotationTeams = By.id("MenuLinkToSaturdayRotationTeams");
     public static final By MenuLinkToEmergencyServiceList = By.id("MenuLinkToEmergencyServiceList");
     public static final By MenuLinkToPharmacyUploadPep = By.id("MenuLinkToPharmacyUploadPep");
     public static final By MenuLinkToManageEmployee = By.id("MenuLinkToManageEmployee");
@@ -93,6 +94,7 @@ public class MenuFragment {
         menuMap.put(MenuLinkToAbsencYear, MenuListItemAbsence);
         menuMap.put(MenuLinkToAttendanceList, MenuListItemAdministration);
         menuMap.put(MenuLinkToSaturdayList, MenuListItemAdministration);
+        menuMap.put(MenuLinkToSaturdayRotationTeams, MenuListItemAdministration);
         menuMap.put(MenuLinkToEmergencyServiceList, MenuListItemAdministration);
         menuMap.put(MenuLinkToPharmacyUploadPep, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageEmployee, MenuListItemAdministration);

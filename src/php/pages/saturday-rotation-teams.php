@@ -92,7 +92,7 @@ $html_select_branch;
         echo sprintf(gettext('It will be team %1$ss turn.'), $team_id_today);
     }
     ?></p>
-<table data-max_team_id="<?= $saturday_rotation->get_maximum_team_id(); ?>">
+<table id="saturday_rotation_team_input_table" data-max_team_id="<?= $saturday_rotation->get_maximum_team_id(); ?>">
     <tr>
         <th>Example date</th>
         <th>Team-Id</th>
@@ -106,9 +106,11 @@ $html_select_branch;
         <tr data-team_id="<?= $team_id ?>">
             <td><?= $saturday_date_object->format('d.m.Y'); ?></td>
             <td>
-                <?= $team_id ?>&nbsp;
+                <span class="team_id_span">
+                    <?= $team_id ?>
+                </span>&nbsp;
                 <?php if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) { ?>
-                    <a onclick="saturdayRotationTeamsRemoveTeam(<?= $team_id . ", " . $branch_id ?>);">
+                    <a class="saturdayRotationTeamsRemoveTeamLink" onclick="saturdayRotationTeamsRemoveTeam(<?= $team_id . ", " . $branch_id ?>);">
                         - <?= gettext('Remove team'); ?>
                     </a>
                 <?php } ?>
