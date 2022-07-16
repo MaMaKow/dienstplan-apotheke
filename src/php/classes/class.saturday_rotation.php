@@ -124,7 +124,7 @@ class saturday_rotation {
                  * TODO: Choose, which team to send in that case
                  */
                 error_log('Could not find $last_team_id ' . $last_team_id . ' in $this->List_of_teams');
-                print_debug_variable($this);
+                //print_debug_variable($this);
                 return FALSE;
             }
         }
@@ -236,7 +236,7 @@ class saturday_rotation {
                 $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
             }
         }
-        if (!isset($workforce->List_of_employees[$roster_employee_id]->last_name)) {
+        if (NULL !== $roster_employee_id and!isset($workforce->List_of_employees[$roster_employee_id]->last_name)) {
             /*
              * Unknown employee, probably someone from the past.
              */
@@ -245,6 +245,11 @@ class saturday_rotation {
 
         $roster_input_row_employee_select .= "</select>\n";
         return $roster_input_row_employee_select;
+    }
+
+    public function buildSaturdayRotationTeamsAddEmployee($team_id, $branch_id, $session) {
+        $saturday_rotation = new saturday_rotation($branch_id);
+        return $saturday_rotation->build_input_row_employee_select(null, $team_id, "", $session);
     }
 
     public function update_team_to_database(int $branch_id = null, int $team_id = null, $team_array = array()) {

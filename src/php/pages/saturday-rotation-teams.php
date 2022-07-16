@@ -19,7 +19,6 @@
  */
 require '../../../default.php';
 $this_saturday_date_object = new DateTime("this saturday");
-
 $workforce = new workforce();
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
@@ -94,16 +93,16 @@ $html_select_branch;
     ?></p>
 <table id="saturday_rotation_team_input_table" data-max_team_id="<?= $saturday_rotation->get_maximum_team_id(); ?>">
     <tr>
-        <th>Example date</th>
-        <th>Team-Id</th>
-        <th>Employee</th>
+        <th><?= gettext("Example date") ?></th>
+        <th><?= gettext("Team-Id") ?></th>
+        <th><?= gettext("Employee") ?></th>
     </tr>
     <?php
     foreach ($List_of_teams as $team_id_should => $team_array_should) {
         $team_id = $team_id_should;
         $team_array = $saturday_rotation->List_of_teams[$team_id];
         ?>
-        <tr data-team_id="<?= $team_id ?>">
+        <tr data-team_id="<?= $team_id ?>" data-branch_id="<?= $branch_id ?>">
             <td><?= $saturday_date_object->format('d.m.Y'); ?></td>
             <td>
                 <span class="team_id_span">
@@ -117,6 +116,7 @@ $html_select_branch;
             </td>
             <td>
                 <form method="POST">
+                    <input type="hidden" name="mandant" value="<?= $branch_id ?>">
                     <?php
                     $roster_row_iterator = 0;
                     foreach ($team_array as $employee_id) {

@@ -259,6 +259,9 @@ abstract class build_html_navigation_elements {
         if (null !== $date_sql) {
             $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
         }
+        /*
+         * TODO: <p lang=de>Ändere name=mandant zu name=branch_id und passe alle Seiten an, die die Antwort aus dieser Funktion nutzen!</p>
+         */
         $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
         foreach ($List_of_branch_objects as $branch_object) {
             if ($branch_object->branch_id != $current_branch_id) {

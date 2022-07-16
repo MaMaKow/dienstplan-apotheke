@@ -23,6 +23,8 @@ function saturdayRotationTeamsAddTeam(clickedElement) {
     var tableElement = rowElement.parentNode.parentNode;
     var team_id = Number.parseInt(tableElement.dataset.max_team_id) + 1;
     tableElement.dataset.max_team_id = team_id;
+    //TODO: Wir müssen das Element direkt per xhtmlrequest holen!
+
     var rosterInputRowEmployeeSelect = "<select "
             + " name=Saturday_rotation_team[" + team_id + "][][employee_id] "
             + " data-team_id='' "
@@ -65,24 +67,24 @@ function saturdayRotationTeamsRemoveTeam(team_id, branch_id) {
 function saturdayRotationTeamsAddEmployee(clickedElement) {
     var rowElement = clickedElement.parentNode.parentNode.parentNode.parentNode; //<tr><td><form><span><a>
     var team_id = Number.parseInt(rowElement.dataset.team_id);
-    var rosterInputRowEmployeeSelect = "<select "
-            + " name=Saturday_rotation_team[" + team_id + "][][employee_id] "
-            + " data-team_id='' "
-            + " onChange='this.form.submit();' "
-            + ">"
-            + "<option value=''>&nbsp;</option>";
-    var selectOptions = "";
-    for (var employeeId in workforce.List_of_employees) {
-        employeeObject = workforce.List_of_employees[employeeId];
-        selectOptions += "<option value=" + employeeObject.employee_id + ">";
-        selectOptions += employeeObject.employee_id + " " + employeeObject.last_name;
-        selectOptions += "</option>";
-    }
-    rosterInputRowEmployeeSelect += selectOptions;
-    rosterInputRowEmployeeSelect += "</select>\n";
-    const newSpanElement = document.createElement('span');
-    newSpanElement.innerHTML = rosterInputRowEmployeeSelect;
+    var branch_id = Number.parseInt(rowElement.dataset.branch_id);
 
-    clickedElement.parentNode.parentNode.insertBefore(newSpanElement, clickedElement.parentNode);
+    var xml_http_request = new XMLHttpRequest();
+    xml_http_request.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            var rosterInputRowEmployeeSelect = this.responseText;
+            const newSpanElement = document.createElement('span');
+            newSpanElement.innerHTML = rosterInputRowEmployeeSelect;
+            clickedElement.parentNode.parentNode.insertBefore(newSpanElement, clickedElement.parentNode);
+        }
+    };
+    var url = http_server_application_path + "src/php/fragments/fragment.saturdayRotationTeamsAddEmployee.php?"
+            + "team_id=" + String(team_id)
+            + "&" + "branch_id=" + String(branch_id);
+
+    xml_http_request.open("GET", url, true);
+    xml_http_request.send();
+
+
 
 }
