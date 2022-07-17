@@ -98,48 +98,8 @@ $html_select_branch;
         <th><?= gettext("Employee") ?></th>
     </tr>
     <?php
-    foreach ($List_of_teams as $team_id_should => $team_array_should) {
-        $team_id = $team_id_should;
-        $team_array = $saturday_rotation->List_of_teams[$team_id];
-        ?>
-        <tr data-team_id="<?= $team_id ?>" data-branch_id="<?= $branch_id ?>">
-            <td><?= $saturday_date_object->format('d.m.Y'); ?></td>
-            <td>
-                <span class="team_id_span">
-                    <?= $team_id ?>
-                </span>&nbsp;
-                <?php if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) { ?>
-                    <a class="saturdayRotationTeamsRemoveTeamLink" onclick="saturdayRotationTeamsRemoveTeam(<?= $team_id . ", " . $branch_id ?>);">
-                        - <?= gettext('Remove team'); ?>
-                    </a>
-                <?php } ?>
-            </td>
-            <td>
-                <form method="POST">
-                    <input type="hidden" name="mandant" value="<?= $branch_id ?>">
-                    <?php
-                    $roster_row_iterator = 0;
-                    foreach ($team_array as $employee_id) {
-                        ?>
-                        <span>
-                            <?= $saturday_rotation->build_input_row_employee_select($employee_id, $team_id, $roster_row_iterator, $session); ?>
-                        </span>
-                        <?php
-                        $roster_row_iterator++;
-                    }
-                    ?>
-                    <?php if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) { ?>
-
-                        <span>
-                            <a onclick="saturdayRotationTeamsAddEmployee(this);" >
-                                + <?= gettext('Add another employee'); ?>
-                            </a>
-                        </span>
-                    <?php } ?>
-                </form>
-            </td>
-        </tr>
-        <?php
+    foreach ($List_of_teams as $team_id => $team_array_should) {
+        echo $saturday_rotation->buildSaturdayRotationTeamsAddTeam($team_id, $branch_id, $saturday_date_object, $session);
         $saturday_date_object->add(new DateInterval('P1W'));
     }
     ?>

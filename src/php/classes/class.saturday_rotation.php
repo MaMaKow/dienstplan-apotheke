@@ -252,6 +252,60 @@ class saturday_rotation {
         return $saturday_rotation->build_input_row_employee_select(null, $team_id, "", $session);
     }
 
+    public function buildSaturdayRotationTeamsAddTeam(int $team_id, int $branch_id, DateTime $saturday_date_object, $session) {
+        $saturday_rotation = new saturday_rotation($branch_id);
+        if (!array_key_exists($team_id, $saturday_rotation->List_of_teams)) {
+            /**
+             * <p>Wir erstellen gerade ein neues Team.
+             *  Es wird ein leeres Team in den Array eingefÃ¼gt.</p>
+             */
+            $saturday_rotation->List_of_teams[$team_id] = array(null);
+        }
+        $team_array = $saturday_rotation->List_of_teams[$team_id];
+        print_debug_variable($saturday_rotation->List_of_teams);
+
+        $buildSaturdayRotationTeamsAddTeamHtml = "";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "<tr data-team_id='$team_id' data-branch_id='$branch_id'>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "<td>" . $saturday_date_object->format('d.m.Y') . "</td>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "<td>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "<span class='team_id_span'>" . $team_id . "</span>&nbsp;";
+        if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+
+            $buildSaturdayRotationTeamsAddTeamHtml .= "<a class='saturdayRotationTeamsRemoveTeamLink' onclick='saturdayRotationTeamsRemoveTeam(" . $team_id . ", " . $branch_id . " )'>";
+            $buildSaturdayRotationTeamsAddTeamHtml .= "-" . gettext('Remove team');
+            $buildSaturdayRotationTeamsAddTeamHtml .= "</a>";
+        }
+        $buildSaturdayRotationTeamsAddTeamHtml .= "</td>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "<td>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "<form method='POST'>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "<input type='hidden' name='mandant' value='$branch_id'>";
+
+        $roster_row_iterator = 0;
+        foreach ($team_array as $employee_id) {
+
+            $buildSaturdayRotationTeamsAddTeamHtml .= "<span>";
+            $buildSaturdayRotationTeamsAddTeamHtml .= $saturday_rotation->build_input_row_employee_select($employee_id, $team_id, $roster_row_iterator, $session);
+            $buildSaturdayRotationTeamsAddTeamHtml .= "</span>";
+
+            $roster_row_iterator++;
+        }
+
+        if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+
+            $buildSaturdayRotationTeamsAddTeamHtml .= "<span>";
+            $buildSaturdayRotationTeamsAddTeamHtml .= "<a onclick='saturdayRotationTeamsAddEmployee(this);' >";
+            $buildSaturdayRotationTeamsAddTeamHtml .= "+" . gettext('Add another employee') . "</a>";
+            $buildSaturdayRotationTeamsAddTeamHtml .= "</span>";
+        }
+        $buildSaturdayRotationTeamsAddTeamHtml .= "</form>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "</td>";
+        $buildSaturdayRotationTeamsAddTeamHtml .= "</tr>";
+
+
+
+        return $buildSaturdayRotationTeamsAddTeamHtml;
+    }
+
     public function update_team_to_database(int $branch_id = null, int $team_id = null, $team_array = array()) {
         database_wrapper::instance()->beginTransaction();
         $sql_query_remove = "DELETE FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id AND `team_id` = :team_id";

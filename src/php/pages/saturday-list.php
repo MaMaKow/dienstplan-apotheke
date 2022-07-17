@@ -120,7 +120,8 @@ function build_table_row(DateTime $date_object, int $branch_id) {
 
     $table_row = "";
     $holiday = holidays::is_holiday($date_object);
-    $date_string = strftime('%a %x', $date_object->getTimestamp());
+    //$date_string = strftime('%a %x', $date_object->getTimestamp());
+    $date_string = $date_object->format("D d.m.Y");
     if (FALSE !== $holiday) {
         $table_row .= "<tr class='saturday_list_row_holiday'>";
         $table_row .= "<td colspan='99'>";
