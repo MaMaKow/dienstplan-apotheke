@@ -86,13 +86,12 @@ public class SaturdayListPage {
 
         for (WebElement saturdayRowElement : saturdayRowListElements) {
             WebElement saturdayRowDateElement = saturdayRowElement.findElement(saturdayRowDateBy);
-            String saturdayRowDateString = saturdayRowDateElement.getText().substring(3, 13);
+            String saturdayRowDateString = saturdayRowDateElement.getText().substring(4, 14);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
             if (simpleDateFormat.format(targetDate).equals(saturdayRowDateString)) {
                 return saturdayRowElement;
             }
         }
-        System.err.println("Wir haben nichts gefunden: return null;");
         return null;
     }
 

@@ -19,6 +19,7 @@
 package Selenium.signin;
 
 import Selenium.HomePage;
+import Selenium.PropertyFile;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -59,5 +60,13 @@ public class SignInPage {
         driver.findElement(passwordBy).sendKeys(password);
         driver.findElement(signinBy).click();
         return new HomePage(driver);
+    }
+
+    public HomePage loginValidUser() {
+        PropertyFile propertyFile = new PropertyFile();
+        String password = propertyFile.getPdrUserPassword();
+        String userName = propertyFile.getPdrUserName();
+        HomePage homePage = this.loginValidUser(userName, password);
+        return homePage;
     }
 }

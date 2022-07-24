@@ -124,7 +124,6 @@ class saturday_rotation {
                  * TODO: Choose, which team to send in that case
                  */
                 error_log('Could not find $last_team_id ' . $last_team_id . ' in $this->List_of_teams');
-                //print_debug_variable($this);
                 return FALSE;
             }
         }
@@ -212,7 +211,7 @@ class saturday_rotation {
         return $Roster;
     }
 
-    public function build_input_row_employee_select($roster_employee_id, $team_id, $roster_row_iterator, $session) {
+    public function build_input_row_employee_select(int $roster_employee_id = null, int $team_id, int $roster_row_iterator = null, $session) {
         $workforce = new workforce();
         $option_set_select_disabled_for_unprivileged_user = "";
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
@@ -249,7 +248,7 @@ class saturday_rotation {
 
     public function buildSaturdayRotationTeamsAddEmployee($team_id, $branch_id, $session) {
         $saturday_rotation = new saturday_rotation($branch_id);
-        return $saturday_rotation->build_input_row_employee_select(null, $team_id, "", $session);
+        return $saturday_rotation->build_input_row_employee_select(null, $team_id, null, $session);
     }
 
     public function buildSaturdayRotationTeamsAddTeam(int $team_id, int $branch_id, DateTime $saturday_date_object, $session) {
@@ -262,7 +261,6 @@ class saturday_rotation {
             $saturday_rotation->List_of_teams[$team_id] = array(null);
         }
         $team_array = $saturday_rotation->List_of_teams[$team_id];
-        print_debug_variable($saturday_rotation->List_of_teams);
 
         $buildSaturdayRotationTeamsAddTeamHtml = "";
         $buildSaturdayRotationTeamsAddTeamHtml .= "<tr data-team_id='$team_id' data-branch_id='$branch_id'>";

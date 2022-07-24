@@ -23,10 +23,14 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -65,20 +69,22 @@ public class SaturdayRotationTeamsPage {
     }
 
     public HashMap<Integer, SaturdayRotationTeam> readListOfTeams() {
-        By teamRowListBy = By.xpath("/html/body/table/tbody/tr");
+        By teamRowListBy = By.xpath("/html/body/table/tbody/tr/td/parent::tr"); //Select a tr, which is parent of td, not of th, thereby skipping the heading
         List<WebElement> teamRowListElements = driver.findElements(teamRowListBy);
+        teamRowListElements.remove(teamRowListElements.size() - 1); // Remove the last row. It only contains the link to add another row.
         teamRowListElements.forEach(teamRowElement -> {
             /**
              * First find the id:
              */
             By teamIdSpanBy = By.xpath(".//td[2]/span");
+
             WebElement teamIdSpanElement = teamRowElement.findElement(teamIdSpanBy);
             int teamIdRead = Integer.valueOf(teamIdSpanElement.getText());
             /**
              * Then find the employees:
              */
             HashSet<Integer> listOfTeamMemberIdsRead = new HashSet();
-            By teamEmployeeSelectBy = By.xpath(".//td[3]/form/span[1]/select");
+            By teamEmployeeSelectBy = By.xpath(".//td[3]/form/span/select");
             List<WebElement> teamEmployeeSelectElementList = teamRowElement.findElements(teamEmployeeSelectBy);
             teamEmployeeSelectElementList.forEach(teamEmployeeSelectElement
                     -> {
@@ -92,9 +98,10 @@ public class SaturdayRotationTeamsPage {
     }
 
     public WebElement getTeamRowById(int teamIdShould) {
-        WebElement teamRowElementFound = null;
-        By teamRowListBy = By.xpath("/html/body/table/tbody/tr");
+        WebElement teamRowElementFound;
+        By teamRowListBy = By.xpath("/html/body/table/tbody/tr/td/parent::tr"); //Select a tr, which is parent of td, not of th, thereby skipping the heading
         List<WebElement> teamRowListElements = driver.findElements(teamRowListBy);
+        teamRowListElements.remove(teamRowListElements.size() - 1); // Remove the last row. It only contains the link to add another row.
         for (Iterator<WebElement> teamRowListElementsIterator = teamRowListElements.iterator(); teamRowListElementsIterator.hasNext();) {
             WebElement teamRowElementCurrent = teamRowListElementsIterator.next();
             /**
@@ -103,14 +110,16 @@ public class SaturdayRotationTeamsPage {
             By teamIdSpanBy = By.xpath(".//td[2]/span");
             WebElement teamIdSpanElement = teamRowElementCurrent.findElement(teamIdSpanBy);
             Integer teamIdRead = Integer.valueOf(teamIdSpanElement.getText());
+
             /**
              * Then compare the id to the target:
              */
             if (teamIdRead.equals(teamIdShould)) {
                 teamRowElementFound = teamRowElementCurrent;
+                return teamRowElementFound;
             }
         }
-        return teamRowElementFound;
+        return null;
     }
 
     public HashMap<Integer, SaturdayRotationTeam> getListOfTeams() {
@@ -118,60 +127,67 @@ public class SaturdayRotationTeamsPage {
     }
 
     public SaturdayRotationTeam getTeamById(int teamId) {
+        this.readListOfTeams();
         return listOfTeams.get(teamId);
     }
 
     public void addEmployeeToTeam(int teamId, int employeeId) {
-        //TODO: Use WebElement teamRowElement = getTeamRowById(teamId);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebElement teamRowElement = getTeamRowById(teamId);
+        /**
+         * Add another employee:
+         */
+        By addEmployeeLinkBy = By.xpath("/html/body/table/tbody/tr/td[3]/form/span/a");
+        WebElement addEmployeeLinkElement = teamRowElement.findElement(addEmployeeLinkBy);
+        By teamEmployeeSelectCountBy = By.xpath(".//td[3]/form/span/select");
 
-        By teamRowListBy = By.xpath("/html/body/table/tbody/tr");
-        List<WebElement> teamRowListElements = driver.findElements(teamRowListBy);
-        teamRowListElements.forEach(teamRowElement -> {
-            /**
-             * First find the id:
-             */
-            By teamIdSpanBy = By.xpath(".//td[2]/span");
-            WebElement teamIdSpanElement = teamRowElement.findElement(teamIdSpanBy);
-            Integer teamIdRead = Integer.valueOf(teamIdSpanElement.getText());
-            if (!teamIdRead.equals(teamId)) {
-                return; // only skips this iteration.
+        int numberOfSelectElementsBeforeClick = teamRowElement.findElements(teamEmployeeSelectCountBy).size();
+        addEmployeeLinkElement.click();
+        /**
+         * Wait until JavaScript has added the new select element:
+         */
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.xpath(".//td[3]/form/span/select"), numberOfSelectElementsBeforeClick + 1));
+        /**
+         * <p lang=de>Select auswählen und Mitarbeiter abschicken.</p>
+         */
+        By teamEmployeeSelectLastBy = By.xpath(".//td[3]/form/span[(last()-1)]/select");
+        WebElement teamEmployeeSelectLastElement = teamRowElement.findElement(teamEmployeeSelectLastBy);
+        Select teamEmployeeSelectLastSelect = new Select(teamEmployeeSelectLastElement);
+        teamEmployeeSelectLastSelect.selectByValue(String.valueOf(employeeId));
+        /*
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SaturdayRotationTeamsPage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         */
+        /**
+         * The page will reload. When the page has reloaded, there will be new
+         * elements. The old Select will be stale.
+         */
+        wait.until(ExpectedConditions.stalenessOf(teamEmployeeSelectLastElement));
+        ExpectedCondition< Boolean> pageLoad = new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete");
             }
-            /**
-             * Now add another employee:
-             */
-            By addEmployeeLinkBy = By.xpath("/html/body/table/tbody/tr/td[3]/form/span/a");
-            WebElement addEmployeeLinkElement = teamRowElement.findElement(addEmployeeLinkBy);
-            addEmployeeLinkElement.click();
-            /**
-             * <p lang=de>Select auswählen und Mitarbeiter abschicken.</p>
-             */
-            By teamEmployeeSelectLastBy = By.xpath(".//td[3]/form/span[1]/select[last()]");
-            WebElement teamEmployeeSelectLastElement = teamRowElement.findElement(teamEmployeeSelectLastBy);
-            Select teamEmployeeSelectLastSelect = new Select(teamEmployeeSelectLastElement);
-            teamEmployeeSelectLastSelect.selectByValue(String.valueOf(employeeId));
-            /**
-             * Get the last element: WebElement rosterTableRowElement =
-             * rosterTableRowElementList.get(rosterTableRowElementList.size() -
-             * 1);
-             */
-        });
+        };
+        wait.until(pageLoad);
+//        teamEmployeeSelectLastSelect.getFirstSelectedOption().getAttribute("value");
+        wait = new WebDriverWait(driver, 2);
+        wait.until(ExpectedConditions.attributeToBe(teamEmployeeSelectLastBy, "value", String.valueOf(employeeId)));
     }
 
     public void addTeam(SaturdayRotationTeam saturdayRotationTeam) {
-        By addTeamLinkBy = By.xpath("//*[@id=\"saturdayRotationTeamsAddTeamTd\"]");
+        By addTeamLinkBy = By.xpath("//*[@id=\"saturdayRotationTeamsAddTeamTd\"]/a");
         WebElement addTeamLinkElement = driver.findElement(addTeamLinkBy);
         addTeamLinkElement.click();
         By saturdayRotationTeamInputTableBy = By.xpath("//*[@id=\"saturday_rotation_team_input_table\"]");
         WebElement saturdayRotationTeamInputTableElement = driver.findElement(saturdayRotationTeamInputTableBy);
         int newTeamId = Integer.valueOf(saturdayRotationTeamInputTableElement.getAttribute("data-max_team_id"));
         saturdayRotationTeam.getListOfTeamMembers().forEach(employeeId -> {
-            /**
-             * TODO: <p lang=de>Funktioniert das auch wenn wir das bereits
-             * vorhandene Select einfach ignorieren und uns mehrere neue
-             * machen?</p>
-             */
             addEmployeeToTeam(newTeamId, employeeId);
         });
+        this.readListOfTeams();
     }
 
     public void removeTeamById(int teamId) {

@@ -23,6 +23,8 @@ import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -67,6 +69,7 @@ public class TestSaturdayListPage {
          */
         Calendar saturdayCalendar = Calendar.getInstance(Locale.GERMANY);
         saturdayCalendar.set(2021, Calendar.APRIL, 24);
+        int teamIdFound = saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime());
         Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 4);
         saturdayCalendar.set(2021, Calendar.MAY, 1);
         Assert.assertEquals(saturdayListPage.teamIdOnDateIsMissing(saturdayCalendar.getTime()), true);

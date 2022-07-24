@@ -29,9 +29,8 @@ function saturdayRotationTeamsAddTeam(clickedElement) {
         if (this.readyState === 4 && this.status === 200) {
             var rosterInputRowHtml = this.responseText;
             const newRowElement = document.createElement('tr');
-            newRowElement.innerHTML = rosterInputRowHtml;
-
             rowElement.parentNode.insertBefore(newRowElement, rowElement);
+            newRowElement.outerHTML = rosterInputRowHtml;
         }
     };
     var url = http_server_application_path + "src/php/fragments/fragment.saturdayRotationTeamsAddTeam.php?"
