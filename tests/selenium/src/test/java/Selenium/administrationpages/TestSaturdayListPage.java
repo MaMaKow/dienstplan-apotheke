@@ -41,8 +41,8 @@ public class TestSaturdayListPage {
 
     WebDriver driver;
 
-    @Test(enabled = true)/*passed*/
-    public void testDateNavigation() {
+    @Test(enabled = true)
+    public void testSaturdayListPage() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -68,12 +68,13 @@ public class TestSaturdayListPage {
          * </p>
          */
         Calendar saturdayCalendar = Calendar.getInstance(Locale.GERMANY);
-        saturdayCalendar.set(2021, Calendar.APRIL, 24);
-        int teamIdFound = saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime());
+        saturdayCalendar.set(2026, Calendar.AUGUST, 29);
+        //int teamIdFound = saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime());
+        //System.out.println("teamIdFound=" + teamIdFound);
         Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 4);
-        saturdayCalendar.set(2021, Calendar.MAY, 1);
+        saturdayCalendar.set(2026, Calendar.OCTOBER, 3);
         Assert.assertEquals(saturdayListPage.teamIdOnDateIsMissing(saturdayCalendar.getTime()), true);
-        saturdayCalendar.set(2021, Calendar.MAY, 8);
+        saturdayCalendar.set(2026, Calendar.MAY, 8);
         Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 0);
     }
 

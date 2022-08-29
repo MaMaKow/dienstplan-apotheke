@@ -268,5 +268,59 @@
             "breakEnd": "13:00",
             "branchId": 1
         }
+    },
+    "2026-08-28": {
+        "0": {
+            "employeeId": 4,
+            "localDate": {
+                "year": 2026,
+                "month": 8,
+                "day": 28
+            },
+            "dutyStart": "09:30",
+            "dutyEnd": "18:00",
+            "breakStart": "13:00",
+            "breakEnd": "13:30",
+            "branchId": 1
+        },
+        "1": {
+            "employeeId": 3,
+            "localDate": {
+                "year": 2026,
+                "month": 8,
+                "day": 28
+            },
+            "dutyStart": "08:00",
+            "dutyEnd": "16:30",
+            "breakStart": "12:00",
+            "breakEnd": "12:30",
+            "branchId": 1
+        },
+        "2": {
+            "employeeId": 5,
+            "localDate": {
+                "year": 2026,
+                "month": 8,
+                "day": 28
+            },
+            "dutyStart": "08:00",
+            "dutyEnd": "16:30",
+            "breakStart": "11:30",
+            "breakEnd": "12:00",
+            "branchId": 1
+        },
+        "3": {
+            "employeeId": 2,
+            "localDate": {
+                "year": 2026,
+                "month": 8,
+                "day": 28
+            },
+            "dutyStart": "09:00",
+            "dutyEnd": "18:00",
+            "breakStart": "12:30",
+            "breakEnd": "13:00",
+            "branchId": 1
+        }
     }
 }

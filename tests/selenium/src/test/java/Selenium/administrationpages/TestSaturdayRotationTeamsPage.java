@@ -21,7 +21,8 @@ package Selenium.administrationpages;
 import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -33,6 +34,12 @@ import org.testng.annotations.BeforeMethod;
 /**
  *
  * @author Mandelkow
+ * @CAVE: This test will stop working after 2026-08-28!
+ * <p lang=de>
+ * Der Samstagsplan füllt nur in die Zukunft sicher mit Daten. Samstage in der
+ * Vergangenheit werden nicht immer befüllt. Daher wird irgendwann im Jahr 2026
+ * der Samstagsplan für 2026 nicht mehr korrekt passen.
+ * </p>
  */
 public class TestSaturdayRotationTeamsPage {
 
@@ -75,21 +82,38 @@ public class TestSaturdayRotationTeamsPage {
         SaturdayRotationTeamsPage saturdayRotationTeamsPage = new SaturdayRotationTeamsPage(driver);
         Assert.assertEquals(saturdayRotationTeamsPage.getUserNameText(), pdr_user_name);
 
-        HashSet<Integer> saturdayRotationTeamMembers;
-        saturdayRotationTeamMembers = new HashSet<>();
-        saturdayRotationTeamMembers.add(1);
-        saturdayRotationTeamMembers.add(13);
         /**
-         * <p lang=de>CAVE: Wir definieren hier die TeamId. Aber wir haben
-         * keinen Einfluss darauf, dass diese TeamId auch angelegt wird.</p>
+         * <p lang=de>
+         * Wenn man wollte, könnte man die saturdayTeamList in einer json Datei
+         * verwalten und zum Lesen dieser Datei eine weitere Klasse
+         * erschaffen.</p>
          */
-        int saturdayRotationId = 0;
+        HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = new HashMap<>();
+        SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null, new int[]{3, 10});
+        SaturdayRotationTeam saturdayRotationTeam1 = new SaturdayRotationTeam(null, new int[]{1, 13});
+        SaturdayRotationTeam saturdayRotationTeam2 = new SaturdayRotationTeam(null, new int[]{5, 12});
+        SaturdayRotationTeam saturdayRotationTeam3 = new SaturdayRotationTeam(null, new int[]{2, 6});
+        SaturdayRotationTeam saturdayRotationTeam4 = new SaturdayRotationTeam(null, new int[]{14, 7});
+        saturdayTeamList.put(0, saturdayRotationTeam0);
+        saturdayTeamList.put(1, saturdayRotationTeam1);
+        saturdayTeamList.put(2, saturdayRotationTeam2);
+        saturdayTeamList.put(3, saturdayRotationTeam3);
+        saturdayTeamList.put(4, saturdayRotationTeam4);
+        for (Map.Entry<Integer, SaturdayRotationTeam> saturdayTeamEntry : saturdayTeamList.entrySet()) {
+            SaturdayRotationTeam saturdayRotationTeamShould = saturdayTeamEntry.getValue();
 
-        SaturdayRotationTeam saturdayRotationTeamShould;
-        saturdayRotationTeamShould = new SaturdayRotationTeam(saturdayRotationId, saturdayRotationTeamMembers);
-        saturdayRotationTeamsPage.addTeam(saturdayRotationTeamShould);
-        SaturdayRotationTeam saturdayRotationTeamFound = saturdayRotationTeamsPage.getTeamById(saturdayRotationId);
-        Assert.assertEquals(saturdayRotationTeamFound.getListOfTeamMembers(), saturdayRotationTeamShould.getListOfTeamMembers()); //TODO: Werden die Objekte ordentlich verglichen?
+            /**
+             * <p lang=de>CAVE: saturdayTeamList hat einen Index. Der ist nicht
+             * zwingend auch die finale teamId. Wir haben keinen Einfluss
+             * darauf, dass diese TeamId auch angelegt wird. Statt
+             * HashMap<Integer, SaturdayRotationTeam> könnte man ein Set ohne
+             * Index verwenden? Aber es muss die Sortierung fest stehen!
+             * </p>
+             */
+            saturdayRotationTeamsPage.addTeam(saturdayRotationTeamShould);
+            SaturdayRotationTeam saturdayRotationTeamFound = saturdayRotationTeamsPage.getTeamById(saturdayRotationTeamShould.getTeamId());
+            Assert.assertEquals(saturdayRotationTeamFound.getListOfTeamMembers(), saturdayRotationTeamShould.getListOfTeamMembers());
+        }
 
     }
 

@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -41,8 +39,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class SaturdayRotationTeamsPage {
 
     protected static WebDriver driver;
-    By user_name_spanBy = By.id("MenuListItemApplicationUsername");
-    By branchFormSelectBy = By.xpath("//*[@id=\"branch_form_select\"]");
+    private final By user_name_spanBy = By.id("MenuListItemApplicationUsername");
+    private final By branchFormSelectBy = By.xpath("//*[@id=\"branch_form_select\"]");
+    private final By teamRowListBy = By.xpath("/html/body/table/tbody/tr/td/parent::tr"); //Select a tr, which is parent of td, not of th, thereby skipping the heading
 
     public HashMap<Integer, SaturdayRotationTeam> listOfTeams = new HashMap<>();
 
@@ -69,7 +68,6 @@ public class SaturdayRotationTeamsPage {
     }
 
     public HashMap<Integer, SaturdayRotationTeam> readListOfTeams() {
-        By teamRowListBy = By.xpath("/html/body/table/tbody/tr/td/parent::tr"); //Select a tr, which is parent of td, not of th, thereby skipping the heading
         List<WebElement> teamRowListElements = driver.findElements(teamRowListBy);
         teamRowListElements.remove(teamRowListElements.size() - 1); // Remove the last row. It only contains the link to add another row.
         teamRowListElements.forEach(teamRowElement -> {
@@ -110,7 +108,6 @@ public class SaturdayRotationTeamsPage {
             By teamIdSpanBy = By.xpath(".//td[2]/span");
             WebElement teamIdSpanElement = teamRowElementCurrent.findElement(teamIdSpanBy);
             Integer teamIdRead = Integer.valueOf(teamIdSpanElement.getText());
-
             /**
              * Then compare the id to the target:
              */
@@ -120,6 +117,12 @@ public class SaturdayRotationTeamsPage {
             }
         }
         return null;
+    }
+
+    private int getNumberOfTeamRows() {
+        List<WebElement> teamRowListElements = driver.findElements(teamRowListBy);
+        teamRowListElements.remove(teamRowListElements.size() - 1); // Remove the last row. It only contains the link to add another row.
+        return teamRowListElements.size();
     }
 
     public HashMap<Integer, SaturdayRotationTeam> getListOfTeams() {
@@ -137,16 +140,16 @@ public class SaturdayRotationTeamsPage {
         /**
          * Add another employee:
          */
-        By addEmployeeLinkBy = By.xpath("/html/body/table/tbody/tr/td[3]/form/span/a");
+        By addEmployeeLinkBy = By.xpath(".//td[3]/form/span/a");
         WebElement addEmployeeLinkElement = teamRowElement.findElement(addEmployeeLinkBy);
         By teamEmployeeSelectCountBy = By.xpath(".//td[3]/form/span/select");
 
-        int numberOfSelectElementsBeforeClick = teamRowElement.findElements(teamEmployeeSelectCountBy).size();
+        int numberOfSelectElementsBeforeClick = driver.findElements(teamEmployeeSelectCountBy).size();
         addEmployeeLinkElement.click();
         /**
          * Wait until JavaScript has added the new select element:
          */
-        wait.until(ExpectedConditions.numberOfElementsToBe(By.xpath(".//td[3]/form/span/select"), numberOfSelectElementsBeforeClick + 1));
+        wait.until(ExpectedConditions.numberOfElementsToBe(teamEmployeeSelectCountBy, numberOfSelectElementsBeforeClick + 1));
         /**
          * <p lang=de>Select auswählen und Mitarbeiter abschicken.</p>
          */
@@ -154,40 +157,44 @@ public class SaturdayRotationTeamsPage {
         WebElement teamEmployeeSelectLastElement = teamRowElement.findElement(teamEmployeeSelectLastBy);
         Select teamEmployeeSelectLastSelect = new Select(teamEmployeeSelectLastElement);
         teamEmployeeSelectLastSelect.selectByValue(String.valueOf(employeeId));
-        /*
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(SaturdayRotationTeamsPage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         */
+
         /**
          * The page will reload. When the page has reloaded, there will be new
          * elements. The old Select will be stale.
          */
         wait.until(ExpectedConditions.stalenessOf(teamEmployeeSelectLastElement));
-        ExpectedCondition< Boolean> pageLoad = new ExpectedCondition<Boolean>() {
+        ExpectedCondition<Boolean> pageLoad = new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver driver) {
                 return ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete");
             }
         };
         wait.until(pageLoad);
-//        teamEmployeeSelectLastSelect.getFirstSelectedOption().getAttribute("value");
-        wait = new WebDriverWait(driver, 2);
-        wait.until(ExpectedConditions.attributeToBe(teamEmployeeSelectLastBy, "value", String.valueOf(employeeId)));
     }
 
-    public void addTeam(SaturdayRotationTeam saturdayRotationTeam) {
+    public int addTeam(SaturdayRotationTeam saturdayRotationTeam) {
         By addTeamLinkBy = By.xpath("//*[@id=\"saturdayRotationTeamsAddTeamTd\"]/a");
         WebElement addTeamLinkElement = driver.findElement(addTeamLinkBy);
+        int numberOfTeamRowsBeforeClick = getNumberOfTeamRows(); // CAVE: Be aware, that this is one less, than the number of teamRowListBy
         addTeamLinkElement.click();
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.numberOfElementsToBe(teamRowListBy, numberOfTeamRowsBeforeClick + 2));
+
         By saturdayRotationTeamInputTableBy = By.xpath("//*[@id=\"saturday_rotation_team_input_table\"]");
         WebElement saturdayRotationTeamInputTableElement = driver.findElement(saturdayRotationTeamInputTableBy);
         int newTeamId = Integer.valueOf(saturdayRotationTeamInputTableElement.getAttribute("data-max_team_id"));
+        /**
+         * <p lang=de>Erst ann diesem Punkt wissen wir, welche teamId das neue
+         * Team bekommt. Deshalb setzen wir hier die teamId. Als nächstes muss
+         * der Rest des Programmes über die neue Id in Kenntnis gesetzt werden.
+         * Die Information steckt im Objekt. Damit wird sie nach oben getragen,
+         * denn der Rest des Programmes hat eine Referenz zu diesem Objekt.</p>
+         */
+        saturdayRotationTeam.setTeamId(newTeamId);
         saturdayRotationTeam.getListOfTeamMembers().forEach(employeeId -> {
             addEmployeeToTeam(newTeamId, employeeId);
         });
         this.readListOfTeams();
+        return newTeamId;
     }
 
     public void removeTeamById(int teamId) {

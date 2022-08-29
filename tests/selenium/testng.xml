@@ -10,31 +10,32 @@
             <class name="Selenium.administrationpages.TestWorkforceManagementPage" />
             <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
             <class name="Selenium.rosterpages.TestRosterDayEditPage" />
-            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne:-->
+            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne:
+            -->
             <class name="Selenium.PrincipleRosterPages.TestDayPage" />
         </classes>
     </test>
     <test name="Application Pages">
         <classes>
-            <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
-            <class name="Selenium.administrationpages.TestUploadPepPage" />
             <!--
             -->
+            <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
+            <class name="Selenium.administrationpages.TestUploadPepPage" />
             <class name="Selenium.administrationpages.TestSaturdayRotationTeamsPage" />
             <class name="Selenium.administrationpages.TestSaturdayListPage" />
             <!--
             -->
-            <class name="Selenium.TestAboutPage" />
-            <class name="Selenium.administrationpages.TestConfigurationPage" />
             <!--
             -->
+            <class name="Selenium.TestAboutPage" />
+            <class name="Selenium.administrationpages.TestConfigurationPage" />
         </classes>
     </test>
     <test name="Absence Pages" >
         <classes>
-            <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
             <!--
             -->
+            <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
         </classes>
     </test>
     <test name="Principle Roster Pages" >
@@ -45,11 +46,11 @@
     </test>
     <test name="Roster Pages" >
         <classes>
+            <!--
+            -->
             <class name="Selenium.rosterpages.TestRosterWeekTablePage" />
             <class name="Selenium.rosterpages.TestRosterEmployeePage" />
             <class name="Selenium.rosterpages.TestRosterHoursPage" />
-            <!--
-            -->
         </classes>
     </test>
 </suite>

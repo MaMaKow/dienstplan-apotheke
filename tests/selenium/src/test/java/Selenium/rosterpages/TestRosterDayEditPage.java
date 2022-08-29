@@ -27,7 +27,6 @@ import Selenium.signin.SignInPage;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;

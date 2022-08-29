@@ -66,10 +66,20 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo $html;
 
-function get_saturday_rotation_team_member_names(saturday_rotation $saturday_rotation, workforce $workforce, array $Absentees) {
+function get_saturday_rotation_team_member_names_span(saturday_rotation $saturday_rotation, workforce $workforce, array $Absentees) {
     $Saturday_rotation_team_member_ids = array();
     $saturday_rotation_team_id = $saturday_rotation->team_id;
-    if (NULL !== $saturday_rotation_team_id and FALSE !== $saturday_rotation_team_id) {
+    if (NULL !== $saturday_rotation_team_id and FALSE !== $saturday_rotation_team_id and array_key_exists($saturday_rotation_team_id, $saturday_rotation->List_of_teams)) {
+        /**
+         * <p lang=de>TODO: Es ist möglich, dass eine größere Zahl an Teams existiert hat, z.B. 6.
+         * Wenn die Zuweisung der Teams bereits erfolgt ist, wurde z.B. das Team 6 in der Datenbank hinterlegt.
+         * Wenn nun nur noch 4 Teams existieren, gibt $saturday_rotation->team_id;
+         *   durch die Funktion get_participation_team_id(), welche read_participation_from_database() aufruft, die gespeicherte Team id zurück.
+         * Die ist in dem array $saturday_rotation->List_of_teams aber gar nicht mehr enthalten.
+         * Wir geben in diesem Fall einen leeren Array weiter.
+         * Ist das so optimal?
+         * </p>
+         */
         $Saturday_rotation_team_member_ids = $saturday_rotation->List_of_teams[$saturday_rotation_team_id];
     }
 
@@ -132,7 +142,7 @@ function build_table_row(DateTime $date_object, int $branch_id) {
     } else {
         $Rostered_employees_names = get_rostered_employees_names($Roster, $workforce, $Absentees);
         $rostered_employees_names_string = implode(', ', $Rostered_employees_names);
-        $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names($saturday_rotation, $workforce, $Absentees);
+        $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names_span($saturday_rotation, $workforce, $Absentees);
         $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
         $table_row .= "<tr>";
         $table_row .= "<td>";

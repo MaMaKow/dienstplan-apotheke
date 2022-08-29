@@ -18,7 +18,10 @@
  */
 package Selenium.administrationpages;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -26,16 +29,28 @@ import java.util.HashSet;
  */
 public class SaturdayRotationTeam {
 
-    private final int teamId;
+    private Integer teamId;
     private final HashSet<Integer> listOfTeamMemerIds;
 
-    public SaturdayRotationTeam(int teamIdInput, HashSet<Integer> listOfTeamMemerIdsInput) {
+    public SaturdayRotationTeam(Integer teamIdInput, HashSet<Integer> listOfTeamMemerIdsInput) {
         teamId = teamIdInput;
         listOfTeamMemerIds = listOfTeamMemerIdsInput;
     }
 
+    public SaturdayRotationTeam(Integer teamIdInput, int[] arrayOfTeamMemerIdsInput) {
+        teamId = teamIdInput;
+        listOfTeamMemerIds = new HashSet<>();
+        for (int teamMemerId : arrayOfTeamMemerIdsInput) {
+            listOfTeamMemerIds.add(teamMemerId);
+        }
+    }
+
     public int getTeamId() {
         return teamId;
+    }
+
+    public void setTeamId(int newTeamId) {
+        teamId = newTeamId;
     }
 
     public HashSet<Integer> getListOfTeamMembers() {

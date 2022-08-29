@@ -52,18 +52,35 @@ class saturday_rotation {
         $holiday = holidays::is_holiday($target_date_object);
         if (FALSE !== $holiday) {
             /*
-             * <p lang=DE>An Feiertagen findet kein Samstagsdienst statt.</p>
+             * <p lang=de>An Feiertagen findet kein Samstagsdienst statt.</p>
              */
             return FALSE;
         }
         $this->target_date_object = $target_date_object;
+        /**
+         * First try to read an existing participation of a team from the database:
+         */
         $this->team_id = $this->read_participation_from_database();
         if (NULL === $this->team_id) {
+            /**
+             * We did not find a participation in the database. We will choose a team:
+             */
             $this->team_id = $this->set_new_participation();
+
             if (NULL !== $this->team_id and FALSE !== $this->team_id) {
+                /**
+                 * <p lang=de>
+                 * Wir haben erfogreich ein Team ausgewählt.
+                 * Dieses wird nun in die Datenbank geschrieben.
+                 * Der Einrag dort wird allerdings nur erhalten, wenn er maximal
+                 * 12 Monate in die Vergangenheit oder zwei Monate in die
+                 * Zukunft reicht.
+                 * </p>
+                 */
                 $this->write_participation_to_database();
             }
         }
+        //print_debug_variable_to_screen($this->team_id);
         return $this->team_id;
     }
 
@@ -109,10 +126,16 @@ class saturday_rotation {
             $last_date_object = new DateTime($last_date_sql);
         }
         if (NULL === $last_team_id) {
-            return FALSE;
+            /**
+             * We did not find any participation in the past.
+             * We choose to return the first team in that case:
+             */
+            reset($this->List_of_teams);
+            return key($this->List_of_teams);
+            //return FALSE;
         }
         /*
-         * move the pointer for the array $this->List_of_teams to the position given by $last_team_id:
+         * Move the pointer for the array $this->List_of_teams to the position given by $last_team_id:
          */
         reset($this->List_of_teams);
         while (key($this->List_of_teams) !== $last_team_id) {
@@ -121,23 +144,24 @@ class saturday_rotation {
                  * next() will advance the pointer forward to the "correct" key.
                  * But it might not exist in the array.
                  * Prevent an infinite loop:
-                 * TODO: Choose, which team to send in that case
                  */
                 error_log('Could not find $last_team_id ' . $last_team_id . ' in $this->List_of_teams');
-                return FALSE;
+                // We choose to return the first team in that case:
+                reset($this->List_of_teams);
+                return key($this->List_of_teams);
             }
         }
 
         for ($date_object = (clone $last_date_object)->add(new DateInterval('P7D')); $date_object <= $this->target_date_object; $date_object->add(new DateInterval('P7D'))) {
             /*
-             * move the pointer in $this->List_of_teams to next()
+             * Move the pointer in $this->List_of_teams to next()
              * In case, we meet the end, just start at the first item again.
              */
             $holiday = holidays::is_holiday($date_object);
 
             if (FALSE !== $holiday) {
                 /*
-                 * <p lang=DE>An Feiertagen findet kein Samstagsdienst statt.</p>
+                 * <p lang=de>An Feiertagen findet kein Samstagsdienst statt.</p>
                  */
                 continue;
             }
@@ -150,6 +174,9 @@ class saturday_rotation {
     }
 
     protected function write_participation_to_database() {
+        /**
+         * TODO: <p lang=de>Was passiert, wenn wir keinerlei Informationen in der Vergangenheit schreiben?</p>
+         */
         if (FALSE === $this->team_id) {
             return FALSE;
         }

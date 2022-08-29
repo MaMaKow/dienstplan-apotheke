@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -47,13 +48,7 @@ public class Wrapper {
 
     public Wrapper() {
         driver = createLocalChromeWebDriver();
-        /*
-        try {
-            //driver = createRemoteWebDriver();
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         */
+        //driver = createRemoteWebDriver();
     }
 
     public static WebDriver getDriver() {
@@ -68,10 +63,14 @@ public class Wrapper {
         return driver;
     }
 
-    private WebDriver createRemoteWebDriver() throws MalformedURLException {
+    private WebDriver createRemoteWebDriver() {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
 
-        driver = new RemoteWebDriver(new URL("http://docker.martin-mandelkow.de:4444/wd/hub"), capabilities);
+        try {
+            driver = new RemoteWebDriver(new URL("http://docker.martin-mandelkow.de:4444/wd/hub"), capabilities);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return driver;
     }
 
@@ -171,5 +170,44 @@ public class Wrapper {
             System.out.println(e);
         }
 
+    }
+
+    public static By getByFromElement(WebElement element) {
+        By by = null;
+        //[[ChromeDriver: chrome on XP (d85e7e220b2ec51b7faf42210816285e)] -> xpath: //input[@title='Search']]
+        String[] pathVariables = (element.toString().split("->")[1].replaceFirst("(?s)(.*)\\]", "$1" + "")).split(":");
+
+        String selector = pathVariables[0].trim();
+        String value = pathVariables[1].trim();
+
+        switch (selector) {
+            case "id":
+                by = By.id(value);
+                break;
+            case "className":
+                by = By.className(value);
+                break;
+            case "tagName":
+                by = By.tagName(value);
+                break;
+            case "xpath":
+                by = By.xpath(value);
+                break;
+            case "cssSelector":
+                by = By.cssSelector(value);
+                break;
+            case "linkText":
+                by = By.linkText(value);
+                break;
+            case "name":
+                by = By.name(value);
+                break;
+            case "partialLinkText":
+                by = By.partialLinkText(value);
+                break;
+            default:
+                throw new IllegalStateException("locator : " + selector + " not found!!!");
+        }
+        return by;
     }
 }
