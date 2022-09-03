@@ -36,7 +36,34 @@ public class TestConfigurationPage {
 
     WebDriver driver;
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = true)
+    public void testWriteConfiguration() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        /**
+         * Go to page:
+         */
+        ConfigurationPage configurationPage = new ConfigurationPage(driver);
+        Assert.assertEquals(configurationPage.getUserNameText(), pdr_user_name);
+        /**
+         * Set locales
+         */
+        configurationPage.setLocales("de_DE.utf8");
+        configurationPage.submitForm();
+        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+
+    }
+
+    @Test(enabled = true, dependsOnMethods = {"testWriteConfiguration"})/*passed*/
     public void testReadInputFields() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -72,7 +99,7 @@ public class TestConfigurationPage {
          * Language and encoding
          */
         Assert.assertEquals(configurationPage.getLanguage(), "Deutsch");
-        Assert.assertEquals(configurationPage.getLocales(), "C");
+        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
         Assert.assertEquals(configurationPage.getEncoding(), "UTF-8");
         /**
          * Error log verbosity:

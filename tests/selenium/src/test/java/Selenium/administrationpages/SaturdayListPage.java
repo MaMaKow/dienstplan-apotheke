@@ -96,6 +96,8 @@ public class SaturdayListPage {
     }
 
     public int getTeamIdOnDate(Date targetDate) {
+        SimpleDateFormat simpleDateFormatYear = new SimpleDateFormat("yyyy", Locale.GERMAN);
+        selectYear(simpleDateFormatYear.format(targetDate)); //Make sure, that we are in the right year.
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement teamIdWebElement = saturdayRowElement.findElement(saturdayRowTeamIdBy);
         return Integer.valueOf(teamIdWebElement.getText());

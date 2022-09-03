@@ -385,7 +385,11 @@ abstract class build_html_roster_views {
 
                 $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlentities($roster_item->date_sql)
-                        . "&employee_id=" . htmlentities($roster_item->employee_id) . "' data-employee_id='" . htmlentities($roster_item->employee_id) . "' data-branch_id='" . htmlentities($roster_item->branch_id) . "'>";
+                        . "&employee_id=" . htmlentities($roster_item->employee_id)
+                        . "' data-employee_id='" . htmlentities($roster_item->employee_id)
+                        . "' data-branch_id='" . htmlentities($roster_item->branch_id)
+                        . "' data-date_sql='" . htmlentities($roster_item->date_sql)
+                        . "'>";
                 if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
                     $zeile .= $workforce->List_of_employees[$roster_item->employee_id]->last_name;
                 } else {

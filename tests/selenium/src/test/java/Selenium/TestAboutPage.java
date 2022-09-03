@@ -80,7 +80,8 @@ public class TestAboutPage {
     public void tearDown(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
-        driver.quit();
-
+        if (testResult.getStatus() != ITestResult.FAILURE) {
+            driver.quit();
+        }
     }
 }

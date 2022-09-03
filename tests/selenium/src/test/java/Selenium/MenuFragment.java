@@ -106,7 +106,7 @@ public class MenuFragment {
         menuMap.put(MenuLinkToLogout, MenuListItemApplication);
 
         /**
-         * TODO: Mit der Map von oben im Folgenden das richtige Item zum hovern
+         * Mit der Map von oben im Folgenden das richtige Item zum hovern
          * auswählen...
          */
         WebElement linkElement = driver.findElement(target);
@@ -125,7 +125,11 @@ public class MenuFragment {
         WebElement menuListItem = driver.findElement(menuListItemBy);
         wait.until(ExpectedConditions.presenceOfElementLocated(target));
         actions.moveToElement(menuListItem).perform();
-        linkElement.click();
+        if (!linkElement.getAttribute("href").equals(driver.getCurrentUrl())) {
+            linkElement.click();
+        } else {
+            actions.moveByOffset(0, 350).perform();
+        }
 
     }
 }

@@ -18,10 +18,14 @@
  */
 package Selenium.rosterpages;
 
+import Selenium.Employee;
 import Selenium.MenuFragment;
+import Selenium.NetworkOfBranchOffices;
 import Selenium.RosterItem;
 import java.text.ParseException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -74,7 +78,15 @@ public class RosterEmployeePage {
         return new RosterEmployeePage(driver);
     }
 
+    public RosterEmployeePage goToDate(LocalDate localDate) {
+        String dateString = localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        return goToDate(dateString);
+    }
+
     public RosterEmployeePage goToDate(String date) {
+        if (date.equals(getDate())) {
+            return this;
+        }
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         dateChooserInput.sendKeys(date);
         dateChooserInput.sendKeys(Keys.ENTER);
@@ -85,6 +97,16 @@ public class RosterEmployeePage {
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         String date_value = dateChooserInput.getAttribute("value");
         return date_value;
+    }
+
+    /**
+     *
+     * @return localDate The localDate of the Monday in the selected week.
+     */
+    public LocalDate getLocalDate() {
+        String dateString = getDate();
+        LocalDate localDate = LocalDate.parse(dateString, Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+        return localDate;
     }
 
     public RosterEmployeePage moveWeekBackward() {
@@ -148,17 +170,31 @@ public class RosterEmployeePage {
         return rosterItemBreakEndXpathBy;
     }
 
-    public RosterItem getRosterItem(int column, int row) throws ParseException {
+    public RosterItem getRosterItem(DayOfWeek dayOfWeek) throws ParseException {
+        return getRosterItem(dayOfWeek.getValue(), 1);
+    }
 
+    public RosterItem getRosterItem(int column, int row) throws ParseException {
         int employeeId = getEmployeeId();
+        /**
+         * We will need a year to correctly parse the date:
+         */
+        LocalDate localMondayDate = getLocalDate();
+        LocalDate actualLocalDate = localMondayDate.plusDays(column - 1);
+        int currentYear = actualLocalDate.getYear();
+        /**
+         * Find the roster values in the table data:
+         */
         String dateString = driver.findElement(getRosterItemDateXpathBy(column)).getText();
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(column, row)).getText();
         String dutyEnd = driver.findElement(getRosterItemDutyEndXpathBy(column, row)).getText();
         String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();
         String breakEnd = driver.findElement(getRosterItemBreakEndXpathBy(column, row)).getText();
         String branchName = driver.findElement(getRosterItemBranchNameXpathBy(column, row)).getText();
-        int branchId = Integer.valueOf(driver.findElement(getRosterItemBranchNameXpathBy(column, row)).getAttribute("data-branch_id"));
+        //int branchId = Integer.valueOf(driver.findElement(getRosterItemBranchNameXpathBy(column, row)).getAttribute("data-branch_id"));
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
 
+        int branchId = networkOfBranchOffices.getBranchByName(branchName).getBranchId();
         String comment = null; //TODO: add comment
         /**
          * <p>
@@ -166,8 +202,8 @@ public class RosterEmployeePage {
          * Locale.GERMANY <-> Locale.ENGLISH
          * </p>
          */
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EE dd.MM.", Locale.GERMANY);
-        LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("eeee dd.MM.yyyy", Locale.GERMANY);
+        LocalDate localDate = LocalDate.parse(dateString + currentYear, dateTimeFormatter);
         RosterItem rosterItem = new RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }

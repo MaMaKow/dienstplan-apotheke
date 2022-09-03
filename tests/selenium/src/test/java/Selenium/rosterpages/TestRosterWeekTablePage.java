@@ -18,15 +18,15 @@
  */
 package Selenium.rosterpages;
 
-import Selenium.HomePage;
 import Selenium.PropertyFile;
+import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
 import Selenium.signin.SignInPage;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.codec.digest.DigestUtils;
-//import org.junit.Test;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -34,6 +34,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.asserts.SoftAssert;
 
 /**
  *
@@ -42,8 +43,9 @@ import org.testng.annotations.BeforeMethod;
 public class TestRosterWeekTablePage {
 
     WebDriver driver;
+    SoftAssert softAssert = new SoftAssert();
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = false)/*passed*/
     public void testDateNavigation() {
         try {
             driver = Selenium.driver.Wrapper.getDriver();
@@ -86,26 +88,33 @@ public class TestRosterWeekTablePage {
         SignInPage signInPage = new SignInPage(driver);
         String pdr_user_password = propertyFile.getPdrUserPassword();
         String pdr_user_name = propertyFile.getPdrUserName();
-        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
         Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
-        /**
-         * Move to specific date to get a specific roster:
-         */
-        rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-        Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
-        /**
-         * Get roster items and compare to assertions:
-         */
-        RosterItem rosterItem = rosterWeekTablePage.getRosterItem(2, 3);
-        String employeeNameHash = DigestUtils.md5Hex(rosterItem.getEmployeeName());
-        Assert.assertEquals(employeeNameHash, "3208b225b142f12b1f380b488837505f");
-        Assert.assertEquals(30, rosterItem.getLocalDate().getDayOfMonth());
-        Assert.assertEquals(6, rosterItem.getLocalDate().getMonth());
-        Assert.assertEquals("08:00", rosterItem.getDutyStart());
-        Assert.assertEquals("16:30", rosterItem.getDutyEnd());
-        Assert.assertEquals("12:00", rosterItem.getBreakStart());
-        Assert.assertEquals("12:30", rosterItem.getBreakEnd());
+
+        Roster roster = new Roster();
+        HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
+        for (HashMap<Integer, RosterItem> listOfRosterItems : listOfRosterDays.values()) {
+            for (RosterItem rosterItemFromPrediction : listOfRosterItems.values()) {
+                /**
+                 * Move to specific date to get a specific roster:
+                 */
+                rosterWeekTablePage.goToDate(rosterItemFromPrediction.getLocalDate());
+                RosterItem rosterItemReadOnPage = rosterWeekTablePage.getRosterItemByEmployeeId(
+                        rosterItemFromPrediction.getLocalDate().getDayOfWeek(),
+                        rosterItemFromPrediction.getEmployeeId()
+                );
+
+                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(), rosterItemReadOnPage.getEmployeeName());
+                softAssert.assertEquals(rosterItemFromPrediction.getLocalDate(), rosterItemReadOnPage.getLocalDate());
+                softAssert.assertEquals(rosterItemFromPrediction.getDutyStart(), rosterItemReadOnPage.getDutyStart());
+                softAssert.assertEquals(rosterItemFromPrediction.getDutyEnd(), rosterItemReadOnPage.getDutyEnd());
+                softAssert.assertEquals(rosterItemFromPrediction.getBreakStart(), rosterItemReadOnPage.getBreakStart());
+                softAssert.assertEquals(rosterItemFromPrediction.getBreakEnd(), rosterItemReadOnPage.getBreakEnd());
+                softAssert.assertAll();
+            }
+        }
+
     }
 
     @BeforeMethod
@@ -117,8 +126,9 @@ public class TestRosterWeekTablePage {
     public void tearDown(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
-        driver.quit();
-
+        if (testResult.getStatus() != ITestResult.FAILURE) {
+            driver.quit();
+        }
     }
 
 }

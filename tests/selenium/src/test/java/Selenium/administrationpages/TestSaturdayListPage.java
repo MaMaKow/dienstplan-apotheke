@@ -62,20 +62,18 @@ public class TestSaturdayListPage {
         Assert.assertEquals(saturdayListPage.getBranchId(), 1);
         /**
          * <p lang=de>
-         * Der 1. Mai 2021 war ein Feiertag. Weil an diesem Feiertag kein
+         * Der 03. October 2026 ist ein Feiertag. Weil an diesem Feiertag kein
          * Samstagsteam arbeitet, muss nach dem Feiertag das Team arbeiten, dass
-         * sonst am 01.05. dran gewesen wäre.
+         * sonst am 03.10. dran gewesen wäre.
          * </p>
          */
         Calendar saturdayCalendar = Calendar.getInstance(Locale.GERMANY);
-        saturdayCalendar.set(2026, Calendar.AUGUST, 29);
-        //int teamIdFound = saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime());
-        //System.out.println("teamIdFound=" + teamIdFound);
-        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 4);
+        saturdayCalendar.set(2026, Calendar.SEPTEMBER, 26);
+        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 2);
         saturdayCalendar.set(2026, Calendar.OCTOBER, 3);
         Assert.assertEquals(saturdayListPage.teamIdOnDateIsMissing(saturdayCalendar.getTime()), true);
-        saturdayCalendar.set(2026, Calendar.MAY, 8);
-        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 0);
+        saturdayCalendar.set(2026, Calendar.OCTOBER, 10);
+        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 3);
     }
 
     @BeforeMethod

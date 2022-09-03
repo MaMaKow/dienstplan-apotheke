@@ -61,6 +61,7 @@ public class RosterDayEditPage {
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
     //private final By buttonRosterInputAddRowBy = By.id("roster_input_add_row_button");
     private final By buttonRosterInputAddRowBy = By.xpath("//*[contains(@id, \'roster_input_row_add_row_target_\')]");
+    By tableRowListXpathBy = By.xpath("//*[@id=\"roster_form\"]/table/tbody/tr[@data-roster_row_iterator]");
 
     public RosterDayEditPage(WebDriver driver) {
         this.driver = driver;
@@ -180,10 +181,6 @@ public class RosterDayEditPage {
     private WebElement findRosterInputDutyStart(int employeeId) {
         WebElement rosterTableRow = findRosterTableRowByEmployee(employeeId);
         By inputBy = By.xpath(".//td/input[contains(@name, \"duty_start_sql\")]");
-        rosterTableRow.findElement(By.xpath(".//td"));
-        rosterTableRow.findElement(By.xpath(".//td/input"));
-        rosterTableRow.findElement(By.xpath(".//td/input[contains(@name, 'duty_start_sql')]"));
-        rosterTableRow.findElement(By.xpath(".//td/input[contains(@name, \"duty_start_sql\")]"));
         WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
         return rosterInputElement;
     }
@@ -315,7 +312,11 @@ public class RosterDayEditPage {
 
     public void rosterInputAddRow(RosterItem rosterItem) {
         WebElement buttonRosterInputAddRowElement = driver.findElement(buttonRosterInputAddRowBy);
+        int numberOfRosterTableRowsBeforeClick = driver.findElements(tableRowListXpathBy).size();
         buttonRosterInputAddRowElement.click();
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.numberOfElementsToBe(tableRowListXpathBy, numberOfRosterTableRowsBeforeClick + 1));
+
         WebElement rosterTableRow = findLastRosterTableRow();
         this.changeRosterInputEmployee(rosterTableRow, rosterItem.getEmployeeId());
         this.changeRosterInputDutyStart(rosterTableRow, rosterItem.getDutyStart());
@@ -324,7 +325,8 @@ public class RosterDayEditPage {
         this.changeRosterInputBreakEnd(rosterTableRow, rosterItem.getBreakEnd());
         this.changeRosterInputComment(rosterTableRow, rosterItem.getComment());
         /**
-         * TODO: Comment is not implemented yet.
+         * @TODO: Comment is not implemented yet.
+         * @TODO: Wait until the element is successfully filled.
          */
     }
 

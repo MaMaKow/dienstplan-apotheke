@@ -61,6 +61,9 @@ public class NetworkOfBranchOffices {
             if (branchObject.getBranchName().equals(name)) {
                 return branchObject;
             }
+            if (branchObject.getBranchShortName().equals(name)) {
+                return branchObject;
+            }
         }
         return branchObject;
     }

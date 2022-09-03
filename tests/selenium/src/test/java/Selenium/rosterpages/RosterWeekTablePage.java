@@ -18,14 +18,13 @@
  */
 package Selenium.rosterpages;
 
+import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -34,6 +33,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 /**
  *
@@ -81,6 +81,11 @@ public class RosterWeekTablePage {
         dateChooserInput.sendKeys(date);
         dateChooserInput.sendKeys(Keys.ENTER);
         return new RosterWeekTablePage(driver);
+    }
+
+    public RosterWeekTablePage goToDate(LocalDate localDate) {
+        String dateString = localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        return goToDate(dateString);
     }
 
     public String getDate() {
@@ -143,11 +148,53 @@ public class RosterWeekTablePage {
         return rosterItemBreakEndXpathBy;
     }
 
-    /*
-    public WebElement getRosterItemDutyEndElement() {
-        return driver.findElement(this.getRosterItemDutyEndXpathBy());
-    }
+    /**
+     * @param dayOfWeek Monday is 1 Sunday is 7
+     * @param employeeId id of the employee
+     * @return RosterItem the first roster item, that is found for this employee
+     * id. CAVE: There could be more items for the same employee!
      */
+    public RosterItem getRosterItemByEmployeeId(DayOfWeek dayOfWeek, int employeeId) {
+
+        WebElement rosterTableDataElement = getRosterTableDataElementByEmployeeId(dayOfWeek, employeeId);
+
+        Select branchFormSelect = new Select(driver.findElement(branchFormSelectBy));
+        int branchId = Integer.parseInt(branchFormSelect.getFirstSelectedOption().getAttribute("value"));
+        By rosterItemEmployeeXpathBy = By.xpath(".//span[1]/span[1]/b/a");
+        By rosterItemDutyStartXpathBy = By.xpath(".//span[@class=\'employee_and_hours_and_duty_time\']/span[@class=\'duty_time\']/span[1]");
+        By rosterItemDutyEndXpathBy = By.xpath(".//span[@class=\'employee_and_hours_and_duty_time\']/span[@class=\'duty_time\']/span[2]");
+        By rosterItemBreakStartXpathBy = By.xpath(".//span[@class=\'break_time\']/span[1]");
+        By rosterItemBreakEndXpathBy = By.xpath(".//span[@class=\'break_time\']/span[2]");
+        String dateSql = rosterTableDataElement.findElement(rosterItemEmployeeXpathBy).getAttribute("data-date_sql");
+
+        LocalDate localDateParsed = LocalDate.parse(dateSql, DateTimeFormatter.ISO_LOCAL_DATE);
+        Workforce workforce = new Workforce();
+        Employee employeeShould = workforce.getEmployeeById(employeeId);
+        String employeeNameStringFound = rosterTableDataElement.findElement(rosterItemEmployeeXpathBy).getText();
+        /**
+         * Make sure, that we found the right TD TableData:
+         */
+        Assert.assertEquals(employeeShould.getLastName(), employeeNameStringFound);
+        /**
+         * Produce the RosterItem object
+         */
+        String dutyStart = rosterTableDataElement.findElement(rosterItemDutyStartXpathBy).getText();
+        String dutyEnd = rosterTableDataElement.findElement(rosterItemDutyEndXpathBy).getText();
+        String breakStart = rosterTableDataElement.findElement(rosterItemBreakStartXpathBy).getText();
+        String breakEnd = rosterTableDataElement.findElement(rosterItemBreakEndXpathBy).getText();
+        String comment = null;//TODO; add comment
+        RosterItem rosterItem = new RosterItem(employeeId, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        return rosterItem;
+
+    }
+
+    private WebElement getRosterTableDataElementByEmployeeId(DayOfWeek dayOfWeek, int employeeId) {
+        int indexOfDay = dayOfWeek.getValue();
+        By rowXpathBy = By.xpath("//table[@id=\"duty_roster_table\"]/tbody/tr/td[" + indexOfDay + "]/span[1]/span[1]/b/a[@data-employee_id=\"" + employeeId + "\"]/parent::b/parent::span/parent::span/parent::td");
+        WebElement rosterTableDataElement = driver.findElement(rowXpathBy);
+        return rosterTableDataElement;
+    }
+
     public RosterItem getRosterItem(int column, int row) throws ParseException {
 
         int employeeId = Integer.valueOf(driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getAttribute("data-employee_id"));
