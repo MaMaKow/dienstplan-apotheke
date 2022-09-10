@@ -30,7 +30,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('request_own_absence');
 
 echo "<div id='input_box_data_div'></div>";
-echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG) . ";</script>\n";
+echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE) . ";</script>\n";
 echo $collaborative_vacation->build_absence_month($year, $month_number);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>

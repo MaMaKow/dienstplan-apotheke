@@ -389,7 +389,7 @@ class collaborative_vacation {
                     . " class='" . $span_class . "' "
                     . " onclick='insert_form_div(\"edit\")' "
                     . " title='" . $this->build_absence_year_absent_employees_containers_title_text($workforce, $Absence) . "' "
-                    . " data-absence_details='" . json_encode($Absence) . "' "
+                    . " data-absence_details='" . json_encode($Absence, JSON_UNESCAPED_UNICODE) . "' "
                     . ">";
             $absent_employees_containers .= $employee_id;
             $absent_employees_containers .= $employee_long_representation;

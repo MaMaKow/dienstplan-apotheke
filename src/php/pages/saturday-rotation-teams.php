@@ -75,7 +75,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
-echo "<script> var workforce = " . json_encode($workforce) . ";</script>";
+echo "<script> var workforce = " . json_encode($workforce, JSON_UNESCAPED_UNICODE) . ";</script>";
 ?>
 <?=
 $html_select_branch;

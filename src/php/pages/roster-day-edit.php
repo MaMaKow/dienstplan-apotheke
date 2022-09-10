@@ -144,9 +144,9 @@ $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 $html_text .= $user_dialog->build_messages();
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
 $html_text .= "<script> "
-        . " var Roster_array = " . json_encode($Roster) . ";\n"
-        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
-        . " var List_of_employee_professions = " . json_encode($workforce->get_list_of_employee_professions()) . ";\n"
+        . " var Roster_array = " . json_encode($Roster, JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_professions = " . json_encode($workforce->get_list_of_employee_professions(), JSON_UNESCAPED_UNICODE) . ";\n"
         . "</script>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";

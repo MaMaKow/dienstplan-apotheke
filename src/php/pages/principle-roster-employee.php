@@ -92,8 +92,8 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
         $html_text .= $alternating_week_id_string;
     }
     $html_text .= "<script> "
-            . " var Roster_array = " . json_encode($Principle_employee_roster) . ";\n"
-            . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
+            . " var Roster_array = " . json_encode($Principle_employee_roster, JSON_UNESCAPED_UNICODE) . ";\n"
+            . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
             . "</script>\n";
 
     $html_text .= "<table>\n";

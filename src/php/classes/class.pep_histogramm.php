@@ -30,7 +30,7 @@ class pep_histogramm {
      */
     public function get_expectation_javascript_object($branch_id) {
         $Expectation = $this->get_expectation($branch_id);
-        $Expectation_javascripft_object = json_encode($Expectation);
+        $Expectation_javascripft_object = json_encode($Expectation, JSON_UNESCAPED_UNICODE);
         return $Expectation_javascripft_object;
     }
 

@@ -91,7 +91,7 @@ class update_database {
               `id` tinyint(3) UNSIGNED NOT NULL,
               `reason_string` varchar(32) COLLATE latin1_german1_ci NOT NULL,
               PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_general_ci;";
             $Sql_query_array[] = "INSERT INTO `absence_reasons` (`id`, `reason_string`) VALUES
                 (1, 'vacation'),
                 (2, 'remaining vacation'),
