@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS `roster` (
   `user` varchar(64) CHARACTER SET utf8 COLLATE utf8_german2_ci NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`roster_element_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

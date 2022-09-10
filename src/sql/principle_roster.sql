@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS `principle_roster` (
   `duty_end` time DEFAULT NULL,
   `break_start` time DEFAULT NULL,
   `break_end` time DEFAULT NULL,
-  `comment` text COLLATE latin1_german1_ci DEFAULT NULL,
+  `comment` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `working_hours` float DEFAULT NULL,
   `branch_id` int(11) NOT NULL DEFAULT 1,
   PRIMARY KEY (`primary_key`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 -- Database: `pdr_test`
 --
 DROP DATABASE `pdr_test`;
-CREATE DATABASE IF NOT EXISTS `pdr_test` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE DATABASE IF NOT EXISTS `pdr_test` DEFAULT CHARACTER SET utf8mb4 COLLATE latin1_swedish_ci;
 USE `pdr_test`;
 
 -- --------------------------------------------------------
@@ -32,15 +32,15 @@ USE `pdr_test`;
 DROP TABLE IF EXISTS `absence`;
 CREATE TABLE IF NOT EXISTS `absence` (
   `employee_id` tinyint(4) NOT NULL,
-  `reason` enum('maternity leave','paid leave of absence','parental leave','remaining holiday','sickness','sickness of child','unpaid leave of absence','vacation') COLLATE latin1_german1_ci NOT NULL,
+  `reason` enum('maternity leave','paid leave of absence','parental leave','remaining holiday','sickness','sickness of child','unpaid leave of absence','vacation') COLLATE utf8mb4_unicode_ci NOT NULL,
   `start` date NOT NULL,
   `end` date NOT NULL,
   `days` int(11) NOT NULL,
-  `comment` varchar(64) COLLATE latin1_german1_ci DEFAULT NULL,
-  `approval` set('approved','not_yet_approved','disapproved','changed_after_approval') CHARACTER SET latin1 NOT NULL DEFAULT 'not_yet_approved',
-  `user` varchar(64) CHARACTER SET latin1 NOT NULL,
+  `comment` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approval` set('approved','not_yet_approved','disapproved','changed_after_approval') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'not_yet_approved',
+  `user` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `absence`
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `approval` (
   `branch` int(11) NOT NULL,
   `user` varchar(64) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `approval`
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `branch` (
   `address` varchar(64) NOT NULL,
   `manager` varchar(64) NOT NULL,
   `PEP` int(11) DEFAULT NULL COMMENT 'Dieser Wert wird vom ASYS PEP-Modul vorgegeben.'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `branch`
@@ -194,12 +194,12 @@ CREATE TABLE IF NOT EXISTS `Dienstplan` (
   `Dienstende` time DEFAULT NULL,
   `Mittagsbeginn` time DEFAULT NULL,
   `Mittagsende` time DEFAULT NULL,
-  `Kommentar` text CHARACTER SET latin1,
+  `Kommentar` text CHARACTER SET utf8mb4,
   `Stunden` float DEFAULT NULL,
   `Mandant` int(11) NOT NULL DEFAULT '1',
-  `user` varchar(64) CHARACTER SET latin1 NOT NULL,
+  `user` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `Dienstplan`
@@ -444,9 +444,9 @@ DROP TABLE IF EXISTS `employees`;
 CREATE TABLE IF NOT EXISTS `employees` (
 `pseudo_id` int(10) unsigned NOT NULL,
   `id` tinyint(3) unsigned NOT NULL,
-  `last_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
-  `first_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
-  `profession` set('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') COLLATE latin1_german1_ci NOT NULL,
+  `last_name` varchar(35) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `first_name` varchar(35) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profession` set('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') COLLATE utf8mb4_unicode_ci NOT NULL,
   `working_hours` float NOT NULL DEFAULT '40',
   `working_week_hours` float NOT NULL DEFAULT '38.5',
   `holidays` tinyint(11) NOT NULL DEFAULT '28',
@@ -457,7 +457,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
   `start_of_employment` date DEFAULT NULL,
   `end_of_employment` date DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `employees`
@@ -511,9 +511,9 @@ DROP TABLE IF EXISTS `employees_backup`;
 CREATE TABLE IF NOT EXISTS `employees_backup` (
 `backup_id` int(11) NOT NULL,
   `id` smallint(5) unsigned NOT NULL,
-  `last_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
-  `first_name` varchar(35) COLLATE latin1_german1_ci NOT NULL,
-  `profession` set('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') COLLATE latin1_german1_ci NOT NULL,
+  `last_name` varchar(35) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `first_name` varchar(35) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profession` set('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau') COLLATE utf8mb4_unicode_ci NOT NULL,
   `working_hours` float NOT NULL DEFAULT '40',
   `working_week_hours` float NOT NULL DEFAULT '38.5',
   `holidays` tinyint(11) NOT NULL DEFAULT '28',
@@ -524,7 +524,7 @@ CREATE TABLE IF NOT EXISTS `employees_backup` (
   `start_of_employment` date DEFAULT NULL,
   `end_of_employment` date DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `employees_backup`
@@ -545,10 +545,10 @@ CREATE TABLE IF NOT EXISTS `Grundplan` (
   `Dienstende` time DEFAULT NULL,
   `Mittagsbeginn` time DEFAULT NULL,
   `Mittagsende` time DEFAULT NULL,
-  `Kommentar` text COLLATE latin1_german1_ci,
+  `Kommentar` text COLLATE utf8mb4_unicode_ci,
   `Stunden` float DEFAULT NULL,
   `Mandant` int(11) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `Grundplan`
@@ -643,10 +643,10 @@ CREATE TABLE IF NOT EXISTS `Grundplan_roll` (
   `Dienstende` time DEFAULT NULL,
   `Mittagsbeginn` time DEFAULT NULL,
   `Mittagsende` time DEFAULT NULL,
-  `Kommentar` text COLLATE latin1_german1_ci,
+  `Kommentar` text COLLATE utf8mb4_unicode_ci,
   `Stunden` float DEFAULT NULL,
   `Mandant` int(11) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `Grundplan_roll`
@@ -661,9 +661,9 @@ TRUNCATE TABLE `Grundplan_roll`;
 
 DROP TABLE IF EXISTS `maintenance`;
 CREATE TABLE IF NOT EXISTS `maintenance` (
-  `id` enum('1') COLLATE latin1_german1_ci NOT NULL DEFAULT '1' COMMENT 'The ENUM(''1'') construct as primary key is used to prevent that more than one row can be entered to the table',
+  `id` enum('1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1' COMMENT 'The ENUM(''1'') construct as primary key is used to prevent that more than one row can be entered to the table',
   `last_execution` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `maintenance`
@@ -688,7 +688,7 @@ CREATE TABLE IF NOT EXISTS `Notdienst` (
   `VK` int(11) DEFAULT NULL,
   `Datum` date NOT NULL,
   `Mandant` int(11) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `Notdienst`
@@ -743,7 +743,7 @@ CREATE TABLE IF NOT EXISTS `opening_times` (
   `start` time NOT NULL,
   `end` time NOT NULL,
   `branch_id` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `opening_times`
@@ -780,7 +780,7 @@ CREATE TABLE IF NOT EXISTS `pep` (
   `Zeit` time NOT NULL,
   `Anzahl` int(11) NOT NULL,
   `Mandant` int(11) DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `pep`
@@ -798,7 +798,7 @@ CREATE TABLE IF NOT EXISTS `pep_month_day` (
   `day` int(11) NOT NULL,
   `factor` float NOT NULL,
   `branch` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `pep_month_day`
@@ -885,7 +885,7 @@ CREATE TABLE IF NOT EXISTS `pep_weekday_time` (
   `Wochentag` int(11) NOT NULL COMMENT '0=Monday',
   `Mittelwert` float DEFAULT NULL,
   `Mandant` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `pep_weekday_time`
@@ -1840,7 +1840,7 @@ CREATE TABLE IF NOT EXISTS `pep_year_month` (
   `month` int(11) NOT NULL,
   `factor` float NOT NULL,
   `branch` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `pep_year_month`
@@ -1888,7 +1888,7 @@ CREATE TABLE IF NOT EXISTS `saturday_rotation` (
   `date` date NOT NULL,
   `team_id` tinyint(4) NOT NULL,
   `branch_id` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `saturday_rotation`
@@ -1916,7 +1916,7 @@ CREATE TABLE IF NOT EXISTS `saturday_rotation_teams` (
   `team_id` tinyint(3) unsigned NOT NULL,
   `employee_id` tinyint(4) NOT NULL,
   `branch_id` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `saturday_rotation_teams`
@@ -1951,7 +1951,7 @@ CREATE TABLE IF NOT EXISTS `Sonderöffnungszeiten` (
   `Beginn` time NOT NULL,
   `Ende` time NOT NULL,
   `Bezeichnung` varchar(64) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `Sonderöffnungszeiten`
@@ -1983,7 +1983,7 @@ CREATE TABLE IF NOT EXISTS `Stunden` (
   `Saldo` float NOT NULL,
   `Grund` varchar(64) DEFAULT NULL,
   `Aktualisierung` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `Stunden`
@@ -2421,7 +2421,7 @@ CREATE TABLE IF NOT EXISTS `task_rotation` (
   `task` varchar(64) NOT NULL,
   `VK` tinyint(4) NOT NULL,
   `branch_id` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Truncate table before insert `task_rotation`
@@ -2531,7 +2531,7 @@ CREATE TABLE IF NOT EXISTS `users_lost_password_token` (
   `employee_id` tinyint(3) unsigned NOT NULL,
   `token` binary(20) NOT NULL,
   `time_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `users_lost_password_token`
@@ -2547,8 +2547,8 @@ TRUNCATE TABLE `users_lost_password_token`;
 DROP TABLE IF EXISTS `users_privileges`;
 CREATE TABLE IF NOT EXISTS `users_privileges` (
   `employee_id` tinyint(3) unsigned NOT NULL,
-  `privilege` varchar(32) COLLATE latin1_german1_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci;
+  `privilege` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `users_privileges`

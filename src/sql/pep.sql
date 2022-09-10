@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS `pep` (
   `Anzahl` int(11) NOT NULL,
   `Mandant` int(11) DEFAULT 1,
   PRIMARY KEY (`hash`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

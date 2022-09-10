@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS `Stunden` (
   `Grund` varchar(64) DEFAULT NULL,
   `Aktualisierung` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`VK`,`Datum`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

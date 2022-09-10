@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS `approval` (
   `user` varchar(64) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`date`,`branch`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
