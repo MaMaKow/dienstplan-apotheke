@@ -28,25 +28,27 @@ import Selenium.signin.SignInPage;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
-import biweekly.io.text.ICalReader;
+import biweekly.io.chain.ChainingTextStringParser;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
-import biweekly.property.Summary;
-import biweekly.util.ICalDate;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -55,6 +57,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.asserts.SoftAssert;
+import org.threeten.extra.YearWeek;
 
 /**
  *
@@ -66,7 +69,7 @@ public class TestRosterEmployeePage {
     String iCalendarFileName = "Calendar.ics";
     SoftAssert softAssert = new SoftAssert();
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = false)/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -94,7 +97,7 @@ public class TestRosterEmployeePage {
         Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-29"); //This is the corresponding monday.
     }
 
-    @Test(enabled = true)/*failed*/
+    @Test(enabled = false)/*failed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -163,85 +166,90 @@ public class TestRosterEmployeePage {
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         Assert.assertEquals(rosterEmployeePage.getUserNameText(), pdr_user_name);
         //Move to specific date to get a specific roster:
-
-        rosterEmployeePage = rosterEmployeePage.selectEmployee(5);
-        rosterEmployeePage = rosterEmployeePage.goToDate("01.07.2020");
-        //This date is a wednesday.
-        Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-29");
-        //This is the corresponding monday. Download the ICS file:
+        int employeeId = 5;
+        rosterEmployeePage = rosterEmployeePage.selectEmployee(employeeId);
         /**
          * Get roster items and compare to assertions:
          */
-        RosterItem rosterItem = rosterEmployeePage.getRosterItem(2, 1);
-        rosterEmployeePage.downloadICSFile();
+        ZoneId timeZoneCET = ZoneId.of("CET");
+        ZoneId timeZoneBerlin = ZoneId.of("Europe/Berlin");
+        Roster roster = new Roster();
+        HashMap<YearWeek, HashMap> listOfRosterWeeksForEmployee = roster.getRosterWeeksByEmployeeId(employeeId);
+        for (YearWeek yearWeek : listOfRosterWeeksForEmployee.keySet()) {
+            HashMap<Integer, RosterItem> rosterWeek = listOfRosterWeeksForEmployee.get(yearWeek);
+            LocalDate mondayLocaldate = yearWeek.atDay(DayOfWeek.MONDAY);
+            rosterEmployeePage = rosterEmployeePage.goToDate(mondayLocaldate);
 
-        try {
-            File file = new File("Calendar.ics");
-            ICalReader reader = new ICalReader(file);
-            try {
-                ICalendar ical;
-                DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-                while ((ical = reader.readNext()) != null) {
-                    for (VEvent event : ical.getEvents()) {
-                        DateStart dateStart = event.getDateStart();
-                        String dateStartStr = (dateStart == null) ? null : df.format(dateStart.getValue());
-                        DateEnd dateEnd = event.getDateEnd();
-                        //String dateEndStr = (dateEnd == null) ? null : df.format(dateEnd.getValue());
-                        ICalDate dateEndICalDate = dateEnd.getValue();
-                        String dateEndStr = dateEndICalDate.toString();
+            /**
+             * //Download the ICS file:
+             *
+             */
+            rosterEmployeePage.downloadICSFile();
 
-                        Summary summary = event.getSummary();
-                        String summaryStr = (summary == null) ? null : summary.getValue();
-
-                        if (summaryStr != null && dateStartStr != null) {
-                            continue;
-                        }
-
-                        if (summaryStr != null) {
-                            continue;
-                        }
-
-                        if (dateStartStr != null) {
-                            continue;
-                        }
-                    }
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(TestRosterEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                reader.close();
+            String iCalendarString;
+            iCalendarString = Files.readString(Path.of(iCalendarFileName), Charset.forName("UTF-8"));
+            ICalendar ical = Biweekly.parse(iCalendarString).first();
+            List<VEvent> listOfEvents = ical.getEvents();
+            /*
+             * Make sure, that the number of events matche the number of roster items:
+             * I hope, that the order is the same and constant.
+             */
+            System.out.println("rosterWeek.size()");
+            System.out.println(rosterWeek.size());
+            System.out.println("rosterWeek.entrySet().size()");
+            System.out.println(rosterWeek.entrySet().size());
+            System.out.println("listOfEvents.size()");
+            System.out.println(listOfEvents.size());
+            Assert.assertEquals(listOfEvents.size(), rosterWeek.entrySet().size());
+            /*
+             * Get all the roster items in the list and compare them against the events in the iCalendar file:
+             */
+            System.out.println("rosterWeek");
+            System.out.println(rosterWeek);
+            int eventKey = 0;
+            for (Map.Entry<Integer, RosterItem> rosterItemEntry : rosterWeek.entrySet()) {
+                RosterItem rosterItem = rosterItemEntry.getValue();
+                //rosterItem.getDutyStart();
+                //ZonedDateTime dutyStartZonedDateTime = rosterItem.getDutyStartLocalDateTime().atZone(timeZoneBerlin);
+                System.out.println("listOfEvents.get(eventKey)" + eventKey);
+                VEvent event = listOfEvents.get(eventKey);
+                DateFormat dateFormatHourColonMinute = new SimpleDateFormat("HH:mm");
+                DateFormat dateFormatDayDotMonth = new SimpleDateFormat("dd.MM.");
+                DateTimeFormatter dateTimeFormatterDayDotMonth = DateTimeFormatter.ofPattern("dd.MM.");
+                String summary = event.getSummary().getValue();
+                DateStart dateStart = event.getDateStart();
+                DateEnd dateEnd = event.getDateEnd();
+                /*
+                System.out.println("dateStart.getValue()");
+                System.out.println(dateStart.getValue());
+                System.out.println("dateStart.getValue().getRawComponents()");
+                System.out.println(dateStart.getValue().getRawComponents());
+                System.out.println("dateStart.getValue().toInstant()");
+                System.out.println(dateStart.getValue().toInstant());
+                System.out.println("dateStart.getValue().toInstant().atZone(timeZone)");
+                System.out.println(dateStart.getValue().toInstant().atZone(timeZoneBerlin));
+                System.out.println("dateStart.getValue().toInstant().atZone(timeZoneBerlin).getHour()");
+                System.out.println(dateStart.getValue().toInstant().atZone(timeZoneBerlin).getHour());
+                System.out.println("dateStart.getValue().toInstant().atZone(timeZoneBerlin).format(DateTimeFormatter.ISO_LOCAL_TIME)");
+                System.out.println(dateStart.getValue().toInstant().atZone(timeZoneBerlin).format(DateTimeFormatter.ISO_LOCAL_TIME));
+                 */
+                //Assert.assertEquals(dayDateFormat.format(dateStart.getValue()), dayDateFormat.format(rosterItem.getDateCalendar().getTime()));
+                System.out.println(dateFormatDayDotMonth.format(dateStart.getValue()) + " = " + rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
+                Assert.assertEquals(dateFormatDayDotMonth.format(dateStart.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
+                //Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), dateFormatDayDotMonth.format(rosterItem.getDateCalendar().getTime()));
+                Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
+                Assert.assertEquals(dateFormatHourColonMinute.format(dateStart.getValue()), rosterItem.getDutyStart());
+                Assert.assertEquals(dateFormatHourColonMinute.format(dateEnd.getValue()), rosterItem.getDutyEnd());
+                NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+                String branchName = networkOfBranchOffices.getBranchById(rosterItem.getBranchId()).getBranchName();
+                Assert.assertTrue(summary.contains(branchName));
+                eventKey++;
             }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(TestRosterEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
-
+            /*
+             * Finally delete the iCalendar file:
+             */
+            rosterEmployeePage.deleteICSFile();
         }
-        String iCalendarString;
-        iCalendarString = Files.readString(Path.of(iCalendarFileName));
-        ICalendar ical = Biweekly.parse(iCalendarString).first();
-        VEvent event = ical.getEvents().get(1);
-
-        DateFormat dateFormatHourColonMinute = new SimpleDateFormat("HH:mm");
-        DateFormat dateFormatDayDotMonth = new SimpleDateFormat("dd.MM.");
-        DateTimeFormatter dateTimeFormatterDayDotMonth = DateTimeFormatter.ofPattern("dd.MM.");
-        String summary = event.getSummary().getValue();
-        DateStart dateStart = event.getDateStart();
-        DateEnd dateEnd = event.getDateEnd();
-
-        //Assert.assertEquals(dayDateFormat.format(dateStart.getValue()), dayDateFormat.format(rosterItem.getDateCalendar().getTime()));
-        Assert.assertEquals(dateFormatDayDotMonth.format(dateStart.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
-        //Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), dateFormatDayDotMonth.format(rosterItem.getDateCalendar().getTime()));
-        Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
-        Assert.assertEquals(dateFormatHourColonMinute.format(dateStart.getValue()), rosterItem.getDutyStart());
-        Assert.assertEquals(dateFormatHourColonMinute.format(dateEnd.getValue()), rosterItem.getDutyEnd());
-        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
-        String branchName = networkOfBranchOffices.getBranchById(rosterItem.getBranchId()).getBranchName();
-        Assert.assertTrue(summary.contains(branchName));
-        /*
-        Finally delete the iCalendar file:
-         */
-        File file = new File("Calendar.ics");
-        Files.deleteIfExists(file.toPath());
-
     }
 
     @BeforeMethod
@@ -249,15 +257,18 @@ public class TestRosterEmployeePage {
         try {
             File file = new File("Calendar.ics");
             Files.deleteIfExists(file.toPath());
+
         } catch (IOException ex) {
-            Logger.getLogger(TestRosterEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TestRosterEmployeePage.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         Selenium.driver.Wrapper.createNewDriver();
     }
 
     @AfterMethod
-    public void tearDown(ITestResult testResult) {
+    public void tearDown(ITestResult testResult
+    ) {
         driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
         if (testResult.getStatus() != ITestResult.FAILURE) {

@@ -54,6 +54,12 @@
             <artifactId>biweekly</artifactId>
             <version>0.6.6</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.threeten/threeten-extra -->
+        <dependency>
+            <groupId>org.threeten</groupId>
+            <artifactId>threeten-extra</artifactId>
+            <version>1.7.1</version>
+        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>

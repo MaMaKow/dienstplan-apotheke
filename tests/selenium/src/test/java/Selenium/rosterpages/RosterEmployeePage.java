@@ -22,6 +22,7 @@ import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.RosterItem;
+import java.io.File;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -210,14 +211,27 @@ public class RosterEmployeePage {
 
     public void downloadICSFile() {
         //By downloadButtonBy = By.xpath("/html/body/div[2]/form[@id=download_ics_file_form]/button");
+        File file = new File("Calendar.ics");
+        file.delete();
         By downloadButtonBy = By.xpath("//*[@id=\"download_ics_file_form\"]/button");
         WebElement downloadButtonElement = driver.findElement(downloadButtonBy);
         downloadButtonElement.click();
         try {
+            /**
+             * Instead of simply waiting, it would be better to use a
+             * WatchService:
+             * https://docs.oracle.com/javase/tutorial/essential/io/notification.html
+             * But that is a lot of code for such a small problem!
+             */
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
             Logger.getLogger(RosterEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void deleteICSFile() {
+        File file = new File("Calendar.ics");
+        file.delete();
     }
 
 }

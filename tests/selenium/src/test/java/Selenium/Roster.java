@@ -31,7 +31,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Month;
+import org.threeten.extra.YearWeek;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -78,6 +80,32 @@ public class Roster {
             }
         }
         return null;
+    }
+
+    public HashMap<YearWeek, HashMap> getRosterWeeksByEmployeeId(int employeeId) {
+        HashMap<LocalDate, HashMap> listOfRosterDaysEmployee = (HashMap<LocalDate, HashMap>) listOfRosterDays.clone();
+        HashMap<YearWeek, HashMap> rosterWeeksByEmployeeId = new HashMap<>();
+        for (HashMap<Integer, RosterItem> rosterDay : listOfRosterDaysEmployee.values()) {
+            HashMap<Integer, RosterItem> rosterDayNew = new HashMap<>();
+            for (Integer rosterRowKey : rosterDay.keySet()) {
+                RosterItem rosterItem = rosterDay.get(rosterRowKey);
+                YearWeek yearWeek = YearWeek.from(rosterItem.getLocalDate());
+                if (employeeId == rosterItem.getEmployeeId()) {
+                    rosterDayNew.put(rosterRowKey, rosterItem);
+                } else {
+                    /**
+                     * This rosterItem with the current rosterRowKey served by
+                     * the current rosterDayIterator does not belong to the
+                     * employee with the given id. The RosterIem will be removed
+                     * from the Map.
+                     */
+                    //rosterDayIterator.remove();
+                    //rosterDay.remove(rosterRowKey);
+                }
+                rosterWeeksByEmployeeId.put(yearWeek, rosterDayNew);
+            }
+        }
+        return rosterWeeksByEmployeeId;
     }
 
     /*
