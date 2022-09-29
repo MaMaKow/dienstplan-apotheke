@@ -85,24 +85,30 @@ public class Roster {
     public HashMap<YearWeek, HashMap> getRosterWeeksByEmployeeId(int employeeId) {
         HashMap<LocalDate, HashMap> listOfRosterDaysEmployee = (HashMap<LocalDate, HashMap>) listOfRosterDays.clone();
         HashMap<YearWeek, HashMap> rosterWeeksByEmployeeId = new HashMap<>();
+        int newRosterRowKey = 0;
         for (HashMap<Integer, RosterItem> rosterDay : listOfRosterDaysEmployee.values()) {
-            HashMap<Integer, RosterItem> rosterDayNew = new HashMap<>();
             for (Integer rosterRowKey : rosterDay.keySet()) {
+                newRosterRowKey++;
                 RosterItem rosterItem = rosterDay.get(rosterRowKey);
                 YearWeek yearWeek = YearWeek.from(rosterItem.getLocalDate());
                 if (employeeId == rosterItem.getEmployeeId()) {
-                    rosterDayNew.put(rosterRowKey, rosterItem);
-                } else {
-                    /**
-                     * This rosterItem with the current rosterRowKey served by
-                     * the current rosterDayIterator does not belong to the
-                     * employee with the given id. The RosterIem will be removed
-                     * from the Map.
-                     */
-                    //rosterDayIterator.remove();
-                    //rosterDay.remove(rosterRowKey);
+                    if (rosterWeeksByEmployeeId.containsKey(yearWeek)) {
+                        /**
+                         * <p lang=de>Wenn in dieser Woche bereits ein Eintrag
+                         * existiert, fügen wir unsere Werte zu dem Eintrag
+                         * hinzu.</p>
+                         */
+                        rosterWeeksByEmployeeId.get(yearWeek).put(newRosterRowKey, rosterItem);
+                    } else {
+                        /**
+                         * <p lang=de>Wenn in dieser Woche noch kein Eintrag
+                         * existiert, erstellen wir einen neuen.</p>
+                         */
+                        HashMap<Integer, RosterItem> rosterWeekNew = new HashMap<>();
+                        rosterWeekNew.put(rosterRowKey, rosterItem);
+                        rosterWeeksByEmployeeId.put(yearWeek, rosterWeekNew);
+                    }
                 }
-                rosterWeeksByEmployeeId.put(yearWeek, rosterDayNew);
             }
         }
         return rosterWeeksByEmployeeId;

@@ -31,6 +31,7 @@ import biweekly.component.VEvent;
 import biweekly.io.chain.ChainingTextStringParser;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
+import biweekly.util.ICalDate;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -41,6 +42,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -190,62 +192,62 @@ public class TestRosterEmployeePage {
             iCalendarString = Files.readString(Path.of(iCalendarFileName), Charset.forName("UTF-8"));
             ICalendar ical = Biweekly.parse(iCalendarString).first();
             List<VEvent> listOfEvents = ical.getEvents();
-            /*
-             * Make sure, that the number of events matche the number of roster items:
-             * I hope, that the order is the same and constant.
+            /**
+             * Make sure, that the number of events matche the number of roster
+             * items: I hope, that the order is the same and constant.
              */
-            System.out.println("rosterWeek.size()");
-            System.out.println(rosterWeek.size());
-            System.out.println("rosterWeek.entrySet().size()");
-            System.out.println(rosterWeek.entrySet().size());
-            System.out.println("listOfEvents.size()");
-            System.out.println(listOfEvents.size());
             Assert.assertEquals(listOfEvents.size(), rosterWeek.entrySet().size());
-            /*
-             * Get all the roster items in the list and compare them against the events in the iCalendar file:
+            /**
+             * Get all the roster items in the list and compare them against the
+             * events in the iCalendar file:
              */
-            System.out.println("rosterWeek");
-            System.out.println(rosterWeek);
-            int eventKey = 0;
+            DateFormat dateFormatHourColonMinute = new SimpleDateFormat("HH:mm");
+            DateFormat dateFormatDayDotMonth = new SimpleDateFormat("dd.MM.");
+            DateTimeFormatter dateTimeFormatterDayDotMonth = DateTimeFormatter.ofPattern("dd.MM.");
             for (Map.Entry<Integer, RosterItem> rosterItemEntry : rosterWeek.entrySet()) {
-                RosterItem rosterItem = rosterItemEntry.getValue();
-                //rosterItem.getDutyStart();
-                //ZonedDateTime dutyStartZonedDateTime = rosterItem.getDutyStartLocalDateTime().atZone(timeZoneBerlin);
-                System.out.println("listOfEvents.get(eventKey)" + eventKey);
-                VEvent event = listOfEvents.get(eventKey);
-                DateFormat dateFormatHourColonMinute = new SimpleDateFormat("HH:mm");
-                DateFormat dateFormatDayDotMonth = new SimpleDateFormat("dd.MM.");
-                DateTimeFormatter dateTimeFormatterDayDotMonth = DateTimeFormatter.ofPattern("dd.MM.");
-                String summary = event.getSummary().getValue();
-                DateStart dateStart = event.getDateStart();
-                DateEnd dateEnd = event.getDateEnd();
-                /*
-                System.out.println("dateStart.getValue()");
-                System.out.println(dateStart.getValue());
-                System.out.println("dateStart.getValue().getRawComponents()");
-                System.out.println(dateStart.getValue().getRawComponents());
-                System.out.println("dateStart.getValue().toInstant()");
-                System.out.println(dateStart.getValue().toInstant());
-                System.out.println("dateStart.getValue().toInstant().atZone(timeZone)");
-                System.out.println(dateStart.getValue().toInstant().atZone(timeZoneBerlin));
-                System.out.println("dateStart.getValue().toInstant().atZone(timeZoneBerlin).getHour()");
-                System.out.println(dateStart.getValue().toInstant().atZone(timeZoneBerlin).getHour());
-                System.out.println("dateStart.getValue().toInstant().atZone(timeZoneBerlin).format(DateTimeFormatter.ISO_LOCAL_TIME)");
-                System.out.println(dateStart.getValue().toInstant().atZone(timeZoneBerlin).format(DateTimeFormatter.ISO_LOCAL_TIME));
+                /**
+                 * <p lang=de>Das Ziel ist es jetzt dieses RosterItem mit allen
+                 * iCalendar Items zu vergleichen. Wenn eines dieser Items
+                 * passt, ist die Bedingung erfüllt. Ich denke, dass dieses Item
+                 * dann nach Möglichkeit aus dem Array entfernt werden
+                 * sollte.</p>
                  */
-                //Assert.assertEquals(dayDateFormat.format(dateStart.getValue()), dayDateFormat.format(rosterItem.getDateCalendar().getTime()));
-                System.out.println(dateFormatDayDotMonth.format(dateStart.getValue()) + " = " + rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
+                RosterItem rosterItem = rosterItemEntry.getValue();
+                VEvent matchingEvent;
+
+                /**
+                 * Convert the DutyStart of the iCalendar event and the
+                 * DutyStart of the rosterItem to long timestamp in
+                 * milliseconds. Compare the times. Return the found iCalendar
+                 * event:
+                 */
+                matchingEvent = listOfEvents.stream()
+                        .filter(eventBar -> eventBar.getDateStart().getValue().getTime() == rosterItem.getDutyStartLocalDateTime().atZone(timeZoneBerlin).toInstant().toEpochMilli())
+                        .findFirst()
+                        .orElse(null);
+                Assert.assertNotNull(matchingEvent);
+
+                /**
+                 * We found a matching VEvent. We can now compare all of the
+                 * parameters to the roster values:
+                 */
+                String summary = matchingEvent.getSummary().getValue();
+                DateStart dateStart = matchingEvent.getDateStart();
+                DateEnd dateEnd = matchingEvent.getDateEnd();
                 Assert.assertEquals(dateFormatDayDotMonth.format(dateStart.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
-                //Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), dateFormatDayDotMonth.format(rosterItem.getDateCalendar().getTime()));
                 Assert.assertEquals(dateFormatDayDotMonth.format(dateEnd.getValue()), rosterItem.getLocalDate().format(dateTimeFormatterDayDotMonth));
                 Assert.assertEquals(dateFormatHourColonMinute.format(dateStart.getValue()), rosterItem.getDutyStart());
                 Assert.assertEquals(dateFormatHourColonMinute.format(dateEnd.getValue()), rosterItem.getDutyEnd());
+                /**
+                 * <p lang=de>Die Zusammenfassung des Events beinhaltet unter
+                 * anderem den Namen der Apotheke.</p>
+                 */
                 NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
                 String branchName = networkOfBranchOffices.getBranchById(rosterItem.getBranchId()).getBranchName();
                 Assert.assertTrue(summary.contains(branchName));
-                eventKey++;
             }
-            /*
+
+            /**
              * Finally delete the iCalendar file:
              */
             rosterEmployeePage.deleteICSFile();
