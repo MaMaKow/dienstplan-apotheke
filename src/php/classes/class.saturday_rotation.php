@@ -115,6 +115,7 @@ class saturday_rotation {
 
     protected function set_new_participation() {
         $last_team_id = NULL;
+        $last_date_object = NULL;
         $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `branch_id` = :branch_id and `date` <= :date ORDER BY `date` DESC LIMIT 1';
         $result = database_wrapper::instance()->run($sql_query, array(
             'branch_id' => $this->branch_id,
@@ -126,13 +127,23 @@ class saturday_rotation {
             $last_date_object = new DateTime($last_date_sql);
         }
         if (NULL === $last_team_id) {
+            if (NULL !== $last_date_object) {
+                /**
+                 * <p lang=de>Eigentlich sollten $last_date_object und $last_team_id immer gemeinsam NULL sein. Wenn das nicht der Fall ist, gibt es hier einen Fehler:</p>
+                 */
+                throw new Exception("Error while searching for the last known saturday participation.");
+            }
             /**
              * We did not find any participation in the past.
-             * We choose to return the first team in that case:
+             * We choose to assume the first team in that case:
+             * @TODO: <p lang=de>Ich glaube, dass wir hier nicht geich aufhören dürfen.
+             *  Sonst gibt es keinen konstanten Anfang. Ich möchte gerne team 0
+             *  am 01.01.1970 haben. Von diesem feststehenden Startpunkt aus
+             *  zählen wir dann durch.</p>
              */
-            reset($this->List_of_teams);
-            return key($this->List_of_teams);
-            //return FALSE;
+            $last_team_id = array_key_first($this->List_of_teams);
+            $last_date_object = new DateTime("03.01.1970");
+            $last_date_object->setDate(1970, 1, 3);
         }
         /*
          * Move the pointer for the array $this->List_of_teams to the position given by $last_team_id:

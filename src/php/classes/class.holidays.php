@@ -103,6 +103,14 @@ class holidays {
             mktime(0, 0, 0, $easter_month, $easter_day + 50, $easter_year) => "Pfingstmontag",
                 //mktime(0, 0, 0, $easter_month, $easter_day + 60, $easter_year) => "Fronleichnam",
         );
+        if ($year >= 2023) {
+            /**
+             * <lang=de>Ab dem Jahr 2023 ist der internationale Frauentag am 08. März in Mecklenburg Vorpommern ein Feiertag.</p>
+             */
+            $German_holidays[mktime(0, 0, 0, 3, 8, $year)] = "Internationaler Frauentag";
+        }
+
+
         $British_holidays = array(
             // These days have a fixed date
             mktime(0, 0, 0, 1, 1, $year) => "New Year's Day",
@@ -144,7 +152,7 @@ class holidays {
      * This function returns the string $holiday if a day is a holiday.
      * @todo Make this function return TRUE on a holiday.
      *   Store the result of the function somewhere and make it callable fr another function.
-     * @param DateTime $date_object.
+     * @param DateTime $date_object
      *
      * @return boolean|string FALSE or name of holiday.
      */
