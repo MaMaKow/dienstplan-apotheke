@@ -1,9 +1,20 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="PDR Selenium Tests" verbose="1" >
+    <!--
+<groups>
+<run>
+    <include name="Selenium.installation.prerequisitesForOtherTests" />
+    <include name="Selenium.administrationpages.prerequisitesForOtherTests" />
+    <include name="Selenium.signin.prerequisitesForOtherTests" />
+    <include name="Selenium.absencepages.prerequisitesForOtherTests" />
+    <include name="Selenium.rosterpages.prerequisitesForOtherTests" />
+    <include name="Selenium.fullTest" />
+</run>
+</groups>
+    -->
     <test name="Installation Pages" >
         <classes>
-            <!---->
             <class name="Selenium.installation.TestInstallation" /><!---->
             <class name="Selenium.signin.TestLogin" />
             <!-- Mitarbeiter müssen eingetragen werden, bevor die Dienstpläne erstellt werden können: -->
@@ -17,25 +28,25 @@
     </test>
     <test name="Application Pages">
         <classes>
-            <!--
-            -->
             <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
+            <!--
             <class name="Selenium.administrationpages.TestUploadPepPage" />
+            -->
             <class name="Selenium.administrationpages.TestSaturdayRotationTeamsPage" />
             <class name="Selenium.administrationpages.TestSaturdayListPage" />
             <!--
             -->
+            <class name="Selenium.TestAboutPage" />
             <!--
             -->
-            <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestConfigurationPage" />
         </classes>
     </test>
     <test name="Absence Pages" >
         <classes>
+            <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
             <!--
             -->
-            <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
         </classes>
     </test>
     <test name="Principle Roster Pages" >
@@ -46,11 +57,11 @@
     </test>
     <test name="Roster Pages" >
         <classes>
-            <!--
-            -->
             <class name="Selenium.rosterpages.TestRosterWeekTablePage" />
             <class name="Selenium.rosterpages.TestRosterEmployeePage" />
             <class name="Selenium.rosterpages.TestRosterHoursPage" />
+            <!--
+            -->
         </classes>
     </test>
 </suite>

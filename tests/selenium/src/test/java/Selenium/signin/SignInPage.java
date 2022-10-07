@@ -21,6 +21,7 @@ package Selenium.signin;
 import Selenium.HomePage;
 import Selenium.PropertyFile;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -34,6 +35,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class SignInPage {
 
     protected static WebDriver driver;
+    By user_name_spanBy = By.id("MenuListItemApplicationUsername");
 
     // <input name="user_name" type="text" value="">
     private final By usernameBy = By.id("login_input_user_name");
@@ -54,8 +56,38 @@ public class SignInPage {
      * @return HomePage object
      */
     public HomePage loginValidUser(String userName, String password) {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login_button_submit")));
+        WebDriverWait waitLong = new WebDriverWait(driver, 20);
+        WebDriverWait waitShort = new WebDriverWait(driver, 1);
+        try {
+            waitShort.until(ExpectedConditions.presenceOfElementLocated(By.id("login_button_submit")));
+        }
+        catch (TimeoutException exception) {
+            /**
+             * <p lang=de>Wenn wir keinen Login submit button finden, dann
+             * könnte es ja sein, dass wir bereits eingeloggt sind?</p>
+             *
+             * @todo
+             * <p>
+             * What do we do in that case? Just cotinue without logging in or
+             * stop the whole program? What might go wrong if we just accept the
+             * existing login?</p>
+             *
+             */
+            if (!getUserNameText().isEmpty()) {
+                /*
+
+                throw new IllegalStateException("This is already a logged in state,"
+                        + " current page is: " + driver.getCurrentUrl());
+                 */
+                System.out.println("We have already been logged in. Nothing to do here.");
+                return new HomePage(driver);
+            } else {
+                /**
+                 * Oder haben wir vielleicht nur nicht lang genug gewartet?
+                 */
+                waitLong.until(ExpectedConditions.presenceOfElementLocated(By.id("login_button_submit")));
+            }
+        }
         driver.findElement(usernameBy).sendKeys(userName);
         driver.findElement(passwordBy).sendKeys(password);
         driver.findElement(signinBy).click();
@@ -69,4 +101,21 @@ public class SignInPage {
         HomePage homePage = this.loginValidUser(userName, password);
         return homePage;
     }
+
+    /**
+     * Get user_name (span tag)
+     * <p lang=de>
+     * Die Loginseite hat keinen user_name text. Allerdings kann es passieren,
+     * dass die Seite bereits eingeloggt ist. Dann finden wir einen bereits
+     * eingeloggten Nutzer.</p>
+     *
+     * @return String user_name text
+     */
+    public String getUserNameText() {
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
+
+        return driver.findElement(user_name_spanBy).getText();
+    }
+
 }

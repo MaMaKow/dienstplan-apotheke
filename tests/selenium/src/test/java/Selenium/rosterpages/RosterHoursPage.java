@@ -118,7 +118,7 @@ public class RosterHoursPage {
         WebElement rosterItemEndElement = rowElement.findElement(rosterItemEndBy);
         String dutyEnd = rosterItemEndElement.getText();
 
-        RosterItem rosterItem = new RosterItem(0, targetLocalDate, dutyStart, dutyEnd, dutyStart, null, null, null);
+        RosterItem rosterItem = new RosterItem(0, targetLocalDate, dutyStart, dutyEnd, null, null, null, null);
         return rosterItem;
     }
 
@@ -163,7 +163,7 @@ public class RosterHoursPage {
 
     public String getAbsenceStringOnLocalDate(LocalDate targetLocalDate) {
         WebElement rowElement = getRowElement(targetLocalDate);
-        By absenceCellBy = By.xpath(".//td[2]");
+        By absenceCellBy = By.xpath(".//td[last()]");
         WebElement absenceCellElement = rowElement.findElement(absenceCellBy);
         String absenceString = absenceCellElement.getText();
         return absenceString;

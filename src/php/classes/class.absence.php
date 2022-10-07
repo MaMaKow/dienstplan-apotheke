@@ -284,7 +284,7 @@ class absence {
             if (empty($ende)) {
                 return FALSE;
             }
-            if (!array_key_exists($reason_id, self::$List_of_absence_reasons)) {
+            if (!in_array($reason_id, self::$List_of_absence_reasons)) {
                 return FALSE;
             }
             if (!in_array($approval, self::$List_of_approval_states)) {

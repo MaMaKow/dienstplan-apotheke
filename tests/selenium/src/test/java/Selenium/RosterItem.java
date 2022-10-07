@@ -35,7 +35,7 @@ public class RosterItem {
     private final String dutyEnd;
     private final String breakStart;
     private final String breakEnd;
-    private final int branchId;
+    private final Integer branchId;
     private final String comment;
     private final LocalDateTime dutyStartLocalDateTime;
     private final LocalDateTime dutyEndLocalDateTime;
