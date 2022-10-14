@@ -157,6 +157,23 @@ public class TestRosterHoursPage {
             Assert.assertEquals(foundRosterItem.getDutyStart(), rosterItem.getDutyStart());
             Assert.assertEquals(foundRosterItem.getDutyEnd(), rosterItem.getDutyEnd());
         }
+    }
+
+    public void testAbsenceDispay() throws Exception {
+        driver = Selenium.driver.Wrapper.getDriver();
+        PropertyFile propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getUrlPageTest();
+        driver.get(urlPageTest);
+
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String pdr_user_password = propertyFile.getPdrUserPassword();
+        String pdr_user_name = propertyFile.getPdrUserName();
+        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
+        Assert.assertEquals(rosterHoursPage.getUserNameText(), pdr_user_name);
 
         /**
          * Test if absence information is displayed:

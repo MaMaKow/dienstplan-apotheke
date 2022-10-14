@@ -70,7 +70,7 @@ public class TestEmergencyServiceListPage {
         Workforce workforce = new Workforce();
         /**
          * <p lang=de>Nur Apotheker (und PI) können allein im Notdienst
-         * einhesetzt werden.</p>
+         * eingesetzt werden.</p>
          */
         Assert.assertEquals("Apotheker", workforce.getEmployeeById(employeeIdInsert).getProfession());
         Assert.assertEquals("Apotheker", workforce.getEmployeeById(employeeIdChange).getProfession());
@@ -81,12 +81,15 @@ public class TestEmergencyServiceListPage {
          * <p lang=de>Daten abfragen:</p>
          */
         Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(localDate), employeeIdInsert);
+        /**
+         * <p lang=de>Daten ändern :</p>
+         */
         emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(localDate, employeeIdChange);
         Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(localDate), employeeIdChange);
         /**
          * <p lang=de>Zeilen wieder entfernen</p>
          */
-        emergencyServiceListPage.doNotRemoveLineByDate(localDate);
+        emergencyServiceListPage = emergencyServiceListPage.doNotRemoveLineByDate(localDate);
         Assert.assertNotNull(emergencyServiceListPage.getEmployeeIdOnDate(localDate));
         emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(localDate);
         Assert.assertNull(emergencyServiceListPage.getEmployeeIdOnDate(localDate));

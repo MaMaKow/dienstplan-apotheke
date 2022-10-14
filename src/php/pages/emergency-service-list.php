@@ -53,10 +53,16 @@ function handle_user_input() {
          * <p lang=de>Neuen Eintrag anlegen</p>
          */
         $sql_query = "INSERT INTO Notdienst (`Datum`, `Mandant`) VALUES(:date_new, :branch_id)";
-        database_wrapper::instance()->run($sql_query, array(
-            'branch_id' => $branch_id,
-            'date_new' => $date_new,
-        ));
+        try {
+            database_wrapper::instance()->run($sql_query, array(
+                'branch_id' => $branch_id,
+                'date_new' => $date_new,
+            ));
+        } catch (Exception $exception) {
+            error_log($exception->getTraceAsString());
+            $user_dialog = new user_dialog();
+            $user_dialog->add_message($exception->getMessage(), E_USER_ERROR);
+        }
     } else if ("replace" === $command) {
         /**
          * <p lang=de>Vorhandenen Eintrag ändern</p>
@@ -96,6 +102,8 @@ echo "<span class='large'>" . gettext('emergency service') . "</span>";
 echo build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 echo form_element_builder::build_html_select_year($year);
 echo "</H1>";
+$user_dialog = new user_dialog();
+$user_dialog->build_messages();
 ?>
 <table id="emergency_service_table" class="table_with_border">
     <tr><th><?= gettext('Date') ?></th><th><?= gettext('Weekday') ?></th><th><?= gettext('Name') ?></th><th class='replacement_td'><?= gettext('Replacement') ?></th></tr>
