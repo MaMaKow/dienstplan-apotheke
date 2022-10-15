@@ -47,7 +47,7 @@ class saturday_rotation {
             /*
              * Until now, this function is specified to only handle saturdays.
              */
-            throw new Exception("saturday_rotation->__construct only accepts saturdays as input.");
+            throw new Exception("saturday_rotation only accepts saturdays as input.");
         }
         $holiday = holidays::is_holiday($target_date_object);
         if (FALSE !== $holiday) {
@@ -157,9 +157,9 @@ class saturday_rotation {
                  * Prevent an infinite loop:
                  */
                 error_log('Could not find $last_team_id ' . $last_team_id . ' in $this->List_of_teams');
-                // We choose to return the first team in that case:
+                // We choose to use the first team in that case:
                 reset($this->List_of_teams);
-                return key($this->List_of_teams);
+                //return key($this->List_of_teams);
             }
         }
 
@@ -201,15 +201,19 @@ class saturday_rotation {
     }
 
     /**
-     * This function cleans up old entries in the table saturday_rotation.
-     *
-     * It also does not allow entries in the too distant future, as these might change.
+     * This function does not allow entries in the too distant future, as these might change.
      *
      * @return void
      */
     protected function cleanup_database_table_saturday_rotation() {
-        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 12 month";
-        database_wrapper::instance()->run($sql_query);
+        /**
+         * <p lang=de>Wenn wir die alten Einträge direkt nach der Eingabe
+         *  löschen, ist der Beginn der Serie inkonsistent. Dann beginnt Team 0
+         *  nämlich immer vor etwa 12 Monaten vor now(). Dadurch kann man bei
+         *  den Tests nicht nach einem dedizierten Paar von Team zu Datum prüfen.</p>
+         * $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 12 month";
+         * database_wrapper::instance()->run($sql_query);
+         */
         $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` >= now()+interval 2 month";
         database_wrapper::instance()->run($sql_query);
     }

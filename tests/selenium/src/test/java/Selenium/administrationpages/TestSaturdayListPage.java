@@ -67,11 +67,11 @@ public class TestSaturdayListPage {
          */
         Calendar saturdayCalendar = Calendar.getInstance(Locale.GERMANY);
         saturdayCalendar.set(2026, Calendar.SEPTEMBER, 26);
-        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 2);
+        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 0);
         saturdayCalendar.set(2026, Calendar.OCTOBER, 3);
         Assert.assertEquals(saturdayListPage.teamIdOnDateIsMissing(saturdayCalendar.getTime()), true);
         saturdayCalendar.set(2026, Calendar.OCTOBER, 10);
-        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 3);
+        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 1);
     }
 
     @BeforeMethod

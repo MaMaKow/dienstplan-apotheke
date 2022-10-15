@@ -69,6 +69,7 @@ class maintenance {
              */
             $this->cleanup_absence();
             $this->cleanup_overtime();
+            $this->cleanup_database_table_saturday_rotation();
             alternating_week::reorganize_ids();
             /*
              * __destruct():
@@ -112,6 +113,16 @@ class maintenance {
          * Take care, not to delete data from employees with unkown employment start/end date
          * Make an archive table to store the old data.
          */
+    }
+
+    /**
+     * This function cleans up old entries in the table saturday_rotation.
+     *
+     * @return void
+     */
+    protected function cleanup_database_table_saturday_rotation() {
+        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 12 month";
+        database_wrapper::instance()->run($sql_query);
     }
 
 }
