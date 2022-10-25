@@ -322,7 +322,7 @@ class collaborative_vacation {
                     . mb_substr(gettext('emergency service'), 0, 2)
                     . "<sub>"
                     . $emergency_service->get_employee_id()
-                    . ", &rarr;"
+                    . "&rarr;"
                     . $emergency_service->get_branch_id()
                     . "</sub>"
                     . "</span>";

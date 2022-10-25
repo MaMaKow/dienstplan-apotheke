@@ -91,7 +91,7 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
             $suffix = '</span>';
             if (in_array($employee_id, array_keys($Absentees))) {
                 $prefix = '<span class="absent">';
-                $suffix = "&nbsp;(" . gettext($Absentees[$employee_id]) . ')</span>';
+                $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$employee_id]) . ')</span>';
             }
 
             $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_id]->last_name . $suffix;
