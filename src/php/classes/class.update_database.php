@@ -94,7 +94,9 @@ class update_database {
             /**
              * Change the database and all the tables and columns to utf8mb4:
              */
-            $this->change_charset_to_utf8mb4();
+            if (FALSE === $this->change_charset_to_utf8mb4()) {
+                return FALSE;
+            }
             /**
              * Change the actual absence tables:
              */
@@ -142,7 +144,6 @@ class update_database {
 
     private function refactor_duty_roster_table() {
         if (database_wrapper::database_table_exists('Dienstplan') and!database_wrapper::database_table_exists('roster')) {
-            database_wrapper::instance()->beginTransaction();
             $sql_query_list = array();
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `VK` `employee_id` TINYINT UNSIGNED NOT NULL ";
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Datum` `date` DATE NOT NULL";
@@ -154,6 +155,7 @@ class update_database {
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Stunden` `working_hours` FLOAT NULL DEFAULT NULL";
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Mandant` `branch` TINYINT UNSIGNED NOT NULL DEFAULT '1'";
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `timestamp` `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
+            database_wrapper::instance()->beginTransaction();
             foreach ($sql_query_list as $sql_query) {
                 error_log($sql_query);
                 $result = database_wrapper::instance()->run($sql_query);
@@ -263,7 +265,7 @@ class update_database {
     }
 
     private function change_charset_to_utf8mb4() {
-        $Sql_query_array[] = array();
+        $Sql_query_array = array();
         $Sql_query_array[] = "ALTER DATABASE " . database_wrapper::quote_identifier(database_wrapper::get_database_name()) . " CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;";
         $Sql_query_array[] = "ALTER TABLE " . database_wrapper::quote_identifier(database_wrapper::get_database_name()) . ".`absence` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
         $Sql_query_array[] = "ALTER TABLE " . database_wrapper::quote_identifier(database_wrapper::get_database_name()) . ".`approval` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
@@ -351,7 +353,9 @@ class update_database {
         $Sql_query_array[] = "ALTER TABLE " . database_wrapper::quote_identifier(database_wrapper::get_database_name()) . ".`Dienstplan` CHANGE `Kommentar` `Kommentar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;";
         $Sql_query_array[] = "ALTER TABLE " . database_wrapper::quote_identifier(database_wrapper::get_database_name()) . ".`user_email_notification_cache` CHANGE `notification_text` `notification_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;";
         $Sql_query_array[] = "ALTER TABLE " . database_wrapper::quote_identifier(database_wrapper::get_database_name()) . ".`principle_roster` CHANGE `comment` `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;";
-        database_wrapper::instance()->beginTransaction();
+        if (!database_wrapper::instance()->inTransaction()) {
+            database_wrapper::instance()->beginTransaction();
+        }
         foreach ($Sql_query_array as $sql_query) {
             $result = database_wrapper::instance()->run($sql_query);
             if ('00000' !== $result->errorCode()) {
@@ -359,6 +363,7 @@ class update_database {
                 return FALSE;
             }
         }
+        database_wrapper::instance()->commit();
     }
 
 }
