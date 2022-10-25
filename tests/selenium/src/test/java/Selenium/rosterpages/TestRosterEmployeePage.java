@@ -28,10 +28,8 @@ import Selenium.signin.SignInPage;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
-import biweekly.io.chain.ChainingTextStringParser;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
-import biweekly.util.ICalDate;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -42,9 +40,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +67,7 @@ public class TestRosterEmployeePage {
     String iCalendarFileName = "Calendar.ics";
     SoftAssert softAssert = new SoftAssert();
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
@@ -99,7 +95,7 @@ public class TestRosterEmployeePage {
         Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-29"); //This is the corresponding monday.
     }
 
-    @Test(enabled = false)/*failed*/
+    @Test(enabled = true)/*failed*/
     public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
