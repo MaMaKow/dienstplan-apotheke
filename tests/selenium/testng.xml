@@ -23,7 +23,7 @@
             <class name="Selenium.rosterpages.TestRosterDayEditPage" />
             <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne:
             -->
-            <class name="Selenium.PrincipleRosterPages.TestDayPage" />
+            <class name="Selenium.principlerosterpages.TestDayPage" />
         </classes>
     </test>
     <test name="Application Pages">
@@ -49,8 +49,17 @@
             -->
         </classes>
     </test>
+    <test name="Overtime Pages" >
+        <classes>
+            <class name="Selenium.overtimepages.TestOvertimeEmployeePage" />
+            <class name="Selenium.overtimepages.TestOvertimeOverviewPage" />
+            <!--
+            -->
+        </classes>
+    </test>
     <test name="Principle Roster Pages" >
         <classes>
+            <class name="Selenium.principlerosterpages.TestEmployeePage" />
             <!--
             -->
         </classes>
