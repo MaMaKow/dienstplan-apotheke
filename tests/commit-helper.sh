@@ -30,7 +30,7 @@ fi
 
 # Determine the correct tag for this commit:
 echo "";
-read -p "Will this commit be tagged as a new major version? [y/n] " -N 1 decision_git_tag_major;
+read -p "Will this commit be tagged as a new MAJOR version? [y/n] " -N 1 decision_git_tag_major;
 if [ "y" == "$decision_git_tag_major" ] || [ "Y" == "$decision_git_tag_major" ]
 then
     # We start a new major branch.
@@ -44,7 +44,7 @@ else
 
     # But perhaps the minor version changed?
     echo "";
-    read -p "Will this commit be tagged as a new minor version? [y/n] " -N 1 decision_git_tag_minor;
+    read -p "Will this commit be tagged as a new Minor version? [y/n] " -N 1 decision_git_tag_minor;
     if [ "y" == "$decision_git_tag_minor" ] || [ "Y" == "$decision_git_tag_minor" ]
     then
         new_version_minor=$(($current_version_minor + 1));
@@ -74,5 +74,17 @@ git add src/php/pages/about.php
 php "tests/calculate_database_version_hash.php"
 git add /src/php/database_version_hash.php
 
-git commit --gpg-sign && git tag "$new_version"
-# git push origin --tags
+read -p "Ready to COMMIT and sign the changes? [y/n] " -N 1 decision_commit;
+if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]
+then
+    clear
+    git commit --gpg-sign && git tag "$new_version"
+    git git show -1
+    git status
+    read -p "Ready to PUSH changes and tags to remote? [y/n] " -N 1 decision_push;
+    if [ "y" == "$decision_push" ] || [ "Y" == "$decision_push" ]
+    then
+	git push origin
+	git push origin --tags
+    fi
+fi

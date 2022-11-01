@@ -111,7 +111,7 @@ function get_rostered_employees_names(array $Roster, workforce $workforce, array
                 $suffix = '</span>';
                 if (in_array($roster_item->employee_id, array_keys($Absentees))) {
                     $prefix = '<span class="absent">';
-                    $suffix = "&nbsp;(" . gettext($Absentees[$roster_item->employee_id]) . ')</span>';
+                    $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$roster_item->employee_id]) . ')</span>';
                 }
                 $Rostered_employees[$roster_item->employee_id] = $prefix . $workforce->List_of_employees[$roster_item->employee_id]->last_name . $suffix;
             }
