@@ -544,8 +544,8 @@ abstract class build_html_roster_views {
         $week_hours_table_html .= "<table class='tight'>";
         $week_hours_table_html .= "<tr>";
         $week_hours_table_html .= "<th>" . gettext('Employee') . "</th>";
-        $week_hours_table_html .= "<th>" . gettext('Target') . "</th>";
         $week_hours_table_html .= "<th>" . gettext('Actual') . "</th>";
+        $week_hours_table_html .= "<th>" . gettext('Target') . "</th>";
         $week_hours_table_html .= "<th>" . gettext('Deviation') . "</th>";
         $week_hours_table_html .= "</tr>";
         foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {

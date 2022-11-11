@@ -14,13 +14,13 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `pdr_test`
 --
 DROP DATABASE `pdr_test`;
-CREATE DATABASE IF NOT EXISTS `pdr_test` DEFAULT CHARACTER SET utf8mb4 COLLATE latin1_swedish_ci;
+CREATE DATABASE IF NOT EXISTS `pdr_test` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `pdr_test`;
 
 -- --------------------------------------------------------
@@ -2497,16 +2497,16 @@ INSERT INTO `task_rotation` (`date`, `task`, `VK`, `branch_id`) VALUES
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `employee_id` tinyint(3) unsigned NOT NULL,
-  `user_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `status` set('deleted','blocked','inactive','active') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'inactive',
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` set('deleted','blocked','inactive','active') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inactive',
   `failed_login_attempts` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `failed_login_attempt_time` timestamp NULL DEFAULT NULL,
   `receive_emails_on_changed_roster` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Truncate table before insert `users`

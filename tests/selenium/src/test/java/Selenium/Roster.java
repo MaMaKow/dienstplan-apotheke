@@ -31,7 +31,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Month;
+import org.threeten.extra.YearWeek;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -78,6 +80,38 @@ public class Roster {
             }
         }
         return null;
+    }
+
+    public HashMap<YearWeek, HashMap> getRosterWeeksByEmployeeId(int employeeId) {
+        HashMap<LocalDate, HashMap> listOfRosterDaysEmployee = (HashMap<LocalDate, HashMap>) listOfRosterDays.clone();
+        HashMap<YearWeek, HashMap> rosterWeeksByEmployeeId = new HashMap<>();
+        int newRosterRowKey = 0;
+        for (HashMap<Integer, RosterItem> rosterDay : listOfRosterDaysEmployee.values()) {
+            for (Integer rosterRowKey : rosterDay.keySet()) {
+                newRosterRowKey++;
+                RosterItem rosterItem = rosterDay.get(rosterRowKey);
+                YearWeek yearWeek = YearWeek.from(rosterItem.getLocalDate());
+                if (employeeId == rosterItem.getEmployeeId()) {
+                    if (rosterWeeksByEmployeeId.containsKey(yearWeek)) {
+                        /**
+                         * <p lang=de>Wenn in dieser Woche bereits ein Eintrag
+                         * existiert, fügen wir unsere Werte zu dem Eintrag
+                         * hinzu.</p>
+                         */
+                        rosterWeeksByEmployeeId.get(yearWeek).put(newRosterRowKey, rosterItem);
+                    } else {
+                        /**
+                         * <p lang=de>Wenn in dieser Woche noch kein Eintrag
+                         * existiert, erstellen wir einen neuen.</p>
+                         */
+                        HashMap<Integer, RosterItem> rosterWeekNew = new HashMap<>();
+                        rosterWeekNew.put(rosterRowKey, rosterItem);
+                        rosterWeeksByEmployeeId.put(yearWeek, rosterWeekNew);
+                    }
+                }
+            }
+        }
+        return rosterWeeksByEmployeeId;
     }
 
     /*

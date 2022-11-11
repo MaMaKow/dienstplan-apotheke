@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2022-05-22 22:35+0200\n"
-"PO-Revision-Date: 2022-05-22 22:35+0200\n"
+"POT-Creation-Date: 2022-10-30 08:09+0100\n"
+"PO-Revision-Date: 2022-10-30 12:12+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.2\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: pdr_gettext\n"
@@ -219,14 +219,14 @@ msgstr "Genehmigen"
 msgid "Disapprove"
 msgstr "Ablehnen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:311
 #: src/php/classes/class.build_html_navigation_elements.php:314
+#: src/php/classes/class.build_html_navigation_elements.php:317
 #: src/php/pages/collaborative-vacation-input-box.php:137
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/php/classes/class.build_html_navigation_elements.php:329
 #: src/php/classes/class.build_html_navigation_elements.php:332
+#: src/php/classes/class.build_html_navigation_elements.php:335
 msgid "Copy"
 msgstr "Kopieren"
 
@@ -242,24 +242,24 @@ msgid "to"
 msgstr "bis"
 
 #: src/php/classes/class.build_html_roster_views.php:138
-#: src/php/classes/class.build_html_roster_views.php:427
-#: src/php/classes/class.build_html_roster_views.php:514
+#: src/php/classes/class.build_html_roster_views.php:431
+#: src/php/classes/class.build_html_roster_views.php:518
 msgid "break"
 msgstr "Pause"
 
 #: src/php/classes/class.build_html_roster_views.php:250
-#: src/php/classes/class.build_html_roster_views.php:392
-#: src/php/classes/class.build_html_roster_views.php:556
+#: src/php/classes/class.build_html_roster_views.php:396
+#: src/php/classes/class.build_html_roster_views.php:560
 #: src/php/classes/class.pharmacy_emergency_service_builder.php:53
 #: src/php/classes/class.roster_image_bar_plot.php:161
-#: src/php/classes/class.saturday_rotation.php:237
+#: src/php/classes/class.saturday_rotation.php:284
 #: src/php/classes/class.task_rotation.php:255
 msgid "Unknown employee"
 msgstr "Unbekannte*r Mitarbeiter*in"
 
 #: src/php/classes/class.build_html_roster_views.php:278
-#: src/php/classes/class.build_html_roster_views.php:414
-#: src/php/classes/class.build_html_roster_views.php:508
+#: src/php/classes/class.build_html_roster_views.php:418
+#: src/php/classes/class.build_html_roster_views.php:512
 #: src/php/pages/absence-edit.php:135
 #: src/php/pages/collaborative-vacation-input-box.php:109
 msgid "Comment"
@@ -278,30 +278,31 @@ msgstr "Kalenderwoche"
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
-#: src/php/classes/class.build_html_roster_views.php:539
+#: src/php/classes/class.build_html_roster_views.php:543
 #: src/php/pages/principle-roster-employee.php:145
 msgid "Hours per week"
 msgstr "Wochenstunden"
 
-#: src/php/classes/class.build_html_roster_views.php:542
+#: src/php/classes/class.build_html_roster_views.php:546
 #: src/php/classes/class.overtime.php:190
 #: src/php/pages/collaborative-vacation-input-box.php:64
 #: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:57
+#: src/php/pages/saturday-rotation-teams.php:98
 msgid "Employee"
 msgstr "Mitarbeiter"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:543
-msgid "Target"
-msgstr "Soll"
-
-# Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:544
+#: src/php/classes/class.build_html_roster_views.php:547
 msgid "Actual"
 msgstr "Ist"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:545
+#: src/php/classes/class.build_html_roster_views.php:548
+msgid "Target"
+msgstr "Soll"
+
+# Soll, Ist und Differenz
+#: src/php/classes/class.build_html_roster_views.php:549
 msgid "Deviation"
 msgstr "Differenz"
 
@@ -323,7 +324,7 @@ msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 #: src/php/classes/class.collaborative_vacation.php:316
 #: src/php/classes/class.collaborative_vacation.php:322
 #: src/php/pages/attendance-list.php:71 src/php/pages/attendance-list.php:72
-#: src/php/pages/emergency-service-list.php:94
+#: src/php/pages/emergency-service-list.php:100
 msgid "emergency service"
 msgstr "Notdienst"
 
@@ -392,8 +393,8 @@ msgstr "Um %1$s Uhr ist kein Approbierter anwesend."
 #, php-format
 msgid "This password has been seen %1$s time before."
 msgid_plural "This password has been seen %1$s times before."
-msgstr[0] "Dieses Passwort wurde %1$s zuvor gesehen."
-msgstr[1] "Dieses Passwort wurde %1s Male zuvor gesehen."
+msgstr[0] "Dieses Passwort wurde bereits zuvor gesehen."
+msgstr[1] "Dieses Passwort wurde %1$s Male zuvor gesehen."
 
 #: src/php/classes/class.have_i_been_pwned.php:103
 msgid ""
@@ -416,37 +417,37 @@ msgstr "Filiale"
 msgid "None"
 msgstr "Kein"
 
-#: src/php/classes/class.iCalendar.php:142
+#: src/php/classes/class.iCalendar.php:156
 msgid "Calendar file for employee"
 msgstr "Kalenderdatei für Mitarbeiter"
 
-#: src/php/classes/class.iCalendar.php:143
+#: src/php/classes/class.iCalendar.php:157
 msgid "contains the roster for"
 msgstr "enthält den Dienstplan für"
 
-#: src/php/classes/class.iCalendar.php:144
-#: src/php/pages/emergency-service-list.php:101
+#: src/php/classes/class.iCalendar.php:158
+#: src/php/pages/emergency-service-list.php:109
 msgid "Weekday"
 msgstr "Wochentag"
 
-#: src/php/classes/class.iCalendar.php:146
+#: src/php/classes/class.iCalendar.php:160
 #, php-format
 msgid "Lunch from %1$s to %2$s"
 msgstr "Mittagspause von %1$s bis %2$s"
 
-#: src/php/classes/class.iCalendar.php:169
+#: src/php/classes/class.iCalendar.php:172
 msgid "Time to go to work"
 msgstr "Zeit zur Arbeit zu gehen"
 
-#: src/php/classes/class.iCalendar.php:175
+#: src/php/classes/class.iCalendar.php:178
 msgid "Time to leave"
 msgstr "Es ist Zeit zu gehen"
 
-#: src/php/classes/class.iCalendar.php:181
+#: src/php/classes/class.iCalendar.php:184
 msgid "Time for lunch break."
 msgstr "Es ist Zeit für eine Pause."
 
-#: src/php/classes/class.iCalendar.php:187
+#: src/php/classes/class.iCalendar.php:190
 msgid "The Lunch break ends now."
 msgstr "Die Pause endet jetzt."
 
@@ -604,9 +605,9 @@ msgid "Balance"
 msgstr "Saldo"
 
 #: src/php/classes/class.overtime.php:192
-#: src/php/classes/class.roster_item.php:190
-#: src/php/pages/emergency-service-list.php:101
-#: src/php/pages/overtime-read.php:51 src/php/pages/saturday-list.php:40
+#: src/php/classes/class.roster_item.php:196
+#: src/php/pages/emergency-service-list.php:109
+#: src/php/pages/overtime-read.php:51 src/php/pages/saturday-list.php:39
 msgid "Date"
 msgstr "Datum"
 
@@ -629,7 +630,7 @@ msgstr ""
 msgid "Please %1$s configure %2$s the opening times!"
 msgstr "Bitte %1$s konfigurieren %2$s Sie die Öffnungszeiten!"
 
-#: src/php/classes/class.roster_item.php:167
+#: src/php/classes/class.roster_item.php:173
 #, php-format
 msgid ""
 "The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s"
@@ -637,7 +638,7 @@ msgstr ""
 "Die Pause beginnt, bevor sie endet.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:171
+#: src/php/classes/class.roster_item.php:177
 #, php-format
 msgid ""
 "The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: "
@@ -646,7 +647,7 @@ msgstr ""
 "Die Pause beginnt, bevor die Arbeit beginnt.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:175
+#: src/php/classes/class.roster_item.php:181
 #, php-format
 msgid ""
 "The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s"
@@ -654,7 +655,7 @@ msgstr ""
 "Die Pause endet, nachdem die Arbeit beendet ist.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:179
+#: src/php/classes/class.roster_item.php:185
 #, php-format
 msgid ""
 "The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s"
@@ -662,23 +663,31 @@ msgstr ""
 "Die Arbeit beginnt nachdem sie zu Ende ist.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:195
+#: src/php/classes/class.roster_item.php:201
 msgid "You work at the following times:"
 msgstr "Sie arbeiten zu folgenden Zeiten:"
 
-#: src/php/classes/class.roster_item.php:198
+#: src/php/classes/class.roster_item.php:205
 msgid "Start and end of duty"
 msgstr "Beginn und Ende des Dienstes"
 
-#: src/php/classes/class.roster_item.php:201
-#: src/php/classes/class.roster_item.php:207
+#: src/php/classes/class.roster_item.php:208
+#: src/php/classes/class.roster_item.php:214
 #, php-format
 msgid "From %1$s to %2$s"
 msgstr "Von %1$s bis %2$s"
 
-#: src/php/classes/class.roster_item.php:204
+#: src/php/classes/class.roster_item.php:211
 msgid "Start and end of lunch break"
 msgstr "Start und Ende der Pause"
+
+#: src/php/classes/class.saturday_rotation.php:315
+msgid "Remove team"
+msgstr "Team entfernen"
+
+#: src/php/classes/class.saturday_rotation.php:337
+msgid "Add another employee"
+msgstr "Mitarbeiter hinzufügen"
 
 #: src/php/classes/class.sessions.php:53
 msgid "administration"
@@ -849,7 +858,7 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: src/php/pages/about.php:23 src/php/pages/menu.php:198
+#: src/php/pages/about.php:23 src/php/pages/menu.php:203
 msgid "About"
 msgstr "Über"
 
@@ -969,7 +978,7 @@ msgstr "Filialleiter"
 msgid "Remove branch"
 msgstr "Mandant löschen"
 
-#: src/php/pages/configuration.php:70 src/php/pages/menu.php:175
+#: src/php/pages/configuration.php:70 src/php/pages/menu.php:180
 msgid "Configuration"
 msgstr "Konfiguration"
 
@@ -1122,26 +1131,26 @@ msgstr "SMTP"
 msgid "SMTP settings"
 msgstr "SMTP Einstellungen"
 
-#: src/php/pages/emergency-service-list.php:101
+#: src/php/pages/emergency-service-list.php:109
 msgid "Name"
 msgstr "Name"
 
-#: src/php/pages/emergency-service-list.php:101
+#: src/php/pages/emergency-service-list.php:109
 msgid "Replacement"
 msgstr "Ersatz"
 
-#: src/php/pages/emergency-service-list.php:146
-#: src/php/pages/emergency-service-list.php:147
+#: src/php/pages/emergency-service-list.php:154
+#: src/php/pages/emergency-service-list.php:155
 msgid "Save changes to this line"
 msgstr "Änderungen an dieser Zeile speichern"
 
-#: src/php/pages/emergency-service-list.php:149
-#: src/php/pages/emergency-service-list.php:150
+#: src/php/pages/emergency-service-list.php:157
+#: src/php/pages/emergency-service-list.php:158
 msgid "Remove this line"
 msgstr "Diese Zeile entfernen"
 
-#: src/php/pages/emergency-service-list.php:164
-#: src/php/pages/emergency-service-list.php:168
+#: src/php/pages/emergency-service-list.php:172
+#: src/php/pages/emergency-service-list.php:176
 msgid "Add line"
 msgstr "Zeile hinzufügen"
 
@@ -1365,30 +1374,34 @@ msgid "Saturday list"
 msgstr "Samstagsliste"
 
 #: src/php/pages/menu.php:143
+msgid "Saturday rotation teams"
+msgstr "Samstags Teams"
+
+#: src/php/pages/menu.php:148
 msgid "Emergency service list"
 msgstr "Notdienstliste"
 
-#: src/php/pages/menu.php:150
+#: src/php/pages/menu.php:155
 msgid "Upload deployment planning"
 msgstr "PEP-Upload"
 
-#: src/php/pages/menu.php:157
+#: src/php/pages/menu.php:162
 msgid "Employee management"
 msgstr "Mitarbeiterverwaltung"
 
-#: src/php/pages/menu.php:162
+#: src/php/pages/menu.php:167
 msgid "Branch management"
 msgstr "Mandantenverwaltung"
 
-#: src/php/pages/menu.php:167
+#: src/php/pages/menu.php:172
 msgid "User management"
 msgstr "Benutzer*innenverwaltung"
 
-#: src/php/pages/menu.php:188
+#: src/php/pages/menu.php:193
 msgid "Account page"
 msgstr "Benutzer*innenkonto"
 
-#: src/php/pages/menu.php:204
+#: src/php/pages/menu.php:209
 msgid "Logout"
 msgstr "Logout"
 
@@ -1481,37 +1494,37 @@ msgstr "Fehlende Daten in der Tabelle `approval`"
 msgid "Time of print: %1$s"
 msgstr "Druckdatum: %1$s"
 
-#: src/php/pages/saturday-list.php:41
+#: src/php/pages/saturday-list.php:40
 msgid "Team"
 msgstr "Team"
 
-#: src/php/pages/saturday-list.php:42
+#: src/php/pages/saturday-list.php:41
 msgid "Team members"
 msgstr "Team Mitglieder"
 
-#: src/php/pages/saturday-list.php:43
+#: src/php/pages/saturday-list.php:42
 msgid "Scheduled in roster"
 msgstr "Im Dienstplan eingetragen"
 
-#: src/php/pages/saturday-rotation-teams.php:89
+#: src/php/pages/saturday-rotation-teams.php:88
 #, php-format
 msgid "This Saturday is %1$s."
 msgstr "Dieser Samstag ist der %1$s."
 
-#: src/php/pages/saturday-rotation-teams.php:92
+#: src/php/pages/saturday-rotation-teams.php:91
 #, php-format
 msgid "It will be team %1$ss turn."
 msgstr "Es wird das Team %1$s dran sein."
 
-#: src/php/pages/saturday-rotation-teams.php:108
-msgid "Remove team"
-msgstr "Team entfernen"
+#: src/php/pages/saturday-rotation-teams.php:96
+msgid "Example date"
+msgstr "Beispiel Datum"
 
-#: src/php/pages/saturday-rotation-teams.php:124
-msgid "Add another employee"
-msgstr "Mitarbeiter hinzufügen"
+#: src/php/pages/saturday-rotation-teams.php:97
+msgid "Team-Id"
+msgstr "Team-Nummer"
 
-#: src/php/pages/saturday-rotation-teams.php:140
+#: src/php/pages/saturday-rotation-teams.php:113
 msgid "Add another team"
 msgstr "Team hinzufügen"
 

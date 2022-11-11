@@ -79,8 +79,13 @@ public class Wrapper {
         System.setProperty("webdriver.chrome.driver", propertyFile.getDriverPath());
         ChromeOptions options = new ChromeOptions();
         options.addArguments("ignore-certificate-errors");
-        // Setting headless argument
+        /*
+         * Setting headless argument
+         * Recommended port for headless mode is 9222.
+         * https://stackoverflow.com/a/58045991/2323627
+         */
         //options.addArguments("--headless");
+        //options.addArguments("--remote-debugging-port=9222");
         options.addArguments("window-size=1920,1080");
         options.addArguments("--start-maximized");
         options.addArguments("--lang=de-DE");

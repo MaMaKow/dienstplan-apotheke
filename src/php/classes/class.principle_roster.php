@@ -272,6 +272,40 @@ class principle_roster extends roster {
         return;
     }
 
+    /**
+     * This function removes one single principle roster item from the database.
+     * The old item is archived, before it is deleted.
+     *
+     * @param int $principle_roster_primary_key
+     * @return boolean success
+     */
+    public static function invalidate_removed_entry_in_database(int $principle_roster_primary_key) {
+        $wasAlreadyInATransaction = database_wrapper::instance()->inTransaction();
+
+        $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT *, NOW() FROM `principle_roster` WHERE `primary_key` = :primary_key)";
+        $sql_query_delete = "DELETE FROM `principle_roster` WHERE `primary_key` = :primary_key";
+        if (FALSE === $wasAlreadyInATransaction) {
+            database_wrapper::instance()->beginTransaction();
+        }
+        $statement_insert = database_wrapper::instance()->prepare($sql_query_insert);
+        $statement_delete = database_wrapper::instance()->prepare($sql_query_delete);
+        $arguments = array('primary_key' => $principle_roster_primary_key);
+        $resultSuccessDelete = $statement_delete->execute($arguments);
+        if (FALSE === $resultSuccessDelete) {
+            database_wrapper::instance()->rollBack();
+            return FALSE;
+        }
+        $resultSuccessInsert = $statement_insert->execute($arguments);
+        if (FALSE === $resultSuccessInsert) {
+            database_wrapper::instance()->rollBack();
+            return FALSE;
+        }
+        if (FALSE === $wasAlreadyInATransaction) {
+            database_wrapper::instance()->commit();
+        }
+        return;
+    }
+
     public static function insert_changed_entries_into_database(array $Roster, array $Changed_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_id_list[$date_unix])) {
@@ -311,12 +345,18 @@ class principle_roster extends roster {
                     /**
                      * <p lang=de>Diesen Eintrag gibt es schon so ähnlich:</p>
                      */
-                    self::update_old_entry_into_db($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
+                    $result_success = self::update_old_entry_into_db($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
+                    if (FALSE === $result_success) {
+                        return FALSE;
+                    }
                 } else {
                     /**
                      * <p lang=de>Dieser Eintrag ist komplett neu:</p>
                      */
-                    self::insert_new_entry_into_db($roster_item, $alternating_week_id);
+                    $result_success = self::insert_new_entry_into_db($roster_item, $alternating_week_id);
+                    if (FALSE === $result_success) {
+                        return FALSE;
+                    }
                 }
                 database_wrapper::instance()->commit();
             }
@@ -331,30 +371,9 @@ class principle_roster extends roster {
      * @return type<p>TODO: Es muss immer erst einmal der alte Eintrag archiviert werden, bevor der neue gesetzt werden kann.</p>
      */
     private static function update_old_entry_into_db(roster_item $roster_item, int $alternating_week_id, int $primary_key) {
-        $sql_query = "UPDATE `principle_roster` "
-                . " SET `employee_id` = :employee_id, "
-                . " `branch_id` = :branch_id, "
-                . " `weekday` = :weekday, "
-                . " `alternating_week_id` = :alternating_week_id, "
-                . " `duty_start` = :duty_start, `duty_end` = :duty_end, `break_start` = :break_start, `break_end` = :break_end, `working_hours` = :working_hours, "
-                . " `comment` = :comment"
-                . " WHERE `primary_key` = :primary_key"
-                . ";";
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $roster_item->employee_id,
-            'weekday' => date('w', $roster_item->date_unix),
-            'alternating_week_id' => $alternating_week_id,
-            'duty_start' => $roster_item->duty_start_sql,
-            'duty_end' => $roster_item->duty_end_sql,
-            'break_start' => $roster_item->break_start_sql,
-            'break_end' => $roster_item->break_end_sql,
-            'working_hours' => $roster_item->working_hours,
-            'branch_id' => $roster_item->branch_id,
-            'comment' => $roster_item->comment,
-            'primary_key' => $primary_key,
-        ));
-
-        return '00000' === $result->errorCode();
+        self::invalidate_removed_entry_in_database($primary_key);
+        $result_success = self::insert_new_entry_into_db($roster_item, $alternating_week_id);
+        return $result_success;
     }
 
     /**

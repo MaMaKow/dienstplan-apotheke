@@ -45,7 +45,7 @@ public class TestRosterWeekTablePage {
     WebDriver driver;
     SoftAssert softAssert = new SoftAssert();
 
-    @Test(enabled = false)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         try {
             driver = Selenium.driver.Wrapper.getDriver();

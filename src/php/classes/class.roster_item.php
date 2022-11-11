@@ -33,6 +33,8 @@ class roster_item implements \JsonSerializable {
     public $comment;
     protected $duty_start_int;
     protected $duty_start_sql;
+    protected $dutyStartDateTime;
+    protected $dutyEndDateTime;
     protected $duty_end_int;
     protected $duty_end_sql;
     protected $break_start_int;
@@ -87,7 +89,11 @@ class roster_item implements \JsonSerializable {
         $this->break_end_int = $this->convert_time_to_seconds($break_end);
         $this->comment = $comment;
         $this->weekday = date("N", $this->date_unix);
-
+        /*
+         * TODO: Make the TimeZone a configuration variable!
+         */
+        $this->dutyStartDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $duty_start, new DateTimeZone('Europe/Berlin'));
+        $this->dutyEndDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $duty_end, new DateTimeZone('Europe/Berlin'));
         /*
          * TODO: This might be a good place to issue an error, if the break times are not within the working times.
          * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?
@@ -193,14 +199,15 @@ class roster_item implements \JsonSerializable {
         $message .= strftime('%x', $this->date_unix) . PHP_EOL;
         $message .= $context_string . PHP_EOL;
         $message .= gettext('You work at the following times:') . PHP_EOL;
-        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices; $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $message .= $List_of_branch_objects[$this->branch_id]->name . PHP_EOL;
         $message .= gettext('Start and end of duty');
         $message .= ":";
         $message .= PHP_EOL;
         $message .= sprintf(gettext('From %1$s to %2$s'), $this->duty_start_sql, $this->duty_end_sql);
         $message .= PHP_EOL;
-        if (!empty($this->break_start_sql) and ! empty($this->break_end_sql)) {
+        if (!empty($this->break_start_sql) and!empty($this->break_end_sql)) {
             $message .= gettext('Start and end of lunch break');
             $message .= ":";
             $message .= PHP_EOL;

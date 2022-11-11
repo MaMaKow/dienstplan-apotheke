@@ -128,7 +128,13 @@ public class MenuFragment {
         if (!linkElement.getAttribute("href").equals(driver.getCurrentUrl())) {
             linkElement.click();
         } else {
-            actions.moveByOffset(0, 350).perform();
+            /**
+             * Move the mouse back to the left top of the page:
+             *
+             * @CAVE: This might be not exactly (0, 0) because the location we
+             * move from is the center of the element.
+             */
+            actions.moveByOffset(-menuListItem.getLocation().getX(), -menuListItem.getLocation().getY()).perform();
         }
 
     }

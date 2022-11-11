@@ -433,7 +433,7 @@ function preventLeavingPage() {
     console.log("preventLeavingPage");
 }
 function enableLeavingPage() {
-    window.onbeforeunload = null;
+    window.onbeforeunload = undefined;
     console.log("enableLeavingPage");
 }
 

@@ -22,6 +22,7 @@ define('PDR_FILE_SYSTEM_APPLICATION_PATH', dirname(__DIR__) . '/');
 $sql_files = glob(PDR_FILE_SYSTEM_APPLICATION_PATH . "src/sql/*.sql");
 $text_to_be_hashed = "";
 foreach ($sql_files as $sql_file_name) {
+    echo "Adding content of file " . basename($sql_file_name) . " to the database hash.\n";
     $text_to_be_hashed .= file_get_contents($sql_file_name);
 }
 $database_hash = sha1($text_to_be_hashed);

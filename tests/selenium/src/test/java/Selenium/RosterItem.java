@@ -20,6 +20,8 @@ package Selenium;
 
 import Selenium.rosterpages.Workforce;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  *
@@ -33,14 +35,20 @@ public class RosterItem {
     private final String dutyEnd;
     private final String breakStart;
     private final String breakEnd;
-    private final int branchId;
+    private final Integer branchId;
     private final String comment;
+    private final LocalDateTime dutyStartLocalDateTime;
+    private final LocalDateTime dutyEndLocalDateTime;
 
     public RosterItem(int employeeId, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
         this.employeeId = employeeId;
         this.localDate = LocalDate.from(localDate);
         this.dutyStart = dutyStart;
+        LocalTime dutyStartLocalTime = LocalTime.parse(dutyStart);
+        dutyStartLocalDateTime = localDate.atTime(dutyStartLocalTime);
         this.dutyEnd = dutyEnd;
+        LocalTime dutyEndLocalTime = LocalTime.parse(dutyEnd);
+        dutyEndLocalDateTime = localDate.atTime(dutyEndLocalTime);
         this.breakStart = breakStart;
         this.breakEnd = breakEnd;
         this.comment = comment;
@@ -65,8 +73,16 @@ public class RosterItem {
         return this.dutyStart;
     }
 
+    public LocalDateTime getDutyStartLocalDateTime() {
+        return this.dutyStartLocalDateTime;
+    }
+
     public String getDutyEnd() {
         return this.dutyEnd;
+    }
+
+    public LocalDateTime getDutyEndLocalDateTime() {
+        return this.dutyEndLocalDateTime;
     }
 
     public String getBreakStart() {

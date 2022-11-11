@@ -68,7 +68,7 @@ public class WorkforceManagementPage {
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
         selectEmployeeSelect.selectByValue(employeeIdValueString);
         /**
-         * <p lang=de>Hier dar keine neue Page returned werden. Es ist wichtig,
+         * <p lang=de>Hier darf keine neue Page returned werden. Es ist wichtig,
          * dass die Seite nicht nach dem select ein zweites Mal neu geladen
          * wird.</p>
          */

@@ -12,6 +12,8 @@ current_version_patch=`echo $current_version | cut -d. -f3 - | cut -d- -f1 -`;
 
 # Display information about the current state:
 clear;
+echo "We are in the directory"
+pwd
 echo "We are currently on the commit $current_version.";
 echo "major: $current_version_major";
 echo "minor $current_version_minor";
@@ -28,7 +30,7 @@ fi
 
 # Determine the correct tag for this commit:
 echo "";
-read -p "Will this commit be tagged as a new major version? [y/n] " -N 1 decision_git_tag_major;
+read -p "Will this commit be tagged as a new MAJOR version? [y/n] " -N 1 decision_git_tag_major;
 if [ "y" == "$decision_git_tag_major" ] || [ "Y" == "$decision_git_tag_major" ]
 then
     # We start a new major branch.
@@ -42,7 +44,7 @@ else
 
     # But perhaps the minor version changed?
     echo "";
-    read -p "Will this commit be tagged as a new minor version? [y/n] " -N 1 decision_git_tag_minor;
+    read -p "Will this commit be tagged as a new Minor version? [y/n] " -N 1 decision_git_tag_minor;
     if [ "y" == "$decision_git_tag_minor" ] || [ "Y" == "$decision_git_tag_minor" ]
     then
         new_version_minor=$(($current_version_minor + 1));
@@ -57,7 +59,8 @@ fi
 new_version=$new_version_major.$new_version_minor.$new_version_patch;
 echo "";
 echo "The new version number will be $new_version";
-
+sed -i 's/<span id="pdrVersionSpan">[0-9.]*<\/span>/<span id="pdrVersionSpan">'$new_version'<\/span>/' src/php/pages/about.php
+git add src/php/pages/about.php
 # TODO: <p lang=de>Ich würde hier sehr gerne das script Tests\get-database-structure.php laufen lassen.
 # Dabei gibt es allerdings ein Problem.
 # Eine Entwicklungsumgebung hat nicht zwingend Zugriff auf eine Datenbank. Sie kann also nicht immer ihre eigene Datenbankstruktur besitzen.
@@ -68,8 +71,20 @@ echo "The new version number will be $new_version";
 # $table_structure_create_with_increment = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
 # $table_structure_create = preg_replace('/AUTO_INCREMENT=[0-9]*/', '', $table_structure_create_with_increment);
 # </p>
-php tests\calculate_database_version_hash.php
+php "tests/calculate_database_version_hash.php"
+git add /src/php/database_version_hash.php
 
-# git commit --gpg-sign
-# git tag -s $new_version
-# git push origin --tags
+read -p "Ready to COMMIT and sign the changes? [y/n] " -N 1 decision_commit;
+if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]
+then
+    clear
+    git commit --gpg-sign && git tag "$new_version"
+    git git show -1
+    git status
+    read -p "Ready to PUSH changes and tags to remote? [y/n] " -N 1 decision_push;
+    if [ "y" == "$decision_push" ] || [ "Y" == "$decision_push" ]
+    then
+	git push origin
+	git push origin --tags
+    fi
+fi
