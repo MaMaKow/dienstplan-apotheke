@@ -22,14 +22,15 @@ import Selenium.PropertyFile;
 import Selenium.ScreenShot;
 import Selenium.Overtime;
 import Selenium.signin.SignInPage;
-import java.util.Calendar;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.Month;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 /**
  *
@@ -45,6 +46,7 @@ public class TestOvertimeEmployeePage {
 
     @Test(enabled = true)/*passed*/
     public void testDisplay() {
+        SoftAssert softAssert = new SoftAssert();
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -61,27 +63,37 @@ public class TestOvertimeEmployeePage {
         Assert.assertEquals(overtimeEmployeePage.getUserNameText(), pdr_user_name);
 
         /**
-         * Move to specific month:
+         * Move to specific year:
          */
-        Calendar calendar = Calendar.getInstance(Locale.GERMANY);
-        calendar.set(2019, Calendar.DECEMBER, 24);
-        overtimeEmployeePage.selectYear(calendar.get(Calendar.YEAR));
+        LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 2);
+        LocalDate localDate1 = LocalDate.of(2019, Month.MARCH, 3);
+        LocalDate localDate2 = LocalDate.of(2019, Month.JULY, 5);
+        LocalDate localDate3 = LocalDate.of(2019, Month.DECEMBER, 24);
+        overtimeEmployeePage.selectYear(localDate0.getYear());
         overtimeEmployeePage.selectEmployee(5);
         /**
          * Create new overtime:
          */
-        overtimeEmployeePage.addNewOvertime(calendar, 8, "Foo");
+        overtimeEmployeePage.addNewOvertime(localDate0, 8, "Foo");
+        overtimeEmployeePage.addNewOvertime(localDate1, 0.5f, "FloatFoo");
+        overtimeEmployeePage.addNewOvertime(localDate2, -8, "NoFoo");
+        overtimeEmployeePage.addNewOvertime(localDate3, 1, "Bar");
+        overtimeEmployeePage.addNewOvertime(localDate3, 99, "Error"); //Should not get inserted
         /**
          * Find the newly created overtime:
          */
-        Overtime overtime = overtimeEmployeePage.getOvertimeByCalendar(calendar);
-        Assert.assertEquals(overtime.getBalance(), (float) 70);
-        Assert.assertEquals(overtime.getHours(), (float) 8);
-        Assert.assertEquals(overtime.getReason(), "Foo");
+        Overtime overtime = overtimeEmployeePage.getOvertimeByCalendar(localDate3);
+        softAssert.assertEquals(overtime.getBalance(), (float) 1.5f);
+        softAssert.assertEquals(overtime.getHours(), (float) 1.0f);
+        softAssert.assertEquals(overtime.getReason(), "Bar");
         /**
          * remove the created overtime:
          */
-        overtimeEmployeePage.removeOvertimeByCalendar(calendar);
+        overtimeEmployeePage.removeOvertimeByLocalDate(localDate0);
+        overtimeEmployeePage.removeOvertimeByLocalDate(localDate1);
+        overtimeEmployeePage.removeOvertimeByLocalDate(localDate2);
+        overtimeEmployeePage.removeOvertimeByLocalDate(localDate3);
+        softAssert.assertAll();
     }
 
     @BeforeMethod

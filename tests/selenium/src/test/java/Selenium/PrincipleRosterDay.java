@@ -33,7 +33,7 @@ public class PrincipleRosterDay {
     }
 
     public void put(PrincipleRosterItem principleRosterItem) {
-        listOfPrincipleRosterItems.put(size(), principleRosterItem);
+        listOfPrincipleRosterItems.put(this.size(), principleRosterItem);
     }
 
     public HashMap<Integer, PrincipleRosterItem> getlistOfPrincipleRosterItems() {
@@ -51,6 +51,16 @@ public class PrincipleRosterDay {
             }
         }
         return null;
+    }
+
+    public PrincipleRosterDay getPrincipleRosterDayByEmployeeId(int employeeId) {
+        PrincipleRosterDay principleEmployeeDay = new PrincipleRosterDay();
+        listOfPrincipleRosterItems.values().stream()
+                .filter(principleRosterItem -> (principleRosterItem.getEmployeeId() == employeeId))
+                .forEachOrdered(principleRosterItem -> {
+                    principleEmployeeDay.put(principleRosterItem);
+                });
+        return principleEmployeeDay;
     }
 
     public int size() {

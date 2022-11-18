@@ -95,7 +95,17 @@ abstract class user_input {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                     continue;
                 }
-                if (NULL === $duty_start_sql OR!validate_date($duty_start_sql, 'H:i')) {
+                if (NULL === $duty_start_sql) {
+                    /**
+                     * <p lang=de>
+                     * Bei der Übertragung von roster items können leere Items übertragen werden.
+                     * Diese haben aber IMMER eine leere employee_id.
+                     * Daher wird diese Zeile in diesem Fall nicht erreicht.
+                     * </p>
+                     */
+                    continue;
+                }
+                if (!validate_date($duty_start_sql, 'H:i')) {
                     /**
                      * <p lang=de>
                      * Bei der Übertragung von roster items können leere Items übertragen werden.
@@ -312,6 +322,9 @@ abstract class user_input {
         $Changed_roster_item_list = array();
         foreach ($Roster_old as $date_unix => $Roster_day_array_old) {
             foreach ($Roster_day_array_old as $roster_row_iterator => $roster_item) {
+                if (!array_key_exists($roster_row_iterator, $Roster_new[$date_unix])) {
+                    continue;
+                }
                 if ($Roster_new[$date_unix][$roster_row_iterator] instanceof roster_item_empty) {
                     continue;
                 }

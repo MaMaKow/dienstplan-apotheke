@@ -18,13 +18,13 @@
  */
 package Selenium.overtimepages;
 
+import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.Overtime;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -47,10 +47,8 @@ public class OvertimeEmployeePage {
     private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
     private final By reasonInputBy = By.xpath("//*[@id=\"grund\"]");
     private final By submitButtonBy = By.xpath("/html/body/div/table/tbody/tr/td/input[@name=\"submitStunden\"]");
-    private final SimpleDateFormat simpleDateFormat;
 
     public OvertimeEmployeePage(WebDriver driver) {
-        this.simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {
@@ -101,33 +99,45 @@ public class OvertimeEmployeePage {
         return listOfOvertimeRows.get(index);
     }
 
-    private WebElement findOvertimeRowByDate(Calendar calendar) {
+    private WebElement findOvertimeRowByDate(LocalDate localDate) {
         By dateBy = By.xpath(".//td/form");
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
-            if (simpleDateFormat.format(calendar.getTime()).equals(dateElement.getText())) {
+            if (dateElement.getText().equals(localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR))) {
                 return overtimeRowElement;
             }
         }
         return null;
     }
 
-    public Overtime getOvertimeByCalendar(Calendar calendar) {
-        WebElement overtimeRow = findOvertimeRowByDate(calendar);
+    public Overtime getOvertimeByCalendar(LocalDate localDate) {
+        WebElement overtimeRow = findOvertimeRowByDate(localDate);
         //String dateString = overtimeRow.findElement(By.xpath(".//td[1]/form")).getText();
-        //simpleDateFormat.format(dateString);
         float hours = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[2]")).getText());
         float balance = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
         String reason = overtimeRow.findElement(By.xpath(".//td[4]")).getText();
-        return new Overtime(calendar, hours, balance, reason);
+        return new Overtime(localDate, hours, balance, reason);
     }
 
+    /**
+     * @deprecated The use of the Calendar class is deprecated.
+     * @param calendar
+     * @param hours
+     * @param reason
+     * @return
+     */
     public OvertimeEmployeePage addNewOvertime(Calendar calendar, float hours, String reason) {
+        LocalDate localDate = LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
+        return addNewOvertime(localDate, hours, reason);
+    }
+
+    public OvertimeEmployeePage addNewOvertime(LocalDate localDate, float hours, String reason) {
         /**
          * date:
          */
-        String dateString = simpleDateFormat.format(calendar.getTime());
+        //String dateString = simpleDateFormat.format(calendar.getTime());
+        String dateString = localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         WebElement dateInputElement = driver.findElement(dateInputBy);
         dateInputElement.clear();
         dateInputElement.sendKeys(dateString);
@@ -153,14 +163,18 @@ public class OvertimeEmployeePage {
          * Daten korrekt sind?" Wir akzeptieren hier einfach die Abfrage.
          * </p>
          */
-        driver.switchTo().alert().accept();
+        try {
+            driver.switchTo().alert().accept();
+        } catch (Exception exception) {
+            System.err.println(exception.getLocalizedMessage());
+        }
 
         return new OvertimeEmployeePage(driver);
 
     }
 
-    public OvertimeEmployeePage removeOvertimeByCalendar(Calendar calendar) {
-        WebElement overtimeRow = findOvertimeRowByDate(calendar);
+    public OvertimeEmployeePage removeOvertimeByLocalDate(LocalDate localDate) {
+        WebElement overtimeRow = findOvertimeRowByDate(localDate);
         By removeButtonBy = By.xpath(".//input");
         WebElement removeButtonElement = overtimeRow.findElement(removeButtonBy);
         removeButtonElement.click();

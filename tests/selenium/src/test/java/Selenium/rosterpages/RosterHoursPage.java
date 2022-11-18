@@ -105,7 +105,7 @@ public class RosterHoursPage {
     }
 
     public RosterItem getRosterOnDate(LocalDate targetLocalDate) {
-        String employeeName = getEmployeeName();
+//        String employeeName = getEmployeeName();
         Workforce workforce = new Workforce();
         workforce.getListOfEmployees();
         WebElement rowElement = getRowElement(targetLocalDate);

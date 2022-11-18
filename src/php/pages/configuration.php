@@ -206,8 +206,8 @@ echo $user_dialog->build_messages();
                     </ul>
                     <?= gettext("How should these emails be sent?"); ?>
                 </div>
-                <input type = "radio" name = "email_method" value = "mail" <? = $email_method === 'mail' ? 'checked="checked"' : ''
-                       ?>><?= gettext('Simple mail') ?> <br><span class="hint"><?= gettext("(Uses sendmail on Linux/Mac)"); ?></span><br>
+                <input type="radio" name="email_method" value="mail" <?= $email_method === 'mail' ? 'checked="checked"' : '' ?>>
+                <?= gettext('Simple mail') ?> <br><span class="hint"><?= gettext("(Uses sendmail on Linux/Mac)"); ?></span><br>
                 <input type="radio" name="email_method" value="sendmail" <?= $email_method === 'sendmail' ? 'checked="checked"' : '' ?>><?= gettext('Sendmail') ?><br>
                 <input type="radio" name="email_method" value="qmail" <?= $email_method === 'qmail' ? 'checked="checked"' : '' ?>><?= gettext('qmail') ?><br>
                 <input type="radio" name="email_method" value="smtp" <?= $email_method === 'smtp' ? 'checked="checked"' : '' ?>><?= gettext('SMTP') ?><br>

@@ -18,22 +18,16 @@ package Selenium.principlerosterpages;
 
 import Selenium.MenuFragment;
 import Selenium.PrincipleRosterItem;
-import Selenium.driver.Wrapper;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -101,10 +95,21 @@ public class DayPage {
         weekdayChooserSelect.selectByValue(String.valueOf(dayOfWeek.getValue()));
     }
 
-    public void goToAlternation(int alternatingWeekId) {
-        WebElement alternationChooserInput = driver.findElement(alternationChooserInputBy);
-        Select alternationChooserSelect = new Select(alternationChooserInput);
-        alternationChooserSelect.selectByValue(String.valueOf(alternatingWeekId));
+    public void goToAlternation(int alternatingWeekId) throws Exception {
+        try {
+            WebElement alternationChooserInput = driver.findElement(alternationChooserInputBy);
+            Select alternationChooserSelect = new Select(alternationChooserInput);
+            alternationChooserSelect.selectByValue(String.valueOf(alternatingWeekId));
+        } catch (Exception exception) {
+            if (0 == alternatingWeekId) {
+                /**
+                 * Wir erlauben die 0, weil es möglich ist, dass nur eine
+                 * Alternation existiert. Dann hat diese die Id 0
+                 */
+                return;
+            }
+            throw exception;
+        }
 
     }
 

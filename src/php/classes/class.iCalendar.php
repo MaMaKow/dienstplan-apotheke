@@ -110,12 +110,6 @@ class iCalendar {
                  * add start date
                  *
                  */
-                print_debug_variable($roster_object->dutyStartDateTime);
-                print_debug_variable($roster_object->dutyStartDateTime->format("H:i:s"));
-                print_debug_variable($roster_object->dutyStartDateTime->getTimestamp());
-                print_debug_variable($roster_object->dutyStartDateTime->getOffset());
-                print_debug_variable($roster_object->dutyStartDateTime->getTimezone());
-                print_debug_variable(ZDateHelper::fromUnixDateTimetoiCal($roster_object->dutyStartDateTime->getTimestamp()));
                 $eventobj->addNode(new ZCiCalDataNode("DTSTART;TZID=" . $tzid . ":" . $roster_object->dutyStartDateTime->format($icalDateFormat)));
                 $eventobj->addNode(new ZCiCalDataNode("DTEND;TZID=" . $tzid . ":" . $roster_object->dutyEndDateTime->format($icalDateFormat)));
                 /**

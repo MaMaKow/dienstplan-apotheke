@@ -33,13 +33,13 @@
             <!--
             -->
             <class name="Selenium.administrationpages.TestSaturdayRotationTeamsPage" />
-            <class name="Selenium.administrationpages.TestSaturdayListPage" />
             <!--
+            <class name="Selenium.administrationpages.TestSaturdayListPage" />
             -->
             <class name="Selenium.TestAboutPage" />
+            <class name="Selenium.administrationpages.TestConfigurationPage" />
             <!--
             -->
-            <class name="Selenium.administrationpages.TestConfigurationPage" />
         </classes>
     </test>
     <test name="Absence Pages" >

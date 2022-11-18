@@ -21,9 +21,13 @@ package Selenium.principlerosterpages;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import java.text.ParseException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -100,8 +104,8 @@ public class EmployeePage {
 
     private By getRosterItemColumnXpathBy(int alternationId, int column) {
         String alternationString = String.valueOf(alternationId + 1);
-        By rosterItemEmployeeIdXpathBy = By.xpath("/html/body/div[2]/div[" + alternationString + "]/form/table/tbody/tr/td[" + column + "]");
-        return rosterItemEmployeeIdXpathBy;
+        By rosterItemColumnXpathBy = By.xpath("/html/body/div[2]/div[" + alternationString + "]/form/table/tbody/tr/td[" + column + "]");
+        return rosterItemColumnXpathBy;
     }
 
     private By getRosterItemWeekdayXpathBy(int column) {
@@ -109,7 +113,7 @@ public class EmployeePage {
         return rosterItemEmployeeIdXpathBy;
     }
 
-    private By getRosterItemDutyStartXpathBy(int alternationId, int column, int row) {
+    private By getRosterItemDutyStartXpathBy(int alternationId, int column, Integer row) {
         String alternationString = String.valueOf(alternationId + 1);
         By rosterItemDutyStartXpathBy = By.xpath("//html/body/div[2]/div[" + alternationString + "]/form/table/tbody/tr[" + row + "]/td[" + column + "]/input[contains(@name, 'duty_start_sql')]");
         return rosterItemDutyStartXpathBy;
@@ -152,16 +156,60 @@ public class EmployeePage {
         //String branchName = branchNameSelect.getFirstSelectedOption().getText();
         int branchId = Integer.valueOf(branchNameSelect.getFirstSelectedOption().getAttribute("value"));
         String comment = null; //TODO: add comment
-        /**
-         * <p>
-         * TODO: Die Locale könnte auch eine Konfigurationsvariable sein.
-         * Locale.GERMANY <-> Locale.ENGLISH
-         * </p>
-         */
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("YY-MM-dd", Locale.GERMANY);
-        LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
+        LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
         RosterItem rosterItem = new Selenium.RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
+    }
+
+    public HashSet<RosterItem> getSetOfRosterItems(int alternationId, DayOfWeek dayOfWeek) {
+        HashSet<RosterItem> setOfRosterItems = new HashSet();
+        dayOfWeek.getValue();
+        int employeeId = getEmployeeId();
+        WebElement rosterItemColumn = driver.findElement(getRosterItemColumnXpathBy(alternationId, dayOfWeek.getValue()));
+        String dateString = rosterItemColumn.getAttribute("data-date_sql");
+
+        List<WebElement> listOfTableCells = getTableCellElements(alternationId, dayOfWeek);
+        listOfTableCells.forEach(tableCellElement -> {
+            String dutyStart = tableCellElement.findElement(By.xpath(".//input[contains(@name, 'duty_start_sql')]")).getAttribute("value");
+            String dutyEnd = tableCellElement.findElement(By.xpath(".//input[contains(@name, 'duty_end_sql')]")).getAttribute("value");
+            String breakStart = tableCellElement.findElement(By.xpath(".//input[contains(@name, 'break_start_sql')]")).getAttribute("value");
+            String breakEnd = tableCellElement.findElement(By.xpath(".//input[contains(@name, 'break_end_sql')]")).getAttribute("value");
+            Select branchNameSelect = new Select(tableCellElement.findElement(By.xpath(".//select[contains(@name, 'branch_id')]")));
+            int branchId = Integer.valueOf(branchNameSelect.getFirstSelectedOption().getAttribute("value"));
+            /**
+             * <p>
+             * TODO: Die Locale könnte auch eine Konfigurationsvariable sein.
+             * Locale.GERMANY <-> Locale.ENGLISH
+             * </p>
+             */
+            //DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd", Locale.GERMANY);
+            //LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
+            LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
+            String comment = null; //TODO: add comment
+            RosterItem rosterItem = new Selenium.RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+            setOfRosterItems.add(rosterItem);
+        });
+        return setOfRosterItems;
+    }
+
+    private List<WebElement> getTableCellElements(int alternationId, DayOfWeek dayOfWeek) {
+        /**
+         * @TODO: <p lang=de>Wir brauchen eine Liste der TabellenZellen, in
+         * denen die Informationen über den Grundplan stehen.</p>
+         */
+        /**
+         * <p lang=de>Erst einmal suchen wir die richtige Tabelle: Für jede
+         * alernationId gibt es eine eigene.</p>
+         */
+        String alternationString = String.valueOf(alternationId + 1);
+        By rosterItemTableXpathBy = By.xpath("//html/body/div[2]/div[" + alternationString + "]/form/table/tbody");
+        WebElement rosterItemTableElement = driver.findElement(rosterItemTableXpathBy);
+        /**
+         * <p lang=de>In der Tabelle wollen wir nur Zellen, die zum Wochentag
+         * passen.</p>
+         */
+        List<WebElement> listOfTableCells = rosterItemTableElement.findElements(By.xpath(".//tr/td[" + dayOfWeek.getValue() + "]"));
+        return listOfTableCells;
     }
 
     public void setRosterItem(int alternationId, int column, int row, RosterItem rosterItem) {

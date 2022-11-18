@@ -39,6 +39,9 @@ public class PrincipleRoster {
     }
 
     private void setPrincipleRoster() {
+        /**
+         * @TODO: Create a real pinciple roster:
+         */
         principleRoster = new HashMap<>();
         PrincipleRosterDay principleMonday = new PrincipleRosterDay();
         PrincipleRosterItem principleRosterItem0 = new PrincipleRosterItem(1, DayOfWeek.MONDAY, LocalTime.of(8, 00), LocalTime.of(16, 30), LocalTime.of(11, 30), LocalTime.of(12, 0), null, 1);
@@ -56,6 +59,14 @@ public class PrincipleRoster {
         PrincipleRosterDay principleRosterDay = principleRoster.get(dayOfWeek);
         PrincipleRosterItem principleRosterItem = principleRosterDay.getlistOfPrincipleRosterItems().get(rowNumber);
         return principleRosterItem;
+    }
+
+    public HashMap<DayOfWeek, PrincipleRosterDay> getPrincipleRosterByEmployee(int employeeId) {
+        HashMap<DayOfWeek, PrincipleRosterDay> principleRosterByEmployee = new HashMap<>();
+        principleRoster.entrySet().forEach(principleRosterDayEntry -> {
+            principleRosterByEmployee.put(principleRosterDayEntry.getKey(), principleRosterDayEntry.getValue().getPrincipleRosterDayByEmployeeId(employeeId));
+        });
+        return principleRosterByEmployee;
     }
 
     public PrincipleRosterDay getPrincipleRosterDay(DayOfWeek dayOfWeek) {

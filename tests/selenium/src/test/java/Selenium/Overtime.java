@@ -18,7 +18,7 @@
  */
 package Selenium;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 /**
  *
@@ -26,20 +26,20 @@ import java.util.Calendar;
  */
 public class Overtime {
 
-    private final Calendar calendar;
+    private final LocalDate localDate;
     private final float hours;
     private final float balance;
     private final String reason;
 
-    public Overtime(Calendar calendar, float hours, float balance, String reason) {
-        this.calendar = calendar;
+    public Overtime(LocalDate localDate, float hours, float balance, String reason) {
+        this.localDate = localDate;
         this.hours = hours;
         this.balance = balance;
         this.reason = reason;
     }
 
-    public Calendar getCalendar() {
-        return calendar;
+    public LocalDate getLocalDate() {
+        return localDate;
     }
 
     public Float getHours() {

@@ -18,8 +18,10 @@ echo "We are currently on the commit $current_version.";
 echo "major: $current_version_major";
 echo "minor $current_version_minor";
 echo "patch $current_version_patch";
-echo "Writting current state of the database structure into the src/sql/ folder";
-php "tests\get-database-structure.php";
+
+# echo "Writting current state of the database structure into the src/sql/ folder";
+# php "tests\get-database-structure.php";
+
 echo "";
 read -p "Show git status? [y/n] " -N 1 decision_git_status;
 if [ "y" == "$decision_git_status" ] || [ "Y" == "$decision_git_status" ]
@@ -72,14 +74,16 @@ git add src/php/pages/about.php
 # $table_structure_create = preg_replace('/AUTO_INCREMENT=[0-9]*/', '', $table_structure_create_with_increment);
 # </p>
 php "tests/calculate_database_version_hash.php"
-git add /src/php/database_version_hash.php
+echo "Created a new database version hash:"
+cat ./src/php/database_version_hash.php
+git add "./src/php/database_version_hash.php"
 
 read -p "Ready to COMMIT and sign the changes? [y/n] " -N 1 decision_commit;
 if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]
 then
     clear
     git commit --gpg-sign && git tag "$new_version"
-    git git show -1
+    git show -1
     git status
     read -p "Ready to PUSH changes and tags to remote? [y/n] " -N 1 decision_push;
     if [ "y" == "$decision_push" ] || [ "Y" == "$decision_push" ]

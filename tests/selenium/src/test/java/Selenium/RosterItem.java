@@ -39,18 +39,37 @@ public class RosterItem {
     private final String comment;
     private final LocalDateTime dutyStartLocalDateTime;
     private final LocalDateTime dutyEndLocalDateTime;
+    private LocalDateTime breakStartLocalDateTime;
+    private LocalDateTime breakEndLocalDateTime;
 
     public RosterItem(int employeeId, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
         this.employeeId = employeeId;
         this.localDate = LocalDate.from(localDate);
+
         this.dutyStart = dutyStart;
         LocalTime dutyStartLocalTime = LocalTime.parse(dutyStart);
         dutyStartLocalDateTime = localDate.atTime(dutyStartLocalTime);
+
         this.dutyEnd = dutyEnd;
         LocalTime dutyEndLocalTime = LocalTime.parse(dutyEnd);
         dutyEndLocalDateTime = localDate.atTime(dutyEndLocalTime);
+
         this.breakStart = breakStart;
+        try {
+            LocalTime breakStartLocalTime = LocalTime.parse(breakStart);
+            breakStartLocalDateTime = localDate.atTime(breakStartLocalTime);
+        } catch (Exception e) {
+            breakStartLocalDateTime = null;
+        }
+
         this.breakEnd = breakEnd;
+        try {
+            LocalTime breakEndLocalTime = LocalTime.parse(breakEnd);
+            breakEndLocalDateTime = localDate.atTime(breakEndLocalTime);
+        } catch (Exception e) {
+            breakEndLocalDateTime = null;
+        }
+
         this.comment = comment;
         this.branchId = branchId;
     }
@@ -89,8 +108,16 @@ public class RosterItem {
         return this.breakStart;
     }
 
+    public LocalDateTime getBreakStartLocalDateTime() {
+        return this.breakStartLocalDateTime;
+    }
+
     public String getBreakEnd() {
         return this.breakEnd;
+    }
+
+    public LocalDateTime getBreakEndLocalDateTime() {
+        return this.breakEndLocalDateTime;
     }
 
     public int getBranchId() {
