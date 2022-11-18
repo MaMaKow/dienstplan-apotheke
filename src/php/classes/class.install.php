@@ -570,7 +570,7 @@ class install {
         $this->Config["database_password"] = filter_input(INPUT_POST, "database_password", FILTER_SANITIZE_STRING, $options = null);
         $this->write_config_to_session();
         if (!in_array($this->Config["database_management_system"], PDO::getAvailableDrivers())) {
-            $this->Error_messages[] = $this->Config["database_management_system"] . "is not available on this server. Please check the configuration!";
+            $this->Error_messages[] = htmlentities($this->Config["database_management_system"]) . "is not available on this server. Please check the configuration!";
             return FALSE;
         }
         $connect_error_info = $this->connect_to_database();
