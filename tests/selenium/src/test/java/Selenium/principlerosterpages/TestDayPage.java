@@ -27,11 +27,16 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -43,9 +48,10 @@ public class TestDayPage {
 
     WebDriver driver;
     SoftAssert softAssert = new SoftAssert();
+    private PropertyFile propertyFile;
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
-    public void testDateNavigation() {
+    public void testDateNavigation() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -77,7 +83,7 @@ public class TestDayPage {
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*passed*/
-    public void testRosterDisplay() {
+    public void testRosterDisplay() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -119,7 +125,7 @@ public class TestDayPage {
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
-    public void testRosterChange() {
+    public void testRosterChange() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -206,9 +212,8 @@ public class TestDayPage {
     }
 
     @Test(enabled = true)/*new*/
-    public void testRosterCreate() {
+    public void testRosterCreate() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
@@ -223,19 +228,18 @@ public class TestDayPage {
         Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
-         * Move to specific month:
+         * Move to specific branch:
          */
         int branchId = 1;
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
         dayPage.goToBranch(branchId);
         /**
          * alternationId MUST be 0! There is no other alternation yet. Therefore
-         * there is no SELECT element for it yet. TODO: Implement a failsafe
-         * dayPage.goToAlternation();
+         * there is no SELECT element for it yet.
          *
          */
         int alternationId = 0;
-        //dayPage.goToAlternation(0);
+        dayPage.goToAlternation(0);
         dayPage.goToWeekday(dayOfWeek);
         PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
         PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
@@ -256,7 +260,7 @@ public class TestDayPage {
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*new*/
-    public void testRosterChangePlotErrors() throws ParseException {
+    public void testRosterChangePlotErrors() throws ParseException, Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -294,11 +298,13 @@ public class TestDayPage {
          */
         dayPage.changeRosterInputDutyStart(employeeId, null);
         dayPage.rosterFormSubmit();
-
+        System.out.println("HERE0");
         PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeId(employeeId);
+        System.out.println("HERE1");
         softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
         softAssert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
         softAssert.assertAll();
+        System.out.println("HERE2");
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
@@ -367,6 +373,20 @@ public class TestDayPage {
     @BeforeMethod
     public void setUp() {
         Selenium.driver.Wrapper.createNewDriver();
+    }
+
+    @BeforeSuite
+    public void setUpSuite() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        /**
+         * Refresh the page contents from the nextcloud data:
+         */
+        propertyFile = new PropertyFile();
+        String testPageFolderPath = propertyFile.getUrlInstallTest();
+        driver.get(testPageFolderPath + "selenium-refresh.php");
+        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
     }
 
     @AfterMethod

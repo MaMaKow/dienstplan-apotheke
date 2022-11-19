@@ -23,12 +23,8 @@ echo "patch $current_version_patch";
 # php "tests\get-database-structure.php";
 
 echo "";
-read -p "Show git status? [y/n] " -N 1 decision_git_status;
-if [ "y" == "$decision_git_status" ] || [ "Y" == "$decision_git_status" ]
-then
-    clear;
-    git status;
-fi
+echo "Showing git status: "; 
+git status;
 
 # Determine the correct tag for this commit:
 echo "";

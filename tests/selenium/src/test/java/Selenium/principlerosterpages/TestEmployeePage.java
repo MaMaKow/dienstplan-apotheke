@@ -30,13 +30,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -48,11 +50,11 @@ public class TestEmployeePage {
 
     WebDriver driver;
     SoftAssert softAssert = new SoftAssert();
+    private PropertyFile propertyFile;
 
     @Test(enabled = true)/*new*/
     public void testEmployeePageRead() {
         driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
@@ -107,7 +109,6 @@ public class TestEmployeePage {
     @Test(dependsOnMethods = {"testEmployeePageRead"}, enabled = true)/*new*/
     public void testEmployeePageWrite() throws ParseException, Exception {
         driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 
@@ -161,7 +162,21 @@ public class TestEmployeePage {
 
     @BeforeMethod
     public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
+        //Selenium.driver.Wrapper.createNewDriver();
+    }
+
+    @BeforeSuite
+    public void setUpSuite() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        /**
+         * Refresh the page contents from the nextcloud data:
+         */
+        propertyFile = new PropertyFile();
+        String testPageFolderPath = propertyFile.getUrlInstallTest();
+        driver.get(testPageFolderPath + "selenium-refresh.php");
+        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
     }
 
     @AfterMethod

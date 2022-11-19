@@ -58,6 +58,7 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id, $Options = array()) {
+        error_log("HERE");
         if (!isset($Roster[$day_iterator]) or!isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
@@ -76,10 +77,18 @@ abstract class build_html_roster_views {
                 . ">\n";
         $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][date_sql] value=" . $Roster[$day_iterator][$roster_row_iterator]->date_sql . ">\n";
         if ($Roster[$day_iterator][$roster_row_iterator] instanceof principle_roster_item) {
+            error_log("is an instanceof principle_roster_item");
             if (isset($Roster[$day_iterator][$roster_row_iterator]->primary_key)) {
+                error_log("private key was set to: " . $Roster[$day_iterator][$roster_row_iterator]->primary_key);
                 $roster_input_row .= "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][primary_key] value=" . $Roster[$day_iterator][$roster_row_iterator]->primary_key . ">\n";
+            } else {
+                error_log("no private key was set.");
             }
+        } else {
+            error_log(get_class($Roster[$day_iterator][$roster_row_iterator]));
+            error_log("no instanceof principle_roster_item");
         }
+        error_log("THERE");
 
         /*
          * employee input:

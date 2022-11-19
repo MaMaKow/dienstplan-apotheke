@@ -32,7 +32,7 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;
     }
-    $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+    $Principle_roster_new = user_input::get_Principle_Roster_from_POST_secure();
     $last_item_in_roster = end($Principle_roster_new)[0];
     $first_item_in_roster = reset($Principle_roster_new)[0];
     $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $first_item_in_roster->date_object, $last_item_in_roster->date_object);

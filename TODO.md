@@ -129,6 +129,11 @@ https://www.php-fig.org/psr/psr-4/
 \PDR\Application\TestHtaccess.php
 
 
+#### Rewrite database table `Dienstplan`
+  - make a table `roster` with a surrogate primary key.
+  - align with the RFC for iCalendar data.
+  - make duty_start, duty_end and perhaps the break DateTime objects.
+    - So they can span more than one single day (e.g. 22:00 on Monday until 08:00 on Tuesday).
 
 
 

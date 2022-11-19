@@ -57,8 +57,14 @@ abstract class user_input {
         alternating_week::delete_alternation($principle_roster_delete);
     }
 
+    /**
+     *
+     * @return boolean|\roster_item
+     * @throws Exception
+     */
     public static function get_Roster_from_POST_secure() {
         $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        print_debug_variable($Roster_from_post);
         $Roster = array();
         if (empty($Roster_from_post)) {
             return FALSE;
@@ -95,16 +101,6 @@ abstract class user_input {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                     continue;
                 }
-                if (NULL === $duty_start_sql) {
-                    /**
-                     * <p lang=de>
-                     * Bei der Übertragung von roster items können leere Items übertragen werden.
-                     * Diese haben aber IMMER eine leere employee_id.
-                     * Daher wird diese Zeile in diesem Fall nicht erreicht.
-                     * </p>
-                     */
-                    continue;
-                }
                 if (!validate_date($duty_start_sql, 'H:i')) {
                     /**
                      * <p lang=de>
@@ -131,6 +127,77 @@ abstract class user_input {
             }
         }
         return $Roster;
+    }
+
+    /**
+     * Read a week of principle roster from the INPUT_POST.
+     *
+     * This function is only applicable for principle-roster-employee.php, where a whole week for a predefined employee is sent.
+     * When using this function for rinciple-roster-day.php data loss might occur in situations, where duty_start is sent as "null".
+     *
+     * @return boolean|\roster_item
+     * @throws Exception
+     */
+    public static function get_Principle_Roster_from_POST_secure() {
+        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        print_debug_variable($Principle_roster_from_post);
+        $Principle_roster = array();
+        if (empty($Principle_roster_from_post)) {
+            return FALSE;
+        }
+        if (7 !== sizeof($Principle_roster_from_post)) {
+            throw new Exception("\$Principle_roster_from_post must contain a whole week sent from principle-roster-employee.php");
+        }
+        foreach ($Principle_roster_from_post as $date_unix => $Principle_roster_from_post_day_array) {
+            if (!is_numeric($date_unix)) {
+                throw new Exception('$date_unix must be an integer representing a unix timestamp!');
+            }
+            foreach ($Principle_roster_from_post_day_array as $roster_row_iterator => $Principle_roster_row_array) {
+                if (!is_numeric($roster_row_iterator)) {
+                    throw new Exception('$roster_row_iterator must be an integer!');
+                }
+                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
+                $employee_id = filter_var($Principle_roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT);
+                $branch_id = filter_var($Principle_roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_STRING));
+                if (!is_numeric($Principle_roster_row_array['primary_key'])) {
+                    continue;
+                }
+                $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
+                if (!is_numeric($branch_id)) {
+                    throw new Exception('$branch_id must be an integer!');
+                }
+                if (!validate_date($date_sql, 'Y-m-d')) {
+                    throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
+                }
+                /*
+                  if ('' === $employee_id) {
+                  $Principle_roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                  continue;
+                  }
+                 *
+                 */
+                if (!validate_date($duty_start_sql, 'H:i')) {
+                    /**
+                     * <p lang=de>
+                     * Bei der Woche gibt es immer auch Tage, an denen nicht gearbeitet wird.
+                     * Die überspringen wir hier.
+                     * </p>
+                     */
+                    continue;
+                }
+                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                    throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
+                }
+                $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
+                $Principle_roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
+            }
+        }
+        return $Principle_roster;
     }
 
     private static function remove_changed_entries_from_database($branch_id, $Employee_id_list) {
