@@ -265,8 +265,8 @@ class principle_roster extends roster {
         $statement_delete = database_wrapper::instance()->prepare($sql_query_delete);
         foreach ($List_of_deleted_roster_primary_keys as $primary_key) {
             $arguments = array('primary_key' => $primary_key);
-            $statement_delete->execute($arguments);
             $statement_insert->execute($arguments);
+            $statement_delete->execute($arguments);
         }
         database_wrapper::instance()->commit();
         return;
@@ -290,13 +290,13 @@ class principle_roster extends roster {
         $statement_insert = database_wrapper::instance()->prepare($sql_query_insert);
         $statement_delete = database_wrapper::instance()->prepare($sql_query_delete);
         $arguments = array('primary_key' => $principle_roster_primary_key);
-        $resultSuccessDelete = $statement_delete->execute($arguments);
-        if (FALSE === $resultSuccessDelete) {
+        $resultSuccessInsert = $statement_insert->execute($arguments);
+        if (FALSE === $resultSuccessInsert) {
             database_wrapper::instance()->rollBack();
             return FALSE;
         }
-        $resultSuccessInsert = $statement_insert->execute($arguments);
-        if (FALSE === $resultSuccessInsert) {
+        $resultSuccessDelete = $statement_delete->execute($arguments);
+        if (FALSE === $resultSuccessDelete) {
             database_wrapper::instance()->rollBack();
             return FALSE;
         }
