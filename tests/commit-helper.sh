@@ -59,6 +59,8 @@ echo "";
 echo "The new version number will be $new_version";
 sed -i 's/<span id="pdrVersionSpan">[0-9.]*<\/span>/<span id="pdrVersionSpan">'$new_version'<\/span>/' src/php/pages/about.php
 git add src/php/pages/about.php
+sed -i '/<artifactId>selenium</,/<name>SeleniumTest</ s/\(<version>\).*\(<\/version>\)/\1'$new_version'\2/' tests/selenium/pom.xml
+git add tests/selenium/pom.xml
 # TODO: <p lang=de>Ich würde hier sehr gerne das script Tests\get-database-structure.php laufen lassen.
 # Dabei gibt es allerdings ein Problem.
 # Eine Entwicklungsumgebung hat nicht zwingend Zugriff auf eine Datenbank. Sie kann also nicht immer ihre eigene Datenbankstruktur besitzen.

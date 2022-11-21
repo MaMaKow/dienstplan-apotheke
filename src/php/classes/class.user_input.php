@@ -164,10 +164,6 @@ abstract class user_input {
                 $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
                 $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
                 $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_STRING));
-                if (!is_numeric($Principle_roster_row_array['primary_key'])) {
-                    continue;
-                }
-                $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
@@ -193,6 +189,18 @@ abstract class user_input {
                 if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
+                if (!isset($Principle_roster_row_array['primary_key']) or!is_numeric($Principle_roster_row_array['primary_key'])) {
+                    /**
+                     * <p lang=de>Wenn an einem Tag bisher kein Grundplan hinterlegt war,
+                     *  dann wird dort auch kein primary key übertragen.
+                     *  Wenn an diesem Tag nun aber doch ein Datum übergeben wird,
+                     *  so müssen wir zunächst einen primary key vergeben.
+                     *  Da die Datenbank final zu entscheiden hat,
+                     *  welcher primary key zu verwenden ist, nehmen wir in PHP einfach NULL.</p>
+                     */
+                    $Principle_roster_row_array['primary_key'] = null;
+                }
+                $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
                 $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 $Principle_roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
             }
@@ -426,7 +434,7 @@ abstract class user_input {
         }
         foreach ($Roster_new as $Roster_new_day_array) {
             foreach ($Roster_new_day_array as $roster_new_item) {
-                if (isset($roster_new_item->employee_id)) {
+                if (isset($roster_new_item->employee_id) and isset($roster_new_item->primary_key)) {
                     $List_of_primary_keys_in_new_roster[] = $roster_new_item->primary_key;
                 }
             }

@@ -21,6 +21,8 @@ abstract class build_html_roster_views {
 
     const OPTION_SHOW_EMERGENCY_SERVICE_NAME = 'show_emergency_service_name';
     const OPTION_SHOW_CALENDAR_WEEK = 'show_calendar_week';
+    const DAYS_IN_A_WEEK = 7;
+    const INPUT_ELEMENTS_IN_ROSTER_FORM = 7;
 
     /**
      * Build one table row for a daily view
@@ -58,6 +60,10 @@ abstract class build_html_roster_views {
     }
 
     public static function build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id, $Options = array()) {
+        $day_of_week = (int) date('N', $day_iterator);
+        $date_object = DateTime::createFromFormat('U', $day_iterator);
+        $alternation_id = alternating_week::get_alternating_week_for_date($date_object->sub(new DateInterval('P' . $date_object->format('w') . 'D')));
+        $alternation_factor = $alternation_id;
         if (!isset($Roster[$day_iterator]) or!isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
@@ -107,7 +113,7 @@ abstract class build_html_roster_views {
                 . " class=Dienstplan_Dienstbeginn "
                 . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_start_sql] "
                 . " id=Dienstplan[" . $day_iterator . "][Dienstbeginn][" . $roster_row_iterator . "] "
-                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 2 )
+                . " tabindex=" . (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 2 )
                 . " value='";
         $roster_input_row .= roster::get_duty_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n ";
@@ -126,7 +132,7 @@ abstract class build_html_roster_views {
                 . " class=Dienstplan_Dienstende "
                 . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][duty_end_sql] "
                 . " id=Dienstplan[" . $day_iterator . "][Dienstende][" . $roster_row_iterator . "] "
-                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 3 )
+                . " tabindex=" . (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 3 )
                 . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n";
@@ -145,7 +151,7 @@ abstract class build_html_roster_views {
                 . " class=Dienstplan_Mittagbeginn "
                 . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_start_sql] "
                 . " id=Dienstplan[" . $day_iterator . "][Mittagsbeginn][" . $roster_row_iterator . "] "
-                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 4 )
+                . " tabindex=" . (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 4 )
                 . " value='";
         $roster_input_row .= roster::get_break_start_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'> ";
@@ -163,7 +169,7 @@ abstract class build_html_roster_views {
                 . " class=Dienstplan_Mittagsende "
                 . " name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][break_end_sql] "
                 . " id=Dienstplan[" . $day_iterator . "][Mittagsende][" . $roster_row_iterator . "] "
-                . " tabindex=" . ($day_iterator * $maximum_number_of_rows * 5 + $roster_row_iterator * 5 + 5 )
+                . " tabindex=" . (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 5)
                 . " value='";
         $roster_input_row .= roster::get_break_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>";
@@ -179,14 +185,16 @@ abstract class build_html_roster_views {
              * Change $roster_input_row_branch from the above hidden input into a visible select element:
              */
             $roster_input_row_branch = "<br>";
-            $roster_input_row_branch .= self::build_roster_input_row_branch_select($roster_input_row_branch_id, $roster_input_row_branch_name);
+            $tabindex_branch_select = (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 6 );
+            $roster_input_row_branch .= self::build_roster_input_row_branch_select($roster_input_row_branch_id, $roster_input_row_branch_name, $tabindex_branch_select);
         }
         $roster_input_row .= $roster_input_row_branch;
 
         /*
          * comments:
          */
-        $roster_input_row .= build_html_roster_views::build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator);
+        $tabindex_branch_comment = (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 7 );
+        $roster_input_row .= build_html_roster_views::build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator, $tabindex_branch_comment);
         $roster_input_row .= "</td>\n";
         return $roster_input_row;
     }
@@ -205,11 +213,13 @@ abstract class build_html_roster_views {
         return $roster_input_row_add_row;
     }
 
-    private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name) {
+    private static function build_roster_input_row_branch_select($current_branch_id, $form_input_name, $tabindex) {
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_select = "";
-        $branch_select .= "<select name='$form_input_name' >\n";
+        $branch_select .= "<select name='$form_input_name' ";
+        $branch_select .= " tabindex='$tabindex' ";
+        $branch_select .= ">\n";
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
             if ($branch_id != $current_branch_id) {
                 $branch_select .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
@@ -222,10 +232,14 @@ abstract class build_html_roster_views {
     }
 
     private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
+        $day_of_week = (int) date('N', $date_unix);
+        $date_object = DateTime::createFromFormat('U', $date_unix);
+        $alternation_id = alternating_week::get_alternating_week_for_date($date_object);
+        $alternation_factor = $alternation_id;
         $workforce = new workforce(date('Y-m-d', $date_unix));
         $roster_input_row_employee_select = "<select "
                 . " name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] "
-                . " tabindex=" . (($date_unix * $maximum_number_of_rows * 5) + ($roster_row_iterator * 5) + 1)
+                . " tabindex=" . (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 1)
                 . " data-date_unix='$date_unix' "
                 . " data-roster_row_iterator='$roster_row_iterator' "
                 . " data-roster_column_name='employee_id' "
@@ -254,7 +268,7 @@ abstract class build_html_roster_views {
         return $roster_input_row_employee_select;
     }
 
-    private static function build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator) {
+    private static function build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator, $tabindex) {
         $roster_input_row_comment_html = "";
         $comment = roster::get_comment_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row_comment_input_id = "roster_input_row_comment_input_" . $day_iterator . "_" . $roster_row_iterator;
@@ -275,7 +289,7 @@ abstract class build_html_roster_views {
                 . "K-</a></div>\n";
         $roster_input_row_comment_html .= "<br>"
                 . "<div style=display:$roster_uncomment_visibility_style_display id=$roster_input_row_comment_input_id>"
-                . gettext("Comment") . ":&nbsp;<input type=text name=Roster[$day_iterator][$roster_row_iterator][comment] value='$comment'></div>\n";
+                . gettext("Comment") . ":&nbsp;<input type=text name=Roster[$day_iterator][$roster_row_iterator][comment] value='$comment' tabindex='$tabindex'></div>\n";
         return $roster_input_row_comment_html;
     }
 

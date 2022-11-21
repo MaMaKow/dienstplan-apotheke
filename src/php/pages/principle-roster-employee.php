@@ -20,14 +20,7 @@ require '../../../default.php';
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
 create_cookie('employee_id', $employee_id, 30);
 $workforce = new workforce();
-/**
- * @todo <p lang="en">
- * This page is too slow.
- * Find out why!
- * Make it better, increase the speed!
- * </p>
- *
- */
+
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;

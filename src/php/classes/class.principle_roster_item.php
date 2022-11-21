@@ -47,10 +47,13 @@ class principle_roster_item extends roster_item {
      * @param string $comment
      * @throws \InvalidArgumentException
      */
-    public function __construct(int $primary_key, string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
-        if (NULL === $primary_key) {
-            throw new \InvalidArgumentException('$primary_key MUST NOT be NULL');
-        }
+    public function __construct(int $primary_key = NULL, string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
+        /**
+         * <p lang=de>TODO: Ich weiß nicht mehr, warum der key nicht null sein darf.</p>
+          if (NULL === $primary_key) {
+          throw new \InvalidArgumentException('$primary_key MUST NOT be NULL');
+          }
+         */
         $this->primary_key = $primary_key;
         parent::__construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
     }

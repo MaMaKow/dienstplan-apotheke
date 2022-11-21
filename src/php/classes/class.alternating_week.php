@@ -99,6 +99,7 @@ class alternating_week {
      *
      * @param DateTime $date_object
      * @return int $alternating_week_id
+     * @todo Is this function broken? Does it really return the correct alternation, on days, which are not a monday?
      */
     public static function get_alternating_week_for_date(DateTime $date_object) {
         $alternation_start_date = self::get_alternation_start_date();

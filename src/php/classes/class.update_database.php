@@ -234,7 +234,7 @@ class update_database {
              */
             return;
         }
-        $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT `primary_key`, `alternating_week_id`, `employee_id`, `weekday`, `duty_start`, `duty_end`, `break_start`, `break_end`, `comment`, `working_hours`, `branch_id`, NOW() FROM `principle_roster` WHERE `valid_until` IS NOT NULL)";
+        $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT `primary_key`, `alternating_week_id`, `employee_id`, `weekday`, `duty_start`, `duty_end`, `break_start`, `break_end`, `comment`, `working_hours`, `branch_id`, `valid_until` FROM `principle_roster` WHERE `valid_until` IS NOT NULL)";
         $sql_query_delete = "DELETE FROM `principle_roster`  WHERE `valid_until` IS NOT NULL";
         $sql_query_from = "ALTER TABLE `principle_roster` DROP `valid_from`;";
         $sql_query_until = "ALTER TABLE `principle_roster` DROP `valid_until`;";
