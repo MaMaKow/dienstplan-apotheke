@@ -22,7 +22,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 <main>
     <p><?= gettext('About') ?>:</p>
     <H1><?= gettext('Pharmacy Duty Roster') ?></H1>
-    <p id="pdrVersionParagraph">Version: <span id="pdrVersionSpan">0.15.5</span></p>
+    <p id="pdrVersionParagraph">Version: <span id="pdrVersionSpan">0.15.6</span></p>
     <p>
         License: Copyright © 2019, Martin Mandelkow
     </p>

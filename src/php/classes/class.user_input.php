@@ -64,7 +64,6 @@ abstract class user_input {
      */
     public static function get_Roster_from_POST_secure() {
         $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-        print_debug_variable($Roster_from_post);
         $Roster = array();
         if (empty($Roster_from_post)) {
             return FALSE;
@@ -119,7 +118,7 @@ abstract class user_input {
                      * This one is a principle roster item.
                      * @todo: There will come a time, when simple roster_items will also have a numeric primary_key.
                      */
-                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql);
+                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                     continue;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
@@ -140,7 +139,6 @@ abstract class user_input {
      */
     public static function get_Principle_Roster_from_POST_secure() {
         $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-        print_debug_variable($Principle_roster_from_post);
         $Principle_roster = array();
         if (empty($Principle_roster_from_post)) {
             return FALSE;
@@ -182,6 +180,23 @@ abstract class user_input {
                      * <p lang=de>
                      * Bei der Woche gibt es immer auch Tage, an denen nicht gearbeitet wird.
                      * Die überspringen wir hier.
+                     * Außerdem gibt es Tage, an denen bisher gearbeitet wurde,
+                     * an denen aber in Zukunft nicht mehr gearbeitet wird.
+                     * Die werden als roster_item_empty markiert.
+                     * </p>
+                     */
+                    if (isset($Principle_roster_row_array['primary_key'])) {
+                        /**
+                         * <p lang=de>
+                         * Dienstzeit wurde gerade gelöscht:
+                         * </p>
+                         */
+                        $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_NUMBER_INT));
+                        $Principle_roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                    }
+                    /**
+                     * <p lang=de>
+                     * An diesem Tag wird grundsätzlich nicht gearbeitet:
                      * </p>
                      */
                     continue;
@@ -200,7 +215,7 @@ abstract class user_input {
                      */
                     $Principle_roster_row_array['primary_key'] = null;
                 }
-                $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
+                $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_NUMBER_INT));
                 $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 $Principle_roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
             }
@@ -272,6 +287,56 @@ abstract class user_input {
      *   get_deleted_roster_employee_id_list ist für die Aufgabe gedacht.
      * </p>
      *
+     * @param type $Principle_roster_new
+     * @param type $Principle_roster_old
+     * @return type
+     */
+    public static function get_changed_roster_primary_key_list($Principle_roster_new, $Principle_roster_old) {
+        $Changed_roster_primary_key_list = array();
+        foreach ($Principle_roster_new as $date_unix => $Roster_day_array) {
+            if (!isset($Principle_roster_old[$date_unix]) or roster::is_empty_roster_day_array($Principle_roster_old[$date_unix])) {
+                /**
+                 * There is no old roster. Every entry for this day is new:
+                 */
+                foreach ($Roster_day_array as $roster_item) {
+                    if (NULL === $roster_item->get_primary_key()) {
+                        continue;
+                    }
+                    $Changed_roster_primary_key_list[$date_unix][] = $roster_item->get_primary_key();
+                }
+            } else {
+                /**
+                 * There is an old roster and we can do a comparison:
+                 */
+                foreach ($Roster_day_array as $roster_item) {
+                    if ($roster_item instanceof roster_item_empty) {
+                        continue;
+                    }
+                    if (NULL === $roster_item->get_primary_key()) {
+                        continue;
+                    }
+                    if (self::principle_roster_item_has_changed($roster_item, $Principle_roster_old)) {
+                        /**
+                         * The roster for the employee has changed for this day.
+                         * The employee_id will be added to Changed_roster_employee_id_list
+                         */
+                        $Changed_roster_primary_key_list[$date_unix][] = $roster_item->get_primary_key();
+                    }
+                }
+            }
+        }
+        return $Changed_roster_primary_key_list;
+    }
+
+    /**
+     * Finde geänderte aber noch existente Einträge im neuen Plan
+     *
+     * <p lang="de">
+     * CAVE! Gelöschte Einträge fehlen hier.
+     *   Wenn ein Tag im neuen $Roster nicht mehr existiert, so wird er auch hier nicht mit erscheinen.
+     *   get_deleted_roster_employee_id_list ist für die Aufgabe gedacht.
+     * </p>
+     *
      * @param type $Roster
      * @param type $Roster_old
      * @return type
@@ -294,7 +359,7 @@ abstract class user_input {
                     if (NULL === $roster_item->employee_id) {
                         continue;
                     }
-                    if (self::roster_item_has_changed($roster_item, $Roster_old)) {
+                    if (self::principle_roster_item_has_changed($roster_item, $Roster_old)) {
                         /**
                          * The roster for the employee has changed for this day.
                          * The employee_id will be added to Changed_roster_employee_id_list
@@ -312,10 +377,50 @@ abstract class user_input {
      *     It compares it to ALL the old elements.
      *     If ANY element in the old roster is the same, then no change has been made to this item.
      *
-     * @param type $roster_item
-     * @param type $Roster_old
+     * @param type $principle_roster_item_new
+     * @param type $Principle_roster_old
      * @return boolean
      */
+    private static function principle_roster_item_has_changed(principle_roster_item $principle_roster_item_new, array $Principle_roster_old) {
+        /**
+         * Searching for the same roster item in the old roster:
+         */
+        foreach ($Principle_roster_old[$principle_roster_item_new->date_unix] as $roster_item_old) {
+            if ($principle_roster_item_new->get_primary_key() != $roster_item_old->get_primary_key()) {
+                continue;
+            }
+            if ($principle_roster_item_new->get_employee_id() != $roster_item_old->get_employee_id()) {
+                continue;
+            }
+            if ($principle_roster_item_new->get_branch_id() != $roster_item_old->get_branch_id()) {
+                continue;
+            }
+            if ($principle_roster_item_new->get_duty_start_sql() != $roster_item_old->get_duty_start_sql()) {
+                continue;
+            }
+            if ($principle_roster_item_new->get_duty_end_sql() != $roster_item_old->get_duty_end_sql()) {
+                continue;
+            }
+            if ($principle_roster_item_new->get_break_start_sql() != $roster_item_old->get_break_start_sql()) {
+                continue;
+            }
+            if ($principle_roster_item_new->get_break_end_sql() != $roster_item_old->get_break_end_sql()) {
+                continue;
+            }
+            if ($principle_roster_item_new->get_comment() != $roster_item_old->get_comment()) {
+                continue;
+            }
+            /**
+             * All values are equal. The item was not changed:
+             */
+            return FALSE;
+        }
+        /**
+         * We found none. return true because the item was changed:
+         */
+        return TRUE;
+    }
+
     private static function roster_item_has_changed(roster_item $roster_item, array $Roster_old) {
 
         /**
@@ -461,6 +566,28 @@ abstract class user_input {
             }
         }
         return $Inserted_roster_employee_id_list;
+    }
+
+    public static function get_inserted_principle_roster_item_list($Principle_roster_new) {
+        $Inserted_principle_roster_item_list = array();
+        foreach ($Principle_roster_new as $date_unix => $Principle_roster_new_day_array) {
+            foreach ($Principle_roster_new_day_array as $roster_row_iterator => $principle_roster_item) {
+                if ($principle_roster_item instanceof roster_item_empty) {
+                    /**
+                     * This is not a roster item with data inside:
+                     */
+                    continue;
+                }
+                if (null !== $principle_roster_item->get_primary_key()) {
+                    /**
+                     * This item is not new:
+                     */
+                    continue;
+                }
+                $Inserted_principle_roster_item_list[$date_unix][] = $principle_roster_item;
+            }
+        }
+        return $Inserted_principle_roster_item_list;
     }
 
     public static function roster_write_user_input_to_database($Roster, $branch_id) {

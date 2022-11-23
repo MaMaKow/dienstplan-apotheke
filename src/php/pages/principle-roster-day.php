@@ -68,9 +68,9 @@ function handle_roster_input($branch_id, $date_object, $session) {
             throw $exception;
         }
     }
-    $List_of_changes = user_input::get_changed_roster_employee_id_list($Principle_roster_new, $Principle_roster_old);
     $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
-    principle_roster::insert_changed_entries_into_database($Principle_roster_new, $List_of_changes);
+    $List_of_changed_keys = user_input::get_changed_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    principle_roster::insert_changed_entries_into_database_by_key($Principle_roster_new, $List_of_changed_keys);
     principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
     /**
      * <p lang=de>Dies sind roster_items, bei denen per SELECT der employee geändert wurde:<p>

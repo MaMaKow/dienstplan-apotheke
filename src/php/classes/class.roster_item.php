@@ -73,6 +73,90 @@ class roster_item implements \JsonSerializable {
         return $this->$variable_name;
     }
 
+    public function get_date_sql() {
+        return $this->date_sql;
+    }
+
+    public function get_date_unix() {
+        return $this->date_unix;
+    }
+
+    public function get_date_object() {
+        return $this->date_object;
+    }
+
+    public function get_employee_id() {
+        return $this->employee_id;
+    }
+
+    public function get_branch_id() {
+        return $this->branch_id;
+    }
+
+    public function get_comment() {
+        return $this->comment;
+    }
+
+    public function get_duty_start_sql() {
+        return $this->duty_start_sql;
+    }
+
+    public function get_dutyStartDateTime() {
+        return $this->dutyStartDateTime;
+    }
+
+    public function get_dutyEndDateTime() {
+        return $this->dutyEndDateTime;
+    }
+
+    public function get_duty_end_sql() {
+        return $this->duty_end_sql;
+    }
+
+    public function get_break_start_sql() {
+        return $this->break_start_sql;
+    }
+
+    public function get_break_end_sql() {
+        return $this->break_end_sql;
+    }
+
+    public function get_duty_start_int() {
+        return $this->duty_start_int;
+    }
+
+    public function get_duty_end_int() {
+        return $this->duty_end_int;
+    }
+
+    public function get_break_start_int() {
+        return $this->break_start_int;
+    }
+
+    public function get_break_end_int() {
+        return $this->break_end_int;
+    }
+
+    public function get_working_hours() {
+        return $this->working_hours;
+    }
+
+    public function get_break_duration() {
+        return $this->break_duration;
+    }
+
+    public function get_duty_duration() {
+        return $this->duty_duration;
+    }
+
+    public function get_working_seconds() {
+        return $this->working_seconds;
+    }
+
+    public function get_weekday() {
+        return $this->weekday;
+    }
+
     public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_object = new DateTime($date_sql);

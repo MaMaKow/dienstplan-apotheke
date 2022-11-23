@@ -58,4 +58,8 @@ class principle_roster_item extends roster_item {
         parent::__construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
     }
 
+    public function get_primary_key() {
+        return $this->primary_key;
+    }
+
 }
