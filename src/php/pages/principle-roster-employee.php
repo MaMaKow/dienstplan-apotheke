@@ -25,11 +25,11 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;
     }
-    $Principle_roster_new = user_input::get_Principle_Roster_from_POST_secure();
+    $Principle_roster_new = user_input::get_principle_employee_roster_from_POST_secure();
     $last_item_in_roster = end($Principle_roster_new)[0];
     $first_item_in_roster = reset($Principle_roster_new)[0];
     $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $first_item_in_roster->date_object, $last_item_in_roster->date_object);
-    $List_of_changed_keys = user_input::get_changed_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    $List_of_changed_keys = user_input::get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     $Inserted_principle_roster_item_list = user_input::get_inserted_principle_roster_item_list($Principle_roster_new);
     $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     principle_roster::insert_changed_entries_into_database_by_key($Principle_roster_new, $List_of_changed_keys);

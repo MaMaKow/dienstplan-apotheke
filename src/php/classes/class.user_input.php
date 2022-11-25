@@ -137,7 +137,7 @@ abstract class user_input {
      * @return boolean|\roster_item
      * @throws Exception
      */
-    public static function get_Principle_Roster_from_POST_secure() {
+    public static function get_principle_employee_roster_from_POST_secure() {
         $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
         $Principle_roster = array();
         if (empty($Principle_roster_from_post)) {
@@ -223,6 +223,94 @@ abstract class user_input {
         return $Principle_roster;
     }
 
+    public static function get_principle_roster_day_from_POST_secure() {
+        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $Principle_roster = array();
+        if (empty($Principle_roster_from_post)) {
+            return FALSE;
+        }
+        if (1 !== sizeof($Principle_roster_from_post)) {
+            throw new Exception("\$Principle_roster_from_post must contain a whole week sent from principle-roster-employee.php");
+        }
+        foreach ($Principle_roster_from_post as $date_unix => $Principle_roster_day) {
+            if (!is_numeric($date_unix)) {
+                throw new Exception('$date_unix must be an integer representing a unix timestamp!');
+            }
+            foreach ($Principle_roster_day as $roster_row_iterator => $Principle_roster_row_array) {
+                if (!is_numeric($roster_row_iterator)) {
+                    throw new Exception('$roster_row_iterator must be an integer!');
+                }
+                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
+                $employee_id = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT));
+                $branch_id = filter_var($Principle_roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_STRING));
+                if (!is_numeric($branch_id)) {
+                    throw new Exception('$branch_id must be an integer!');
+                }
+                if (!validate_date($date_sql, 'Y-m-d')) {
+                    throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
+                }
+                if (NULL === $employee_id OR!is_numeric($employee_id)) {
+                    /**
+                     * Es wurde kein Mitarbeiter übergeben.
+                     * Dieses Item ist ungültig und wird übersprungen:
+                     */
+                    continue;
+                }
+                if (!validate_date($duty_start_sql, 'H:i')) {
+                    /**
+                     * <p lang=de>
+                     * Einträge sind nur gültig, wenn sie einen Start und ein Ende haben.
+                     * Entweder hier wurde ein bereits existierender Eintrag gelöscht,
+                     * oder es wurde ein neuer Eintrag nicht korrekt übergeben.
+                     * </p>
+                     */
+                    if (isset($Principle_roster_row_array['primary_key']) and!validate_date($duty_end_sql, 'H:i')) {
+                        /**
+                         * <p lang=de>
+                         * Dienstzeit wurde gerade gelöscht.
+                         * Wir erstellen einen leeren Eintrag ohne Inhalt:
+                         * </p>
+                         */
+                        $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_NUMBER_INT));
+                        $Principle_roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                        continue;
+                    }
+                    /**
+                     * <p lang=de>
+                     * Der Eintrag ist komplett ungültig.
+                     * Wir geben das als Feher an den User zurück:
+                     * </p>
+                     */
+                    throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
+                }
+                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                    throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
+                }
+                if (!isset($Principle_roster_row_array['primary_key']) or!is_numeric($Principle_roster_row_array['primary_key'])) {
+                    /**
+                     * <p lang=de>Wenn für diesen Mitarbeiter bisher kein Grundplan hinterlegt war,
+                     *  dann wird dort auch kein primary key übertragen.
+                     *  Wenn für diesen Mitarbeiter nun aber doch ein Eintrag übergeben wird,
+                     *  so müssen wir zunächst einen primary key vergeben.
+                     *  Da die Datenbank final zu entscheiden hat,
+                     *  welcher primary key zu verwenden ist, nehmen wir in PHP einfach NULL.</p>
+                     */
+                    $Principle_roster_row_array['primary_key'] = null;
+                }
+
+                $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_NUMBER_INT));
+                $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
+                $Principle_roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
+            }
+        }
+        return $Principle_roster;
+    }
+
     private static function remove_changed_entries_from_database($branch_id, $Employee_id_list) {
         $sql_query = "DELETE FROM `Dienstplan`"
                 . " WHERE `Datum` = :date"
@@ -291,7 +379,7 @@ abstract class user_input {
      * @param type $Principle_roster_old
      * @return type
      */
-    public static function get_changed_roster_primary_key_list($Principle_roster_new, $Principle_roster_old) {
+    public static function get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old) {
         $Changed_roster_primary_key_list = array();
         foreach ($Principle_roster_new as $date_unix => $Roster_day_array) {
             if (!isset($Principle_roster_old[$date_unix]) or roster::is_empty_roster_day_array($Principle_roster_old[$date_unix])) {
@@ -299,6 +387,9 @@ abstract class user_input {
                  * There is no old roster. Every entry for this day is new:
                  */
                 foreach ($Roster_day_array as $roster_item) {
+                    if ($roster_item instanceof roster_item_empty) {
+                        continue;
+                    }
                     if (NULL === $roster_item->get_primary_key()) {
                         continue;
                     }

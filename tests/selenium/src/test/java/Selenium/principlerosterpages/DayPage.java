@@ -23,6 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -368,10 +370,6 @@ public class DayPage {
         WebElement employeeRosterInputElement = insertedRowElement.findElement(employeeInputBy);
         Select empoyeeInputElementSelect = new Select(employeeRosterInputElement);
         empoyeeInputElementSelect.selectByValue(String.valueOf(rosterItem.getEmployeeId()));
-        /**
-         * Get log from console.log() inside the browser:
-         */
-        //Wrapper.printBrowserConsole();
         rosterFormSubmit();
     }
 
@@ -429,7 +427,6 @@ public class DayPage {
          * The release does not seem to work properly. Move the mouse once more:
          */
         actions.moveToElement(rosterPlotElement, elementOffset, 0).build().perform();
-        Thread.sleep(5000);
         WebDriverWait wait = new WebDriverWait(driver, 20);
         /**
          * CAVE! Wir bräuchten eigentlich zwei By Variablen. CSS kann

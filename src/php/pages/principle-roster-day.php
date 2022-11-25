@@ -47,7 +47,7 @@ function handle_roster_input($branch_id, $date_object, $session) {
     }
     $Principle_roster_old = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object);
     try {
-        $Principle_roster_new = user_input::get_Roster_from_POST_secure();
+        $Principle_roster_new = user_input::get_principle_roster_day_from_POST_secure();
     } catch (\Exception $exception) {
         $user_dialog = new user_dialog();
         if (user_input::EXCEPTION_CODE_DUTY_START_INVALID === $exception->getCode()) {
@@ -69,8 +69,10 @@ function handle_roster_input($branch_id, $date_object, $session) {
         }
     }
     $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
-    $List_of_changed_keys = user_input::get_changed_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    $List_of_changed_keys = user_input::get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    $Inserted_principle_roster_item_list = user_input::get_inserted_principle_roster_item_list($Principle_roster_new);
     principle_roster::insert_changed_entries_into_database_by_key($Principle_roster_new, $List_of_changed_keys);
+    principle_roster::insert_new_entries_into_database($Inserted_principle_roster_item_list);
     principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
     /**
      * <p lang=de>Dies sind roster_items, bei denen per SELECT der employee geändert wurde:<p>

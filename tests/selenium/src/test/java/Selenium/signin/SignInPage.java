@@ -60,8 +60,7 @@ public class SignInPage {
         WebDriverWait waitShort = new WebDriverWait(driver, 1);
         try {
             waitShort.until(ExpectedConditions.presenceOfElementLocated(By.id("login_button_submit")));
-        }
-        catch (TimeoutException exception) {
+        } catch (TimeoutException exception) {
             /**
              * <p lang=de>Wenn wir keinen Login submit button finden, dann
              * könnte es ja sein, dass wir bereits eingeloggt sind?</p>
@@ -79,7 +78,7 @@ public class SignInPage {
                 throw new IllegalStateException("This is already a logged in state,"
                         + " current page is: " + driver.getCurrentUrl());
                  */
-                System.out.println("We have already been logged in. Nothing to do here.");
+                //System.out.println("We have already been logged in. Nothing to do here.");
                 return new HomePage(driver);
             } else {
                 /**

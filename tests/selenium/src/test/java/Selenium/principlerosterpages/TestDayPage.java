@@ -53,7 +53,7 @@ public class TestDayPage {
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
     public void testDateNavigation() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
+        propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
         driver.get(urlPageTest);
 

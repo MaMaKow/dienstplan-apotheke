@@ -80,7 +80,6 @@ class saturday_rotation {
                 $this->write_participation_to_database();
             }
         }
-        //print_debug_variable_to_screen($this->team_id);
         return $this->team_id;
     }
 

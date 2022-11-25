@@ -111,12 +111,6 @@ public class TestRosterEmployeePage {
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         Assert.assertEquals(rosterEmployeePage.getUserNameText(), pdr_user_name);
         /**
-         * Move to specific date to get a specific roster:
-         */
-        rosterEmployeePage = rosterEmployeePage.selectEmployee(5);
-        rosterEmployeePage = rosterEmployeePage.goToDate("01.07.2020"); //This date is a wednesday.
-        Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-29"); //This is the corresponding monday.
-        /**
          * Read the roster from json files and find the same values in the
          * employee pages:
          */
