@@ -33,6 +33,8 @@ class roster_item implements \JsonSerializable {
     public $comment;
     protected $duty_start_int;
     protected $duty_start_sql;
+    protected $dutyStartDateTime;
+    protected $dutyEndDateTime;
     protected $duty_end_int;
     protected $duty_end_sql;
     protected $break_start_int;
@@ -71,6 +73,90 @@ class roster_item implements \JsonSerializable {
         return $this->$variable_name;
     }
 
+    public function get_date_sql() {
+        return $this->date_sql;
+    }
+
+    public function get_date_unix() {
+        return $this->date_unix;
+    }
+
+    public function get_date_object() {
+        return $this->date_object;
+    }
+
+    public function get_employee_id() {
+        return $this->employee_id;
+    }
+
+    public function get_branch_id() {
+        return $this->branch_id;
+    }
+
+    public function get_comment() {
+        return $this->comment;
+    }
+
+    public function get_duty_start_sql() {
+        return $this->duty_start_sql;
+    }
+
+    public function get_dutyStartDateTime() {
+        return $this->dutyStartDateTime;
+    }
+
+    public function get_dutyEndDateTime() {
+        return $this->dutyEndDateTime;
+    }
+
+    public function get_duty_end_sql() {
+        return $this->duty_end_sql;
+    }
+
+    public function get_break_start_sql() {
+        return $this->break_start_sql;
+    }
+
+    public function get_break_end_sql() {
+        return $this->break_end_sql;
+    }
+
+    public function get_duty_start_int() {
+        return $this->duty_start_int;
+    }
+
+    public function get_duty_end_int() {
+        return $this->duty_end_int;
+    }
+
+    public function get_break_start_int() {
+        return $this->break_start_int;
+    }
+
+    public function get_break_end_int() {
+        return $this->break_end_int;
+    }
+
+    public function get_working_hours() {
+        return $this->working_hours;
+    }
+
+    public function get_break_duration() {
+        return $this->break_duration;
+    }
+
+    public function get_duty_duration() {
+        return $this->duty_duration;
+    }
+
+    public function get_working_seconds() {
+        return $this->working_seconds;
+    }
+
+    public function get_weekday() {
+        return $this->weekday;
+    }
+
     public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_object = new DateTime($date_sql);
@@ -87,12 +173,16 @@ class roster_item implements \JsonSerializable {
         $this->break_end_int = $this->convert_time_to_seconds($break_end);
         $this->comment = $comment;
         $this->weekday = date("N", $this->date_unix);
-
+        /*
+         * TODO: Make the TimeZone a configuration variable!
+         */
+        $this->dutyStartDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $duty_start, new DateTimeZone('Europe/Berlin'));
+        $this->dutyEndDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $duty_end, new DateTimeZone('Europe/Berlin'));
         /*
          * TODO: This might be a good place to issue an error, if the break times are not within the working times.
          * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?
          */
-        //$this->check_roster_item_sequence();
+//$this->check_roster_item_sequence();
         $this->calculate_durations();
     }
 
@@ -162,22 +252,22 @@ class roster_item implements \JsonSerializable {
     }
 
     public function check_roster_item_sequence() {
-        try {
-            if ($this->break_end_int > $this->duty_end_int) {
-                throw new Exception('The break starts, before it ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-            if (!empty($this->break_start_int) and $this->break_start_int < $this->duty_start_int) {
-                throw new Exception('The break starts, before duty begins.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-            if ($this->break_end_int < $this->break_start_int) {
-                throw new Exception('The break ends, after duty ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-            if ($this->duty_end_int < $this->duty_start_int) {
-                throw new Exception('The duty starts, after it ends.<br>' . ' Employee id: ' . $this->employee_id . '<br> Start of duty: ' . $this->duty_start_sql);
-            }
-        } catch (Exception $exception) {
-            error_log('Message: ' . $exception->getMessage());
-            throw new PDRRosterLogicException($exception->getMessage());
+        $user_dialog = new user_dialog();
+        if ($this->break_end_int > $this->duty_end_int) {
+            $error_message = sprintf(gettext('The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
+        }
+        if (!empty($this->break_start_int) and $this->break_start_int < $this->duty_start_int) {
+            $error_message = sprintf(gettext('The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
+        }
+        if ($this->break_end_int < $this->break_start_int) {
+            $error_message = sprintf(gettext('The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
+        }
+        if ($this->duty_end_int < $this->duty_start_int) {
+            $error_message = sprintf(gettext('The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
     }
 
@@ -186,7 +276,6 @@ class roster_item implements \JsonSerializable {
         $message = "";
         /*
          * The following part is added upon aggregation:
-         * $message = sprintf(gettext("Dear %1s,"), $workforce->List_of_employees[$this->employee_id]->full_name) . PHP_EOL . PHP_EOL;
          */
         $message .= gettext('Date');
         $message .= ":";
@@ -194,18 +283,19 @@ class roster_item implements \JsonSerializable {
         $message .= strftime('%x', $this->date_unix) . PHP_EOL;
         $message .= $context_string . PHP_EOL;
         $message .= gettext('You work at the following times:') . PHP_EOL;
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $message .= $List_of_branch_objects[$this->branch_id]->name . PHP_EOL;
         $message .= gettext('Start and end of duty');
         $message .= ":";
         $message .= PHP_EOL;
-        $message .= sprintf(gettext("From %1s to %2s"), $this->duty_start_sql, $this->duty_end_sql);
+        $message .= sprintf(gettext('From %1$s to %2$s'), $this->duty_start_sql, $this->duty_end_sql);
         $message .= PHP_EOL;
-        if (!empty($this->break_start_sql) and ! empty($this->break_end_sql)) {
+        if (!empty($this->break_start_sql) and!empty($this->break_end_sql)) {
             $message .= gettext('Start and end of lunch break');
             $message .= ":";
             $message .= PHP_EOL;
-            $message .= sprintf(gettext("From %1s to %2s"), $this->break_start_sql, $this->break_end_sql);
+            $message .= sprintf(gettext('From %1$s to %2$s'), $this->break_start_sql, $this->break_end_sql);
             $message .= PHP_EOL;
         }
         /*

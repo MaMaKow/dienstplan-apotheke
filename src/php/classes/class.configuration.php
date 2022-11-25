@@ -46,7 +46,7 @@ class configuration {
         'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
         'LC_TIME' => 'C',
         'timezone' => 'Europe/Berlin',
-        'language' => 'de_DE',
+        'language' => 'de-DE',
         'mb_internal_encoding' => 'UTF-8',
         'contact_email' => '',
         'hide_disapproved' => FALSE, //We set it up to false in order not to disconcert new administrators.
@@ -90,8 +90,8 @@ class configuration {
      *
      */
     public static $List_of_supported_languages = array(
-        'en_GB' => 'English',
-        'de_DE' => 'Deutsch',
+        'en-GB' => 'English',
+        'de-DE' => 'Deutsch',
     );
 
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
@@ -163,9 +163,15 @@ class configuration {
      */
     public static function build_supported_locales_datalist() {
         $datalist_locales = "<datalist id='locales'>\n";
+        $exec_result = array();
         exec("locale -a", $exec_result);
-        foreach ($exec_result as $key => $installed_locale) {
-            $datalist_locales .= "<option value='$installed_locale'>\n";
+        foreach ($exec_result as $installed_locale) {
+            /*
+             * For security reasons we clean the result of the shell execution.
+             * This might be paranoid. But I count this as user input.
+             */
+            $installed_locale_clean = filter_var($installed_locale, FILTER_SANITIZE_STRING);
+            $datalist_locales .= "<option value='" . htmlentities($installed_locale_clean, ENT_QUOTES) . "'>\n";
         }
         $datalist_locales .= "</datalist>\n";
         return $datalist_locales;
@@ -189,7 +195,7 @@ class configuration {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
-                        $user_dialog->add_message(gettext('Passwords do not match!'));
+                        $user_dialog->add_message(gettext('The passwords do not match.'));
                         $new_config[$key] = $config[$key];
                         continue;
                     }

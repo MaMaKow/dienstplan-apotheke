@@ -27,7 +27,7 @@ function build_permission_list($user) {
     $text = (string) "";
     foreach (sessions::$Pdr_list_of_privileges as $privilege) {
 
-        $privilege_name = pdr_gettext(str_replace('_', ' ', $privilege));
+        $privilege_name = localization::gettext(str_replace('_', ' ', $privilege));
         $text .= "<label for='$privilege'>" . $privilege_name . ": </label>";
         $text .= "<input type='checkbox' name='privilege[]' value='$privilege' id='$privilege' ";
         if (in_array($privilege, $user->privileges)) {
@@ -75,7 +75,7 @@ $user_dialog = new \user_dialog;
 echo $user_dialog->build_messages();
 ?>
 <main>
-    <h1><?= sprintf(gettext('User page for user %1s'), $_SESSION['user_object']->user_name); ?></h1>
+    <h1><?= sprintf(gettext('User page for user %1$s'), $_SESSION['user_object']->user_name); ?></h1>
     <form action='' method='POST' id='user_form'></form>
     <form action='' method='POST' id="user_page_password_form"></form>
     <fieldset id='email_consent'>

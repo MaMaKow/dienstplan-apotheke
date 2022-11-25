@@ -3,4 +3,4 @@ CREATE TABLE IF NOT EXISTS `saturday_rotation_teams` (
   `employee_id` tinyint(4) NOT NULL,
   `branch_id` tinyint(4) NOT NULL,
   PRIMARY KEY (`team_id`,`employee_id`,`branch_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_german1_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

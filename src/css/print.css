@@ -64,9 +64,9 @@ div#weekly_rotation {
 }
 div#week_hours_table_div {
     position: fixed;
-    top: 5cm;
+    bottom: 2cm;
     right: 0cm;
-    width: 4cm;
+    width: 5.2cm;
     font-size: xx-small;
 }
 table#duty_roster_table {

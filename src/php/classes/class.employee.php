@@ -29,6 +29,7 @@ class employee {
     public $first_name;
     public $last_name;
     public $full_name;
+    public $profession;
 
     /**
      *
@@ -56,6 +57,13 @@ class employee {
      *   This might be a day before the start of the actual contract.
      */
     public $start_of_employment;
+
+    /**
+     *
+     * @var string The last day on which the employee did work.
+     *   This might be a day after the start of the actual contract.
+     *   This might also be a day without work if the employee was sick or had holidays or overtime left.
+     */
     public $end_of_employment;
 
     /**
@@ -93,8 +101,8 @@ class employee {
          */
         $date_unix = $date_object->getTimestamp();
         if (empty($this->Principle_roster[$date_unix])) {
-            $Principle_roster_on_date = principle_roster::read_current_principle_employee_roster_from_database($this->employee_id, $date_object, $date_object);
-            $this->Principle_roster[$date_unix] = $Principle_roster_on_date[$date_unix];
+            $Example_roster = principle_roster::read_current_principle_employee_roster_from_database($this->employee_id, clone $date_object, clone $date_object);
+            $this->Principle_roster[$date_unix] = $Example_roster[$date_unix];
         }
         return $this->Principle_roster[$date_unix];
     }

@@ -38,7 +38,7 @@ class roster {
             $date_end_object = clone $date_start_object;
         }
         if (NULL !== $employee_id) {
-            $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
+            $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_id, clone $date_start_object, clone $date_end_object);
             return TRUE;
         }
         throw new Exception('The object of the class ' . __CLASS__ . ' was not correctly constructed. Please check the parameters.');
@@ -84,7 +84,7 @@ class roster {
      * @param $start_date_sql string A string representation in the form of 'Y-m-d'. The first day, that is to be read.
      * @param $end_date_sql string A string representation in the form of 'Y-m-d'. The last day, that is to be read.
      */
-    public static function read_roster_from_database($branch_id, $date_sql_start, $date_sql_end = NULL) {
+    public static function read_roster_from_database(int $branch_id, string $date_sql_start, string $date_sql_end = NULL) {
         /*
          * TODO: unify this with read_branch_roster_from_database
          * Make them both one function perhaps.
@@ -161,27 +161,6 @@ class roster {
         return $Roster;
     }
 
-    public static function transfer_lunch_breaks($Principle_employee_roster, $Principle_roster) {
-        foreach ($Principle_employee_roster as $date_unix => $Principle_employee_roster_day_array) {
-            foreach ($Principle_employee_roster_day_array as $principle_employee_roster_object) {
-                if (NULL === $principle_employee_roster_object->break_start_int and isset($Principle_roster[$date_unix])) {
-                    foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
-                        if ($principle_roster_object->employee_id === $principle_employee_roster_object->employee_id
-                                and $principle_roster_object->duty_start_int === $principle_employee_roster_object->duty_start_int
-                                and $principle_roster_object->branch_id === $principle_employee_roster_object->branch_id
-                                and NULL !== $principle_roster_object->break_start_int) {
-                            $principle_employee_roster_object->break_start_int = $principle_roster_object->break_start_int;
-                            $principle_employee_roster_object->break_end_int = $principle_roster_object->break_end_int;
-                            $principle_employee_roster_object->break_start_sql = $principle_roster_object->break_start_sql;
-                            $principle_employee_roster_object->break_end_sql = $principle_roster_object->break_end_sql;
-                            // The durations are automagically recalculated using roster_intem->__set() which calls roster_item->calculate_durations()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     public static function calculate_changing_times($Roster) {
         if (array() === $Roster) {
             /* No roster, no changing times */
@@ -209,6 +188,14 @@ class roster {
         return $Clean_changing_times;
     }
 
+    /**
+     *
+     * @param type $Roster
+     * @param type $day_iterator
+     * @param type $roster_row_iterator
+     * @return type
+     * @todo Are these functions used somewhere?
+     */
     public static function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
         return $Roster[$day_iterator][$roster_row_iterator]->employee_id;
     }
@@ -233,6 +220,19 @@ class roster {
         return $Roster[$day_iterator][$roster_row_iterator]->comment;
     }
 
+    public static function get_working_hours_in_all_branches(string $date_string, int $employee_id) {
+        $working_hours = 0;
+        $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `VK` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'date' => $date_string,
+            'employee_id' => $employee_id,
+        ));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $working_hours = $row->working_hours;
+        }
+        return $working_hours;
+    }
+
     /**
      *
      * @param array $Roster
@@ -248,10 +248,9 @@ class roster {
         return $roster_employee_count;
     }
 
-    /*
+    /**
      * Calculation of the working hours of the employees:
      */
-
     public static function calculate_working_hours_weekly_from_branch_roster($Branch_roster) {
         /*
          * CAVE! This function expects an array of the format: $Branch_roster[$branch_id][$date_unix][$roster_item]

@@ -27,7 +27,8 @@ class examine_rosterTest extends PHPUnit_Framework_TestCase {
     private $instance;
 
     public function setUp() {
-        $this->List_of_branch_objects = branch::read_branches_from_database();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+        $this->List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $this->branch_id = 1;
     }
 

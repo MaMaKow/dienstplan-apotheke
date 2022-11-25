@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS `branch` (
   `manager` varchar(64) NOT NULL,
   `PEP` int(11) DEFAULT NULL COMMENT 'Dieser Wert wird vom ASYS PEP-Modul vorgegeben.',
   PRIMARY KEY (`branch_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

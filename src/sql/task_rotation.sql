@@ -4,4 +4,4 @@ CREATE TABLE IF NOT EXISTS `task_rotation` (
   `VK` tinyint(4) NOT NULL,
   `branch_id` tinyint(4) NOT NULL,
   PRIMARY KEY (`date`,`task`,`branch_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

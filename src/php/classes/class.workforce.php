@@ -23,11 +23,11 @@
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class workforce {
-    /*
-     * TODO: This class is now used more often to create objects.
-     *     It should be optimized.
-     *     For example it could store an array of known workforce objects/arrays.
+
+    /**
+     * @var array List_of_workforce_objects <p>is an array of known workforce objects</p>
      */
+    static private $List_of_workforce_objects = array();
 
     /**
      *
@@ -45,9 +45,20 @@ class workforce {
     public $List_of_goods_receipt_employees;
     public $List_of_compounding_employees;
 
-    public function __construct($date_start_sql = NULL, $date_end_sql = NULL) {
+    public function __construct(string $date_start_sql = NULL, string $date_end_sql = NULL) {
         $this->date_start_sql = $date_start_sql;
         $this->date_end_sql = $date_end_sql;
+        if (isset(self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql])) {
+            /*
+             * If this exact workforce is known already, we do not have to repeat that queries.
+             */
+            $this->List_of_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_employees;
+            $this->List_of_qualified_pharmacist_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_qualified_pharmacist_employees;
+            $this->List_of_goods_receipt_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_goods_receipt_employees;
+            $this->List_of_compounding_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_compounding_employees;
+
+            return TRUE;
+        }
         if (NULL === $date_start_sql) {
             $sql_query = 'SELECT * FROM `employees` '
                     . 'ORDER BY `id` ASC, ISNULL(`end_of_employment`) ASC, `end_of_employment` ASC;';
@@ -75,13 +86,74 @@ class workforce {
                 $this->List_of_compounding_employees[] = $row->id;
             }
         }
+        self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql] = $this;
     }
 
+    /**
+     * @todo Get rid of this function!
+     */
     public function __set($name, $value) {
         if ('date_sql' === $name) {
             throw new Exception('$date_sql may only be given on __construct!');
         }
         $this->$name = $value;
+    }
+
+    /**
+     * Get the last name of an employee
+     *
+     * @param int $employee_id
+     * @return string <p>last name of chosen employee or '???' if the employee is not known.
+     * For example if an emergency service is not yet chosen ($employee_id = NULL)</p>
+     */
+    public function get_employee_last_name(int $employee_id) {
+        if (FALSE !== $this->get_employee_value($employee_id, 'last_name')) {
+            return $this->get_employee_value($employee_id, 'last_name');
+        }
+        return $employee_id . '???';
+    }
+
+    /**
+     * Get the profession of an employee
+     *
+     * @param int $employee_id
+     * @return string profession of the chosen employee
+     */
+    public function get_employee_profession($employee_id) {
+        if (FALSE !== $this->get_employee_value($employee_id, 'profession')) {
+            return $this->get_employee_value($employee_id, 'profession');
+        } else {
+            throw new Exception('This employee does not exist!');
+        }
+    }
+
+    public function get_employee_object($employee_id) {
+        if ($this->List_of_employees[$employee_id] instanceof employee) {
+            return $this->List_of_employees[$employee_id];
+        }
+        throw new Exception('This employee does not exist!');
+    }
+
+    public function employee_exists($employee_id) {
+        if (isset($this->List_of_employees[$employee_id]) and $this->List_of_employees[$employee_id] instanceof employee) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+    /**
+     * @todo Delete this function. We do not need it, I hope.
+     * @param int $employee_id
+     * @param string $key
+     * @return misc
+     */
+    private function get_employee_value(int $employee_id, string $key) {
+        if (isset($this->List_of_employees[$employee_id])) {
+            if (isset($this->List_of_employees[$employee_id]->$key)) {
+                return $this->List_of_employees[$employee_id]->$key;
+            }
+        }
+        return FALSE;
     }
 
     public function get_list_of_employee_names() {
@@ -90,6 +162,14 @@ class workforce {
             $List_of_employee_last_names[$employee_id] = $employee_object->last_name;
         }
         return $List_of_employee_last_names;
+    }
+
+    public function get_list_of_employee_professions() {
+        $List_of_employee_professions = array();
+        foreach ($this->List_of_employees as $employee_id => $employee_object) {
+            $List_of_employee_professions[$employee_id] = $employee_object->profession;
+        }
+        return $List_of_employee_professions;
     }
 
     public static function get_first_start_of_employment($employee_id) {
@@ -101,7 +181,7 @@ class workforce {
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             if (NULL === $row->first_start_of_employment) {
-                $row->first_start_of_employment = "1970-01-01";
+                return new DateTime("1970-01-01");
             }
             return new DateTime($row->first_start_of_employment);
         }

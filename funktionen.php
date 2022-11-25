@@ -23,9 +23,19 @@
  * @param int $days The number of days until expiration.
  * @return null
  */
-function create_cookie($cookie_name, $cookie_value, $days = 7) {
+function create_cookie(string $cookie_name, $cookie_value, float $days = 7) {
     if (isset($cookie_name) AND isset($cookie_value)) {
-        setcookie($cookie_name, $cookie_value, time() + (86400 * $days), "/"); // 86400 = 1 day
+        $minutes = round($days * 24 * 60);
+        $Expire_obj = (new DateTime())->add(new DateInterval('PT' . $minutes . 'M'));
+        //function setcookie(string $name, string $value = "", int $expires = 0, string $path = "", string $domain = "", bool $secure = FALSE, bool $httponly = FALSE): bool {}
+        $name = $cookie_name;
+        $value = $cookie_value;
+        $expires = $Expire_obj->getTimestamp();
+        $path = PDR_HTTP_SERVER_APPLICATION_PATH;
+        $domain = "." . PDR_HTTP_SERVER_DOMAIN; //The dot is necessary for all domains, which are no subdomains, at least for some browsers.
+        $secure = true;
+        $httponly = true;
+        setcookie($name, $value, $expires, $path, $domain, $secure, $httponly);
     }
 }
 
@@ -60,9 +70,11 @@ function calculate_percentile($arr, $percentile) {
 }
 
 function print_debug_variable_to_screen($variable) {
+    $argument_list = func_get_args();
     echo "<br>"
     . "<pre>";
-    var_export($variable);
+    //var_export($variable);
+    var_dump($argument_list);
     echo "</pre>"
     . "<br>";
 }
@@ -101,16 +113,6 @@ function print_debug_variable($variable) {
      */
 }
 
-/*
- *
-  function print_debug_backtrace() {
-  $trace = debug_backtrace();
-  $message = $trace;
-  error_log(var_export($message, TRUE));
-  return true;
-  }
- */
-
 /**
  * Test if PHP is running on a Windows machine.
  *
@@ -147,13 +149,16 @@ function get_php_binary() {
 }
 
 /**
- * TODO: Is this a good alternative for background_maintenance?
- * Does it work reliably?
-function execute_in_background(string $command, string $logfile = "/dev/null", string $parameters = "") {
-    if (substr(php_uname(), 0, 7) == "Windows") {
-        pclose(popen("start /B " . $command . escapeshellcmd($parameters) . " > $logfile", "r"));
-    } else {
-        exec($cmd . escapeshellcmd($parameters) . " > $logfile &");
-    }
-}
+ *
+ * @param string $date
+ * @param string $format
+ * @return bool true if the input is a date of the given format
+ * @todo Move this function into a class that extends DateTime
  */
+function validate_date(string $date = null, string $format = 'Y-m-d') {
+    if (null === $date) {
+        return false;
+    }
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) == $date;
+}

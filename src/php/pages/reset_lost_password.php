@@ -89,10 +89,13 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
 
     /*
      * No error, we can update the password in the database.
+     * TODO: Check if the password is secure!
      */
     if (!$error and lost_password_token_is_valid($employee_id, $token)) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
+        /*
+         * TODO: Move this into the user class!
+         */
         $sql_query = "UPDATE users SET password = :password WHERE `employee_id` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'password' => $password_hash));
 
@@ -107,7 +110,7 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
         }
     }
 } else {
-    $user_dialog->add_message(gettext('Missing input token'));
+    $user_dialog->add_message(gettext('The input token is missing.'));
 }
 echo $user_dialog->build_messages();
 ?>

@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+//TODO: drei Graphen mit den jeweils aktuellen pep Zahlen .;
 require "../../../default.php";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -31,7 +33,6 @@ function handle_user_input() {
     $user_dialog = new user_dialog();
     $target_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'upload/' . uniqid() . "_pep";
     $upload_file_name = basename($_FILES['file_to_upload']['name']);
-    $upload_ok = 1;
     $file_type = pathinfo($upload_file_name, PATHINFO_EXTENSION);
 
     if (UPLOAD_ERR_OK != $_FILES['file_to_upload']['error']) {
@@ -96,46 +97,97 @@ EOT;
          * Allow certain file formats
          */
         $user_dialog->add_message(gettext('Sorry, only ASYS PEP files are allowed.'));
-        $user_dialog->add_message(sprintf(gettext('You tried to upload: %1s'), $upload_file_name), E_USER_NOTICE);
+        $user_dialog->add_message(sprintf(gettext('You tried to upload: %1$s.'), $upload_file_name), E_USER_NOTICE);
         $user_dialog->add_message(gettext('Please upload a valid ASYS PEP file!'), E_USER_NOTICE);
-        $upload_ok = 0;
         return FALSE;
     }
-    if (FALSE /* Add other checks here: */) {
-        /*
-         * TODO: Check if file is in the correct format.
-         */
-        $user_dialog->add_message(gettext('Sorry, your file was not uploaded.'));
+    if (FALSE === test_file_content_pattern_asys($_FILES["file_to_upload"]["tmp_name"])) {
+        $user_dialog->add_message(gettext('Sorry, your file does not have the correct format.'));
         return FALSE;
     }
     if (!move_uploaded_file($_FILES["file_to_upload"]["tmp_name"], $target_file)) {
-        $message = gettext('Sorry, there was an error uploading your file');
+        $message = gettext('Sorry, there was an error uploading your file.');
         $user_dialog->add_message($message, E_USER_ERROR);
         return FALSE;
     }
-    $message = sprintf(gettext("The file %1s has been uploaded."), htmlentities($upload_file_name));
+    $message = sprintf(gettext('The file %1$s has been uploaded.'), htmlentities($upload_file_name));
     $message .= ' ' . gettext('It will be processed in the background.');
     $user_dialog->add_message($message, E_USER_NOTICE);
     echo "<input hidden type=text id=filename value='upload/" . htmlentities($_FILES["file_to_upload"]["name"]) . "'>\n";
     echo "<input hidden type=text id=targetfilename value='$target_file'>\n";
+}
+
+/**
+ *
+ * Test if the file content matches the expected pattern for asys pep files.
+ *
+ * @param type $file_name
+ * @return boolean
+ */
+function test_file_content_pattern_asys($file_name) {
+    $handle = fopen($file_name, "r");
+    if ($handle) {
+
+        $number_of_matches = 0;
+        for ($index = 0; $index < 5; $index++) {
+            $line = fgets($handle);
+            /*
+             * The pattern should match against:
+             *   01.06.2019;08:14;3,95;2;1;2531
+             */
+            $pattern = '/[0-3][0-9]\.[0-1][0-9]\.[0-9][0-9][0-9][0-9];[0-2][0-9]:[0-5][0-9];[0-9]*,[0-9][0-9];[0-9]*;[0-9]*;[0-9]*/';
+
+            $matches = array();
+            if (1 === preg_match($pattern, $line, $matches)) {
+                $number_of_matches++;
+            }
+            if ($number_of_matches >= 4) {
+                /*
+                 * Allow for one line in the test set to not match the pattern.
+                 *   This might be the heading in the first line.
+                 */
+                fclose($handle);
+                return TRUE;
+            }
+        }
+        fclose($handle);
+        return FALSE;
+    } else {
+        /*
+         *  error opening the file
+         */
+        $user_dialog = new user_dialog;
+        $user_dialog->add_message(gettext('Sorry, your file could not be opened.'));
+        return FALSE;
+    }
 }
 ?>
 <p style=height:2em></p>
 <div id=main-area>
     <form method="post" id='pep_upload_form' enctype="multipart/form-data">
         <label for="file_to_upload">Eine PEP-Datei zum Hochladen auswählen:</label><br>
-        <input type="file" name="file_to_upload" id="file_to_upload" onchange="this.form.submit()" ><br>
+        <input type="file" name="file_to_upload" id="file_to_upload" onchange=" this.form.submit(); document.body.style.cursor = 'wait';" ><br>
     </form>
+    <p id=xmlhttpresult class=day_paragraph></p>
+    <?php
+    echo $user_dialog->build_messages();
+    $histogramm = new \pep_histogramm();
+    $Expectation_javascripft_object = $histogramm->get_expectation_javascript_object(1);
+    echo "<div id='expectation' data-expectation='$Expectation_javascripft_object'>";
+    echo "</div>";
+    $canvas_width = 650;
+    $canvas_height = 300;
+    echo $histogramm->get_last_update_of_pep_data_date_string();
+    echo "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height'>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
+    ?>
+    <script src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/draw_canvas_histogram.js" ></script>
+
 </div>
 <?php
-echo $user_dialog->build_messages();
-
-echo "<p id=xmlhttpresult></p>\n";
-echo "<p id=javascriptmessage></p>\n";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 <script type="text/javascript">
-    update_pep();
+            update_pep();
 </script>
 </body>
 </html>

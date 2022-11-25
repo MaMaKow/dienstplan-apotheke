@@ -65,15 +65,15 @@ Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
 Zeile nach dem Text beginnen.
 \end{itemize}
 Festplattenplatz ist nicht mehr knapp. IDEs helfen mit
-Autoverfollständung. Es ist nicht nötig, Dinge abzukürzen. Bitte verwenden
-Sie lange Begriffe wie  \lstinline|user_email_notification_cach|  statt
-\lstinline|usr_ml_ntfcn_ca| oder \lstinline|u_e_n_c|. 
+Autovervollständigung. Es ist nicht nötig, Dinge abzukürzen. Bitte verwenden
+Sie lange Begriffe wie  \lstinline|user_email_notification_cache|  statt
+\lstinline|usr_ml_ntfcn_ca| oder \lstinline|u_e_n_c|.
 
 \subsection{Die Datenbank}
 Derzeit wird nur MySQL als Datenbankverwaltungssystem (DBMS)
 unterstützt. Die Tabellen sind:
 \begin{itemize}
-\item Abwesenheit (Krankheit, Urlaub und andere Arten von Abwesenheit)
+\item absence (Krankheit, Urlaub und andere Arten von Abwesenheit)
 \item approval (speichert für jeden Tag, ob der Leiter offiziell den Dienstplan
 autorisiert hat)
 \item branch (Informationen über die Hauptapotheke und mögliche Filialen)
@@ -153,6 +153,12 @@ Die Klassen werden im Ordner \directory{src/php/classes/} oder
 \directory{src/php/3rdparty/} gespeichert. Der Autoloader lädt nur Klassen
 aus \directory{\lstinline|src/php/classes/class.\$class_name.php|}. Jede
 andere Klasse muss manuell geladen werden.
+
+\subsubsection{DateTime}
+\emph{Warum werden die DateTime Objecte überall als clone an die Funktionen übergeben?}
+Weil Objekte stets als Referenz übergeben werden.
+Änderungen des Datums innerhalb der Methode ändern damit auch das Datumsobjekt außerhalb der Methode.
+
 
 \subsubsection{Benutzer}
 Die Klasse user stellt einen Mitarbeiter dar, der ein Benutzerkonto in PDR

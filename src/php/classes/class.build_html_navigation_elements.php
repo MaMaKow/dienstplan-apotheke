@@ -71,8 +71,11 @@ abstract class build_html_navigation_elements {
         return $button_img;
     }
 
-    public static function build_button_day_backward($date_unix) {
-        $yesterday_date_string = general_calculations::yesterday_date_string($date_unix);
+    public static function build_button_day_backward(DateTime $date_object) {
+        $yesterday_object = (clone $date_object); //We absolutely do not want to change the content of the input object.
+        unset($date_object);
+        $yesterday_object->sub(new DateInterval('P1D'));
+        $yesterday_date_string = $yesterday_object->format('Y-m-d');
         $backward_button_img = "
             <form class='inline_form' id='button_day_backward_form'>
 		<button type='submit' class='btn-primary no_print' value='$yesterday_date_string' name='datum' id='button_day_backward' title='" . gettext('Ctrl + &#8678;') . "'>
@@ -86,8 +89,11 @@ abstract class build_html_navigation_elements {
         return $backward_button_img;
     }
 
-    public static function build_button_day_forward($date_unix) {
-        $tomorow_date_string = general_calculations::tomorow_date_string($date_unix);
+    public static function build_button_day_forward(DateTime $date_object) {
+        $tomorrow_object = clone $date_object;
+        unset($date_object); //We absolutely do not want to change the content of the input object.
+        $tomorrow_object->add(new DateInterval('P1D'));
+        $tomorow_date_string = $tomorrow_object->format('Y-m-d');
         $forward_button_img = "
             <form class='inline_form' id='button_day_forward_form'>
 		<button type='submit' class='btn-primary no_print' value='$tomorow_date_string' name='datum' id='button_day_forward' title='" . gettext('Ctrl + &#8680;') . "'>
@@ -182,7 +188,7 @@ abstract class build_html_navigation_elements {
         <form method=post class='inline_form'>
                 <button type='submit' class='btn-secondary no_print' value='approve' name='submit_approval' $disabled>
                 <i class='icon-grey'>
-                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png' class='button-image' alt='" . gettext('Approve') . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_up-24px.svg' class='button-image' alt='" . gettext('Approve') . "' >
                 </i>
                 <br>
                 " . gettext('Approve') . "
@@ -202,7 +208,7 @@ abstract class build_html_navigation_elements {
         <form method=post class='inline_form'>
                 <button type='submit' class='btn-secondary no_print' value='disapprove' name='submit_disapproval' $disabled>
                 <i class='icon-grey'>
-                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/disapprove.png' class='button-image' alt='" . gettext("Disapprove") . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_down-24px.svg' class='button-image' alt='" . gettext("Disapprove") . "' >
                 </i>
                 <br>
                 " . gettext("Disapprove") . "
@@ -218,13 +224,13 @@ abstract class build_html_navigation_elements {
      * @param int $employee_id
      * @return string HTML element
      */
-    public static function build_select_employee($employee_id, $Employee_object_list) {
+    public static function build_select_employee(int $employee_id = null, array $Employee_object_list = array()) {
         $text = "<!-- employee select form-->\n";
         $text .= "<form method='POST' id='select_employee' class='inline_form'>\n";
         $text .= "<select name=employee_id class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_object_list as $employee_object) {
-            if ($employee_object->employee_id == $employee_id) {
-                $text .= "<option value=$employee_object->employee_id selected>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
+            if ($employee_object->employee_id === $employee_id) {
+                $text .= "<option selected value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
             } else {
                 $text .= "<option value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
             }
@@ -243,30 +249,25 @@ abstract class build_html_navigation_elements {
      * Support for various branch clients.
      *
      * @param int $current_branch
-
-
      * @return string HTML element
      */
 
-    public static function build_select_branch(int $current_branch_id, string $date_sql = NULL) {
-        /*
-         * TODO: Is it possible to leave out the date_sql?
-         * Branch management will send NULL. Does this interrupt any cookies?
-         */
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
-        if (1 === count($List_of_branch_objects)) {
-            return FALSE;
-        }
+    public static function build_select_branch(int $current_branch_id = null, array $List_of_branch_objects = array(), string $date_sql = NULL) {
         $text = "<!-- branch select form-->\n";
         $text .= "<div id='branch_form_div' class='inline_element'>\n";
-        $text .= "<form id=branch_form method=post>\n";
-        $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
+        $text .= "<form id=branch_form method=get>\n";
+        if (null !== $date_sql) {
+            $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
+        }
+        /*
+         * TODO: <p lang=de>Ändere name=mandant zu name=branch_id und passe alle Seiten an, die die Antwort aus dieser Funktion nutzen!</p>
+         */
         $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
-        foreach ($List_of_branch_objects as $branch_id => $branch_object) {
-            if ($branch_id != $current_branch_id) {
-                $text .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
+        foreach ($List_of_branch_objects as $branch_object) {
+            if ($branch_object->branch_id != $current_branch_id) {
+                $text .= "<option value=" . $branch_object->branch_id . ">" . $branch_object->name . "</option>\n";
             } else {
-                $text .= "<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
+                $text .= "<option selected value=" . $branch_object->branch_id . ">" . $branch_object->name . "</option>\n";
             }
         }
         $text .= "</select>\n"
@@ -277,7 +278,7 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_select_weekday($weekday_selected) {
-        $Weekday_names = build_html_navigation_elements::get_weekday_names();
+        $Weekday_names = localization::get_weekday_names();
 
         $html = '';
         $html .= "<form id='week_day_form' method=post>";
@@ -293,40 +294,17 @@ abstract class build_html_navigation_elements {
         return $html;
     }
 
-    public static function build_button_show_principle_roster_history(int $alternating_week_id, int $employee_id, int $weekday, int $branch_id, DateTime $date_object) {
-        $List_of_history_dates = principle_roster_history::get_list_of_history_dates($weekday, $alternating_week_id, $branch_id);
-        if (2 > count($List_of_history_dates)) {
-            return NULL;
-        }
-        $class_string = '';
-        $title_string = '';
-        if ($date_object < max($List_of_history_dates)) {
-            $class_string = ' attention ';
-            $title_string = sprintf(
-                    gettext("Dieser Grundplan gilt ab dem %2\$s.\nDies ist nicht die jüngste Version des Grundplanes.\nDer aktuellste Grundplan beginnt am %1\$s."), max($List_of_history_dates)->format('d.m.Y'), $date_object->format('d.m.Y'));
-        }
-        $button_img = "<form class='inline_form' action='../fragments/fragment.principle-roster-day-history.php' method='post' id='show_principle_roster_history'>
-            <input type='hidden' form='show_principle_roster_history' name='alternating_week_id' value=$alternating_week_id>
-            <input type='hidden' form='show_principle_roster_history' name='employee_id' value=$employee_id>
-            <input type='hidden' form='show_principle_roster_history' name='weekday' value=$weekday>
-            <input type='hidden' form='show_principle_roster_history' name='branch_id' value=$branch_id>
-		<button type='submit' class='btn-primary no_print $class_string' title='$title_string'>
-			<i>
-				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/history.svg' class='button-image' alt='" . gettext("principle roster history") . "'>
-			</i>
-			<br>
-			" . gettext("History") . "
-		</button>
-            </form>\n";
-        return $button_img;
-    }
-
     public static function build_button_principle_roster_delete($alternating_week_id) {
         global $session;
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
             return NULL;
         }
         if (!alternating_week::alternations_exist()) {
+            /*
+             * Prohibit deleting the last remaining alternation:
+             *   This is also enforced in the core by alternaing_week::delete_alternation()
+             */
+
             return NULL;
         }
         $button_img = "<form class='inline_form' action='' method='post' id='principle_roster_delete'>
@@ -370,12 +348,12 @@ abstract class build_html_navigation_elements {
         $Alternating_week_ids = alternating_week::get_alternating_week_ids();
         foreach ($Alternating_week_ids as $alternating_week_id_current) {
             $alternating_week = new alternating_week($alternating_week_id_current);
-            $example_monday = $alternating_week->get_monday_date_for_alternating_week($date);
+            $example_monday = $alternating_week->get_monday_date_for_alternating_week(clone $date);
             $example_date = clone $example_monday;
             if ($weekday > 1) {
                 $example_date = $example_monday->add(new DateInterval('P' . ($weekday - 1) . 'D'));
             }
-            $alternating_week_id_string = alternating_week::get_human_readably_string($alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
+            $alternating_week_id_string = alternating_week::get_human_readable_string($alternating_week_id_current) . ': ' . $example_date->format('d.m.Y');
             if ($alternating_week_id != $alternating_week_id_current) {
                 $html .= "<option value='$alternating_week_id_current'>$alternating_week_id_string</option>\n";
             } else {
@@ -384,23 +362,6 @@ abstract class build_html_navigation_elements {
         }
         $html .= "</select></form>\n";
         return $html;
-    }
-
-    public static function get_weekday_names() {
-        /*
-         * TODO: Move this function to somewhere more general!
-         * It should go into the localization class, once that it exists.
-         */
-        $Weekday_names = array(
-            1 => gettext('Monday'),
-            2 => gettext('Tuesday'),
-            3 => gettext('Wednesday'),
-            4 => gettext('Thursday'),
-            5 => gettext('Friday'),
-            6 => gettext('Saturday'),
-            7 => gettext('Sunday'),
-        );
-        return $Weekday_names;
     }
 
     public static function build_input_date($date_sql) {

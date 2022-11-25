@@ -66,7 +66,7 @@ echo "<div id=main-area>\n";
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 
-echo absence::build_html_select_year($year);
+echo form_element_builder::build_html_select_year($year);
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_id' => $employee_id));
 
@@ -96,13 +96,13 @@ echo "<tr>\n"
  */
 echo "<tr class='no_print'>\n";
 echo "<td>\n";
-echo "<input type=date id=date_chooser_input class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime>\n";
+echo "<input type=date id='date_chooser_input' class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime  autofocus>\n";
 echo "</td>\n";
 echo "<td>\n";
 echo "<input type=text onchange=update_overtime_balance() id=stunden name=stunden form=insert_new_overtime>\n";
 echo "</td>\n";
 echo "<td>\n";
-echo "<p><span id=balance_new>" . htmlentities($balance) . " </span><span id='balance_old' data-balance='" . htmlentities($balance) . "'>&nbsp</span></p>\n";
+echo "<p><span id=balance_new>" . htmlentities($balance) . " </span><span id='balance_old' data-balance='" . htmlentities($balance) . "'>&nbsp;</span></p>\n";
 echo "</td>\n";
 echo "<td>\n";
 echo "<input type=text id=grund name=grund form=insert_new_overtime>\n";

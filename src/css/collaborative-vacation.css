@@ -155,6 +155,9 @@ span.absent_employee_container.PTA.not_yet_approved{
 span.absent_employee_container.PKA{
     background-color: rgba(180, 180, 180, 0.9);
 }
+span.absent_employee_container.non_existing_employee{
+    text-decoration: line-through;
+}
 span.absent_employee_container.not_yet_approved{
     background-color: red;
     background-image: linear-gradient(to bottom right, rgba(180, 180, 180, 0.9) 50%, red);

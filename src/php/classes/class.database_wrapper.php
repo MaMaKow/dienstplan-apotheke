@@ -59,18 +59,27 @@ class database_wrapper {
         if (!empty($this->database_port) and 3306 != $this->database_port) {
             $port_string = 'port=' . $this->database_port . ';';
         } else {
-            /*
-             * TODO: Should we add special options for access thru the unix socket?
-             * Note: Unix only:
-             * When the host name is set to "localhost", then the connection to the server is made thru a domain socket. If PDO_MYSQL is compiled against libmysqlclient then the location of the socket file is at libmysqlclient's compiled in location. If PDO_MYSQL is compiled against mysqlnd a default socket can be set thru the pdo_mysql.default_socket setting.
-             * dsn examples:
-             * mysql:host=localhost;port=3306;dbname=testdb
-             * mysql:unix_socket=/tmp/mysql.sock;dbname=testdb
-             */
             $port_string = '';
         }
-        $dsn = 'mysql:host=' . $this->database_host . ';' . $port_string . 'dbname=' . $this->database_name . ';charset=utf8';
-        $this->pdo = new PDO($dsn, $this->database_user_name, $this->database_password, $options);
+        if (null == $this->database_host) {
+            die("database_host ist not set inside the configuration!");
+        }
+        $dsn = 'mysql:host=' . $this->database_host . ';' . $port_string . 'dbname=' . $this->database_name . ';charset=utf8mb4';
+        try {
+            $this->pdo = new \PDO($dsn, $this->database_user_name, $this->database_password, $options);
+        } catch (PDOException $exception) {
+            print_debug_variable($exception);
+            $message = gettext('There was an error while connecting to the database.')
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+            die("<p>$message</p>");
+        } catch (Exception $exception) {
+            print_debug_variable($exception);
+            $message = gettext('There was an error while connecting to the database.')
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+            die("<p>$message</p>");
+        }
     }
 
     /**
@@ -118,6 +127,11 @@ class database_wrapper {
     public function run($sql_query, $arguments = []) {
         try {
             $statement = $this->pdo->prepare($sql_query);
+            /*
+              if (false !== strpos($sql_query, "DELETE FROM `saturday_rotation_teams`")) {
+              print_debug_variable($sql_query, $arguments);
+              }
+             */
             $statement->execute($arguments);
             return $statement;
         } catch (Exception $exception) {
@@ -216,33 +230,6 @@ class database_wrapper {
     }
 
     /**
-     * Enable the usage of prepared statements for IN clauses
-     *
-     * This methods helps to prevent sql injection.
-     *
-     * @param array an array of values to be queryed in an IN clause
-     * @return array the placeholders and the fitting bind array
-     * @return string $in_placeholder_trimmed the placeholder string
-     * @return array $in_parameters the array items appended with ":in_placeholder"
-     */
-    public static function create_placeholder_for_mysql_IN_function($input_array, $named_placeholders = FALSE) {
-        if (FALSE === $named_placeholders) {
-            $in_placeholder = str_repeat('?,', count($input_array) - 1) . '?';
-            return array($in_placeholder, $input_array);
-        } else {
-            $in = "";
-            $in_parameters = array();
-            foreach ($input_array as $iterator => $item) {
-                $key = ":in_placeholder" . $iterator;
-                $in .= "$key,";
-                $in_parameters[$key] = $item; // collecting values into key-value array
-            }
-            $in_placeholder_trimmed = rtrim($in, ","); // :id0,:id1,:id2
-            return array($in_placeholder_trimmed, $in_parameters);
-        }
-    }
-
-    /**
      * Handle exception thrown by self::run()
      *
      * Exceptions are supposed to be of the class PDOStatement.
@@ -258,8 +245,11 @@ class database_wrapper {
         if (TRUE === $this->pdo->inTransaction()) {
             $this->pdo->rollBack();
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
-            die("<p>$message</p>");
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+            $user_dialog = new user_dialog();
+            $user_dialog->add_message($message, E_USER_ERROR);
+            throw $exception;
         } elseif ('42S22' == $exception->getCode() and 1054 === $exception->errorInfo[1]) {
             /*
              * Unknown column ... in field list
@@ -269,7 +259,8 @@ class database_wrapper {
              */
             if (3 <= self::$unknown_column_iterator++) {
                 $message = gettext('There was an error while querying the database.')
-                        . " " . gettext('Please see the error log for more details!');
+                        . " " . gettext('Please see the error log for more details!')
+                        . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
                 die("<p>$message</p>");
             }
             new update_database();
@@ -324,7 +315,8 @@ class database_wrapper {
              * print_debug_variable($exception);
              */
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         }
     }

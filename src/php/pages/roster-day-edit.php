@@ -22,6 +22,8 @@
  */
 require '../../../default.php';
 
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
@@ -65,7 +67,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql);
 }
 
-$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, $date_object, $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
+$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $date_object, clone $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
 /*
  * In case there is no roster scheduled yet, create a suggestion:
  */
@@ -80,7 +82,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     } elseif (6 == strftime('%u', $date_unix)) {
         try {
             $saturday_rotation = new saturday_rotation($branch_id);
-            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
+            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_object);
             $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
             if (!roster::is_empty($Roster)) {
                 $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
@@ -94,7 +96,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
 /*
  * Examine roster for errors and irregularities:
  */
-if ("7" !== date('N', $date_unix) and ! holidays::is_holiday($date_unix)) {
+if ("7" !== date('N', $date_unix) and!holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     $examine_roster->check_for_overlap($date_sql, $List_of_branch_objects, $workforce);
     $examine_roster->check_for_sufficient_employee_count();
@@ -121,8 +123,8 @@ $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
 $html_text .= "<div id=main-area>\n";
 $html_text .= "<div id=navigation_elements>";
-$html_text .= build_html_navigation_elements::build_button_day_backward($date_unix);
-$html_text .= build_html_navigation_elements::build_button_day_forward($date_unix);
+$html_text .= build_html_navigation_elements::build_button_day_backward(clone $date_object);
+$html_text .= build_html_navigation_elements::build_button_day_forward(clone $date_object);
 if ($session->user_has_privilege('create_roster')) {
     $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 }
@@ -134,7 +136,7 @@ if ($session->user_has_privilege('approve_roster')) {
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
 $html_text .= "</div><!-- id=navigation_elements -->\n";
-$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+$html_text .= build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 /*
  * Here we put the output of errors and warnings.
@@ -142,8 +144,9 @@ $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 $html_text .= $user_dialog->build_messages();
 $html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
 $html_text .= "<script> "
-        . " var Roster_array = " . json_encode($Roster) . ";\n"
-        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names()) . ";\n"
+        . " var Roster_array = " . json_encode($Roster, JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_professions = " . json_encode($workforce->get_list_of_employee_professions(), JSON_UNESCAPED_UNICODE) . ";\n"
         . "</script>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
@@ -159,7 +162,11 @@ if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
 $html_text .= "<br>";
-$html_text .= "" . strftime(gettext("calendar week") . ' %V', $date_unix);
+$html_text .= ""
+        . strftime(gettext("calendar week")
+                . ' %V', $date_unix)
+        . '&nbsp;'
+        . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_object));
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
@@ -174,7 +181,7 @@ $max_employee_count = roster::calculate_max_employee_count($Roster);
 $day_iterator = $date_unix; //Just in case the loop does not define it for build_html_roster_views::build_roster_input_row_add_row
 if (array() !== $Roster) {
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
-        $html_text .= "<tr>\n";
+        $html_text .= "<tr data-branch_id=" . $branch_id . " data-date_sql=" . $Roster[$day_iterator][$table_input_row_iterator]->date_sql . " data-roster_row_iterator='$table_input_row_iterator'>\n";
         foreach (array_keys($Roster) as $day_iterator) {
             $html_text .= build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_employee'));
         }
@@ -184,10 +191,10 @@ if (array() !== $Roster) {
     /*
      * Write an empty line in case the roster is empty:
      */
-    $html_text .= "<tr>\n";
+    $html_text .= "<tr data-branch_id=" . $branch_id . " data-date_sql=" . $Roster[$day_iterator][$table_input_row_iterator]->date_sql . " data-roster_row_iterator='0'>\n";
     $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 0, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
-    $html_text .= "<tr>\n";
+    $html_text .= "<tr data-branch_id=" . $branch_id . " data-date_sql=" . $Roster[$day_iterator][$table_input_row_iterator]->date_sql . " data-roster_row_iterator='1'>\n";
     $html_text .= build_html_roster_views::build_roster_input_row($Roster, $date_unix, 1, $max_employee_count, $branch_id, array('add_select_employee'));
     $html_text .= "</tr>\n";
 }

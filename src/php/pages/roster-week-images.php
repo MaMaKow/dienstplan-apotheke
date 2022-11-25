@@ -19,6 +19,8 @@
 
 require_once '../../../default.php';
 $tage = 7;
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 $mandant = $branch_id;
 create_cookie('mandant', $mandant, 30);
@@ -40,7 +42,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo "<div class='main-area'>\n";
 echo "<div id=navigation_elements class='no_print'>";
-echo build_html_navigation_elements::build_select_branch($mandant, $date_sql);
+echo build_html_navigation_elements::build_select_branch($mandant, $List_of_branch_objects, $date_sql);
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
 echo build_html_navigation_elements::build_input_date($date_sql);

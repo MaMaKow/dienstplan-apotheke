@@ -45,7 +45,7 @@ abstract class examine_attendance {
         }
         if (isset($Arbeitende_abwesende)) {
             foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
-                $message = sprintf(gettext("%1s is absent (%2s) and should not be in the roster."), $workforce->List_of_employees[$arbeitender_abwesender]->last_name, pdr_gettext($Abwesende[$arbeitender_abwesender]));
+                $message = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'), $workforce->List_of_employees[$arbeitender_abwesender]->last_name, absence::get_reason_string_localized($Abwesende[$arbeitender_abwesender]));
                 $user_dialog->add_message($message);
             }
         }
@@ -64,59 +64,82 @@ abstract class examine_attendance {
         $date_object = new DateTime();
         $date_object->setTimestamp($date_unix);
         $user_dialog = new user_dialog();
-        $Roster_workers = array();
-        $Principle_roster_workers = array();
-        global $workforce;
-        foreach ($Principle_roster as $Principle_roster_day) {
-            foreach ($Principle_roster_day as $principle_roster_object) {
-                $Principle_roster_workers[] = $principle_roster_object->employee_id;
+        $Roster_workers = self::get_roster_workers($Roster);
+        $Principle_roster_workers = self::get_roster_workers($Principle_roster);
+        $workforce = new workforce($date_object->format('Y-m-d'));
+
+        $Mitarbeiter_differenz = array_diff($Principle_roster_workers, $Roster_workers);
+        self::trim_absent_employees($Mitarbeiter_differenz, $Abwesende);
+        /*
+         * Stop processing if nobody is left
+         */
+        if (empty($Mitarbeiter_differenz)) {
+            return NULL;
+        }
+        /*
+         * Check if that worker is scheduled in any of the other branches:
+         */
+        self::trim_rescheduled_employees($Mitarbeiter_differenz, $date_object);
+        /*
+         * Stop processing if nobody is left
+         */
+        if (empty($Mitarbeiter_differenz)) {
+            return NULL;
+        }
+
+        $message = gettext('The following employees are not scheduled:');
+        $user_dialog->add_message($message, E_USER_WARNING);
+        foreach ($Mitarbeiter_differenz as $arbeiter) {
+            foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
+                if ($arbeiter == $principle_roster_object->employee_id) {
+                    //TODO: Set a link to add the employee via JavaScript?
+                    $duty_start = $principle_roster_object->duty_start_sql;
+                    $duty_end = $principle_roster_object->duty_end_sql;
+                    $message = $workforce->List_of_employees[$arbeiter]->last_name;
+                    $message .= " ($duty_start - $duty_end)";
+                    $user_dialog->add_message($message, E_USER_WARNING);
+                    break;
+                }
             }
         }
+    }
+
+    /**
+     * Check if that worker is scheduled in any of the other branches.
+     *
+     * @param type $Mitarbeiter_differenz
+     * @param type $date_object
+     */
+    private static function trim_rescheduled_employees(&$Mitarbeiter_differenz, $date_object) {
+        foreach ($Mitarbeiter_differenz as $key => $employee_id) {
+            $working_hours = roster::get_working_hours_in_all_branches($date_object->format('Y-m-d'), $employee_id);
+            $working_hours_should = principle_roster::get_working_hours_should(clone $date_object, $employee_id);
+            if ($working_hours >= $working_hours_should) {
+                unset($Mitarbeiter_differenz[$key]);
+            }
+        }
+    }
+
+    /**
+     * Check if that worker is absent
+     *
+     * @param type $Mitarbeiter_differenz
+     * @param type $Abwesende
+     */
+    private static function trim_absent_employees(&$Mitarbeiter_differenz, $Abwesende) {
+        if (isset($Abwesende)) {
+            $Mitarbeiter_differenz = array_diff($Mitarbeiter_differenz, array_keys($Abwesende));
+        }
+    }
+
+    private static function get_roster_workers($Roster) {
+        $Roster_workers = array();
         foreach ($Roster as $Roster_day) {
             foreach ($Roster_day as $roster_object) {
                 $Roster_workers[] = $roster_object->employee_id;
             }
         }
-        $Mitarbeiter_differenz = array_diff($Principle_roster_workers, $Roster_workers);
-        if (isset($Abwesende)) {
-            $Mitarbeiter_differenz = array_diff($Mitarbeiter_differenz, array_keys($Abwesende));
-        }
-        if (!empty($Mitarbeiter_differenz)) {
-            /*
-             * Check if that worker is scheduled in any of the other branches:
-             */
-            foreach ($Mitarbeiter_differenz as $key => $employee_id) {
-                $working_hours = 0;
-                $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `VK` = :employee_id";
-                $result = database_wrapper::instance()->run($sql_query, array(
-                    'date' => $date_object->format('Y-m-d'),
-                    'employee_id' => $employee_id,
-                ));
-                while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                    $working_hours = $row->working_hours;
-                }
-                $working_hours_should = principle_roster::get_working_hours_should($date_object, $employee_id);
-                if ($working_hours >= $working_hours_should) {
-                    unset($Mitarbeiter_differenz[$key]);
-                }
-            }
-        }
-        if (!empty($Mitarbeiter_differenz)) {
-            $message = gettext('The following employees are not scheduled:');
-            $user_dialog->add_message($message, E_USER_WARNING);
-            foreach ($Mitarbeiter_differenz as $arbeiter) {
-                foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
-                    if ($arbeiter == $principle_roster_object->employee_id) {
-                        $duty_start = $principle_roster_object->duty_start_sql;
-                        $duty_end = $principle_roster_object->duty_end_sql;
-                        $message = $workforce->List_of_employees[$arbeiter]->last_name;
-                        $message .= " ($duty_start - $duty_end)";
-                        $user_dialog->add_message($message, E_USER_WARNING);
-                        break;
-                    }
-                }
-            }
-        }
+        return $Roster_workers;
     }
 
 }

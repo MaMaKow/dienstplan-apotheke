@@ -21,19 +21,18 @@ require '../../../default.php';
 
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_STRING, date('Y'));
 create_cookie("year", $year, 1);
-$start_date_unix = strtotime("first sat of jan $year");
-$end_date_unix = strtotime("last sat of dec $year");
-$date_unix = $start_date_unix;
-$date_sql = date('Y-m-d', $date_unix);
+$date_object_start = new DateTime("first sat of jan $year");
+$date_object_end = new DateTime("last sat of dec $year");
 
-$branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 create_cookie("mandant", $branch_id, 30);
 
+$user_dialog = new user_dialog();
 
-$saturday_rotation = new saturday_rotation($branch_id);
-
-$html_select_year = absence::build_html_select_year($year);
-$html_select_branch = build_html_navigation_elements::build_select_branch($branch_id, $date_sql);
+$html_select_year = form_element_builder::build_html_select_year($year);
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$html_select_branch = build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects);
 
 $table_head = "<thead>\n";
 $table_head .= "<tr>";
@@ -44,66 +43,8 @@ $table_head .= "<th>" . gettext("Scheduled in roster") . "</th>\n";
 $table_head .= "</tr>\n";
 $table_head .= "</thead>\n";
 $table_body = "<tbody>\n";
-for ($date_unix = $start_date_unix; $date_unix <= $end_date_unix; $date_unix += PDR_ONE_DAY_IN_SECONDS * 7) {
-    /*
-     * TODO: Move to date objects!
-     */
-    $date_string = strftime('%a %x', $date_unix);
-    $date_sql = date('Y-m-d', $date_unix);
-
-    $workforce = new workforce($date_sql);
-    $Absentees = absence::read_absentees_from_database($date_sql);
-    $Roster = roster::read_roster_from_database($branch_id, $date_sql);
-
-    $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_sql);
-    if (NULL === $saturday_rotation_team_id or FALSE === $saturday_rotation_team_id) {
-        /*
-         * TODO: Find a better workaround?
-         */
-        continue;
-    }
-    $Saturday_rotation_team_member_ids = $saturday_rotation->List_of_teams[$saturday_rotation_team_id];
-    $Saturday_rotation_team_member_names = array();
-    foreach ($Saturday_rotation_team_member_ids as $employee_id) {
-        if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
-            $prefix = '<span>';
-            $suffix = '</span>';
-            if (in_array($employee_id, array_keys($Absentees))) {
-                $prefix = '<span class="absent">';
-                $suffix = "&nbsp;(" . gettext($Absentees[$employee_id]) . ')</span>';
-            }
-
-            $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_id]->last_name . $suffix;
-        } else {
-            $Saturday_rotation_team_member_names[] = "$employee_id???";
-        }
-    }
-
-    $Rostered_employees = array();
-    foreach ($Roster as $Roster_day_array) {
-        foreach ($Roster_day_array as $roster_item) {
-            if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
-                $prefix = '<span>';
-                $suffix = '</span>';
-                if (in_array($roster_item->employee_id, array_keys($Absentees))) {
-                    $prefix = '<span class="absent">';
-                    $suffix = "&nbsp;(" . gettext($Absentees[$roster_item->employee_id]) . ')</span>';
-                }
-                $Rostered_employees[$roster_item->employee_id] = $prefix . $workforce->List_of_employees[$roster_item->employee_id]->last_name . $suffix;
-            }
-        }
-    }
-
-    $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
-    $rostered_employees_names_string = implode(', ', $Rostered_employees);
-
-    $table_row = "";
-    $table_row .= "<tr>";
-    $table_row .= "<td>" . $date_string . "</td>";
-    $table_row .= "<td>" . $saturday_rotation->team_id . "</td>";
-    $table_row .= "<td>" . $saturday_rotation_team_member_names_string . "</td>";
-    $table_row .= "<td>" . $rostered_employees_names_string . "</td>";
-    $table_row .= "</tr>\n";
+for ($date_object = clone $date_object_start; $date_object <= $date_object_end; $date_object->add(new DateInterval('P7D'))) {
+    $table_row = \build_table_row($date_object, $branch_id);
     $table_body .= $table_row;
 }
 $table_body .= "</tbody>\n";
@@ -116,6 +57,7 @@ $table .= "</table>\n";
 $html = '';
 $html .= $html_select_year;
 $html .= $html_select_branch;
+$html .= $user_dialog->build_messages();
 $html .= $table;
 
 
@@ -123,3 +65,93 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo $html;
+
+function get_saturday_rotation_team_member_names_span(saturday_rotation $saturday_rotation, workforce $workforce, array $Absentees) {
+    $Saturday_rotation_team_member_ids = array();
+    $saturday_rotation_team_id = $saturday_rotation->team_id;
+    if (NULL !== $saturday_rotation_team_id and FALSE !== $saturday_rotation_team_id and array_key_exists($saturday_rotation_team_id, $saturday_rotation->List_of_teams)) {
+        /**
+         * <p lang=de>TODO: Es ist möglich, dass eine größere Zahl an Teams existiert hat, z.B. 6.
+         * Wenn die Zuweisung der Teams bereits erfolgt ist, wurde z.B. das Team 6 in der Datenbank hinterlegt.
+         * Wenn nun nur noch 4 Teams existieren, gibt $saturday_rotation->team_id;
+         *   durch die Funktion get_participation_team_id(), welche read_participation_from_database() aufruft, die gespeicherte Team id zurück.
+         * Die ist in dem array $saturday_rotation->List_of_teams aber gar nicht mehr enthalten.
+         * Wir geben in diesem Fall einen leeren Array weiter.
+         * Ist das so optimal?
+         * </p>
+         */
+        $Saturday_rotation_team_member_ids = $saturday_rotation->List_of_teams[$saturday_rotation_team_id];
+    }
+
+    $Saturday_rotation_team_member_names = array();
+    foreach ($Saturday_rotation_team_member_ids as $employee_id) {
+
+        if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
+            $prefix = '<span>';
+            $suffix = '</span>';
+            if (in_array($employee_id, array_keys($Absentees))) {
+                $prefix = '<span class="absent">';
+                $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$employee_id]) . ')</span>';
+            }
+
+            $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_id]->last_name . $suffix;
+        } else {
+            $Saturday_rotation_team_member_names[] = "$employee_id???";
+        }
+    }
+    return $Saturday_rotation_team_member_names;
+}
+
+function get_rostered_employees_names(array $Roster, workforce $workforce, array $Absentees) {
+    $Rostered_employees = array();
+    foreach ($Roster as $Roster_day_array) {
+        foreach ($Roster_day_array as $roster_item) {
+            if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
+                $prefix = '<span>';
+                $suffix = '</span>';
+                if (in_array($roster_item->employee_id, array_keys($Absentees))) {
+                    $prefix = '<span class="absent">';
+                    $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$roster_item->employee_id]) . ')</span>';
+                }
+                $Rostered_employees[$roster_item->employee_id] = $prefix . $workforce->List_of_employees[$roster_item->employee_id]->last_name . $suffix;
+            }
+        }
+    }
+    return $Rostered_employees;
+}
+
+function build_table_row(DateTime $date_object, int $branch_id) {
+    $saturday_rotation = new saturday_rotation($branch_id);
+    $saturday_rotation->get_participation_team_id($date_object);
+    $workforce = new workforce($date_object->format('Y-m-d'));
+    $Absentees = absence::read_absentees_from_database($date_object->format('Y-m-d'));
+    $Roster = roster::read_roster_from_database($branch_id, $date_object->format('Y-m-d'));
+
+
+    $table_row = "";
+    $holiday = holidays::is_holiday($date_object);
+    //$date_string = strftime('%a %x', $date_object->getTimestamp());
+    $date_string = $date_object->format("D d.m.Y");
+    if (FALSE !== $holiday) {
+        $table_row .= "<tr class='saturday_list_row_holiday'>";
+        $table_row .= "<td colspan='99'>";
+        $table_row .= $date_string;
+        $table_row .= "&nbsp;<span>" . $holiday . "</span>";
+        $table_row .= "</td>";
+        $table_row .= "</tr>\n";
+    } else {
+        $Rostered_employees_names = get_rostered_employees_names($Roster, $workforce, $Absentees);
+        $rostered_employees_names_string = implode(', ', $Rostered_employees_names);
+        $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names_span($saturday_rotation, $workforce, $Absentees);
+        $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
+        $table_row .= "<tr>";
+        $table_row .= "<td>";
+        $table_row .= $date_string;
+        $table_row .= "</td>";
+        $table_row .= "<td>" . $saturday_rotation->team_id . "</td>";
+        $table_row .= "<td>" . $saturday_rotation_team_member_names_string . "</td>";
+        $table_row .= "<td>" . $rostered_employees_names_string . "</td>";
+        $table_row .= "</tr>\n";
+    }
+    return $table_row;
+}

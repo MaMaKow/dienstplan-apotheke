@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2021 Martin Mandelkow <mandelkow@apotheke-schwerin.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 "use strict";
 var http_server_application_path = get_http_server_application_path();
 function gettext(string_to_translate) {
@@ -12,6 +29,20 @@ function gettext(string_to_translate) {
         query_webserver_without_response(http_server_application_path + "src/php/pages/maintenance_write_gettext_for_javascript.php");
         return string_to_translate;
     }
+}
+
+/*
+ * Add leading zeros to numbers.
+ *
+ * @param float number
+ * @param int size Number of characters in final string.
+ * @returns {pad.number_string|String}
+ */
+function pad(number, size) {
+    var number_string = number + "";
+    while (number_string.length < size)
+        number_string = "0" + number_string;
+    return number_string;
 }
 
 function get_http_server_application_path() {
@@ -220,6 +251,12 @@ function update_pep() {
             //document.getElementById("xmlhttpresult").innerHTML = this.responseText;
         }
         document.getElementById("xmlhttpresult").innerHTML = this.responseText;
+        //let user_dialog_container = document.getElementsByClassName("user_dialog_container");
+        //user_dialog_container[0].innerHTML = this.responseText;
+        /*
+         * CAVE: We want to reload. But we do not want to POST again. Therefore we will not use: window.location.reload(true);
+         */
+        window.location.href = window.location.href;
     };
     xml_http_request.open("GET", http_server_application_path + "pep.php?filename=" + targetfilename, true);
     console.log('opening pep.php?filename=' + targetfilename);
@@ -229,7 +266,6 @@ function reset_update_pep() {
     console.log('reset_update_pep');
     /*
      document.getElementById("xmlhttpresult").innerHTML = "";
-     document.getElementById("javascriptmessage").innerHTML = "";
      document.getElementById("phpscriptmessages").innerHTML = "";
      */
     console.log(document.getElementById("pep_upload_form"));
@@ -303,15 +339,6 @@ function cancelEdit(beginn) {
     }
 
 
-    var list = document.getElementsByClassName('datepickershow');
-    console.log(list);
-    var i;
-    for (i = 0; i < list.length; i++) {
-        console.log(list[i].parentElement);
-        list[i].parentElement.removeChild(list[i]);
-    }
-    var list = document.getElementsByClassName('datepickershow');
-    list[0].parentElement.removeChild(list[0]); //For some reason one datepicker survives the first deletion.
     return false;
 }
 
@@ -323,7 +350,7 @@ function clear_form(form_id) {
     console.log(form_id);
     var elements = form_id.elements;
     form_id.reset();
-    for (i = 0; i < elements.length; i++) {
+    for (var i = 0; i < elements.length; i++) {
 
         var field_type = elements[i].type.toLowerCase();
         switch (field_type) {
@@ -372,6 +399,48 @@ function configuration_toggle_show_smtp_options() {
             /*
              * only one radio can be logically checked, don't check the rest
              */
+            break;
+        }
+    }
+}
+
+function show_login_p_caps_warning(event) {
+    event = event || window.event;
+    /*
+     * Get the warning text element
+     */
+    var p_warning = document.getElementById("login_p_caps_warning");
+
+    /*
+     * If "caps lock" is pressed, display the warning text
+     */
+    if (event.getModifierState("CapsLock")) {
+        p_warning.innerHTML = gettext('Warning! Caps lock is ON.');
+    } else {
+        p_warning.innerHTML = '&nbsp';
+    }
+
+}
+
+function isValidDate(date) {
+    return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
+}
+
+function preventLeavingPage() {
+    window.onbeforeunload = function () {
+        return "Are you sure you want to navigate away?";
+    };
+    console.log("preventLeavingPage");
+}
+function enableLeavingPage() {
+    window.onbeforeunload = undefined;
+    console.log("enableLeavingPage");
+}
+
+function unsafeSleepDoNotUse(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds) {
             break;
         }
     }

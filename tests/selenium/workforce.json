@@ -1,0 +1,282 @@
+[
+    {
+        "employeeId": 0,
+        "employeeLastName": "Arnold",
+        "employeeFirstName": "Valentina",
+        "employeeProfession": "Zugehfrau",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": {
+            "year": 2001,
+            "month": 1,
+            "day": 1
+        },
+        "employeeEndOfEmployment": {
+            "year": 2021,
+            "month": 6,
+            "day": 30
+        }
+    },
+    {
+        "employeeId": 1,
+        "employeeLastName": "Probst",
+        "employeeFirstName": "Alexandra",
+        "employeeProfession": "PI",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": {
+            "year": 2002,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 2,
+        "employeeLastName": "Neuhaus",
+        "employeeFirstName": "Anabell",
+        "employeeProfession": "Apotheker",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": {
+            "year": 2003,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 3,
+        "employeeLastName": "Lehmann",
+        "employeeFirstName": "Elisabeth",
+        "employeeProfession": "Apotheker",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": true,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2004,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 4,
+        "employeeLastName": "Baumann",
+        "employeeFirstName": "Albert",
+        "employeeProfession": "Apotheker",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Filiale in der Nebenstraße",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": {
+            "year": 2005,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 5,
+        "employeeLastName": "Kremer",
+        "employeeFirstName": "Albert",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2006,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 6,
+        "employeeLastName": "Krüger",
+        "employeeFirstName": "Albert",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2007,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 7,
+        "employeeLastName": "Jansen",
+        "employeeFirstName": "Albert",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": true,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": {
+            "year": 2008,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 8,
+        "employeeLastName": "Hartmann",
+        "employeeFirstName": "Franziska",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": true,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2009,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 9,
+        "employeeLastName": "Müller",
+        "employeeFirstName": "Luisa",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": true,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2010,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 10,
+        "employeeLastName": "Grimm",
+        "employeeFirstName": "Emma",
+        "employeeProfession": "PI",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Filiale in der Nebenstraße",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2011,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 11,
+        "employeeLastName": "Fischer",
+        "employeeFirstName": "Marie",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Filiale in der Nebenstraße",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2012,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 12,
+        "employeeLastName": "Dietrich",
+        "employeeFirstName": "Lea",
+        "employeeProfession": "PTA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Filiale in der Nebenstraße",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": false,
+        "employeeAbilitiesCompounding": true,
+        "employeeStartOfEmployment": {
+            "year": 2013,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 13,
+        "employeeLastName": "Dambach",
+        "employeeFirstName": "Jule",
+        "employeeProfession": "PKA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": true,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": {
+            "year": 2014,
+            "month": 1,
+            "day": 1
+        }
+    },
+    {
+        "employeeId": 14,
+        "employeeLastName": "Eckert",
+        "employeeFirstName": "Hannah",
+        "employeeProfession": "PKA",
+        "employeeWorkingHours": 40.0,
+        "employeeLunchBreakMinutes": 30,
+        "employeeHolidays": 28,
+        "employeeBranchString": "Hauptapotheke am großen Platz",
+        "employeeBranchId": 0,
+        "employeeAbilitiesGoodsReceipt": true,
+        "employeeAbilitiesCompounding": false,
+        "employeeStartOfEmployment": {
+            "year": 2015,
+            "month": 1,
+            "day": 1
+        },
+        "employeeEndOfEmployment": {
+            "year": 2050,
+            "month": 12,
+            "day": 31
+        }
+    }
+]

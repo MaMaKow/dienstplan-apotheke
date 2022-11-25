@@ -2,7 +2,7 @@
 %
 \chapter{Administratorhandbuch}
 
-\section{Installation}\label{sec:installation}
+\section{Installation}\label{chapter_admin_section_install}
 
 \subsection{PDR finden}
 Die neueste Version von PDR ist verfügbar unter
@@ -101,7 +101,7 @@ git pull origin master
 \end{lstlisting}
 \emph{CAVE:} Stellen Sie sicher, dass Sie Ihr \directory{config/config.php}
 behalten! Es sollte nicht von Git geändert werden, da es in der
-.gitigore-Datei dieses Projekts aufgeführt ist.
+.gitigore-Datei dieses Projekts aufgeführt ist. Machen Sie trotzdem ein Backup!
 
 
 \section{Konfiguration}
@@ -110,16 +110,31 @@ Standardwerte sind:
 \begin{lstlisting}
 <?php
 
-$config = array( 'application_name' => 'PDR', 'database_management_system'
-=> 'mysql', 'database_host' => 'localhost', 'database_name' => '',
-'database_port' => 3306, 'database_user' => '', 'database_password' => '',
-'session_secret' => '', 'error_reporting' => E_ALL, 'display_errors' => 0,
-'log_errors' => 1, 'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH
-. 'error.log', 'LC_TIME' => 'C', 'timezone' => 'Europe/Berlin', 'language'
-=> 'de_DE', 'mb_internal_encoding' => 'UTF-8', 'contact_email' => '',
-'hide_disapproved' => FALSE, 'email_method' => 'mail', 'email_smtp_host' =>
-NULL, 'email_smtp_port' => 587, 'email_smtp_username' => NULL,
-'email_smtp_password' => NULL, );
+$config = array(
+ 'application_name' => 'PDR',
+ 'database_management_system' => 'mysql',
+ 'database_host' => 'localhost',
+ 'database_name' => '',
+ 'database_port' => 3306,
+ 'database_user' => '',
+ 'database_password' => '',
+ 'session_secret' => '',
+ 'error_reporting' => E_ALL,
+ 'display_errors' => 0,
+ 'log_errors' => 1,
+ 'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH. 'error.log',
+ 'LC_TIME' => 'C',
+ 'timezone' => 'Europe/Berlin',
+ 'language' => 'de_DE',
+ 'mb_internal_encoding' => 'UTF-8',
+ 'contact_email' => '',
+ 'hide_disapproved' => FALSE,
+ 'email_method' => 'mail',
+ 'email_smtp_host' => NULL,
+ 'email_smtp_port' => 587,
+ 'email_smtp_username' => NULL,
+ 'email_smtp_password' => NULL,
+);
 \end{lstlisting}
 
 
@@ -129,9 +144,10 @@ dass jeder ihren Inhalt lesen kann.
 
 
 Die meisten dieser Optionen können auch in \menu{Administration >
-Konfiguration} \paragraph{Anwendungsname} konfiguriert werden. Dieser Name
-wird auf der Anmeldeseite, dem Seitentitel im Browser und als Betreffzeile
-in E-Mails verwendet, die vom Programm gesendet werden.
+Konfiguration} konfiguriert werden. 
+
+\paragraph{Anwendungsname} Dieser Name wird auf der Anmeldeseite, dem Seitentitel im Browser und als Betreffzeile in E-Mails verwendet, die vom Programm gesendet werden.
+
 \paragraph{Datenbank Einstellungen}
 \begin{itemize}
 	\item database\_management\_system  Derzeit wird nur MySQL unterstützt. Andere
@@ -147,28 +163,51 @@ Passwort und gewährt alle Berechtigungen für die pdr-Datenbank. Sie können
 jeden anderen Benutzer auswählen, der Zugriff auf die Datenbank hat.
 	\item database\_password Das Datenbankkennwort des Datenbankbenutzers.
 \end{itemize}
+
 \paragraph{session\_secret}
 Eine geheime zufällige Zeichenfolge, mit der der Sitzungsname definiert
 wird. Dies ist nur relevant, wenn mehrere Instanzen von PDR auf demselben
-Webserver ausgeführt werden. \paragraph{error\_reporting} Welche Fehler
-sollte PHP melden? \paragraph{display\_errors} Sollten dem Benutzer Fehler
-direkt angezeigt werden? \paragraph{log\_errors} Sollten Fehler in einer
-Datei protokolliert werden?\paragraph{error\_log} Wo sollen Fehler
-protokolliert werden? \paragraph{LC\_TIME} In welcher Sprache sollten
+Webserver ausgeführt werden. 
+
+\paragraph{error\_reporting} Welche Fehler
+sollte PHP melden? 
+
+\paragraph{display\_errors} Sollten dem Benutzer Fehler
+direkt angezeigt werden? 
+
+\paragraph{log\_errors} Sollten Fehler in einer
+Datei protokolliert werden?
+
+\paragraph{error\_log} Wo sollen Fehler
+protokolliert werden? 
+
+\paragraph{LC\_TIME} In welcher Sprache sollten
 Zeitzeichenfolgen wie Montag oder Januar geschrieben werden? Diese
 Einstellung ist unabhängig von der Einstellung
-'language'.\paragraph{timezone} Die Zeitzone ist notwendig, um die
+'language'.
+
+\paragraph{timezone} Die Zeitzone ist notwendig, um die
 Rohzeitdaten in Unix-Zeitstempeln zu verstehen. (1545038523 = Montag,
-17.-18.12. 09:22:03 UTC in RFC ~ 2822)\paragraph{language} Die Sprache der
+17.12.2018 09:22:03 UTC in RFC~2822)
+
+\paragraph{language} Die Sprache der
 Begriffe und Meldungen, die dem Benutzer angezeigt werden. Bisher werden nur
-Englisch und Deutsch unterstützt.\paragraph{mb\_internal\_encoding} Eine
+Englisch und Deutsch unterstützt.
+
+\paragraph{mb\_internal\_encoding} Eine
 Codierung ist eine Möglichkeit, dem Computer mitzuteilen, wie Bits und Bytes
-in Buchstaben übersetzt werden (z. B. bedeutet UTF8 01000101 E, 11000011
-10100100 ä).\paragraph{contact\_email} E-Mails der Benutzer können an den
-Administrator der Pdr-Instanz gesendet werden. \paragraph{hide\_disapproved}
+in Buchstaben übersetzt werden (z. B. bedeutet UTF8 01000101 E und 11000011
+10100100 ä).
+
+\paragraph{contact\_email} E-Mails der Benutzer können an den
+Administrator der PDR-Instanz gesendet werden. 
+
+\paragraph{hide\_disapproved}
 Es ist möglich, geplante Dienstpläne auszublenden, bis sie genehmigt
 werden. Standardmäßig sind alle Dienstpläne sofort für jeden Benutzer
-sichtbar.\paragraph{E-Mail-Einstellungen} E-Mails werden (teilweise) mit der
+sichtbar.
+
+\paragraph{E-Mail-Einstellungen} E-Mails werden (teilweise) mit der
 PHPMailer-Klasse gesendet.
 \begin{itemize}
 	\item 'email\_method' PHPMailer unterstützt das Versenden per 'mail', 'sendmail',
@@ -189,12 +228,12 @@ Die Datei  \directory{src/php/background\_maintenance.php} wird bei jedem
 Login eines beliebigen Benutzers aufgerufen.  Es wird eine Instanz der
 folgenden Klassen erzeugen:
 \begin{itemize}
-    \item Wartung
+    \item maintenance
     \item update\_database
     \end{itemize}
 
 \subsection{Klasse maintenance}
-Die Methoden, die in der Klassen maintenance enthalten sind, werden nur dann
+Die Methoden, die in der Klasse maintenance enthalten sind, werden nur dann
 aufgerufen, wenn die letzte Ausführung mindestens
 \lstinline|MAINTENANCE_PERIOD_IN_SECONDS| her ist.
 \lstinline|MAINTENANCE_PERIOD_IN_SECONDS| ist auf einmal am Tag eingestellt.
@@ -219,7 +258,7 @@ Bevor die Klasse update\_database eine ihrer Methoden ausführt, prüft sie,
 ob sich die offizielle Datenbankstruktur seit der letzten Aktualisierung
 geändert hat.  Sie vergleicht den pdr\_database\_version\_hash aus der
 Tabelle pdr\_self in der Datenbank mit dem Wert
-\lstinline|PDR_DATABASE_VERSION_HASH| In der Datei
+\lstinline|PDR_DATABASE_VERSION_HASH| in der Datei
 \directory{src/php/database\_version\_hash.php}
 
 Die Klasse sollte jede SQL-Abfrage enthalten, die notwendig ist, um eine

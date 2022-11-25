@@ -4,4 +4,4 @@ CREATE TABLE IF NOT EXISTS `pep_weekday_time` (
   `Mittelwert` float DEFAULT NULL,
   `Mandant` int(11) NOT NULL,
   PRIMARY KEY (`Uhrzeit`,`Wochentag`,`Mandant`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

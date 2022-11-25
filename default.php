@@ -23,11 +23,14 @@
 define('PDR_FILE_SYSTEM_APPLICATION_PATH', __DIR__ . '/');
 /**
  * @var PDR_HTTP_SERVER_APPLICATION_PATH The relative path of the application root on the web server.
+ *   This has been tested to work also for symbolic links.
+ *
  */
 $folder_tree_depth_in_chars = strlen(substr(getcwd(), strlen(__DIR__)));
+$domain = $_SERVER['SERVER_NAME'];
 $root_folder = substr(dirname($_SERVER["SCRIPT_NAME"]), 0, strlen(dirname($_SERVER["SCRIPT_NAME"])) - $folder_tree_depth_in_chars) . "/";
+define('PDR_HTTP_SERVER_DOMAIN', $domain);
 define('PDR_HTTP_SERVER_APPLICATION_PATH', $root_folder);
-//TODO: This does not work, if the location is a symbolic link.
 /**
  * @var PDR_ONE_DAY_IN_SECONDS The amount of seconds in one day.
  */
@@ -37,11 +40,25 @@ define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
  * Define an autoloader:
  */
 spl_autoload_register(function ($class_name) {
-    include_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.' . $class_name . '.php';
+    $base_dir = PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/classes/';
+    $file = $base_dir . 'class.' . $class_name . '.php';
+    if (file_exists($file)) {
+        include_once $file;
+    }
+    /**
+     * <p lang="de">
+     * Wir wollen die Files der Klassen besser sortieren.
+     * Der Autoloader muss so lange bis das abgeschlossen ist, beide Varianten beherrschen.
+     * </p>
+     */
+    $file = $base_dir . str_replace('\\', '/', $class_name) . '.php';
+    if (file_exists($file)) {
+        include_once $file;
+    }
 });
 
 
-if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
+if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php')) {
     header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php");
     die("The application does not seem to be installed. Please see the <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php'>installation page</a>!");
 } else {
@@ -61,6 +78,10 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . '/config/config.php')) {
         }
     }
 }
+
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_secure', 1);
 /*
  * Setup if errors should be reported to the user, if to log them, and where:
  */
@@ -76,7 +97,11 @@ if ($config['log_errors'] or $config['display_errors']) {
     //ini_set('zend.assertions', -1); //Assertions are not compiled.
     ini_set('assert.exception', 0); //Only warnings would be shown if assertions were to be executed and failed.
 }
+/**
+ * @todo CAVE: php-fpm might log the errors somewhere else, e.g. in /var/log/php-fpm/www-error.log
+ */
 ini_set('error_log', $config['error_log']); //Which file should errors be logged to?
+//echo ini_get('error_log'); //Which file should errors be logged to?
 error_reporting($config['error_reporting']); //Which errors should be reported?
 
 /*
@@ -98,17 +123,13 @@ date_default_timezone_set($config['timezone']);
  * This is necessary for the usage of UTF-8 characters in functions like mb_substr()
  */
 mb_internal_encoding($config['mb_internal_encoding']);
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
+localization::initialize_gettext($config["language"]);
 
 /*
  * session management
  */
 $session = new sessions;
 
-/*
- * TODO: Get rid of this maybe?
- */
-$List_of_branch_objects = branch::get_list_of_branch_objects();
 /*
  * Guess the navigator (=browser) language from HTTP_ACCEPT_LANGUAGE:
  * This is used in the head.php

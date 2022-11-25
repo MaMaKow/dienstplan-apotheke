@@ -2,16 +2,11 @@
 # Diese Daten sind zudem geheim, weil sie das Passwort enthalten. 	#
 #########################################################################
 config/
-documentation/
 
 # These files are for development purposes only: #
 ##################################################
-layout-test.html
-style-test.css
-#tests/*
-#!tests/log
-#!tests/log/*
 nbproject/
+errorScreenshots/
 
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
@@ -75,3 +70,23 @@ tmp/
 ehthumbs.db
 Thumbs.db
 /nbproject/private/
+
+# Selenium Java Test Output #
+######################
+surefire-reports/
+tests/selenium/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+*.lst
+tests/selenium/src/test/config.properties
+tests/selenium/src/test/Configuration.properties
+*.properties
+.vs/
+.vscode/
+*.prefs
+target/
+tests/selenium/.project_old
+tests/selenium/.classpath_old
+tests/selenium/nb-configuration.xml
+tests/selenium/.project
+tests/selenium/.classpath
+tests/selenium/test-output/
+.project

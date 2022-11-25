@@ -99,8 +99,8 @@ echo $user_dialog->build_messages();
                        onpaste="compare_passwords()"
                        >
                 <br>
-                <img id="approve_pass_img"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/approve.png" height="20">
-                <img id="disapprove_pass_img" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/disapprove.png" height="20">
+                <img id="approve_pass_img"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_up-24px.svg" height="20">
+                <img id="disapprove_pass_img" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_down-24px.svg" height="20">
                 <br>
                 <label><?= gettext('Repeat password') ?></label>
                 <br>
@@ -175,7 +175,7 @@ echo $user_dialog->build_messages();
                 <br>
                 <br>
                 <?php
-                if (FALSE and ! empty($other_error)) {
+                if (FALSE and!empty($other_error)) {
                     ?>
                     <input type="radio" id="error_reporting_<?= $other_error ?>" name="error_reporting" value="<?= $config['error_reporting'] . '" checked'; ?>">
                     <label for="error_reporting_<?= $other_error ?>"><?= $other_error . ' ' . gettext('(current value)') ?></label>
@@ -190,23 +190,24 @@ echo $user_dialog->build_messages();
                     <?= gettext('After a duty roster is planned, it has to be approved, before it is in effect.') ?>
                     <?= gettext('Should viewers be able to see duty rosters before they are finally approved?') ?>
                 </p>
-                <input type="radio" name="hide_disapproved" value=0 <?= $hide_disapproved_no ?>>Show<br>
-                <input type="radio" name="hide_disapproved" value=1 <?= $hide_disapproved_yes ?>>Hide<br>
+                <input type="radio" name="hide_disapproved" value=0 <?= $hide_disapproved_no ?>><?= gettext("Show"); ?><br>
+                <input type="radio" name="hide_disapproved" value=1 <?= $hide_disapproved_yes ?>><?= gettext("Hide"); ?><br>
             </fieldset>
 
             <!-- Email settings: -->
             <fieldset onchange="configuration_toggle_show_smtp_options();">
                 <legend><?= gettext('Email settings') ?></legend>
                 <div class="hint">
-                    Emails are sent in some cases:
+                    <?= gettext("Emails are sent in some cases:"); ?>
                     <ul>
-                        <li>When new users are registered</li>
-                        <li>When users want to comment on the roster</li>
-                        <li>When there are acute changes to the roster (optional for the distinct users)</li>
+                        <li><?= gettext("When new users are registered"); ?></li>
+                        <li><?= gettext("When users want to comment on the roster"); ?></li>
+                        <li><?= gettext("When there are acute changes to the roster (optional for the distinct users)"); ?></li>
                     </ul>
-                    How should these emails be sent?
+                    <?= gettext("How should these emails be sent?"); ?>
                 </div>
-                <input type="radio" name="email_method" value="mail" <?= $email_method === 'mail' ? 'checked="checked"' : '' ?>><?= gettext('Simple mail') ?> <br><span class="hint">(Uses sendmail on Linux/Mac)</span><br>
+                <input type="radio" name="email_method" value="mail" <?= $email_method === 'mail' ? 'checked="checked"' : '' ?>>
+                <?= gettext('Simple mail') ?> <br><span class="hint"><?= gettext("(Uses sendmail on Linux/Mac)"); ?></span><br>
                 <input type="radio" name="email_method" value="sendmail" <?= $email_method === 'sendmail' ? 'checked="checked"' : '' ?>><?= gettext('Sendmail') ?><br>
                 <input type="radio" name="email_method" value="qmail" <?= $email_method === 'qmail' ? 'checked="checked"' : '' ?>><?= gettext('qmail') ?><br>
                 <input type="radio" name="email_method" value="smtp" <?= $email_method === 'smtp' ? 'checked="checked"' : '' ?>><?= gettext('SMTP') ?><br>

@@ -25,10 +25,10 @@
  */
 
 class iCalendar {
-    /*
+
+    /**
      * TODO: Enable the creation of an alert for lunch breaks.
      */
-
     const VALARM_NONE = 0;
     const VALARM_FOR_DUTY_START = 1;
     const VALARM_FOR_DUTY_END = 2;
@@ -40,12 +40,33 @@ class iCalendar {
      * @param array $Roster
      * @return string $text_ics the ICS text file
      */
-    public static function build_ics_roster_employee($Roster, $create_valarm = self::VALARM_NONE) {
+    public static function build_ics_roster_employee(array $Roster, $create_valarm = self::VALARM_NONE) {
+        /**
+         * @var $tzid Define the timezone
+         * timezone must be a supported PHP timezone
+         * (see http://php.net/manual/en/timezones.php )
+         * Note: multi-word timezones must use underscore "_" separator
+         * @todo Make timezone a configuration variable!
+         */
+        $tzid = "Europe/Berlin";
+        $sqlDateFormat = "Y-m-d H:i:s";
+        $icalDateFormat = "Ymd\THis";
+// create the ical object
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/icalendar/zapcallib.php';
+        $icalobj = new ZCiCal();
 
-        $text_ics = "";
-        $text_ics .= "BEGIN:VCALENDAR\r\n";
-        $text_ics .= "VERSION:2.0\r\n";
-        $text_ics .= "PRODID:-//MaMaKow/martin-mandelkow.de//PDR//DE\r\n";
+        $dateTimeZone = new DateTimeZone($tzid);
+        $firstDateInRoster = new DateTime('@' . min(array_keys($Roster)), $dateTimeZone);
+        $lastDateInRoster = new DateTime('@' . max(array_keys($Roster)), $dateTimeZone);
+        /**
+         * Add timezone data to $icalobj:
+         */
+        ZCTimeZoneHelper::getTZNode($firstDateInRoster->format("Y"), $lastDateInRoster->format("Y"), $tzid, $icalobj->curnode);
+
+        global $config;
+        $administrator_email = $config['contact_email']; /* This is the email of the roster administrator. It is not specific to the branch. */
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         foreach ($Roster as $Roster_day_array) {
             /**
              * @var $same_employee_count array <p>This array has the format array(employee_id => int).<br>
@@ -67,137 +88,111 @@ class iCalendar {
                 if (!isset($same_employee_count[$roster_object->employee_id])) {
                     $same_employee_count[$roster_object->employee_id] = 0;
                 }
-                $same_employee_count[$roster_object->employee_id] ++;
+                $same_employee_count[$roster_object->employee_id]++;
                 /*
                  * Output the data in iCalendar format:
                  */
-                $text_ics .= "BEGIN:VEVENT\r\n";
-                $text_ics .= iCalendar::build_ics_roster_employee_head($roster_object, $same_employee_count);
-                $text_ics .= iCalendar::build_ics_roster_employee_description($roster_object);
-                $text_ics .= iCalendar::build_ics_roster_employee_valarms($roster_object, $create_valarm);
-                $text_ics .= "END:VEVENT\r\n";
+                // create the event within the ical object
+                $eventobj = new ZCiCalNode("VEVENT", $icalobj->curnode);
+                $date_unix = $roster_object->date_unix;
+                $branch_id = $roster_object->branch_id;
+                $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+                $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+                $branch_name = $List_of_branch_objects[$branch_id]->name;
+                $branch_address = $List_of_branch_objects[$branch_id]->address;
+                $branch_manager = $List_of_branch_objects[$branch_id]->manager;
+                /**
+                 * add title:
+                 */
+                $title = $branch_name;
+                $eventobj->addNode(new ZCiCalDataNode("SUMMARY:" . $title));
+                /**
+                 * add start date
+                 *
+                 */
+                $eventobj->addNode(new ZCiCalDataNode("DTSTART;TZID=" . $tzid . ":" . $roster_object->dutyStartDateTime->format($icalDateFormat)));
+                $eventobj->addNode(new ZCiCalDataNode("DTEND;TZID=" . $tzid . ":" . $roster_object->dutyEndDateTime->format($icalDateFormat)));
+                /**
+                 *  UID is a required item in VEVENT, create unique string for this event
+                 * Adding your domain to the end is a good way of creating uniqueness
+                 */
+                $eventobj->addNode(new ZCiCalDataNode("UID:" . $date_unix . "-" . $roster_object->employee_id . "-" . $branch_id . "-" . $same_employee_count[$roster_object->employee_id] . "@martin-mandelkow.de"));
+                /**
+                 *  DTSTAMP is a required item in VEVENT
+                 */
+                $now = time();
+                $eventobj->addNode(new ZCiCalDataNode("DTSTAMP:" . ZDateHelper::fromUnixDateTimetoiCal($now)));
+                $eventobj->addNode(new ZCiCalDataNode("LAST-MODIFIED:" . ZDateHelper::fromUnixDateTimetoiCal($now)));
+                $eventobj->addNode(new ZCiCalDataNode("ORGANIZER;CN=$branch_manager:MAILTO:$administrator_email"));
+                $eventobj->addNode(new ZCiCalDataNode("LOCATION:" . $branch_address));
+                $eventobj->addNode(new ZCiCalDataNode("DESCRIPTION:" . self::build_simple_roster_employee_description($roster_object)));
+
+                iCalendar::build_ics_roster_employee_valarms($roster_object, $create_valarm, $eventobj);
             }
         }
 
-        $text_ics .= "END:VCALENDAR\r\n";
-
-        return $text_ics;
+        return $icalobj->export();
     }
 
-    private static function build_ics_roster_employee_head($roster_object, $same_employee_count) {
-        global $config;
-
-        $administrator_email = $config['contact_email']; /* This is the email of the roster administrator. It is not specific to the branch. */
-
-        $date_unix = $roster_object->date_unix;
-        /*
-         * duty_start and duty_end are strings representing the UTC time of the given time
-         */
-        $duty_start_string = self::time_int_to_utc_string($roster_object->duty_start_int);
-        $duty_end_string = self::time_int_to_utc_string($roster_object->duty_end_int);
-
-        $branch_id = $roster_object->branch_id;
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
-        $branch_name = $List_of_branch_objects[$branch_id]->name;
-        $branch_address = $List_of_branch_objects[$branch_id]->address;
-        $branch_manager = $List_of_branch_objects[$branch_id]->manager;
-
-        $text_ics = '';
-        $text_ics .= "METHOD:REQUEST\r\n";
-        $text_ics .= "UID:" . $date_unix . "-" . $roster_object->employee_id . "-" . $branch_id . "-" . $same_employee_count[$roster_object->employee_id] . "@martin-mandelkow.de\r\n";
-        $text_ics .= "DTSTAMP:" . gmdate('Ymd\THis\Z') . "\r\n";
-        $text_ics .= "LAST-MODIFIED:" . gmdate('Ymd\THis\Z') . "\r\n";
-        $text_ics .= "ORGANIZER;CN=$branch_manager:MAILTO:$administrator_email\r\n";
-        /*
-          $text_ics .= "DTSTART;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstbeginn . "\r\n";
-          $text_ics .= "DTEND;TZID=Europe/Berlin:" . date('Ymd', $date_unix) . "T" . $dienstende . "\r\n";
-         */
-        $text_ics .= "DTSTART:" . date('Ymd', $date_unix) . 'T' . $duty_start_string . "\r\n";
-        $text_ics .= "DTEND:" . date('Ymd', $date_unix) . 'T' . $duty_end_string . "\r\n";
-        $text_ics .= "SUMMARY:$branch_name" . "\r\n";
-        $text_ics .= "LOCATION:$branch_address" . "\r\n";
-        return $text_ics;
-    }
-
-    /**
-     * @param $roster_object object An object of the class roster_item
-     */
-    private static function build_ics_roster_employee_description($roster_object) {
+    private static function build_simple_roster_employee_description($roster_object) {
         $mittags_beginn = $roster_object->break_start_sql;
         $mittags_ende = $roster_object->break_end_sql;
         $date_unix = $roster_object->date_unix;
         $workforce = new workforce($roster_object->date_sql);
         $branch_id = $roster_object->branch_id;
-        $List_of_branch_objects = \branch::get_list_of_branch_objects();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_name = $List_of_branch_objects[$branch_id]->name;
         $date_weekday_name = strftime('%A', $date_unix);
 
-        /*
-         * New lines have to be escaped via \\r\\n
-         */
-        $text_ics = '';
-        $text_ics .= "DESCRIPTION:"
-                . gettext("Calendar file for employee ") . " " . $roster_object->employee_id . " (" . $workforce->List_of_employees[$roster_object->employee_id]->full_name . ") \\r\\n"
-                . gettext("contains the roster for") . " $branch_name. \\r\\n"
-                . gettext("Weekday") . ": $date_weekday_name\\r\\n";
-        if (!empty($mittags_beginn) and ! empty($mittags_ende)) {
-            $text_ics .= sprintf(gettext('Lunch from %1s to %2s'), $mittags_beginn, $mittags_ende) . "\\r\\n";
+        $text = '';
+        $text .= "DESCRIPTION:"
+                . gettext("Calendar file for employee") . " " . $roster_object->employee_id . " (" . $workforce->List_of_employees[$roster_object->employee_id]->full_name . ") \\r\\n"
+                . gettext("contains the roster for") . " $branch_name. \n"
+                . gettext("Weekday") . ": $date_weekday_name\n";
+        if (!empty($mittags_beginn) and!empty($mittags_ende)) {
+            $text .= sprintf(gettext('Lunch from %1$s to %2$s'), $mittags_beginn, $mittags_ende) . "\n";
         }
-        $text_ics .= "\r\n";
-        /*
-         * RFC 5545 3.1. Content Lines
-         * Lines of text SHOULD NOT be longer than 75 octets, excluding the line break.
-         * Long content lines SHOULD be split into a multiple line representations using a line "folding" technique.
-         * That is, a long line can be split between any two characters by inserting a CRLF immediately followed by
-         *  a single linear white-space character (i.e., SPACE or HTAB).
-         * Any sequence of CRLF followed immediately by a single linear white-space character is ignored (i.e., removed)
-         *  when processing the content type.
-         */
-        $Array_ICS = str_split($text_ics, 70);
-        return implode("\r\n ", $Array_ICS);
+        $text .= "\n";
+        return $text;
     }
 
-    private static function build_ics_roster_employee_valarms($roster_object, $create_valarm) {
+    private static function build_ics_roster_employee_valarms($roster_object, $create_valarm, $event_object) {
         if (0 == $create_valarm) {
             return NULL;
         }
-        $text_ics = "";
         if ($create_valarm & self::VALARM_FOR_DUTY_START and NULL !== $roster_object->duty_start_int) {
             $seconds_before_duty = 30 * 60;
             $description = gettext('Time to go to work');
             $trigger_time_string = self::time_int_to_utc_string($roster_object->duty_start_int - $seconds_before_duty);
             $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
-            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
+            self::build_ics_roster_employee_valarm($trigger_date_time, $description, $event_object);
         }
         if ($create_valarm & self::VALARM_FOR_DUTY_END and NULL !== $roster_object->duty_end_int) {
             $description = gettext('Time to leave');
             $trigger_time_string = self::time_int_to_utc_string($roster_object->duty_end_int);
             $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
-            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
+            self::build_ics_roster_employee_valarm($trigger_date_time, $description, $event_object);
         }
         if ($create_valarm & self::VALARM_FOR_BREAK_START and NULL !== $roster_object->break_start_int) {
-            $description = gettext('Time for lunch break');
+            $description = gettext('Time for lunch break.');
             $trigger_time_string = self::time_int_to_utc_string($roster_object->break_start_int);
             $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
-            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
+            self::build_ics_roster_employee_valarm($trigger_date_time, $description, $event_object);
         }
         if ($create_valarm & self::VALARM_FOR_BREAK_END and NULL !== $roster_object->break_end_int) {
-            $description = gettext('Lunch break ends now');
+            $description = gettext('The Lunch break ends now.');
             $trigger_time_string = self::time_int_to_utc_string($roster_object->break_end_int);
             $trigger_date_time = date('Ymd', $roster_object->date_unix) . "T" . $trigger_time_string;
-            $text_ics .= self::build_ics_roster_employee_valarm($trigger_date_time, $description);
+            self::build_ics_roster_employee_valarm($trigger_date_time, $description, $event_object);
         }
-        return $text_ics;
     }
 
-    private static function build_ics_roster_employee_valarm($trigger_date_time, $description) {
-        $text_ics = "";
-        $text_ics .= "BEGIN:VALARM\r\n";
-        $text_ics .= "TRIGGER;VALUE=DATE-TIME:$trigger_date_time\r\n";
-        $text_ics .= "ACTION:DISPLAY\r\n";
-        $text_ics .= "DESCRIPTION:$description\r\n";
-        $text_ics .= "END:VALARM\r\n";
-        return $text_ics;
+    private static function build_ics_roster_employee_valarm($trigger_date_time, $description, $eventObject) {
+        $alarmObject = new ZCiCalNode("VALARM", $eventObject);
+        $alarmObject->addNode(new ZCiCalDataNode("TRIGGER;VALUE=DATE-TIME:$trigger_date_time"));
+        $alarmObject->addNode(new ZCiCalDataNode("ACTION:DISPLAY"));
+        $alarmObject->addNode(new ZCiCalDataNode("DESCRIPTION:$description"));
     }
 
     private static function time_int_to_utc_string($time_int) {
@@ -207,7 +202,13 @@ class iCalendar {
         return $time_string_utc;
     }
 
-    public static function build_ics_roster_cancelled($roster_item_object) {
+    /**
+     *
+     * @param roster_item $roster_item_object
+     * @return string
+     * @deprecated since version 0.15.0 This function needs to be removed or completely rewritten.
+     */
+    public static function build_ics_roster_cancelled(roster_item $roster_item_object) {
         /**
          * @var int $same_employee_count is part of the UID of each VEVENT.
          * @todo <p>
@@ -216,11 +217,26 @@ class iCalendar {
          * Also entries would not be deleted, but rather marked as CANCELLED.
           </p>
          */
+        /**
+         * Define Timezone string
+          $tzid = "Europe/Berlin";
+         */
+        /**
+         *  create the ical object
+          $icalobj = new ZCiCal();
+         */
+        /**
+         * Add timezone data to $icalobj:
+          ZCTimeZoneHelper::getTZNode($roster_item_object->date_object->format("Y"), $roster_item_object->date_object->format("Y"), $tzid, $icalobj->curnode);
+          $eventobj = new ZCiCalNode("VEVENT", $icalobj->curnode);
+          $eventobj->addNode(new ZCiCalDataNode("STATUS:CANCELLED"));
+         */
         $same_employee_count = 0;
         $text_ics = "";
         $text_ics .= "BEGIN:VCALENDAR\r\n";
         $text_ics .= "VERSION:2.0\r\n";
         $text_ics .= "PRODID:-//MaMaKow/martin-mandelkow.de//PDR//DE\r\n";
+        $text_ics .= self::getVTimeZoneBerlin();
         $text_ics .= "BEGIN:VEVENT\r\n";
         $text_ics .= "STATUS:CANCELLED\r\n";
         $text_ics .= iCalendar::build_ics_roster_employee_head($roster_item_object, $same_employee_count);
@@ -228,6 +244,36 @@ class iCalendar {
         $text_ics .= "END:VEVENT\r\n";
         $text_ics .= "END:VCALENDAR\r\n";
         return $text_ics;
+    }
+
+    /**
+     *
+     * @return string
+     * @deprecated since version 0.15.0 This function needs to be removed when build_ics_roster_cancelled() is rewritten.
+     */
+    private static function getVTimeZoneBerlin() {
+
+
+        $vTimeZoneString = "";
+        $vTimeZoneString .= "BEGIN:VTIMEZONE\r\n";
+        $vTimeZoneString .= "TZID:Europe/Berlin\r\n";
+        $vTimeZoneString .= "X-LIC-LOCATION:Europe/Berlin\r\n";
+        $vTimeZoneString .= "BEGIN:DAYLIGHT\r\n";
+        $vTimeZoneString .= "TZOFFSETFROM:+0100\r\n";
+        $vTimeZoneString .= "TZOFFSETTO:+0200\r\n";
+        $vTimeZoneString .= "TZNAME:CEST\r\n";
+        $vTimeZoneString .= "DTSTART:19700329T020000\r\n";
+        $vTimeZoneString .= "RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3\r\n";
+        $vTimeZoneString .= "END:DAYLIGHT\r\n";
+        $vTimeZoneString .= "BEGIN:STANDARD\r\n";
+        $vTimeZoneString .= "TZOFFSETFROM:+0200\r\n";
+        $vTimeZoneString .= "TZOFFSETTO:+0100\r\n";
+        $vTimeZoneString .= "TZNAME:CET\r\n";
+        $vTimeZoneString .= "DTSTART:19701025T030000\r\n";
+        $vTimeZoneString .= "RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10\r\n";
+        $vTimeZoneString .= "END:STANDARD\r\n";
+        $vTimeZoneString .= "END:VTIMEZONE\r\n";
+        return $vTimeZoneString;
     }
 
 }

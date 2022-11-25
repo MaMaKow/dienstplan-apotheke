@@ -16,7 +16,6 @@
  */
 
 
-/* global bar_width_factor: is a factor generated within image_dienstplan.php It describes the width of one hour in pixels. */
 
 var selectedElement = 0;
 var currentX = 0;
@@ -39,7 +38,7 @@ function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
     } else if (moveType === 'group') {
         selectedElement = evt.target.parentNode;
     } else {
-        console.log('Error: roster_change_table_on_drag_of_bar_plot() has to be called with a moveType of either "single" or "group"!' + evt + ", " + moveType);
+        console.error('Error: roster_change_table_on_drag_of_bar_plot() has to be called with a moveType of either "single" or "group"!' + evt + ", " + moveType);
     }
     firstX = evt.clientX;
     firstY = evt.clientY;
@@ -65,16 +64,44 @@ function moveElement(evt) {
     return true;
 }
 function deselectElement(evt) {
+    var result = null;
     if (selectedElement !== 0) {
         var svg_element = selectedElement.parentNode.parentNode;
         var box_type = selectedElement.dataset.box_type;
+        var date_unix = selectedElement.dataset.date_unix;
         var line = selectedElement.dataset.line;
+
+        var bar_width_factor = svg_element.dataset.bar_width_factor;
+
         var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
         var start_hour_float = Math.round((selectedElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
         selectedElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
         var end_hour_float = (selectedElement.x.baseVal.value - margin_before_bar + selectedElement.width.baseVal.value) / bar_width_factor;
-        var date_unix = selectedElement.dataset.date_unix;
-        sync_from_bar_plot_to_roster_array_object(box_type, date_unix, line, start_hour_float, end_hour_float);
+        if (start_hour_float < 0 || end_hour_float >= 24) {
+            /**
+             * <p lang=de>
+             * Momentan kann das Programm nur Werte zwischen 0:00 und 23:59 Uhr verarbeiten.
+             * Wenn der Balken weiter vor oder zurück verschoben wird, so werden fehlerhafte Daten (null für duty_start oder duty_end) übertragen.
+             * Auf Serverseite (PHP) führt das zum Verwerfen des Eintrages. Der Mitarbeiter wird aus dem Dienstplan gelöscht.
+             * </p>
+             */
+            writeErrorToUserDialogContainer("Achtung beim Verschieben! Es sind nur Werte zwischen 0:00 und 23:59 Uhr erlaubt.", "dragAndDropOutOfRangeError");
+            sync_from_roster_array_object_to_bar_plot(line, date_unix);
+            result = false;
+        } else {
+            /**
+             * <p lang=de>Der Input ist jetzt korrekt.
+             * Vielleicht war er vorher mal kaputt.
+             * Wir entfernen eventuelle Fehlermeldungen.
+             * </p>
+             */
+            removeErrorFromUserDialogContainer("dragAndDropOutOfRangeError");
+            /**
+             * <p lang=de>Jetzt können wir den Dienstplan in der Tabelle ändern:</p>
+             */
+            sync_from_bar_plot_to_roster_array_object(box_type, date_unix, line, start_hour_float, end_hour_float);
+            result = true;
+        }
         selectedElement.parentNode.removeAttributeNS(null, "onmousemove");
         selectedElement.removeAttributeNS(null, "onmouseout");
         selectedElement.removeAttributeNS(null, "onmouseup");
@@ -83,26 +110,67 @@ function deselectElement(evt) {
             selectedElement.firstChild.classList.remove("selected");
         }
         selectedElement = 0;
+        return result;
     }
 }
 
 function roster_change_bar_plot_on_change_of_table(input_object) {
+    var input_object_parent = input_object.parentNode;
+    if (input_object_parent.nodeName !== "TD") {
+        input_object_parent = input_object.parentNode.parentNode;
+    }
     /*
      * Change the one directly changed column:
      */
     var date_unix = input_object.dataset.date_unix;
-    var roster_row_iterator = input_object.dataset.roster_row_iterator;
+    var date_object = new Date();
+    date_object.setTime(date_unix * 1000);
+    var branch_id = input_object_parent.dataset.branch_id;
+    var date_sql = input_object_parent.dataset.date_sql;
+    var roster_row_iterator = input_object_parent.dataset.roster_row_iterator;
     var roster_column_name = input_object.dataset.roster_column_name;
     var roster_item = Roster_array[date_unix][roster_row_iterator];
+    if (!roster_item) {
+        /*
+         * Initialize the object with zero values:
+         */
+        Roster_array[date_unix][roster_row_iterator] = {
+            branch_id: branch_id,
+            comment: null,
+            //date_sql: date_object.getFullYear() + "-" + date_object.getMonth() + "-" + date_object.getDate(),
+            date_sql: date_sql,
+            date_unix: date_unix,
+            date_object: date_object,
+            break_duration: 0,
+            break_start_int: 0,
+            break_end_int: 0,
+            duty_duration: 0,
+            duty_start_int: 0,
+            duty_end_int: 0,
+            duty_start_sql: "0:00",
+            duty_end_sql: "0:00",
+            break_start_sql: "0:00",
+            break_end_sql: "0:00",
+            employee_id: 0,
+            working_hours: 0,
+            working_seconds: 0
+        };
+        Roster_array[date_unix][roster_row_iterator][roster_column_name] = Number(input_object.value);
+        roster_item = Roster_array[date_unix][roster_row_iterator];
+    }
     roster_item[roster_column_name] = input_object.value;
     /*
      * Calculate the resulting information for the other columns:
      */
-    var duty_start_object = new Date(roster_item['date_sql'] + 'T' + roster_item['duty_start_sql']);
-    var duty_end_object = new Date(roster_item['date_sql'] + 'T' + roster_item['duty_end_sql']);
-    var break_start_object = new Date(roster_item['date_sql'] + 'T' + roster_item['break_start_sql']);
-    var break_end_object = new Date(roster_item['date_sql'] + 'T' + roster_item['break_end_sql']);
-    var break_duration_integer = (break_end_object - break_start_object);
+    var duty_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_start_sql']);
+    var duty_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_end_sql']);
+    var break_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_start_sql']);
+    var break_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_end_sql']);
+    if (isValidDate(break_end_object) && isValidDate(break_start_object)) {
+        var break_duration_integer = (break_end_object - break_start_object);
+    } else {
+        var break_duration_integer = 0;
+    }
     var working_hours = (duty_end_object - duty_start_object - break_duration_integer) / 3600 / 1000;
 
     roster_item['working_hours'] = Math.round(working_hours * 4, 0) / 4;//round to quarter hours
@@ -113,6 +181,7 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     roster_item['duty_end_int'] = duty_end_object.getHours() * 3600 + duty_end_object.getMinutes() * 60;
     roster_item['break_start_int'] = break_start_object.getHours() * 3600 + break_start_object.getMinutes() * 60;
     roster_item['break_end_int'] = break_end_object.getHours() * 3600 + break_end_object.getMinutes() * 60;
+
     /*
      * sync the information to the bar plot:
      */
@@ -123,47 +192,143 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     /*
      * duty start and duty end:
      */
+    roster_row_iterator = Number(roster_row_iterator);
     var roster_item = Roster_array[date_unix][roster_row_iterator];
     var bar_element_id = 'work_box_' + roster_row_iterator + '_' + date_unix;
     var bar_element = document.getElementById(bar_element_id);
+
+    if (!bar_element) {
+        /*
+         * This bar does not exist yet.
+         * Most probably a new row has been inserted in the roster in the table.
+         */
+        var parent_of_bar_elements = document.getElementById('svg_img_g_' + date_unix);
+        bar_element = create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, parent_of_bar_elements);
+        parent_of_bar_elements.appendChild(bar_element);
+    }
     var svg_element = bar_element.parentNode.parentNode;
     var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
     var bar_width_factor = svg_element.dataset.bar_width_factor;
-    var duty_start_object = new Date(roster_item['date_sql'] + 'T' + roster_item['duty_start_sql']);
-    var duty_end_object = new Date(roster_item['date_sql'] + 'T' + roster_item['duty_end_sql']);
-    var break_start_object = new Date(roster_item['date_sql'] + 'T' + roster_item['break_start_sql']);
-    var break_end_object = new Date(roster_item['date_sql'] + 'T' + roster_item['break_end_sql']);
-    var break_duration_integer = (break_end_object - break_start_object);
+    var duty_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_start_sql']);
+    var duty_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_end_sql']);
+    /*
+     * TODO: Insert error handling here. When the employe is changed to null and the break is edited, there is an error, which does not recover just by again adding the employee.
+     */
+    var break_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_start_sql']);
+    var break_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_end_sql']);
+    /*var break_duration_integer = (break_end_object - break_start_object);*/
     var new_bar_x = (duty_start_object.getHours() + duty_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
     var new_bar_width = (
             (duty_end_object.getHours() + duty_end_object.getMinutes() / 60)
             -
             (duty_start_object.getHours() + duty_start_object.getMinutes() / 60)
             ) * bar_width_factor;
-    bar_element.x.baseVal.value = new_bar_x;
-    bar_element.width.baseVal.value = new_bar_width;
+
+    bar_element.setAttributeNS(null, 'x', new_bar_x);
+    bar_element.setAttributeNS(null, 'width', new_bar_width);
+
     /*
      * lunch break:
      */
-    var break_box_id = 'break_box_' + roster_row_iterator + '_' + date_unix;
-    var break_box_element = document.getElementById(break_box_id);
-    var new_box_x = (break_start_object.getHours() + break_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
-    var new_box_width = (
-            (break_end_object.getHours() + break_end_object.getMinutes() / 60)
-            -
-            (break_start_object.getHours() + break_start_object.getMinutes() / 60)
-            ) * bar_width_factor;
-    break_box_element.x.baseVal.value = new_box_x;
-    break_box_element.width.baseVal.value = new_box_width;
-
+    if (isValidDate(break_start_object) && isValidDate(break_end_object)) {
+        var new_box_x = (break_start_object.getHours() + break_start_object.getMinutes() / 60) * bar_width_factor + margin_before_bar;
+        var new_box_width = (
+                (break_end_object.getHours() + break_end_object.getMinutes() / 60)
+                -
+                (break_start_object.getHours() + break_start_object.getMinutes() / 60)
+                ) * bar_width_factor;
+        var break_box_id = 'break_box_' + roster_row_iterator + '_' + date_unix;
+        var break_box_element = document.getElementById(break_box_id);
+        if (!break_box_element) {
+            /*
+             * TODO: Also insert break boxes, if they are missing.
+             */
+            var parent_of_bar_elements = document.getElementById('svg_img_g_' + date_unix);
+            break_box_element = create_new_break_rect(date_unix, new_box_x, new_box_width, roster_row_iterator, break_box_id, parent_of_bar_elements);
+            parent_of_bar_elements.appendChild(break_box_element);
+        }
+        break_box_element.x.baseVal.value = new_box_x;
+        break_box_element.width.baseVal.value = new_box_width;
+    }
+    var employee_name_p_element = bar_element.childNodes[0];
     var employee_name_text_element = bar_element.childNodes[0].childNodes[0];
     var working_hours_span = bar_element.childNodes[0].childNodes[1];
-
     employee_name_text_element.nodeValue = List_of_employee_names[roster_item['employee_id']];
+    employee_name_p_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_id']]);
     working_hours_span.innerText = roster_item['working_hours'];
 }
 
+function create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, parent_of_bar_elements) {
+    var svg_element = parent_of_bar_elements.parentNode;
+    var outer_margin_y = Number(svg_element.dataset.outer_margin_y);
+    var inner_margin_y = Number(svg_element.dataset.inner_margin_y);
+    var bar_height = Number(svg_element.dataset.bar_height);
 
+    var new_foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    /*
+     * Calculate the value of y:
+     * The formula is exactly the same as in class.roster_image_bar_plot.php
+     */
+    var y_pos = outer_margin_y + (inner_margin_y * (roster_row_iterator + 1)) + (bar_height * roster_row_iterator);
+    /*
+     * Assign all the known values and methods to the new object:
+     */
+    new_foreignObject.setAttributeNS(null, 'id', bar_element_id);
+    new_foreignObject.setAttributeNS(null, 'height', bar_height);
+    new_foreignObject.setAttributeNS(null, 'y', y_pos);
+    new_foreignObject.dataset.date_unix = date_unix;
+    new_foreignObject.dataset.line = roster_row_iterator;
+    new_foreignObject.dataset.box_type = 'work_box';
+    new_foreignObject.setAttributeNS(null, 'onmousedown', 'roster_change_table_on_drag_of_bar_plot(evt, "group")');
+    /*
+     * Add a paragraph (p) to the foreignObject:
+     * @type create_new_bar_element_p.new_p_element|Element
+     */
+    var new_p_element = create_new_bar_element_p();
+    new_foreignObject.appendChild(new_p_element);
+
+    /*
+     * Return the new foreignObject as the new bar element:
+     * @returns {new_foreignObject|Element}
+     */
+    return new_foreignObject;
+}
+
+function create_new_bar_element_p() {
+    var new_p_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
+    new_p_element.setAttributeNS(null, 'class', 'PTA');//TODO: Add the actual class for the specific employee!
+    var new_text_node = document.createTextNode('');
+    new_p_element.appendChild(new_text_node);
+    var new_span_in_p = document.createElementNS('http://www.w3.org/1999/xhtml', 'span');
+    new_span_in_p.innerHTML = "";
+    new_p_element.appendChild(new_span_in_p);
+    return new_p_element;
+}
+
+function create_new_break_rect(date_unix, new_box_x, new_box_width, roster_row_iterator, break_box_id, parent_of_bar_elements) {
+    var svg_element = parent_of_bar_elements.parentNode;
+    var bar_height = Number(svg_element.dataset.bar_height);
+    var outer_margin_y = Number(svg_element.dataset.outer_margin_y);
+    var inner_margin_y = Number(svg_element.dataset.inner_margin_y);
+
+    /*
+     * Calculate the value of y:
+     * The formula is exactly the same as in class.roster_image_bar_plot.php
+     */
+    var y_pos = outer_margin_y + (inner_margin_y * (roster_row_iterator + 1)) + (bar_height * roster_row_iterator);
+
+    var new_rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    new_rect.setAttributeNS(null, 'id', break_box_id);
+    new_rect.setAttributeNS(null, 'x', new_box_x);
+    new_rect.setAttributeNS(null, 'y', y_pos);
+    new_rect.setAttributeNS(null, 'height', bar_height);
+    new_rect.setAttributeNS(null, 'width', new_box_width);
+    new_rect.setAttributeNS(null, 'onmousedown', 'roster_change_table_on_drag_of_bar_plot(evt, \"single\")');
+    new_rect.dataset.box_type = 'break_box';
+    new_rect.dataset.line = roster_row_iterator;
+    new_rect.dataset.date_unix = date_unix;
+    return new_rect;
+}
 function sync_from_bar_plot_to_roster_array_object(box_type, date_unix, roster_row_iterator, start_hour_float, end_hour_float) {
     var roster_item = Roster_array[date_unix][roster_row_iterator];
     switch (box_type) {
@@ -172,23 +337,24 @@ function sync_from_bar_plot_to_roster_array_object(box_type, date_unix, roster_r
             roster_item['duty_end_int'] = end_hour_float * 3600;
             roster_item['duty_start_sql'] = format_time_int_to_string(start_hour_float * 3600);
             roster_item['duty_end_sql'] = format_time_int_to_string(end_hour_float * 3600);
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstbeginn', roster_item['duty_start_sql'])
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstende', roster_item['duty_end_sql'])
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstbeginn', roster_item['duty_start_sql']);
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Dienstende', roster_item['duty_end_sql']);
             break;
         case 'break_box':
             roster_item['break_start_int'] = start_hour_float * 3600;
             roster_item['break_start_sql'] = format_time_int_to_string(start_hour_float * 3600);
             roster_item['break_end_int'] = end_hour_float * 3600;
             roster_item['break_end_sql'] = format_time_int_to_string(end_hour_float * 3600);
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsbeginn', roster_item['break_start_sql'])
-            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsende', roster_item['break_end_sql'])
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsbeginn', roster_item['break_start_sql']);
+            sync_from_roster_array_to_table(date_unix, roster_row_iterator, 'Mittagsende', roster_item['break_end_sql']);
             break;
         default:
-            console.log('Error: sync_from_bar_plot_to_roster_array_object() only works on the "break_box" and on the "work_box"!' + box_type);
+            console.error('Error: sync_from_bar_plot_to_roster_array_object() only works on the "break_box" and on the "work_box"!' + box_type);
             break;
 
     }
 }
+
 
 function sync_from_roster_array_to_table(date_unix, roster_row_iterator, column, value) {
     var input_element_id = "Dienstplan[" + date_unix + "][" + column + "][" + roster_row_iterator + "]";

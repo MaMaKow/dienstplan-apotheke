@@ -19,9 +19,36 @@
 
 abstract class human_resource_management {
 
-    public static function read_employee_data_from_database($employee_id) {
+    private static function create_empty_employee(int $employee_id = null) {
+        $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+
+        $Worker["employee_id"] = $employee_id;
+        $Worker["first_name"] = null;
+        $Worker["last_name"] = null;
+        $Worker["profession"] = null;
+        $Worker["working_hours"] = 40;
+        $Worker["working_week_hours"] = 40;
+        $Worker["holidays"] = 28;
+        $Worker["lunch_break_minutes"] = 30;
+        $Worker["goods_receipt"] = null;
+        $Worker["compounding"] = null;
+        $Worker["branch"] = $networkOfBranchOffices->get_main_branch_id();
+        $Worker["start_of_employment"] = null;
+        $Worker["end_of_employment"] = null;
+        return $Worker;
+    }
+
+    /**
+     * <p lang=de>
+     * TODO: Warum erschaffen wir hier einen array? Können wir nicht einfach mit einem Objekt arbeiten?
+     * </p>
+     * @param int $employee_id
+     * @return array
+     */
+    public static function read_employee_data_from_database(int $employee_id = null) {
         $sql_query = "SELECT * FROM `employees` WHERE `id` = :employee_id";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        $Worker = self::create_empty_employee($employee_id);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $Worker["employee_id"] = $row->id;
             $Worker["first_name"] = $row->first_name;
@@ -132,13 +159,14 @@ ON DUPLICATE KEY UPDATE
             //$text .= "<label for='profession'>Ausbildung: </label>\n";
 
             foreach ($Professions as $profession) {
+                $text .= "<label>";
                 $text .= "<input type='radio' name='profession' required ";
                 $text .= "value='$profession'";
                 if ($checked == $profession) {
                     $text .= " checked=checked";
                 }
                 $text .= ">&nbsp;$profession\n";
-                $text .= "<br>";
+                $text .= "</span></label><br>";
             }
             //$text .= "&nbsp;<a title='Einen weiteren Beruf hinzufügen' id=button_new_profession>[Neu]</a>";
             $text .= "</fieldset>\n";
@@ -151,23 +179,31 @@ ON DUPLICATE KEY UPDATE
         }
     }
 
-    public static function make_radio_branch_list($checked_branch_id) {
+    public static function make_radio_branch_list(int $checked_branch_id) {
         $text = "";
         $text .= "<fieldset>\n";
 
         $text .= "<legend>" . gettext("Branch") . ": </legend>\n";
-        $List_of_branch_objects = branch::get_list_of_branch_objects();
+        $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         if (!isset($List_of_branch_objects[0])) {
-            $List_of_branch_objects[0] = new branch();
-            $List_of_branch_objects[0]->name = gettext("None");
+            $branch_id = 0;
+            $text .= "<label>";
+            $text .= "<input type='radio' name='branch' ";
+            $text .= "value='0'";
+            if ($checked_branch_id == $branch_id) {
+                $text .= " checked=checked";
+            }
+            $text .= ">&nbsp;<span>" . gettext("None") . "</span></label><br>\n";
         }
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
+            $text .= "<label>";
             $text .= "<input type='radio' name='branch' ";
             $text .= "value='$branch_id'";
             if ($checked_branch_id == $branch_id) {
                 $text .= " checked=checked";
             }
-            $text .= ">&nbsp;$branch_object->name<br>\n";
+            $text .= ">&nbsp;<span>$branch_object->name</span></label><br>\n";
         }
         $text .= "</fieldset>\n";
 

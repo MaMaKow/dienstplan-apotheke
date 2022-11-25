@@ -60,6 +60,7 @@ td {
 
 th {
     text-align: left;
+    border-bottom: solid black;
 }
 
 td.absentees_column {
@@ -199,6 +200,7 @@ div.user_dialog_container {
     float: right;
     top:0;
     max-width: 650px;
+    margin: 1em;
 }
 div.user_dialog_container div {
     /*
@@ -288,7 +290,8 @@ nav ul#navigation li:last-child a {
     font-style: italic;
 }
 
-nav ul#navigation li a {
+nav ul#navigation li p, nav ul#navigation li span, nav ul#navigation li a {
+    vertical-align: central;
     border-left: 1px solid #73AC22;
     display: inline-block;
     text-align: center;
@@ -374,7 +377,9 @@ img.worker-img:hover {
 .hint {
     font-size: small;
     font-weight: lighter;
+    /*
     text-align: left;
+    */
 }
 
 .table {
@@ -489,8 +494,10 @@ button:disabled, .btn-secondary:disabled {
 div#weekly_rotation {
     font-family: monospace;
     font-size: smaller;
+    /*
     position: relative;
     float: right;
+    */
 }
 
 div#print_time_info {
@@ -506,8 +513,10 @@ div#roster_week_image_div {
 div#week_hours_table_div {
     font-family: monospace;
     font-size: smaller;
+    /*
     position: relative;
     float:     right;
+    */
 }
 
 table.tight tr td {
@@ -805,6 +814,11 @@ svg.svg_img {
 svg.svg_img foreignObject p {
     margin-top: 0px;
     box-shadow: inset 0 0 0 1000px #B4B4B4;
+    /*
+     * cursor styles:
+     * TODO: These could be turned back to default in read_only views:
+     */
+    cursor: move;
 }
 svg.svg_img foreignObject p.Apotheker, svg.svg_img foreignObject p.PI {
     margin-top: 0px;
@@ -822,6 +836,28 @@ svg.svg_img foreignObject p.selected {
     color: white;
 }
 
+svg.svg_img foreignObject p span {
+    float: right;
+}
+
+svg.svg_img rect {
+    fill: #FEFEFF;
+    cursor: cell;
+    stroke: black;
+    stroke-width: 0.3;
+
+}
+
+svg.svg_img line.grid_line {
+    stroke-dasharray:1, 8;
+    stroke:black;
+    stroke-width:2;
+}
+svg.svg_img line.grid_line_secondary {
+    stroke-dasharray:1, 16;
+    stroke:black;
+    stroke-width:2;
+}
 
 body table tbody tr.branch_roster_title_tr th{
     padding-top: 1em;
@@ -864,3 +900,12 @@ div.remaining_holidays p span {
 
 }
 
+img.example_artwork {
+    /*Relevant for list_of_artwork.php*/
+    height: 32px;
+    margin-top: 1em;
+}
+
+p#hidden_on_load {
+    display: none;
+}

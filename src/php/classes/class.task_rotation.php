@@ -170,16 +170,24 @@ abstract class task_rotation {
              */
             $Abwesende = absence::read_absentees_from_database($temp_date_object->format('Y-m-d'));
             $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, array_keys($Abwesende));
+            if (array() === $List_of_current_compounding_rotation_employees) {
+                /*
+                 * There is nobody here today to do the task.
+                 */
+                return FALSE;
+            }
             $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_object->format('Y-m-d'), $to_date_object->format('Y-m-d'));
-
+            if (array() === $Done_rotation_count) {
+                $next_rotation_employee_id = current($List_of_current_compounding_rotation_employees);
+            } else {
+                $next_rotation_employee_id = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
+            }
             /**
              * Take the employee, who did the task the least in the last weeks:
              * min($Done_rotation_count) is the minimum number someone did the task.
              * array_keys($Done_rotation_count, min($Done_rotation_count) is the employee_id(s) as an array of all the employees, who worked the least.
              * current() just takes one of those least task-working employees.
              */
-            $next_rotation_employee_id = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
-
             if (!empty($next_rotation_employee_id)) {
                 $rotation_employee_id = $next_rotation_employee_id;
             }
@@ -189,6 +197,7 @@ abstract class task_rotation {
     }
 
     private static function read_done_rotation_count_from_database($List_of_compounding_rotation_employees, $from_date_sql, $to_date_sql) {
+        $Done_rotation_count = array();
         foreach ($List_of_compounding_rotation_employees as $employee_id) {
             $Done_rotation_count[$employee_id] = 0;
             $sql_query = "SELECT `VK`, COUNT(`date`) as `count`"
@@ -220,7 +229,7 @@ abstract class task_rotation {
         }
         $task_rotation_select_html = "";
         $task_rotation_select_html .= "<div id='task_rotation_select_div'>";
-        $task_rotation_select_html .= "<p>" . pdr_gettext($task) . "</p>";
+        $task_rotation_select_html .= "<p>" . localization::gettext($task) . "</p>";
         $task_rotation_select_html .= "<form>";
         $task_rotation_select_html .= "<input  name='task_rotation_task' type='hidden' value='$task'>";
         $task_rotation_select_html .= "<input  name='task_rotation_date' type='hidden' value='$date_sql'>";
@@ -230,7 +239,7 @@ abstract class task_rotation {
          * The empty option is necessary to enable the deletion of employees:
          */
         $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$task_employee_id]->last_name) or ! isset($task_employee_id)) {
+        if (isset($workforce->List_of_employees[$task_employee_id]->last_name) or!isset($task_employee_id)) {
             foreach ($workforce->List_of_compounding_employees as $employee_id) {
                 $employee_object = $workforce->List_of_employees[$employee_id];
                 if ($task_employee_id == $employee_id and NULL !== $task_employee_id) {
@@ -243,7 +252,7 @@ abstract class task_rotation {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $task_rotation_select_html .= "<option value=$task_employee_id selected>" . $task_employee_id . " Unknown employee" . "</option>";
+            $task_rotation_select_html .= "<option value=$task_employee_id selected>" . $task_employee_id . " " . gettext("Unknown employee") . "</option>";
         }
 
         $task_rotation_select_html .= "</select>\n";
@@ -263,6 +272,11 @@ abstract class task_rotation {
         return $employee_id;
     }
 
+    /**
+     *
+     * @todo This should probably be a part of the page, not of the class.
+     * @return boolean FALSE in case of missing data.
+     */
     public static function task_handle_user_input() {
         $task = user_input::get_variable_from_any_input('task_rotation_task', FILTER_SANITIZE_STRING);
         $date_sql = user_input::get_variable_from_any_input('task_rotation_date', FILTER_SANITIZE_STRING);

@@ -18,35 +18,30 @@
 
 require_once '../../../default.php';
 
-$current_branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys(branch::get_list_of_branch_objects())));
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+$current_branch_id = user_input::convert_post_empty_to_php_null(user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id()));
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
     $new_branch_name = filter_input(INPUT_POST, "branch_name", FILTER_SANITIZE_STRING);
     $new_branch_short_name = filter_input(INPUT_POST, "branch_short_name", FILTER_SANITIZE_STRING);
     $new_branch_address = filter_input(INPUT_POST, "branch_address", FILTER_SANITIZE_STRING);
     $new_branch_manager = filter_input(INPUT_POST, "branch_manager", FILTER_SANITIZE_STRING);
-    $new_branch_pep_id = filter_input(INPUT_POST, "branch_pep_id", FILTER_SANITIZE_NUMBER_INT);
+    $new_branch_pep_id = user_input::convert_post_empty_to_php_null(filter_input(INPUT_POST, "branch_pep_id", FILTER_SANITIZE_NUMBER_INT));
 
     if (filter_has_var(INPUT_POST, 'remove_branch')) {
         $old_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
         $sql_query = "DELETE FROM `branch` WHERE `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $old_branch_id));
-        $current_branch_id = min(array_keys(branch::update_list_of_branch_objects()));
-        /*
-         * TODO: Is this still necessary?
-         */
         if ('00000' === $result->errorCode()) {
-            $deletion_done_div_html = "<div class=overlay_top>"
-                    . "<form id='branch_deletion_done_confirmation_form'>"
-                    . "<p>The branch was successfully deleted.</p>"
-                    . "<button type='submit' form='branch_deletion_done_confirmation_form' class='form_button' name='deletion_done_confirmation_button' id='deletion_done_confirmation_button'>"
-                    . "<img src=" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/approve.png>"
-                    . "<p>Continue</p>"
-                    . "</button>"
-                    . "</form>"
-                    . "</div>";
+            $message = "The branch was successfully deleted.";
+            $user_dialog = new \user_dialog();
+            $user_dialog->add_message($message, E_USER_NOTICE);
+        } else {
+            $message = "Error while trying to delete the branch.";
+            $user_dialog = new \user_dialog();
+            $user_dialog->add_message($message, E_USER_ERROR);
         }
-    } elseif (!branch::exists($new_branch_id)) {
+    } elseif (!$network_of_branch_offices->branch_exists($new_branch_id)) {
         /*
          * This is a new branch.
          * We will simply insert it into the database table.
@@ -61,7 +56,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         database_wrapper::instance()->run($sql_query, $new_branch_data);
-        $List_of_branch_objects = branch::read_branches_from_database();
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $current_branch_id = $new_branch_id;
     } else {
         /*
@@ -84,7 +79,7 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
             'PEP' => $new_branch_pep_id
         );
         database_wrapper::instance()->run($sql_query, $new_branch_data);
-        $List_of_branch_objects = branch::read_branches_from_database();
+        $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $current_branch_id = $new_branch_id;
     }
 
@@ -94,6 +89,14 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
      * TODO: Move this into the branch class.
      */
     for ($weekday = 1; $weekday <= 7; $weekday++) {
+        /*
+         * Remove row from database if it existed
+         */
+        $sql_query = "DELETE FROM `opening_times` WHERE `branch_id` = :branch_id AND `weekday` = :weekday";
+        $result = database_wrapper::instance()->run($sql_query, array(
+            'branch_id' => $new_branch_id,
+            'weekday' => $weekday,
+        ));
         if ('' !== $Opening_times_from[$weekday] and '' !== $Opening_times_to[$weekday]) {
             $sql_query = "INSERT INTO `opening_times` "
                     . " SET `start` = :start, `end` = :end, `branch_id` = :branch_id, `weekday` = :weekday "
@@ -106,32 +109,17 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
                 'end' => $Opening_times_to[$weekday],
                 'end2' => $Opening_times_to[$weekday],
             ));
-        } else {
-            /*
-             * Remove row from database if it existed
-             */
-            $sql_query = "DELETE FROM `opening_times` WHERE `branch_id` = :branch_id AND `weekday` = :weekday";
-            $result = database_wrapper::instance()->run($sql_query, array(
-                'branch_id' => $new_branch_id,
-                'weekday' => $weekday,
-            ));
         }
     }
 }
 
-/*
+/**
  * Reload branch data:
  */
-$List_of_branch_objects = branch::update_list_of_branch_objects();
+$network_of_branch_offices->update_list_of_branch_objects();
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-if (!empty($deletion_done_div_html)) {
-    echo "$deletion_done_div_html";
-    /*
-     * TODO: This would not be necessary if I had a solution to the deletion being to late for the next query.
-     * https://stackoverflow.com/questions/48491976/how-can-one-prevent-php-reading-mysql-before-deletion-success
-     */
-}
 
 $session->exit_on_missing_privilege('administration');
 
@@ -142,29 +130,66 @@ if (empty($List_of_branch_objects)) {
     . gettext("No pharmacy and no branches have been configured. Please setup at least one pharmacy!")
     . "</p>";
     $current_branch_id = 1;
-} else {
+}
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+$new_branch = new \PDR\Pharmacy\Branch(null);
+$List_of_branch_objects[] = $new_branch;
+echo build_html_navigation_elements::build_select_branch($current_branch_id, $List_of_branch_objects, NULL);
 
-    echo build_html_navigation_elements::build_select_branch($current_branch_id, NULL);
+
+/**
+ * <p>Define the $branch_object which will be edited.
+ * In case there is no branch object yet, we will create an empty one.
+ * </p>
+ */
+if ($network_of_branch_offices->branch_exists($current_branch_id)) {
+    $branch_object = $network_of_branch_offices->get_list_of_branch_objects()[$current_branch_id];
+} else {
+    /**
+     * @todo Is there a more clean way to do this?
+     * I probably do not want to create a class branch_object_empty, do I?
+     */
+    $branch_object = new stdClass();
+    $branch_object->branch_id = $current_branch_id;
+    $branch_object->name = "";
+    $branch_object->short_name = "";
+    $branch_object->address = "";
+    $branch_object->manager = "";
+    $branch_object->PEP = "";
+
+    $branch_object->Opening_times = array(
+        1 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        2 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        3 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        4 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        5 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        6 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        7 => array('day_opening_start' => "", 'day_opening_end' => ""),
+    );
 }
 
-function build_branch_input_opening_times($branch_id) {
-    $List_of_branch_objects = (branch::get_list_of_branch_objects());
-    $branch_object = $List_of_branch_objects[$branch_id];
-    unset($List_of_branch_objects);
+/**
+ * @todo <p>Perhaps make a group of builder classes.
+ * And put the html building functions inside.</p>
+ * @param int $branch_id
+ * @return string
+ */
+function build_branch_input_opening_times($branch_object) {
 
     $string = "<fieldset>";
     $string .= "<legend>"
             . gettext('Opening times')
             . "</legend>";
     $string .= "<table id='branch_input_opening_times_fieldset_table'>";
-    $Weekday_names = build_html_navigation_elements::get_weekday_names();
+    $Weekday_names = localization::get_weekday_names();
     foreach ($Weekday_names as $weekday_number => $weekday_name) {
         $string .= "<tr>";
         $string .= "<td>" . $weekday_name . "</td> ";
         $string .= "<td>" . gettext("from") . "</td> ";
-        $string .= "<td><input type = time name = opening_times_from[$weekday_number] value = '" . $branch_object->Opening_times[$weekday_number]['day_opening_start'] . "' form = 'branch_management_form' ></td> ";
+        $string .= "<td><input type=time name=opening_times_from[$weekday_number] value='" . $branch_object->Opening_times[$weekday_number]['day_opening_start'] . "' form='branch_management_form' ></td> ";
         $string .= "<td>" . gettext("to") . "</td> ";
-        $string .= "<td><input type = time name = opening_times_to[$weekday_number] value = '" . $branch_object->Opening_times[$weekday_number]['day_opening_end'] . "' form = 'branch_management_form' ></td> ";
+        $string .= "<td><input type=time name=opening_times_to[$weekday_number] value='" . $branch_object->Opening_times[$weekday_number]['day_opening_end'] . "' form='branch_management_form' ></td> ";
         $string .= "</tr>";
     }
     $string .= "</table>";
@@ -190,7 +215,7 @@ function build_branch_input_opening_times($branch_id) {
                  class="inline-image"
                  title="<?= gettext("Awinta Smart and Awinta One have an option to export PEP data. If you uploaded such PEP data, enter your PEP Id for this branch here.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $List_of_branch_objects[$current_branch_id]->PEP ?>">
+            <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $branch_object->PEP ?>">
         </p>
     </fieldset>
     <fieldset>
@@ -198,43 +223,42 @@ function build_branch_input_opening_times($branch_id) {
         <p>
             <label for="branch_name"><?= gettext('Branch name') ?>: </label>
             <br>
-            <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $List_of_branch_objects[$current_branch_id]->name ?>">
+            <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $branch_object->name ?>">
         </p><p>
             <label for="branch_short_name"><?= gettext('Branch short name') ?>: </label>
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
                  class="inline-image"
                  title="<?= gettext("This is a short unofficial nickname for your pharmacy. It is used in pages with limited space. Please choose no more than 12 letters.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $List_of_branch_objects[$current_branch_id]->short_name ?>">
+            <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $branch_object->short_name ?>">
         </p><p>
             <label for="branch_address"><?= gettext('Branch address') ?>: </label>
             <br>
-            <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" ><?= $List_of_branch_objects[$current_branch_id]->address ?></textarea>
+            <textarea form="branch_management_form" cols="50" rows="3" name='branch_address' id="branch_address" ><?= $branch_object->address ?></textarea>
         </p><p>
             <label for="branch_manager"><?= gettext('Branch manager') ?>: </label>
             <br>
-            <input form="branch_management_form" type='text' name='branch_manager' id="branch_manager" value="<?= $List_of_branch_objects[$current_branch_id]->manager ?>">
+            <input form="branch_management_form" type='text' name='branch_manager' id="branch_manager" value="<?= $branch_object->manager ?>">
         </p>
     </fieldset>
-    <?= build_branch_input_opening_times($current_branch_id); ?>
+    <?= build_branch_input_opening_times($branch_object); ?>
 
     <div id="form_buttons_container">
         <button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no_print">
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/save.png">
             <p> <?= gettext("Save") ?>  </p>
         </button>
-        <button type='reset' form='branch_management_form' class="form_button no_print" onclick='clear_form(getElementById("branch_management_form")); getElementById("branch_form_select").selectedIndex = -1'>
-            <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/edit-icon.svg">
-            <p> <?= gettext("Clear form data") ?>  </p>
-        </button>
-        <button type='submit' name="remove_branch" form='branch_management_form' class="form_button no_print" onclick='return confirmDelete()'>
-            <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
-            <p> <?= gettext("Remove branch") ?>  </p>
-        </button>
+        <?php if (null !== $current_branch_id) { ?>
+            <button type='submit' name="remove_branch" form='branch_management_form' id="branch_form_button_remove" class="form_button no_print" onclick='return confirmDelete()'>
+                <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
+                <p> <?= gettext("Remove branch") ?>  </p>
+            </button>
+        <?php } ?>
     </div>
-    <p class="hint"><?= gettext('Use "Clear form data" to enter data for a new branch') ?></p>
 </div>
 </div><!--id = 'branch_management_main' -->
+
+<?php require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php'; ?>
 
 </body>
 </html>

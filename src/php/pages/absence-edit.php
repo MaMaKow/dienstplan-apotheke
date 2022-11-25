@@ -18,8 +18,8 @@
 require '../../../default.php';
 $workforce = new workforce();
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
-create_cookie('year', $year, 1);
 $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+create_cookie('year', $year, 1);
 create_cookie('employee_id', $employee_id, 30);
 absence::handle_user_input();
 
@@ -49,6 +49,10 @@ $sql_query = 'SELECT * FROM `absence` WHERE `employee_id` = :employee_id and (Ye
 $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year, 'year2' => $year));
 $tablebody = '';
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+    /*
+     * Todo: Wenn jemand kündigt, so können Abwesenheiten bleiben, die nachh der Kündigung liegen.
+     *   In dem Fall könnte man eine Warnung über user_dialog senden.
+     */
     $html_form_id = "change_absence_entry_" . $row->start;
     $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
             . "<form accept-charset='utf-8' method=POST id='$html_form_id'>"
@@ -71,9 +75,9 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     /*
      * reason
      */
-    $tablebody .= "<td><div id=reason_out_$row->start>" . pdr_gettext($row->reason) . "</div>";
+    $tablebody .= "<td><div id='reason_out_$row->start' data-reason_id='$row->reason_id'>" . absence::get_reason_string_localized($row->reason_id) . "</div>";
     $html_id = "reason_in_$row->start";
-    $tablebody .= absence::build_reason_input_select($row->reason, $html_id, $html_form_id);
+    $tablebody .= absence::build_reason_input_select($row->reason_id, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
     /*
      * comment
@@ -86,7 +90,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
      * days
      */
     $tablebody .= "<td>$row->days</td>\n";
-    $tablebody .= "<td><span id=absence_out_$row->start>" . pdr_gettext($row->approval) . "</span>";
+    $tablebody .= "<td><span id=absence_out_$row->start data-absence_approval=$row->approval>" . localization::gettext($row->approval) . "</span>";
     $html_id = "absence_in_$row->start";
     $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
@@ -119,7 +123,7 @@ echo "<div id=main-area>\n";
 
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
-echo absence::build_html_select_year($year);
+echo form_element_builder::build_html_select_year($year);
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/absence-read.php', array('employee_id' => $employee_id));
@@ -141,10 +145,10 @@ echo "</td>\n";
 echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
 echo "</td>\n";
-echo "<td>" . absence::build_reason_input_select(NULL, NULL, 'new_absence_entry') . "</td>\n";
-echo "<td><input type='text' name='comment' form='new_absence_entry'></td>\n";
+echo "<td>" . absence::build_reason_input_select(absence::REASON_VACATION, 'new_absence_reason_id_select', 'new_absence_entry') . "</td>\n";
+echo "<td><input type='text' id='new_absence_input_comment' name='comment' form='new_absence_entry'></td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
-echo "<td>" . absence::build_approval_input_select('not_yet_approved', NULL, 'new_absence_entry') . "</td>\n";
+echo "<td>" . absence::build_approval_input_select('not_yet_approved', 'new_absence_approval_select', 'new_absence_entry') . "</td>\n";
 echo "<td>\n";
 echo "<button type=submit id=save_new class=no_print name=command value='insert_new' form='new_absence_entry'>" . gettext('Save') . "</button>";
 echo "</td>\n";

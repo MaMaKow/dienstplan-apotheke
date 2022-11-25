@@ -3,4 +3,4 @@ CREATE TABLE IF NOT EXISTS `pep_month_day` (
   `factor` float NOT NULL,
   `branch` int(11) NOT NULL,
   PRIMARY KEY (`day`,`branch`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

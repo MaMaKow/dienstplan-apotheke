@@ -16,12 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
+/*
+ * TODO: rename this file workforce-management. I think, I like this term much more
+ */
 human_resource_management::write_employee_data_to_database(); //$success = write_employee_data_to_database();
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+$employee_id = user_input::convert_post_empty_to_php_null(user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id));
 create_cookie('employee_id', $employee_id, 1);
 
 $Worker = human_resource_management::read_employee_data_from_database($employee_id);
 $workforce = new workforce();
+/**
+ * add a "new employee" to the list. This can be used as a template to create a new employee.
+ */
+$List_of_employees = $workforce->List_of_employees;
+$List_of_employees[] = new \employee(NULL, gettext("new employee"), null, 40, 30, null, null, null, null, 28);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_employee');
@@ -30,7 +38,7 @@ $session->exit_on_missing_privilege('create_employee');
  */
 ?>
 <div class="centered_form_div">
-    <?= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees) ?>
+    <?= build_html_navigation_elements::build_select_employee($employee_id, $List_of_employees) ?>
     <form accept-charset='utf-8' method='POST' id='human_resource_management'>
 
         <fieldset>
@@ -82,6 +90,9 @@ $session->exit_on_missing_privilege('create_employee');
                 <br>
                 <label for="end_of_employment"><?= gettext("End of employment") ?>:  </label>
                 <input type='date' name='end_of_employment' id="end_of_employment" value="<?php echo $Worker["end_of_employment"] ?>">
+                <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
+                     class="inline-image"
+                     title="<?= gettext("This is the last day the employee worked.") ?>">
             </p>
         </fieldset>
 

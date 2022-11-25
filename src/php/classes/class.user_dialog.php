@@ -96,7 +96,7 @@ class user_dialog {
      * </p>
      * @param bool $allow_formatted_input If set to TRUE, the $text is not parsed by htmlentities($text), which allows it to contain HTML text formatting.
      */
-    public function add_message($text, $type = E_USER_ERROR, $allow_formatted_input = FALSE) {
+    public function add_message(string $text, int $type = E_USER_ERROR, bool $allow_formatted_input = FALSE) {
         switch ($type) {
             case E_USER_ERROR:
                 $type_string = 'error';
@@ -105,12 +105,13 @@ class user_dialog {
                 $type_string = 'warning';
                 break;
             case E_USER_NOTICE:
+            case E_USER_DEPRECATED:
                 $type_string = 'notification';
                 break;
             default :
                 throw new Exception('$type must be E_USER_ERROR, E_USER_NOTICE or E_USER_WARNING but was: ' . $type);
         }
-        if ($allow_formatted_input) {
+        if (TRUE === $allow_formatted_input) {
             self::$Messages[] = array('text' => $text, 'type' => $type_string);
             return TRUE;
         }
@@ -174,7 +175,6 @@ class user_dialog {
         if (!isset($workforce)) {
             $workforce = new workforce();
         }
-        $trace = debug_backtrace();
         $paragraph_separator = "\n\n\n\n";
         $message = "";
         $message .= "________ " . gettext('Message') . " ________\n";
@@ -186,14 +186,9 @@ class user_dialog {
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('File') . " ________\n";
-        $message .= $trace[1]['file'];
+        $message .= filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_STRING);
         $message .= $paragraph_separator;
 
-        /* $message .= "________ " . gettext('Trace') . " ________\n";
-         * $message .= "TRACE DEACTIVATED";
-         * //$message .= htmlentities(var_export($trace, TRUE));
-         * $message .= $paragraph_separator;
-         */
         return $message;
     }
 

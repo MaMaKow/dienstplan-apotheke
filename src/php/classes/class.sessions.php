@@ -61,17 +61,30 @@ class sessions {
 
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
-        if (isset($_SESSION['number_of_times_redirected'])) {
-            $_SESSION['number_of_times_redirected'] = 0;
-        }
         global $config;
         /*
          * In case there are several instances of the program on the same machine,
          * we need a specific identifier for the different instances.
          * Therefore we define a specific session_name:
          */
-        session_name('PDR' . md5($config["session_secret"]));
+        session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
         session_start();
+        if (isset($_SESSION['number_of_times_redirected'])) {
+            /*
+             * TODO: Check if this is correct!
+             * Sollte hier isset() oder !isset() stehen?
+             * Was genau wird hier getestet?
+             * Es geht sicherlich um die Nutzung von HTTPS.
+             * Um das zu testen und zu erzwingen wurden redirects angelegt.
+             * Damit diese nicht endlos laufen, werden sie in der $SESSION mitgezählt.
+             * Muss diese Prüfug nun vor oder nach session_start(); stattfinden?
+             * Vorher sollte $_SESSION in keinem Fall definiert sein. Oder?
+             * Was passiert denn, wenn die Variable bereits vorher gesetzt wird?
+             *
+             * In welchem genauen Fall soll die Bedingung jetzt wahr werden?
+             */
+            $_SESSION['number_of_times_redirected'] = 0;
+        }
 
         /*
          * Interpret $_SERVER values:
@@ -96,10 +109,11 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        if (!isset($_SESSION['user_object']->employee_id) and ! in_array(basename($script_name), array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php'))) {
+        $List_of_pages_accessible_without_login = array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
+        if (!isset($_SESSION['user_object']->employee_id) and!in_array(basename($script_name), $List_of_pages_accessible_without_login)) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
-            header("Location:" . $location . "?referrer=" . $request_uri);
-            die('<p>Bitte zuerst <a href="' . $location . '?referrer=' . $request_uri . '">einloggen</a></p>' . PHP_EOL);
+            header("Location:" . $location);
+            die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
         }
         $this->keep_alive();
     }
@@ -120,6 +134,10 @@ class sessions {
         }
     }
 
+    /**
+     * TODO: Move this into the user class.
+     * @return void
+     */
     private function read_Privileges_from_database() {
         $Privileges = array();
         $sql_query = "SELECT * FROM users_privileges WHERE `employee_id` = :employee_id";
@@ -152,12 +170,12 @@ class sessions {
     }
 
     public function exit_on_missing_privilege($privilege) {
-        $user_dialog = new user_dialog();
         if (!$this->user_has_privilege($privilege)) {
+            $user_dialog = new user_dialog();
             $request_uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
             $message = gettext('You are missing the necessary permission to use this page.')
                     . ' ' . gettext('Please contact the administrator if you feel this is an error.')
-                    . ' ("' . pdr_gettext(str_replace('_', ' ', $privilege))
+                    . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
                     . '" ' . gettext('is required for') . ' ' . basename($request_uri) . ')';
             $user_dialog->add_message($message, E_USER_ERROR);
             echo $user_dialog->build_messages();
@@ -165,26 +183,22 @@ class sessions {
         }
     }
 
-    public function login($user_name = NULL, $user_password = NULL, $redirect = TRUE) {
-        global $pdo;
+    public function create_message_on_missing_privilege($privilege, $error_type = E_USER_ERROR) {
+        if (!$this->user_has_privilege($privilege)) {
+            $user_dialog = new user_dialog();
+            $message = gettext('You are missing the necessary permission to perform this action.')
+                    . ' ' . gettext('Please contact the administrator if you feel this is an error.')
+                    . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
+                    . '" ' . gettext('is required.') . ')';
+            $user_dialog->add_message($message, $error_type);
+        }
+    }
+
+    public function login($user_name, $user_password, $redirect = TRUE) {
         $user_dialog = new user_dialog;
-        /*
-         * TODO: Use user_dialog for the error messages
-         * user_dialog->add_message($text);
-         * user_dialog->build_messages();
-         */
-        $errorMessage = "";
-        /*
-         * Interpret POST data:
-         */
-        if (NULL === $user_name) {
-            $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
-        }
-        if (NULL === $user_password) {
-            $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_STRING);
-        }
         if (empty($user_password) OR empty($user_name)) {
-            exit("No login credentials were given.\n");
+            $user_dialog->add_message("No login credentials were given.", E_USER_ERROR);
+            return FALSE;
         }
         /*
          * Get user data:
@@ -194,16 +208,22 @@ class sessions {
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $user = new user($row->employee_id);
         }
-
+        if (!$user instanceof user) {
+            /*
+             * In case the given username just does not exist.
+             */
+            $user_dialog->add_message("Dieser Nutzer existiert nicht.", E_USER_ERROR);
+            return FALSE;
+        }
         /*
          * Check for multiple failed login attempts
          * If a user has tried to login 3 times in a row, he is blocked for 5 minutes.
          * The number of failed attempts is reset to 0 on every successfull login.
          */
         if (3 <= $user->failed_login_attempts and strtotime('-5min') <= strtotime($user->failed_login_attempt_time)) {
-            $errorMessage .= "<p>Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.</p>";
-            $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
-            return $errorMessage;
+            $errorMessage = "Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.";
+            $user_dialog->add_message($errorMessage, E_USER_ERROR);
+            return FALSE;
         }
 
         /*
@@ -222,24 +242,27 @@ class sessions {
 
             /*
              * Start another PHP process to do maintenance tasks:
+             * Obsolete: This is now done via XMLHttpRequest() from the login page.
+              $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php';
+              execute_in_background($command);
              */
-            $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php' . ' > ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log 2>&1 &';
-            exec($command);
 
 
             if (TRUE === $redirect) {
-                $referrer = filter_input(INPUT_GET, "referrer", FILTER_SANITIZE_STRING);
+
                 if (!isset($_SESSION['number_of_times_redirected'])) {
                     $_SESSION['number_of_times_redirected'] = 0;
                 }
                 if (!empty($referrer)) {
                     if ($_SESSION['number_of_times_redirected'] < 3) {
-                        $_SESSION['number_of_times_redirected'] ++;
+                        $_SESSION['number_of_times_redirected']++;
+                        $referrer = 'pages/menu-tiles.php';
+                        //die("Location:" . $referrer);
                         header("Location:" . $referrer);
                     }
                 } else {
                     if ($_SESSION['number_of_times_redirected'] < 3) {
-                        $_SESSION['number_of_times_redirected'] ++;
+                        $_SESSION['number_of_times_redirected']++;
 
                         header("Location:" . PDR_HTTP_SERVER_APPLICATION_PATH);
                     }
@@ -250,28 +273,19 @@ class sessions {
             /*
              * Register failed_login_attempts
              */
-            $user->register_failed_login_attempt();
-            $errorMessage .= "<p>Benutzername oder Passwort war ungültig</p>\n";
-            $user_dialog->add_message($errorMessage, E_USER_ERROR, TRUE);
-            return $errorMessage;
+            if ($user instanceof user) {
+                $user->register_failed_login_attempt();
+            }
+            $errorMessage = "Benutzername oder Passwort war ungültig.";
+            $user_dialog->add_message($errorMessage, E_USER_ERROR);
+            return FALSE;
         }
         return FALSE;
     }
 
     public static function logout() {
-        if (session_destroy()) {
-            //echo "Logout erfolgreich";
-        }
+        session_destroy();
         header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php");
-    }
-
-    public function build_logout_button() {
-        /*
-         * TODO: MOve this to build_navigation perhaps.
-         */
-        $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
-        $text_html = "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/logout.php'>" . gettext('Logout') . '</a>';
-        return $text_html;
     }
 
     function send_mail_about_lost_password($employee_id, $user_name, $recipient, $token) {
@@ -285,7 +299,7 @@ class sessions {
 
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
-                . gettext("Dear User,\n\n in order to set a new password for")
+                . gettext("Dear $user_name,\n\n in order to set a new password for")
                 . " '"
                 . $application_name
                 . "' "
@@ -303,6 +317,9 @@ class sessions {
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         $headers .= "Content-Transfer-Encoding: quoted-printable";
 
+        /*
+         * TODO: Use PDR email class
+         */
         $sent_result = mail($recipient, $message_subject, $message_text, $headers);
         if ($sent_result) {
             $message = gettext("The mail was successfully sent. Thank you!");
@@ -314,7 +331,7 @@ class sessions {
     }
 
     public function write_lost_password_token_to_database($employee_id, $token) {
-        if (!is_null($employee_id) and ! is_null($token)) {
+        if (!is_null($employee_id) and!is_null($token)) {
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
             $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES (:employee_id, UNHEX(:token))";
             database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
@@ -330,14 +347,14 @@ class sessions {
             }
             $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             if (!headers_sent() and ( $_SESSION['number_of_times_redirected'] ) < 3) {
-                $_SESSION['number_of_times_redirected'] ++;
+                $_SESSION['number_of_times_redirected']++;
                 header("Status: 301 Moved Permanently");
                 header("Location: $https_url");
                 die("<p>Dieses Programm erfordert die Nutzung von "
                         . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
                         . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
             } elseif (( $_SESSION['number_of_times_redirected'] ) < 3) {
-                $_SESSION['number_of_times_redirected'] ++;
+                $_SESSION['number_of_times_redirected']++;
                 die('<script type="javascript">document.location.href="' . $https_url . '";</script>');
             } else {
                 die("<p>Dieses Programm erfordert die Nutzung von "

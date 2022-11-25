@@ -18,9 +18,34 @@
 require_once "../classes/class.install.php";
 $install = new install;
 if (filter_has_var(INPUT_POST, "database_user")) {
-    $install->handle_user_input_database();
+    if (FALSE === $install->handle_user_input_database()) {
+        $install->Error_message[] = gettext("There was an error while trying to create the database.");
+        $install->Error_message[] = gettext("Please see the error log for details!");
+    }
 }
-require_once 'install_head.php'
+require_once 'install_head.php';
+$install->build_error_message_div();
+
+if (isset($_SESSION["Config"]["database_host"])) {
+    $database_host = $_SESSION["Config"]["database_host"];
+} else {
+    $database_host = "localhost";
+}
+if (isset($_SESSION["Config"]["database_port"])) {
+    $database_port = $_SESSION["Config"]["database_port"];
+} else {
+    $database_port = "";
+}
+if (isset($_SESSION["Config"]["database_user"])) {
+    $database_user = $_SESSION["Config"]["database_user"];
+} else {
+    $database_user = "";
+}
+if (isset($_SESSION["Config"]["database_name"])) {
+    $database_name = $_SESSION["Config"]["database_name"];
+} else {
+    $database_name = "";
+}
 ?>
 <H1>Database configuration</H1>
 
@@ -31,39 +56,30 @@ require_once 'install_head.php'
             <option value="mysql">MySQL</option>
         </select>
     </p><p>
-        <LABEL for="database_host">Database server hostname or DSN:</LABEL><br>
-        <input type="text" id="database_host" name="database_host" value="<?= $_SESSION["Config"]["database_host"] ? $_SESSION["Config"]["database_host"] : "localhost" ?>" />
+        <LABEL for="database_host">Database server hostname:</LABEL><br>
+        <input type="text" id="database_host" name="database_host" value="<?= htmlentities($database_host) ?>" />
         <BR>
-        <DEL>
-            DSN stands for Data Source Name and is relevant only for ODBC installs.
-            On PostgreSQL, use localhost to connect to the local server via UNIX domain socket and 127.0.0.1 to connect via TCP.
-            For SQLite, enter the full path to your database file.
-        </DEL>
     </p><p>
 
         <LABEL for="database_port">Database server port:</LABEL><br>
-        <input type="text" id="database_port" name="database_port" value="<?= $_SESSION["Config"]["database_port"] ? $_SESSION["Config"]["database_port"] : "" ?>" /><!--standard value 3306-->
-        <br>Leave this blank unless you know the server operates on a non-standard port.
-    </p><p>
+        <input type="text" id="database_port" name="database_port" value="<?= htmlentities($database_port) ?>" /><!--standard value 3306-->
+        <br><span class="hint">Leave this blank unless you know the server operates on a non-standard port.<span>
+            </p><p>
 
-        <LABEL for="database_user">Database username:</LABEL><br>
-        <input type="text" id="database_user" name="database_user" value="<?= $_SESSION["Config"]["database_user"] ? $_SESSION["Config"]["database_user"] : "" ?>" />
-    </p><p>
+            <LABEL for="database_user">Database username:</LABEL><br>
+            <input type="text" id="database_user" name="database_user" value="<?= htmlentities($database_user) ?>" />
+        </p><p>
 
-        <LABEL for="database_password">Database password:</LABEL><br>
-        <input type="password" id="database_password" name="database_password" value="" />
-    </p><p>
+            <LABEL for="database_password">Database password:</LABEL><br>
+            <input type="password" id="database_password" name="database_password" value="" />
+        </p><p>
 
-        <LABEL for="database_name">Database name:</LABEL><br>
-        <input type="text" id="database_name" name="database_name" value="<?= $_SESSION["Config"]["database_name"] ? $_SESSION["Config"]["database_name"] : "pharmacy_duty_roster" ?>" />
-    </p><p>
-
-        <del>Prefix for tables in database:
-            The prefix must start with a letter and must only contain letters, numbers and underscores.</del>
-    </p><p>
-        <?php
-        echo $install->build_error_message_div();
-        ?>
-    </p><p>
-        <input type="submit" />
-    </p>
+            <LABEL for="database_name">Database name:</LABEL><br>
+            <input type="text" id="database_name" name="database_name" value="<?= htmlentities($database_name) ?>" />
+        </p><p>
+            <?php
+            echo $install->build_error_message_div();
+            ?>
+        </p><p>
+            <input type="submit" id="InstallPageDatabaseFormButton" />
+        </p>

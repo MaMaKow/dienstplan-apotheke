@@ -36,11 +36,11 @@ class principle_roster extends roster {
     public $alternating_week_id;
 
     public static function read_current_principle_roster_from_database(int $branch_id, DateTime $date_start_object, DateTime $date_end_object = NULL, array $Options = array()) {
-        global $workforce;
         if (NULL === $date_end_object) {
             $date_end_object = $date_start_object;
         }
-        if (array() !== $Options and ! is_array($Options)) {
+        $workforce = new workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
+        if (array() !== $Options and!is_array($Options)) {
             $Options = (array) $Options;
         }
         $Roster = array();
@@ -52,16 +52,12 @@ class principle_roster extends roster {
                     . " WHERE `weekday` = :weekday "
                     . " AND `branch_id` = :branch_id "
                     . " AND `alternating_week_id` = :alternating_week_id "
-                    . " AND (`valid_from` <= :date1 OR ISNULL(`valid_from`))"
-                    . " AND (`valid_until` >= :date2 OR ISNULL(`valid_until`)) "
-                    . " ORDER BY `duty_start` + `duty_end`, `duty_start`";
+                    . " ORDER BY `duty_start` + `duty_end`, `break_start`";
             $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
             $result = database_wrapper::instance()->run($sql_query, array(
-                'branch_id' => $branch_id,
                 'weekday' => $weekday,
+                'branch_id' => $branch_id,
                 'alternating_week_id' => $alternating_week_id,
-                'date1' => $date_sql,
-                'date2' => $date_sql,
             ));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -71,13 +67,18 @@ class principle_roster extends roster {
                      */
                     continue 1;
                 }
-                if (isset($workforce->List_of_employees) AND array_search($row->employee_id, array_keys($workforce->List_of_employees)) === false) {
+                if (isset($workforce->List_of_employees) AND false === array_search($row->employee_id, array_keys($workforce->List_of_employees))) {
                     /*
                      * Exclude non-existent employees from the principle roster:
                      */
                     continue 1;
                 }
-                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end);
+                try {
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                } catch (Exception $exception) {
+                    error_log($exception->getTraceAsString());
+                    throw new Exception('There was an error while reading the current principle roster from the database. Please see the error log file for details!');
+                }
                 $roster_row_iterator++;
             }
         }
@@ -87,56 +88,6 @@ class principle_roster extends roster {
          */
         //self::determine_lunch_breaks($Roster);
         return $Roster;
-    }
-
-    public static function get_list_of_employee_change_dates(int $employee_id, int $alternating_week_id) {
-        $List_of_change_dates = array();
-        /*
-         * Define a valid_from for all the entries in the database. 1970-01-01
-         * Read all the valid_until values.
-         * Make an array of those values.
-         * Make a list of weeks.
-         * Make an array of Rosters in those weeks, with the valid_from as key
-         */
-        $sql_query = "SELECT DISTINCT `valid_from` "
-                . " FROM `principle_roster` "
-                . " WHERE `employee_id` = :employee_id AND `alternating_week_id` = :alternating_week_id ORDER BY `valid_from`;";
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $employee_id,
-            'alternating_week_id' => $alternating_week_id,
-        ));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $date_of_change = new DateTime($row->valid_from);
-            if (NULL === $row->valid_from) {
-                /*
-                 * If there is no known start of validity for one entry, we just take the start of employment for this employee.
-                 * CAVE: This might not be correct if the employee started working after this change.
-                 *   This may happen if an old employee_id is given to someone new.
-                 * TODO: Fix this maybe?
-                 */
-                $alternating_week = new alternating_week($alternating_week_id);
-                $date_of_change = $alternating_week->get_monday_date_for_alternating_week(workforce::get_first_start_of_employment($employee_id));
-            }
-            $List_of_change_dates[] = $date_of_change;
-        }
-        if (array() === $List_of_change_dates) {
-            /*
-             * There has to be at least one entry in the list:
-             */
-            $date_of_change = workforce::get_first_start_of_employment($employee_id);
-            return array($date_of_change);
-        }
-        return $List_of_change_dates;
-    }
-
-    public static function read_all_principle_employee_rosters_from_database(int $employee_id, int $alternating_week_id) {
-        $List_of_change_dates = self::get_list_of_employee_change_dates();
-        foreach ($List_of_change_dates as $date_start_object) {
-            $date_end_object = clone $date_start_object;
-            $date_end_object->add(new DateInterval('P6D'));
-            $List_of_principle_employee_rosters[$date_start_object->format('Y-m-d')] = self::read_current_principle_employee_roster_from_database($employee_id, $date_start_object, $date_end_object);
-        }
-        return $List_of_principle_employee_rosters;
     }
 
     public static function read_current_principle_employee_roster_from_database(int $employee_id, DateTime $date_start_object, DateTime $date_end_object = NULL) {
@@ -155,21 +106,22 @@ class principle_roster extends roster {
                     . " WHERE `weekday` = :weekday "
                     . " AND `employee_id` = :employee_id "
                     . " AND `alternating_week_id` = :alternating_week_id "
-                    . " AND (`valid_from` <= :date1 OR ISNULL(`valid_from`))"
-                    . " AND (`valid_until` >= :date2 OR ISNULL(`valid_until`)) "
                     . " ORDER BY `duty_start` + `duty_end`, `duty_start`";
 
             $result = database_wrapper::instance()->run($sql_query, array(
                 'weekday' => $weekday,
                 'employee_id' => $employee_id,
                 'alternating_week_id' => $alternating_week_id,
-                'date1' => $date_sql,
-                'date2' => $date_sql,
             ));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end);
-                $roster_row_iterator++;
+                try {
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $roster_row_iterator++;
+                } catch (Exception $exception) {
+                    error_log($exception->getTraceAsString());
+                    throw new Exception('There was an error while reading the current principle employee roster from the database. Please see the error log file for details!');
+                }
             }
             if (0 === $roster_row_iterator) {
                 /*
@@ -184,7 +136,9 @@ class principle_roster extends roster {
                      * In case, the employee does not exist on this day we fall back to using the first branch.
                      * This can happen if an employee will start shortly, but not on a monday.
                      */
-                    $branch_id = min(array_keys(branch::get_list_of_branch_objects()));
+                    $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+                    $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
+                    $branch_id = min(array_keys($List_of_branch_objects));
                 }
                 $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
             }
@@ -213,16 +167,20 @@ class principle_roster extends roster {
             $lunch_break_start = roster_item::convert_time_to_seconds('11:30:00');
             foreach ($Roster[$date_unix] as $roster_item_object) {
                 $employee_id = $roster_item_object->employee_id;
-                if (!empty($workforce->List_of_employees[$employee_id]->lunch_break_minutes) AND ! ($roster_item_object->break_start_int > 0) AND ! ($roster_item_object->break_end_int > 0)) {
-                    //Zunächst berechnen wir die Stunden, damit wir wissen, wer überhaupt eine Mittagspause bekommt.
+                if (!empty($workforce->List_of_employees[$employee_id]->lunch_break_minutes) AND!($roster_item_object->break_start_int > 0) AND!($roster_item_object->break_end_int > 0)) {
+                    /**
+                     *  <p lang="de">Zunächst berechnen wir die Stunden,
+                     *  damit wir wissen, wer überhaupt eine Mittagspause bekommt.</p>
+                     */
                     $duty_seconds_with_a_break = $roster_item_object->duty_end_int - $roster_item_object->duty_start_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes * 60;
                     if ($duty_seconds_with_a_break >= 6 * 3600) {
-                        //echo "Mehr als 6 Stunden, also gibt es Mittag!";
-                        //Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.
+                        /**
+                         *  <p lang="de">Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.</p>
+                         */
                         $lunch_break_end = $lunch_break_start + $workforce->List_of_employees[$employee_id]->lunch_break_minutes * 60;
                         for ($number_of_trys = 0; $number_of_trys < 3; $number_of_trys++) {
                             if (FALSE !== array_search($lunch_break_start, $break_start_taken_int) OR FALSE !== array_search($lunch_break_end, $break_end_taken_int)) {
-                                //Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)
+                                /* <p lang="de">Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)</p> */
                                 $lunch_break_start += $lunch_break_length_standard;
                                 $lunch_break_end += $lunch_break_length_standard;
                                 continue;
@@ -239,10 +197,10 @@ class principle_roster extends roster {
                          */
                         $lunch_break_start = $lunch_break_end;
                     }
-                } elseif (!empty($employee_id) AND ! empty($roster_item_object->break_start_int) AND empty($roster_item_object->break_end_int)) {
+                } elseif (!empty($employee_id) AND!empty($roster_item_object->break_start_int) AND empty($roster_item_object->break_end_int)) {
                     $roster_item_object->break_end_int = $roster_item_object->break_start_int + $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
                     $roster_item_object->break_end_sql = roster_item::format_time_integer_to_string($roster_item_object->break_end_int);
-                } elseif (!empty($employee_id) AND empty($roster_item_object->break_start_int) AND ! empty($roster_item_object->break_end_int)) {
+                } elseif (!empty($employee_id) AND empty($roster_item_object->break_start_int) AND!empty($roster_item_object->break_end_int)) {
                     $roster_item_object->break_start_int = $roster_item_object->break_end_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
                     $roster_item_object->break_start_sql = roster_item::format_time_integer_to_string($roster_item_object->break_start_int);
                 }
@@ -267,11 +225,18 @@ class principle_roster extends roster {
     }
 
     public static function get_working_week_days($employee_id) {
-        $sql_query = "SELECT `employee_id`, Count(DISTINCT `weekday`) as `working_week_days`, Count(DISTINCT `alternating_week_id`) as `alternations` FROM `principle_roster` WHERE `employee_id` = :employee_id";
+        /*
+         * TODO: Die Funktion könnte in die employee Klasse übergeben werden, wenn diese einen Zugriff auf den Grundplan hätte.
+         * Sie wäre dort vermutlich private und nicht static.
+         * Ein employee Objekt enthät bereits einen Grundplan. Allerdings ist die vorhandene Instanz nur für eine Alternierung vorhanden.
+         * Sonderfall: Wenn jemand im Wechsel 2 und 3 Tage pro Woche arbeitet,
+         *   so kann nur hier mit Zugriff auf den kompletten Grundplan und den kompletten Alternierungen auch der korrekte Wert von 2,5 gefunden werden.
+         */
+        $sql_query = "SELECT COUNT(*) AS `working_week_days`, COUNT(DISTINCT `alternating_week_id`) AS `alternations` FROM (SELECT `alternating_week_id` FROM `principle_roster` WHERE `employee_id` = :employee_id GROUP BY `alternating_week_id`, `weekday`) AS q1;";
         $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             if (0 != $row->alternations) {
-                return (int) $row->working_week_days / $row->alternations;
+                return (float) $row->working_week_days / $row->alternations;
             }
             return (int) $row->working_week_days;
         }
@@ -286,150 +251,239 @@ class principle_roster extends roster {
             'weekday' => $date_object->format('N'),
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Opening_times['day_opening_start'] = $row->day_opening_start;
-            $Opening_times['day_opening_end'] = $row->day_opening_end;
+            $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->day_opening_start);
+            $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->day_opening_end);
         }
         return $Opening_times;
     }
 
-    public static function remove_changed_employee_entries_from_database($branch_id, $Employee_id_list) {
-        throw new Exception('We will probably not remove any entries anymore. Just invalidate them!');
-        foreach ($Employee_id_list as $date_unix => $Employee_id_list_day) {
-            $weekday = date('w', $date_unix);
-            $date_object = new DateTime();
-            $date_object->setTimestamp($date_unix);
-            $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
-            if (!empty($Employee_id_list_day)) {
-                list($IN_placeholder, $IN_employees_list) = database_wrapper::create_placeholder_for_mysql_IN_function($Employee_id_list_day, TRUE);
-                $sql_query = "DELETE FROM `principle_roster`"
-                        . " WHERE `weekday` = :weekday"
-                        . " AND `employee_id` IN ($IN_placeholder)"
-                        . " AND `branch_id` = :branch_id"
-                        . " AND `alternating_week_id` = :alternating_week_id";
-                database_wrapper::instance()->run($sql_query, array_merge($IN_employees_list, array(
-                    'weekday' => $weekday,
-                    'branch_id' => $branch_id,
-                    'alternating_week_id' => $alternating_week_id,
-                )));
-            }
+    /**
+     *
+     * @param array $List_of_deleted_roster_primary_keys
+     * @return void
+     */
+    public static function invalidate_removed_entries_in_database(array $List_of_deleted_roster_primary_keys) {
+        $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT *, NOW() FROM `principle_roster` WHERE `primary_key` = :primary_key)";
+        $sql_query_delete = "DELETE FROM `principle_roster` WHERE `primary_key` = :primary_key";
+        database_wrapper::instance()->beginTransaction();
+        $statement_insert = database_wrapper::instance()->prepare($sql_query_insert);
+        $statement_delete = database_wrapper::instance()->prepare($sql_query_delete);
+        foreach ($List_of_deleted_roster_primary_keys as $primary_key) {
+            $arguments = array('primary_key' => $primary_key);
+            $statement_insert->execute($arguments);
+            $statement_delete->execute($arguments);
         }
+        database_wrapper::instance()->commit();
+        return;
     }
 
-    public static function insert_changed_entries_into_database(array $Roster, array $Changed_roster_employee_id_list, string $valid_from) {
+    /**
+     * This function removes one single principle roster item from the database.
+     * The old item is archived, before it is deleted.
+     *
+     * @param int $principle_roster_primary_key
+     * @return boolean success
+     */
+    public static function invalidate_removed_entry_in_database(int $principle_roster_primary_key) {
+        $wasAlreadyInATransaction = database_wrapper::instance()->inTransaction();
+
+        $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT *, NOW() FROM `principle_roster` WHERE `primary_key` = :primary_key)";
+        $sql_query_delete = "DELETE FROM `principle_roster` WHERE `primary_key` = :primary_key";
+        if (FALSE === $wasAlreadyInATransaction) {
+            database_wrapper::instance()->beginTransaction();
+        }
+        $statement_insert = database_wrapper::instance()->prepare($sql_query_insert);
+        $statement_delete = database_wrapper::instance()->prepare($sql_query_delete);
+        $arguments = array('primary_key' => $principle_roster_primary_key);
+        $resultSuccessInsert = $statement_insert->execute($arguments);
+        if (FALSE === $resultSuccessInsert) {
+            database_wrapper::instance()->rollBack();
+            return FALSE;
+        }
+        $resultSuccessDelete = $statement_delete->execute($arguments);
+        if (FALSE === $resultSuccessDelete) {
+            database_wrapper::instance()->rollBack();
+            return FALSE;
+        }
+        if (FALSE === $wasAlreadyInATransaction) {
+            database_wrapper::instance()->commit();
+        }
+        return;
+    }
+
+    public static function insert_changed_entries_into_database(array $Roster, array $Changed_roster_employee_id_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_id_list[$date_unix])) {
-                /* There are no changes. */
+                /**
+                 * There are no changes.
+                 */
                 continue;
             }
+            /**
+             * There is some change on $date_unix
+             */
             $date_object = new DateTime;
             $date_object->setTimestamp($date_unix);
             $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
 
             foreach ($Roster_day_array as $roster_item) {
                 if (!in_array($roster_item->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                    /**
+                     * <p lang=de>Dieser Mitarbeiter wurde nicht geändert.</p>
+                     */
                     continue;
                 }
                 if (NULL === $roster_item->employee_id) {
+                    /**
+                     * <p lang=de>Dies ist der Pseudomitarbeiter.
+                     * Er wird nur aus optischen/technischen Gründen mitgeführt.
+                     * </p>
+                     */
                     continue;
                 }
                 database_wrapper::instance()->beginTransaction();
-
                 /*
                  * TODO: Do we also have to delete entries in some cases?
-                 *     Or do we at least have to end their validity?
                  */
-                $primary_key_of_existing_entry = self::find_existing_entry_in_db($roster_item, $alternating_week_id, $valid_from);
+                $primary_key_of_existing_entry = self::find_existing_entry_in_db($roster_item, $alternating_week_id);
                 if (FALSE !== $primary_key_of_existing_entry) {
-                    self::update_old_entry_into_db($roster_item, $alternating_week_id, $valid_from, $primary_key_of_existing_entry);
+                    /**
+                     * <p lang=de>Diesen Eintrag gibt es schon so ähnlich:</p>
+                     */
+                    $result_success = self::update_old_entry_into_db($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
+                    if (FALSE === $result_success) {
+                        return FALSE;
+                    }
                 } else {
-                    self::insert_new_entry_into_db($roster_item, $alternating_week_id, $valid_from);
+                    /**
+                     * <p lang=de>Dieser Eintrag ist komplett neu:</p>
+                     */
+                    $result_success = self::insert_new_entry_into_db($roster_item, $alternating_week_id);
+                    if (FALSE === $result_success) {
+                        return FALSE;
+                    }
                 }
-                self::update_valid_until_values($roster_item->employee_id, $roster_item->branch_id, date('w', $roster_item->date_unix), $alternating_week_id);
                 database_wrapper::instance()->commit();
             }
         }
     }
 
-    private static function update_valid_until_values(int $employee_id, int $branch_id, int $weekday, int $alternating_week_id) {
-        $sql_query = "SELECT * FROM `principle_roster`"
-                . " WHERE "
-                . " `employee_id` = :employee_id AND "
-                . " `branch_id` = :branch_id AND "
-                . " `weekday` = :weekday AND "
-                . " `alternating_week_id` = :alternating_week_id"
-                . " ORDER BY ISNULL(`valid_from`) ASC, `valid_from` DESC";
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $employee_id,
-            'branch_id' => $branch_id,
-            'weekday' => $weekday,
-            'alternating_week_id' => $alternating_week_id,
-        ));
-        $valid_until_date = NULL;
-        $valid_until_sql = $valid_until_date;
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $table_row_identifier = (int) $row->primary_key;
-            if (NULL !== $valid_until_date) {
-                $valid_until_sql = $valid_until_date->format('Y-m-d');
-            }
-            $update_result = self::write_valid_until_value_into_db($table_row_identifier, $valid_until_sql);
-            if (FALSE === $update_result) {
-                database_wrapper::instance()->rollBack();
-            }
-
-            /*
-             * now set the $valid_until_date for the next iteration:
+    public static function insert_new_entries_into_database(array $Principle_roster_of_new_items) {
+        foreach ($Principle_roster_of_new_items as $date_unix => $Principle_roster_day_array) {
+            /**
+             * There is some change on $date_unix
              */
-            $valid_from_date = new DateTime($row->valid_from);
-            $valid_until_date = clone $valid_from_date;
-            $valid_until_date->sub(new DateInterval('P1D'));
+            $date_object = new DateTime;
+            $date_object->setTimestamp($date_unix);
+            $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
+
+            foreach ($Principle_roster_day_array as $roster_item) {
+                if (NULL === $roster_item->employee_id) {
+                    /**
+                     * <p lang=de>Dies ist der Pseudomitarbeiter.
+                     * Er wird nur aus optischen/technischen Gründen mitgeführt.
+                     * </p>
+                     */
+                    continue;
+                }
+                self::insert_new_entry_into_db($roster_item, $alternating_week_id);
+            }
         }
     }
 
-    private static function update_old_entry_into_db(roster_item $roster_item, int $alternating_week_id, string $valid_from, int $primary_key) {
-        $sql_query = "UPDATE `principle_roster` "
-                . " SET `employee_id` = :employee_id, "
-                . " `branch_id` = :branch_id, "
-                . " `weekday` = :weekday, "
-                . " `alternating_week_id` = :alternating_week_id, "
-                . " `duty_start` = :duty_start, `duty_end` = :duty_end, `break_start` = :break_start, `break_end` = :break_end, `working_hours` = :working_hours, "
-                . " `valid_from` = :valid_from, "
-                . " `comment` = :comment"
-                . " WHERE `primary_key` = :primary_key"
-                . ";";
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $roster_item->employee_id,
-            'weekday' => date('w', $roster_item->date_unix),
-            'alternating_week_id' => $alternating_week_id,
-            'duty_start' => $roster_item->duty_start_sql,
-            'duty_end' => $roster_item->duty_end_sql,
-            'break_start' => $roster_item->break_start_sql,
-            'break_end' => $roster_item->break_end_sql,
-            'working_hours' => $roster_item->working_hours,
-            'branch_id' => $roster_item->branch_id,
-            'valid_from' => $valid_from,
-            'comment' => $roster_item->comment,
-            'primary_key' => $primary_key,
-        ));
+    public static function insert_changed_entries_into_database_by_key(array $Roster, array $Changed_roster_primary_key_list) {
+        foreach ($Roster as $date_unix => $Roster_day_array) {
+            if (!isset($Changed_roster_primary_key_list[$date_unix])) {
+                /**
+                 * There are no changes.
+                 */
+                continue;
+            }
+            /**
+             * There is some change on $date_unix
+             */
+            $date_object = new DateTime;
+            $date_object->setTimestamp($date_unix);
+            $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
 
-        return '00000' === $result->errorCode();
+            foreach ($Roster_day_array as $roster_item) {
+                if (!in_array($roster_item->get_primary_key(), $Changed_roster_primary_key_list[$date_unix])) {
+                    /**
+                     * <p lang=de>Dieser Eintrag wurde nicht geändert.</p>
+                     */
+                    continue;
+                }
+                if (NULL === $roster_item->employee_id) {
+                    /**
+                     * <p lang=de>Dies ist der Pseudomitarbeiter.
+                     * Er wird nur aus optischen/technischen Gründen mitgeführt.
+                     * </p>
+                     */
+                    continue;
+                }
+                database_wrapper::instance()->beginTransaction();
+                /*
+                 * TODO: Do we also have to delete entries in some cases?
+                 */
+                $primary_key_of_existing_entry = $roster_item->get_primary_key();
+                if (null !== $primary_key_of_existing_entry) {
+                    /**
+                     * <p lang=de>Diesen Eintrag gibt es schon so ähnlich:</p>
+                     */
+                    $result_success = self::update_old_entry_into_db($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
+                    if (FALSE === $result_success) {
+                        return FALSE;
+                    }
+                } else {
+                    /**
+                     * <p lang=de>Dieser Eintrag ist komplett neu:</p>
+                     */
+                    $result_success = self::insert_new_entry_into_db($roster_item, $alternating_week_id);
+                    if (FALSE === $result_success) {
+                        return FALSE;
+                    }
+                }
+                database_wrapper::instance()->commit();
+            }
+        }
     }
 
-    private static function find_existing_entry_in_db(roster_item $roster_item, int $alternating_week_id, string $valid_from) {
+    /**
+     *
+     * @param roster_item $roster_item
+     * @param int $alternating_week_id
+     * @param int $primary_key
+     * @return type<p>TODO: Es muss immer erst einmal der alte Eintrag archiviert werden, bevor der neue gesetzt werden kann.</p>
+     */
+    private static function update_old_entry_into_db(principle_roster_item $roster_item, int $alternating_week_id, int $primary_key) {
+        self::invalidate_removed_entry_in_database($roster_item->get_primary_key());
+        $result_success = self::insert_new_entry_into_db($roster_item, $alternating_week_id);
+        return $result_success;
+    }
+
+    /**
+     *
+     * @param roster_item $roster_item
+     * @param int $alternating_week_id
+     * @return boolean
+     * <p>TODO: Es sollte möglichst immer der primary_key übergeben werden.
+     * Der sollte Bestandteil des roster_item werden!
+     * $alternating_week_id sollte da auch rein. Im Zweifel null, wenn das feature nicht benutzt wird.
+     * </p>
+     */
+    public static function find_existing_entry_in_db(roster_item $roster_item, int $alternating_week_id) {
         $sql_query = "SELECT * FROM `principle_roster` "
                 . " WHERE "
                 . " `employee_id` = :employee_id AND "
                 . " `branch_id` = :branch_id AND "
                 . " `alternating_week_id` = :alternating_week_id AND "
-                . " `weekday` = :weekday AND "
-                . " `valid_from` = :valid_from "
-                . "";
+                . " `weekday` = :weekday ";
 
         $result = database_wrapper::instance()->run($sql_query, array(
             'employee_id' => $roster_item->employee_id,
-            'weekday' => date('w', $roster_item->date_unix),
-            'alternating_week_id' => $alternating_week_id,
             'branch_id' => $roster_item->branch_id,
-            'valid_from' => $valid_from,
+            'alternating_week_id' => $alternating_week_id,
+            'weekday' => date('w', $roster_item->date_unix),
         ));
 
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -438,14 +492,13 @@ class principle_roster extends roster {
         return FALSE;
     }
 
-    private static function insert_new_entry_into_db(roster_item $roster_item, int $alternating_week_id, string $valid_from) {
+    private static function insert_new_entry_into_db(roster_item $roster_item, int $alternating_week_id) {
         $sql_query = "INSERT INTO `principle_roster` "
                 . " SET `employee_id` = :employee_id, "
                 . " `branch_id` = :branch_id, "
                 . " `weekday` = :weekday, "
                 . " `alternating_week_id` = :alternating_week_id, "
                 . " `duty_start` = :duty_start, `duty_end` = :duty_end, `break_start` = :break_start, `break_end` = :break_end, `working_hours` = :working_hours, "
-                . " `valid_from` = :valid_from, "
                 . " `comment` = :comment"
                 . ";";
         $result = database_wrapper::instance()->run($sql_query, array(
@@ -458,20 +511,9 @@ class principle_roster extends roster {
             'break_end' => $roster_item->break_end_sql,
             'working_hours' => $roster_item->working_hours,
             'branch_id' => $roster_item->branch_id,
-            'valid_from' => $valid_from,
             'comment' => $roster_item->comment,
         ));
 
-        return '00000' === $result->errorCode();
-    }
-
-    private static function write_valid_until_value_into_db(int $table_row_identifier, string $valid_until = NULL) {
-        $sql_query = "UPDATE `principle_roster` SET `valid_until` = :valid_until"
-                . " WHERE `primary_key` = :primary_key";
-        $result = database_wrapper::instance()->run($sql_query, array(
-            'valid_until' => $valid_until,
-            'primary_key' => $table_row_identifier,
-        ));
         return '00000' === $result->errorCode();
     }
 

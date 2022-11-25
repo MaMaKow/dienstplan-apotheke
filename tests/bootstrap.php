@@ -8,12 +8,26 @@ define('PDR_FILE_SYSTEM_APPLICATION_PATH', dirname(__DIR__) . '/');
 define('PDR_HTTP_SERVER_APPLICATION_PATH', 'http://localhost/dienstplan-apotheke/'); //adapt this to your personal server!
 define('PDR_ONE_DAY_IN_SECONDS', 24 * 60 * 60);
 spl_autoload_register(function ($class_name) {
-    include_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/classes/class.' . $class_name . '.php';
+    $base_dir = PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/classes/';
+    $file = $base_dir . 'class.' . $class_name . '.php';
+    if (file_exists($file)) {
+        include_once $file;
+    }
+    /**
+     * <p lang="de">
+     * Wir wollen die Files der Klassen besser sortieren.
+     * Der Autoloader muss so lange bis das abgeschlossen ist, beide Varianten beherrschen.
+     * </p>
+     */
+    $file = $base_dir . str_replace('\\', '/', $class_name) . '.php';
+    if (file_exists($file)) {
+        include_once $file;
+    }
 });
 $config = array(
     'application_name' => 'PDR_TEST',
     'database_name' => 'pdr_test',
-    'session_secret' => '40a8e06346471e26',
+    'session_secret' => '40a8e0634c4f1e2a',
     'error_reporting' => E_ALL | E_STRICT,
     'display_errors' => 1,
     'log_errors' => 1,
@@ -34,11 +48,13 @@ require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "funktionen.php";
 setlocale(LC_TIME, $config['LC_TIME']);
 date_default_timezone_set($config['timezone']);
 mb_internal_encoding($config['mb_internal_encoding']);
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/localization.php';
+localization::initialize_gettext($config["language"]);
 $navigator_language = 'de-de';
 
-
-exec("mysql < " . PDR_FILE_SYSTEM_APPLICATION_PATH . 'tests/pdr_test.sql', $exec_result);
+/**
+ *  Read predefined data into the database:
+ */
+exec("mysql < " . escapeshellarg(PDR_FILE_SYSTEM_APPLICATION_PATH . 'tests/pdr_test.sql'), $exec_result);
 if (!empty($exec_result)) {
     echo "mysql result: " . var_export($exec_result, TRUE) . PHP_EOL;
 }

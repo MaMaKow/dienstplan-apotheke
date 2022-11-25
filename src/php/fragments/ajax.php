@@ -57,4 +57,20 @@ if (filter_has_var(INPUT_POST, 'form')) {
     if ('user_form' === filter_input(INPUT_POST, 'form', FILTER_SANITIZE_STRING)) {
         form_input_user_page();
     }
+} elseif (filter_has_var(INPUT_GET, 'saturdayRotationTeamsRemoveTeamId')) {
+    $team_id_to_remove = filter_input(INPUT_GET, 'saturdayRotationTeamsRemoveTeamId', FILTER_SANITIZE_NUMBER_INT);
+    $branch_id_to_remove = filter_input(INPUT_GET, 'saturdayRotationTeamsRemoveBranchId', FILTER_SANITIZE_NUMBER_INT);
+    if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+        return null;
+    }
+    $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+    if (false === $network_of_branch_offices->branch_exists($branch_id_to_remove)) {
+        return null;
+    }
+    $saturday_rotation = new saturday_rotation($branch_id_to_remove);
+
+    if (!array_key_exists($team_id_to_remove, $saturday_rotation->List_of_teams)) {
+        return null;
+    }
+    $saturday_rotation->remove_team_from_database($branch_id_to_remove, $team_id_to_remove);
 }

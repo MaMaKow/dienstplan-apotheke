@@ -30,8 +30,10 @@ create_cookie('datum', $date_sql, 1);
 $workforce = new workforce($date_sql_start, $date_sql_end);
 
 $employee_id = (int) user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+if (!$workforce->employee_exists($employee_id)) {
+    $_SESSION['user_object']->employee_id;
+}
 create_cookie('employee_id', $employee_id, 1);
-
 /*
  * Get a list of employees:
  */
@@ -44,8 +46,10 @@ if (!isset($workforce->List_of_employees[$employee_id])) {
     $employee_id = $_SESSION['user_object']->employee_id;
 }
 
-$roster_object = new roster($date_start_object, $date_end_object, $employee_id, NULL);
+$roster_object = new roster(clone $date_start_object, clone $date_end_object, $employee_id, NULL);
 $Roster = $roster_object->array_of_days_of_roster_items;
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
@@ -57,7 +61,11 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
-echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> " . gettext("calendar week") . strftime(' %V', $date_unix) . "</a><br>\n";
+echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> "
+ . gettext("calendar week")
+ . strftime(' %V', $date_unix)
+ . '&nbsp;' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))
+ . "</a><br>\n";
 
 echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
 
@@ -65,6 +73,8 @@ echo build_html_navigation_elements::build_select_employee($employee_id, $workfo
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
 echo build_html_navigation_elements::build_button_link_download_ics_file($date_sql, $employee_id);
+echo build_html_navigation_elements::build_input_date($date_sql);
+echo "<br>";
 
 echo "<table>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME));
@@ -96,8 +106,8 @@ echo "</table>\n";
 
 
 $Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
-$Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster);
-echo build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, array('employee_id' => $employee_id));
+$Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster, $workforce);
+echo build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $workforce, array('employee_id' => $employee_id));
 echo "</div>\n";
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';

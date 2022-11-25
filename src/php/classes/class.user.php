@@ -206,9 +206,8 @@ class user {
      * @param string $status
      * @return boolean
      */
-    public function create_new($employee_id, $user_name, $password_hash, $email, $status) {
-        $statement = $this->pdo->prepare("INSERT INTO"
-                . " users (user_name, employee_id, password, email, status)"
+    public function create_new(int $employee_id, string $user_name, string $password_hash, string $email, string $status) {
+        $statement = database_wrapper::instance()->prepare("INSERT INTO `users` (user_name, employee_id, password, email, status)"
                 . " VALUES (:user_name, :employee_id, :password, :email, :status)");
         $result = $statement->execute(array(
             'user_name' => $user_name,
@@ -217,12 +216,11 @@ class user {
             'email' => $email,
             'status' => $status,
         ));
-        if (!$result) {
-            /*
-             * We were not able to create the user.
-             */
-            return FALSE;
-        }
+        /**
+         * Return TRUE, if the user with the given id was created successfully.
+         * Return FALSE otherwise.
+         */
+        return $result;
     }
 
     /**
@@ -293,8 +291,8 @@ class user {
      * @todo should this be static? Is it working?
      */
     public function exists() {
-        $statement = $this->pdo->prepare("SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id");
-        $result = $statement->execute(array('employee_id' => $this->employee_id));
+        $sql_query = "SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             return TRUE;
         }
