@@ -277,7 +277,7 @@ class update_database {
          *  einmal das ganze SET gekürzt werden. Vieleicht gibt es einen eleganteren Weg?</p>
          */
         $Sql_query_array[] = "ALTER TABLE $quoted_database_name.`employees` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
-        $Sql_query_array[] = "ALTER TABLE $quoted_database_name`employees` CHANGE `profession` `profession` SET('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau','Apo','Pra','Ern','Kos','Zug') CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL;";
+        $Sql_query_array[] = "ALTER TABLE $quoted_database_name.`employees` CHANGE `profession` `profession` SET('Apotheker','PI','PTA','PKA','Praktikant','Ernährungsberater','Kosmetiker','Zugehfrau','Apo','Pra','Ern','Kos','Zug') CHARACTER SET latin1 COLLATE latin1_german1_ci NOT NULL;";
         $Sql_query_array[] = "UPDATE $quoted_database_name.`employees` SET `profession` = 'Apo' WHERE `employees`.`profession` = 'Apotheker';";
         $Sql_query_array[] = "UPDATE $quoted_database_name.`employees` SET `profession` = 'Pra' WHERE `employees`.`profession` = 'Praktikant';";
         $Sql_query_array[] = "UPDATE $quoted_database_name.`employees` SET `profession` = 'Ern' WHERE `employees`.`profession` = 'Ernährungsberater';";
