@@ -19,6 +19,7 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import Selenium.MenuFragment;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,7 @@ public class AbsenceEmployeePage {
     public AbsenceEmployeePage() {
 
         driver = Selenium.driver.Wrapper.getDriver();
+        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceEdit);
 
         listOfAbsenceReasons = new HashMap<>();
         listOfAbsenceReasons.put(1, "Urlaub");

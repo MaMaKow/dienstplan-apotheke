@@ -18,44 +18,29 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
+import Selenium.TestPage;
 import Selenium.rosterpages.Workforce;
-import Selenium.signin.SignInPage;
 import java.time.LocalDate;
 import java.time.Month;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-
 /**
  *
  * @author Mandelkow
  */
-public class TestEmergencyServiceListPage {
-
-    WebDriver driver;
+public class TestEmergencyServiceListPage extends TestPage {
 
     @Test(enabled = true)/*new*/
     public void testEmergencyService() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
+        /**
+         * Go to page:
+         */
         EmergencyServiceListPage emergencyServiceListPage = new EmergencyServiceListPage(driver);
-        Assert.assertEquals(emergencyServiceListPage.getUserNameText(), pdr_user_name);
         emergencyServiceListPage.selectYear("2021");
         emergencyServiceListPage.selectBranch(2);
         emergencyServiceListPage.selectYear("2019");
@@ -94,19 +79,4 @@ public class TestEmergencyServiceListPage {
         emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(localDate);
         Assert.assertNull(emergencyServiceListPage.getEmployeeIdOnDate(localDate));
     }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

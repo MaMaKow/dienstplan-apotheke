@@ -18,46 +18,17 @@
  */
 package Selenium.signin;
 
-import Selenium.HomePage;
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import org.openqa.selenium.WebDriver;
-import static org.testng.Assert.assertEquals;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
+import Selenium.TestPage;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestLogin {
+public class TestLogin extends TestPage {
 
-    WebDriver driver;
-
-    // static WebDriver driver;
     @Test(enabled = true)/*passed*/
     public void testLogin() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        //String urlPageTest = propertyFile.getUrlPageTest();
-        String testPageUrl = propertyFile.getTestPageUrl();
-        driver.get(testPageUrl);
-
-        Selenium.signin.SignInPage signInPage = new Selenium.signin.SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-        assertEquals(pdr_user_name, homePage.getUserNameText());
+        super.signIn();
     }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

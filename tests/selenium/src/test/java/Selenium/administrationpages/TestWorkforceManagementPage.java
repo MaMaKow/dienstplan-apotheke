@@ -19,43 +19,26 @@
 package Selenium.administrationpages;
 
 import Selenium.Employee;
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
+import Selenium.TestPage;
 import Selenium.rosterpages.Workforce;
-import Selenium.signin.SignInPage;
 import java.util.Map;
 import org.testng.annotations.Test;
 import org.testng.Assert;
-
-import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestWorkforceManagementPage {
-
-    WebDriver driver;
+public class TestWorkforceManagementPage extends TestPage {
 
     @Test(enabled = true, dependsOnMethods = {"testCreateEmployee"})/*new*/
     public void testReadEmployee() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
-        Assert.assertEquals(workforceManagementPage.getUserNameText(), pdr_user_name);
+
         workforceManagementPage.selectEmployee(1);
 
         Workforce workforce = new Workforce();
@@ -85,20 +68,11 @@ public class TestWorkforceManagementPage {
         Workforce workforce = new Workforce();
         //workforce.writeToFile(listOfEmployees);
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
-        Assert.assertEquals(workforceManagementPage.getUserNameText(), pdr_user_name);
 
         /**
          * TODO: CAVE! Old employees seem to be overwritten.
@@ -106,21 +80,5 @@ public class TestWorkforceManagementPage {
         listOfEmployeesMap.forEach((employeeId, employee) -> {
             workforceManagementPage.createEmployee(employee);
         });
-
     }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

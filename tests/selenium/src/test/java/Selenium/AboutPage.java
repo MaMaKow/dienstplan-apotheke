@@ -18,6 +18,11 @@
  */
 package Selenium;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,12 +34,32 @@ import org.openqa.selenium.WebElement;
 public class AboutPage {
 
     private WebDriver driver;
-
     private final By pdrVersionSpanBy = By.id("pdrVersionSpan");
+
+    public AboutPage() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToApplicationAbout);
+    }
 
     public String getVersion() {
         driver = Selenium.driver.Wrapper.getDriver();
         WebElement pdrVersionSpanElement = driver.findElement(pdrVersionSpanBy);
         return pdrVersionSpanElement.getText();
     }
+
+    public String getVersionStingShould() {
+        try {
+            String command = "git describe --abbrev=0 --tags";
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = input.readLine()) != null) {
+                return line;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(TestAboutPage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
 }

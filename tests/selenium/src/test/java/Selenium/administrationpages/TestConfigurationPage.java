@@ -18,42 +18,26 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
-import org.openqa.selenium.WebDriver;
+import Selenium.TestPage;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestConfigurationPage {
-
-    WebDriver driver;
+public class TestConfigurationPage extends TestPage {
 
     @Test(enabled = true)
     public void testWriteConfiguration() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         /**
          * Go to page:
          */
         ConfigurationPage configurationPage = new ConfigurationPage(driver);
-        Assert.assertEquals(configurationPage.getUserNameText(), pdr_user_name);
         /**
          * Set locales
          */
@@ -65,23 +49,14 @@ public class TestConfigurationPage {
 
     @Test(enabled = true, dependsOnMethods = {"testWriteConfiguration"})/*passed*/
     public void testReadInputFields() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         /**
          * Go to page:
          */
         ConfigurationPage configurationPage = new ConfigurationPage(driver);
-        Assert.assertEquals(configurationPage.getUserNameText(), pdr_user_name);
         /**
          * Check the expected values:
          */
@@ -117,20 +92,6 @@ public class TestConfigurationPage {
          * @todo: <p lang=de>Es fehen noch die Methoden zum Ändern der
          * Konfiguration.</p>
          */
-    }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
     }
 
 }

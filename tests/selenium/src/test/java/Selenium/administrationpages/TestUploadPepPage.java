@@ -18,44 +18,22 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
+import Selenium.TestPage;
 import org.testng.annotations.Test;
-import org.testng.Assert;
-
-import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.asserts.SoftAssert;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestUploadPepPage {
-
-    WebDriver driver;
-    SoftAssert softAssert = new SoftAssert();
+public class TestUploadPepPage extends TestPage {
 
     @Test(enabled = true)/*new*/
     public void testDateNavigation() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         UploadPepPage uploadPepPage = new UploadPepPage(driver);
-        Assert.assertEquals(uploadPepPage.getUserNameText(), pdr_user_name);
-        softAssert.assertEquals(false, uploadPepPage.expectationIsPresent());
         /**
          * Find a file to upload:
          */
@@ -70,19 +48,4 @@ public class TestUploadPepPage {
         softAssert.assertAll();
 
     }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

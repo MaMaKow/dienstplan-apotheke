@@ -36,12 +36,12 @@ import org.testng.annotations.Test;
  */
 public class TestPage {
 
-    WebDriver driver;
-    SoftAssert softAssert = new SoftAssert();
-    private PropertyFile propertyFile;
+    protected WebDriver driver;
+    protected SoftAssert softAssert = new SoftAssert();
+    protected PropertyFile propertyFile;
 
     @Test
-    public void signIn() throws Exception {
+    public void signIn() {
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -58,12 +58,6 @@ public class TestPage {
 
     }
 
-    /*
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-     */
     @BeforeSuite
     public void setUpSuite() {
         driver = Selenium.driver.Wrapper.getDriver();
@@ -76,6 +70,7 @@ public class TestPage {
         By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
+        driver.quit();
     }
 
     @AfterMethod

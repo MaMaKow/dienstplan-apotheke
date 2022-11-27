@@ -18,13 +18,10 @@
  */
 package Selenium.rosterpages;
 
-import Selenium.HomePage;
 import Selenium.NetworkOfBranchOffices;
-import Selenium.PropertyFile;
 import Selenium.Roster;
 import Selenium.RosterItem;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
+import Selenium.TestPage;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
@@ -50,39 +47,24 @@ import java.util.logging.Logger;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.asserts.SoftAssert;
 import org.threeten.extra.YearWeek;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestRosterEmployeePage {
+public class TestRosterEmployeePage extends TestPage {
 
-    WebDriver driver;
-    String iCalendarFileName = "Calendar.ics";
-    SoftAssert softAssert = new SoftAssert();
+    private final String iCalendarFileName = "Calendar.ics";
 
     @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
-        Assert.assertEquals(rosterEmployeePage.getUserNameText(), pdr_user_name);
         /**
          * Move to specific date and go foreward and backward from there:
          */
@@ -97,19 +79,11 @@ public class TestRosterEmployeePage {
 
     @Test(enabled = true)/*failed*/
     public void testRosterDisplay() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
-        Assert.assertEquals(rosterEmployeePage.getUserNameText(), pdr_user_name);
         /**
          * Read the roster from json files and find the same values in the
          * employee pages:
@@ -144,26 +118,19 @@ public class TestRosterEmployeePage {
 
     @Test(enabled = true)/*failed*/
     public void testDownloadICSFile() throws IOException, ParseException {
-
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
-        //Sign in:
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        /**
+         * Sign in:
+         */
+        super.signIn();
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
-        Assert.assertEquals(rosterEmployeePage.getUserNameText(), pdr_user_name);
-        //Move to specific date to get a specific roster:
+        /**
+         * Move to specific date to get a specific roster:
+         */
         int employeeId = 5;
         rosterEmployeePage = rosterEmployeePage.selectEmployee(employeeId);
         /**
          * Get roster items and compare to assertions:
          */
-        ZoneId timeZoneCET = ZoneId.of("CET");
         ZoneId timeZoneBerlin = ZoneId.of("Europe/Berlin");
         Roster roster = new Roster();
         HashMap<YearWeek, HashMap> listOfRosterWeeksForEmployee = roster.getRosterWeeksByEmployeeId(employeeId);
@@ -247,25 +214,12 @@ public class TestRosterEmployeePage {
     @BeforeMethod
     public void setUp() {
         try {
-            File file = new File("Calendar.ics");
+            File file = new File(iCalendarFileName);
             Files.deleteIfExists(file.toPath());
-
         } catch (IOException ex) {
             Logger.getLogger(TestRosterEmployeePage.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
 
-        Selenium.driver.Wrapper.createNewDriver();
     }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult
-    ) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

@@ -18,43 +18,28 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
+import Selenium.TestPage;
 import java.util.Calendar;
 import java.util.Locale;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-
 /**
  *
  * @author Mandelkow
  */
-public class TestSaturdayListPage {
-
-    WebDriver driver;
+public class TestSaturdayListPage extends TestPage {
 
     @Test(enabled = true)
     public void testSaturdayListPage() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
+        /**
+         * Go to page:
+         */
         SaturdayListPage saturdayListPage = new SaturdayListPage(driver);
-        Assert.assertEquals(saturdayListPage.getUserNameText(), pdr_user_name);
         saturdayListPage.selectYear("2021");
         saturdayListPage.selectBranch(1);
         Assert.assertEquals(saturdayListPage.getBranchId(), 1);
@@ -73,19 +58,4 @@ public class TestSaturdayListPage {
         saturdayCalendar.set(2026, Calendar.OCTOBER, 10);
         Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 1);
     }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

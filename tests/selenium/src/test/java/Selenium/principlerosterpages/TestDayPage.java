@@ -17,55 +17,30 @@
 package Selenium.principlerosterpages;
 
 import Selenium.PrincipleRoster;
+import Selenium.TestPage;
 import Selenium.PrincipleRosterDay;
 import Selenium.PrincipleRosterItem;
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 /**
  *
  * @author Martin Mandelkow <netbeans@martin-mandelkow.de>
  */
-public class TestDayPage {
-
-    WebDriver driver;
-    SoftAssert softAssert = new SoftAssert();
-    private PropertyFile propertyFile;
+public class TestDayPage extends TestPage {
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
     public void testDateNavigation() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific month:
@@ -84,20 +59,11 @@ public class TestDayPage {
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*passed*/
     public void testRosterDisplay() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific principle roster:
@@ -126,20 +92,11 @@ public class TestDayPage {
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
     public void testRosterChange() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific month:
@@ -190,20 +147,11 @@ public class TestDayPage {
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate"})/*new*/
     public void testRosterCopyAlternation() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
          * Copy the alternation:
@@ -213,19 +161,11 @@ public class TestDayPage {
 
     @Test(enabled = true)/*new*/
     public void testRosterCreate() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific branch:
@@ -261,20 +201,11 @@ public class TestDayPage {
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*new*/
     public void testRosterChangePlotErrors() throws ParseException, Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific month:
@@ -306,20 +237,11 @@ public class TestDayPage {
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
     public void testRosterChangeDragAndDrop() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Assert.assertEquals(dayPage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific month:
@@ -366,33 +288,4 @@ public class TestDayPage {
         }
 
     }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @BeforeSuite
-    public void setUpSuite() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        /**
-         * Refresh the page contents from the nextcloud data:
-         */
-        propertyFile = new PropertyFile();
-        String testPageFolderPath = propertyFile.getUrlInstallTest();
-        driver.get(testPageFolderPath + "selenium-refresh.php");
-        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

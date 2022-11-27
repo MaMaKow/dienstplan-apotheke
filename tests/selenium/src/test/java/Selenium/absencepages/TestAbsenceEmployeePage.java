@@ -19,39 +19,22 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
-import Selenium.MenuFragment;
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
-import org.openqa.selenium.WebDriver;
+import Selenium.TestPage;
 import static org.testng.Assert.assertEquals;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestAbsenceEmployeePage {
+public class TestAbsenceEmployeePage extends TestPage {
 
-    WebDriver driver;
-
-    @org.testng.annotations.Test(enabled = true)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testCreateAbsence() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-
-        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceEdit);
+        super.signIn();
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         /**
          * Create a new absence:
@@ -109,14 +92,5 @@ public class TestAbsenceEmployeePage {
         absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", 5);
         assertEquals(currentAbsence, null);
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
     }
 }

@@ -19,11 +19,9 @@
 package Selenium.rosterpages;
 
 import Selenium.Employee;
-import Selenium.PropertyFile;
 import Selenium.Roster;
 import Selenium.RosterItem;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
+import Selenium.TestPage;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
@@ -31,39 +29,22 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.testng.annotations.Test;
-import org.openqa.selenium.WebDriver;
 import static org.testng.Assert.assertEquals;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.asserts.SoftAssert;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestRosterDayEditPage {
-
-    WebDriver driver;
-    SoftAssert softAssert = new SoftAssert();
+public class TestRosterDayEditPage extends TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         try {
-            driver = Selenium.driver.Wrapper.getDriver();
-            PropertyFile propertyFile = new PropertyFile();
-            String urlPageTest = propertyFile.getUrlPageTest();
-            driver.get(urlPageTest);
-
             /**
              * Sign in:
              */
-            SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = propertyFile.getPdrUserPassword();
-            String pdr_user_name = propertyFile.getPdrUserName();
-            signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+            super.signIn();
             RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
-            assertEquals(rosterDayEditPage.getUserNameText(), pdr_user_name);
             /**
              * Move to specific date and go foreward and backward from there:
              */
@@ -82,19 +63,12 @@ public class TestRosterDayEditPage {
 
     @Test(enabled = true, dependsOnMethods = {"testDateNavigation", "testRosterEdit"})/*passed*/
     public void testRosterDisplay() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
-        assertEquals(rosterDayEditPage.getUserNameText(), pdr_user_name);
+
         /**
          * Get roster items and compare to assertions:
          */
@@ -121,19 +95,11 @@ public class TestRosterDayEditPage {
 
     @Test(enabled = true)/*new*/
     public void testRosterEdit() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
-        assertEquals(rosterDayEditPage.getUserNameText(), pdr_user_name);
         /**
          * Move to specific date to get a specific roster:
          */
@@ -150,20 +116,5 @@ public class TestRosterDayEditPage {
             rosterDayEditPage.rosterFormSubmit();
         }
 
-    }
-
-    @BeforeMethod
-    public void setUp() {
-        /*driver = */
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
     }
 }

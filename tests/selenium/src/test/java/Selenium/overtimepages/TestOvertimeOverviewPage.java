@@ -19,17 +19,14 @@
 package Selenium.overtimepages;
 
 import Selenium.Employee;
+import Selenium.TestPage;
 import Selenium.PropertyFile;
-import Selenium.ScreenShot;
 import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
 import java.time.LocalDate;
 import java.time.Month;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -40,34 +37,22 @@ import org.testng.annotations.Test;
  *
  * @author Martin Mandelkow <netbeans@martin-mandelkow.de>
  */
-public class TestOvertimeOverviewPage {
-
-    WebDriver driver;
+public class TestOvertimeOverviewPage extends TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testDisplay() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
-        LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 2);
 
         /**
          * create an overtime first;
          */
+        LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 2);
         overtimeEmployeePage.addNewOvertime(localDate0, 8.15f, "Foo");
-
         OvertimeOverviewPage overtimeOverviewPage = new OvertimeOverviewPage(driver);
-        Assert.assertEquals(overtimeOverviewPage.getUserNameText(), pdr_user_name);
 
         /**
          * Find the overtime balance:
@@ -85,19 +70,4 @@ public class TestOvertimeOverviewPage {
         overtimeEmployeePage.removeOvertimeByLocalDate(localDate0);
         Assert.assertEquals(balance, 8.15f);
     }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }
