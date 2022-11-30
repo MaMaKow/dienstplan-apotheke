@@ -414,3 +414,15 @@ Dienstplan Mitarbeiteransicht mit Kommentar für Personen mit Bearbeiterprivileg
 
 play around with docker
 Post/Redirect/Get
+
+user_dialog_contact_form_div
+
+#### das Kontaktformular ist aus dem Script register.php erreichbar.
+
+Dadurch kommt es mitunter zu Kommunikation aus scannern, die die website  untersuchen.
+
+Vielleicht sollte ich für register.php auch ein rate-limiting einsetzen.
+und für vergessene Passwörter auch. Da kamen am 04.10.2022 sehr viele  Emails von einem bot, der den Dienstplan tiefgehend untersucht hat.
+
+#### Übersicht Resturlaubstage aus den vergangenen 3 Jahren für das Steuerbüro
+

@@ -216,6 +216,10 @@ class roster {
         return roster_item::format_time_integer_to_string($Roster[$day_iterator][$roster_row_iterator]->break_end_int);
     }
 
+    public static function get_working_hours_from_roster(array $Roster, int $day_iterator, int $roster_row_iterator) {
+        return $Roster[$day_iterator][$roster_row_iterator]->working_hours;
+    }
+
     public static function get_comment_from_roster($Roster, $day_iterator, $roster_row_iterator) {
         return $Roster[$day_iterator][$roster_row_iterator]->comment;
     }

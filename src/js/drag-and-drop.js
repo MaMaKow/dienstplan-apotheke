@@ -129,35 +129,39 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     var date_sql = input_object_parent.dataset.date_sql;
     var roster_row_iterator = input_object_parent.dataset.roster_row_iterator;
     var roster_column_name = input_object.dataset.roster_column_name;
-    var roster_item = Roster_array[date_unix][roster_row_iterator];
-    if (!roster_item) {
-        /*
-         * Initialize the object with zero values:
-         */
-        Roster_array[date_unix][roster_row_iterator] = {
-            branch_id: branch_id,
-            comment: null,
-            //date_sql: date_object.getFullYear() + "-" + date_object.getMonth() + "-" + date_object.getDate(),
-            date_sql: date_sql,
-            date_unix: date_unix,
-            date_object: date_object,
-            break_duration: 0,
-            break_start_int: 0,
-            break_end_int: 0,
-            duty_duration: 0,
-            duty_start_int: 0,
-            duty_end_int: 0,
-            duty_start_sql: "0:00",
-            duty_end_sql: "0:00",
-            break_start_sql: "0:00",
-            break_end_sql: "0:00",
-            employee_id: 0,
-            working_hours: 0,
-            working_seconds: 0
-        };
-        Roster_array[date_unix][roster_row_iterator][roster_column_name] = Number(input_object.value);
-        roster_item = Roster_array[date_unix][roster_row_iterator];
+    try {
+        var roster_item = Roster_array[date_unix][roster_row_iterator];
+    } catch (e) {
+        if (!roster_item) {
+            /*
+             * Initialize the object with zero values:
+             */
+            Roster_array[date_unix][roster_row_iterator] = {
+                branch_id: branch_id,
+                comment: null,
+                //date_sql: date_object.getFullYear() + "-" + date_object.getMonth() + "-" + date_object.getDate(),
+                date_sql: date_sql,
+                date_unix: date_unix,
+                date_object: date_object,
+                break_duration: 0,
+                break_start_int: 0,
+                break_end_int: 0,
+                duty_duration: 0,
+                duty_start_int: 0,
+                duty_end_int: 0,
+                duty_start_sql: "0:00",
+                duty_end_sql: "0:00",
+                break_start_sql: "0:00",
+                break_end_sql: "0:00",
+                employee_id: 0,
+                working_hours: 0,
+                working_seconds: 0
+            };
+            Roster_array[date_unix][roster_row_iterator][roster_column_name] = Number(input_object.value);
+            roster_item = Roster_array[date_unix][roster_row_iterator];
+        }
     }
+
     roster_item[roster_column_name] = input_object.value;
     /*
      * Calculate the resulting information for the other columns:
@@ -182,7 +186,12 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     roster_item['break_start_int'] = break_start_object.getHours() * 3600 + break_start_object.getMinutes() * 60;
     roster_item['break_end_int'] = break_end_object.getHours() * 3600 + break_end_object.getMinutes() * 60;
 
-    /*
+    /**
+     * Update working hours span:
+     */
+    var working_hours_span = document.getElementById("Dienstplan[" + date_unix + "][working_hours_span][" + roster_row_iterator + "]");
+    working_hours_span.innerHTML = working_hours.toFixed(2);
+    /**
      * sync the information to the bar plot:
      */
     sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_unix);

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2022-10-30 08:09+0100\n"
-"PO-Revision-Date: 2022-10-30 12:12+0100\n"
+"POT-Creation-Date: 2022-11-29 21:04+0100\n"
+"PO-Revision-Date: 2022-11-29 21:09+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -139,7 +139,7 @@ msgstr "und wird nicht berechnet."
 msgid "%1$s is not a working day for %2$s and will not be counted."
 msgstr "%1$s ist kein Arbeitstag für %2$s und wird nicht gezählt."
 
-#: src/php/classes/class.alternating_week.php:264
+#: src/php/classes/class.alternating_week.php:265
 msgid "week"
 msgstr "Woche"
 
@@ -230,60 +230,60 @@ msgstr "Löschen"
 msgid "Copy"
 msgstr "Kopieren"
 
-#: src/php/classes/class.build_html_roster_views.php:52
+#: src/php/classes/class.build_html_roster_views.php:54
 msgid "Absentees"
 msgstr "Abwesende"
 
-#: src/php/classes/class.build_html_roster_views.php:115
-#: src/php/classes/class.build_html_roster_views.php:152
+#: src/php/classes/class.build_html_roster_views.php:121
+#: src/php/classes/class.build_html_roster_views.php:164
 #: src/php/classes/class.collaborative_vacation.php:406
 #: src/php/pages/branch-management.php:191
 msgid "to"
 msgstr "bis"
 
-#: src/php/classes/class.build_html_roster_views.php:138
-#: src/php/classes/class.build_html_roster_views.php:431
-#: src/php/classes/class.build_html_roster_views.php:518
+#: src/php/classes/class.build_html_roster_views.php:150
+#: src/php/classes/class.build_html_roster_views.php:451
+#: src/php/classes/class.build_html_roster_views.php:536
 msgid "break"
 msgstr "Pause"
 
-#: src/php/classes/class.build_html_roster_views.php:250
-#: src/php/classes/class.build_html_roster_views.php:396
-#: src/php/classes/class.build_html_roster_views.php:560
+#: src/php/classes/class.build_html_roster_views.php:270
+#: src/php/classes/class.build_html_roster_views.php:416
+#: src/php/classes/class.build_html_roster_views.php:578
 #: src/php/classes/class.pharmacy_emergency_service_builder.php:53
 #: src/php/classes/class.roster_image_bar_plot.php:161
-#: src/php/classes/class.saturday_rotation.php:284
+#: src/php/classes/class.saturday_rotation.php:282
 #: src/php/classes/class.task_rotation.php:255
 msgid "Unknown employee"
 msgstr "Unbekannte*r Mitarbeiter*in"
 
-#: src/php/classes/class.build_html_roster_views.php:278
-#: src/php/classes/class.build_html_roster_views.php:418
-#: src/php/classes/class.build_html_roster_views.php:512
+#: src/php/classes/class.build_html_roster_views.php:298
+#: src/php/classes/class.build_html_roster_views.php:438
+#: src/php/classes/class.build_html_roster_views.php:530
 #: src/php/pages/absence-edit.php:135
 #: src/php/pages/collaborative-vacation-input-box.php:109
 msgid "Comment"
 msgstr "Kommentar"
 
-#: src/php/classes/class.build_html_roster_views.php:325
-#: src/php/pages/principle-roster-employee.php:88
+#: src/php/classes/class.build_html_roster_views.php:345
+#: src/php/pages/principle-roster-employee.php:85
 #: src/php/pages/roster-day-edit.php:166
 #: src/php/pages/roster-employee-table.php:65
 #: src/php/pages/roster-week-table.php:72
 msgid "calendar week"
 msgstr "Kalenderwoche"
 
-#: src/php/classes/class.build_html_roster_views.php:330
+#: src/php/classes/class.build_html_roster_views.php:350
 #: src/php/pages/roster-day-edit.php:173 src/php/pages/roster-day-edit.php:175
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
-#: src/php/classes/class.build_html_roster_views.php:543
-#: src/php/pages/principle-roster-employee.php:145
+#: src/php/classes/class.build_html_roster_views.php:561
+#: src/php/pages/principle-roster-employee.php:142
 msgid "Hours per week"
 msgstr "Wochenstunden"
 
-#: src/php/classes/class.build_html_roster_views.php:546
+#: src/php/classes/class.build_html_roster_views.php:564
 #: src/php/classes/class.overtime.php:190
 #: src/php/pages/collaborative-vacation-input-box.php:64
 #: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:57
@@ -292,17 +292,17 @@ msgid "Employee"
 msgstr "Mitarbeiter"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:547
+#: src/php/classes/class.build_html_roster_views.php:565
 msgid "Actual"
 msgstr "Ist"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:548
+#: src/php/classes/class.build_html_roster_views.php:566
 msgid "Target"
 msgstr "Soll"
 
 # Soll, Ist und Differenz
-#: src/php/classes/class.build_html_roster_views.php:549
+#: src/php/classes/class.build_html_roster_views.php:567
 msgid "Deviation"
 msgstr "Differenz"
 
@@ -417,37 +417,37 @@ msgstr "Filiale"
 msgid "None"
 msgstr "Kein"
 
-#: src/php/classes/class.iCalendar.php:156
+#: src/php/classes/class.iCalendar.php:150
 msgid "Calendar file for employee"
 msgstr "Kalenderdatei für Mitarbeiter"
 
-#: src/php/classes/class.iCalendar.php:157
+#: src/php/classes/class.iCalendar.php:151
 msgid "contains the roster for"
 msgstr "enthält den Dienstplan für"
 
-#: src/php/classes/class.iCalendar.php:158
+#: src/php/classes/class.iCalendar.php:152
 #: src/php/pages/emergency-service-list.php:109
 msgid "Weekday"
 msgstr "Wochentag"
 
-#: src/php/classes/class.iCalendar.php:160
+#: src/php/classes/class.iCalendar.php:154
 #, php-format
 msgid "Lunch from %1$s to %2$s"
 msgstr "Mittagspause von %1$s bis %2$s"
 
-#: src/php/classes/class.iCalendar.php:172
+#: src/php/classes/class.iCalendar.php:166
 msgid "Time to go to work"
 msgstr "Zeit zur Arbeit zu gehen"
 
-#: src/php/classes/class.iCalendar.php:178
+#: src/php/classes/class.iCalendar.php:172
 msgid "Time to leave"
 msgstr "Es ist Zeit zu gehen"
 
-#: src/php/classes/class.iCalendar.php:184
+#: src/php/classes/class.iCalendar.php:178
 msgid "Time for lunch break."
 msgstr "Es ist Zeit für eine Pause."
 
-#: src/php/classes/class.iCalendar.php:190
+#: src/php/classes/class.iCalendar.php:184
 msgid "The Lunch break ends now."
 msgstr "Die Pause endet jetzt."
 
@@ -480,7 +480,7 @@ msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
 msgid "The directory %1$s is not writable."
 msgid_plural "The directories %1$s are not writable."
 msgstr[0] "Das Verzeichnis %1$s ist nicht beschreibbar."
-msgstr[1] "Die Verzeichnisse %1s sind nicht beschreibbar."
+msgstr[1] "Die Verzeichnisse %1$s sind nicht beschreibbar."
 
 #: src/php/classes/class.install.php:528
 msgid "Make sure that the directories are writable by pdr!"
@@ -605,7 +605,7 @@ msgid "Balance"
 msgstr "Saldo"
 
 #: src/php/classes/class.overtime.php:192
-#: src/php/classes/class.roster_item.php:196
+#: src/php/classes/class.roster_item.php:280
 #: src/php/pages/emergency-service-list.php:109
 #: src/php/pages/overtime-read.php:51 src/php/pages/saturday-list.php:39
 msgid "Date"
@@ -630,7 +630,7 @@ msgstr ""
 msgid "Please %1$s configure %2$s the opening times!"
 msgstr "Bitte %1$s konfigurieren %2$s Sie die Öffnungszeiten!"
 
-#: src/php/classes/class.roster_item.php:173
+#: src/php/classes/class.roster_item.php:257
 #, php-format
 msgid ""
 "The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s"
@@ -638,7 +638,7 @@ msgstr ""
 "Die Pause beginnt, bevor sie endet.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:177
+#: src/php/classes/class.roster_item.php:261
 #, php-format
 msgid ""
 "The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: "
@@ -647,7 +647,7 @@ msgstr ""
 "Die Pause beginnt, bevor die Arbeit beginnt.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:181
+#: src/php/classes/class.roster_item.php:265
 #, php-format
 msgid ""
 "The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s"
@@ -655,7 +655,7 @@ msgstr ""
 "Die Pause endet, nachdem die Arbeit beendet ist.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:185
+#: src/php/classes/class.roster_item.php:269
 #, php-format
 msgid ""
 "The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s"
@@ -663,29 +663,29 @@ msgstr ""
 "Die Arbeit beginnt nachdem sie zu Ende ist.<br>Mitarbeiter Nummer: "
 "%1$s<br>Arbeitsbeginn: %2$s"
 
-#: src/php/classes/class.roster_item.php:201
+#: src/php/classes/class.roster_item.php:285
 msgid "You work at the following times:"
 msgstr "Sie arbeiten zu folgenden Zeiten:"
 
-#: src/php/classes/class.roster_item.php:205
+#: src/php/classes/class.roster_item.php:289
 msgid "Start and end of duty"
 msgstr "Beginn und Ende des Dienstes"
 
-#: src/php/classes/class.roster_item.php:208
-#: src/php/classes/class.roster_item.php:214
+#: src/php/classes/class.roster_item.php:292
+#: src/php/classes/class.roster_item.php:298
 #, php-format
 msgid "From %1$s to %2$s"
 msgstr "Von %1$s bis %2$s"
 
-#: src/php/classes/class.roster_item.php:211
+#: src/php/classes/class.roster_item.php:295
 msgid "Start and end of lunch break"
 msgstr "Start und Ende der Pause"
 
-#: src/php/classes/class.saturday_rotation.php:315
+#: src/php/classes/class.saturday_rotation.php:313
 msgid "Remove team"
 msgstr "Team entfernen"
 
-#: src/php/classes/class.saturday_rotation.php:337
+#: src/php/classes/class.saturday_rotation.php:335
 msgid "Add another employee"
 msgstr "Mitarbeiter hinzufügen"
 
@@ -1107,27 +1107,62 @@ msgstr ""
 "Sollten die Nutzer Dienstpläne sehen können, bevor sie endgültig genehmigt "
 "werden?"
 
+#: src/php/pages/configuration.php:193
+msgid "Show"
+msgstr "Anzeigen"
+
+#: src/php/pages/configuration.php:194
+msgid "Hide"
+msgstr "Verstecken"
+
 #: src/php/pages/configuration.php:199
 msgid "Email settings"
 msgstr "Email Einstellungen"
 
-#: src/php/pages/configuration.php:209
+#: src/php/pages/configuration.php:201
+msgid "Emails are sent in some cases:"
+msgstr "In einigen Fällen werden E-mails verschickt:"
+
+#: src/php/pages/configuration.php:203
+msgid "When new users are registered"
+msgstr "Wenn neue Benutzer registriert werden"
+
+#: src/php/pages/configuration.php:204
+msgid "When users want to comment on the roster"
+msgstr "Wenn Benutzer den Dienstplan kommentieren möchten"
+
+#: src/php/pages/configuration.php:205
+msgid ""
+"When there are acute changes to the roster (optional for the distinct users)"
+msgstr ""
+"Wenn akute Änderungen im Dienstplan vorgenommen werden (Option für einzelne "
+"Nutzer)"
+
+#: src/php/pages/configuration.php:207
+msgid "How should these emails be sent?"
+msgstr "Wie sollen diese Emails versendet werden?"
+
+#: src/php/pages/configuration.php:210
 msgid "Simple mail"
 msgstr "Simple mail"
 
 #: src/php/pages/configuration.php:210
+msgid "(Uses sendmail on Linux/Mac)"
+msgstr "(Verwendet sendmail auf Linux/Mac)"
+
+#: src/php/pages/configuration.php:211
 msgid "Sendmail"
 msgstr "Sendmail"
 
-#: src/php/pages/configuration.php:211
+#: src/php/pages/configuration.php:212
 msgid "qmail"
 msgstr "qmail"
 
-#: src/php/pages/configuration.php:212
+#: src/php/pages/configuration.php:213
 msgid "SMTP"
 msgstr "SMTP"
 
-#: src/php/pages/configuration.php:216
+#: src/php/pages/configuration.php:217
 msgid "SMTP settings"
 msgstr "SMTP Einstellungen"
 
@@ -1317,7 +1352,7 @@ msgstr "Tagesansicht Eingabe"
 msgid "Daily output"
 msgstr "Tagesansicht Ausgabe"
 
-#: src/php/pages/menu.php:50 src/php/pages/principle-roster-day.php:108
+#: src/php/pages/menu.php:50 src/php/pages/principle-roster-day.php:110
 msgid "Principle roster daily"
 msgstr "Grundplan Tagesansicht"
 
@@ -1422,7 +1457,7 @@ msgstr "Dienstbeginn MUSS eine gültige Zeit sein!"
 msgid "Duty end MUST be a valid time!"
 msgstr "Dienstende MUSS eine gültige Zeit sein!"
 
-#: src/php/pages/principle-roster-employee.php:87
+#: src/php/pages/principle-roster-employee.php:84
 msgid "e.g."
 msgstr "z.B."
 

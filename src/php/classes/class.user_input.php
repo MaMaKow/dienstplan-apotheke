@@ -84,12 +84,6 @@ abstract class user_input {
                 $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
                 $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
                 $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_STRING));
-                if (isset($Roster_row_array['primary_key'])) {
-                    /*
-                     * Dies scheint ein principle_roster zu sein:
-                     */
-                    $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
-                }
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
@@ -108,18 +102,19 @@ abstract class user_input {
                      * Daher wird diese Zeile in diesem Fall nicht erreicht.
                      * </p>
                      */
+                    if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                        /**
+                         * <p lang=de>
+                         * Sowohl Beginn als auch Ende wurden als leer übertragen. Dieses roster item wurde also gelöscht.
+                         * </p>
+                         */
+                        $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                        continue;
+                    }
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
                 if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
-                }
-                if (!empty($primary_key) && is_numeric($primary_key)) {
-                    /*
-                     * This one is a principle roster item.
-                     * @todo: There will come a time, when simple roster_items will also have a numeric primary_key.
-                     */
-                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
-                    continue;
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
@@ -450,7 +445,7 @@ abstract class user_input {
                     if (NULL === $roster_item->employee_id) {
                         continue;
                     }
-                    if (self::principle_roster_item_has_changed($roster_item, $Roster_old)) {
+                    if (self::roster_item_has_changed($roster_item, $Roster_old)) {
                         /**
                          * The roster for the employee has changed for this day.
                          * The employee_id will be added to Changed_roster_employee_id_list
@@ -699,8 +694,8 @@ abstract class user_input {
             user_input::insert_changed_roster_into_database($Roster, $Changed_roster_employee_id_list);
             user_input::insert_changed_roster_into_database($Roster, $Inserted_roster_employee_id_list);
             database_wrapper::instance()->commit();
-            $user_dialog_email = new user_dialog_email();
-            $user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);
+            //$user_dialog_email = new user_dialog_email();
+            //$user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);
         }
     }
 

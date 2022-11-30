@@ -29,7 +29,7 @@ import java.time.LocalTime;
  */
 public class RosterItem {
 
-    private final int employeeId;
+    private final Integer employeeId;
     private final LocalDate localDate;
     private final String dutyStart;
     private final String dutyEnd;
@@ -37,22 +37,30 @@ public class RosterItem {
     private final String breakEnd;
     private final Integer branchId;
     private final String comment;
-    private final LocalDateTime dutyStartLocalDateTime;
-    private final LocalDateTime dutyEndLocalDateTime;
+    private LocalDateTime dutyStartLocalDateTime;
+    private LocalDateTime dutyEndLocalDateTime;
     private LocalDateTime breakStartLocalDateTime;
     private LocalDateTime breakEndLocalDateTime;
 
-    public RosterItem(int employeeId, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
+    public RosterItem(Integer employeeId, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
         this.employeeId = employeeId;
         this.localDate = LocalDate.from(localDate);
 
         this.dutyStart = dutyStart;
-        LocalTime dutyStartLocalTime = LocalTime.parse(dutyStart);
-        dutyStartLocalDateTime = localDate.atTime(dutyStartLocalTime);
+        try {
+            LocalTime dutyStartLocalTime = LocalTime.parse(dutyStart);
+            dutyStartLocalDateTime = localDate.atTime(dutyStartLocalTime);
+        } catch (Exception e) {
+            dutyStartLocalDateTime = null;
+        }
 
         this.dutyEnd = dutyEnd;
-        LocalTime dutyEndLocalTime = LocalTime.parse(dutyEnd);
-        dutyEndLocalDateTime = localDate.atTime(dutyEndLocalTime);
+        try {
+            LocalTime dutyEndLocalTime = LocalTime.parse(dutyEnd);
+            dutyEndLocalDateTime = localDate.atTime(dutyEndLocalTime);
+        } catch (Exception e) {
+            dutyEndLocalDateTime = null;
+        }
 
         this.breakStart = breakStart;
         try {
@@ -80,7 +88,7 @@ public class RosterItem {
         return employeeObject.getLastName();
     }
 
-    public int getEmployeeId() {
+    public Integer getEmployeeId() {
         return this.employeeId;
     }
 

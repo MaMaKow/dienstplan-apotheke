@@ -204,50 +204,6 @@ class iCalendar {
 
     /**
      *
-     * @param roster_item $roster_item_object
-     * @return string
-     * @deprecated since version 0.15.0 This function needs to be removed or completely rewritten.
-     */
-    public static function build_ics_roster_cancelled(roster_item $roster_item_object) {
-        /**
-         * @var int $same_employee_count is part of the UID of each VEVENT.
-         * @todo <p>
-         * If we really want to work with iCalendar, then a real unique identifier might be a totally good thing to have.
-         * Perhaps it could be a new primary key on the roster table.
-         * Also entries would not be deleted, but rather marked as CANCELLED.
-          </p>
-         */
-        /**
-         * Define Timezone string
-          $tzid = "Europe/Berlin";
-         */
-        /**
-         *  create the ical object
-          $icalobj = new ZCiCal();
-         */
-        /**
-         * Add timezone data to $icalobj:
-          ZCTimeZoneHelper::getTZNode($roster_item_object->date_object->format("Y"), $roster_item_object->date_object->format("Y"), $tzid, $icalobj->curnode);
-          $eventobj = new ZCiCalNode("VEVENT", $icalobj->curnode);
-          $eventobj->addNode(new ZCiCalDataNode("STATUS:CANCELLED"));
-         */
-        $same_employee_count = 0;
-        $text_ics = "";
-        $text_ics .= "BEGIN:VCALENDAR\r\n";
-        $text_ics .= "VERSION:2.0\r\n";
-        $text_ics .= "PRODID:-//MaMaKow/martin-mandelkow.de//PDR//DE\r\n";
-        $text_ics .= self::getVTimeZoneBerlin();
-        $text_ics .= "BEGIN:VEVENT\r\n";
-        $text_ics .= "STATUS:CANCELLED\r\n";
-        $text_ics .= iCalendar::build_ics_roster_employee_head($roster_item_object, $same_employee_count);
-        $text_ics .= iCalendar::build_ics_roster_employee_description($roster_item_object);
-        $text_ics .= "END:VEVENT\r\n";
-        $text_ics .= "END:VCALENDAR\r\n";
-        return $text_ics;
-    }
-
-    /**
-     *
      * @return string
      * @deprecated since version 0.15.0 This function needs to be removed when build_ics_roster_cancelled() is rewritten.
      */

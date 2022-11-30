@@ -118,14 +118,14 @@ class user_dialog_email {
 
                 if (!empty($Deleted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
                     $message = sprintf(gettext('You are not in the roster anymore on %1$s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
-                    $ics_file = iCalendar::build_ics_roster_cancelled($roster_item_object);
+                    $ics_file = ""; // TODO: Right now iCalendar can not handle events with the STATUS:CANCELED
                     self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
     }
 
-    private static function save_notification_about_changed_roster_to_database(int $employee_id, string $date_sql, string $message, string $ics_file) {
+    private static function save_notification_about_changed_roster_to_database(int $employee_id, string $date_sql, string $message, string $ics_file = "") {
         /*
          * TODO: Do not send mail directly.
          *     Save it to the database, aggregate it, check it for plausibility, send it later.
@@ -281,7 +281,7 @@ class user_dialog_email {
             /*
              * Attachments
              */
-            if (NULL !== $attachment_string and ! empty($attachment_filename)) {
+            if (NULL !== $attachment_string and!empty($attachment_string)and!empty($attachment_filename)) {
                 $mail->addStringAttachment($attachment_string, $attachment_filename);
             }
             /*

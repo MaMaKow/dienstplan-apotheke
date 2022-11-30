@@ -136,6 +136,12 @@ abstract class build_html_roster_views {
                 . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n";
+        /*
+         * working hours:
+         */
+        $roster_input_row .= " <span class='working_hours_span' id=Dienstplan[" . $day_iterator . "][working_hours_span][" . $roster_row_iterator . "]>";
+        $roster_input_row .= roster::get_working_hours_from_roster($Roster, $day_iterator, $roster_row_iterator);
+        $roster_input_row .= "</span><span class='unit_of_time'>&nbsp h</span>\n";
         $roster_input_row .= "<br>\n";
 
         /*

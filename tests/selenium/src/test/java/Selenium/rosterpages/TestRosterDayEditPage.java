@@ -22,12 +22,18 @@ import Selenium.Employee;
 import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 
@@ -39,29 +45,25 @@ public class TestRosterDayEditPage extends TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
-        try {
-            /**
-             * Sign in:
-             */
-            super.signIn();
-            RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
-            /**
-             * Move to specific date and go foreward and backward from there:
-             */
-            LocalDate localDate = LocalDate.of(2020, Month.JULY, 1);
-            rosterDayEditPage.goToDate(localDate); //This date is a wednesday.
-            assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
-            rosterDayEditPage.moveDayBackward();
-            LocalDate dayBackward = localDate.minusDays(1);
-            assertEquals(dayBackward.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
-            rosterDayEditPage.moveDayForward();
-            assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
-        } catch (Exception exception) {
-            Logger.getLogger(TestRosterDayEditPage.class.getName()).log(Level.SEVERE, null, exception);
-        }
+        /**
+         * Sign in:
+         */
+        super.signIn();
+        RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
+        /**
+         * Move to specific date and go foreward and backward from there:
+         */
+        LocalDate localDate = LocalDate.of(2020, Month.JULY, 1);
+        rosterDayEditPage.goToDate(localDate); //This date is a wednesday.
+        assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
+        rosterDayEditPage.moveDayBackward();
+        LocalDate dayBackward = localDate.minusDays(1);
+        assertEquals(dayBackward.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
+        rosterDayEditPage.moveDayForward();
+        assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testDateNavigation", "testRosterEdit"})/*passed*/
+    @Test(enabled = true, dependsOnMethods = {"testDateNavigation", "testRosterEditAdd"})/*passed*/
     public void testRosterDisplay() throws Exception {
         /**
          * Sign in:
@@ -94,15 +96,13 @@ public class TestRosterDayEditPage extends TestPage {
     }
 
     @Test(enabled = true)/*new*/
-    public void testRosterEdit() {
+    public void testRosterEditAdd() {
         /**
          * Sign in:
          */
         super.signIn();
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
-        /**
-         * Move to specific date to get a specific roster:
-         */
+
         Roster roster = new Roster();
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (Map.Entry<LocalDate, HashMap> listOfRosterDaysEntrySet : listOfRosterDays.entrySet()) {
@@ -117,4 +117,145 @@ public class TestRosterDayEditPage extends TestPage {
         }
 
     }
+
+    @Test(enabled = true, dependsOnMethods = {"testDateNavigation", "testRosterEditAdd", "testRosterDisplay"})
+    public void testRosterEditChangeDutyEnd() throws Exception {
+        /**
+         * Sign in:
+         */
+        super.signIn();
+        RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
+
+        int numberOfEditsMax = 5;
+        int numberOfEdits = 0;
+
+        Roster roster = new Roster();
+        HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
+        for (Map.Entry<LocalDate, HashMap> listOfRosterDaysEntrySet : listOfRosterDays.entrySet()) {
+            LocalDate localDate = listOfRosterDaysEntrySet.getKey();
+            rosterDayEditPage.goToDate(localDate);
+            HashMap<Integer, RosterItem> listOfRosterItems = listOfRosterDaysEntrySet.getValue();
+            for (RosterItem rosterItem : listOfRosterItems.values()) {
+                /**
+                 * apply a random change by +- three hours to the rosterItem
+                 */
+                long hourDifference = (long) Math.round(Math.random() * 6) - 3;
+                LocalDateTime dutyEndNew = rosterItem.getDutyEndLocalDateTime().plusHours(hourDifference);
+                RosterItem rosterItemNew = new RosterItem(
+                        rosterItem.getEmployeeId(),
+                        rosterItem.getLocalDate(),
+                        rosterItem.getDutyStart(),
+                        dutyEndNew.format(DateTimeFormatter.ISO_TIME),
+                        rosterItem.getBreakStart(),
+                        rosterItem.getBreakEnd(),
+                        rosterItem.getComment(),
+                        rosterItem.getBranchId());
+                rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
+                numberOfEdits++;
+                if (numberOfEdits >= numberOfEditsMax) {
+                    return;
+                }
+            }
+            rosterDayEditPage.rosterFormSubmit();
+        }
+
+    }
+
+    @Test(enabled = true, dependsOnMethods = {"testRosterEditAdd"})
+    public void testRosterEditDelete() throws ParseException {
+        /**
+         * Sign in:
+         */
+        super.signIn();
+        RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
+
+        Roster roster = new Roster();
+        HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
+        Optional<HashMap> someRosterDayOptional = listOfRosterDays.values().stream().findAny();
+        HashMap<Integer, RosterItem> someRosterDay = someRosterDayOptional.get();
+        Iterator<RosterItem> someRosterDayIterator = someRosterDay.values().iterator();
+        RosterItem rosterItem;
+        LocalDate localDate;
+        RosterItem emptyRosterItemFound = null;
+        /**
+         * Check if there is an entry left in this HashMap:
+         */
+        Assert.assertTrue(someRosterDayIterator.hasNext());
+        rosterItem = someRosterDayIterator.next();
+
+        /**
+         * Remove an item by applying an empty employeeId:
+         */
+        localDate = rosterItem.getLocalDate();
+        rosterDayEditPage.goToDate(localDate);
+        RosterItem rosterItemNew = new RosterItem(
+                null,
+                rosterItem.getLocalDate(),
+                rosterItem.getDutyStart(),
+                rosterItem.getDutyEnd(),
+                rosterItem.getBreakStart(),
+                rosterItem.getBreakEnd(),
+                rosterItem.getComment(),
+                rosterItem.getBranchId());
+        rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
+        rosterDayEditPage.rosterFormSubmit();
+        try {
+            emptyRosterItemFound = rosterDayEditPage.getRosterItem(rosterItem.getEmployeeId());
+        } catch (Exception exception) {
+            /**
+             * Everything is fine. We expected not to find anything.
+             */
+            System.err.println(exception.getLocalizedMessage());
+        }
+        /**
+         * Add the item back in again:
+         */
+        rosterDayEditPage.rosterInputAddRow(rosterItem);
+        rosterDayEditPage.rosterFormSubmit();
+        /**
+         * Finally make the assertion:
+         */
+        Assert.assertNull(emptyRosterItemFound);
+
+        /**
+         * Check if there is an entry left in this HashMap:
+         */
+        Assert.assertTrue(someRosterDayIterator.hasNext());
+        rosterItem = someRosterDayIterator.next();
+
+        /**
+         * Remove an item by applying an empty dutyStart and dutyEnd:
+         */
+        localDate = rosterItem.getLocalDate();
+        rosterDayEditPage.goToDate(localDate);
+        rosterItemNew = new RosterItem(
+                rosterItem.getEmployeeId(),
+                rosterItem.getLocalDate(),
+                "",
+                "",
+                rosterItem.getBreakStart(),
+                rosterItem.getBreakEnd(),
+                rosterItem.getComment(),
+                rosterItem.getBranchId());
+        rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
+        rosterDayEditPage.rosterFormSubmit();
+        try {
+            emptyRosterItemFound = rosterDayEditPage.getRosterItem(rosterItem.getEmployeeId());
+        } catch (Exception exception) {
+            /**
+             * Everything is fine. We expected not to find anything.
+             */
+            System.err.println(exception.getLocalizedMessage());
+        }
+        /**
+         * Add the item back in again:
+         */
+        rosterDayEditPage.rosterInputAddRow(rosterItem);
+        rosterDayEditPage.rosterFormSubmit();
+        /**
+         * Finally make the assertion:
+         */
+        Assert.assertNull(emptyRosterItemFound);
+    }
+
 }
