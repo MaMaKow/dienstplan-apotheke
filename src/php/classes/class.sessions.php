@@ -219,6 +219,7 @@ class sessions {
          * Check for multiple failed login attempts
          * If a user has tried to login 3 times in a row, he is blocked for 5 minutes.
          * The number of failed attempts is reset to 0 on every successfull login.
+         * TODO: Write a selenium test for this lock!
          */
         if (3 <= $user->failed_login_attempts and strtotime('-5min') <= strtotime($user->failed_login_attempt_time)) {
             $errorMessage = "Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.";
@@ -239,14 +240,6 @@ class sessions {
              * Reset failed_login_attempts
              */
             $user->reset_failed_login_attempts();
-
-            /*
-             * Start another PHP process to do maintenance tasks:
-             * Obsolete: This is now done via XMLHttpRequest() from the login page.
-              $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php';
-              execute_in_background($command);
-             */
-
 
             if (TRUE === $redirect) {
 
@@ -362,6 +355,15 @@ class sessions {
                         . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
             }
         }
+    }
+
+    public function user_is_logged_in() {
+        if (!empty($_SESSION['user_object'])
+                and $_SESSION['user_object'] instanceof user
+                and $_SESSION['user_object']->exists()) {
+            return true;
+        }
+        return false;
     }
 
 }

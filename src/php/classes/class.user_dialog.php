@@ -160,7 +160,7 @@ class user_dialog {
             $this->add_message($message, E_USER_NOTICE);
         } else {
             error_log(var_export(error_get_last(), TRUE));
-            $message = gettext("Error while sending the mail. I am sorry.");
+            $message = gettext("An error occured while sending the mail. I am sorry.");
             $this->add_message($message, E_USER_ERROR);
         }
         return $mail_result;

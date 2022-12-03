@@ -145,18 +145,29 @@ public class TestRosterDayEditPage extends TestPage {
                         rosterItem.getEmployeeId(),
                         rosterItem.getLocalDate(),
                         rosterItem.getDutyStart(),
-                        dutyEndNew.format(DateTimeFormatter.ISO_TIME),
+                        dutyEndNew.format(DateTimeFormatter.ofPattern("HH:mm")),
                         rosterItem.getBreakStart(),
                         rosterItem.getBreakEnd(),
                         rosterItem.getComment(),
                         rosterItem.getBranchId());
                 rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
+                RosterItem rosterItemFound;
+                rosterItemFound = rosterDayEditPage.getRosterItem(rosterItemNew.getEmployeeId());
+                rosterDayEditPage.rosterFormSubmit();
+                /**
+                 * Finally change item back again:
+                 */
+                rosterDayEditPage.rosterInputEditRow(rosterItemNew, rosterItem);
+                rosterDayEditPage.rosterFormSubmit();
+                /**
+                 * Assert that the changes were stored:
+                 */
+                Assert.assertEquals(rosterItemFound.getDutyEndLocalDateTime(), rosterItemNew.getDutyEndLocalDateTime());
                 numberOfEdits++;
                 if (numberOfEdits >= numberOfEditsMax) {
                     return;
                 }
             }
-            rosterDayEditPage.rosterFormSubmit();
         }
 
     }

@@ -45,6 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <BODY>
         <?php
         $user_dialog = new user_dialog();
-        echo $user_dialog->build_contact_form();
-        $user_dialog->contact_form_send_mail();
+        if ($session->user_is_logged_in()) {
+            echo $user_dialog->build_contact_form();
+            $user_dialog->contact_form_send_mail();
+        }
         ?>

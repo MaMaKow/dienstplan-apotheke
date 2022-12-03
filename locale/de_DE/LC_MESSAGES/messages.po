@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2022-11-29 21:04+0100\n"
-"PO-Revision-Date: 2022-11-29 21:09+0100\n"
+"POT-Creation-Date: 2022-12-03 13:24+0100\n"
+"PO-Revision-Date: 2022-12-03 13:25+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2\n"
+"X-Generator: Poedit 3.2.2\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: pdr_gettext\n"
@@ -740,34 +740,35 @@ msgstr "Ihnen fehlt die notwendige Berechtigung für diese Aktion."
 msgid "is required."
 msgstr "wird benötigt."
 
-#: src/php/classes/class.sessions.php:300
+#: src/php/classes/class.sessions.php:293
 msgid "Lost password"
 msgstr "Passwort vergessen"
 
-#: src/php/classes/class.sessions.php:306 src/php/register_approve.php:42
+#: src/php/classes/class.sessions.php:299 src/php/register_approve.php:42
 msgid "user name"
 msgstr "Benutzer*in"
 
-#: src/php/classes/class.sessions.php:307
+#: src/php/classes/class.sessions.php:300
 msgid "please visit"
 msgstr "besuchen Sie bitte"
 
-#: src/php/classes/class.sessions.php:310
+#: src/php/classes/class.sessions.php:303
 msgid "this address"
 msgstr "diese Adresse"
 
-#: src/php/classes/class.sessions.php:312
+#: src/php/classes/class.sessions.php:305
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/classes/class.sessions.php:325
+#: src/php/classes/class.sessions.php:318
 #: src/php/classes/class.user_dialog.php:159
 msgid "The mail was successfully sent. Thank you!"
 msgstr "Die Mail wurde erfolgreich versendet. Vielen Dank!"
 
-#: src/php/classes/class.sessions.php:328
+#: src/php/classes/class.sessions.php:321
+#: src/php/classes/class.user_dialog.php:163
 msgid "An error occured while sending the mail. I am sorry."
-msgstr "Beim Versender der Mail trat ein Fehler auf. Es tut mir leid."
+msgstr "Beim Versenden der Mail trat ein Fehler auf. Es tut mir leid."
 
 #: src/php/classes/class.user.php:235 src/php/pages/user-page.php:53
 msgid "The password was not correct."
@@ -798,10 +799,6 @@ msgstr "Nachricht"
 #: src/php/classes/class.user_dialog.php:152
 msgid "has a comment"
 msgstr "hat einen Kommentar"
-
-#: src/php/classes/class.user_dialog.php:163
-msgid "Error while sending the mail. I am sorry."
-msgstr "Beim Versenden der Mail trat ein Fehler auf. Es tut mir leid."
 
 #: src/php/classes/class.user_dialog.php:184
 msgid "Sender"
@@ -1282,13 +1279,17 @@ msgstr ""
 "Es ist für jedes Werk soweit bekannt Titel, Autor, Quelle und Lizenz "
 "gelistet."
 
-#: src/php/pages/lost_password.php:45
+#: src/php/pages/lost_password.php:27
+msgid "If the user exists, an email has been sent."
+msgstr "Wenn der Benutzer existiert, wurde eine E-Mail versandt."
+
+#: src/php/pages/lost_password.php:48
 msgid "Please enter your email address, user name or user id!"
 msgstr ""
 "Bitte geben Sie Ihren Benutzer-Namen, Ihre Benutzer-Kennung oder Ihre Email-"
 "Adresse an!"
 
-#: src/php/pages/lost_password.php:46
+#: src/php/pages/lost_password.php:49
 msgid "identifier"
 msgstr "Bezeichner"
 
@@ -1762,6 +1763,9 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 #: tests/get-database-structure.php:124
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
+
+#~ msgid "Error while sending the mail. I am sorry."
+#~ msgstr "Beim Versenden der Mail trat ein Fehler auf. Es tut mir leid."
 
 #, fuzzy
 #~| msgid "Es gibt keine Änderungen."
