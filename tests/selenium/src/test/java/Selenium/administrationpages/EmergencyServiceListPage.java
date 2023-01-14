@@ -43,7 +43,7 @@ public class EmergencyServiceListPage {
     //By selectYearSelectBy = By.xpath("/html/body/form/select[@name='year']");
     By emergencyRowListBy = By.xpath("//*[@id=\"emergency_service_table\"]/tbody/tr");
     //By emergencyRowListBy = By.xpath("/html/body/table/tbody/tr");
-    By emergencyRowEmployeeIdBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
+    By emergencyRowEmployeeKeyBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
 
     public EmergencyServiceListPage(WebDriver driver) {
         this.driver = driver;
@@ -100,23 +100,23 @@ public class EmergencyServiceListPage {
         return null;
     }
 
-    public Integer getEmployeeIdOnDate(LocalDate localDate) {
+    public Integer getEmployeeKeyOnDate(LocalDate localDate) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         if (null == emergencyRowElement) {
             return null;
         }
-        WebElement employeeIdWebElement = emergencyRowElement.findElement(emergencyRowEmployeeIdBy);
-        Select employeeIdSelect = new Select(employeeIdWebElement);
-        WebElement selectedOption = employeeIdSelect.getFirstSelectedOption();
+        WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeKeyBy);
+        Select employeeKeySelect = new Select(employeeKeyWebElement);
+        WebElement selectedOption = employeeKeySelect.getFirstSelectedOption();
         return Integer.valueOf(selectedOption.getAttribute("value"));
     }
 
-    public EmergencyServiceListPage setEmployeeIdOnDate(LocalDate localDate, int employeeId) {
+    public EmergencyServiceListPage setEmployeeKeyOnDate(LocalDate localDate, int employeeKey) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
-        WebElement employeeIdWebElement = emergencyRowElement.findElement(emergencyRowEmployeeIdBy);
+        WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeKeyBy);
         WebElement submitButtonElement = emergencyRowElement.findElement(By.xpath(".//td/button[contains(@id, \"save_\")]"));
-        Select employeeIdSelect = new Select(employeeIdWebElement);
-        employeeIdSelect.selectByValue(String.valueOf(employeeId));
+        Select employeeKeySelect = new Select(employeeKeyWebElement);
+        employeeKeySelect.selectByValue(String.valueOf(employeeKey));
         submitButtonElement.click();
         return new EmergencyServiceListPage(driver);
     }

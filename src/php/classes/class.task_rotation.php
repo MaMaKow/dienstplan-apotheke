@@ -39,12 +39,11 @@ abstract class task_rotation {
         $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
         $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
         foreach ($Dates_unix as $date_unix) {
-            //unset($rotation_employee_id);
-            $rotation_employee_id = self::task_rotation_get_worker($date_unix, $task, $branch_id);
+            $rotation_employee_key = self::task_rotation_get_worker($date_unix, $task, $branch_id);
             $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
-            if (NULL !== $rotation_employee_id) {
+            if (NULL !== $rotation_employee_key) {
                 $number_of_filled_days++;
-                $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_employee_id]->last_name;
+                $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_employee_key]->last_name;
             }
             $weekly_rotation_div_html .= "<br>\n";
         }
@@ -59,7 +58,7 @@ abstract class task_rotation {
         $date_sql = date("Y-m-d", $date_unix);
         /*
          * We want the PTAs to take turns in the lab at a weekly basis.
-         * We sort them by VK number and check for the last one to take his turn.
+         * We sort them by employee id and check for the last one to take his turn.
          * TODO: Are there other tasks, that are rotated between people? Is there a weekly, daily or monthly basis?
          */
 
@@ -67,20 +66,20 @@ abstract class task_rotation {
         /*
          * Was this day already planned?
          */
-        $rotation_employee_id = self::read_task_employee_from_database($task, $date_sql, $branch_id);
-        if (NULL !== $rotation_employee_id) {
+        $rotation_employee_key = self::read_task_employee_from_database($task, $date_sql, $branch_id);
+        if (NULL !== $rotation_employee_key) {
             $Abwesende = absence::read_absentees_from_database($date_sql);
-            if (FALSE === array_search($rotation_employee_id, array_keys($Abwesende))) {
-                return $rotation_employee_id;
+            if (FALSE === array_search($rotation_employee_key, array_keys($Abwesende))) {
+                return $rotation_employee_key;
             }
             /*
              * If an employee is absent, then he/she can obviously not take the task:
              */
             database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` = :date", array('date' => $date_sql));
         }
-        $rotation_employee_id = self::task_rotation_set_worker($date_unix, $task, $branch_id);
-        if (!empty($rotation_employee_id)) {
-            return $rotation_employee_id;
+        $rotation_employee_key = self::task_rotation_set_worker($date_unix, $task, $branch_id);
+        if (!empty($rotation_employee_key)) {
+            return $rotation_employee_key;
         }
         return NULL;
     }
@@ -88,7 +87,7 @@ abstract class task_rotation {
     /**
      * @param int $date_unix The date as a unix time stamp.
      * @param string $task The task that is to be rotated.
-     * @return int $rotation_employee_id A worker for a given day and task.
+     * @return int $rotation_employee_key A worker for a given day and task.
      */
     private static function task_rotation_set_worker($date_unix, $task, $branch_id) {
         /*
@@ -102,15 +101,16 @@ abstract class task_rotation {
         }
         global $workforce;
         $date_sql = date("Y-m-d", $date_unix);
-        $rotation_employee_id = NULL;
+        $rotation_employee_key = NULL;
         /*
          * Make a list of people who can do the task:
          * Currently only compounding is a task.
          */
         $List_of_compounding_rotation_employees = array();
-        foreach ($workforce->List_of_compounding_employees as $employee_id) {
-            if ($workforce->List_of_employees[$employee_id]->principle_branch_id == $branch_id) {
-                $List_of_compounding_rotation_employees[$employee_id] = $employee_id;
+        print_debug_variable($workforce->List_of_compounding_employees);
+        foreach ($workforce->List_of_compounding_employees as $employee_key) {
+            if ($workforce->List_of_employees[$employee_key]->get_principle_branch_id() == $branch_id) {
+                $List_of_compounding_rotation_employees[$employee_key] = $employee_key;
             }
         }
         if (array() === $List_of_compounding_rotation_employees) {
@@ -133,15 +133,15 @@ abstract class task_rotation {
             /*
              * If there is noone anywhere in the past we just take the first person in the array.
              */
-            $rotation_employee_id = min($List_of_compounding_rotation_employees);
-            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `VK`, `branch_id`) VALUES (:task, :date, :employee_id, :branch_id)";
+            $rotation_employee_key = min($List_of_compounding_rotation_employees);
+            $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `employee_key`, `branch_id`) VALUES (:task, :date, :employee_key, :branch_id)";
             database_wrapper::instance()->run($sql_query, array(
                 'task' => $task,
                 'date' => $date_sql,
                 'branch_id' => $branch_id,
-                'employee_id' => $rotation_employee_id
+                'employee_key' => $rotation_employee_key
             ));
-            return $rotation_employee_id;
+            return $rotation_employee_key;
         }
 
         $temp_date_object = new DateTime($row->date);
@@ -178,42 +178,42 @@ abstract class task_rotation {
             }
             $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_object->format('Y-m-d'), $to_date_object->format('Y-m-d'));
             if (array() === $Done_rotation_count) {
-                $next_rotation_employee_id = current($List_of_current_compounding_rotation_employees);
+                $next_rotation_employee_key = current($List_of_current_compounding_rotation_employees);
             } else {
-                $next_rotation_employee_id = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
+                $next_rotation_employee_key = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
             }
             /**
              * Take the employee, who did the task the least in the last weeks:
              * min($Done_rotation_count) is the minimum number someone did the task.
-             * array_keys($Done_rotation_count, min($Done_rotation_count) is the employee_id(s) as an array of all the employees, who worked the least.
+             * array_keys($Done_rotation_count, min($Done_rotation_count) is the employee_key(s) as an array of all the employees, who worked the least.
              * current() just takes one of those least task-working employees.
              */
-            if (!empty($next_rotation_employee_id)) {
-                $rotation_employee_id = $next_rotation_employee_id;
+            if (!empty($next_rotation_employee_key)) {
+                $rotation_employee_key = $next_rotation_employee_key;
             }
-            self::write_task_employee_to_database($task, $temp_date_object->format('Y-m-d'), $branch_id, $rotation_employee_id);
+            self::write_task_employee_to_database($task, $temp_date_object->format('Y-m-d'), $branch_id, $rotation_employee_key);
         }
-        return $rotation_employee_id;
+        return $rotation_employee_key;
     }
 
     private static function read_done_rotation_count_from_database($List_of_compounding_rotation_employees, $from_date_sql, $to_date_sql) {
         $Done_rotation_count = array();
-        foreach ($List_of_compounding_rotation_employees as $employee_id) {
-            $Done_rotation_count[$employee_id] = 0;
-            $sql_query = "SELECT `VK`, COUNT(`date`) as `count`"
+        foreach ($List_of_compounding_rotation_employees as $employee_key) {
+            $Done_rotation_count[$employee_key] = 0;
+            $sql_query = "SELECT `employee_key`, COUNT(`date`) as `count`"
                     . "FROM `task_rotation` "
                     . "WHERE "
-                    . "`VK` = :employee_id "
+                    . "`employee_key` = :employee_key "
                     . "AND `date` > :date_from "
                     . "AND `date` < :date_to ";
             $result = database_wrapper::instance()->run($sql_query, array(
-                'employee_id' => $employee_id,
+                'employee_key' => $employee_key,
                 'date_from' => $from_date_sql,
                 'date_to' => $to_date_sql
             ));
             $row = $result->fetch(PDO::FETCH_OBJ);
             if (!empty($row->count)) {
-                $Done_rotation_count[$row->VK] = $row->count;
+                $Done_rotation_count[$row->employee_key] = $row->count;
             }
         }
         asort($Done_rotation_count);
@@ -222,7 +222,7 @@ abstract class task_rotation {
 
     public static function build_html_task_rotation_select($task, $date_sql, $branch_id) {
         self::task_handle_user_input();
-        $task_employee_id = self::read_task_employee_from_database($task, $date_sql, $branch_id);
+        $task_employee_key = self::read_task_employee_from_database($task, $date_sql, $branch_id);
         global $workforce;
         if (NULL === $workforce) {
             $workforce = new workforce($date_sql);
@@ -239,20 +239,20 @@ abstract class task_rotation {
          * The empty option is necessary to enable the deletion of employees:
          */
         $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$task_employee_id]->last_name) or!isset($task_employee_id)) {
-            foreach ($workforce->List_of_compounding_employees as $employee_id) {
-                $employee_object = $workforce->List_of_employees[$employee_id];
-                if ($task_employee_id == $employee_id and NULL !== $task_employee_id) {
-                    $task_rotation_select_html .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+        if (isset($workforce->List_of_employees[$task_employee_key]->last_name) or!isset($task_employee_key)) {
+            foreach ($workforce->List_of_compounding_employees as $employee_key) {
+                $employee_object = $workforce->List_of_employees[$employee_key];
+                if ($task_employee_key == $employee_key and NULL !== $task_employee_key) {
+                    $task_rotation_select_html .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
                 } else {
-                    $task_rotation_select_html .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                    $task_rotation_select_html .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
                 }
             }
         } else {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $task_rotation_select_html .= "<option value=$task_employee_id selected>" . $task_employee_id . " " . gettext("Unknown employee") . "</option>";
+            $task_rotation_select_html .= "<option value=$task_employee_key selected>" . $task_employee_key . " " . gettext("Unknown employee") . "</option>";
         }
 
         $task_rotation_select_html .= "</select>\n";
@@ -265,11 +265,11 @@ abstract class task_rotation {
         $sql_query = "SELECT * FROM `task_rotation` WHERE `task` = :task and `date` = :date and `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('task' => $task, 'date' => $date_sql, 'branch_id' => $branch_id));
         $row = $result->fetch(PDO::FETCH_OBJ);
-        if (empty($row->VK)) {
+        if (empty($row->employee_key)) {
             return NULL;
         }
-        $employee_id = $row->VK;
-        return $employee_id;
+        $employee_key = $row->employee_key;
+        return $employee_key;
     }
 
     /**
@@ -281,33 +281,33 @@ abstract class task_rotation {
         $task = user_input::get_variable_from_any_input('task_rotation_task', FILTER_SANITIZE_STRING);
         $date_sql = user_input::get_variable_from_any_input('task_rotation_date', FILTER_SANITIZE_STRING);
         $branch_id = user_input::get_variable_from_any_input('task_rotation_branch', FILTER_SANITIZE_NUMBER_INT);
-        $employee_id = user_input::get_variable_from_any_input('task_rotation_employee', FILTER_SANITIZE_NUMBER_INT);
-        if (is_null($task) or is_null($date_sql) or is_null($branch_id) or is_null($employee_id)) {
+        $employee_key = user_input::get_variable_from_any_input('task_rotation_employee', FILTER_SANITIZE_NUMBER_INT);
+        if (is_null($task) or is_null($date_sql) or is_null($branch_id) or is_null($employee_key)) {
             return FALSE;
         }
-        if ('' === $task or '' === $date_sql or '' === $branch_id or '' === $employee_id) {
+        if ('' === $task or '' === $date_sql or '' === $branch_id or '' === $employee_key) {
             return FALSE;
         }
-        self::write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id);
+        self::write_task_employee_to_database($task, $date_sql, $branch_id, $employee_key);
     }
 
-    private static function write_task_employee_to_database($task, $date_sql, $branch_id, $employee_id) {
-        if (NULL === $employee_id) {
+    private static function write_task_employee_to_database($task, $date_sql, $branch_id, $employee_key) {
+        if (NULL === $employee_key) {
             return FALSE;
         }
         $sql_query = "INSERT INTO `task_rotation` SET "
-                . "`task` = :task, `date` = :date, `branch_id` = :branch_id, `VK` = :employee_id "
+                . "`task` = :task, `date` = :date, `branch_id` = :branch_id, `employee_key` = :employee_key "
                 . "ON DUPLICATE KEY UPDATE "
-                . "`task` = :task2, `date` = :date2, `branch_id` = :branch_id2, `VK` = :employee_id2";
+                . "`task` = :task2, `date` = :date2, `branch_id` = :branch_id2, `employee_key` = :employee_key2";
         $result = database_wrapper::instance()->run($sql_query, array(
             'task' => $task,
             'date' => $date_sql,
             'branch_id' => $branch_id,
-            'employee_id' => $employee_id,
+            'employee_key' => $employee_key,
             'task2' => $task,
             'date2' => $date_sql,
             'branch_id2' => $branch_id,
-            'employee_id2' => $employee_id
+            'employee_key2' => $employee_key
         ));
         return $result;
     }

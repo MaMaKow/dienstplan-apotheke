@@ -39,16 +39,15 @@ public class TestWorkforceManagementPage extends TestPage {
         super.signIn();
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
 
-        workforceManagementPage.selectEmployee(1);
-
         Workforce workforce = new Workforce();
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
-        Employee employeeObjectShould = listOfEmployeesMap.get(5);
+        Employee employeeObjectShould = listOfEmployeesMap.get(7);
 
-        workforceManagementPage.selectEmployee(employeeObjectShould.getEmployeeId());
+        workforceManagementPage.selectEmployee(employeeObjectShould);
 
         Employee employeeObject = workforceManagementPage.getEmployeeObject();
-        Assert.assertEquals(employeeObject.getEmployeeId(), employeeObjectShould.getEmployeeId());
+
+        Assert.assertEquals(employeeObject.getEmployeeKey(), employeeObjectShould.getEmployeeKey());
         Assert.assertEquals(employeeObject.getLastName(), employeeObjectShould.getLastName());
         Assert.assertEquals(employeeObject.getFirstName(), employeeObjectShould.getFirstName());
         Assert.assertEquals(employeeObject.getProfession(), employeeObjectShould.getProfession());
@@ -77,7 +76,7 @@ public class TestWorkforceManagementPage extends TestPage {
         /**
          * TODO: CAVE! Old employees seem to be overwritten.
          */
-        listOfEmployeesMap.forEach((employeeId, employee) -> {
+        listOfEmployeesMap.forEach((employeeKey, employee) -> {
             workforceManagementPage.createEmployee(employee);
         });
     }

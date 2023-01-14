@@ -182,7 +182,7 @@ class user_dialog {
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('Sender') . " ________\n";
-        $message .= $workforce->List_of_employees[$_SESSION['user_object']->employee_id]->full_name;
+        $message .= $_SESSION['user_object']->get_user_name();
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('File') . " ________\n";

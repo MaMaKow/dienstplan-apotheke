@@ -15,7 +15,7 @@ class employeeTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $employee_id = 5;
+        $employee_key = 1;
         $last_name = 'Maier';
         $first_name = 'Ma';
         $working_week_hours = 40;
@@ -25,7 +25,7 @@ class employeeTest extends PHPUnit_Framework_TestCase {
         $start_of_employment = '2015-01-01';
         $end_of_employment = NULL;
         $holidays = 28;
-        $this->object = new employee($employee_id, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch, $start_of_employment, $end_of_employment, $holidays);
+        $this->object = new employee($employee_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch, $start_of_employment, $end_of_employment, $holidays);
     }
 
     /**

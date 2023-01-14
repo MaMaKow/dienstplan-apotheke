@@ -32,7 +32,7 @@ public class Employee {
     public static final DateTimeFormatter DATE_TIME_FORMATTER_DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY);
     public static final DateTimeFormatter DATE_TIME_FORMATTER_YEAR_MONTH_DAY = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY);
 
-    private int employeeId;
+    private int employeeKey;
     private String employeeLastName;
     private String employeeFirstName;
     private String employeeProfession;
@@ -46,7 +46,7 @@ public class Employee {
     private LocalDate employeeStartOfEmployment;
     private LocalDate employeeEndOfEmployment;
 
-    public Employee(String employeeId,
+    public Employee(String employeeKey,
             String employeeLastName,
             String employeeFirstName,
             String employeeProfession,
@@ -59,7 +59,7 @@ public class Employee {
             String employeeStartOfEmployment,
             String employeeEndOfEmployment
     ) {
-        this.employeeId = Integer.valueOf(employeeId);
+        this.employeeKey = Integer.valueOf(employeeKey);
         this.employeeLastName = employeeLastName;
         this.employeeFirstName = employeeFirstName;
         this.employeeProfession = employeeProfession;
@@ -81,8 +81,8 @@ public class Employee {
         this.employeeEndOfEmployment = LocalDate.parse(employeeEndOfEmployment, DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
     }
 
-    public int getEmployeeId() {
-        return employeeId;
+    public int getEmployeeKey() {
+        return employeeKey;
     }
 
     public String getLastName() {
@@ -134,7 +134,7 @@ public class Employee {
     }
 
     public Employee(HashMap<String, String> employeeHashMap) {
-        this.employeeId = Integer.valueOf(employeeHashMap.get("employeeId"));
+        this.employeeKey = Integer.valueOf(employeeHashMap.get("employeeKey"));
         this.employeeLastName = employeeHashMap.get("employeeLastName");
         this.employeeFirstName = employeeHashMap.get("employeeFirstName");
         this.employeeProfession = employeeHashMap.get("employeeProfession");

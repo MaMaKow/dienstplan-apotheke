@@ -177,14 +177,6 @@ public class PropertyFile {
         return getPdrUserName();
     }
 
-    public String getAdministratorEmployeeId() {
-        String property = properties.getProperty("administratorEmployeeId");
-        if (null != property) {
-            return property;
-        }
-        return null;
-    }
-
     public String getAdministratorEmail() {
         String property = properties.getProperty("administratorEmail");
         if (null != property) {

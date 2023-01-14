@@ -33,6 +33,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 /**
  *
@@ -198,25 +199,25 @@ public class DayPage {
         return rosterValue;
     }
 
-    private String getRosterValueBreakEndByEmployeeId(WebElement rosterTableRow) {
+    private String getRosterValueBreakEndByEmployeeKey(WebElement rosterTableRow) {
         WebElement rosterInputElement = findRosterInputBreakEndInTableRow(rosterTableRow);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    public PrincipleRosterItem getRosterItemByEmployeeId(int employeeId) {
+    public PrincipleRosterItem getRosterItemByEmployeeKey(int employeeKey) {
         DateTimeFormatter dateTimeFormatterSql = DateTimeFormatter.ISO_LOCAL_DATE;
-        WebElement rosterTableRow = findRosterTableRowByEmloyeeId(employeeId);
+        WebElement rosterTableRow = findRosterTableRowByEmloyeeKey(employeeKey);
         String dateSql = this.getRosterValueDateString();
         LocalDate localDate = LocalDate.parse(dateSql, dateTimeFormatterSql);
 
         String dutyStart = getRosterValueDutyStartInTableRow(rosterTableRow);
         String dutyEnd = getRosterValueDutyEndInTabeRow(rosterTableRow);
         String breakStart = getRosterValueBreakStartInTableRow(rosterTableRow);
-        String breakEnd = getRosterValueBreakEndByEmployeeId(rosterTableRow);
+        String breakEnd = getRosterValueBreakEndByEmployeeKey(rosterTableRow);
         int branchId = getRosterValueBranchId();
         String comment = null; //TODO; add comment
-        PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(employeeId, localDate.getDayOfWeek(),
+        PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(employeeKey, localDate.getDayOfWeek(),
                 LocalTime.parse(dutyStart, DateTimeFormatter.ISO_TIME),
                 LocalTime.parse(dutyEnd, DateTimeFormatter.ISO_TIME),
                 LocalTime.parse(breakStart, DateTimeFormatter.ISO_TIME),
@@ -232,27 +233,27 @@ public class DayPage {
         return rosterTableRowElement;
     }
 
-    private WebElement findRosterTableRowByEmloyeeId(int employeeId) {
+    private WebElement findRosterTableRowByEmloyeeKey(int employeeKey) {
         /**
          * Wir brauchen zwei By Variablen. CSS kann tatsächlich gerade markierte
          * options finden. XPath kann parent elements finden.
          */
-        By rowCssBy = By.cssSelector("#principle_roster_form > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeId + "\"]");
+        By rowCssBy = By.cssSelector("#principle_roster_form > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
         By rowXpathBy = By.xpath("parent::select/parent::span/parent::td");
         WebElement rosterTableRowOptionElement = driver.findElement(rowCssBy);
         WebElement rosterTableRowElement = rosterTableRowOptionElement.findElement(rowXpathBy);
         return rosterTableRowElement;
     }
 
-    private WebElement findRosterInputEmployeeByEmployeeId(int employeeId) {
-        WebElement tableRow = findRosterTableRowByEmloyeeId(employeeId);
-        By inputBy = By.xpath(".//*[contains(@name, \"employee_id\")]");
+    private WebElement findRosterInputEmployeeByEmployeeKey(int employeeKey) {
+        WebElement tableRow = findRosterTableRowByEmloyeeKey(employeeKey);
+        By inputBy = By.xpath(".//*[contains(@name, \"employee_key\")]");
         WebElement rosterInputElement = tableRow.findElement(inputBy);
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputDutyStartByEmployeeId(int employeeId) {
-        WebElement rosterTableRow = findRosterTableRowByEmloyeeId(employeeId);
+    private WebElement findRosterInputDutyStartByEmployeeKey(int employeeKey) {
+        WebElement rosterTableRow = findRosterTableRowByEmloyeeKey(employeeKey);
         By inputBy = By.xpath(".//*[contains(@name, \"duty_start_sql\")]");
         WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
         return rosterInputElement;
@@ -282,14 +283,14 @@ public class DayPage {
         return rosterInputElement;
     }
 
-    public void changeRosterInputEmployee(int employeeIdOld, int employeeIdNew) {
-        WebElement rosterInputEmployeeElement = findRosterInputEmployeeByEmployeeId(employeeIdOld);
+    public void changeRosterInputEmployee(int employeeKeyOld, int employeeKeyNew) {
+        WebElement rosterInputEmployeeElement = findRosterInputEmployeeByEmployeeKey(employeeKeyOld);
         Select inputElementSelect = new Select(rosterInputEmployeeElement);
-        inputElementSelect.selectByValue(String.valueOf(employeeIdNew));
+        inputElementSelect.selectByValue(String.valueOf(employeeKeyNew));
     }
 
-    public void changeRosterInputDutyStart(int employeeId, LocalTime time) {
-        WebElement rosterInputElement = findRosterInputDutyStartByEmployeeId(employeeId);
+    public void changeRosterInputDutyStart(int employeeKey, LocalTime time) {
+        WebElement rosterInputElement = findRosterInputDutyStartByEmployeeKey(employeeKey);
         if (null == time) {
             /**
              * Delete the time from the form field:
@@ -302,8 +303,8 @@ public class DayPage {
         rosterInputElement.sendKeys(time.format(DateTimeFormatter.ofPattern("HH:mm")));
     }
 
-    public void changeRosterInputDutyEnd(int employeeId, LocalTime time) {
-        WebElement rosterTableRow = findRosterTableRowByEmloyeeId(employeeId);
+    public void changeRosterInputDutyEnd(int employeeKey, LocalTime time) {
+        WebElement rosterTableRow = findRosterTableRowByEmloyeeKey(employeeKey);
 
         WebElement rosterInputElement = findRosterInputDutyEndInTableRow(rosterTableRow);
         if (null == time) {
@@ -318,19 +319,41 @@ public class DayPage {
         rosterInputElement.sendKeys(time.format(DateTimeFormatter.ofPattern("HH:mm")));
     }
 
-    public void changeRosterInputBreakStart(int employeeId, LocalTime time) {
-        WebElement rosterTableRow = findRosterTableRowByEmloyeeId(employeeId);
+    public void changeRosterInputBreakStart(int employeeKey, LocalTime time) {
+        WebElement rosterTableRow = findRosterTableRowByEmloyeeKey(employeeKey);
         WebElement rosterInputElement = findRosterInputBreakStartInTableRow(rosterTableRow);
         rosterInputElement.sendKeys(time.format(DateTimeFormatter.ofPattern("HH:mm")));
     }
 
-    public void changeRosterInputBreakEnd(int employeeId, LocalTime time) {
-        WebElement rosterTableRow = findRosterTableRowByEmloyeeId(employeeId);
+    public void changeRosterInputBreakEnd(int employeeKey, LocalTime time) {
+        WebElement rosterTableRow = findRosterTableRowByEmloyeeKey(employeeKey);
         WebElement rosterInputElement = findRosterInputBreakEndInTableRow(rosterTableRow);
         rosterInputElement.sendKeys(time.format(DateTimeFormatter.ofPattern("HH:mm")));
     }
 
     public void createNewRosterItem(PrincipleRosterItem rosterItem) {
+        /**
+         * First check if this rosterItem already exists:
+         */
+        try {
+            PrincipleRosterItem rosterItemFound = this.getRosterItemByEmployeeKey(rosterItem.getEmployeeKey());
+            if (rosterItemFound.getDutyStart().getHour() == rosterItem.getDutyStart().getHour()
+                    && rosterItemFound.getDutyStart().getMinute() == rosterItem.getDutyStart().getMinute()
+                    && rosterItemFound.getDutyEnd().getHour() == rosterItem.getDutyEnd().getHour()
+                    && rosterItemFound.getDutyEnd().getMinute() == rosterItem.getDutyEnd().getMinute()) {
+                /**
+                 * This item allready exists; quit creation:
+                 */
+                return;
+            }
+        } catch (Exception e) {
+            /**
+             * We did not find the element. It will be created.
+             */
+        }
+        /**
+         * Add new row:
+         */
         addRosterRow();
         By insertedRowBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr[(last()-1)]/td");
         WebDriverWait wait = new WebDriverWait(driver, 20);
@@ -366,10 +389,10 @@ public class DayPage {
         /**
          * employee:
          */
-        By employeeInputBy = By.xpath(".//*[contains(@name, \"employee_id\")]");
+        By employeeInputBy = By.xpath(".//*[contains(@name, \"employee_key\")]");
         WebElement employeeRosterInputElement = insertedRowElement.findElement(employeeInputBy);
         Select empoyeeInputElementSelect = new Select(employeeRosterInputElement);
-        empoyeeInputElementSelect.selectByValue(String.valueOf(rosterItem.getEmployeeId()));
+        empoyeeInputElementSelect.selectByValue(String.valueOf(rosterItem.getEmployeeKey()));
         rosterFormSubmit();
     }
 
@@ -378,20 +401,20 @@ public class DayPage {
         buttonSubmitElement.click();
     }
 
-    private WebElement getRosterPlotDutyElementByEmployeeId(int employeeId) {
-        By elementBy = By.xpath("//*[contains(@id, \"work_box_\") and @data-employee_id=\"" + employeeId + "\"]/p");
+    private WebElement getRosterPlotDutyElementByEmployeeKey(int employeeKey) {
+        By elementBy = By.xpath("//*[contains(@id, \"work_box_\") and @data-employee_key=\"" + employeeKey + "\"]/p");
         WebElement element = driver.findElement(elementBy);
         return element;
     }
 
-    private WebElement getRosterPlotBreakElementByEmployeeId(int employeeId) {
-        By elementBy = By.xpath("//*[contains(@id, \"break_box_\") and @data-employee_id=\"" + employeeId + "\"]");
+    private WebElement getRosterPlotBreakElementByEmployeeKey(int employeeKey) {
+        By elementBy = By.xpath("//*[contains(@id, \"break_box_\") and @data-employee_key=\"" + employeeKey + "\"]");
         WebElement element = driver.findElement(elementBy);
         return element;
     }
 
-    public void changeRosterByDragAndDrop(int unixTime, int employeeId, double offsetMinutes, String dutyOrBreak) throws Exception {
-        PrincipleRosterItem rosterItemReadBefore = getRosterItemByEmployeeId(employeeId);
+    public void changeRosterByDragAndDrop(int unixTime, int employeeKey, double offsetMinutes, String dutyOrBreak) throws Exception {
+        PrincipleRosterItem rosterItemReadBefore = getRosterItemByEmployeeKey(employeeKey);
         /**
          * @todo
          * <p lang=de>
@@ -404,9 +427,9 @@ public class DayPage {
         double offsetPixelsDouble = ((offsetMinutes / 60) * barWidthFactor * 1.30);
         int offsetPixels = (int) Math.round(offsetPixelsDouble);
         if ("duty".equals(dutyOrBreak)) {
-            rosterPlotElement = getRosterPlotDutyElementByEmployeeId(employeeId);
+            rosterPlotElement = getRosterPlotDutyElementByEmployeeKey(employeeKey);
         } else if ("break".equals(dutyOrBreak)) {
-            rosterPlotElement = getRosterPlotBreakElementByEmployeeId(employeeId);
+            rosterPlotElement = getRosterPlotBreakElementByEmployeeKey(employeeKey);
         } else {
             String message = "dutyOrBreak must be duty or break" + dutyOrBreak + "given.";
             System.err.println(message);
@@ -435,13 +458,17 @@ public class DayPage {
          * AKTUELL SELEKTIERTE option ausgewählt.
          */
         if ("duty".equals(dutyOrBreak)) {
-            By dutyStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeId + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_start_sql\")]");
-            By dutyEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeId + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_end_sql\")]");
+            By dutyStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_start_sql\")]");
+            By dutyEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_end_sql\")]");
+            WebElement dutyStartInputElement = driver.findElement(dutyStartInputBy);
+            WebElement dutyEndInputElement = driver.findElement(dutyEndInputBy);
             wait.until(ExpectedConditions.attributeToBe(dutyStartInputBy, "value", rosterItemReadBefore.getDutyStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
             wait.until(ExpectedConditions.attributeToBe(dutyEndInputBy, "value", rosterItemReadBefore.getDutyEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
+            Assert.assertEquals(dutyStartInputElement.getAttribute("value"), rosterItemReadBefore.getDutyStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm")));
+            Assert.assertEquals(dutyEndInputElement.getAttribute("value"), rosterItemReadBefore.getDutyEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm")));
         } else if ("break".equals(dutyOrBreak)) {
-            By breakStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeId + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_start_sql\")]");
-            By breakEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeId + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_end_sql\")]");
+            By breakStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_start_sql\")]");
+            By breakEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_end_sql\")]");
             wait.until(ExpectedConditions.attributeToBe(breakStartInputBy, "value", rosterItemReadBefore.getBreakStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
             wait.until(ExpectedConditions.attributeToBe(breakEndInputBy, "value", rosterItemReadBefore.getBreakEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
         } else {

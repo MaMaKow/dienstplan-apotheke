@@ -137,15 +137,15 @@ public class AbsenceEmployeePage {
         return Integer.parseInt(year);
     }
 
-    public AbsenceEmployeePage goToEmployee(int employeeId) {
-        employeeFormSelect.selectByValue(String.valueOf(employeeId));
+    public AbsenceEmployeePage goToEmployee(int employeeKey) {
+        employeeFormSelect.selectByValue(String.valueOf(employeeKey));
         return new AbsenceEmployeePage();
     }
 
-    public int getEmployeeId() {
+    public int getEmployeeKey() {
         WebElement yearElement = employeeFormSelect.getFirstSelectedOption();
-        String employeeId = yearElement.getAttribute("value");
-        return Integer.parseInt(employeeId);
+        String employeeKey = yearElement.getAttribute("value");
+        return Integer.parseInt(employeeKey);
     }
 
     public AbsenceEmployeePage createNewAbsence(String startDate, String endDate, int reasonId, String comment, String approval) {
@@ -232,7 +232,7 @@ public class AbsenceEmployeePage {
 
     }
 
-    public Absence getExistingAbsence(String startDate, int employeeId) {
+    public Absence getExistingAbsence(String startDate, int employeeKey) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String startDateString = startDateElement.getText();
@@ -251,7 +251,7 @@ public class AbsenceEmployeePage {
             WebElement approvalElement = absenceRowElement.findElement(By.xpath(".//td[6]/span"));
             String approvalString = approvalElement.getAttribute("data-absence_approval");
             //String approvalStringLocalized = approvalElement.getText();
-            Absence absence = new Absence(employeeId, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
+            Absence absence = new Absence(employeeKey, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
             return absence;
         }
         return null;

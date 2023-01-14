@@ -25,7 +25,7 @@
 abstract class build_html_navigation_elements {
 
     static $List_of_allowed_input_names = array(
-        'employee_id',
+        'employee_key',
         'datum',
     );
 
@@ -137,10 +137,10 @@ abstract class build_html_navigation_elements {
         return $forward_button_week_img;
     }
 
-    public static function build_button_link_download_ics_file(string $date_sql, int $employee_id) {
+    public static function build_button_link_download_ics_file(string $date_sql, int $employee_key) {
         $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php' method='get' id='download_ics_file_form'>"
                 . "<input type='hidden' name='date_string' value='$date_sql' form='download_ics_file_form'>"
-                . "<input type='hidden' name='employee_id' value='$employee_id' form='download_ics_file_form'>"
+                . "<input type='hidden' name='employee_key' value='$employee_key' form='download_ics_file_form'>"
                 . " <button type='submit' class='btn-primary no_print' "
                 . " title='" . gettext("Download iCalendar file") . "'>"
                 . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
@@ -221,18 +221,18 @@ abstract class build_html_navigation_elements {
      * Build a form to select an employee.
      *
      *
-     * @param int $employee_id
+     * @param int $employee_key
      * @return string HTML element
      */
-    public static function build_select_employee(int $employee_id = null, array $Employee_object_list = array()) {
+    public static function build_select_employee(int $employee_key = null, array $Employee_object_list = array()) {
         $text = "<!-- employee select form-->\n";
         $text .= "<form method='POST' id='select_employee' class='inline_form'>\n";
-        $text .= "<select name=employee_id class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
+        $text .= "<select name=employee_key class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_object_list as $employee_object) {
-            if ($employee_object->employee_id === $employee_id) {
-                $text .= "<option selected value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
+            if ($employee_object->get_employee_key() === $employee_key) {
+                $text .= "<option selected value='" . $employee_object->get_employee_key() . "'>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>\n";
             } else {
-                $text .= "<option value=$employee_object->employee_id>" . $employee_object->employee_id . " " . $employee_object->last_name . "</option>\n";
+                $text .= "<option value='" . $employee_object->get_employee_key() . "'>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>\n";
             }
         }
         $text .= "</select>\n";
@@ -243,7 +243,36 @@ abstract class build_html_navigation_elements {
         return $text;
     }
 
-    /*
+    /**
+     * Build a form to select a user.
+     *
+     *
+     * @param int $user_key
+     * @return string HTML element
+     */
+    public static function build_select_user(int $user_key = null) {
+        $text = "<!-- user select form-->\n";
+        $text .= "<form method='POST' id='select_user' class='inline_form'>\n";
+        $text .= "<select name=user_key class='large' onChange='document.getElementById(\"submit_select_user\").click()'>\n";
+        $user_base = new \PDR\Workforce\user_base();
+        $user_list = $user_base->get_user_list();
+
+        foreach ($user_list as $user_object) {
+            if ($user_object->get_primary_key() === $user_key) {
+                $text .= "<option selected value='" . $user_object->get_primary_key() . "'>" . $user_object->get_user_name() . "</option>\n";
+            } else {
+                $text .= "<option value='" . $user_object->get_primary_key() . "'>" . $user_object->get_user_name() . "</option>\n";
+            }
+        }
+        $text .= "</select>\n";
+        $text .= "<input hidden type=submit value=select_user name='submit_select_user' id='submit_select_user' class=no_print>\n";
+        $text .= "</form>\n";
+        $text .= "<!--/user select form-->\n";
+
+        return $text;
+    }
+
+    /**
      * Build a form to select a branch.
      *
      * Support for various branch clients.
@@ -251,7 +280,6 @@ abstract class build_html_navigation_elements {
      * @param int $current_branch
      * @return string HTML element
      */
-
     public static function build_select_branch(int $current_branch_id = null, array $List_of_branch_objects = array(), string $date_sql = NULL) {
         $text = "<!-- branch select form-->\n";
         $text .= "<div id='branch_form_div' class='inline_element'>\n";

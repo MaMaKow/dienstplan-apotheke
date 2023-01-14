@@ -40,7 +40,7 @@ echo "<form method='POST' id='register_approve'>";
 echo "<table id='register_approve_table'>";
 echo "<tr>"
  . "<th>" . gettext('user name') . "</th>"
- . "<th>" . gettext('employee id') . "</th>"
+ . "<th>" . gettext('employee key') . "</th>"
  . "<th> " . gettext('email') . "</th>"
  . "<th>" . gettext('created at') . "</th>"
  . "<th>" . gettext('status') . "</th>"
@@ -56,12 +56,12 @@ while ($user = $result->fetch(PDO::FETCH_OBJ)) {
     }
     echo "<tr>"
     . "<td>" . $user->user_name . "</td>"
-    . "<td>" . $user->employee_id . "</td>"
+    . "<td>" . $user->get_employee_key() . "</td>"
     . "<td> " . $user->email . "</td>"
     . "<td>" . $user->created_at . "</td>"
     . "<td>" . $user->status . "</td>"
-    . "<td><button type='submit' form='register_approve' name=approve value='" . $user->employee_id . "' title='Benutzer bestätigen' $approve_button_activity>Bestätigen</button></td>"
-    . "<td><button type='submit' form='register_approve' name=disapprove value=" . $user->employee_id . " title='Benutzer löschen'>Löschen</button></td>"
+    . "<td><button type='submit' form='register_approve' name=approve value='" . $user->get_primary_key() . "' title='Benutzer bestätigen' $approve_button_activity>Bestätigen</button></td>"
+    . "<td><button type='submit' form='register_approve' name=disapprove value=" . $user->get_primary_key() . " title='Benutzer löschen'>Löschen</button></td>"
     . "</tr>";
 }
 echo "</table>";

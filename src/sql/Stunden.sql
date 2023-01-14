@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS `Stunden` (
-  `VK` int(11) NOT NULL,
+  `employee_key` int(10) NOT NULL,
   `Datum` date NOT NULL,
   `Stunden` float DEFAULT NULL,
   `Saldo` float NOT NULL,
   `Grund` varchar(64) DEFAULT NULL,
   `Aktualisierung` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`VK`,`Datum`)
+  PRIMARY KEY (`employee_key`,`Datum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

@@ -28,7 +28,7 @@ class roster_item implements \JsonSerializable {
     public $date_sql;
     public $date_unix;
     public $date_object;
-    public $employee_id;
+    public $employee_key;
     public $branch_id;
     public $comment;
     protected $duty_start_int;
@@ -85,8 +85,8 @@ class roster_item implements \JsonSerializable {
         return $this->date_object;
     }
 
-    public function get_employee_id() {
-        return $this->employee_id;
+    public function get_employee_key() {
+        return $this->employee_key;
     }
 
     public function get_branch_id() {
@@ -157,11 +157,11 @@ class roster_item implements \JsonSerializable {
         return $this->weekday;
     }
 
-    public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
+    public function __construct(string $date_sql, int $employee_key = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
         $this->date_object = new DateTime($date_sql);
         $this->date_unix = $this->date_object->getTimestamp();
-        $this->employee_id = $employee_id;
+        $this->employee_key = $employee_key;
         $this->branch_id = (int) $branch_id;
         $this->duty_start_sql = $this->format_time_string_correct($duty_start);
         $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
@@ -253,20 +253,21 @@ class roster_item implements \JsonSerializable {
 
     public function check_roster_item_sequence() {
         $user_dialog = new user_dialog();
+        $workforce = new workforce();
         if ($this->break_end_int > $this->duty_end_int) {
-            $error_message = sprintf(gettext('The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if (!empty($this->break_start_int) and $this->break_start_int < $this->duty_start_int) {
-            $error_message = sprintf(gettext('The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if ($this->break_end_int < $this->break_start_int) {
-            $error_message = sprintf(gettext('The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if ($this->duty_end_int < $this->duty_start_int) {
-            $error_message = sprintf(gettext('The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
     }

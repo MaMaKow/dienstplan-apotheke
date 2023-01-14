@@ -38,7 +38,7 @@ class principle_roster_item extends roster_item {
      *
      * @param int $primary_key
      * @param string $date_sql
-     * @param int $employee_id
+     * @param int $employee_key
      * @param int $branch_id
      * @param string $duty_start
      * @param string $duty_end
@@ -47,7 +47,7 @@ class principle_roster_item extends roster_item {
      * @param string $comment
      * @throws \InvalidArgumentException
      */
-    public function __construct(int $primary_key = NULL, string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
+    public function __construct(int $primary_key = NULL, string $date_sql, int $employee_key = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         /**
          * <p lang=de>TODO: Ich weiß nicht mehr, warum der key nicht null sein darf.</p>
           if (NULL === $primary_key) {
@@ -55,7 +55,7 @@ class principle_roster_item extends roster_item {
           }
          */
         $this->primary_key = $primary_key;
-        parent::__construct($date_sql, $employee_id, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
+        parent::__construct($date_sql, $employee_key, $branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
     }
 
     public function get_primary_key() {

@@ -51,13 +51,13 @@ class collaborative_vacation {
      */
     private function write_user_input_to_database($session) {
 
-        $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+        $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
         $start_date_string = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
         $end_date_string = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
         $reason_id = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_NUMBER_INT);
         $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
         $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING);
-        $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
+        $employee_key_old = filter_input(INPUT_POST, 'employee_key_old', FILTER_SANITIZE_STRING);
         $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
 
         if ($session->user_has_privilege('create_absence')) {
@@ -69,22 +69,22 @@ class collaborative_vacation {
             /*
              * User is only allowed to ask for specific changes to the database.
              */
-            if ($_SESSION['user_object']->employee_id !== $employee_id) {
-                error_log("Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays for employee " . $employee_id);
+            if ($_SESSION['user_object']->employee_key !== $employee_key) {
+                error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays for employee " . $employee_key);
                 global $config;
                 $recipient = $config['contact_email'];
                 $subject = "Permission Error";
-                $message = "Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays for employee " . $employee_id;
+                $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays for employee " . $employee_key;
                 $user_dialog_email->send_email($recipient, $subject, $message);
                 throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
             }
-            if ("" !== $employee_id_old and $_SESSION['user_object']->employee_id !== $employee_id_old) {
-                error_log("Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays from employee " . $employee_id_old);
+            if ("" !== $employee_key_old and $_SESSION['user_object']->employee_key !== $employee_key_old) {
+                error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays from employee " . $employee_key_old);
                 $user_dialog_email = new user_dialog_email;
                 global $config;
                 $recipient = $config['contact_email'];
                 $subject = "Permission Error";
-                $message = "Permissions: Employee " . $_SESSION['user_object']->employee_id . " tried to request holidays from employee " . $employee_id_old;
+                $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays from employee " . $employee_key_old;
                 $user_dialog_email->send_email($recipient, $subject, $message);
                 throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
             }
@@ -95,25 +95,25 @@ class collaborative_vacation {
             $message = "Dear Admin,\n\n";
             $message = "An absence for " . $_SESSION['user_object']->user_name . " was inserted or changed.\n";
             $message .= "\nUser input:";
-            $message .= "$employee_id  = $employee_id
+            $message .= "$employee_key  = $employee_key
         start_date_string = $start_date_string
         end_date_string = $end_date_string
         reason_id = $reason_id
         comment = $comment
         command = $command
-        employee_id_old = $employee_id_old
+        employee_key_old = $employee_key_old
         start_date_old_string = $start_date_old_string"; //TODO: Test this an then gettext.
             $user_dialog_email->send_email($recipient, $subject, $message);
         } else {
             /*
              * This point should never be reached.
              */
-            error_log("Permissions: Employee " . $_SESSION['user_object']->employee_id . " seems to misuse collaborative vacation.");
+            error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " seems to misuse collaborative vacation.");
             $user_dialog_email = new user_dialog_email;
             global $config;
             $recipient = $config['contact_email'];
             $subject = "Permission Error";
-            $message = "Permissions: Employee " . $_SESSION['user_object']->employee_id . " seems to misuse collaborative vacation.";
+            $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " seems to misuse collaborative vacation.";
             $user_dialog_email->send_email($recipient, $subject, $message);
             throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
         }
@@ -123,8 +123,8 @@ class collaborative_vacation {
         /*
          * Delete old entries:
          */
-        if (NULL !== $employee_id_old) {
-            absence::delete_absence($employee_id_old, $start_date_old_string);
+        if (NULL !== $employee_key_old) {
+            absence::delete_absence($employee_key_old, $start_date_old_string);
         }
 
         /*
@@ -132,9 +132,9 @@ class collaborative_vacation {
          */
         if ("save" === $command) {
             $workforce = new \workforce();
-            $employee_object = $workforce->get_employee_object($employee_id);
+            $employee_object = $workforce->get_employee_object($employee_key);
             $days = \absence::calculate_employee_absence_days(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
-            absence::insert_absence($employee_id, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval);
+            absence::insert_absence($employee_key, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval);
         }
         database_wrapper::instance()->commit();
     }
@@ -153,9 +153,9 @@ class collaborative_vacation {
             return FALSE;
         }
         $approval = filter_input(INPUT_POST, 'approve_absence', FILTER_SANITIZE_STRING);
-        $employee_id_old = filter_input(INPUT_POST, 'employee_id_old', FILTER_SANITIZE_STRING);
+        $employee_key_old = filter_input(INPUT_POST, 'employee_key_old', FILTER_SANITIZE_STRING);
         $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_STRING);
-        absence::set_approval($approval, $employee_id_old, $start_date_old_string);
+        absence::set_approval($approval, $employee_key_old, $start_date_old_string);
     }
 
     /**
@@ -164,7 +164,7 @@ class collaborative_vacation {
      * The calendar is a div of the year containing divs of months containing paragraphs of days.
      * Each day paragraph contains the day of week and day number.
      * It may contain spans with the name of a holiday or
-     * spans with the employee_id numbers of absent employees.
+     * spans with the employee representations of absent employees.
      * Absence is not shown on holidays and on weekends.
      * The absence spans are colored differently for different professions.
      *
@@ -216,7 +216,7 @@ class collaborative_vacation {
      * The calendar is a div of the month with adjacend weeks containing rows of weeks containing columns of days.
      * Each day column contains the day of week and day number.
      * It may contain spans with the name of a holiday or
-     * spans with the employee_id numbers of absent employees.
+     * spans with the employee representing strings of absent employees.
      * Absence is not shown on holidays and on weekends.
      * The absence spans are colored differently for different professions.
      *
@@ -310,7 +310,7 @@ class collaborative_vacation {
                     . ": "
                     . $emergency_service->get_branch_name_short()
                     . ", "
-                    . $emergency_service->get_employee_name()
+                    . $emergency_service->get_employee_short_descriptor()
                     . "</span>\n";
         } else {
             $title = gettext("emergency service")
@@ -321,7 +321,7 @@ class collaborative_vacation {
             $emergency_service_content .= "<span class='emergency_service' title='$title'>"
                     . mb_substr(gettext('emergency service'), 0, 2)
                     . "<sub>"
-                    . $emergency_service->get_employee_id()
+                    . $emergency_service->get_employee_short_descriptor()
                     . "&rarr;"
                     . $emergency_service->get_branch_id()
                     . "</sub>"
@@ -362,11 +362,12 @@ class collaborative_vacation {
                 continue;
             }
 
-            $employee_id = $Absence['employee_id'];
-            $employee_long_representation = " ";
+            $employee_key = $Absence['employee_key'];
+
             $workforce = new workforce($date_object->format('Y-m-d'));
-            if ($workforce->employee_exists($employee_id)) {
-                $profession = $workforce->get_employee_profession($employee_id);
+            $employee_representation = $workforce->get_employee_short_descriptor($employee_key);
+            if ($workforce->employee_exists($employee_key)) {
+                $profession = $workforce->get_employee_profession($employee_key);
                 $employee_exists = ""; //blank means existing.
             } else {
                 $profession = "";
@@ -382,7 +383,7 @@ class collaborative_vacation {
                 /*
                  * In the year mode there is not enough space for the last names:
                  */
-                $employee_long_representation = " " . mb_substr($workforce->get_employee_last_name($employee_id), 0, 16);
+                $employee_representation = mb_substr($workforce->get_employee_last_name($employee_key), 0, 16);
             }
 
             $absent_employees_containers .= "<span "
@@ -391,15 +392,14 @@ class collaborative_vacation {
                     . " title='" . $this->build_absence_year_absent_employees_containers_title_text($workforce, $Absence) . "' "
                     . " data-absence_details='" . json_encode($Absence, JSON_UNESCAPED_UNICODE) . "' "
                     . ">";
-            $absent_employees_containers .= $employee_id;
-            $absent_employees_containers .= $employee_long_representation;
+            $absent_employees_containers .= $employee_representation;
             $absent_employees_containers .= "</span> \n";
         }
         return $absent_employees_containers;
     }
 
     private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence) {
-        $absence_title_text = $workforce->get_employee_last_name($Absence['employee_id']) . "\n";
+        $absence_title_text = $workforce->get_employee_last_name($Absence['employee_key']) . "\n";
         $absence_title_text .= absence::get_reason_string_localized($Absence['reason_id']) . "\n";
         $absence_title_text .= $Absence['comment'] . "\n";
         $absence_title_text .= gettext('from') . ' ' . strftime('%x', strtotime($Absence['start'])) . "\n";

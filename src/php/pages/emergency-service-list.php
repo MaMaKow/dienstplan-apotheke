@@ -41,14 +41,14 @@ function handle_user_input() {
     $date_new = user_input::get_variable_from_any_input('emergency_service_date', FILTER_SANITIZE_NUMBER_INT);
     $date_old = user_input::get_variable_from_any_input('emergency_service_date_old', FILTER_SANITIZE_NUMBER_INT);
     $branch_id = user_input::get_variable_from_any_input('emergency_service_branch', FILTER_SANITIZE_NUMBER_INT);
-    $employee_id = user_input::get_variable_from_any_input('emergency_service_employee', FILTER_SANITIZE_NUMBER_INT);
+    $employee_key = user_input::get_variable_from_any_input('emergency_service_employee', FILTER_SANITIZE_NUMBER_INT);
     if ("" === $date_new) {
         return FALSE;
     }
     if ("" === $branch_id) {
         return FALSE;
     }
-    if ("" === $employee_id and "" === $date_old) {
+    if ("" === $employee_key and "" === $date_old) {
         /**
          * <p lang=de>Neuen Eintrag anlegen</p>
          */
@@ -67,9 +67,9 @@ function handle_user_input() {
         /**
          * <p lang=de>Vorhandenen Eintrag ändern</p>
          */
-        $sql_query = "UPDATE Notdienst SET `VK` = :employee_id, `Datum` = :date_new WHERE `Datum` = :date_old AND Mandant = :branch_id";
+        $sql_query = "UPDATE Notdienst SET `employee_key` = :employee_key, `Datum` = :date_new WHERE `Datum` = :date_old AND Mandant = :branch_id";
         database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => user_input::convert_post_empty_to_php_null($employee_id),
+            'employee_key' => user_input::convert_post_empty_to_php_null($employee_key),
             'branch_id' => $branch_id,
             'date_new' => $date_new,
             'date_old' => $date_old,
@@ -89,7 +89,7 @@ function handle_user_input() {
 $sql_query = "SELECT * FROM Notdienst WHERE YEAR(Datum) = :year AND Mandant = :branch_id";
 $result = database_wrapper::instance()->run($sql_query, array('year' => $year, 'branch_id' => $branch_id));
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $Emergency_services['VK'][] = $row->VK;
+    $Emergency_services['employee_key'][] = $row->employee_key;
     $Emergency_services['Datum'][] = $row->Datum;
     $Emergency_services['Mandant'][] = $row->Mandant;
 }
@@ -145,7 +145,7 @@ $user_dialog->build_messages();
                          * Employee:
                          */
                         echo "<td>\n";
-                        echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($Emergency_services['VK'][$key], $branch_id, $date_sql);
+                        echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($Emergency_services['employee_key'][$key], $branch_id, $date_sql);
                         echo "</td>\n";
                         /**
                          * Buttons:
@@ -161,7 +161,7 @@ $user_dialog->build_messages();
                     } else {
                         echo "\n<td>" . strftime('%x', $date_unix) . "</td>\n";
                         echo "<td>\n";
-                        echo (isset($workforce->List_of_employees[$Emergency_services['VK'][$key]])) ? $workforce->List_of_employees[$Emergency_services['VK'][$key]]->last_name : "?";
+                        echo (isset($workforce->List_of_employees[$Emergency_services['employee_key'][$key]])) ? $workforce->List_of_employees[$Emergency_services['employee_key'][$key]]->last_name : "?";
                         echo "</td>\n";
                     }
                     echo "<td class='replacement_td'></td>\n</form>\n</tr>\n";

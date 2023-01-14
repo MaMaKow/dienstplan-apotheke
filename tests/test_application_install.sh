@@ -50,5 +50,5 @@ echo "\$config['hide_disapproved'] = false;"                                  >>
 
 # TODO: We need to setup the test user!
 selenium_test_userPasswordHash=`php -r "echo password_hash('$selenium_test_userPassword', PASSWORD_DEFAULT);"`
-mysql -u pdrDbUser -p$pdrDbUserPassword pdrTest_$versionString -e 'INSERT INTO `employees` (`id`, `last_name`, `first_name`, `profession`)'" VALUES ('5', 'Mandelkow', 'Martin', 'Apotheker'); "
+mysql -u pdrDbUser -p$pdrDbUserPassword pdrTest_$versionString -e 'INSERT INTO `employees` (`last_name`, `first_name`, `profession`)'" VALUES ('Mandelkow', 'Martin', 'Apotheker'); "
 mysql -u pdrDbUser -p$pdrDbUserPassword pdrTest_$versionString -e 'INSERT INTO `users` (`employee_id`, `user_name`, `email`, `password`, `status`, `receive_emails_on_changed_roster`)'" VALUES ('5', 'selenium_test_user', 'selenium_test_user@martin-mandelkow.de', '$selenium_test_userPasswordHash', 'active', '1');"

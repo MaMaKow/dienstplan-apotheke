@@ -122,16 +122,16 @@ public class RosterEmployeePage {
         return new RosterEmployeePage(driver);
     }
 
-    public RosterEmployeePage selectEmployee(int employeeId) {
+    public RosterEmployeePage selectEmployee(int employeeKey) {
         Select employeeFormSelect = new Select(driver.findElement(employeeFormSelectBy));
-        employeeFormSelect.selectByValue(String.valueOf(employeeId));
+        employeeFormSelect.selectByValue(String.valueOf(employeeKey));
         return new RosterEmployeePage(driver);
     }
 
-    public int getEmployeeId() {
+    public int getEmployeeKey() {
         Select employeeFormSelect = new Select(driver.findElement(employeeFormSelectBy));
-        int employeeId = Integer.parseInt(employeeFormSelect.getFirstSelectedOption().getAttribute("value"));
-        return employeeId;
+        int employeeKey = Integer.parseInt(employeeFormSelect.getFirstSelectedOption().getAttribute("value"));
+        return employeeKey;
     }
 
     public String getEmployeeName() {
@@ -142,8 +142,8 @@ public class RosterEmployeePage {
     }
 
     private By getRosterItemDateXpathBy(int column) {
-        By rosterItemEmployeeIdXpathBy = By.xpath("/html/body/div/table/thead/tr/td[" + column + "]/a");
-        return rosterItemEmployeeIdXpathBy;
+        By rosterItemEmployeeKeyXpathBy = By.xpath("/html/body/div/table/thead/tr/td[" + column + "]/a");
+        return rosterItemEmployeeKeyXpathBy;
     }
 
     private By getRosterItemDutyStartXpathBy(int column, int row) {
@@ -176,7 +176,7 @@ public class RosterEmployeePage {
     }
 
     public RosterItem getRosterItem(int column, int row) throws ParseException {
-        int employeeId = getEmployeeId();
+        int employeeKey = getEmployeeKey();
         /**
          * We will need a year to correctly parse the date:
          */
@@ -205,7 +205,7 @@ public class RosterEmployeePage {
          */
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("eeee dd.MM.yyyy", Locale.GERMANY);
         LocalDate localDate = LocalDate.parse(dateString + currentYear, dateTimeFormatter);
-        RosterItem rosterItem = new RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 

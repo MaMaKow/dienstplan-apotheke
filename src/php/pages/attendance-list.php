@@ -41,21 +41,21 @@ echo form_element_builder::build_html_select_year($year);
     <TR>
         <TD>Anwesenheit</TD>
         <?php
-        foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-            echo '<TD style="padding-bottom: 0">' . mb_substr($employee_object->last_name, 0, 4) . "<br>$employee_id</TD>";
+        foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
+            echo '<TD style="padding-bottom: 0">' . mb_substr($employee_object->last_name, 0, 4) . "<br>$workforce->get_employee_short_descriptor($employee_key)</TD>";
         }
         ?>
     </TR>
     <?php
     /*
      * TODO: Use date object
-     * TODO: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_id] equals/contains/holds a reason_id for the absence.
+     * TODO: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_key] equals/contains/holds a reason_id for the absence.
      */
     for ($date_unix = $start_date_unix; $date_unix < strtotime('+ 1 month', $start_date_unix); $date_unix = $date_unix + PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date("Y-m-d", $date_unix);
         if (date('N', $date_unix) >= 6) {
             echo '<TR class=wochenende><TD style="padding-bottom: 0">' . strftime('%a %d.%m.', $date_unix) . '</TD>';
-            foreach (array_keys($workforce->List_of_employees) as $employee_id) {
+            foreach (array_keys($workforce->List_of_employees) as $employee_key) {
                 echo '<TD></TD>';
             }
         } else {
@@ -63,11 +63,11 @@ echo form_element_builder::build_html_select_year($year);
             $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
             echo '<TR><TD style="padding-bottom: 0">' . strftime('%a %d.%m.%Y', $date_unix) . '</TD>';
             //TODO: The following part is not localized. It will not wrk in any other language:
-            foreach (array_keys($workforce->List_of_employees) as $employee_id) {
-                if (isset($Absentees[$employee_id])) {
-                    $reason_short_string = mb_substr(absence::get_reason_string_localized($Absentees[$employee_id]), 0, 4);
-                    echo "<TD style='padding-bottom: 0' title='" . absence::get_reason_string_localized($Absentees[$employee_id]) . "'>" . $reason_short_string . "</TD>";
-                } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_id'] == $employee_id) {
+            foreach (array_keys($workforce->List_of_employees) as $employee_key) {
+                if (isset($Absentees[$employee_key])) {
+                    $reason_short_string = mb_substr(absence::get_reason_string_localized($Absentees[$employee_key]), 0, 4);
+                    echo "<TD style='padding-bottom: 0' title='" . absence::get_reason_string_localized($Absentees[$employee_key]) . "'>" . $reason_short_string . "</TD>";
+                } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_key'] == $employee_key) {
                     $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . gettext("emergency service") . "'>" . $reason_short_string . "</TD>";
                 } else {

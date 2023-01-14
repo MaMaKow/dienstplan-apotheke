@@ -81,10 +81,10 @@ public class OvertimeEmployeePage {
         return new OvertimeEmployeePage(driver);
     }
 
-    public OvertimeEmployeePage selectEmployee(int employeeId) {
+    public OvertimeEmployeePage selectEmployee(int employeeKey) {
         WebElement selectEmployeeElement = driver.findElement(employeeFormSelectBy);
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
-        selectEmployeeSelect.selectByValue(String.valueOf(employeeId));
+        selectEmployeeSelect.selectByValue(String.valueOf(employeeKey));
         return new OvertimeEmployeePage(driver);
     }
 
@@ -129,6 +129,11 @@ public class OvertimeEmployeePage {
      */
     public OvertimeEmployeePage addNewOvertime(Calendar calendar, float hours, String reason) {
         LocalDate localDate = LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
+        return addNewOvertime(localDate, hours, reason);
+    }
+
+    public OvertimeEmployeePage addNewOvertimeForEmployee(int employeeKey, LocalDate localDate, float hours, String reason) {
+        this.selectEmployee(employeeKey);
         return addNewOvertime(localDate, hours, reason);
     }
 

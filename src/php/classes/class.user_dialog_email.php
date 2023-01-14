@@ -70,12 +70,12 @@ class user_dialog_email {
      *
      * @param array $Roster the new roster
      * @param array $Roster_old obsolete
-     * @param array $Inserted_roster_employee_id_list An array of days, each with an array of employee_ids who were inserted into the Roster
-     * @param array $Changed_roster_employee_id_list An array of days, each with an array of employee_ids whose existing Roster was changed
-     * @param array $Deleted_roster_employee_id_list An array of days, each with an array of employee_ids who were deleted from the Roster
+     * @param array $Inserted_roster_employee_key_list An array of days, each with an array of employee_keys who were inserted into the Roster
+     * @param array $Changed_roster_employee_key_list An array of days, each with an array of employee_keys whose existing Roster was changed
+     * @param array $Deleted_roster_employee_key_list An array of days, each with an array of employee_keys who were deleted from the Roster
      * @return void
      */
-    public function create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list) {
+    public function create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_key_list, $Changed_roster_employee_key_list, $Deleted_roster_employee_key_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (strtotime('+' . $this->maximum_future_days . ' days', time()) <= $date_unix) {
                 continue;
@@ -84,27 +84,27 @@ class user_dialog_email {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
-                if (NULL === $roster_item_object->employee_id) {
+                if (NULL === $roster_item_object->employee_key) {
                     continue;
                 }
-                if (!empty($Inserted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Inserted_roster_employee_id_list[$date_unix])) {
+                if (!empty($Inserted_roster_employee_key_list[$date_unix]) and in_array($roster_item_object->employee_key, $Inserted_roster_employee_key_list[$date_unix])) {
                     $context_string = gettext("You have been added to the roster.");
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
-                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_key, $roster_item_object->date_sql, $message, $ics_file);
                 }
-                if (!empty($Changed_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                if (!empty($Changed_roster_employee_key_list[$date_unix]) and in_array($roster_item_object->employee_key, $Changed_roster_employee_key_list[$date_unix])) {
                     $context_string = gettext("Your roster has changed.");
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
-                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_key, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
         /*
-         * TODO: Build the foreach loop only on the $Deleted_roster_employee_id_list.
+         * TODO: Build the foreach loop only on the $Deleted_roster_employee_key_list.
          * We do not need the $Roster_old information.
          */
         foreach ($Roster_old as $date_unix => $Roster_day_array) {
@@ -112,20 +112,20 @@ class user_dialog_email {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
-                if (NULL === $roster_item_object->employee_id) {
+                if (NULL === $roster_item_object->employee_key) {
                     continue;
                 }
 
-                if (!empty($Deleted_roster_employee_id_list[$date_unix]) and in_array($roster_item_object->employee_id, $Deleted_roster_employee_id_list[$date_unix])) {
+                if (!empty($Deleted_roster_employee_key_list[$date_unix]) and in_array($roster_item_object->employee_key, $Deleted_roster_employee_key_list[$date_unix])) {
                     $message = sprintf(gettext('You are not in the roster anymore on %1$s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
                     $ics_file = ""; // TODO: Right now iCalendar can not handle events with the STATUS:CANCELED
-                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_id, $roster_item_object->date_sql, $message, $ics_file);
+                    self::save_notification_about_changed_roster_to_database($roster_item_object->employee_key, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
     }
 
-    private static function save_notification_about_changed_roster_to_database(int $employee_id, string $date_sql, string $message, string $ics_file = "") {
+    private static function save_notification_about_changed_roster_to_database(int $employee_key, string $date_sql, string $message, string $ics_file = "") {
         /*
          * TODO: Do not send mail directly.
          *     Save it to the database, aggregate it, check it for plausibility, send it later.
@@ -134,24 +134,24 @@ class user_dialog_email {
          * Remove old entries about this day if existent for this employee:
          */
         $sql_query = "DELETE FROM `user_email_notification_cache` WHERE "
-                . " `employee_id` = :employee_id and "
+                . " `employee_key` = :employee_key and "
                 . " `date` = :date;"
         ;
         database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $employee_id,
+            'employee_key' => $employee_key,
             'date' => $date_sql
         ));
         /**
          * Insert the new enries:
          */
         $sql_query = "INSERT INTO `user_email_notification_cache` SET "
-                . " `employee_id` = :employee_id, "
+                . " `employee_key` = :employee_key, "
                 . " `date` = :date, "
                 . " `notification_text` = :notification_text, "
                 . " `notification_ics_file` = :notification_ics_file "
         ;
         database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $employee_id,
+            'employee_key' => $employee_key,
             'date' => $date_sql,
             'notification_text' => $message,
             'notification_ics_file' => $ics_file,
@@ -159,21 +159,21 @@ class user_dialog_email {
     }
 
     public function aggregate_messages_about_changed_roster_to_employees($workforce) {
-        $sql_query = "SELECT DISTINCT `employee_id` "
+        $sql_query = "SELECT DISTINCT `employee_key` "
                 . " FROM `user_email_notification_cache`;";
         $result = database_wrapper::instance()->run($sql_query);
         while ($employee_row = $result->fetch(PDO::FETCH_OBJ)) {
-            $employee_id = $employee_row->employee_id;
+            $employee_key = $employee_row->employee_key;
 
-            $aggregated_message = sprintf(gettext('Dear %1$s,'), $workforce->List_of_employees[$employee_id]->full_name) . PHP_EOL . PHP_EOL;
+            $aggregated_message = sprintf(gettext('Dear %1$s,'), $workforce->List_of_employees[$employee_key]->full_name) . PHP_EOL . PHP_EOL;
             $aggregated_ics_file = (string) "";
             $notifications_exist = FALSE;
 
-            $sql_query = "SELECT `notification_id`, `employee_id`, `date`, `notification_text`, `notification_ics_file` "
+            $sql_query = "SELECT `notification_id`, `employee_key`, `date`, `notification_text`, `notification_ics_file` "
                     . " FROM `user_email_notification_cache` "
-                    . " WHERE `employee_id` = :employee_id and `date` >= NOW();";
+                    . " WHERE `employee_key` = :employee_key and `date` >= NOW();";
             $result_notification_employee = database_wrapper::instance()->run($sql_query, array(
-                'employee_id' => $employee_id,
+                'employee_key' => $employee_key,
             ));
             while ($row = $result_notification_employee->fetch(PDO::FETCH_OBJ)) {
                 $List_of_deletable_notifications[] = $row->notification_id;
@@ -184,7 +184,7 @@ class user_dialog_email {
 
             if ($notifications_exist) {
                 $aggregated_message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
-                $mail_result = $this->send_email_about_changed_roster_to_employees($employee_id, $aggregated_message, $aggregated_ics_file);
+                $mail_result = $this->send_email_about_changed_roster_to_employees($employee_key, $aggregated_message, $aggregated_ics_file);
                 if (TRUE === $mail_result) {
                     $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `notification_id` = :notification_id";
                     $statement = database_wrapper::instance()->prepare($sql_query);
@@ -225,9 +225,13 @@ class user_dialog_email {
         database_wrapper::instance()->commit();
     }
 
-    private function send_email_about_changed_roster_to_employees($employee_id, $message, $ics_file_string) {
-        $user = new user($employee_id);
-        if (FALSE == $user->receive_emails_on_changed_roster) {
+    private function send_email_about_changed_roster_to_employees($employee_key, $message, $ics_file_string) {
+        $user_key = user::guess_user_key_by_employee_key($employee_key);
+        if (NULL === $user_key) {
+            return FALSE;
+        }
+        $user = new user($user_key);
+        if (FALSE == $user->wants_emails_on_changed_roster()) {
             /*
              * The user does not want to be informed about roster changes via email.
              */

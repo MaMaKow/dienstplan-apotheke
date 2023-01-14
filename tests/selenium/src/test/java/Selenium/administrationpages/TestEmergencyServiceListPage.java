@@ -50,33 +50,33 @@ public class TestEmergencyServiceListPage extends TestPage {
         /**
          * <p lang=de>Daten einfügen:</p>
          */
-        Integer employeeIdInsert = 2;
-        Integer employeeIdChange = 4;
+        Integer employeeKeyInsert = 4;
+        Integer employeeKeyChange = 6;
         Workforce workforce = new Workforce();
         /**
          * <p lang=de>Nur Apotheker (und PI) können allein im Notdienst
          * eingesetzt werden.</p>
          */
-        Assert.assertEquals("Apotheker", workforce.getEmployeeById(employeeIdInsert).getProfession());
-        Assert.assertEquals("Apotheker", workforce.getEmployeeById(employeeIdChange).getProfession());
+        Assert.assertEquals("Apotheker", workforce.getEmployeeByKey(employeeKeyInsert).getProfession());
+        Assert.assertEquals("Apotheker", workforce.getEmployeeByKey(employeeKeyChange).getProfession());
         LocalDate localDate = LocalDate.of(2019, Month.AUGUST, 8);
         emergencyServiceListPage = emergencyServiceListPage.addLineForDate(localDate);
-        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(localDate, employeeIdInsert);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyInsert);
         /**
          * <p lang=de>Daten abfragen:</p>
          */
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(localDate), employeeIdInsert);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyInsert);
         /**
          * <p lang=de>Daten ändern :</p>
          */
-        emergencyServiceListPage = emergencyServiceListPage.setEmployeeIdOnDate(localDate, employeeIdChange);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeIdOnDate(localDate), employeeIdChange);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyChange);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyChange);
         /**
          * <p lang=de>Zeilen wieder entfernen</p>
          */
         emergencyServiceListPage = emergencyServiceListPage.doNotRemoveLineByDate(localDate);
-        Assert.assertNotNull(emergencyServiceListPage.getEmployeeIdOnDate(localDate));
+        Assert.assertNotNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
         emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(localDate);
-        Assert.assertNull(emergencyServiceListPage.getEmployeeIdOnDate(localDate));
+        Assert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
     }
 }

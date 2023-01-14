@@ -26,12 +26,11 @@ class overtime {
 
     public static function handle_user_input_insert() {
         $user_dialog = new user_dialog();
-        $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
+        $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
         $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
         $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        list($balance_old, $date_old) = overtime::get_current_balance($employee_id);
-        //list($balance_first, $date_first) = overtime::get_first_balance($employee_id);
-        $first_balance_row = overtime::get_first_balance($employee_id);
+        list($balance_old, $date_old) = overtime::get_current_balance($employee_key);
+        $first_balance_row = overtime::get_first_balance($employee_key);
         /*
          * In case the user inserts a date, that is before the last inserted date, a warning is shown.
          * If the user still wishes to enter the data, the flag user_has_been_warned_about_date_sequence is set to 1.
@@ -58,11 +57,11 @@ class overtime {
             $balance_new = $first_balance_row->Saldo - $first_balance_row->Stunden;
         }
 
-        $sql_query = "INSERT INTO `Stunden` (VK, Datum, Stunden, Saldo, Grund)
-        VALUES (:employee_id, :date, :overtime_hours, :balance, :reason)";
+        $sql_query = "INSERT INTO `Stunden` (`employee_key`, Datum, Stunden, Saldo, Grund)
+        VALUES (:employee_key, :date, :overtime_hours, :balance, :reason)";
         try {
             $result = database_wrapper::instance()->run($sql_query, array(
-                'employee_id' => $employee_id,
+                'employee_key' => $employee_key,
                 'date' => $date,
                 'overtime_hours' => $overtime_hours_new,
                 'balance' => $balance_new,
@@ -80,21 +79,21 @@ class overtime {
             }
         }
 
-        overtime::recalculate_balances($employee_id);
+        overtime::recalculate_balances($employee_key);
     }
 
     public static function handle_user_input_delete() {
         $Remove = filter_input(INPUT_POST, 'loeschen', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-        foreach ($Remove as $employee_id => $Data) {
-            $employee_id = intval($employee_id);
+        foreach ($Remove as $employee_key => $Data) {
+            $employee_key = intval($employee_key);
             foreach (array_keys($Data) as $date_sql) {
-                $sql_query = "DELETE FROM `Stunden` WHERE `VK` = :employee_id AND `Datum` = :date";
-                database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'date' => $date_sql));
+                $sql_query = "DELETE FROM `Stunden` WHERE `employee_key` = :employee_key AND `Datum` = :date";
+                database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'date' => $date_sql));
             }
         }
     }
 
-    public static function handle_user_input($session, $employee_id) {
+    public static function handle_user_input($session, $employee_key) {
         if (!$session->user_has_privilege('create_overtime')) {
             return FALSE;
         }
@@ -108,19 +107,19 @@ class overtime {
         /*
          * Insert new data:
          */
-        if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_id') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'grund')) {
+        if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_key') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'grund')) {
             self::handle_user_input_insert();
         }
         /*
          * Sorting and recalculating the entries:
          */
-        overtime::recalculate_balances($employee_id);
+        overtime::recalculate_balances($employee_key);
     }
 
-    public static function recalculate_balances($employee_id) {
+    public static function recalculate_balances($employee_key) {
         $Overtime_list = array();
-        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` ASC";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` ASC";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
         $first_loop = TRUE;
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             if ($first_loop === TRUE) {
@@ -133,8 +132,8 @@ class overtime {
         ksort($Overtime_list);
         foreach ($Overtime_list as $overtime_entry) {
             $balance += $overtime_entry->Stunden;
-            $sql_query = "UPDATE `Stunden` SET `Saldo` = :balance WHERE `VK` = :employee_id and `Datum` = :date";
-            database_wrapper::instance()->run($sql_query, array('employee_id' => $overtime_entry->VK, 'date' => $overtime_entry->Datum, 'balance' => $balance));
+            $sql_query = "UPDATE `Stunden` SET `Saldo` = :balance WHERE `employee_key` = :employee_key and `Datum` = :date";
+            database_wrapper::instance()->run($sql_query, array('employee_key' => $overtime_entry->employee_key, 'date' => $overtime_entry->Datum, 'balance' => $balance));
         }
         return TRUE;
     }
@@ -142,12 +141,12 @@ class overtime {
     /**
      * <p>The last balance stored in the database for a given employee. Current means, that the date (`Datum`) of the entry is the highest.</p>
      *
-     * @param int $employee_id
+     * @param int $employee_key
      * @return array [$balance, $date]
      */
-    public static function get_current_balance($employee_id) {
-        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` DESC LIMIT 1";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    public static function get_current_balance($employee_key) {
+        $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` DESC LIMIT 1";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             /*
              * We cast the result to float,
@@ -166,12 +165,12 @@ class overtime {
      * First means, that the date (`Datum`) of the entry is the lowest.
      * </p>
      *
-     * @param int $employee_id
+     * @param int $employee_key
      * @return object <p>A standard PHP object representing a single row of data.</p>
      */
-    public static function get_first_balance($employee_id) {
-        $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` ASC LIMIT 1";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    public static function get_first_balance($employee_key) {
+        $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` ASC LIMIT 1";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             return $row;
         }
@@ -197,9 +196,9 @@ class overtime {
     private static function build_overview_table_body() {
         $workforce = new workforce();
         $table_rows = "<tbody>";
-        foreach (array_keys($workforce->List_of_employees) as $employee_id) {
-            $sql_query = "SELECT * FROM `Stunden` WHERE `VK` = :employee_id ORDER BY `Datum` DESC LIMIT 1";
-            $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        foreach (array_keys($workforce->List_of_employees) as $employee_key) {
+            $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` DESC LIMIT 1";
+            $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 switch (TRUE) {
                     case 40 < $row->Saldo:
@@ -219,7 +218,7 @@ class overtime {
                         break;
                 }
                 $table_rows .= "<tr class='$class'>";
-                $table_rows .= "<td>" . $row->VK . " " . $workforce->List_of_employees[$row->VK]->last_name . "</td>";
+                $table_rows .= "<td>" . $row->employee_key . " " . $workforce->List_of_employees[$row->employee_key]->last_name . "</td>";
                 $table_rows .= "<td>" . $row->Saldo . "</td>";
                 $table_rows .= "<td>" . strftime('%x', strtotime($row->Datum)) . "</td>";
                 $table_rows .= "</tr>\n";

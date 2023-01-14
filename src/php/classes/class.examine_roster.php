@@ -57,21 +57,21 @@ class examine_roster {
      */
     public function check_for_overlap($date_sql, $List_of_branch_objects, $workforce) {
         $user_dialog = new user_dialog();
-        $sql_query = "SELECT `first`.`VK`,"
+        $sql_query = "SELECT `first`.`employee_key`,"
                 . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
                 . " `first`.`Mandant` as first_branch,"
                 . " `second`.`Dienstbeginn` as second_start, `second`.`Dienstende` as second_end,"
                 . " `second`.`Mandant` as second_branch"
                 . " FROM `Dienstplan` AS first"
                 . " 	INNER JOIN `Dienstplan` as second"
-                . " 		ON first.VK = second.VK AND first.datum = second.datum"
+                . " 		ON first.employee_key = second.employee_key AND first.datum = second.datum"
                 . " WHERE `first`.`Datum` = :date "
-                . " 	AND ((`first`.`Dienstbeginn` != `second`.`Dienstbeginn` ) OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates, primary key is VK+start+mandant
+                . " 	AND ((`first`.`Dienstbeginn` != `second`.`Dienstbeginn` ) OR (`first`.`mandant` != `second`.`mandant` ))" //eliminate pure self-duplicates, primary key is employee_key+start+mandant
                 . " 	AND (`first`.`Dienstbeginn` > `second`.`Dienstbeginn` AND `first`.`Dienstbeginn` < `second`.`Dienstende`)"; //find overlaping time values!
 
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $message = sprintf(gettext('Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s (%7$s)'), $workforce->List_of_employees[$row->VK]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->short_name, $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->short_name
+            $message = sprintf(gettext('Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s (%7$s)'), $workforce->List_of_employees[$row->employee_key]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->short_name, $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->short_name
             );
             $user_dialog->add_message($message, E_USER_ERROR, TRUE);
         }

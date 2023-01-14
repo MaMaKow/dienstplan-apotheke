@@ -26,7 +26,7 @@ class roster_item_empty extends roster_item {
 
     public $date_sql;
     public $date_unix;
-    public $employee_id;
+    public $employee_key;
     public $branch_id;
     public $comment;
     protected $duty_start_int;

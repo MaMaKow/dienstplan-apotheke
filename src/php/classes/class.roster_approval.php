@@ -73,8 +73,8 @@ abstract class roster_approval {
                 . "ON DUPLICATE KEY "
                 . "UPDATE date = :date2, branch = :branch_id2, state = :state2, user = :user2";
         $result = database_wrapper::instance()->run($sql_query, array(
-            'date' => $date_sql, 'branch_id' => $branch_id, 'state' => $approval_state, 'user' => $_SESSION['user_object']->employee_id,
-            'date2' => $date_sql, 'branch_id2' => $branch_id, 'state2' => $approval_state, 'user2' => $_SESSION['user_object']->employee_id,
+            'date' => $date_sql, 'branch_id' => $branch_id, 'state' => $approval_state, 'user' => $_SESSION['user_object']->get_employee_key(),
+            'date2' => $date_sql, 'branch_id2' => $branch_id, 'state2' => $approval_state, 'user2' => $_SESSION['user_object']->get_employee_key(),
         ));
         return $result;
     }

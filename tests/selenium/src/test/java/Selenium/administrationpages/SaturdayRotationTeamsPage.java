@@ -134,7 +134,7 @@ public class SaturdayRotationTeamsPage {
         return listOfTeams.get(teamId);
     }
 
-    public void addEmployeeToTeam(int teamId, int employeeId) {
+    public void addEmployeeToTeam(int teamId, int employeeKey) {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         WebElement teamRowElement = getTeamRowById(teamId);
         /**
@@ -156,7 +156,7 @@ public class SaturdayRotationTeamsPage {
         By teamEmployeeSelectLastBy = By.xpath(".//td[3]/form/span[(last()-1)]/select");
         WebElement teamEmployeeSelectLastElement = teamRowElement.findElement(teamEmployeeSelectLastBy);
         Select teamEmployeeSelectLastSelect = new Select(teamEmployeeSelectLastElement);
-        teamEmployeeSelectLastSelect.selectByValue(String.valueOf(employeeId));
+        teamEmployeeSelectLastSelect.selectByValue(String.valueOf(employeeKey));
 
         /**
          * The page will reload. When the page has reloaded, there will be new
@@ -190,8 +190,8 @@ public class SaturdayRotationTeamsPage {
          * denn der Rest des Programmes hat eine Referenz zu diesem Objekt.</p>
          */
         saturdayRotationTeam.setTeamId(newTeamId);
-        saturdayRotationTeam.getListOfTeamMembers().forEach(employeeId -> {
-            addEmployeeToTeam(newTeamId, employeeId);
+        saturdayRotationTeam.getListOfTeamMembers().forEach(employeeKey -> {
+            addEmployeeToTeam(newTeamId, employeeKey);
         });
         this.readListOfTeams();
         return newTeamId;

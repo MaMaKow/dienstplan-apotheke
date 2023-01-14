@@ -38,10 +38,10 @@ public class PrincipleRosterItem {
     private final Branch branchObject;
     private final String comment;
 
-    public PrincipleRosterItem(int employeeId, DayOfWeek weekday, LocalTime dutyStart, LocalTime dutyEnd, LocalTime breakStart, LocalTime breakEnd, String comment, Integer branchId) {
+    public PrincipleRosterItem(int employeeKey, DayOfWeek weekday, LocalTime dutyStart, LocalTime dutyEnd, LocalTime breakStart, LocalTime breakEnd, String comment, Integer branchId) {
         Workforce workforce = new Workforce();
         HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
-        Employee employee = listOfEmployees.get(employeeId);
+        Employee employee = listOfEmployees.get(employeeKey);
         this.employeeObject = employee;
         this.weekday = weekday;
         this.dutyStart = dutyStart;
@@ -58,8 +58,8 @@ public class PrincipleRosterItem {
         return this.employeeObject.getLastName();
     }
 
-    public int getEmployeeId() {
-        return this.employeeObject.getEmployeeId();
+    public int getEmployeeKey() {
+        return this.employeeObject.getEmployeeKey();
     }
 
     public DayOfWeek getWeekday() {

@@ -17,9 +17,9 @@
  */
 require '../../../default.php';
 
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-create_cookie('employee_id', $employee_id, 30);
 $workforce = new workforce();
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+create_cookie('employee_key', $employee_key, 30);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
@@ -28,7 +28,7 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
     $Principle_roster_new = user_input::get_principle_employee_roster_from_POST_secure();
     $last_item_in_roster = end($Principle_roster_new)[0];
     $first_item_in_roster = reset($Principle_roster_new)[0];
-    $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_id, $first_item_in_roster->date_object, $last_item_in_roster->date_object);
+    $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_key, $first_item_in_roster->date_object, $last_item_in_roster->date_object);
     $List_of_changed_keys = user_input::get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     $Inserted_principle_roster_item_list = user_input::get_inserted_principle_roster_item_list($Principle_roster_new);
     $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
@@ -48,15 +48,15 @@ $session->exit_on_missing_privilege('create_roster');
 $html_text = '';
 $html_text .= "<div id=main-area>\n";
 //TODO: find out how to respect the lunch breaks!
-$html_text .= build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
+$html_text .= build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
 
-function build_change_principle_roster_employee_form(int $alternating_week_id, int $employee_id) {
+function build_change_principle_roster_employee_form(int $alternating_week_id, int $employee_key) {
     $alternating_week = new alternating_week($alternating_week_id);
     $pseudo_date_start_object = $alternating_week->get_monday_date_for_alternating_week(new DateTime('Monday this week'));
     $pseudo_date_end_object = clone $pseudo_date_start_object;
     $pseudo_date_end_object->add(new DateInterval('P6D'));
 
-    $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_id, clone $pseudo_date_start_object, clone $pseudo_date_end_object);
+    $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_key, clone $pseudo_date_start_object, clone $pseudo_date_end_object);
     /*
      * TODO: We might stop using a transfer for the lunch breaks.
      *   This means, that the breaks will not magically appear in the principle-roster-employee.php
@@ -65,7 +65,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
      *     If so, should there be a warning/notice if the law wants a break to be given?
      */
     $workforce = new workforce($pseudo_date_start_object->format('Y-m-d'), $pseudo_date_end_object->format('Y-m-d'));
-    $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
+    $branch_id = $workforce->List_of_employees[$employee_key]->principle_branch_id;
     /*
      * @todo Take care to write a warning if lunch breaks are not given.
      */
@@ -108,7 +108,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
         $html_text .= "<tr data-roster_row_iterator='$table_input_row_iterator'>\n";
         foreach (array_keys($Principle_employee_roster) as $day_iterator) {
-            $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_branch', 'add_hidden_employee' => $employee_id));
+            $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_branch', 'add_hidden_employee' => $employee_key));
         }
         $html_text .= "</tr>\n";
     }
@@ -128,7 +128,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     $html_text .= "<tr>\n";
     $html_text .= "<td colspan=7>\n";
 
-    $html_text .= build_roster_table_working_hours($Principle_employee_roster, $workforce);
+    $html_text .= build_roster_table_working_week_hours($Principle_employee_roster, $workforce);
     $html_text .= "</td>\n";
     $html_text .= "</tr>\n";
     $html_text .= "</tfoot>\n";
@@ -137,36 +137,36 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     return $html_text;
 }
 
-function build_roster_table_working_hours(array $Roster_array, workforce $workforce) {
+function build_roster_table_working_week_hours(array $Roster_array, workforce $workforce) {
     $html_text = '';
     $html_text .= gettext("Hours per week") . "&nbsp;";
-    $List_of_working_hours = calculate_list_of_working_hours($Roster_array);
-    foreach ($List_of_working_hours as $employee_id => $working_hours) {
-        $html_text .= array_sum($working_hours);
+    $List_of_working_week_hours = calculate_list_of_working_week_hours($Roster_array);
+    foreach ($List_of_working_week_hours as $employee_key => $working_week_hours) {
+        $html_text .= array_sum($working_week_hours);
         $html_text .= ' / ';
-        $html_text .= $workforce->List_of_employees[$employee_id]->working_week_hours;
-        if ($workforce->List_of_employees[$employee_id]->working_week_hours != array_sum($working_hours)) {
-            $difference = round(array_sum($working_hours) - $workforce->List_of_employees[$employee_id]->working_week_hours, 2);
+        $html_text .= $workforce->List_of_employees[$employee_key]->working_week_hours;
+        if ($workforce->List_of_employees[$employee_key]->working_week_hours != array_sum($working_week_hours)) {
+            $difference = round(array_sum($working_week_hours) - $workforce->List_of_employees[$employee_key]->working_week_hours, 2);
             $html_text .= " <b>( " . $difference . " )</b>";
         }
     }
     return $html_text;
 }
 
-function calculate_list_of_working_hours($Roster_array) {
-    $List_of_working_hours = array();
+function calculate_list_of_working_week_hours($Roster_array) {
+    $List_of_working_week_hours = array();
     foreach ($Roster_array as $Principle_employee_roster_day_array) {
         foreach ($Principle_employee_roster_day_array as $roster_object) {
-            $List_of_working_hours[$roster_object->employee_id][] = $roster_object->working_hours;
+            $List_of_working_week_hours[$roster_object->employee_key][] = $roster_object->working_hours;
         }
     }
-    ksort($List_of_working_hours);
-    return $List_of_working_hours;
+    ksort($List_of_working_week_hours);
+    return $List_of_working_week_hours;
 }
 
 foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
     $html_text .= "<div class=principle_roster_alternation_container>";
-    $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $employee_id);
+    $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $employee_key);
     $html_text .= "</div>";
 }
 

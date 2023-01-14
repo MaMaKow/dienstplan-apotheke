@@ -84,19 +84,19 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
     }
 
     $Saturday_rotation_team_member_names = array();
-    foreach ($Saturday_rotation_team_member_ids as $employee_id) {
+    foreach ($Saturday_rotation_team_member_ids as $employee_key) {
 
-        if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
+        if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
             $prefix = '<span>';
             $suffix = '</span>';
-            if (in_array($employee_id, array_keys($Absentees))) {
+            if (in_array($employee_key, array_keys($Absentees))) {
                 $prefix = '<span class="absent">';
-                $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$employee_id]) . ')</span>';
+                $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$employee_key]) . ')</span>';
             }
 
-            $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_id]->last_name . $suffix;
+            $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_key]->last_name . $suffix;
         } else {
-            $Saturday_rotation_team_member_names[] = "$employee_id???";
+            $Saturday_rotation_team_member_names[] = "$employee_key???";
         }
     }
     return $Saturday_rotation_team_member_names;
@@ -106,14 +106,14 @@ function get_rostered_employees_names(array $Roster, workforce $workforce, array
     $Rostered_employees = array();
     foreach ($Roster as $Roster_day_array) {
         foreach ($Roster_day_array as $roster_item) {
-            if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
+            if (isset($workforce->List_of_employees[$roster_item->employee_key]->last_name)) {
                 $prefix = '<span>';
                 $suffix = '</span>';
-                if (in_array($roster_item->employee_id, array_keys($Absentees))) {
+                if (in_array($roster_item->employee_key, array_keys($Absentees))) {
                     $prefix = '<span class="absent">';
-                    $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$roster_item->employee_id]) . ')</span>';
+                    $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$roster_item->employee_key]) . ')</span>';
                 }
-                $Rostered_employees[$roster_item->employee_id] = $prefix . $workforce->List_of_employees[$roster_item->employee_id]->last_name . $suffix;
+                $Rostered_employees[$roster_item->employee_key] = $prefix . $workforce->List_of_employees[$roster_item->employee_key]->last_name . $suffix;
             }
         }
     }

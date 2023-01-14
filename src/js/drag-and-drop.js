@@ -153,7 +153,7 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
                 duty_end_sql: "0:00",
                 break_start_sql: "0:00",
                 break_end_sql: "0:00",
-                employee_id: 0,
+                employee_key: 0,
                 working_hours: 0,
                 working_seconds: 0
             };
@@ -262,8 +262,8 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     var employee_name_p_element = bar_element.childNodes[0];
     var employee_name_text_element = bar_element.childNodes[0].childNodes[0];
     var working_hours_span = bar_element.childNodes[0].childNodes[1];
-    employee_name_text_element.nodeValue = List_of_employee_names[roster_item['employee_id']];
-    employee_name_p_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_id']]);
+    employee_name_text_element.nodeValue = List_of_employee_names[roster_item['employee_key']];
+    employee_name_p_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_key']]);
     working_hours_span.innerText = roster_item['working_hours'];
 }
 

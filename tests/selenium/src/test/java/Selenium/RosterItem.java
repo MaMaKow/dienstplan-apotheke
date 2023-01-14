@@ -29,7 +29,7 @@ import java.time.LocalTime;
  */
 public class RosterItem {
 
-    private final Integer employeeId;
+    private final Integer employeeKey;
     private final LocalDate localDate;
     private final String dutyStart;
     private final String dutyEnd;
@@ -42,8 +42,8 @@ public class RosterItem {
     private LocalDateTime breakStartLocalDateTime;
     private LocalDateTime breakEndLocalDateTime;
 
-    public RosterItem(Integer employeeId, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
-        this.employeeId = employeeId;
+    public RosterItem(Integer employeeKey, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
+        this.employeeKey = employeeKey;
         this.localDate = LocalDate.from(localDate);
 
         this.dutyStart = dutyStart;
@@ -84,12 +84,12 @@ public class RosterItem {
 
     public String getEmployeeName() {
         Workforce workforce = new Workforce();
-        Employee employeeObject = workforce.getEmployeeById(employeeId);
+        Employee employeeObject = workforce.getEmployeeByKey(employeeKey);
         return employeeObject.getLastName();
     }
 
-    public Integer getEmployeeId() {
-        return this.employeeId;
+    public Integer getEmployeeKey() {
+        return this.employeeKey;
     }
 
     public LocalDate getLocalDate() {

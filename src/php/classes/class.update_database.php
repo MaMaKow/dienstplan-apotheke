@@ -145,7 +145,7 @@ class update_database {
     private function refactor_duty_roster_table() {
         if (database_wrapper::database_table_exists('Dienstplan') and!database_wrapper::database_table_exists('roster')) {
             $sql_query_list = array();
-            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `VK` `employee_id` TINYINT UNSIGNED NOT NULL ";
+            $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `employee_key` `employee_id` TINYINT UNSIGNED NOT NULL ";
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Datum` `date` DATE NOT NULL";
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Dienstbeginn` `start_of_shift` TIME NOT NULL DEFAULT '00:00:00'";
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Dienstende` `end_of_shift` TIME NULL DEFAULT NULL";
@@ -204,7 +204,7 @@ class update_database {
         }
         if (database_wrapper::database_table_exists('Grundplan')) {
             database_wrapper::instance()->beginTransaction();
-            $sql_query = "INSERT INTO `principle_roster` SELECT NULL, 0, `VK`, `Wochentag`, `Dienstbeginn`, `Dienstende`, `Mittagsbeginn`, `Mittagsende`, `Kommentar`, `Stunden`, `Mandant`, NULL, NULL FROM `Grundplan`;";
+            $sql_query = "INSERT INTO `principle_roster` SELECT NULL, 0, `employee_key`, `Wochentag`, `Dienstbeginn`, `Dienstende`, `Mittagsbeginn`, `Mittagsende`, `Kommentar`, `Stunden`, `Mandant`, NULL, NULL FROM `Grundplan`;";
             $result = database_wrapper::instance()->run($sql_query);
             if ('00000' !== $result->errorCode()) {
                 database_wrapper::instance()->rollBack();
@@ -357,6 +357,131 @@ class update_database {
         if (!database_wrapper::instance()->inTransaction()) {
             database_wrapper::instance()->beginTransaction();
         }
+        foreach ($Sql_query_array as $sql_query) {
+            $result = database_wrapper::instance()->run($sql_query);
+            if ('00000' !== $result->errorCode()) {
+                database_wrapper::instance()->rollBack();
+                return FALSE;
+            }
+        }
+        database_wrapper::instance()->commit();
+    }
+
+    private function employee_table_add_primary_key() {
+
+        $Sql_query_array[] = "ALTER TABLE `users` ADD `primary_key` INT UNSIGNED NOT NULL FIRST;";
+        $Sql_query_array[] = "UPDATE `users` SET `users`.`primary_key` = `users`.`employee_id`;";
+        $Sql_query_array[] = "ALTER TABLE `users` DROP FOREIGN KEY `users_ibfk_1`;";
+        $Sql_query_array[] = "ALTER TABLE `users` DROP PRIMARY KEY, ADD PRIMARY KEY (`primary_key`);";
+
+        $Sql_query_array[] = "ALTER TABLE `employees` CHANGE `pseudo_id` `primary_key` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT; ";
+        $Sql_query_array[] = "ALTER TABLE `employees` DROP PRIMARY KEY, ADD PRIMARY KEY(`primary_key`);";
+        $Sql_query_array[] = "ALTER TABLE `employees` DROP INDEX `pseudo`;";
+        //DROP `working_hours` after moving the data to working_week_hours:
+        $Sql_query_array[] = "UPDATE `employees` SET `employees`.`working_week_hours` = `employees`.`working_hours`;";
+        $Sql_query_array[] = "ALTER TABLE `employees` DROP `working_hours`;";
+        $Sql_query_array[] = "UPDATE `employees_backup` SET `employees_backup`.`working_week_hours` = `employees_backup`.`working_hours`;";
+        $Sql_query_array[] = "ALTER TABLE `employees_backup` DROP `working_hours`;";
+
+        /**
+         * <p lang=de>Alte Mitarbeiter zurück in die employees table holen:</p>
+         */
+        $Sql_query_array[] = "DROP TRIGGER IF EXISTS `backup_employee_data`;";
+        $Sql_query_array[] = "DELETE `employees_backup` FROM `employees`  LEFT JOIN `employees_backup` ON `employees`.`primary_key` = `employees_backup`.`backup_id` WHERE `employees`.`last_name` = `employees_backup`.`last_name` AND `employees`.`first_name` = `employees_backup`.`first_name`;";
+        $Sql_query_array[] = "INSERT IGNORE INTO employees (SELECT * FROM `employees_backup`);";
+        /**
+         * Delete employees with same id and last name;
+         * Delete employees with same id and first name;
+         * Keep the row with the bigger timestamp:
+         */
+        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.last_name = t2.last_name;";
+        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.first_name = t2.first_name;";
+        $Sql_query_array[] = "TRUNCATE TABLE `employees_backup`";
+        /**
+         * <p lang=de>Die neuen Keys in die Daten-Tabellen einfügen:</p>
+         */
+        //Dienstplan
+        $Sql_query_array[] = "ALTER TABLE `Dienstplan` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        $Sql_query_array[] = "ALTER TABLE `Dienstplan` DROP FOREIGN KEY `Dienstplan_ibfk_1`;";
+        $Sql_query_array[] = "ALTER TABLE `Dienstplan` ADD FOREIGN KEY (`employee_key`) REFERENCES `employees`(`employee_key`) ON DELETE RESTRICT ON UPDATE RESTRICT; ";
+        // zuerst die Mitarbeiter, die noch da sind (IS NULL employees.end_of_employment):
+        $Sql_query_array[] = "UPDATE `Dienstplan` LEFT JOIN `employees` ON Dienstplan.VK=employees.id"
+                . "SET Dienstplan.employee_key = employees.primary_key"
+                . "WHERE Dienstplan.employee_key IS NULL AND Dienstplan.Datum >= employees.start_of_employment AND employees.end_of_employment IS NULL;";
+        // dann die Mitarbeiter, mit definierter bekannter Zeit von bis:
+        $Sql_query_array[] = "UPDATE `Dienstplan` LEFT JOIN `employees` ON Dienstplan.VK=employees.id"
+                . "SET Dienstplan.employee_key = employees.primary_key"
+                . "WHERE Dienstplan.employee_key IS NULL AND Dienstplan.Datum >= employees.start_of_employment AND Dienstplan.Datum <= employees.end_of_employment;";
+        // dann die Mitarbeiter, die nur ei Ende, aber keinen Anfang kennen:
+        $Sql_query_array[] = "UPDATE `Dienstplan` LEFT JOIN `employees` ON Dienstplan.VK=employees.id"
+                . "SET Dienstplan.employee_key = employees.primary_key"
+                . "WHERE Dienstplan.employee_key IS NULL AND employees.start_of_employment IS NULL AND Dienstplan.Datum <= employees.end_of_employment;";
+        // es fehlen eventuell noch Mitarbeiter, bei denen Beginn und Ende NULL ist. Gibt es solche?
+        // Ja, z.B. der Chef und der Filialleiter
+        //Notdienst
+        $Sql_query_array[] = "ALTER TABLE `Notdienst` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        //Stunden
+        $Sql_query_array[] = "ALTER TABLE `Stunden` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        $Sql_query_array[] = "ALTER TABLE `Stunden` DROP PRIMARY KEY, ADD PRIMARY KEY (`employee_key`,`Datum`);";
+        //absence
+        $Sql_query_array[] = "ALTER TABLE `absence` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        $Sql_query_array[] = "ALTER TABLE `absence` DROP PRIMARY KEY, ADD PRIMARY KEY (`employee_key`,`start`);";
+        //principle_roster
+        $Sql_query_array[] = "ALTER TABLE `principle_roster` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        //principle_roster_archive
+        $Sql_query_array[] = "ALTER TABLE `principle_roster_archive` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        //saturday_rostation_teams
+        $Sql_query_array[] = "ALTER TABLE `saturday_rostation_teams` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        $Sql_query_array[] = "ALTER TABLE `saturday_rostation_teams` DROP PRIMARY KEY, ADD PRIMARY KEY (`team_id`,`employee_id`,`branch_id`);";
+        //task_rotation
+        $Sql_query_array[] = "ALTER TABLE `task_rotation` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        //user_email_notification_cache
+        $Sql_query_array[] = "ALTER TABLE `user_email_notification_cache` ADD `employee_key` INT UNSIGNED NULL FIRST;";
+        //users_lost_password_token
+        $Sql_query_array[] = "ALTER TABLE `users_lost_password_token` ADD `user_key` INT UNSIGNED NULL FIRST;";
+        //users_privileges
+        $Sql_query_array[] = "ALTER TABLE `users_privileges` ADD `user_key` INT UNSIGNED NULL FIRST;";
+        $Sql_query_array[] = "ALTER TABLE `saturday_rostation_teams` DROP PRIMARY KEY, ADD PRIMARY KEY (`employee_key`,`privilege`);";
+        /**
+         * DROP some columns:
+         */
+        $Sql_query_array[] = "ALTER TABLE `absence` DROP `employee_id`;";
+        $Sql_query_array[] = "ALTER TABLE `Dienstplan` DROP `VK`;";
+        $Sql_query_array[] = "ALTER TABLE `Notdienst` DROP `VK`;";
+        $Sql_query_array[] = "ALTER TABLE `Stunden` DROP `VK`;";
+        $Sql_query_array[] = "ALTER TABLE `employees` DROP `id`;";
+        $Sql_query_array[] = "ALTER TABLE `principle_roster` DROP `employee_id`;";
+        $Sql_query_array[] = "ALTER TABLE `principle_roster_archive` DROP `employee_id`;";
+        $Sql_query_array[] = "ALTER TABLE `saturday_rostation_teams` DROP `employee_id`;";
+        $Sql_query_array[] = "ALTER TABLE `task_rotation` DROP `VK`;";
+        $Sql_query_array[] = "ALTER TABLE `users` DROP `employee_id`;";
+        $Sql_query_array[] = "ALTER TABLE `users_lost_password_token` DROP `employee_id`;";
+        $Sql_query_array[] = "ALTER TABLE `users_privileges` DROP `employee_id`;";
+        /**
+         * @todo Add in all the new and old CONSTRAINTs!
+         */
+        /**
+         * @todo <p lang=de>Leider gibt es eine Inkonstistenz zwischen den beiden Tabellen employees und employees_backup.
+         * In den backup Daten liegt z.B. die backup_id von 57 bei VK1 als Pharmazieingenieur Gu. Schep.
+         * Durch ein UPDATE wurde in der employee Tabelle für die pseudo_id (jetzt neu primary_key) der Wert für 57 bei VK1 beibehalten,
+         * aber die PTA St. Mö. eingetragen.
+         * Dadurch können beide Tabellen nicht ohne weiteres wieder vereint werden.
+         * Wahrscheinlich kann man die Werte der backup Tabelle einfach als INSERT an die employees Tabelle übergeben
+         * und diese dann neue primary keys setzen lassen.
+         * Lassen sich die Werte dann konsistent auslesen?
+         * Sind die alten employees wirklich raus aus dem Dienstplan der Zukunft,
+         * werden aber sichtbar im Plan der Vergangenheit?
+         * </p>
+         */
+        /**
+         * @todo <p lang=de>Was machen wir mit dem gleichen Mitarbeiter, der verschiedene Arbeitszeiten hinterlegt hat?
+         * Löschen wir diese Informationen zu working_hours?
+         * Können wir sie erhalten? Wollen wir sie erhalten?
+         * Werden die Daten in eine andere neue Tabelle hinein-normalisiert?
+         * Soll ein Mitarbeiter verschiedene Instanzen haben? Ich denke nicht. Das ist im UI nicht abbildbar.
+         * </p>
+         */
+        database_wrapper::instance()->beginTransaction();
         foreach ($Sql_query_array as $sql_query) {
             $result = database_wrapper::instance()->run($sql_query);
             if ('00000' !== $result->errorCode()) {

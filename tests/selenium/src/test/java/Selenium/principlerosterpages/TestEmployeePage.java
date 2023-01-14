@@ -48,14 +48,14 @@ public class TestEmployeePage extends TestPage {
         /**
          * Move to specific employee:
          */
-        int employeeId = 1;
-        employeePage.selectEmployee(employeeId);
-        Assert.assertEquals(employeeId, employeePage.getEmployeeId());
+        int employeeKey = 3;
+        employeePage.selectEmployee(employeeKey);
+        Assert.assertEquals(employeeKey, employeePage.getEmployeeKey());
 
         int alternationId = 0;
         int branchId = 1;
         PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
-        HashMap<DayOfWeek, PrincipleRosterDay> principleEmployeeRoster = principleRoster.getPrincipleRosterByEmployee(employeeId);
+        HashMap<DayOfWeek, PrincipleRosterDay> principleEmployeeRoster = principleRoster.getPrincipleRosterByEmployee(employeeKey);
         principleEmployeeRoster.entrySet().forEach(principleRosterDayEntry -> {
             principleRosterDayEntry.getValue().getlistOfPrincipleRosterItems().values().forEach((principleRosterItemShould) -> {
                 /**
@@ -64,7 +64,7 @@ public class TestEmployeePage extends TestPage {
                 Set<RosterItem> setOfRosterItemsFound = employeePage.getSetOfRosterItems(alternationId, principleRosterDayEntry.getKey());
                 HashSet<RosterItem> setOfEqualItems = new HashSet();
                 setOfRosterItemsFound.stream().map(rosterItemFound -> {
-                    if (rosterItemFound.getEmployeeId() == principleRosterItemShould.getEmployeeId()
+                    if (rosterItemFound.getEmployeeKey() == principleRosterItemShould.getEmployeeKey()
                             && rosterItemFound.getBranchId() == principleRosterItemShould.getBranchId()
                             && rosterItemFound.getLocalDate().getDayOfWeek().equals(principleRosterItemShould.getWeekday())
                             && rosterItemFound.getDutyStartLocalDateTime().toLocalTime().equals(principleRosterItemShould.getDutyStart())
@@ -94,14 +94,16 @@ public class TestEmployeePage extends TestPage {
         /**
          * Move to specific employee:
          */
-        employeePage.selectEmployee(1);
-        Assert.assertEquals(1, employeePage.getEmployeeId());
+        int employeeKey = 3;
+        int branchId = 1;
+        employeePage.selectEmployee(employeeKey);
+        Assert.assertEquals(employeeKey, employeePage.getEmployeeKey());
         /**
          * Set a new roster item:
          */
 
         LocalDate localDate = LocalDate.of(2021, Month.SEPTEMBER, 21);
-        RosterItem rosterItemNew = new RosterItem(1, localDate, "10:30", "19:00", "12:30", "13:30", null, 1);
+        RosterItem rosterItemNew = new RosterItem(employeeKey, localDate, "10:30", "19:00", "12:30", "13:30", null, branchId);
         //RosterItem rosterItemOld = employeePage.getRosterItem(1, 1, 1);
         HashSet<RosterItem> rosterItemsOldSet = employeePage.getSetOfRosterItems(0, DayOfWeek.MONDAY);
         Optional<RosterItem> rosterItemOldOptional = rosterItemsOldSet.stream().findFirst();
@@ -116,6 +118,10 @@ public class TestEmployeePage extends TestPage {
         employeePage.setRosterItem(1, 1, 1, rosterItemNew);
         rosterItemChanged = employeePage.getRosterItem(1, 1, 1);
 
+        System.out.println("rosterItemChanged.getEmployeeName():");
+        System.out.println(rosterItemChanged.getEmployeeName());
+        System.out.println("rosterItemNew.getEmployeeName():");
+        System.out.println(rosterItemNew.getEmployeeName());
         softAssert.assertEquals(rosterItemChanged.getEmployeeName(), rosterItemNew.getEmployeeName());
         softAssert.assertEquals(rosterItemChanged.getDutyStart(), rosterItemNew.getDutyStart());
         softAssert.assertEquals(rosterItemChanged.getDutyEnd(), rosterItemNew.getDutyEnd());

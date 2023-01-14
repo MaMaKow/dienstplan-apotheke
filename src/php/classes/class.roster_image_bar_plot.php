@@ -34,7 +34,7 @@ class roster_image_bar_plot {
         foreach ($Roster as $Roster_day_array) {
             $this->total_number_of_lines++;
             foreach ($Roster_day_array as $roster_item) {
-                if ($roster_item->employee_id !== NULL) {
+                if ($roster_item->employee_key !== NULL) {
                     $this->total_number_of_lines++;
                 }
             }
@@ -120,10 +120,10 @@ class roster_image_bar_plot {
              */
             $svg_box_text = "<!-- Boxes -->\n";
             foreach ($Roster_day_array as $roster_item) {
-                if (NULL === $roster_item->employee_id) {
+                if (NULL === $roster_item->employee_key) {
                     continue;
                 }
-                $employee_id = $roster_item->employee_id;
+                $employee_key = $roster_item->employee_key;
                 $dienst_beginn = $roster_item->duty_start_int / 3600;
                 $dienst_ende = $roster_item->duty_end_int / 3600;
                 $break_start = $roster_item->break_start_int / 3600;
@@ -131,8 +131,8 @@ class roster_image_bar_plot {
                 $working_hours = $roster_item->working_hours;
                 $width_in_hours = $dienst_ende - $dienst_beginn;
                 $break_width_in_hours = $break_end - $break_start;
-                if (isset($workforce->List_of_employees[$employee_id]->profession)) {
-                    $employee_style_class = $workforce->List_of_employees[$employee_id]->profession;
+                if (isset($workforce->List_of_employees[$employee_key]->profession)) {
+                    $employee_style_class = $workforce->List_of_employees[$employee_key]->profession;
                 } else {
                     $employee_style_class = '';
                 }
@@ -151,14 +151,14 @@ class roster_image_bar_plot {
                         . "x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' "
                         . "data-line='$this->line' "
                         . "data-date_unix='$date_unix' "
-                        . "data-employee_id='$employee_id' "
+                        . "data-employee_key='$employee_key' "
                         . "data-box_type='work_box' "
                         . ">";
                 $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' class='$employee_style_class'>";
-                if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
-                    $svg_box_text .= $workforce->List_of_employees[$employee_id]->last_name;
+                if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
+                    $svg_box_text .= $workforce->List_of_employees[$employee_key]->last_name;
                 } else {
-                    $svg_box_text .= gettext("Unknown employee") . ":" . $employee_id;
+                    $svg_box_text .= gettext("Unknown employee") . ":" . $employee_key;
                 }
                 $svg_box_text .= "<span>$working_hours</span>";
                 $svg_box_text .= "</p>";
@@ -170,7 +170,7 @@ class roster_image_bar_plot {
                         . " "
                         . "data-line='$this->line' "
                         . "data-box_type='break_box' "
-                        . "data-employee_id=$employee_id "
+                        . "data-employee_key=$employee_key "
                         . "data-date_unix=$date_unix "
                         . "/>\n";
                 $this->line++;

@@ -96,7 +96,7 @@ public class TestRosterEmployeePage extends TestPage {
                  * Move to specific date to get a specific roster:
                  */
                 rosterEmployeePage.goToDate(rosterItemFromPrediction.getLocalDate());
-                rosterEmployeePage = rosterEmployeePage.selectEmployee(rosterItemFromPrediction.getEmployeeId());
+                rosterEmployeePage = rosterEmployeePage.selectEmployee(rosterItemFromPrediction.getEmployeeKey());
                 /**
                  * Get roster items and compare to assertions:
                  */
@@ -126,14 +126,14 @@ public class TestRosterEmployeePage extends TestPage {
         /**
          * Move to specific date to get a specific roster:
          */
-        int employeeId = 5;
-        rosterEmployeePage = rosterEmployeePage.selectEmployee(employeeId);
+        int employeeKey = 7;
+        rosterEmployeePage = rosterEmployeePage.selectEmployee(employeeKey);
         /**
          * Get roster items and compare to assertions:
          */
         ZoneId timeZoneBerlin = ZoneId.of("Europe/Berlin");
         Roster roster = new Roster();
-        HashMap<YearWeek, HashMap> listOfRosterWeeksForEmployee = roster.getRosterWeeksByEmployeeId(employeeId);
+        HashMap<YearWeek, HashMap> listOfRosterWeeksForEmployee = roster.getRosterWeeksByEmployeeKey(employeeKey);
         for (YearWeek yearWeek : listOfRosterWeeksForEmployee.keySet()) {
             HashMap<Integer, RosterItem> rosterWeek = listOfRosterWeeksForEmployee.get(yearWeek);
             LocalDate mondayLocaldate = yearWeek.atDay(DayOfWeek.MONDAY);

@@ -230,7 +230,7 @@ class install {
          * PDOStatement::execute will return TRUE on success or FALSE on failure.
          */
         if ($result) {
-            error_log("The database user " . $this->Config["database_user_self"] . " was created with the password: " . $this->Config["database_password_self"]);
+            error_log("The database user " . $this->Config["database_user_self"] . " was created.");
             if ("localhost" !== $this->Config["database_host"]) {
                 /*
                  * Allow access from any remote.
@@ -250,7 +250,7 @@ class install {
             }
             return TRUE;
         } else {
-            error_log("The database user " . $this->Config["database_user_self"] . " could not be created with the password: " . $this->Config["database_password_self"]);
+            error_log("The database user " . $this->Config["database_user_self"] . " could not be created.");
             return FALSE;
         }
     }
@@ -287,11 +287,9 @@ class install {
     }
 
     public function handle_user_input_administration() {
-
         $this->Config["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["admin"]["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["admin"]["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING, $options = null);
-        $this->Config["admin"]["employee_id"] = filter_input(INPUT_POST, "employee_id", FILTER_SANITIZE_NUMBER_INT, $options = null);
         $this->Config["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, $options = null);
         $this->Config["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_STRING, $options = null);
         $this->Config["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_STRING, $options = null);
@@ -313,14 +311,21 @@ class install {
         $this->connect_to_database();
 
         /*
-         * The table users has a constraint:
-         * CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-         * This means, that only existing employes can have an account to login.
-         * It follows, that we have to create an employee first, before we can create a user:
+         *
+         * In the past the table users had a constraint:
+         * CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_key`) REFERENCES `employees` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+         * This meant, that only existing employees could have an account to login.
+         * It followed, that we had to create an employee first, before we could create a user:
          */
-        $statement = $this->pdo->prepare("INSERT INTO `employees` (`id`, `last_name`, `first_name`, `profession`) VALUES (:employee_id, :last_name, :first_name, :profession);");
+        /**
+         * @todo The above is not true anymore.
+         * @todo <p>Maybe we should let the user choose the profession of the admin employee?
+         *  Or we could just not create an employee at all at this point?</p>
+         *
+         * The below has to be changed to reflect the emloyee_id not being the primay_key anymore.
+         */
+        $statement = $this->pdo->prepare("INSERT INTO `employees` (`last_name`, `first_name`, `profession`) VALUES (:last_name, :first_name, :profession);");
         $result = $statement->execute(array(
-            'employee_id' => $this->Config["admin"]["employee_id"],
             'last_name' => $this->Config["admin"]["last_name"],
             'first_name' => $this->Config["admin"]["first_name"],
             'profession' => "Apotheker", //Employees need a profession. We just take "Apotheker". The user can change this later on, if necessary.
@@ -329,16 +334,28 @@ class install {
             $this->Error_message[] = gettext("Error while trying to create employee.");
             return false;
         }
-        //error_log("Created the employee " . $this->Config["admin"]["last_name"] . ", " . $this->Config["admin"]["first_name"] . " with the id " . $this->Config["admin"]["employee_id"]);
+        $statement = $this->pdo->prepare("SELECT `primary_key` FROM `employees` WHERE `last_name` = :last_name and `first_name` = :first_name;");
+        $result = $statement->execute(array(
+            'last_name' => $this->Config["admin"]["last_name"],
+            'first_name' => $this->Config["admin"]["first_name"],
+        ));
+        while ($row = $statement->fetch(\PDO::FETCH_OBJ)) {
+            $employee_key = $row->primary_key;
+            $this->Config["admin"]["employee_key"] = $employee_key;
+        }
         global $config;
         $config['database_host'] = $this->Config['database_host'];
         $config['database_name'] = $this->Config['database_name'];
         $config['database_port'] = $this->Config['database_port'];
         $config['database_user'] = $this->Config['database_user'];
         $config['database_password'] = $this->Config['database_password'];
-        $user = new user($this->Config["admin"]["employee_id"]);
-        if (!$user->exists()) {
-            $user_creation_result = $user->create_new($this->Config["admin"]["employee_id"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
+        /**
+         * Create a user object:
+         */
+        $user_base = new PDR\Workforce\user_base();
+        $user = $user_base->guess_user_by_identifier($this->Config["admin"]["user_name"]);
+        if (false === $user or!$user->exists()) {
+            $user_creation_result = $user_base->create_new_user($this->Config["admin"]["employee_key"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
             if (FALSE === $user_creation_result) {
                 /*
                  * We were not able to create the administrative user.
@@ -347,18 +364,20 @@ class install {
                 $this->Error_message[] = gettext("Error while trying to create administrative user.");
                 return FALSE;
             }
+            $_SESSION['user_object'] = $user_creation_result;
         } else {
             /*
              * The administrative user already exists.
              * We will not delete it.
              */
+            $_SESSION['user_object'] = $user;
             error_log("Administrative user already exists.");
             $this->Error_message[] = gettext("Administrative user already exists.");
         }
         /*
          * Grant all privileges to the administrative user:
          */
-        $statement = $this->pdo->prepare("INSERT IGNORE INTO `users_privileges` (`employee_id`, `privilege`) VALUES (:employee_id, :privilege)");
+        $statement = $this->pdo->prepare("INSERT IGNORE INTO `users_privileges` (`user_key`, `privilege`) VALUES (:user_key, :privilege)");
         require_once $this->pdr_file_system_application_path . 'src/php/classes/class.sessions.php';
         /*
          * The __construct method already calls session_regenerate_id();
@@ -367,17 +386,14 @@ class install {
          */
         /*
          * Brute force method of login:
-         * TODO: Which parts of the following lines are relevant?
          */
-        //$_SESSION['user_name'] = $this->Config["admin"]["user_name"];
-        //$_SESSION['user_employee_id'] = $this->Config["admin"]["employee_id"];
-        //$_SESSION['user_email'] = $this->Config["admin"]["email"];
-        $_SESSION['user_object'] = new user($this->Config["admin"]["employee_id"]);
-
-
+        $_SESSION['user_object'] = $user_base->guess_user_by_identifier($this->Config["admin"]["user_name"]);
+        if (!$_SESSION['user_object'] instanceof user) {
+            throw new \Exception("User object coud not be created from identifier.");
+        }
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
             $result = $statement->execute(array(
-                "employee_id" => $this->Config["admin"]["employee_id"],
+                "user_key" => $_SESSION['user_object']->get_primary_key(),
                 "privilege" => $privilege
             ));
             if (FALSE === $result) {
@@ -755,6 +771,8 @@ class install {
                  */
                 error_log(print_r($statement->errorInfo(), TRUE));
                 error_log("Error while creating the database tables. Not all tables could be created.");
+                error_log("Failed statements:");
+                print_debug_variable($list_of_failed_statements);
                 //TODO: Report also to the administrator on the screen.
                 break;
             }

@@ -50,7 +50,7 @@ public class TestOvertimeEmployeePage extends TestPage {
         LocalDate localDate2 = LocalDate.of(2019, Month.JULY, 5);
         LocalDate localDate3 = LocalDate.of(2019, Month.DECEMBER, 24);
         overtimeEmployeePage.selectYear(localDate0.getYear());
-        overtimeEmployeePage.selectEmployee(5);
+        overtimeEmployeePage.selectEmployee(7);
         /**
          * Create new overtime:
          */

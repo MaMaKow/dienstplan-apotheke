@@ -69,14 +69,14 @@ class iCalendar {
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         foreach ($Roster as $Roster_day_array) {
             /**
-             * @var $same_employee_count array <p>This array has the format array(employee_id => int).<br>
+             * @var $same_employee_count array <p>This array has the format array(employee_key => int).<br>
              * It is used for the case, when a single employee has multiple duty start times.<br>
              * e.g. Start at 8:00, leave at 10:00 for a doctors meeting, come back at 13:00 and leave at 17:00.<br>
              * Without this the UID would not be unique. Therefore one VEVENT would overwrite the other in the calendaring application.</p>
              */
             $same_employee_count = array();
             foreach ($Roster_day_array as $roster_object) {
-                if (!isset($roster_object->employee_id)) {
+                if (!isset($roster_object->employee_key)) {
                     /*
                      * Ignore fields without data:
                      */
@@ -85,10 +85,10 @@ class iCalendar {
                 /*
                  * Processing the data:
                  */
-                if (!isset($same_employee_count[$roster_object->employee_id])) {
-                    $same_employee_count[$roster_object->employee_id] = 0;
+                if (!isset($same_employee_count[$roster_object->employee_key])) {
+                    $same_employee_count[$roster_object->employee_key] = 0;
                 }
-                $same_employee_count[$roster_object->employee_id]++;
+                $same_employee_count[$roster_object->employee_key]++;
                 /*
                  * Output the data in iCalendar format:
                  */
@@ -116,7 +116,7 @@ class iCalendar {
                  *  UID is a required item in VEVENT, create unique string for this event
                  * Adding your domain to the end is a good way of creating uniqueness
                  */
-                $eventobj->addNode(new ZCiCalDataNode("UID:" . $date_unix . "-" . $roster_object->employee_id . "-" . $branch_id . "-" . $same_employee_count[$roster_object->employee_id] . "@martin-mandelkow.de"));
+                $eventobj->addNode(new ZCiCalDataNode("UID:" . $date_unix . "-" . $roster_object->employee_key . "-" . $branch_id . "-" . $same_employee_count[$roster_object->employee_key] . "@martin-mandelkow.de"));
                 /**
                  *  DTSTAMP is a required item in VEVENT
                  */
@@ -147,7 +147,7 @@ class iCalendar {
 
         $text = '';
         $text .= "DESCRIPTION:"
-                . gettext("Calendar file for employee") . " " . $roster_object->employee_id . " (" . $workforce->List_of_employees[$roster_object->employee_id]->full_name . ") \\r\\n"
+                . gettext("Calendar file for employee") . " " . $roster_object->employee_key . " (" . $workforce->List_of_employees[$roster_object->employee_key]->full_name . ") \\r\\n"
                 . gettext("contains the roster for") . " $branch_name. \n"
                 . gettext("Weekday") . ": $date_weekday_name\n";
         if (!empty($mittags_beginn) and!empty($mittags_ende)) {

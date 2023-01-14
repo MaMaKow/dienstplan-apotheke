@@ -86,11 +86,11 @@ public class TestRosterHoursPage extends TestPage {
             throw new Exception("No roster item was found in the roster day. There has to be at least one roster item!");
         }
         RosterItem firstRosterItem = firstRosterItemOptional.get();
-        int employeeId = firstRosterItem.getEmployeeId();
+        int employeeKey = firstRosterItem.getEmployeeKey();
 
         for (HashMap<Integer, RosterItem> rosterDay : listOfRosterDays.values()) {
             LocalDate dayInRoster = rosterDay.values().stream().findFirst().get().getLocalDate();
-            RosterItem rosterItem = roster.getRosterItemByEmployeeId(dayInRoster, employeeId);
+            RosterItem rosterItem = roster.getRosterItemByEmployeeKey(dayInRoster, employeeKey);
             if (null == rosterItem) {
                 /**
                  * <p lang=de>Wir haben weiter oben abgesichert, dass es
@@ -136,23 +136,23 @@ public class TestRosterHoursPage extends TestPage {
          */
         Workforce workforce = new Workforce();
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
-
+        int employeeKey = 7;
         absenceEmployeePage = absenceEmployeePage.goToYear(2020);
-        absenceEmployeePage = absenceEmployeePage.goToEmployee(5);
+        absenceEmployeePage = absenceEmployeePage.goToEmployee(employeeKey);
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", 8, "Foo comment", "not_yet_approved"); // 1 = Urlaub
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("02.07.2020", "02.07.2020", 8, "Bar comment", "not_yet_approved"); // 1 = Urlaub
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("03.07.2020", "03.07.2020", 8, "Baz comment", "not_yet_approved"); // 1 = Urlaub
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", 8, "123 comment", "not_yet_approved"); // 1 = Urlaub
         Absence currentAbsence;
-        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", 5);
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
         Assert.assertEquals(currentAbsence.getCommentString(), "Foo comment");
         Assert.assertEquals(currentAbsence.getDurationString(), "1");
-        Assert.assertEquals(currentAbsence.getEmployeeId(), 5);
+        Assert.assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
         Assert.assertEquals(currentAbsence.getStartDateString(), "01.07.2020");
         Assert.assertEquals(currentAbsence.getEndDateString(), "01.07.2020");
 
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
-        rosterHoursPage.selectEmployee(workforce.getEmployeeNameById(5));
+        rosterHoursPage.selectEmployee(workforce.getEmployeeNameById(employeeKey));
         rosterHoursPage.selectMonth("Juli");
         rosterHoursPage.selectYear("2020");
 

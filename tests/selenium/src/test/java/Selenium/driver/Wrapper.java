@@ -109,10 +109,11 @@ public class Wrapper {
      * type of text box.
      * https://medium.com/@hanikhan18/tackling-issues-related-to-missing-characters-in-selenium-sendkeys-on-ie-42846d90d97b
      *
+     * @throws Exception if the text could not be correctly written.
      * @param element
      * @param stringToEnter
      */
-    public static void CustomSendKeysIE(WebElement element, String stringToEnter) /*throws InterruptedException*/ {
+    public static void CustomSendKeysIE(WebElement element, String stringToEnter) throws Exception {
         //Convert String to be entered to a character array
         char[] charsToEnter = stringToEnter.toCharArray();
 
@@ -140,6 +141,7 @@ public class Wrapper {
 
                         //use throws or similar statement to throw an exception instead of syso based on your test case requirement
                         System.err.println("Throw Exception");
+                        throw new Exception("Error while trying to type text.");
                     }
                 } //If text length matches, it indicates that an invalid character was entered
                 else if (element.getAttribute("value").length() == (i + 1)) {

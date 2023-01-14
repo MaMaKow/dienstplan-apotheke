@@ -162,7 +162,8 @@ class NetworkOfBranchOffices {
      * @return void
      */
     private function redirect_to_branch_management_form() {
-        if (!isset($_SESSION['user_object']->employee_id)) {
+        global $session;
+        if (false === $session->user_is_logged_in()) {
             /*
              * If we are not logged in yet, then there is no sense in redirecting.
              */

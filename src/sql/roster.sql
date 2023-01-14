@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `roster` (
   `roster_element_id` int(11) NOT NULL,
-  `employee_id` tinyint(3) unsigned NOT NULL,
+  `employee_key` int(10) unsigned NOT NULL,
   `date` date NOT NULL,
   `dtstart` datetime DEFAULT NULL,
   `dtend` datetime DEFAULT NULL,

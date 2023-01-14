@@ -118,14 +118,14 @@ public class RosterWeekTablePage {
         return branchId;
     }
 
-    private By getRosterItemEmployeeIdXpathBy(int column, int row) {
-        By rosterItemEmployeeIdXpathBy = By.xpath("/html/body/div[4]/div[4]/table/tbody/tr[" + row + "]/td[" + column + "]/span[1]/span[1]/b/a");
-        return rosterItemEmployeeIdXpathBy;
+    private By getRosterItemEmployeeKeyXpathBy(int column, int row) {
+        By rosterItemEmployeeKeyXpathBy = By.xpath("/html/body/div[4]/div[4]/table/tbody/tr[" + row + "]/td[" + column + "]/span[1]/span[1]/b/a");
+        return rosterItemEmployeeKeyXpathBy;
     }
 
     private By getRosterItemDateXpathBy(int column) {
-        By rosterItemEmployeeIdXpathBy = By.xpath("/html/body/div[4]/div[4]/table/thead/tr/td[" + column + "]/a");
-        return rosterItemEmployeeIdXpathBy;
+        By rosterItemEmployeeKeyXpathBy = By.xpath("/html/body/div[4]/div[4]/table/thead/tr/td[" + column + "]/a");
+        return rosterItemEmployeeKeyXpathBy;
     }
 
     private By getRosterItemDutyStartXpathBy(int column, int row) {
@@ -150,13 +150,13 @@ public class RosterWeekTablePage {
 
     /**
      * @param dayOfWeek Monday is 1 Sunday is 7
-     * @param employeeId id of the employee
+     * @param employeeKey id of the employee
      * @return RosterItem the first roster item, that is found for this employee
      * id. CAVE: There could be more items for the same employee!
      */
-    public RosterItem getRosterItemByEmployeeId(DayOfWeek dayOfWeek, int employeeId) {
+    public RosterItem getRosterItemByEmployeeKey(DayOfWeek dayOfWeek, int employeeKey) {
 
-        WebElement rosterTableDataElement = getRosterTableDataElementByEmployeeId(dayOfWeek, employeeId);
+        WebElement rosterTableDataElement = getRosterTableDataElementByEmployeeKey(dayOfWeek, employeeKey);
 
         Select branchFormSelect = new Select(driver.findElement(branchFormSelectBy));
         int branchId = Integer.parseInt(branchFormSelect.getFirstSelectedOption().getAttribute("value"));
@@ -169,7 +169,7 @@ public class RosterWeekTablePage {
 
         LocalDate localDateParsed = LocalDate.parse(dateSql, DateTimeFormatter.ISO_LOCAL_DATE);
         Workforce workforce = new Workforce();
-        Employee employeeShould = workforce.getEmployeeById(employeeId);
+        Employee employeeShould = workforce.getEmployeeByKey(employeeKey);
         String employeeNameStringFound = rosterTableDataElement.findElement(rosterItemEmployeeXpathBy).getText();
         /**
          * Make sure, that we found the right TD TableData:
@@ -183,22 +183,22 @@ public class RosterWeekTablePage {
         String breakStart = rosterTableDataElement.findElement(rosterItemBreakStartXpathBy).getText();
         String breakEnd = rosterTableDataElement.findElement(rosterItemBreakEndXpathBy).getText();
         String comment = null;//TODO; add comment
-        RosterItem rosterItem = new RosterItem(employeeId, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new RosterItem(employeeKey, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
 
     }
 
-    private WebElement getRosterTableDataElementByEmployeeId(DayOfWeek dayOfWeek, int employeeId) {
+    private WebElement getRosterTableDataElementByEmployeeKey(DayOfWeek dayOfWeek, int employeeKey) {
         int indexOfDay = dayOfWeek.getValue();
-        By rowXpathBy = By.xpath("//table[@id=\"duty_roster_table\"]/tbody/tr/td[" + indexOfDay + "]/span[1]/span[1]/b/a[@data-employee_id=\"" + employeeId + "\"]/parent::b/parent::span/parent::span/parent::td");
+        By rowXpathBy = By.xpath("//table[@id=\"duty_roster_table\"]/tbody/tr/td[" + indexOfDay + "]/span[1]/span[1]/b/a[@data-employee_key=\"" + employeeKey + "\"]/parent::b/parent::span/parent::span/parent::td");
         WebElement rosterTableDataElement = driver.findElement(rowXpathBy);
         return rosterTableDataElement;
     }
 
     public RosterItem getRosterItem(int column, int row) throws ParseException {
 
-        int employeeId = Integer.valueOf(driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getAttribute("data-employee_id"));
-        int branchId = Integer.valueOf(driver.findElement(getRosterItemEmployeeIdXpathBy(column, row)).getAttribute("data-branch_id"));
+        int employeeKey = Integer.valueOf(driver.findElement(getRosterItemEmployeeKeyXpathBy(column, row)).getAttribute("data-employee_key"));
+        int branchId = Integer.valueOf(driver.findElement(getRosterItemEmployeeKeyXpathBy(column, row)).getAttribute("data-branch_id"));
         String dateString = driver.findElement(getRosterItemDateXpathBy(column)).getText();
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(column, row)).getText();
         String dutyEnd = driver.findElement(getRosterItemDutyEndXpathBy(column, row)).getText();
@@ -213,7 +213,7 @@ public class RosterWeekTablePage {
          */
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EE dd.MM.", Locale.GERMANY);
         LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
-        RosterItem rosterItem = new Selenium.RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new Selenium.RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 }

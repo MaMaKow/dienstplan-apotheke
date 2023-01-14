@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `principle_roster` (
   `primary_key` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `alternating_week_id` tinyint(4) NOT NULL,
-  `employee_id` tinyint(4) NOT NULL,
+  `employee_key` int(10) NOT NULL,
   `weekday` tinyint(4) NOT NULL,
   `duty_start` time DEFAULT NULL,
   `duty_end` time DEFAULT NULL,

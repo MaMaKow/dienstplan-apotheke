@@ -23,7 +23,7 @@ abstract class roster_headcount {
         $Roster_of_qualified_pharmacist_employees = array();
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
-                if (in_array($roster_item_object->employee_id, $workforce->List_of_qualified_pharmacist_employees)) {
+                if (in_array($roster_item_object->employee_key, $workforce->List_of_qualified_pharmacist_employees)) {
                     $Roster_of_qualified_pharmacist_employees[$roster_item_object->date_unix][] = $roster_item_object;
                 }
             }
@@ -36,8 +36,8 @@ abstract class roster_headcount {
         $List_of_goods_receipt_employees = $workforce->List_of_goods_receipt_employees;
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
-                $employee_id = $roster_item_object->employee_id;
-                if (in_array($employee_id, $List_of_goods_receipt_employees)) {
+                $employee_key = $roster_item_object->employee_key;
+                if (in_array($employee_key, $List_of_goods_receipt_employees)) {
                     $Roster_of_goods_receipt_employees[$roster_item_object->date_unix][] = $roster_item_object;
                 }
             }
@@ -74,25 +74,25 @@ abstract class roster_headcount {
             foreach ($Duty_start_times as $dienstbeginn) {
                 if ($dienstbeginn <= $time) {
                     //$Gekommene[$time] ++;
-                    $Anwesende[$time] ++;
+                    $Anwesende[$time]++;
                 }
             }
             foreach ($Duty_end_times as $dienstende) {
                 if ($dienstende <= $time) {
                     //$Gegangene[$time] ++;
-                    $Anwesende[$time] --;
+                    $Anwesende[$time]--;
                 }
             }
             foreach ($Break_start_times as $lunch_break_start) {
                 if ($lunch_break_start <= $time) {
                     //$Mittagende[$time] ++;
-                    $Anwesende[$time] --;
+                    $Anwesende[$time]--;
                 }
             }
             foreach ($Break_end_times as $lunch_break_end) {
                 if ($lunch_break_end <= $time) {
                     //$Gemittagte[$time] ++;
-                    $Anwesende[$time] ++;
+                    $Anwesende[$time]++;
                 }
             }
         }
@@ -112,7 +112,7 @@ abstract class roster_headcount {
         $sql_query = "SELECT * FROM `opening_times` WHERE `weekday` = :weekday AND `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
         $row = $result->fetch(PDO::FETCH_OBJ);
-        if (!empty($row->start) and ! empty($row->end)) {
+        if (!empty($row->start) and!empty($row->end)) {
             $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->start);
             $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->end);
             return $Opening_times;

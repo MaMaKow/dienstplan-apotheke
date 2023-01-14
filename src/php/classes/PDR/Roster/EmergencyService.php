@@ -33,7 +33,7 @@ namespace PDR\Roster;
 class EmergencyService {
 
     private $date_object;
-    private $employee_id;
+    private $employee_key;
     private $branch_id;
 
     public function __construct(\DateTime $date_object) {
@@ -41,7 +41,7 @@ class EmergencyService {
         $result = \database_wrapper::instance()->run($sql_query, array('date' => $date_object->format('Y-m-d')));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $this->date_object = $date_object;
-            $this->employee_id = $row->VK;
+            $this->employee_key = $row->employee_key;
             $this->branch_id = $row->Mandant;
             return true;
         }
@@ -52,14 +52,15 @@ class EmergencyService {
         return $this->branch_id;
     }
 
-    public function get_employee_id() {
-        return $this->employee_id;
+    public function get_employee_short_descriptor() {
+        $workforce = new \workforce();
+        return $workforce->get_employee_short_descriptor($employee_key)
     }
 
     public function get_employee_name(): string {
         $workforce = new \workforce($this->date_object->format('Y-m-d'));
-        if (is_integer($this->employee_id)) {
-            $employee_name = $workforce->get_employee_last_name($this->employee_id);
+        if (is_integer($this->employee_key)) {
+            $employee_name = $workforce->get_employee_last_name($this->employee_key);
             return $employee_name;
         }
         return '???';

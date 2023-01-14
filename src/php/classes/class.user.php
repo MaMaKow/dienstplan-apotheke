@@ -28,10 +28,26 @@ class user {
 
     /**
      *
-     * @var int <p>The employee_id is the primary key of the `users` table.
-     *  It refers to the primary key `id` in the `employees` table of the database.</p>
+     * @var int $primary_key <p>The user_key is the primary key of the `users` table.
+     *  It DOES NOT refer to the `employees` table anymore.</p>
      */
-    public $employee_id;
+    private $primary_key;
+
+    public function get_primary_key() {
+        return $this->primary_key;
+    }
+
+    /**
+     * @var int $employee_key <p lang=de>Der Benutzer kann fakultativ mit einem Mitarbeiter verknüpft werden.</p>
+     */
+    public $employee_key;
+
+    public function get_employee_key() {
+        /**
+         * @todo handle the case of empty ids!
+         */
+        return $this->employee_key;
+    }
 
     /**
      *
@@ -40,12 +56,20 @@ class user {
      */
     public $user_name;
 
+    public function get_user_name() {
+        return $this->user_name;
+    }
+
     /**
      *
      * @var string <p>An email address of the user.
      * It is a UNIQUE KEY in the `users` table.</p>
      */
     public $email;
+
+    public function get_email() {
+        return $this->email;
+    }
 
     /**
      *
@@ -109,30 +133,31 @@ class user {
     /**
      * <p>It is possible to create an empty user.</p>
      *
-     * @param int $employee_id
+     * @param int $user_key
      * @return void
      */
-    public function __construct($employee_id = NULL) {
-        if (is_null($employee_id)) {
+    public function __construct($user_key = NULL) {
+        if (is_null($user_key)) {
             /*
              * create empty user object:
              */
             return NULL;
         }
-        $this->read_data_from_database($employee_id);
+        $this->read_data_from_database($user_key);
     }
 
     /**
      * Read the user data from the database and store it in the object.
      *
-     * @param int $employee_id
+     * @param int $user_key
      * @return boolean <p>success of the database calls.</p>
      */
-    private function read_data_from_database($employee_id) {
-        $sql_query = "SELECT * from `users` WHERE `employee_id` = :employee_id;";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+    private function read_data_from_database($user_key) {
+        $sql_query = "SELECT * from `users` WHERE `primary_key` = :user_key;";
+        $result = database_wrapper::instance()->run($sql_query, array('user_key' => $user_key));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $this->employee_id = $row->employee_id;
+            $this->primary_key = $row->primary_key;
+            $this->employee_key = $row->employee_key;
             $this->user_name = $row->user_name;
             $this->email = $row->email;
             $this->password = $row->password;
@@ -152,12 +177,37 @@ class user {
      * Read the privileges of the user from the database and store them in the object.
      */
     private function read_privileges_from_database() {
-        $sql_query = "SELECT * FROM `users_privileges` WHERE `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
+        $sql_query = "SELECT * FROM `users_privileges` WHERE `user_key` = :user_key";
+        $result = database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key()));
         $this->privileges = array();
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $this->privileges[] = $row->privilege;
+            /**
+             * <p lang=de>CAVE! Diese Definition wurde geändert.
+             * Der Array hat jetzt das Recht als key. Davor hate er das Recht als Value.
+             * So wie jetzt existierte die Definition bereits in class.sessions.php.
+             * Dort wird jetzt diese Funktion hier genutzt.
+             * </p>
+             * $this->privileges[] = $row->privilege;
+             */
+            $this->privileges[$row->privilege] = TRUE;
         }
+    }
+
+    public function get_privileges() {
+        if (empty($this->privileges)) {
+            $this->read_privileges_from_database();
+        }
+        return $this->privileges;
+    }
+
+    public function has_privilege(String $privilege) {
+        if (empty($this->privileges)) {
+            $this->read_privileges_from_database();
+        }
+        if (isset($this->privileges) and isset($this->privileges[$privilege]) and TRUE === $this->privileges[$privilege]) {
+            return TRUE;
+        }
+        return FALSE;
     }
 
     /**
@@ -169,11 +219,11 @@ class user {
      */
     public function write_new_privileges_to_database($privileges = array()) {
         database_wrapper::instance()->beginTransaction();
-        $sql_query = "DELETE FROM `users_privileges` WHERE `employee_id`  = :employee_id";
-        database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
+        $sql_query = "DELETE FROM `users_privileges` WHERE `user_key`  = :user_key";
+        database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key()));
         foreach ($privileges as $privilege) {
-            $sql_query = "INSERT INTO `users_privileges` (`employee_id`, `privilege`) VALUES(:employee_id, :privilege)";
-            database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id, 'privilege' => $privilege));
+            $sql_query = "INSERT INTO `users_privileges` (`user_key`, `privilege`) VALUES(:user, :privilege)";
+            database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key(), 'privilege' => $privilege));
         }
         database_wrapper::instance()->commit();
         $this->read_privileges_from_database();
@@ -189,29 +239,29 @@ class user {
     public function set_receive_emails_opt_in($receive_emails_opt_in) {
         $sql_query = "UPDATE `users` "
                 . "SET `receive_emails_on_changed_roster` = :receive_emails_opt_in "
-                . "WHERE `employee_id` = :employee_id";
+                . "WHERE `primary_key` = :primary_key";
         $result = database_wrapper::instance()->run($sql_query, array(
             'receive_emails_opt_in' => $receive_emails_opt_in,
-            'employee_id' => $this->employee_id,
+            'primary_key' => $this->primary_key,
         ));
         return '00000' === $result->errorCode();
     }
 
     /**
      *
-     * @param int $employee_id
+     * @param int $employee_key
      * @param string $user_name
      * @param string $password_hash
      * @param string $email
      * @param string $status
-     * @return boolean
+     * @return user|boolean
      */
-    public function create_new(int $employee_id, string $user_name, string $password_hash, string $email, string $status) {
-        $statement = database_wrapper::instance()->prepare("INSERT INTO `users` (user_name, employee_id, password, email, status)"
-                . " VALUES (:user_name, :employee_id, :password, :email, :status)");
+    public function create_new(int $employee_key = null, string $user_name, string $password_hash, string $email, string $status) {
+        $statement = database_wrapper::instance()->prepare("INSERT INTO `users` (user_name, employee_key, password, email, status)"
+                . " VALUES (:user_name, :employee_key, :password, :email, :status)");
         $result = $statement->execute(array(
             'user_name' => $user_name,
-            'employee_id' => $employee_id,
+            'employee_key' => $employee_key,
             'password' => $password_hash,
             'email' => $email,
             'status' => $status,
@@ -220,7 +270,24 @@ class user {
          * Return TRUE, if the user with the given id was created successfully.
          * Return FALSE otherwise.
          */
-        return $result;
+        if (false === $result) {
+            error_log("User could not be written to the database.");
+            return false;
+        }
+        $user = $this->get_user_object_by_user_name($user_name);
+        return $user;
+    }
+
+    private function get_user_object_by_user_name($user_name) {
+        $statement = database_wrapper::instance()->prepare("SELECT `primary_key` FROM `users` WHERE user_name = :user_name;");
+        $statement->execute(array(
+            'user_name' => $user_name,
+        ));
+        while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
+            $primary_key = $row->primary_key;
+            return new user($primary_key);
+        }
+        return false;
     }
 
     /**
@@ -247,24 +314,24 @@ class user {
                 return FALSE;
             }
         } catch (Exception $exception) {
-            /*
+            /**
              * Well I am sad. But we will be fine.
-             * TODO: Perhaps send a mail to pdr@martin-mandelkow.de to make me check if anything is wrong with the api.
+             * @TODO: Perhaps send a mail to pdr@martin-mandelkow.de to make me check if anything is wrong with the api.
              * No, better: Build a test against the API. The user does not have to be botherd sending messages to the developer.
              */
         }
 
         $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-        $sql_query = "UPDATE `users` SET `password` = :password WHERE `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id, 'password' => $password_hash));
+        $sql_query = "UPDATE `users` SET `password` = :password WHERE `primary_key` = :primary_key";
+        $result = database_wrapper::instance()->run($sql_query, array('primary_key' => $this->primary_key, 'password' => $password_hash));
         return '00000' === $result->errorCode();
     }
 
     /**
-     * @todo not implemented yet
+     * @todo test, implement usage of this function
      */
     public function wants_emails_on_changed_roster() {
-
+        return $this->receive_emails_on_changed_roster;
     }
 
     public function activate() {
@@ -280,8 +347,8 @@ class user {
     }
 
     private function set_status($new_status) {
-        $sql_query = "UPDATE `users` SET `status` = :status WHERE `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id, 'status' => $new_status));
+        $sql_query = "UPDATE `users` SET `status` = :status WHERE `primary_key` = :primary_key";
+        $result = database_wrapper::instance()->run($sql_query, array('primary_key' => $this->primary_key, 'status' => $new_status));
         return '00000' === $result->errorCode();
     }
 
@@ -291,27 +358,25 @@ class user {
      * @todo should this be static? Is it working?
      */
     public function exists() {
-        $sql_query = "SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $this->employee_id));
+        if (null === $this->primary_key) {
+            return FALSE;
+        }
+        $sql_query = "SELECT `primary_key` FROM `users` WHERE `primary_key` = :primary_key";
+        $result = database_wrapper::instance()->run($sql_query, array('primary_key' => $this->primary_key));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             return TRUE;
         }
         return FALSE;
     }
 
-    /**
-     *
-     * @param string $identifier
-     * @return boolean|int
-     */
-    public function guess_user_by_identifier($identifier) {
-        $sql_query = "SELECT `employee_id` FROM `users` WHERE `employee_id` = :employee_id OR `email` = :email OR `user_name` = :user_name";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $identifier, 'email' => $identifier, 'user_name' => $identifier));
+    public static function guess_user_key_by_employee_key(int $employee_key) {
+        $sql_query = "SELECT `primary_key` FROM `users` WHERE `employee_key` = :employee_key;";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $this->read_data_from_database($row->employee_id);
-            return $row->employee_id;
+            $this->read_data_from_database($row->primary_key);
+            return $row->primary_key;
         }
-        return FALSE;
+        return NULL;
     }
 
     /**

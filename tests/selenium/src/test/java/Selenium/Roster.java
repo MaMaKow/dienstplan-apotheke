@@ -68,13 +68,13 @@ public class Roster {
         return rosterItem;
     }
 
-    public RosterItem getRosterItemByEmployeeId(LocalDate localDate, int employeeId) {
+    public RosterItem getRosterItemByEmployeeKey(LocalDate localDate, int employeeKey) {
         if (!listOfRosterDays.containsKey(localDate)) {
             return null;
         }
         listOfRosterItems = listOfRosterDays.get(localDate);
         for (RosterItem rosterItem : listOfRosterItems.values()) {
-            if (rosterItem.getEmployeeId() == employeeId) {
+            if (rosterItem.getEmployeeKey() == employeeKey) {
                 return rosterItem;
 
             }
@@ -82,23 +82,23 @@ public class Roster {
         return null;
     }
 
-    public HashMap<YearWeek, HashMap> getRosterWeeksByEmployeeId(int employeeId) {
+    public HashMap<YearWeek, HashMap> getRosterWeeksByEmployeeKey(int employeeKey) {
         HashMap<LocalDate, HashMap> listOfRosterDaysEmployee = (HashMap<LocalDate, HashMap>) listOfRosterDays.clone();
-        HashMap<YearWeek, HashMap> rosterWeeksByEmployeeId = new HashMap<>();
+        HashMap<YearWeek, HashMap> rosterWeeksByEmployeeKey = new HashMap<>();
         int newRosterRowKey = 0;
         for (HashMap<Integer, RosterItem> rosterDay : listOfRosterDaysEmployee.values()) {
             for (Integer rosterRowKey : rosterDay.keySet()) {
                 newRosterRowKey++;
                 RosterItem rosterItem = rosterDay.get(rosterRowKey);
                 YearWeek yearWeek = YearWeek.from(rosterItem.getLocalDate());
-                if (employeeId == rosterItem.getEmployeeId()) {
-                    if (rosterWeeksByEmployeeId.containsKey(yearWeek)) {
+                if (employeeKey == rosterItem.getEmployeeKey()) {
+                    if (rosterWeeksByEmployeeKey.containsKey(yearWeek)) {
                         /**
                          * <p lang=de>Wenn in dieser Woche bereits ein Eintrag
                          * existiert, fügen wir unsere Werte zu dem Eintrag
                          * hinzu.</p>
                          */
-                        rosterWeeksByEmployeeId.get(yearWeek).put(newRosterRowKey, rosterItem);
+                        rosterWeeksByEmployeeKey.get(yearWeek).put(newRosterRowKey, rosterItem);
                     } else {
                         /**
                          * <p lang=de>Wenn in dieser Woche noch kein Eintrag
@@ -106,12 +106,12 @@ public class Roster {
                          */
                         HashMap<Integer, RosterItem> rosterWeekNew = new HashMap<>();
                         rosterWeekNew.put(rosterRowKey, rosterItem);
-                        rosterWeeksByEmployeeId.put(yearWeek, rosterWeekNew);
+                        rosterWeeksByEmployeeKey.put(yearWeek, rosterWeekNew);
                     }
                 }
             }
         }
-        return rosterWeeksByEmployeeId;
+        return rosterWeeksByEmployeeKey;
     }
 
     /*
@@ -150,7 +150,7 @@ public class Roster {
                     String dutyEnd = entryValue.getAsJsonObject().get("dutyEnd").getAsString();
                     String breakStart = entryValue.getAsJsonObject().get("breakStart").getAsString();
                     String breakEnd = entryValue.getAsJsonObject().get("breakEnd").getAsString();
-                    int employeeId = entryValue.getAsJsonObject().get("employeeId").getAsInt();
+                    int employeeKey = entryValue.getAsJsonObject().get("employeeKey").getAsInt();
                     int branchId = entryValue.getAsJsonObject().get("branchId").getAsInt();
                     String comment = null;
                     try {
@@ -160,7 +160,7 @@ public class Roster {
                          * comment was not set. Nothing to do here.
                          */
                     }
-                    rosterItem = new RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+                    rosterItem = new RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
                     listOfRosterItems.put(rowNumber, rosterItem);
                 }
                 listOfRosterDays.put(localDate, listOfRosterItems);
@@ -185,50 +185,50 @@ public class Roster {
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2020, Month.JULY, 1);
-        listOfRosterItems.put(0, new RosterItem(4, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(2, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1));
-        listOfRosterItems.put(3, new RosterItem(3, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem(4, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1));
+        listOfRosterItems.put(3, new RosterItem(5, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2020, Month.JULY, 2);
-        listOfRosterItems.put(0, new RosterItem(5, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(3, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(4, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(2, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem(7, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem(6, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2020, Month.JULY, 3);
-        listOfRosterItems.put(0, new RosterItem(4, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(3, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(2, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day in 2021:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2021, Month.JANUARY, 4);
-        listOfRosterItems.put(0, new RosterItem(4, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(3, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(2, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day in 2019:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2019, Month.DECEMBER, 30);
-        listOfRosterItems.put(0, new RosterItem(4, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(3, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(5, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(2, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
 
         /**

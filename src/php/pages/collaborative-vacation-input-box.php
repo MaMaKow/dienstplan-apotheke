@@ -26,7 +26,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $absence_details_json_unsafe = filter_input(INPUT_GET, 'absence_details_json', FILTER_UNSAFE_RAW);
     $Absence_details_unsafe = json_decode($absence_details_json_unsafe, TRUE);
     $filters = array(
-        'employee_id' => FILTER_SANITIZE_NUMBER_INT,
+        'employee_key' => FILTER_SANITIZE_NUMBER_INT,
         'reason_id' => FILTER_SANITIZE_NUMBER_INT,
         'comment' => FILTER_SANITIZE_STRING,
         'start' => FILTER_SANITIZE_STRING,
@@ -35,7 +35,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     );
     $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
     $Absence_details['mode'] = "edit";
-    $employee_id = $Absence_details['employee_id'];
+    $employee_key = $Absence_details['employee_key'];
 } elseif (filter_has_var(INPUT_GET, 'highlight_details_json')) {
     /*
      * A new entry will be created:
@@ -49,50 +49,52 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'date_range_max' => FILTER_SANITIZE_STRING,
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
-    $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-    $Absence_details['employee_id'] = $employee_id;
+    $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+    $Absence_details['employee_key'] = $employee_key;
     $Absence_details['reason_id'] = absence::REASON_VACATION;
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
     $Absence_details['comment'] = '';
     $Absence_details['mode'] = "create";
 } else {
-    $employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+    $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 }
 ?>
 <form accept-charset='utf-8' id="input_box_form" method="POST">
-    <p><?= gettext("Employee") ?><br><select name="employee_id" id="employee_id_select"></p>
+    <p><?= gettext("Employee") ?><br><select name="employee_key" id="employee_key_select"></p>
     <?php
     if ($session->user_has_privilege('create_absence')) {
         /*
          * The user is allowed to create an absence for anyone:
          */
-        foreach ($workforce->List_of_employees as $employee_id_option => $employee_object) {
-            if ($employee_id_option == $employee_id) {
+        foreach ($workforce->List_of_employees as $employee_key_option => $employee_object) {
+            if ($employee_key_option == $employee_key) {
                 $option_selected = "selected";
             } else {
                 $option_selected = "";
             }
-            echo "<option id='employee_id_option_$employee_id_option' value='$employee_id_option' $option_selected>";
-            echo "$employee_id_option $employee_object->last_name";
+            echo "<option id='employee_key_option_$employee_key_option' value='$employee_key_option' $option_selected>";
+            echo "$employee_key_option $employee_object->last_name";
             echo "</option>\n";
         }
-    } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_id) {
-        /*
+    } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_key) {
+        /**
          * The user is allowed to create an absence for himself and
          * This absence is new.
+         * @todo <p>This has to be tested very intensively!</p>
+         * CAVE! This get_employee_key() might be empty.
          */
-        $session_employee_id = $_SESSION['user_object']->employee_id;
-        echo "<option id='employee_id_option_" . $session_employee_id . "' value=" . $session_employee_id . ">";
-        echo $session_employee_id . " " . $workforce->List_of_employees[$session_employee_id]->last_name;
+        $session_employee_key = $_SESSION['user_object']->get_employee_key();
+        echo "<option id='employee_key_option_" . $session_employee_key . "' value=" . $session_employee_key . ">";
+        echo $session_employee_key . " " . $workforce->List_of_employees[$session_employee_key]->last_name;
         echo "</option>\n";
     } else {
         /*
          * The user is NOT allowed to create any absence
          * or this is an existing absence.
          */
-        echo "<option id='employee_id_option_" . $employee_id . "' value=" . $employee_id . ">";
-        echo $employee_id . " " . $workforce->List_of_employees[$employee_id]->last_name;
+        echo "<option id='employee_key_option_" . $employee_key . "' value=" . $employee_key . ">";
+        echo $employee_key . " " . $workforce->List_of_employees[$employee_key]->last_name;
         echo "</option>\n";
     }
     ?>
@@ -126,8 +128,8 @@ if ($session->user_has_privilege('create_absence') and "edit" === $Absence_detai
 if (
         $session->user_has_privilege('create_absence')
         or ( $session->user_has_privilege('request_own_absence')
-        and ( $_SESSION['user_object']->employee_id === $employee_id
-        or "" === $employee_id)
+        and ( $_SESSION['user_object']->get_employee_key() === $employee_key
+        or "" === $employee_key)
         )
 ) {
     ?>
@@ -139,7 +141,7 @@ if (
     </p>
 <?php } ?>
 
-<input type="hidden" id="employee_id_old" name="employee_id_old" value="<?= $Absence_details['employee_id'] ?>">
+<input type="hidden" id="employee_key_old" name="employee_key_old" value="<?= $Absence_details['employee_key'] ?>">
 <input type="hidden" id="input_box_form_start_date_old" name="start_date_old" value="<?= $Absence_details['start'] ?>">
 </form>
 <a title="<?= gettext("Close"); ?>" href="#" onclick="remove_form_div()">

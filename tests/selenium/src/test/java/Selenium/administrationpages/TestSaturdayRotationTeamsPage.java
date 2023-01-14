@@ -63,11 +63,11 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
          * erschaffen.</p>
          */
         HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = new HashMap<>();
-        SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null, new int[]{3, 10});
-        SaturdayRotationTeam saturdayRotationTeam1 = new SaturdayRotationTeam(null, new int[]{1, 13});
-        SaturdayRotationTeam saturdayRotationTeam2 = new SaturdayRotationTeam(null, new int[]{5, 12});
-        SaturdayRotationTeam saturdayRotationTeam3 = new SaturdayRotationTeam(null, new int[]{2, 6});
-        SaturdayRotationTeam saturdayRotationTeam4 = new SaturdayRotationTeam(null, new int[]{14, 7});
+        SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null, new int[]{5, 12});
+        SaturdayRotationTeam saturdayRotationTeam1 = new SaturdayRotationTeam(null, new int[]{3, 15});
+        SaturdayRotationTeam saturdayRotationTeam2 = new SaturdayRotationTeam(null, new int[]{7, 14});
+        SaturdayRotationTeam saturdayRotationTeam3 = new SaturdayRotationTeam(null, new int[]{4, 8});
+        SaturdayRotationTeam saturdayRotationTeam4 = new SaturdayRotationTeam(null, new int[]{16, 9});
         saturdayTeamList.put(0, saturdayRotationTeam0);
         saturdayTeamList.put(1, saturdayRotationTeam1);
         saturdayTeamList.put(2, saturdayRotationTeam2);

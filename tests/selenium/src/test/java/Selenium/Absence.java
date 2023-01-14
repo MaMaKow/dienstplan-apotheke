@@ -34,7 +34,7 @@ public class Absence {
     private final String commentString;
     private final String durationString;
     private final String approvalString;
-    private final int employeeId;
+    private final int employeeKey;
 
     public static Map<Integer, String> absenceReasonsMap = ImmutableMap.<Integer, String>builder()
             .put(1, "Urlaub")
@@ -47,8 +47,17 @@ public class Absence {
             .put(8, "Elternzeit")
             .build();
 
-    public Absence(int employeeId, String startDateString, String endDateString, int reasonId, String commentString, String durationString, String approvalString) {
-        this.employeeId = employeeId;
+    public static final int REASON_VACATION = 1;
+    public static final int REASON_REMAINING_VACATION = 2;
+    public static final int REASON_SICKNESS = 3;
+    public static final int REASON_SICKNESS_OF_CHILD = 4;
+    public static final int REASON_TAKEN_OVERTIME = 5;
+    public static final int REASON_PAID_LEAVE_OF_ABSENCE = 6;
+    public static final int REASON_MATERNITY_LEAVE = 7;
+    public static final int REASON_PARENTAL_LEAVE = 8;
+
+    public Absence(int employeeKey, String startDateString, String endDateString, int reasonId, String commentString, String durationString, String approvalString) {
+        this.employeeKey = employeeKey;
         this.startDateString = startDateString;
         this.endDateString = endDateString;
         this.commentString = commentString;
@@ -58,8 +67,8 @@ public class Absence {
         this.reasonString = absenceReasonsMap.get(this.reasonId);
     }
 
-    public int getEmployeeId() {
-        return employeeId;
+    public int getEmployeeKey() {
+        return employeeKey;
     }
 
     public String getStartDateString() {

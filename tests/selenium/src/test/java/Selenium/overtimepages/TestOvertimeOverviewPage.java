@@ -20,12 +20,9 @@ package Selenium.overtimepages;
 
 import Selenium.Employee;
 import Selenium.TestPage;
-import Selenium.PropertyFile;
 import Selenium.rosterpages.Workforce;
-import Selenium.signin.SignInPage;
 import java.time.LocalDate;
 import java.time.Month;
-import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -50,16 +47,16 @@ public class TestOvertimeOverviewPage extends TestPage {
         /**
          * create an overtime first;
          */
+        int employeeKey = 7;
         LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 2);
-        overtimeEmployeePage.addNewOvertime(localDate0, 8.15f, "Foo");
+        overtimeEmployeePage.addNewOvertimeForEmployee(employeeKey, localDate0, 8.15f, "Foo");
         OvertimeOverviewPage overtimeOverviewPage = new OvertimeOverviewPage(driver);
 
         /**
          * Find the overtime balance:
          */
         Workforce workforce = new Workforce();
-        int employeeId = 5;
-        Employee employee = workforce.getEmployeeById(employeeId);
+        Employee employee = workforce.getEmployeeByKey(employeeKey);
         Float balance = overtimeOverviewPage.getBalanceByEmployeeName(employee.getLastName());
 
         /**

@@ -80,9 +80,9 @@ public class TestRosterWeekTablePage extends TestPage {
                  * Move to specific date to get a specific roster:
                  */
                 rosterWeekTablePage.goToDate(rosterItemFromPrediction.getLocalDate());
-                RosterItem rosterItemReadOnPage = rosterWeekTablePage.getRosterItemByEmployeeId(
+                RosterItem rosterItemReadOnPage = rosterWeekTablePage.getRosterItemByEmployeeKey(
                         rosterItemFromPrediction.getLocalDate().getDayOfWeek(),
-                        rosterItemFromPrediction.getEmployeeId()
+                        rosterItemFromPrediction.getEmployeeKey()
                 );
 
                 softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(), rosterItemReadOnPage.getEmployeeName());

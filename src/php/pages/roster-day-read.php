@@ -82,7 +82,6 @@ $max_vk_count_in_roster_days = 0;
 foreach ($Roster as $Roster_day_array) {
     $max_vk_count_in_roster_days = max($max_vk_count_in_roster_days, count($Roster_day_array));
 }
-$VKmax = max(array_keys($workforce->List_of_employees)); //The highest given employee_id
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 

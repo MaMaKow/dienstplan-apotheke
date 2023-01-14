@@ -88,13 +88,13 @@ class absence {
         gettext('changed_after_approval');
     }
 
-    public static function insert_absence(int $employee_id, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string $approval) {
+    public static function insert_absence(int $employee_key, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string $approval) {
         $sql_query = "INSERT INTO `absence` "
-                . "(employee_id, start, end, days, reason_id, comment, user, approval) "
-                . "VALUES (:employee_id, :start, :end, :days, :reason_id, :comment, :user, :approval)";
+                . "(employee_key, start, end, days, reason_id, comment, user, approval) "
+                . "VALUES (:employee_key, :start, :end, :days, :reason_id, :comment, :user, :approval)";
         try {
             database_wrapper::instance()->run($sql_query, array(
-                'employee_id' => $employee_id,
+                'employee_key' => $employee_key,
                 'start' => $date_start_string,
                 'end' => $date_end_string,
                 'days' => $days,
@@ -123,9 +123,9 @@ class absence {
         }
     }
 
-    public static function delete_absence($employee_id, $start_date_sql) {
-        $query = "DELETE FROM absence WHERE `employee_id` = :employee_id AND `start` = :start";
-        $result = \database_wrapper::instance()->run($query, array('employee_id' => $employee_id, 'start' => $start_date_sql));
+    public static function delete_absence($employee_key, $start_date_sql) {
+        $query = "DELETE FROM absence WHERE `employee_key` = :employee_key AND `start` = :start";
+        $result = \database_wrapper::instance()->run($query, array('employee_key' => $employee_key, 'start' => $start_date_sql));
         return $result;
     }
 
@@ -175,10 +175,10 @@ class absence {
     /**
      *
      * @param string $date_sql
-     * @return array $Absentees[$employee_id] = $reason_id;
+     * @return array $Absentees[$employee_key] = $reason_id;
      * @throws Exception
      * @throws UnexpectedValueException
-     * @todo: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_id] equals/contains/holds a reason_id for the absence.
+     * @todo: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_key] equals/contains/holds a reason_id for the absence.
      */
     public static function read_absentees_from_database(string $date_sql) {
 
@@ -199,25 +199,25 @@ class absence {
                 . "AND `end` >= :end ;"; //Employees, whose absence has started but not ended yet.
         $result = database_wrapper::instance()->run($sql_query, array('start' => $date_sql, 'end' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            if (!in_array($row->employee_id, array_keys($workforce->List_of_employees))) {
+            if (!in_array($row->employee_key, array_keys($workforce->List_of_employees))) {
                 /**
                  * Es werden nur Mitarbeiter ausgegeben, die auch noch arbeiten. Abwesenheiten von gekündigten Mitarbeiern werden ignoriert.
                  */
                 continue;
             }
-            $Absentees[$row->employee_id] = $row->reason_id;
+            $Absentees[$row->employee_key] = $row->reason_id;
         }
         return $Absentees;
     }
 
-    public static function get_absence_data_specific(string $date_sql, int $employee_id) {
+    public static function get_absence_data_specific(string $date_sql, int $employee_key) {
         $Absence = array();
         $query = "SELECT *
 		FROM `absence`
-		WHERE `start` <= :start AND `end` >= :end AND `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($query, array('start' => $date_sql, 'end' => $date_sql, 'employee_id' => $employee_id));
+		WHERE `start` <= :start AND `end` >= :end AND `employee_key` = :employee_key";
+        $result = database_wrapper::instance()->run($query, array('start' => $date_sql, 'end' => $date_sql, 'employee_key' => $employee_key));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Absence['employee_id'] = $row->employee_id;
+            $Absence['employee_key'] = $row->employee_key;
             $Absence['reason_id'] = $row->reason_id;
             $Absence['comment'] = $row->comment;
             $Absence['start'] = $row->start;
@@ -236,7 +236,7 @@ class absence {
         $result = database_wrapper::instance()->run($query, array('start' => $start_date_sql, 'end' => $end_date_sql));
         $i = 0;
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Absences[$i]['employee_id'] = $row->employee_id;
+            $Absences[$i]['employee_key'] = $row->employee_key;
             $Absences[$i]['reason_id'] = $row->reason_id;
             $Absences[$i]['comment'] = $row->comment;
             $Absences[$i]['start'] = $row->start;
@@ -269,13 +269,13 @@ class absence {
          * We create new entries or edit old entries. (Empty values are not accepted.)
          */
         if (('insert_new' === $command or 'replace' === $command)) {
-            $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+            $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
             $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
             $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING);
             $reason_id = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_STRING);
             $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING);
             $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
-            if (NULL === $employee_id or FALSE === $employee_id) {
+            if (NULL === $employee_key or FALSE === $employee_key) {
                 return FALSE;
             }
             if (empty($beginn)) {
@@ -291,7 +291,7 @@ class absence {
                 return FALSE;
             }
             $workforce = new workforce();
-            $employee_object = $workforce->List_of_employees[$employee_id];
+            $employee_object = $workforce->List_of_employees[$employee_key];
             self::write_absence_data_to_database($employee_object, $beginn, $ende, $reason_id, $comment, $approval);
         }
     }
@@ -309,7 +309,7 @@ class absence {
     private static function write_absence_data_to_database(\employee $employee_object, string $beginn, string $ende, int $reason_id, string $comment = NULL, string $approval = 'approved') {
         $date_start_object = new DateTime($beginn);
         $date_end_object = new DateTime($ende);
-        $employee_id = $employee_object->employee_id;
+        $employee_key = $employee_object->get_employee_key();
 
         $days = self::calculate_employee_absence_days(clone $date_start_object, clone $date_end_object, $employee_object);
         /*
@@ -318,8 +318,8 @@ class absence {
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
             database_wrapper::instance()->beginTransaction();
             $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
-            self::delete_absence($employee_id, $start_date_old_sql);
-            self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
+            self::delete_absence($employee_key, $start_date_old_sql);
+            self::insert_absence($employee_key, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
 
             if (!database_wrapper::instance()->inTransaction()) {
                 return false;
@@ -327,17 +327,17 @@ class absence {
             database_wrapper::instance()->commit();
             return true;
         }
-        self::insert_absence($employee_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
+        self::insert_absence($employee_key, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
         return true;
     }
 
-    public static function set_approval(string $approval, int $employee_id, string $start_date) {
+    public static function set_approval(string $approval, int $employee_key, string $start_date) {
         if (!in_array($approval, self::$List_of_approval_states)) {
             throw new Exception('Ileagal approval state');
         }
         $query = "UPDATE `absence` SET `approval` = :approval "
-                . " WHERE `employee_id` = :employee_id AND `start` = :start";
-        database_wrapper::instance()->run($query, array('approval' => $approval, 'employee_id' => $employee_id, 'start' => $start_date));
+                . " WHERE `employee_key` = :employee_key AND `start` = :start";
+        database_wrapper::instance()->run($query, array('approval' => $approval, 'employee_key' => $employee_key, 'start' => $start_date));
     }
 
     /**
@@ -345,9 +345,9 @@ class absence {
      * @return Statement
      */
     private static function delete_absence_data() {
-        $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+        $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
         $start_date_sql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
-        return self::delete_absence($employee_id, $start_date_sql);
+        return self::delete_absence($employee_key, $start_date_sql);
     }
 
     public static function calculate_employee_absence_days(DateTime $date_start_object, DateTime $date_end_object, employee $employee_object) {
@@ -416,12 +416,12 @@ class absence {
         return array_unique($Years);
     }
 
-    public static function get_number_of_holidays_due($employee_id, $workforce, $year) {
+    public static function get_number_of_holidays_due($employee_key, $workforce, $year) {
         $first_day_of_this_year = new DateTime("01.01." . $year);
         $last_day_of_this_year = new DateTime("31.12." . $year);
         $months_worked_in_this_year = 0;
 
-        $employee_object = $workforce->List_of_employees[$employee_id];
+        $employee_object = $workforce->List_of_employees[$employee_key];
         $number_of_holidays_principle = $employee_object->holidays;
         $number_of_working_week_days = $employee_object->working_week_days;
         $number_of_holidays_due = $number_of_holidays_principle;
@@ -490,34 +490,34 @@ class absence {
     /**
      * Read the number of remaining holidays, which have been submitted already in the following year from the database.
      *
-     * @param int $employee_id
+     * @param int $employee_key
      * @param int $year <p>
      * The actual year to which the holidays belong.
      * The query looks for 'remaining holiday' in the following year.</p>
      * @return int number of remaining holidays
      */
-    public static function get_number_of_remaining_holidays_submitted($employee_id, $year) {
+    public static function get_number_of_remaining_holidays_submitted($employee_key, $year) {
         $sql_query = "SELECT sum(`days`) FROM `absence` "
-                . "WHERE `employee_id` = :employee_id AND "
+                . "WHERE `employee_key` = :employee_key AND "
                 . " `reason_id` = :reason_remain and :year = YEAR(`start`)-1";
 
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year, 'reason_remain' => self::REASON_REMAINING_VACATION));
+        $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'year' => $year, 'reason_remain' => self::REASON_REMAINING_VACATION));
         $number_of_remaining_holidays_submitted = (int) $result->fetch(PDO::FETCH_COLUMN);
         return $number_of_remaining_holidays_submitted;
     }
 
     /**
      *
-     * @param type $employee_id
+     * @param type $employee_key
      * @param type $year
      * @return int
      */
-    public static function get_number_of_holidays_taken($employee_id, $year) {
+    public static function get_number_of_holidays_taken($employee_key, $year) {
         $sql_query = "SELECT sum(`days`) FROM `absence` "
-                . "WHERE `employee_id` = :employee_id AND "
+                . "WHERE `employee_key` = :employee_key AND "
                 . "reason_id = :reason_vacation and :year = YEAR(`start`)";
 
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year, 'reason_vacation' => self::REASON_VACATION));
+        $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'year' => $year, 'reason_vacation' => self::REASON_VACATION));
         $number_of_holidays_taken = (int) $result->fetch(PDO::FETCH_COLUMN);
         return $number_of_holidays_taken;
     }

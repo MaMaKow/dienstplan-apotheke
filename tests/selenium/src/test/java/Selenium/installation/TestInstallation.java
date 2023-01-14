@@ -55,7 +55,7 @@ public class TestInstallation {
     String testPageUrl;
 
     @Test(enabled = true)/*passed*/
-    public void testInstallation() {
+    public void testInstallation() throws Exception {
         driver = Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String testPageFolderPath = propertyFile.getUrlInstallTest();
@@ -79,7 +79,6 @@ public class TestInstallation {
         /**
          * Start the actual installation process:
          */
-
         InstallationPageIntro installationPageIntro = new InstallationPageIntro();
         InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
         InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();

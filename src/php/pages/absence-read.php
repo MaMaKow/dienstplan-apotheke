@@ -17,12 +17,11 @@
  */
 require '../../../default.php';
 $workforce = new workforce();
-$VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen die höchste VK-Nummer.
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-create_cookie("employee_id", $employee_id, 1);
-$vk = $employee_id;
-$sql_query = "SELECT * FROM `absence` WHERE `employee_id` = :employee_id ORDER BY `start` DESC";
-$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+create_cookie("employee_key", $employee_key, 1);
+$vk = $employee_key;
+$sql_query = "SELECT * FROM `absence` WHERE `employee_key` = :employee_key ORDER BY `start` DESC";
+$result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
 $tablebody = "";
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>";
@@ -37,8 +36,8 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 //Hier beginnt die Ausgabe
 echo "<div id=main-area>\n";
 
-echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
-echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/absence-edit.php', array('employee_id' => $employee_id));
+echo build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/absence-edit.php', array('employee_key' => $employee_key));
 
 echo "<table>\n";
 //Überschrift

@@ -82,7 +82,7 @@ public class TestRosterDayEditPage extends TestPage {
                  * Move to specific date to get a specific roster:
                  */
                 rosterDayEditPage.goToDate(rosterItemFromPrediction.getLocalDate());
-                RosterItem rosterItemReadOnPage = rosterDayEditPage.getRosterItem(rosterItemFromPrediction.getEmployeeId());
+                RosterItem rosterItemReadOnPage = rosterDayEditPage.getRosterItem(rosterItemFromPrediction.getEmployeeKey());
 
                 softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(), rosterItemReadOnPage.getEmployeeName());
                 softAssert.assertEquals(rosterItemFromPrediction.getLocalDate(), rosterItemReadOnPage.getLocalDate());
@@ -142,7 +142,7 @@ public class TestRosterDayEditPage extends TestPage {
                 long hourDifference = (long) Math.round(Math.random() * 6) - 3;
                 LocalDateTime dutyEndNew = rosterItem.getDutyEndLocalDateTime().plusHours(hourDifference);
                 RosterItem rosterItemNew = new RosterItem(
-                        rosterItem.getEmployeeId(),
+                        rosterItem.getEmployeeKey(),
                         rosterItem.getLocalDate(),
                         rosterItem.getDutyStart(),
                         dutyEndNew.format(DateTimeFormatter.ofPattern("HH:mm")),
@@ -152,7 +152,7 @@ public class TestRosterDayEditPage extends TestPage {
                         rosterItem.getBranchId());
                 rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
                 RosterItem rosterItemFound;
-                rosterItemFound = rosterDayEditPage.getRosterItem(rosterItemNew.getEmployeeId());
+                rosterItemFound = rosterDayEditPage.getRosterItem(rosterItemNew.getEmployeeKey());
                 rosterDayEditPage.rosterFormSubmit();
                 /**
                  * Finally change item back again:
@@ -195,12 +195,12 @@ public class TestRosterDayEditPage extends TestPage {
         rosterItem = someRosterDayIterator.next();
 
         /**
-         * Remove an item by applying an empty employeeId:
+         * Remove an item by applying an empty employeeKey:
          */
         localDate = rosterItem.getLocalDate();
         rosterDayEditPage.goToDate(localDate);
         RosterItem rosterItemNew = new RosterItem(
-                null,
+                null, //empty employeeKey:
                 rosterItem.getLocalDate(),
                 rosterItem.getDutyStart(),
                 rosterItem.getDutyEnd(),
@@ -211,7 +211,7 @@ public class TestRosterDayEditPage extends TestPage {
         rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
         rosterDayEditPage.rosterFormSubmit();
         try {
-            emptyRosterItemFound = rosterDayEditPage.getRosterItem(rosterItem.getEmployeeId());
+            emptyRosterItemFound = rosterDayEditPage.getRosterItem(rosterItem.getEmployeeKey());
         } catch (Exception exception) {
             /**
              * Everything is fine. We expected not to find anything.
@@ -240,7 +240,7 @@ public class TestRosterDayEditPage extends TestPage {
         localDate = rosterItem.getLocalDate();
         rosterDayEditPage.goToDate(localDate);
         rosterItemNew = new RosterItem(
-                rosterItem.getEmployeeId(),
+                rosterItem.getEmployeeKey(),
                 rosterItem.getLocalDate(),
                 "",
                 "",
@@ -251,7 +251,7 @@ public class TestRosterDayEditPage extends TestPage {
         rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
         rosterDayEditPage.rosterFormSubmit();
         try {
-            emptyRosterItemFound = rosterDayEditPage.getRosterItem(rosterItem.getEmployeeId());
+            emptyRosterItemFound = rosterDayEditPage.getRosterItem(rosterItem.getEmployeeKey());
         } catch (Exception exception) {
             /**
              * Everything is fine. We expected not to find anything.

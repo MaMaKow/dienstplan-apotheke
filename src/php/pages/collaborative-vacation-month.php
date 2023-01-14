@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once "../../../default.php";
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+$workforce = new workforce();
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 $year = \user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date("Y"));
 $month_number = \user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_NUMBER_INT, date("n"));
 create_cookie('month_number', $month_number, 1);
 create_cookie('year', $year, 1);
-create_cookie("employee_id", $employee_id, 30);
+create_cookie("employee_key", $employee_key, 30);
 //require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "src/php/collaborative-vacation.php";
 $collaborative_vacation = new collaborative_vacation();
 $collaborative_vacation->handle_user_data_input($session);
@@ -30,7 +31,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('request_own_absence');
 
 echo "<div id='input_box_data_div'></div>";
-echo "<script>var employee_id = " . json_encode($employee_id, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE) . ";</script>\n";
+echo "<script>var employee_key = " . json_encode($employee_key, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE) . ";</script>\n";
 echo $collaborative_vacation->build_absence_month($year, $month_number);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>

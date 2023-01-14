@@ -53,15 +53,15 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
      */
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
 }
-$VKcount = count($workforce->List_of_employees); //Die Anzahl der Mitarbeiter. Es können ja nicht mehr Leute arbeiten, als Mitarbeiter vorhanden sind.
-$VKmax = max(array_keys($workforce->List_of_employees)); //Wir suchen nach der höchsten VK-Nummer VKmax. Diese wird für den <option>-Bereich benötigt.
-//Build a div containing assignment of tasks:
+/**
+ * Build a div containing assignment of tasks:
+ */
 $weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id);
-$Working_hours_week_have = roster::calculate_working_hours_weekly_from_branch_roster($Branch_roster);
-$duty_roster_working_hours_div = "";
-if (array() !== $Roster and isset($Working_hours_week_have)) {
-    $Working_hours_week_should = build_html_roster_views::calculate_working_hours_week_should($Roster, $workforce);
-    $duty_roster_working_hours_div = build_html_roster_views::build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $workforce);
+$Working_week_hours_have = roster::calculate_working_weekly_hours_from_branch_roster($Branch_roster);
+$duty_roster_working_week_hours_div = "";
+if (array() !== $Roster and isset($Working_week_hours_have)) {
+    $Working_week_hours_should = build_html_roster_views::calculate_working_week_hours_should($Roster, $workforce);
+    $duty_roster_working_week_hours_div = build_html_roster_views::build_roster_working_week_hours_div($Working_week_hours_have, $Working_week_hours_should, $workforce);
 }
 
 //Produziere die Ausgabe
@@ -137,7 +137,7 @@ $table_div_html .= "$weekly_rotation_div_html";
 $duty_roster_form_html .= $table_div_html;
 
 $main_div_html .= $duty_roster_form_html;
-$main_div_html .= $duty_roster_working_hours_div;
+$main_div_html .= $duty_roster_working_week_hours_div;
 //$main_div_html .= "</div>\n";
 
 echo $user_dialog->build_messages();

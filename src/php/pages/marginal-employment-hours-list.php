@@ -37,8 +37,6 @@ const PDR_YEAR_FULL = 1212;
 
 $month_or_part = user_input::get_variable_from_any_input('month_or_part', FILTER_SANITIZE_NUMBER_INT, date('n'));
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-create_cookie('employee_id', $employee_id, 1);
 create_cookie('month_or_part', $month_or_part, 1);
 create_cookie('year', $year, 1);
 if ($month_or_part <= 12) {
@@ -89,8 +87,10 @@ if ($month_or_part <= 12) {
 }
 
 $workforce = new workforce($date_start_object->format('Y-m-d'));
-if (!isset($workforce->List_of_employees[$employee_id])) {
-    $employee_id = min(array_keys($workforce->List_of_employees));
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+create_cookie('employee_key', $employee_key, 1);
+if (!$workforce->employee_exists($employee_key)) {
+    $employee_key = $workforce->get_default_employee_key();
 }
 
 $Months = array();
@@ -99,24 +99,24 @@ for ($i = 1; $i <= 12; $i++) {
 }
 $Years = absence::get_rostering_years();
 $table_body_html = "<tbody>";
-for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))){
-$sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
-        . "FROM `Dienstplan` "
-        . "WHERE  `VK` = :employee_id AND `Datum` = :date "
-        . "GROUP BY `Datum`";
+for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
+    $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
+            . "FROM `Dienstplan` "
+            . "WHERE  `employee_key` = :employee_key AND `Datum` = :date "
+            . "GROUP BY `Datum`";
 
-$result = database_wrapper::instance()->run($sql_query, array(
-    'employee_id' => $employee_id, 
-    'date' => $date_object->format('Y-m-d')));
+    $result = database_wrapper::instance()->run($sql_query, array(
+        'employee_key' => $employee_key,
+        'date' => $date_object->format('Y-m-d')));
     $table_body_html .= "<tr>";
     $table_body_html .= "<td>" . $date_object->format('D d.m.Y') . "</td>";
-    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         //There should only be one row here.
         $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";
         $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['end'])) . "</td>";
         $table_body_html .= "<td>" . round($row['hours'], 2);
-        if (isset($workforce->List_of_employees[$employee_id])) {
-            $employee_object = $workforce->List_of_employees[$employee_id];
+        if (isset($workforce->List_of_employees[$employee_key])) {
+            $employee_object = $workforce->List_of_employees[$employee_key];
             $principle_working_hours = $employee_object->get_principle_roster_on_date($date_object)[0]->working_hours;
             $overtime_hours = $row['hours'] - $principle_working_hours;
             $overtime_hours_round = round($overtime_hours, 2);
@@ -128,12 +128,12 @@ $result = database_wrapper::instance()->run($sql_query, array(
         }
         $table_body_html .= "</td>";
     }
-        $Absence = absence::get_absence_data_specific($date_object->format('Y-m-d'), $employee_id);
-        if (array() !== $Absence){
-            $table_body_html .=  "<td colspan='3'>" . absence::get_reason_string_localized($Absence['reason_id']) . "</td>";
-        }
+    $Absence = absence::get_absence_data_specific($date_object->format('Y-m-d'), $employee_key);
+    if (array() !== $Absence) {
+        $table_body_html .= "<td colspan='3'>" . absence::get_reason_string_localized($Absence['reason_id']) . "</td>";
+    }
 
-        $table_body_html .= "</tr>";
+    $table_body_html .= "</tr>";
 }
 $table_body_html .= "</tbody>";
 /*
@@ -198,11 +198,11 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
         }
         ?>
     </SELECT>
-    <SELECT name='employee_id' onchange='this.form.submit()'>
+    <SELECT name='employee_key' onchange='this.form.submit()'>
         <?php
-        foreach ($workforce->List_of_employees as $employee_id_option => $employee_object) {
-            echo "<option value='$employee_id_option'";
-            if ($employee_id_option == $employee_id) {
+        foreach ($workforce->List_of_employees as $employee_key_option => $employee_object) {
+            echo "<option value='$employee_key_option'";
+            if ($employee_key_option == $employee_key) {
                 echo " SELECTED ";
             }
             echo ">$employee_object->last_name</option>\n";
@@ -211,7 +211,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     </SELECT>
 </FORM>
 <H1>Stundenzettel</H1>
-<H2><?= $workforce->List_of_employees[$employee_id]->full_name ?></H2>
+<H2><?= $workforce->List_of_employees[$employee_key]->full_name ?></H2>
 <TABLE class="table_with_border" id="marginal_employment_hours_list_table">
     <THEAD>
         <TR><!--This following part is specific to German law. No other translation semms necessary.-->

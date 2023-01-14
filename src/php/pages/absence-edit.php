@@ -18,19 +18,19 @@
 require '../../../default.php';
 $workforce = new workforce();
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 create_cookie('year', $year, 1);
-create_cookie('employee_id', $employee_id, 30);
+create_cookie('employee_key', $employee_key, 30);
 absence::handle_user_input();
 
 
 /*
  * TODO: Find overlapping absences.
  */
-$number_of_holidays_due = absence::get_number_of_holidays_due($employee_id, $workforce, $year);
-$number_of_holidays_principle = $workforce->List_of_employees[$employee_id]->holidays;
-$number_of_holidays_taken = absence::get_number_of_holidays_taken($employee_id, $year);
-$number_of_remaining_holidays_submitted = absence::get_number_of_remaining_holidays_submitted($employee_id, $year);
+$number_of_holidays_due = absence::get_number_of_holidays_due($employee_key, $workforce, $year);
+$number_of_holidays_principle = $workforce->List_of_employees[$employee_key]->holidays;
+$number_of_holidays_taken = absence::get_number_of_holidays_taken($employee_key, $year);
+$number_of_remaining_holidays_submitted = absence::get_number_of_remaining_holidays_submitted($employee_key, $year);
 $number_of_remaining_holidays_left = $number_of_holidays_due - ($number_of_holidays_taken + $number_of_remaining_holidays_submitted);
 
 $remaining_holidays_div = "<div class='remaining_holidays'>";
@@ -45,8 +45,8 @@ $remaining_holidays_div .= "</div>";
  * TODO: An option to automatically mark vacation days as 'remaining holidays'.
  */
 
-$sql_query = 'SELECT * FROM `absence` WHERE `employee_id` = :employee_id and (Year(`start`) = :year or Year(`end`) =:year2) ORDER BY `start` DESC';
-$result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'year' => $year, 'year2' => $year));
+$sql_query = 'SELECT * FROM `absence` WHERE `employee_key` = :employee_key and (Year(`start`) = :year or Year(`end`) =:year2) ORDER BY `start` DESC';
+$result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'year' => $year, 'year2' => $year));
 $tablebody = '';
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     /*
@@ -95,7 +95,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
     $tablebody .= "<td style='font-size: 1em; height: 1em'>\n"
-            . "<input hidden name='employee_id' value='$employee_id' form='$html_form_id'>\n"
+            . "<input hidden name='employee_key' value='$employee_key' form='$html_form_id'>\n"
             . "<button type=submit id=delete_$row->start class='button_small delete_button no_print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Diese Zeile löschen'>\n"
             . "</button>\n"
@@ -124,9 +124,9 @@ echo "<div id=main-area>\n";
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 echo form_element_builder::build_html_select_year($year);
-echo build_html_navigation_elements::build_select_employee($employee_id, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
 
-echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/absence-read.php', array('employee_id' => $employee_id));
+echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/absence-read.php', array('employee_key' => $employee_key));
 echo "<table id=absence_table>\n";
 /*
  * Head
@@ -139,7 +139,7 @@ echo "<tr><th>" . gettext('Start') . "</th><th>" . gettext('End') . "</th><th>" 
 echo "<tr class=no_print id=input_line_new>\n"
  . "<form accept-charset='utf-8' method=POST id='new_absence_entry'>\n";
 echo "<td>\n"
- . "<input type=hidden name=employee_id value=$employee_id form='new_absence_entry'>\n";
+ . "<input type=hidden name=employee_key value=$employee_key form='new_absence_entry'>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=beginn name=beginn value=" . date("Y-m-d") . " form='new_absence_entry'>";
 echo "</td>\n";
 echo "<td>\n";
