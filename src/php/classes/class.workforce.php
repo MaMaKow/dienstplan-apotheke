@@ -61,7 +61,7 @@ class workforce {
             $this->List_of_qualified_pharmacist_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_qualified_pharmacist_employees;
             $this->List_of_goods_receipt_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_goods_receipt_employees;
             $this->List_of_compounding_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_compounding_employees;
-            $this->List_of_short_descriptors = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_short_descriptors;
+            self::$List_of_short_descriptors = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_short_descriptors;
             return TRUE;
         }
         if (NULL === $date_start_sql) {
@@ -192,10 +192,10 @@ class workforce {
      * </p>
      */
     public function get_employee_short_descriptor($employee_key) {
-        if (empty($this->List_of_short_descriptors)) {
+        if (empty(self::$List_of_short_descriptors)) {
             $this->create_list_of_short_descriptors();
         }
-        return $this->List_of_short_descriptors[$employee_key];
+        return self::$List_of_short_descriptors[$employee_key];
     }
 
     /**
@@ -206,7 +206,7 @@ class workforce {
      * "Alexandra Prokoviev",</p>
      */
     private function create_list_of_short_descriptors() {
-        $this->List_of_short_descriptors = array();
+        self::$List_of_short_descriptors = array();
         foreach ($this->List_of_employees as $employee_key => $employee_object) {
             $number_of_characters_of_first_name = 2;
             $number_of_characters_of_last_name = 2;
@@ -214,9 +214,9 @@ class workforce {
              * Try to add into the array: 2+2
              */
             $short_descriptor = $this->create_short_descriptor($employee_object, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
-            $search_result = array_search($short_descriptor, $this->List_of_short_descriptors, FALSE);
+            $search_result = array_search($short_descriptor, self::$List_of_short_descriptors, FALSE);
             if (FALSE === $search_result) {
-                $this->List_of_short_descriptors[$employee_key] = $short_descriptor;
+                self::$List_of_short_descriptors[$employee_key] = $short_descriptor;
                 continue;
             }
             /**
@@ -226,9 +226,9 @@ class workforce {
             $number_of_characters_of_last_name = 3;
             $this->change_short_descriptor_by_chars($search_result, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
             $short_descriptor = $this->create_short_descriptor($employee_object, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
-            $search_result = array_search($short_descriptor, $this->List_of_short_descriptors, FALSE);
+            $search_result = array_search($short_descriptor, self::$List_of_short_descriptors, FALSE);
             if (FALSE === $search_result) {
-                $this->List_of_short_descriptors[$employee_key] = $short_descriptor;
+                self::$List_of_short_descriptors[$employee_key] = $short_descriptor;
                 continue;
             }
             /**
@@ -238,9 +238,9 @@ class workforce {
             $number_of_characters_of_last_name = 4;
             $this->change_short_descriptor_by_chars($search_result, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
             $short_descriptor = $this->create_short_descriptor($employee_object, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
-            $search_result = array_search($short_descriptor, $this->List_of_short_descriptors, FALSE);
+            $search_result = array_search($short_descriptor, self::$List_of_short_descriptors, FALSE);
             if (FALSE === $search_result) {
-                $this->List_of_short_descriptors[$employee_key] = $short_descriptor;
+                self::$List_of_short_descriptors[$employee_key] = $short_descriptor;
                 continue;
             }
             /**
@@ -250,9 +250,9 @@ class workforce {
             $number_of_characters_of_last_name = 1;
             $this->change_short_descriptor_by_chars($search_result, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
             $short_descriptor = $this->create_short_descriptor($employee_object, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
-            $search_result = array_search($short_descriptor, $this->List_of_short_descriptors, FALSE);
+            $search_result = array_search($short_descriptor, self::$List_of_short_descriptors, FALSE);
             if (FALSE === $search_result) {
-                $this->List_of_short_descriptors[$employee_key] = $short_descriptor;
+                self::$List_of_short_descriptors[$employee_key] = $short_descriptor;
                 continue;
             }
             /**
@@ -276,9 +276,9 @@ class workforce {
         /**
          * Only add this variant, if it does not create another duplicate:
          */
-        $search_result = array_search($short_descriptor, $this->List_of_short_descriptors, FALSE);
+        $search_result = array_search($short_descriptor, self::$List_of_short_descriptors, FALSE);
         if (FALSE === $search_result) {
-            $this->List_of_short_descriptors[$employee_key] = $short_descriptor;
+            self::$List_of_short_descriptors[$employee_key] = $short_descriptor;
         }
     }
 
@@ -291,7 +291,7 @@ class workforce {
         $employee_object = $this->get_employee_object($employee_key);
         $short_descriptor = $this->create_short_descriptor($employee_object, $number_of_characters_of_first_name, $number_of_characters_of_last_name);
         $short_descriptor .= $employee_object->get_employee_key();
-        $this->List_of_short_descriptors[$employee_key] = $short_descriptor;
+        self::$List_of_short_descriptors[$employee_key] = $short_descriptor;
     }
 
     private function create_short_descriptor($employee_object, $number_of_characters_of_first_name, $number_of_characters_of_last_name) {

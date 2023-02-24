@@ -118,10 +118,6 @@ public class TestEmployeePage extends TestPage {
         employeePage.setRosterItem(1, 1, 1, rosterItemNew);
         rosterItemChanged = employeePage.getRosterItem(1, 1, 1);
 
-        System.out.println("rosterItemChanged.getEmployeeName():");
-        System.out.println(rosterItemChanged.getEmployeeName());
-        System.out.println("rosterItemNew.getEmployeeName():");
-        System.out.println(rosterItemNew.getEmployeeName());
         softAssert.assertEquals(rosterItemChanged.getEmployeeName(), rosterItemNew.getEmployeeName());
         softAssert.assertEquals(rosterItemChanged.getDutyStart(), rosterItemNew.getDutyStart());
         softAssert.assertEquals(rosterItemChanged.getDutyEnd(), rosterItemNew.getDutyEnd());

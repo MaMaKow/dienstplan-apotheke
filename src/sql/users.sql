@@ -13,5 +13,5 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`primary_key`),
   UNIQUE KEY `user_name` (`user_name`),
   UNIQUE KEY `email` (`email`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_key`) REFERENCES `employees` (`primary_key`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_key`) REFERENCES `employees` (`primary_key`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

@@ -107,7 +107,6 @@ abstract class task_rotation {
          * Currently only compounding is a task.
          */
         $List_of_compounding_rotation_employees = array();
-        print_debug_variable($workforce->List_of_compounding_employees);
         foreach ($workforce->List_of_compounding_employees as $employee_key) {
             if ($workforce->List_of_employees[$employee_key]->get_principle_branch_id() == $branch_id) {
                 $List_of_compounding_rotation_employees[$employee_key] = $employee_key;

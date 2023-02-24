@@ -220,6 +220,60 @@ class database_wrapper {
         return FALSE;
     }
 
+    public static function database_table_index_exists($database_name, $table_name, $index_name) {
+        $sql_query = "SELECT count(*) as index_exists FROM information_schema.statistics "
+                . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND index_name = :index_name";
+        $result = self::instance()->run($sql_query, array(
+            'database_name' => $database_name,
+            'table_name' => $table_name,
+            'index_name' => $index_name
+        ));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            if ($row->index_exists > 0) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
+    public static function table_has_constraints($table_name) {
+        $constraints = self::find_table_constraints($table_name);
+        if (array() == $constraints) {
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    private static function find_table_constraints($referenced_table_name) {
+        $table_constraints = array();
+        $sql_query = "SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+            FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+            WHERE REFERENCED_TABLE_NAME = :referencedTableName AND TABLE_SCHEMA = DATABASE();";
+        $result = self::instance()->run($sql_query, array(
+            'referencedTableName' => $referenced_table_name,
+        ));
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            if ($row->index_exists > 0) {
+                $table_constraints[] = clone $row;
+            }
+        }
+        return $table_constraints;
+    }
+
+    public static function database_table_constraint_exists($table_name, $constraint_name) {
+        $table_constraints = self::find_table_constraints($table_name);
+        foreach ($table_constraints as $table_constraint_object) {
+            $message = "Found constraint: " . $table_constraint_object->CONSTRAINT_NAME;
+            error_log($message);
+            print_debug_variable_to_screen($table_constraint_object);
+            echo $message;
+            if ($constraint_name == $table_constraint_object->CONSTRAINT_NAME) {
+                return true;
+            }
+            return false;
+        }
+    }
+
     /**
      *
      * @param string $field database identifier (i.e. database name, table name, column name)

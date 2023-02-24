@@ -169,6 +169,11 @@ filter for absence
 filter option for years and for specific reasons e.g. Vacation
 
 ### API
+Eine API benutzen um Ferien im aktuellen Bundesland zu lesen.
+Diese sollten in einer Datenbanktabelle zwischengespeichert werden.
+z.B. https://ferien-api.de/api/v1/holidays/BY/2021
+z.B. https://openholidaysapi.org/SchoolHolidays?countryIsoCode=DE&subdivisionCode=DE-BY&languageIsoCode=DE&validFrom=2023-01-01&validTo=2024-12-31
+
 Build an API for android apps
 
 + http://restcookbook.com/
