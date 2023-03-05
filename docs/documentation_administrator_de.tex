@@ -1,5 +1,3 @@
-% This file was generated with po4a. Translate the source file.
-%
 \chapter{Administratorhandbuch}
 
 \section{Installation}\label{chapter_admin_section_install}
@@ -61,8 +59,6 @@ zum Administrator gesammelt:
     \item Benutzername \\ Der Name, mit dem der Administrator sich in Zukunft im
 Programm anmeldet. 
     \item Nachname \\ Dieser Name ist mit der Mitarbeiter-ID verbunden.
-    \item Mitarbeiter-ID \\ Diese wird verwendet, um einen Mitarbeiter zu erstellen,
-der mit dem Benutzer mit Administratorrechten verbunden ist.
     \item Die Kontakt-E-Mail-Adresse \\ wird für Fragen und Kommentare von Benutzern
 verwendet. Diese E-Mail erhält auch einige interne Informationen aus dem
 Dienstplan.
@@ -71,8 +67,9 @@ sich in Zukunft am Programm anzumelden.
 \end{itemize}
 Bitte registrieren Sie den Administrator und klicken Sie auf
 \menu{Senden}. Die Daten werden in die Datei \directory{config/config.php}
-geschrieben. Für jeden Benutzer, der das Programm benutzt, muss es genau
-einen Mitarbeiter geben. \subsection {Erste Schritte} Nach dem Absenden der
+geschrieben.
+
+\subsection {Erste Schritte} Nach dem Absenden der
 Administratorkonfiguration werden Sie auf die Anmeldeseite
 weitergeleitet. Melden Sie sich mit Ihren Administrator-Anmeldeinformationen
 an.
@@ -200,7 +197,7 @@ in Buchstaben übersetzt werden (z. B. bedeutet UTF8 01000101 E und 11000011
 10100100 ä).
 
 \paragraph{contact\_email} E-Mails der Benutzer können an den
-Administrator der PDR-Instanz gesendet werden. 
+Administrator der PDR-Instanz gesendet werden. Auch bei der Anmeldung neuer Benutzer wird der Administrator vom PDR informiert.
 
 \paragraph{hide\_disapproved}
 Es ist möglich, geplante Dienstpläne auszublenden, bis sie genehmigt
@@ -224,7 +221,7 @@ Postfix, gmail-smtp-in.l.google.com für gmail).
 
 
 \section{Wartung}
-Die Datei  \directory{src/php/background\_maintenance.php} wird bei jedem
+Die Datei  \directory{src/php/background\_maintenance.php} wird vor jedem
 Login eines beliebigen Benutzers aufgerufen.  Es wird eine Instanz der
 folgenden Klassen erzeugen:
 \begin{itemize}

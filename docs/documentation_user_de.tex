@@ -1,5 +1,3 @@
-% This file was generated with po4a. Translate the source file.
-%
 \chapter{Benutzerhandbuch}
 
 
@@ -27,13 +25,13 @@ können Sie auf \menu{Passwort vergessen?} klicken.
 \includegraphics[width=0.4\linewidth]{{images/en_GB/register.php}.png}
 	\caption{Registrierungsseite}
 \end{figure}
-Wählen Sie einen Benutzernamen, geben Sie Ihre Mitarbeiter-ID und Ihre
+Wählen Sie einen Benutzernamen, geben Sie Ihre
 E-Mail-Adresse ein. Wählen Sie ein sicheres Passwort.
 
 Das Konto ist inaktiv, bis ein Administrator es aktiviert. Der
 Hauptadministrator wird per E-Mail über die Registrierung informiert.
 
-Neue Benutzer können nur für vorhandene Mitarbeiter erstellt werden. Neue
+Neue Benutzer können einem vorhandene Mitarbeiter zugeordnet werden. Neue
 Mitarbeiter werden von einem Administrator erstellt.
 
 \subsection{Passwort vergessen}
@@ -43,9 +41,7 @@ Mitarbeiter werden von einem Administrator erstellt.
     \caption{Passwort vergessen Seite}
 \end{figure}
 Auf der Seite \menu{Passwort vergessen} wird der Name der Anwendung
-angezeigt. Sie werden aufgefordert, entweder Ihren Benutzernamen, Ihre ID
-oder Ihre E-Mail-Adresse einzugeben. Nachdem Sie das Formular abgeschickt
-haben, wird eine E-Mail an Ihre gespeicherte E-Mail-Adresse gesendet. In
+angezeigt. Sie werden aufgefordert, entweder Ihren Benutzernamen oder Ihre E-Mail-Adresse einzugeben. Nachdem Sie das Formular abgeschickt haben, wird eine E-Mail an Ihre gespeicherte E-Mail-Adresse gesendet. In
 dieser E-Mail finden Sie einen Link, der Sie zur Seite zum Ändern des
 Passworts führt.
 \subsubsection{Wiederherstellung des Passworts}
@@ -57,7 +53,7 @@ Passworts führt.
 Auf der Seite zur Wiederherstellung des verlorenen Passworts werden der Name
 der Anwendung und Ihr Benutzername angezeigt. Sie werden aufgefordert, ein
 neues Passwort zweimal einzugeben.
-
+Das Passwort wird mittels \url{haveibeenpwned.com} auf Sicherheit überprüft.
 
 \subsection{Navigation}
 \begin{figure}[ph]
@@ -138,7 +134,7 @@ Arbeitszeit}
 Die Dienstplan-Wochenansicht zeigt die Liste einer ausgewählten Woche und
 Filiale (\autoref{img_roster_week_table_view}).
 Für die Mitarbeiter wird der Nachname gefolgt von den Arbeitsstunden, dem Beginn und dem Ende der Arbeitszeit, sowie der Pausenzeiten angezeigt.
-Wenn Mitarbeiter der Apotheke in einer anderen Filiale arbeiten, werden diese unten
+Wenn Mitarbeiter der ausgewählten Apotheke in einer anderen Filiale arbeiten, werden diese unten
 angezeigt. Der Tabellenfuß enthält Informationen über abwesende Mitarbeiter
 und deren Abwesenheitsgründe.
 
@@ -158,8 +154,7 @@ Histogramm, welche den Dienstplan wiedergeben (\autoref{img_roster-day-read}).
 	\label{img_roster-day-read}
 \end{figure}
 
-Die Dienstplantabelle listet alle Mitarbeiter auf, die in dem ausgewählten
-Zweig an dem ausgewählten Tag geplant sind. Jeder Eintrag enthält den Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des Dienstes und die Zeit der Mittagspause, soweit vorhanden.
+Die Dienstplantabelle listet alle Mitarbeiter auf, die in der ausgewählten Filiale an dem ausgewählten Tag eingeplant sind. Jeder Eintrag enthält den Nachnamen des Mitarbeiters, die Arbeitsstunden, den Beginn und das Ende des Dienstes und die Zeit der Mittagspause, soweit vorhanden.
 
 Wenn ein Mitarbeiter, der in erster Linie in der ausgewählten Filiale
 eingeplant ist, in einer anderen Filiale arbeitet, wird dieser Eintrag in
@@ -235,8 +230,6 @@ Es ist möglich, abwechselnde Wochen zu erstellen. Beispielsweise kann eine
 Mitarbeiterin in einer A-Woche und einer B-Woche arbeiten. In A-Wochen
 beginnt sie am Montag regelmäßig um 08:00 Uhr, in B-Wochen um 10:00 Uhr.
 
-PDR speichert die Historie von Grundplänen. Auch Grundpläne für die Zukunft können eingestellt werden.
-
 \subsection{Überstunden}
 Es gibt drei Ansichten auf die Überstunden: Überstunden Eingabe, Überstunden Ausgabe und Überstunden Übersicht.
 \subsubsection{Überstunden Eingabe}
@@ -254,7 +247,7 @@ Die Überstunden Ausgabe entspricht der Tabelle der Überstunden Eingabe. Allerd
 \subsubsection{Überstunden Übersicht}
 In der Übersicht gibt es keinerlei Navigation. Hier wird lediglich eine reine Aufzählung der Saldi von Überstunden aufgeführt. Die Tabelle ist nach Mitarbeiternummer sortiert. Negative Überstunden sind rot dargestellt. Überstunden, die 20 oder sogar 40 übersteigen werden betont.
 
-Da die Überstunden nicht immer sofort aktualisiert werden, ist jeweils das Datum der letzten Aktualisierung mit angegeben.
+Da die Überstunden manuell gepflegt werden müssen, ist jeweils das Datum der letzten Aktualisierung mit angegeben.
 
 \subsection{Abwesenheit}
 Es gibt vier Ansichten zu den Abwesenheitsdaten.
@@ -275,13 +268,14 @@ unbezahlte Freistellung, bezahlte Freistellung, Elternzeit und
 Mutterschutz). Die Anzahl der Abwesenheitstage wird für eine 5-Tage-Woche
 berechnet. Abwesenheiten an Samstagen und Sonntagen werden registriert, aber
 nicht gezählt. Das Gleiche gilt für Feiertage.
+Hat ein Mitarbeiter einen festen Grundplan, und umfasst der Grundplan zum Beispiel nur drei Tage je Woche, so werden auch nur diese drei Tage als Abwesenheitstage gezählt.
 
 \subsubsection{Mitarbeiteransicht Eingabe}
 \changemenucolortheme{menus}{icon}
 In der \emph{Mitarbeiteransicht Eingabe} kann zunächst ein Jahr und ein Mitarbeiter ausgewählt werden.
 Darunter befindet sich eine Eingabemaske für Abwesenheiten.
 Hier werden der Beginn und das Ende der Abwesenheit angegeben.
-Darauf folgt der Abwesenheitsgrund. Für das Abbummeln von Überstunden sollte unbezahlte Freistellung gewählt werden, Diese Option wird als einzige nicht positiv auf die Wochenstunden angerechnet.
+Darauf folgt der Abwesenheitsgrund. Für das Abbummeln von Überstunden sollte unbezahlte Freistellung gewählt werden. Diese Option wird als einzige nicht positiv auf die Wochenstunden angerechnet.
 Außerdem kann ein Kommentar angegeben werden. Für alle Abwesenheiten kann vermerkt werden, ob sie bereits genehmigt, oder erst beantragt wurden. Mit \menu{Speichern} werden die Daten in die Datenbank geschrieben.
 
 Die Tabelle unter der Eingabemaske gibt die bereits eingetragenen Abwesenheiten wieder.
@@ -301,7 +295,7 @@ Um eine neue Abwesenheit zu erstellen, kann man auf den gewünschten Tag klicken
 Die Bearbeitung kann mit \keys{\esc} oder oben rechts per Klick auf \menu{X} geschlossen werden.
 
 \subsubsection{Jahresplan}
-Der Jahresplan ähnelt dem Monatsplan. Es werden alle Monate des ausgewählten Jahres dargestellt. Statt ausgeschriebenen Namen wird hier auf die VK-Nummer verkürzt.
+Der Jahresplan ähnelt dem Monatsplan. Es werden alle Monate des ausgewählten Jahres dargestellt. Statt ausgeschriebenen Namen wird hier ein Kürzel verwendet.
 
 \section{Kalender API}\label{section-calendar-api}
 Es ist möglich, die Dienstplandaten in Form von iCalendar-Dateien auszulesen. Diese Dateien können mit allen wichtigen Kalenderanwendungen auf Desktops und Smartphones verwendet werden. Diese API ist keinesfalls eine
