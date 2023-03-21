@@ -54,7 +54,7 @@ class EmergencyService {
 
     public function get_employee_short_descriptor() {
         $workforce = new \workforce();
-        return $workforce->get_employee_short_descriptor($employee_key)
+        return $workforce->get_employee_short_descriptor($this->employee_key);
     }
 
     public function get_employee_name(): string {

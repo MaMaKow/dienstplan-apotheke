@@ -74,7 +74,7 @@ function build_checkbox_permission($privilege, $checked) {
     <p>
         <?php
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
-            echo build_checkbox_permission($privilege, in_array($privilege, $user->privileges));
+            echo build_checkbox_permission($privilege, array_key_exists($privilege, $user->privileges));
             echo "<br>";
         }
         ?>

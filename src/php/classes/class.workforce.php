@@ -54,19 +54,18 @@ class workforce {
         $this->date_start_sql = $date_start_sql;
         $this->date_end_sql = $date_end_sql;
         if (isset(self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql])) {
-            /*
+            /**
              * If this exact workforce is known already, we do not have to repeat that queries.
              */
             $this->List_of_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_employees;
             $this->List_of_qualified_pharmacist_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_qualified_pharmacist_employees;
             $this->List_of_goods_receipt_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_goods_receipt_employees;
             $this->List_of_compounding_employees = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_compounding_employees;
-            self::$List_of_short_descriptors = self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql]->List_of_short_descriptors;
             return TRUE;
         }
         if (NULL === $date_start_sql) {
             $sql_query = 'SELECT * FROM `employees` '
-                    . 'ORDER BY `primary_key` ASC;';
+                    . 'ORDER BY `last_name`, `first_name` ASC;';
             $result = database_wrapper::instance()->run($sql_query);
         } else {
             if (NULL === $date_end_sql) {
@@ -75,7 +74,7 @@ class workforce {
             $sql_query = 'SELECT * FROM `employees` '
                     . 'WHERE  (`end_of_employment` >= :date_start OR `end_of_employment` IS NULL) '
                     . 'AND  (`start_of_employment` <= :date_end OR `start_of_employment` IS NULL) '
-                    . 'ORDER BY `primary_key` ASC;';
+                    . 'ORDER BY `last_name`, `first_name` ASC;';
             $result = database_wrapper::instance()->run($sql_query, array('date_end' => $date_end_sql, 'date_start' => $date_start_sql));
         }
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -90,8 +89,8 @@ class workforce {
             if (TRUE == $row->compounding) {
                 $this->List_of_compounding_employees[] = $row->primary_key;
             }
-            $this->create_list_of_short_descriptors();
         }
+        $this->create_list_of_short_descriptors();
         self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql] = $this;
     }
 
@@ -117,6 +116,15 @@ class workforce {
             return $this->get_employee_value($employee_key, 'last_name');
         }
         return $employee_key . '???';
+    }
+
+    private function get_list_of_all_employees() {
+        $sql_query = 'SELECT * FROM `employees` ORDER BY `last_name`, `first_name` ASC;';
+        $result = database_wrapper::instance()->run($sql_query);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $List_of_all_employees[$row->primary_key] = new employee((int) $row->primary_key, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, $row->compounding, $row->goods_receipt, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
+        }
+        return $List_of_all_employees;
     }
 
     /**
@@ -207,7 +215,7 @@ class workforce {
      */
     private function create_list_of_short_descriptors() {
         self::$List_of_short_descriptors = array();
-        foreach ($this->List_of_employees as $employee_key => $employee_object) {
+        foreach ($this->get_list_of_all_employees() as $employee_key => $employee_object) {
             $number_of_characters_of_first_name = 2;
             $number_of_characters_of_last_name = 2;
             /**

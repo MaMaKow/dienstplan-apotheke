@@ -222,7 +222,7 @@ class user {
         $sql_query = "DELETE FROM `users_privileges` WHERE `user_key`  = :user_key";
         database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key()));
         foreach ($privileges as $privilege) {
-            $sql_query = "INSERT INTO `users_privileges` (`user_key`, `privilege`) VALUES(:user, :privilege)";
+            $sql_query = "INSERT INTO `users_privileges` (`user_key`, `privilege`) VALUES (:user_key, :privilege)";
             database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key(), 'privilege' => $privilege));
         }
         database_wrapper::instance()->commit();
