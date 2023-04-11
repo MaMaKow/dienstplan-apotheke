@@ -42,7 +42,7 @@ echo form_element_builder::build_html_select_year($year);
         <TD>Anwesenheit</TD>
         <?php
         foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
-            echo '<TD style="padding-bottom: 0">' . mb_substr($employee_object->last_name, 0, 4) . "<br>$workforce->get_employee_short_descriptor($employee_key)</TD>";
+            echo '<TD style="padding-bottom: 0">' . mb_substr($employee_object->last_name, 0, 4) . "<br>" . $workforce->get_employee_short_descriptor($employee_key) . "</TD>";
         }
         ?>
     </TR>
