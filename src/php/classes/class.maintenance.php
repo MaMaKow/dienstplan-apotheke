@@ -69,6 +69,8 @@ class maintenance {
              */
             alternating_week::reorganize_ids();
             $this->cleanup_database_table_saturday_rotation();
+            $this->cleanup_database_table_overtime();
+            $this->cleanup_database_table_roster();
             /*
              * __destruct():
              */
@@ -91,7 +93,26 @@ class maintenance {
      * @return void
      */
     protected function cleanup_database_table_saturday_rotation() {
-        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 24 month";
+        $sql_query = "DELETE FROM `saturday_rotation` WHERE YEAR(`date`) < YEAR(now()-interval 24 month);";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * @see Arbeitszeitgesetz / § 16 Aushang und Arbeitszeitnachweise
+     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
+     *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
+     */
+    protected function cleanup_database_table_overtime() {
+        $sql_query = "DELETE FROM `Stunden` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * Wie lange müssen Zeiterfassungsdaten aufbewahrt werden?
+     * In Deutschland müssen Arbeitszeitaufzeichnungen 2 Jahre aufbewahrt werden.
+     */
+    protected function cleanup_database_table_roster() {
+        $sql_query = "DELETE FROM `Dienstplan` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
         database_wrapper::instance()->run($sql_query);
     }
 
