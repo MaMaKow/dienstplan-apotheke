@@ -802,31 +802,30 @@ svg.svg_img foreignObject p {
     box-shadow: inset 0 0 0 1000px #B4B4B4;
     /*
      * cursor styles:
-     * TODO: These could be turned back to default in read_only views:
      */
     cursor: move;
 }
-svg.svg_img foreignObject p.Apotheker, svg.svg_img foreignObject p.PI {
+svg.svg_img g g rect.Apotheker, svg.svg_img g g rect.PI {
     margin-top: 0px;
-    box-shadow: inset 0 0 0 1000px #73AC22;
+    fill: #73AC22;
 }
-svg.svg_img foreignObject p.PTA {
+svg.svg_img g g rect.PTA {
     margin-top: 0px;
-    box-shadow: inset 0 0 0 1000px #BDE682;
+    fill: #BDE682;
 }
-svg.svg_img foreignObject p.PKA {
+svg.svg_img g g rect  {
     margin-top: 0px;
-    box-shadow: inset 0 0 0 1000px #B4B4B4;
+    fill: #B4B4B4;
 }
-svg.svg_img foreignObject p.selected {
+svg.svg_img g g rect.selected {
     color: white;
 }
 
-svg.svg_img foreignObject p span {
+svg.svg_img g g text tspan {
     float: right;
 }
 
-svg.svg_img rect {
+svg.svg_img g.break_box rect {
     fill: #FEFEFF;
     cursor: cell;
     stroke: black;

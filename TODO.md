@@ -67,14 +67,14 @@ Mitarbeiter selbst tauschen -> Modul bauen
 
 
 * database Ware-Termine / Ware-PEP
-* PSR-4: Die Klassen können mal sortiert und in Ordner gepackt werden. Bei der Gelegenheit kann man direkt mal in Richtung PSR-4 denken. https://www.php-fig.org/psr/psr-4/ 
+* PSR-4: Die Klassen können mal sortiert und in Ordner gepackt werden. Bei der Gelegenheit kann man direkt mal in Richtung PSR-4 denken. https://www.php-fig.org/psr/psr-4/
 
   * \\PDR\\Pharmacy\\Branch.php \
-  * \PDR\\Pharmacy\\NetworkOfBranchOffices.php 
-  * \\PDR\\Workforce\\Absence.php 
-  * \\PDR\\Workforce\\Overtime.php 
-  * \PDR\\Workforce\\Employee.php 
-  * \\PDR\\Workforce\\Workforce.php 
+  * \PDR\\Pharmacy\\NetworkOfBranchOffices.php
+  * \\PDR\\Workforce\\Absence.php
+  * \\PDR\\Workforce\\Overtime.php
+  * \PDR\\Workforce\\Employee.php
+  * \\PDR\\Workforce\\Workforce.php
   * \\PDR\\Workforce\\EmployeeManagement.php instead of \PDR\\Workforce\\HumanResourceManagement.php
   * \\PDR\\Roster\\Roster.php (Eine ganze Woche/Monat/beliebiger Bereich)
 
@@ -345,5 +345,10 @@ Vielleicht sollte ich für register.php auch ein rate-limiting einsetzen. und f�
 #### Übersicht Resturlaubstage aus den vergangenen 3 Jahren für das Steuerbüro
 
 Write selenium tests for user-management.php
+Write selenium tests for maintenance
+    Create data for an employee in the past; end the employment of the employee; logout; login; make sure, that the data is gone.
+    How can we force maintenance to happen during the testing period?
 
 Logviewer für das error.log in die / in eine Administraor-Ansicht einbauen.
+
+Löschen von Usern inklusive Löschen von Benutzerberechtigungen

@@ -108,11 +108,11 @@ class roster_image_bar_plot {
                  */
                 $x_pos_svg_weekday_text = $this->outer_margin_x + $this->inner_margin_x;
                 $y_pos_svg_weekday_text = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
-                $svg_text .= "<foreignObject id=svg_weekday_text_$date_unix x='$x_pos_svg_weekday_text' y='$y_pos_svg_weekday_text' width='100%' height='$this->bar_height'>"
-                        . "<p xmlns='http://www.w3.org/1999/xhtml' style='margin-top: 0px;'>"
+                $svg_text .= "<g id=svg_weekday_text_$date_unix x='$x_pos_svg_weekday_text' y='$y_pos_svg_weekday_text' width='100%' height='$this->bar_height'>"
+                        . "<text xmlns='http://www.w3.org/1999/xhtml' style='margin-top: 0px;'>"
                         . strftime('%A', $date_unix)
-                        . "</p>"
-                        . "</foreignObject>";
+                        . "</text>"
+                        . "</g>";
                 $this->line++;
             }
             /*
@@ -141,38 +141,41 @@ class roster_image_bar_plot {
                 $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $this->bar_width_factor);
                 $this->x_pos_text = $x_pos_box;
                 $y_pos_box = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
+                $y_pos_text = $y_pos_box + $this->bar_height / 2;
                 $width = $width_in_hours * $this->bar_width_factor;
                 $break_width = $break_width_in_hours * $this->bar_width_factor;
                 $work_box_id = "work_box_" . $this->line . '_' . $roster_item->date_unix;
                 $break_box_id = "break_box_" . $this->line . '_' . $roster_item->date_unix;
 
-                $svg_box_text .= "<foreignObject id=$work_box_id "
-                        . "onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"group\")' "
-                        . "x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' "
-                        . "data-line='$this->line' "
-                        . "data-date_unix='$date_unix' "
-                        . "data-employee_key='$employee_key' "
-                        . "data-box_type='work_box' "
-                        . ">";
-                $svg_box_text .= "<p xmlns='http://www.w3.org/1999/xhtml' class='$employee_style_class'>";
+                $svg_box_text .= "<g id=$work_box_id class='work_box' "
+                        . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"group\")' "
+                        . " data-line='$this->line' "
+                        . " data-date_unix='$date_unix' "
+                        . " data-employee_key='$employee_key' "
+                        . " data-box_type='work_box' "
+                        . " >"
+                        . "<rect class='$employee_style_class' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' />";
+                //$svg_box_text .= "\n    <text class='$employee_style_class' x='$x_pos_box' y='$y_pos_box'  text-anchor='middle' alignment-baseline='middle'>";
+                $svg_box_text .= "\n    <text x='$x_pos_box' y='" . $y_pos_text . "'  alignment-baseline='middle'>";
                 if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
                     $svg_box_text .= $workforce->List_of_employees[$employee_key]->last_name;
                 } else {
                     $svg_box_text .= gettext("Unknown employee") . ":" . $employee_key;
                 }
-                $svg_box_text .= "<span>$working_hours</span>";
-                $svg_box_text .= "</p>";
-                $svg_box_text .= "</foreignObject>";
+                $svg_box_text .= "\n        <tspan alignment-baseline='inherit'>&nbsp$working_hours</tspan>";
+                $svg_box_text .= "\n    </text>";
+                $svg_box_text .= "</g>";
 
-                $svg_box_text .= "<rect id='$break_box_id' "
-                        . "onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"single\")' "
-                        . "x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' "
+                $svg_box_text .= "<g class='break_box' "
+                        . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"single\")' "
+                        . " data-box_type='break_box' "
+                        . " data-line='$this->line' "
+                        . " data-employee_key=$employee_key "
+                        . " data-date_unix=$date_unix "
+                        . "><!--This group exists, beacause the work_box also has to be in a group.--><rect id='$break_box_id' "
+                        . " x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' "
                         . " "
-                        . "data-line='$this->line' "
-                        . "data-box_type='break_box' "
-                        . "data-employee_key=$employee_key "
-                        . "data-date_unix=$date_unix "
-                        . "/>\n";
+                        . "/><text><!--This text is intentionally left blank.--><text></g>\n";
                 $this->line++;
             }
             $svg_text .= $svg_box_text;

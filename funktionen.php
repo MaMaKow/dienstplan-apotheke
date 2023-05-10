@@ -33,9 +33,15 @@ function create_cookie(string $cookie_name, $cookie_value, float $days = 7) {
         $expires = $Expire_obj->getTimestamp();
         $path = PDR_HTTP_SERVER_APPLICATION_PATH;
         $domain = "." . PDR_HTTP_SERVER_DOMAIN; //The dot is necessary for all domains, which are no subdomains, at least for some browsers.
-        $secure = true;
-        $httponly = true;
-        setcookie($name, $value, $expires, $path, $domain, $secure, $httponly);
+        $arr_cookie_options = array(
+            'expires' => $expires,
+            'path' => $path,
+            'domain' => $domain, // leading dot for compatibility or use subdomain
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => "Strict", // None || Lax  || Strict
+        );
+        setcookie($name, $value, $arr_cookie_options);
     }
 }
 

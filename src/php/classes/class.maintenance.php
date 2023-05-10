@@ -69,8 +69,19 @@ class maintenance {
              */
             alternating_week::reorganize_ids();
             $this->cleanup_database_table_saturday_rotation();
+            $this->cleanup_database_table_task_rotation();
             $this->cleanup_database_table_overtime();
+            $this->cleanup_database_table_absence();
+            $this->cleanup_database_table_emergency_service();
+            $this->cleanup_database_table_approval();
+            $this->cleanup_database_table_principle_roster();
+            $this->cleanup_database_table_principle_roster_archive();
+            $this->cleanup_database_table_saturday_rotation_teams();
             $this->cleanup_database_table_roster();
+            $this->cleanup_database_table_users_lost_password_token();
+            $this->cleanup_database_table_user_email_notification_cache();
+            $this->cleanup_database_table_users();
+            $this->cleanup_database_table_employees();
             /*
              * __destruct():
              */
@@ -92,7 +103,7 @@ class maintenance {
      *
      * @return void
      */
-    protected function cleanup_database_table_saturday_rotation() {
+    private function cleanup_database_table_saturday_rotation() {
         $sql_query = "DELETE FROM `saturday_rotation` WHERE YEAR(`date`) < YEAR(now()-interval 24 month);";
         database_wrapper::instance()->run($sql_query);
     }
@@ -102,8 +113,28 @@ class maintenance {
      *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
      *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
      */
-    protected function cleanup_database_table_overtime() {
+    private function cleanup_database_table_overtime() {
         $sql_query = "DELETE FROM `Stunden` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * @see Arbeitszeitgesetz / § 16 Aushang und Arbeitszeitnachweise
+     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
+     *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
+     */
+    private function cleanup_database_table_absence() {
+        $sql_query = "DELETE FROM `absence` WHERE YEAR(`end`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * @see Arbeitszeitgesetz / § 16 Aushang und Arbeitszeitnachweise
+     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
+     *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
+     */
+    private function cleanup_database_table_emergency_service() {
+        $sql_query = "DELETE FROM `Notdienst` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
         database_wrapper::instance()->run($sql_query);
     }
 
@@ -111,8 +142,70 @@ class maintenance {
      * Wie lange müssen Zeiterfassungsdaten aufbewahrt werden?
      * In Deutschland müssen Arbeitszeitaufzeichnungen 2 Jahre aufbewahrt werden.
      */
-    protected function cleanup_database_table_roster() {
+    private function cleanup_database_table_roster() {
         $sql_query = "DELETE FROM `Dienstplan` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_principle_roster() {
+        $sql_query = "DELETE principle_roster FROM principle_roster LEFT JOIN employees
+            ON principle_roster.employee_key = employees.primary_key
+            WHERE employees.end_of_employment < NOW();";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_principle_roster_archive() {
+        $sql_query = "DELETE principle_roster_archive FROM principle_roster_archive LEFT JOIN employees
+            ON principle_roster.employee_key = employees.primary_key
+            WHERE YEAR(employees.end_of_employment) < YEAR(NOW() - INTERVAL 48 month);";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_users() {
+        $sql_query = "DELETE users FROM users LEFT JOIN employees
+            ON users.employee_key = employees.primary_key
+            WHERE employees.end_of_employment < NOW() - INTERVAL 1 month;";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_saturday_rotation_teams() {
+        $sql_query = "DELETE saturday_rotation_teams FROM saturday_rotation_teams LEFT JOIN employees
+            ON saturday_rotation_teams.employee_key = employees.primary_key
+            WHERE employees.end_of_employment < NOW() - INTERVAL 1 month;";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * Wie lange müssen Zeiterfassungsdaten aufbewahrt werden?
+     * In Deutschland müssen Arbeitszeitaufzeichnungen 2 Jahre aufbewahrt werden.
+     */
+    private function cleanup_database_table_approval() {
+        $sql_query = "DELETE FROM `approval` WHERE YEAR(`date`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_task_rotation() {
+        $sql_query = "DELETE FROM `task_rotation` WHERE YEAR(`date`) < YEAR(now()-interval 12 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * Employees are bound in multiple tables through CONSTRAINTs.
+     * An employee can only be deleted, if all of its rosters, absences, overtimes etc. are deleted beforehand.
+     * This data is typically deleted after four years (now()-interval 48 month)
+     */
+    private function cleanup_database_table_employees() {
+        $sql_query = "DELETE IGNORE FROM employees WHERE end_of_employment < now();";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_users_lost_password_token() {
+        $sql_query = "DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY;";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_user_email_notification_cache() {
+        $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `date` <= NOW() - INTERVAL 1 DAY;";
         database_wrapper::instance()->run($sql_query);
     }
 

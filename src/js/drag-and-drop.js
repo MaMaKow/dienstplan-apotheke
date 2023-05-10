@@ -33,13 +33,11 @@ function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
     }
 
 
-    if (moveType === 'single') {
-        selectedElement = evt.target;
-    } else if (moveType === 'group') {
-        selectedElement = evt.target.parentNode;
-    } else {
-        console.error('Error: roster_change_table_on_drag_of_bar_plot() has to be called with a moveType of either "single" or "group"!' + evt + ", " + moveType);
-    }
+    /**
+     * @todo Cange the signature of this function! movetype can be (safely) removed.
+     * We now have everything inside of groups.
+     */
+    selectedElement = evt.target.parentNode;
     firstX = evt.clientX;
     firstY = evt.clientY;
     currentX = evt.clientX;
@@ -47,7 +45,9 @@ function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
     selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
     selectedElement.classList.add("selected");
     if (selectedElement.firstChild) {
-        selectedElement.firstChild.classList.add("selected");
+        if (selectedElement.firstChild.classList) { // TODO: The number of working hours is a child of the text. When the drag and drop occurs on the number, it will not have a child with a classlist.
+            selectedElement.firstChild.classList.add("selected");
+        }
     }
     selectedElement.parentNode.setAttributeNS(null, "onmousemove", "moveElement(evt)");
 }
@@ -58,7 +58,10 @@ function moveElement(evt) {
         return false;
     }
     var dx = (evt.clientX - currentX) * 0.8;
-    selectedElement.x.baseVal.value += dx;
+    let rectElement = selectedElement.children[0];
+    let textElement = selectedElement.children[1];
+    rectElement.x.baseVal.value += dx;
+    textElement.x.baseVal.value += dx;
     currentX = evt.clientX;
     currentY = evt.clientY;
     return true;
@@ -66,17 +69,18 @@ function moveElement(evt) {
 function deselectElement(evt) {
     var result = null;
     if (selectedElement !== 0) {
-        var svg_element = selectedElement.parentNode.parentNode;
-        var box_type = selectedElement.dataset.box_type;
-        var date_unix = selectedElement.dataset.date_unix;
-        var line = selectedElement.dataset.line;
+        let svg_element = selectedElement.parentNode.parentNode;
+        let box_type = selectedElement.dataset.box_type;
+        let date_unix = selectedElement.dataset.date_unix;
+        let line = selectedElement.dataset.line;
+        let rectElement = selectedElement.children[0];
 
-        var bar_width_factor = svg_element.dataset.bar_width_factor;
+        let bar_width_factor = svg_element.dataset.bar_width_factor;
 
-        var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
-        var start_hour_float = Math.round((selectedElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
-        selectedElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
-        var end_hour_float = (selectedElement.x.baseVal.value - margin_before_bar + selectedElement.width.baseVal.value) / bar_width_factor;
+        let margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
+        let start_hour_float = Math.round((rectElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
+        rectElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
+        let end_hour_float = (rectElement.x.baseVal.value - margin_before_bar + rectElement.width.baseVal.value) / bar_width_factor;
         if (start_hour_float < 0 || end_hour_float >= 24) {
             /**
              * <p lang=de>
@@ -107,7 +111,9 @@ function deselectElement(evt) {
         selectedElement.removeAttributeNS(null, "onmouseup");
         selectedElement.classList.remove("selected");
         if (selectedElement.firstChild) {
-            selectedElement.firstChild.classList.remove("selected");
+            if (selectedElement.firstChild.classList) {
+                selectedElement.firstChild.classList.remove("selected");
+            }
         }
         selectedElement = 0;
         return result;
