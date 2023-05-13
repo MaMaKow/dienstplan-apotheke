@@ -24,7 +24,7 @@ var currentMatrix = 0;
 var firstX = 0;
 var firstY = 0;
 
-function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
+function roster_change_table_on_drag_of_bar_plot(evt) {
     if (!document.getElementById('roster_form') && !document.getElementById('principle_roster_form')) {
         /*
          * If there is no roster form, then there is nothing to change by moving around.
@@ -58,8 +58,8 @@ function moveElement(evt) {
         return false;
     }
     var dx = (evt.clientX - currentX) * 0.8;
-    let rectElement = selectedElement.children[0];
-    let textElement = selectedElement.children[1];
+    var rectElement = selectedElement.children[0];
+    var textElement = selectedElement.children[1];
     rectElement.x.baseVal.value += dx;
     textElement.x.baseVal.value += dx;
     currentX = evt.clientX;
@@ -69,18 +69,18 @@ function moveElement(evt) {
 function deselectElement(evt) {
     var result = null;
     if (selectedElement !== 0) {
-        let svg_element = selectedElement.parentNode.parentNode;
-        let box_type = selectedElement.dataset.box_type;
-        let date_unix = selectedElement.dataset.date_unix;
-        let line = selectedElement.dataset.line;
-        let rectElement = selectedElement.children[0];
+        var svg_element = selectedElement.parentNode.parentNode;
+        var box_type = selectedElement.dataset.box_type;
+        var date_unix = selectedElement.dataset.date_unix;
+        var line = selectedElement.dataset.line;
+        var rectElement = selectedElement.children[0];
 
-        let bar_width_factor = svg_element.dataset.bar_width_factor;
+        var bar_width_factor = svg_element.dataset.bar_width_factor;
 
-        let margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
-        let start_hour_float = Math.round((rectElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
+        var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
+        var start_hour_float = Math.round((rectElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
         rectElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
-        let end_hour_float = (rectElement.x.baseVal.value - margin_before_bar + rectElement.width.baseVal.value) / bar_width_factor;
+        var end_hour_float = (rectElement.x.baseVal.value - margin_before_bar + rectElement.width.baseVal.value) / bar_width_factor;
         if (start_hour_float < 0 || end_hour_float >= 24) {
             /**
              * <p lang=de>
@@ -211,6 +211,9 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     var roster_item = Roster_array[date_unix][roster_row_iterator];
     var bar_element_id = 'work_box_' + roster_row_iterator + '_' + date_unix;
     var bar_element = document.getElementById(bar_element_id);
+    var rect_element = bar_element.getElementsByTagName("rect")[0];
+    var employee_name_text_element = bar_element.getElementsByTagName("text")[0];
+    var working_hours_tspan_element = employee_name_text_element.getElementsByTagName("tspan")[0];
 
     if (!bar_element) {
         /*
@@ -227,7 +230,7 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     var duty_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_start_sql']);
     var duty_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_end_sql']);
     /*
-     * TODO: Insert error handling here. When the employe is changed to null and the break is edited, there is an error, which does not recover just by again adding the employee.
+     * TODO: Insert error handling here. When the employee is changed to null and the break is edited, there is an error, which does not recover just by again adding the employee.
      */
     var break_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_start_sql']);
     var break_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_end_sql']);
@@ -238,9 +241,8 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
             -
             (duty_start_object.getHours() + duty_start_object.getMinutes() / 60)
             ) * bar_width_factor;
-
-    bar_element.setAttributeNS(null, 'x', new_bar_x);
-    bar_element.setAttributeNS(null, 'width', new_bar_width);
+    rect_element.setAttributeNS(null, 'x', new_bar_x);
+    rect_element.setAttributeNS(null, 'width', new_bar_width);
 
     /*
      * lunch break:
@@ -265,12 +267,15 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
         break_box_element.x.baseVal.value = new_box_x;
         break_box_element.width.baseVal.value = new_box_width;
     }
-    var employee_name_p_element = bar_element.childNodes[0];
-    var employee_name_text_element = bar_element.childNodes[0].childNodes[0];
-    var working_hours_span = bar_element.childNodes[0].childNodes[1];
-    employee_name_text_element.nodeValue = List_of_employee_names[roster_item['employee_key']];
-    employee_name_p_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_key']]);
-    working_hours_span.innerText = roster_item['working_hours'];
+    employee_name_text_element.textContent = List_of_employee_names[roster_item['employee_key']];
+    /**
+     * After the textContent of the <text> has been changed, the <tspan> element
+     * and its content are gone.
+     * We have to set it back as a child of the <text>:
+     */
+    employee_name_text_element.appendChild(working_hours_tspan_element);
+    working_hours_tspan_element.textContent = " " + roster_item['working_hours'];
+    rect_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_key']]);
 }
 
 function create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, parent_of_bar_elements) {

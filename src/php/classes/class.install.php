@@ -36,7 +36,7 @@ class install {
      * The requirements have been calculated by phpcompatinfo-5.0.12
      * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
      */
-    const PHP_VERSION_ID_REQUIRED = 70002;
+    const PHP_VERSION_ID_REQUIRED = 70300;
 
     function __construct() {
         $this->Error_message = array();

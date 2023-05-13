@@ -148,7 +148,7 @@ class roster_image_bar_plot {
                 $break_box_id = "break_box_" . $this->line . '_' . $roster_item->date_unix;
 
                 $svg_box_text .= "<g id=$work_box_id class='work_box' "
-                        . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"group\")' "
+                        . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt)' "
                         . " data-line='$this->line' "
                         . " data-date_unix='$date_unix' "
                         . " data-employee_key='$employee_key' "
@@ -167,7 +167,7 @@ class roster_image_bar_plot {
                 $svg_box_text .= "</g>";
 
                 $svg_box_text .= "<g class='break_box' "
-                        . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt, \"single\")' "
+                        . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt)' "
                         . " data-box_type='break_box' "
                         . " data-line='$this->line' "
                         . " data-employee_key=$employee_key "
