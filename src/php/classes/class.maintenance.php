@@ -27,7 +27,7 @@ class maintenance {
     /**
      * @var int MAINTENANCE_PERIOD_IN_SECONDS the minimum time between two maintenance executions
      */
-    const MAINTENANCE_PERIOD_IN_SECONDS = PDR_ONE_DAY_IN_SECONDS;
+    const MAINTENANCE_PERIOD_IN_SECONDS = 24 * 60 * 60;
 
     /**
      * @var int <p>unix time stamp of the last execution time of the maintenance functions</p>
@@ -156,7 +156,7 @@ class maintenance {
 
     private function cleanup_database_table_principle_roster_archive() {
         $sql_query = "DELETE principle_roster_archive FROM principle_roster_archive LEFT JOIN employees
-            ON principle_roster.employee_key = employees.primary_key
+            ON principle_roster_archive.employee_key = employees.primary_key
             WHERE YEAR(employees.end_of_employment) < YEAR(NOW() - INTERVAL 48 month);";
         database_wrapper::instance()->run($sql_query);
     }
