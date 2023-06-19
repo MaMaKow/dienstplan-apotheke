@@ -88,7 +88,7 @@ class absence {
         gettext('changed_after_approval');
     }
 
-    public static function insert_absence(int $employee_id, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string $approval) {
+    public static function insert_absence(int $employee_id, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string|null $approval) {
         $sql_query = "INSERT INTO `absence` "
                 . "(employee_id, start, end, days, reason_id, comment, user, approval) "
                 . "VALUES (:employee_id, :start, :end, :days, :reason_id, :comment, :user, :approval)";
@@ -101,7 +101,7 @@ class absence {
                 'reason_id' => $reason_id,
                 'comment' => $comment,
                 'user' => $_SESSION['user_object']->user_name,
-                'approval' => $approval
+                'approval' => (!is_null($approval)) ? $approval : "not_yet_approved"
             ));
         } catch (Exception $exception) {
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
