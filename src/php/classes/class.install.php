@@ -123,7 +123,12 @@ class install {
             echo $this->build_error_message_div();
             die("Could not connect to the database.");
         }
-
+        if (!$this->database_exists($this->Config["database_name"])) {
+            /*
+             * Bei der ersten Verbindung mit mysql existiert die Datenbank vermutlich noch nicht.
+             */
+            return NULL;
+        }
         $this->pdo->exec("USE " . $this->Config["database_name"]);
         return $this->pdo->errorInfo();
     }
@@ -220,12 +225,18 @@ class install {
         /*
          * Create the user:
          */
-        $statement = $this->pdo->prepare("CREATE USER :database_user@:database_host IDENTIFIED BY :database_password");
-        $result = $statement->execute(array(
-            'database_user' => $this->Config["database_user_self"],
-            'database_host' => "localhost",
-            'database_password' => $this->Config["database_password_self"],
-        ));
+        try {
+            $statement = $this->pdo->prepare("CREATE USER :database_user@:database_host IDENTIFIED BY :database_password");
+            $result = $statement->execute(array(
+                'database_user' => $this->Config["database_user_self"],
+                'database_host' => "localhost",
+                'database_password' => $this->Config["database_password_self"],
+            ));
+        } catch (Exception $exception) {
+            error_log($exception->getMessage());
+            error_log("The database user " . $this->Config["database_user_self"] . " could not be created.");
+            return FALSE;
+        }
         /*
          * PDOStatement::execute will return TRUE on success or FALSE on failure.
          */
@@ -591,7 +602,7 @@ class install {
         }
         $connect_error_info = $this->connect_to_database();
 
-        if ($connect_error_info[1] === 1049) {
+        if (is_null($connect_error_info) or $connect_error_info[1] === 1049) {
             /*
              * Unknown database
              * Maybe we are able to just create that database.
@@ -758,9 +769,11 @@ class install {
                 $sql_create_table_statement = preg_replace($pattern, "$1 $2", $sql_create_table_statement);
             }
             $statement = $this->pdo->prepare($sql_create_table_statement);
-            $result = $statement->execute();
-            if (TRUE !== $result) {
+            try {
+                $result = $statement->execute();
+            } catch (Exception $exception) {
                 $list_of_failed_statements[] = $statement;
+                error_log($exception->getMessage());
             }
         }
         while (array() !== $list_of_failed_statements) {
@@ -777,9 +790,13 @@ class install {
                 break;
             }
             foreach ($list_of_failed_statements as $key => $failed_statement) {
-                $result = $failed_statement->execute();
-                if (TRUE === $result) {
-                    unset($list_of_failed_statements[$key]);
+                try {
+                    $result = $failed_statement->execute();
+                    if (TRUE === $result) {
+                        unset($list_of_failed_statements[$key]);
+                    }
+                } catch (Exception $exception) {
+                    error_log($exception->getMessage());
                 }
             }
         }
@@ -846,12 +863,13 @@ class install {
      * Test if some database user exists:
      */
     private function database_user_exists($database_user_name) {
-        $statement = $this->pdo->prepare("SELECT EXISTS (SELECT 1 FROM mysql.user WHERE user = :database_user_name) AS `exists`");
+        //$statement = $this->pdo->prepare("SELECT EXISTS (SELECT 1 FROM mysql.user WHERE user = :database_user_name) AS `exists`");
+        $statement = $this->pdo->prepare("SELECT COUNT(*) AS user_exists FROM INFORMATION_SCHEMA.USER_PRIVILEGES WHERE GRANTEE LIKE :database_user_name;");
         $result = $statement->execute(array(
-            "database_user_name" => $database_user_name,
+            "database_user_name" => "'" . $database_user_name . "'@%",
         ));
         while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
-            if (1 == $row->exists) {
+            if (1 <= $row->exists) {
                 return TRUE;
             }
         }

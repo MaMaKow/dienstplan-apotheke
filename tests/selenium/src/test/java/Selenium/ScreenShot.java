@@ -20,6 +20,7 @@ package Selenium;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -57,9 +58,9 @@ public class ScreenShot {
                     + testResult.getMethod().getMethodName()
                     //+ "-"
                     //+ Arrays.toString(testResult.getParameters())
-                    + ".jpg"));
-        } catch (IOException exception) {
-            Logger.getLogger(ScreenShot.class.getName()).log(Level.SEVERE, null, exception);
+                    + ".jpg"), true, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            Logger.getLogger(ScreenShot.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -153,8 +153,8 @@ class roster_image_bar_plot {
                         . " data-date_unix='$date_unix' "
                         . " data-employee_key='$employee_key' "
                         . " data-box_type='work_box' "
-                        . " >"
-                        . "<rect class='$employee_style_class' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' />";
+                        . " >\n"
+                        . "<rect class='$employee_style_class' data-employee_key='$employee_key' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' />";
                 //$svg_box_text .= "\n    <text class='$employee_style_class' x='$x_pos_box' y='$y_pos_box'  text-anchor='middle' alignment-baseline='middle'>";
                 $svg_box_text .= "\n    <text x='$x_pos_box' y='" . $y_pos_text . "'  alignment-baseline='middle'>";
                 if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
@@ -172,7 +172,7 @@ class roster_image_bar_plot {
                         . " data-line='$this->line' "
                         . " data-employee_key=$employee_key "
                         . " data-date_unix=$date_unix "
-                        . "><!--This group exists, beacause the work_box also has to be in a group.--><rect id='$break_box_id' "
+                        . "><!--This group exists, beacause the work_box also has to be in a group.--><rect id='$break_box_id' data-employee_key='$employee_key' "
                         . " x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' "
                         . " "
                         . "/><text><!--This text is intentionally left blank.--><text></g>\n";

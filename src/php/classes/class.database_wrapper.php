@@ -87,7 +87,7 @@ class database_wrapper {
      *  @return PDO Object of class PDO
      */
     public static function instance() {
-        if (self::$instance === null) {
+        if (null === self::$instance) {
             self::$instance = new self;
         }
         return self::$instance;

@@ -12,15 +12,6 @@ Beim Speichern der Grundpläne erkennt das Programm nicht, wenn jemand gelöscht
 
 principle-roster-employee.php input does not work AGAIN!
 
-update_database requires the hash to be rewritten before commit. Does that still hapen? Do we need a new hook?
-
-* Upload a PEP file to upload-pep.php **FAILED**
-
-
-* Sorry, there was an error uploading your file
-
-
-* Error not reproducible
 
 Mitarbeiter anlegen und speichern: Leere Werte für Urlaub ergeben einen Datenbankfehler. Bitte im Frontend vorher Werte >0 erzwingen
 
@@ -352,8 +343,5 @@ Write selenium tests for maintenance
 Logviewer für das error.log in die / in eine Administraor-Ansicht einbauen.
 
 Löschen von Usern inklusive Löschen von Benutzerberechtigungen
-
-write a bootstrap, that is not default.php make it load everything but the session management. I want to use it for maintenance.
-It would probably be wise to call that file from default.php. So the code will be easier to maintain.
 
 Get rid of PDR_ONE_DAY_IN_SECONDS!

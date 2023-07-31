@@ -277,8 +277,12 @@ public class TestDayPage extends TestPage {
             /**
              * Revert the changes for the next test:
              */
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeKey, -dutyOffset, "duty");
-            dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeKey, -breakOffset, "break");
+            dayPage.changeRosterInputDutyStart(employeeKey, principleRosterItem.getDutyStart());
+            dayPage.changeRosterInputDutyEnd(employeeKey, principleRosterItem.getDutyEnd());
+            //dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeKey, -dutyOffset, "duty");
+            dayPage.changeRosterInputBreakStart(employeeKey, principleRosterItem.getBreakStart());
+            dayPage.changeRosterInputBreakEnd(employeeKey, principleRosterItem.getBreakEnd());
+            //dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeKey, -breakOffset, "break");
             dayPage.rosterFormSubmit();
             softAssert.assertAll();
         } catch (ParseException ex) {

@@ -144,7 +144,7 @@ class workforce {
         }
     }
 
-    public function get_employee_object(int $employee_key) {
+    public function get_employee_object(int|null $employee_key) {
         if (isset(self::$List_of_all_employees[$employee_key])) {
             if (self::$List_of_all_employees[$employee_key] instanceof employee) {
                 return self::$List_of_all_employees[$employee_key];

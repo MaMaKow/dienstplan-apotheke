@@ -73,6 +73,30 @@ public class PropertyFile {
         throw new RuntimeException("testPageUrl not specified in the Configuration.properties file.");
     }
 
+    public String getRealTestPageUrl() {
+        String testPageUrl = properties.getProperty("testRealPageUrl");
+        if (null != testPageUrl) {
+            return testPageUrl;
+        }
+        throw new RuntimeException("testPageUrl not specified in the Configuration.properties file.");
+    }
+
+    public String getRealUsername() {
+        String testRealUsername = properties.getProperty("testRealUsername");
+        if (null != testRealUsername) {
+            return testRealUsername;
+        }
+        throw new RuntimeException("testRealUsername not specified in the Configuration.properties file.");
+    }
+
+    public String getRealPassword() {
+        String testRealPassword = properties.getProperty("testRealPassword");
+        if (null != testRealPassword) {
+            return testRealPassword;
+        }
+        throw new RuntimeException("testRealPassword not specified in the Configuration.properties file.");
+    }
+
     private void setProperty(String propertyName, String propertyValue) {
         FileOutputStream fileOutputStream = null;
         try {

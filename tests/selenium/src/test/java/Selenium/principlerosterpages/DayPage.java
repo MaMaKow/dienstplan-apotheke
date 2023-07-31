@@ -22,6 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -401,15 +402,56 @@ public class DayPage {
         buttonSubmitElement.click();
     }
 
-    private WebElement getRosterPlotDutyElementByEmployeeKey(int employeeKey) {
-        By elementBy = By.xpath("//*[contains(@id, \"work_box_\") and @data-employee_key=\"" + employeeKey + "\"]/p");
-        WebElement element = driver.findElement(elementBy);
+    private WebElement getSvgElementOnPage() {
+        By svgBy = By.xpath("/html/body/div[3]/div[3]/div/*");
+        List<WebElement> elementList = driver.findElements(svgBy);
+        WebElement svgElement;
+        for (Iterator<WebElement> iterator = elementList.iterator(); iterator.hasNext();) {
+            WebElement nextElement = iterator.next();
+            if ("svg".equals(nextElement.getTagName())) {
+                svgElement = nextElement;
+                return svgElement;
+            }
+        }
+        return null;
+    }
+
+    private WebElement getRectElementInSvgGroup(WebElement svgElement) throws Exception {
+        if (!svgElement.getTagName().equals("g")) {
+            throw new Exception("This function may only be used to search for a rect in a group of an svg element.");
+        }
+        By rectBy = By.xpath(".//*");
+        List<WebElement> elementList = svgElement.findElements(rectBy);
+        WebElement rectElement;
+        for (Iterator<WebElement> iterator = elementList.iterator(); iterator.hasNext();) {
+            WebElement nextElement = iterator.next();
+            if ("rect".equals(nextElement.getTagName())) {
+                rectElement = nextElement;
+                return rectElement;
+            }
+        }
+        return null;
+    }
+
+    private WebElement getRosterPlotDutyElementByEmployeeKey(int employeeKey) throws Exception {
+        By workBoxGroupBy = By.xpath(".//*[contains(@id, \"work_box_\") and @data-employee_key=\"" + employeeKey + "\"]");
+        WebElement svgElement = getSvgElementOnPage();
+        if (null == svgElement) {
+            return null;
+        }
+        WebElement workBoxGroupElement = svgElement.findElement(workBoxGroupBy);
+        WebElement element = getRectElementInSvgGroup(workBoxGroupElement);
         return element;
     }
 
-    private WebElement getRosterPlotBreakElementByEmployeeKey(int employeeKey) {
-        By elementBy = By.xpath("//*[contains(@id, \"break_box_\") and @data-employee_key=\"" + employeeKey + "\"]");
-        WebElement element = driver.findElement(elementBy);
+    private WebElement getRosterPlotBreakElementByEmployeeKey(int employeeKey) throws Exception {
+        By breakBoxGroupBy = By.xpath(".//*[contains(@data-box_type, \"break_box\") and @data-employee_key=\"" + employeeKey + "\"]");
+        WebElement svgElement = getSvgElementOnPage();
+        if (null == svgElement) {
+            return null;
+        }
+        WebElement breakBoxGroupElement = svgElement.findElement(breakBoxGroupBy);
+        WebElement element = getRectElementInSvgGroup(breakBoxGroupElement);
         return element;
     }
 
@@ -472,7 +514,6 @@ public class DayPage {
             wait.until(ExpectedConditions.attributeToBe(breakStartInputBy, "value", rosterItemReadBefore.getBreakStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
             wait.until(ExpectedConditions.attributeToBe(breakEndInputBy, "value", rosterItemReadBefore.getBreakEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
         } else {
-            System.err.println("fail");
             String message = "dutyOrBreak must be duty or break" + dutyOrBreak + "given.";
             throw new Exception(message);
         }

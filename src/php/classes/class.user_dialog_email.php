@@ -208,24 +208,32 @@ class user_dialog_email {
          * which was created in exactly that moment
          * between the SELECT search and the TRUNCATE deletion.
          */
-        database_wrapper::instance()->beginTransaction();
-        $sql_query = "SELECT `notification_id` "
-                . " FROM `user_email_notification_cache`;";
-        $result = database_wrapper::instance()->run($sql_query);
-        $table_is_empty = TRUE;
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $table_is_empty = FALSE;
-            break;
+        try {
+            database_wrapper::instance()->beginTransaction();
+            $sql_query = "SELECT `notification_id` "
+                    . " FROM `user_email_notification_cache`;";
+            $result = database_wrapper::instance()->run($sql_query);
+            $table_is_empty = TRUE;
+            while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+                $table_is_empty = FALSE;
+                break;
+            }
+            if ($table_is_empty) {
+                /*
+                 * TRUNCATE the table if it is empty.
+                 * This will reset the AUTO_INCREMENT value of `notification_id`
+                 * TRUNCATE will implicitly commit all transactions.
+                 */
+                $sql_query = "TRUNCATE TABLE `user_email_notification_cache`;";
+                database_wrapper::instance()->run($sql_query);
+            }
+            if (database_wrapper::instance()->inTransaction()) {
+                database_wrapper::instance()->commit();
+            }
+        } catch (Exception $exception) {
+            error_log($exception->getMessage());
+            error_log($exception->getTraceAsString());
         }
-        if ($table_is_empty) {
-            /*
-             * TRUNCATE the table if it is empty.
-             * This will reset the AUTO_INCREMENT value of `notification_id`
-             */
-            $sql_query = "TRUNCATE TABLE `user_email_notification_cache`;";
-            database_wrapper::instance()->run($sql_query);
-        }
-        database_wrapper::instance()->commit();
     }
 
     private function send_email_about_changed_roster_to_employees($user_key, $message, $ics_file_string) {

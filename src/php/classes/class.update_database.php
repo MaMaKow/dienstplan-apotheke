@@ -404,7 +404,7 @@ class update_database {
          * <p lang=de>Alte Mitarbeiter zurück in die employees table holen:</p>
          */
         $Sql_query_array[] = "DROP TRIGGER IF EXISTS `backup_employee_data`;";
-        //$Sql_query_array[] = "DELETE `employees_backup` FROM `employees`  LEFT JOIN `employees_backup` ON `employees`.`primary_key` = `employees_backup`.`backup_id` WHERE `employees`.`last_name` = `employees_backup`.`last_name` AND `employees`.`first_name` = `employees_backup`.`first_name`;";
+        $Sql_query_array[] = "DELETE `employees_backup` FROM `employees`  LEFT JOIN `employees_backup` ON `employees`.`primary_key` = `employees_backup`.`backup_id` WHERE `employees`.`last_name` = `employees_backup`.`last_name` AND `employees`.`first_name` = `employees_backup`.`first_name`;";
         $Sql_query_array[] = "INSERT IGNORE INTO employees (SELECT * FROM `employees_backup`);";
         $Sql_query_array[] = "INSERT IGNORE INTO employees (`id`, `last_name`, `first_name`, `profession`,
   `working_week_hours`, `holidays`, `lunch_break_minutes`, `goods_receipt`, `compounding`,
@@ -417,8 +417,15 @@ class update_database {
          * Delete employees with same id and first name;
          * Keep the row with the bigger timestamp:
          */
+        $Sql_query_array[] = "UPDATE `employees` SET start_of_employment = NULL WHERE start_of_employment = '0000-00-00';";
+        $Sql_query_array[] = "UPDATE `employees` SET end_of_employment = NULL WHERE end_of_employment = '0000-00-00';";
+
         $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.last_name = t2.last_name AND t1.start_of_employment = t2.start_of_employment";
         $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.first_name = t2.first_name AND t1.start_of_employment = t2.start_of_employment;";
+
+        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.last_name = t2.last_name";
+        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.first_name = t2.first_name";
+
         $Sql_query_array[] = "TRUNCATE TABLE `employees_backup`";
 
         if (!database_wrapper::database_table_column_exists($config['database_name'], "users", "primary_key")) {
@@ -656,7 +663,7 @@ class update_database {
         $Sql_query_array[] = "ALTER TABLE `users_lost_password_token` DROP `employee_id`;";
         $Sql_query_array[] = "ALTER TABLE `users_privileges` DROP `employee_id`;";
         /**
-         * @todo Add all the new and old CONSTRAINTs!
+         * Add all the new and old CONSTRAINTs:
          */
         $Sql_query_array[] = "ALTER TABLE `absence` ADD FOREIGN KEY (`employee_key`) REFERENCES `employees`(`primary_key`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
 
