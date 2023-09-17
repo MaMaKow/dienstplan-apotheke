@@ -64,7 +64,7 @@ function build_lost_password_form($user_key, $token) {
 
 if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'user_key')) {
     $user_key = filter_input(INPUT_GET, 'user_key', FILTER_SANITIZE_NUMBER_INT);
-    $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
+    $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     /*
      * Remove expired tokens:
@@ -74,7 +74,7 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'user_key')
 } elseif (filter_has_var(INPUT_POST, 'user_key')) {
     $error = FALSE;
     $user_key = filter_input(INPUT_POST, 'user_key', FILTER_SANITIZE_NUMBER_INT);
-    $token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING);
+    $token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 

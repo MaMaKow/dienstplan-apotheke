@@ -19,7 +19,7 @@ require '../../../default.php';
 
 if (filter_has_var(INPUT_GET, 'request_new_password')) {
     $token = sha1(uniqid());
-    $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_STRING);
+    $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $user_dialog = new user_dialog();
     if (!empty($identifier)) {
         $user_base = new \PDR\Workforce\user_base();

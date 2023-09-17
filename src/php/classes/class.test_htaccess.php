@@ -53,7 +53,7 @@ class test_htaccess {
         $user_dialog = new user_dialog();
         $hostname = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
 
-        $input_server_https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_STRING);
+        $input_server_https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $protocol = 'http';
         if (!empty($input_server_https) and $input_server_https === "on") {
             $protocol = 'https';

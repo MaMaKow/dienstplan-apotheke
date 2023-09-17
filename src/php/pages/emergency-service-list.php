@@ -37,7 +37,7 @@ function handle_user_input() {
     if (!$session->user_has_privilege('create_roster')) {
         return FALSE;
     }
-    $command = user_input::get_variable_from_any_input('command', FILTER_SANITIZE_STRING);
+    $command = user_input::get_variable_from_any_input('command', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $date_new = user_input::get_variable_from_any_input('emergency_service_date', FILTER_SANITIZE_NUMBER_INT);
     $date_old = user_input::get_variable_from_any_input('emergency_service_date_old', FILTER_SANITIZE_NUMBER_INT);
     $branch_id = user_input::get_variable_from_any_input('emergency_service_branch', FILTER_SANITIZE_NUMBER_INT);

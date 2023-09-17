@@ -258,7 +258,7 @@ class absence {
         if (!$session->user_has_privilege('create_absence')) {
             return FALSE;
         }
-        $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING);
+        $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         /*
          * Deleting existing entries:
          */
@@ -270,11 +270,11 @@ class absence {
          */
         if (('insert_new' === $command or 'replace' === $command)) {
             $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
-            $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
-            $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_STRING);
-            $reason_id = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_STRING);
-            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_STRING);
-            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
+            $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $reason_id = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             if (NULL === $employee_key or FALSE === $employee_key) {
                 return FALSE;
             }
@@ -315,9 +315,9 @@ class absence {
         /*
          * TODO: externalize the following part out or get the $start_date_old_sql as a parameter?
          */
-        if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_STRING)) {
+        if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
             database_wrapper::instance()->beginTransaction();
-            $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_STRING);
+            $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             self::delete_absence($employee_key, $start_date_old_sql);
             self::insert_absence($employee_key, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
 
@@ -346,7 +346,7 @@ class absence {
      */
     private static function delete_absence_data() {
         $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
-        $start_date_sql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_STRING);
+        $start_date_sql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         return self::delete_absence($employee_key, $start_date_sql);
     }
 

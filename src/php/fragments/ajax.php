@@ -27,7 +27,7 @@ require_once '../../../default.php';
  * This function is meant to distribute data to the user_page action functions.
  */
 function form_input_user_page() {
-    $receive_emails_opt_in = filter_input(INPUT_POST, 'receive_emails_opt_in', FILTER_SANITIZE_STRING);
+    $receive_emails_opt_in = filter_input(INPUT_POST, 'receive_emails_opt_in', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     if ('true' === $receive_emails_opt_in) {
         return toggle_receive_emails_opt_in(1);
     }
@@ -54,7 +54,7 @@ function toggle_receive_emails_opt_in(int $receive_emails_opt_in) {
 }
 
 if (filter_has_var(INPUT_POST, 'form')) {
-    if ('user_form' === filter_input(INPUT_POST, 'form', FILTER_SANITIZE_STRING)) {
+    if ('user_form' === filter_input(INPUT_POST, 'form', FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
         form_input_user_page();
     }
 } elseif (filter_has_var(INPUT_GET, 'saturdayRotationTeamsRemoveTeamId')) {

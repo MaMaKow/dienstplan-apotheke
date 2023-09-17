@@ -169,7 +169,7 @@ class NetworkOfBranchOffices {
              */
             return FALSE;
         }
-        $script_name = \filter_input(\INPUT_SERVER, 'SCRIPT_NAME', \FILTER_SANITIZE_STRING);
+        $script_name = \filter_input(\INPUT_SERVER, 'SCRIPT_NAME', \FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         if (in_array(basename($script_name), array('branch-management.php'))) {
             /*
              * If we are already on the page, then there is no sense in redirecting.

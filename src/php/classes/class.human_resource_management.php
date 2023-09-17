@@ -38,19 +38,19 @@ abstract class human_resource_management {
     }
 
     public static function write_employee_data_to_database() {
-        if (filter_input(INPUT_POST, "submitStunden", FILTER_SANITIZE_STRING)) {
+        if (filter_input(INPUT_POST, "submitStunden", FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
             $Worker["employee_key"] = filter_input(INPUT_POST, "employee_key", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-            $Worker["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_STRING);
-            $Worker["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_STRING);
-            $Worker["profession"] = filter_input(INPUT_POST, "profession", FILTER_SANITIZE_STRING);
+            $Worker["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $Worker["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $Worker["profession"] = filter_input(INPUT_POST, "profession", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $Worker["working_week_hours"] = filter_input(INPUT_POST, "working_week_hours", FILTER_VALIDATE_FLOAT);
             $Worker["holidays"] = filter_input(INPUT_POST, "holidays", FILTER_VALIDATE_INT);
             $Worker["lunch_break_minutes"] = filter_input(INPUT_POST, "lunch_break_minutes", FILTER_VALIDATE_INT);
             $Worker["goods_receipt"] = filter_input(INPUT_POST, "goods_receipt", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0; //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
             $Worker["compounding"] = filter_input(INPUT_POST, "compounding", FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? 1 : 0; //FILTER_NULL_ON_FAILURE because empty checkboxes are not sent by the browser.
             $Worker["branch"] = filter_input(INPUT_POST, "branch", FILTER_VALIDATE_INT);
-            $Worker["start_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING));
-            $Worker["end_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING));
+            $Worker["start_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+            $Worker["end_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_FULL_SPECIAL_CHARS));
 
 
             $sql_query_deletion = "DELETE FROM `employees` WHERE `primary_key` = :employee_key;";

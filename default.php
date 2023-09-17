@@ -27,5 +27,5 @@ $session = new sessions;
  * Guess the navigator (=browser) language from HTTP_ACCEPT_LANGUAGE:
  * This is used in the head.php
  */
-$navigator_languages = preg_split('/[,;]/', filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_STRING));
+$navigator_languages = preg_split('/[,;]/', filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
 $navigator_language = $navigator_languages[0]; //ignore the other options

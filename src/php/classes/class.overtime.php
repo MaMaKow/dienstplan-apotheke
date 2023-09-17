@@ -27,7 +27,7 @@ class overtime {
     public static function handle_user_input_insert() {
         $user_dialog = new user_dialog();
         $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
-        $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_STRING);
+        $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         list($balance_old, $date_old) = overtime::get_current_balance($employee_key);
         $first_balance_row = overtime::get_first_balance($employee_key);
@@ -36,7 +36,7 @@ class overtime {
          * If the user still wishes to enter the data, the flag user_has_been_warned_about_date_sequence is set to 1.
          * We cancel the execution if that warning has not been approved.
          */
-        $user_has_been_warned_about_date_sequence = filter_input(INPUT_POST, 'user_has_been_warned_about_date_sequence', FILTER_SANITIZE_STRING);
+        $user_has_been_warned_about_date_sequence = filter_input(INPUT_POST, 'user_has_been_warned_about_date_sequence', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         if (strtotime($date) < strtotime($date_old) and 'true' !== $user_has_been_warned_about_date_sequence) {
             $message = gettext('An error has occurred while inserting the overtime data.');
             $user_dialog->add_message($message, E_USER_ERROR);
@@ -65,7 +65,7 @@ class overtime {
                 'date' => $date,
                 'overtime_hours' => $overtime_hours_new,
                 'balance' => $balance_new,
-                'reason' => filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_STRING)
+                'reason' => filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_FULL_SPECIAL_CHARS)
             ));
         } catch (Exception $exception) {
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
@@ -83,7 +83,7 @@ class overtime {
     }
 
     public static function handle_user_input_delete() {
-        $Remove = filter_input(INPUT_POST, 'loeschen', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $Remove = filter_input(INPUT_POST, 'loeschen', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         foreach ($Remove as $employee_key => $Data) {
             $employee_key = intval($employee_key);
             foreach (array_keys($Data) as $date_sql) {

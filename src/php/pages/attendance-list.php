@@ -21,9 +21,9 @@
  */
 
 require '../../../default.php';
-$month_number = user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_STRING, date('n'));
+$month_number = user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('n'));
 create_cookie("month_number", $month_number, 1);
-$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_STRING, date('Y'));
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y'));
 create_cookie("year", $year, 1);
 $start_date_unix = mktime(0, 0, 0, $month_number, 1, $year);
 $date_unix = $start_date_unix;
