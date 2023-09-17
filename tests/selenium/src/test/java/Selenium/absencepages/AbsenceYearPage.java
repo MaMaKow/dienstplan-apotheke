@@ -19,6 +19,7 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import Selenium.driver.Wrapper;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -119,10 +120,8 @@ public class AbsenceYearPage {
          * Send the data:
          */
         absenceFormEmployeeKeyElement.selectByValue(String.valueOf(employeeKey));
-        absenceFormStartIdElement.clear();
-        absenceFormStartIdElement.sendKeys(startDateString);
-        absenceFormEndIdElement.clear();
-        absenceFormEndIdElement.sendKeys(endDateString);
+        Wrapper.fillDateInput(absenceFormStartIdElement, startDateString);
+        Wrapper.fillDateInput(absenceFormEndIdElement, endDateString);
         absenceFormReasonIdElement.selectByVisibleText(reasonString);
         absenceFormCommentIdElement.clear();
         absenceFormCommentIdElement.sendKeys(commentString);
@@ -162,10 +161,8 @@ public class AbsenceYearPage {
              * Send the data:
              */
             absenceFormEmployeeKeyElement.selectByValue(String.valueOf(employeeKey));
-            absenceFormStartIdElement.clear();
-            absenceFormStartIdElement.sendKeys(startDateString);
-            absenceFormEndIdElement.clear();
-            absenceFormEndIdElement.sendKeys(endDateString);
+            Wrapper.fillDateInput(absenceFormStartIdElement, startDateString);
+            Wrapper.fillDateInput(absenceFormEndIdElement, endDateString);
             absenceFormReasonIdElement.selectByVisibleText(reasonString);
             absenceFormCommentIdElement.clear();
             absenceFormCommentIdElement.sendKeys(commentString);

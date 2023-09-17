@@ -22,6 +22,7 @@ import Selenium.TestPage;
 import Selenium.rosterpages.Workforce;
 import java.time.LocalDate;
 import java.time.Month;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 

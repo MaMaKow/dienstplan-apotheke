@@ -33,7 +33,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import org.threeten.extra.YearWeek;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -144,7 +143,7 @@ public class Roster {
                 Set<Map.Entry<String, JsonElement>> jsonDayRosterEntrySet = jsonRosterDay.getAsJsonObject().entrySet();
                 listOfRosterItems = new HashMap<>();
                 for (Map.Entry<String, JsonElement> jsonDayRosterEntry : jsonDayRosterEntrySet) {
-                    int rowNumber = Integer.valueOf(jsonDayRosterEntry.getKey());
+                    int rowNumber = Integer.parseInt(jsonDayRosterEntry.getKey());
                     JsonElement entryValue = jsonDayRosterEntry.getValue();
                     String dutyStart = entryValue.getAsJsonObject().get("dutyStart").getAsString();
                     String dutyEnd = entryValue.getAsJsonObject().get("dutyEnd").getAsString();

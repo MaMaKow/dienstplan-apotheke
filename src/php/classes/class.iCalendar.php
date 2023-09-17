@@ -143,14 +143,19 @@ class iCalendar {
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_name = $List_of_branch_objects[$branch_id]->name;
-        $date_weekday_name = strftime('%A', $date_unix);
+
+        //$locale = 'de_DE';   // Set your desired locale (German in this case)
+        $locale = \PDR\Application\configuration::getLanguage(); // e.g. de-DE
+        $formatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+        $formatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
+        $date_weekday_name = $formatter->format($date_unix);
 
         $text = '';
         $text .= "DESCRIPTION:"
                 . gettext("Calendar file for employee") . " " . $roster_object->employee_key . " (" . $workforce->List_of_employees[$roster_object->employee_key]->full_name . ") \\r\\n"
                 . gettext("contains the roster for") . " $branch_name. \n"
                 . gettext("Weekday") . ": $date_weekday_name\n";
-        if (!empty($mittags_beginn) and!empty($mittags_ende)) {
+        if (!empty($mittags_beginn) and !empty($mittags_ende)) {
             $text .= sprintf(gettext('Lunch from %1$s to %2$s'), $mittags_beginn, $mittags_ende) . "\n";
         }
         $text .= "\n";
@@ -231,5 +236,4 @@ class iCalendar {
         $vTimeZoneString .= "END:VTIMEZONE\r\n";
         return $vTimeZoneString;
     }
-
 }

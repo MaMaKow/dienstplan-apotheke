@@ -22,6 +22,7 @@ import Selenium.Employee;
 import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
+import Selenium.driver.Wrapper;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,12 +56,12 @@ public class TestRosterDayEditPage extends TestPage {
          */
         LocalDate localDate = LocalDate.of(2020, Month.JULY, 1);
         rosterDayEditPage.goToDate(localDate); //This date is a wednesday.
-        assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
+        assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
         rosterDayEditPage.moveDayBackward();
         LocalDate dayBackward = localDate.minusDays(1);
-        assertEquals(dayBackward.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
+        assertEquals(dayBackward.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
         rosterDayEditPage.moveDayForward();
-        assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
+        assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
     }
 
     @Test(enabled = true, dependsOnMethods = {"testDateNavigation", "testRosterEditAdd"})/*passed*/
@@ -108,7 +109,7 @@ public class TestRosterDayEditPage extends TestPage {
         for (Map.Entry<LocalDate, HashMap> listOfRosterDaysEntrySet : listOfRosterDays.entrySet()) {
             LocalDate localDate = listOfRosterDaysEntrySet.getKey();
             rosterDayEditPage.goToDate(localDate);
-            assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString());
+            assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString());
             HashMap<Integer, RosterItem> listOfRosterItems = listOfRosterDaysEntrySet.getValue();
             listOfRosterItems.values().forEach(rosterItem -> {
                 rosterDayEditPage.rosterInputAddRow(rosterItem);

@@ -18,20 +18,28 @@
  */
 package Selenium.driver;
 
+import Selenium.Employee;
 import Selenium.PropertyFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -45,10 +53,13 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class Wrapper {
 
     protected static WebDriver driver;
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY);
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_YEAR_MONTH_DAY = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY);
 
     public Wrapper() {
-        driver = createLocalChromeWebDriver();
-        //driver = createRemoteWebDriver();
+        //driver = createLocalChromeWebDriver();
+        driver = createRemoteWebDriver();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
 
     public static WebDriver getDriver() {
@@ -64,10 +75,28 @@ public class Wrapper {
     }
 
     private WebDriver createRemoteWebDriver() {
-        DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+        //DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+/*
+        FirefoxProfile profile = new FirefoxProfile();
 
+        // Set the download directory preference
+        profile.setPreference("browser.download.dir", "/home/seluser/Downloads");
+        profile.setPreference("browser.download.folderList", 2); // 2: Use specified directory
+
+        // Set other download-related preferences if needed
+        profile.setPreference("browser.download.manager.showWhenStarting", false);
+        profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf"); // Example MIME type
+
+// Create FirefoxOptions and pass the profile
+        FirefoxOptions options = new FirefoxOptions();
+        options.setProfile(profile);
+         */
+        //ChromeOptions options = new ChromeOptions();
+        FirefoxOptions options = new FirefoxOptions();
         try {
-            driver = new RemoteWebDriver(new URL("http://docker.martin-mandelkow.de:4444/wd/hub"), capabilities);
+            //driver = new RemoteWebDriver(new URL("https://martin-mandelkow.de:4444/wd/hub"), capabilities);
+            //driver = new RemoteWebDriver(new URL("http://lcalhost:4444/wd/hub"), options);
+            driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
         } catch (MalformedURLException ex) {
             Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -164,17 +193,60 @@ public class Wrapper {
         }
     }
 
+    /**
+     * Fills a date input field with the provided LocalDate value using
+     * JavaScript execution.
+     *
+     * This method takes a WebElement representing a date input field and a
+     * LocalDate object containing the date to be filled into the input field.
+     * It utilizes JavaScript execution to directly set the value of the input
+     * field to the formatted date string. The date is formatted according to
+     * the specified format using the
+     * Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY formatter.
+     *
+     * @param dateInputElement The WebElement representing the date input field
+     * to be filled.
+     * @param localDate The LocalDate object containing the date to be set in
+     * the input field.
+     * @since 2023-08-08
+     */
+    public static void fillDateInput(WebElement dateInputElement, LocalDate localDate) {
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        String dateString = localDate.format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+        jsExecutor.executeScript("arguments[0].value = arguments[1];", dateInputElement, dateString);
+    }
+
+    /**
+     * Fills a date input field with the provided date string using JavaScript
+     * execution.
+     *
+     * This method takes a WebElement representing a date input field and a
+     * date string in the format specified by
+     * Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR. The date string is parsed
+     * into a LocalDate object, and then the fillDateInput method is called to
+     * populate the input field using the parsed date.
+     *
+     * @param dateInputElement The WebElement representing the date input field
+     * to be filled.
+     * @param localDateString The date string to be parsed and set in the input field.
+     * @since 2023-08-08
+     */
+    public static void fillDateInput(WebElement dateInputElement, String localDateString) {
+        LocalDate localDate = LocalDate.parse(localDateString, DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        fillDateInput(dateInputElement, localDate);
+    }
+
     public static void printBrowserConsole() {
         System.out.println("printBrowserConsole():");
         /**
          * Get log from console.log() inside the browser: Mentioning type of Log
          */
-        LogEntries entry = driver.manage().logs().get(LogType.BROWSER);
+        LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
         // Retrieving all log
-        List<LogEntry> logs = entry.getAll();
+        List<LogEntry> logs = logEntries.getAll();
         // Print one by one
-        for (LogEntry e : logs) {
-            System.out.println(e);
+        for (LogEntry entry : logs) {
+            System.out.println(entry);
         }
 
     }

@@ -143,10 +143,10 @@ public class TestRosterEmployeePage extends TestPage {
              * //Download the ICS file:
              *
              */
-            rosterEmployeePage.downloadICSFile();
+            File downloadedICalendarFile = rosterEmployeePage.downloadICSFile();
 
             String iCalendarString;
-            iCalendarString = Files.readString(Path.of(iCalendarFileName), Charset.forName("UTF-8"));
+            iCalendarString = Files.readString(downloadedICalendarFile.toPath(), Charset.forName("UTF-8"));
             ICalendar ical = Biweekly.parse(iCalendarString).first();
             List<VEvent> listOfEvents = ical.getEvents();
             /**
@@ -211,15 +211,4 @@ public class TestRosterEmployeePage extends TestPage {
         }
     }
 
-    @BeforeMethod
-    public void setUp() {
-        try {
-            File file = new File(iCalendarFileName);
-            Files.deleteIfExists(file.toPath());
-        } catch (IOException ex) {
-            Logger.getLogger(TestRosterEmployeePage.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
 }

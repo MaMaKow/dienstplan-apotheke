@@ -24,7 +24,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-//import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -42,17 +41,12 @@ public class ScreenShot {
         takeScreenShot(testResult);
     }
 
-    public void takeScreenShot(ITestResult testResult) {
-        /*
-         * TODO: <p lang=de>Leider werden die Bilder überschrieben.
-         * Die verschiedenen Klassen haben Testnamen mit den gleichen methods.
-         * Daher überschreiben die Bilder der einen Klasse die Bilder der anderen Klasse.</p>
-         */
+    private void takeScreenShot(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
         File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         try {
             FileUtils.copyFile(scrFile, new File(
-                    "errorScreenshots\\"
+                    "errorScreenshots" + File.separator
                     + testResult.getTestClass().getName()
                     + "-"
                     + testResult.getMethod().getMethodName()

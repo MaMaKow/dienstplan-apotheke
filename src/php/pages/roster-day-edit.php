@@ -96,7 +96,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
 /*
  * Examine roster for errors and irregularities:
  */
-if ("7" !== date('N', $date_unix) and!holidays::is_holiday($date_unix)) {
+if ("7" !== date('N', $date_unix) and !holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     $examine_roster->check_for_overlap($date_sql, $List_of_branch_objects, $workforce);
     $examine_roster->check_for_sufficient_employee_count();
@@ -209,7 +209,6 @@ $html_text .= "<tr><td></td></tr>\n";
 $html_text .= build_html_roster_views::build_absentees_row($Absentees);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
-
 
 if (!empty($Roster)) {
     if (!isset($examine_roster)) {

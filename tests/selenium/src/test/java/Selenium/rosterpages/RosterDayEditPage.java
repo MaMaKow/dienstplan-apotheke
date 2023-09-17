@@ -21,6 +21,7 @@ package Selenium.rosterpages;
 import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
+import Selenium.driver.Wrapper;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -94,7 +95,7 @@ public class RosterDayEditPage {
     }
 
     public void goToDate(LocalDate localDate) {
-        if (localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY).equals(getDateString())) {
+        if (localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY).equals(getDateString())) {
             /**
              * We are on that date already. There is nothing to do:
              */
@@ -102,11 +103,13 @@ public class RosterDayEditPage {
         }
         WebElement dateChooserInput;
         dateChooserInput = driver.findElement(dateChooserInputBy);
-        dateChooserInput.sendKeys(localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR));
-        dateChooserInput.sendKeys(Keys.ENTER);
+        Wrapper.fillDateInput(dateChooserInput, localDate);
+        By dateChooserInputSendBy = By.xpath("/html/body/div[2]/div[3]/form/input[@name=\"tagesAuswahl\"]");
+        WebElement dateChooserInputSendEement = driver.findElement(dateChooserInputSendBy);
+        dateChooserInputSendEement.click();
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(dateChooserInputBy));
-        assertEquals(localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), getDateString());
+        assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), getDateString());
     }
 
     public String getDateString() {

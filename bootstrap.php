@@ -44,6 +44,7 @@ spl_autoload_register(function ($class_name) {
     $file = $base_dir . 'class.' . $class_name . '.php';
     if (file_exists($file)) {
         include_once $file;
+        return;
     }
     /**
      * <p lang="de">
@@ -54,9 +55,9 @@ spl_autoload_register(function ($class_name) {
     $file = $base_dir . str_replace('\\', '/', $class_name) . '.php';
     if (file_exists($file)) {
         include_once $file;
+        return;
     }
 });
-
 
 if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php')) {
     header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/install_page_intro.php");
@@ -72,7 +73,7 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php')) {
     /*
      * Complement the configuration array with the default values for unset parameters:
      */
-    foreach (configuration::$List_of_configuration_parameters as $key => $value) {
+    foreach (\PDR\Application\configuration::$List_of_configuration_parameters as $key => $value) {
         if (!isset($config[$key])) {
             $config[$key] = $value;
         }

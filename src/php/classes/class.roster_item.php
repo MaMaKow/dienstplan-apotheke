@@ -158,7 +158,7 @@ class roster_item implements \JsonSerializable {
     }
 
     public function __construct(string $date_sql, int $employee_key = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
-        $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
+        $this->date_sql = $this->format_time_string_correct($date_sql, 'Y-m-d');
         $this->date_object = new DateTime($date_sql);
         $this->date_unix = $this->date_object->getTimestamp();
         $this->employee_key = $employee_key;
@@ -197,15 +197,17 @@ class roster_item implements \JsonSerializable {
         $this->working_hours = round($this->working_seconds / 3600, 2);
     }
 
-    public static function format_time_string_correct(string $time_string = NULL, string $format = '%H:%M') {
-        /*
-         * TODO: This could be part of a namespaced DateTime class.
-         */
-        $time_int = strtotime($time_string);
-        if (FALSE === $time_int) {
-            return $time_string;
+    public static function format_time_string_correct(string $time_string = null, string $format = 'H:i'): ?string {
+        if (null === $time_string || '' === $time_string) {
+            return null;
         }
-        return strftime($format, $time_int);
+
+        try {
+            $dateTime = new DateTime($time_string);
+            return $dateTime->format($format);
+        } catch (Exception $e) {
+            return $time_string; // Return the original string if parsing fails.
+        }
     }
 
     /*
@@ -292,7 +294,7 @@ class roster_item implements \JsonSerializable {
         $message .= PHP_EOL;
         $message .= sprintf(gettext('From %1$s to %2$s'), $this->duty_start_sql, $this->duty_end_sql);
         $message .= PHP_EOL;
-        if (!empty($this->break_start_sql) and!empty($this->break_end_sql)) {
+        if (!empty($this->break_start_sql) and !empty($this->break_end_sql)) {
             $message .= gettext('Start and end of lunch break');
             $message .= ":";
             $message .= PHP_EOL;
@@ -310,5 +312,4 @@ class roster_item implements \JsonSerializable {
     public function jsonSerialize() {
         return get_object_vars($this);
     }
-
 }

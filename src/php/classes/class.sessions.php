@@ -93,7 +93,7 @@ class sessions {
          */
         $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
         $http_host = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
-        $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_STRING);
+        $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_URL);
 
         if ("localhost" != $http_host AND "" != $http_host) {
             header("strict-transport-security: max-age=31536000");
@@ -114,7 +114,7 @@ class sessions {
         $List_of_pages_accessible_without_login = array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
         if (
                 false === $this->user_is_logged_in()
-                and!in_array(basename($script_name), $List_of_pages_accessible_without_login)
+                and !in_array(basename($script_name), $List_of_pages_accessible_without_login)
         ) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location);
@@ -306,7 +306,7 @@ class sessions {
     }
 
     public function write_lost_password_token_to_database(user $user, $token) {
-        if (!is_null($user) and!is_null($token)) {
+        if (!is_null($user) and !is_null($token)) {
             $user_key = $user->user_key;
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
             $sql_query = "INSERT INTO `users_lost_password_token` (`user_key`, `token`) VALUES (:user_key, UNHEX(:token))";
@@ -348,5 +348,4 @@ class sessions {
         }
         return false;
     }
-
 }

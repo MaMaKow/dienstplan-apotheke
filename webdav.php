@@ -40,4 +40,5 @@ $roster_object = new roster(clone $date_start_object, clone $date_end_object, $e
 $Roster = $roster_object->array_of_days_of_roster_items;
 header('Content-type: text/Calendar; charset=UTF-8');
 header('Content-Disposition: attachment; filename="Calendar.ics"');
-echo iCalendar::build_ics_roster_employee($Roster, $create_valarm);
+$iCalendarFileContentString = iCalendar::build_ics_roster_employee($Roster, $create_valarm);
+echo $iCalendarFileContentString;

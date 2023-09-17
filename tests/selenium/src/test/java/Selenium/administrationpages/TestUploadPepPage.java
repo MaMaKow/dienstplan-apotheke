@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.TestPage;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -28,7 +29,7 @@ import org.testng.annotations.Test;
 public class TestUploadPepPage extends TestPage {
 
     @Test(enabled = true)/*new*/
-    public void testDateNavigation() {
+    public void testPEPFileUpload() {
         /**
          * Sign in:
          */
@@ -43,9 +44,7 @@ public class TestUploadPepPage extends TestPage {
          * vermutlich noch nicht fertig berechnet. Nach weiteren 30 Sekunden
          * sollte die Berechnung aber fertig sein.</p>
          */
-        softAssert.assertEquals(false, uploadPepPage.expectationIsPresentAfterWaiting(5));
-        softAssert.assertEquals(true, uploadPepPage.expectationIsPresentAfterWaiting(30));
-        softAssert.assertAll();
-
+        Assert.assertEquals(false, uploadPepPage.expectationIsPresentAfterWaiting(5));
+        Assert.assertEquals(true, uploadPepPage.expectationIsPresentAfterWaiting(30));
     }
 }

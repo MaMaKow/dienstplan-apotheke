@@ -22,6 +22,9 @@ import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.RosterItem;
+import Selenium.driver.FileAvailabilityChecker;
+import Selenium.driver.Wrapper;
+import static Selenium.rosterpages.RosterWeekTablePage.driver;
 import java.io.File;
 import java.text.ParseException;
 import java.time.DayOfWeek;
@@ -31,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import junit.framework.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -52,6 +56,8 @@ public class RosterEmployeePage {
     private final By buttonWeekBackwardBy = By.id("button_week_backward");
     private final By buttonWeekForwardBy = By.id("button_week_forward");
     private final By employeeFormSelectBy = By.xpath("/html/body/div/form[@id='select_employee']/select");
+
+    private final File downloadedICalendarFile = new File("/tmp/selenium/shared_downloads/Calendar.ics");
 
     public RosterEmployeePage(WebDriver driver) {
         this.driver = driver;
@@ -80,7 +86,7 @@ public class RosterEmployeePage {
     }
 
     public RosterEmployeePage goToDate(LocalDate localDate) {
-        String dateString = localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        String dateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         return goToDate(dateString);
     }
 
@@ -89,8 +95,10 @@ public class RosterEmployeePage {
             return this;
         }
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
-        dateChooserInput.sendKeys(date);
-        dateChooserInput.sendKeys(Keys.ENTER);
+        Wrapper.fillDateInput(dateChooserInput, date);
+        By dateChooserSubmitBy = By.xpath("//*[@name=\"tagesAuswahl\"]");
+        WebElement dateChooserSubmit = driver.findElement(dateChooserSubmitBy);
+        dateChooserSubmit.click();
         return new RosterEmployeePage(driver);
     }
 
@@ -106,7 +114,7 @@ public class RosterEmployeePage {
      */
     public LocalDate getLocalDate() {
         String dateString = getDate();
-        LocalDate localDate = LocalDate.parse(dateString, Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+        LocalDate localDate = LocalDate.parse(dateString, Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
         return localDate;
     }
 
@@ -209,29 +217,22 @@ public class RosterEmployeePage {
         return rosterItem;
     }
 
-    public void downloadICSFile() {
-        //By downloadButtonBy = By.xpath("/html/body/div[2]/form[@id=download_ics_file_form]/button");
-        File file = new File("Calendar.ics");
-        file.delete();
+    public File downloadICSFile() {
+        downloadedICalendarFile.delete();
         By downloadButtonBy = By.xpath("//*[@id=\"download_ics_file_form\"]/button");
         WebElement downloadButtonElement = driver.findElement(downloadButtonBy);
         downloadButtonElement.click();
         try {
-            /**
-             * Instead of simply waiting, it would be better to use a
-             * WatchService:
-             * https://docs.oracle.com/javase/tutorial/essential/io/notification.html
-             * But that is a lot of code for such a small problem!
-             */
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(RosterEmployeePage.class.getName()).log(Level.SEVERE, null, ex);
+            FileAvailabilityChecker.waitForFileAvailability(downloadedICalendarFile);
+        } catch (Exception exception) {
+            Logger.getLogger(RosterEmployeePage.class.getName()).log(Level.SEVERE, null, exception);
+            Assert.fail(exception.getMessage());
         }
+        return downloadedICalendarFile;
     }
 
     public void deleteICSFile() {
-        File file = new File("Calendar.ics");
-        file.delete();
+        downloadedICalendarFile.delete();
     }
 
 }

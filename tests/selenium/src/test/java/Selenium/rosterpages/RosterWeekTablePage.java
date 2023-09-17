@@ -21,6 +21,8 @@ package Selenium.rosterpages;
 import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
+import Selenium.driver.Wrapper;
+import biweekly.util.com.google.ical.values.DateValue;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -78,13 +80,15 @@ public class RosterWeekTablePage {
 
     public RosterWeekTablePage goToDate(String date) {
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
-        dateChooserInput.sendKeys(date);
-        dateChooserInput.sendKeys(Keys.ENTER);
+        Wrapper.fillDateInput(dateChooserInput, date);
+        By dateChooserSubmitBy = By.xpath("//*[@name=\"tagesAuswahl\"]");
+        WebElement dateChooserSubmit = driver.findElement(dateChooserSubmitBy);
+        dateChooserSubmit.click();
         return new RosterWeekTablePage(driver);
     }
 
     public RosterWeekTablePage goToDate(LocalDate localDate) {
-        String dateString = localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        String dateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         return goToDate(dateString);
     }
 

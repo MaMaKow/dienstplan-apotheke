@@ -20,6 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.Employee;
 import Selenium.MenuFragment;
+import Selenium.driver.Wrapper;
 import java.time.LocalDate;
 import java.util.HashMap;
 import org.openqa.selenium.By;
@@ -50,15 +51,12 @@ public class WorkforceManagementPage {
     private final By employeeKeyInputBy = By.xpath("//*[@id=\"employee_key\"]");
 
     public WorkforceManagementPage(WebDriver driver) {
-
         this.driver = driver;
-
         if (getUserNameText().isEmpty()) {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToManageEmployee);
-
     }
 
     public WorkforceManagementPage selectEmployee(Employee employee) {
@@ -132,7 +130,6 @@ public class WorkforceManagementPage {
             if (false == employeeObject.getAbilitiesGoodsReceipt()) {
                 employeeAbilitiesGoodsReceiptElement.click();
             }
-
         }
 
         WebElement employeeAbilitiesCompoundingElement = driver.findElement(employeeAbilitiesCompoundingBy);
@@ -150,24 +147,16 @@ public class WorkforceManagementPage {
          */
         By employeeStartOfEmploymentBy = By.xpath("//*[@id=\"start_of_employment\"]");
         WebElement employeeStartOfEmploymentElement = driver.findElement(employeeStartOfEmploymentBy);
-        employeeStartOfEmploymentElement.clear();
-        LocalDate dateThing = employeeObject.getStartOfEmployment();
-        String dateStartString = "";
-        if (null != dateThing) {
-            dateStartString = dateThing.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        LocalDate dateStartThing = employeeObject.getStartOfEmployment();
+        if (null != dateStartThing) {
+            Wrapper.fillDateInput(employeeStartOfEmploymentElement, dateStartThing);
         }
-        employeeStartOfEmploymentElement.sendKeys(dateStartString);
-
         By employeeEndOfEmploymentBy = By.xpath("//*[@id=\"end_of_employment\"]");
         WebElement employeeEndOfEmploymentElement = driver.findElement(employeeEndOfEmploymentBy);
-        employeeEndOfEmploymentElement.clear();
         LocalDate dateEndThing = employeeObject.getEndOfEmployment();
-        String dateEndString = "";
         if (null != dateEndThing) {
-            dateEndString = employeeObject.getEndOfEmployment().format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+            Wrapper.fillDateInput(employeeEndOfEmploymentElement, dateEndThing);
         }
-        employeeEndOfEmploymentElement.sendKeys(dateEndString);
-
         /**
          * Finally submit
          */
@@ -189,7 +178,6 @@ public class WorkforceManagementPage {
         }
         selectEmployee("");//Select the empty new employee
         return setEmployeeData(employeeObject);
-        //return new WorkforceManagementPage(driver);
     }
 
     public Employee getEmployeeObject() {
@@ -267,7 +255,6 @@ public class WorkforceManagementPage {
         By submitButtonBy = By.xpath("//*[@id=\"save_new\"]");
         WebElement submitButtonElement = driver.findElement(submitButtonBy);
         submitButtonElement.click();
-
         return new WorkforceManagementPage(driver);
     }
 

@@ -20,11 +20,14 @@ package Selenium.administrationpages;
 
 import Selenium.Employee;
 import Selenium.MenuFragment;
+import Selenium.driver.Wrapper;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -52,8 +55,14 @@ public class EmergencyServiceListPage {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
-        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToEmergencyServiceList);
-
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(MenuFragment.MenuLinkToEmergencyServiceList));
+            MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToEmergencyServiceList);
+        } catch (NoSuchElementException noSuchElementException) {
+            wait.until(ExpectedConditions.presenceOfElementLocated(MenuFragment.MenuLinkToEmergencyServiceList));
+            MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToEmergencyServiceList);
+        }
     }
 
     public void selectYear(String yearString) {
@@ -92,7 +101,7 @@ public class EmergencyServiceListPage {
             }
             WebElement emergencyRowDateElement = emergencyRowElement.findElement(emergencyRowDateBy);
             String emergencyRowDateString = emergencyRowDateElement.getAttribute("value");
-            if (localDate.format(Employee.DATE_TIME_FORMATTER_YEAR_MONTH_DAY).equals(emergencyRowDateString)) {
+            if (localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY).equals(emergencyRowDateString)) {
                 return emergencyRowElement;
             }
         }
@@ -123,7 +132,8 @@ public class EmergencyServiceListPage {
 
     public EmergencyServiceListPage addLineForDate(LocalDate localDate) {
         WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
-        dateInputElement.sendKeys(localDate.format(DateTimeFormatter.ofPattern("dd.MM")));
+        //dateInputElement.sendKeys(localDate.format(DateTimeFormatter.ofPattern("dd.MM")));
+        Wrapper.fillDateInput(dateInputElement, localDate);
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
         submitButton.click();
         return new EmergencyServiceListPage(driver);
@@ -139,7 +149,17 @@ public class EmergencyServiceListPage {
          */
         Alert alert = driver.switchTo().alert();
         alert.accept();
-        return new EmergencyServiceListPage(driver);
+        EmergencyServiceListPage emergencyServiceListPageAfterDeletion;
+        try {
+            /**
+             * This step often results in a stale element state.
+             * In that case we will just repeat the creation of the new page:
+             */
+            emergencyServiceListPageAfterDeletion = new EmergencyServiceListPage(driver);
+        } catch (StaleElementReferenceException staleElementReferenceException) {
+            emergencyServiceListPageAfterDeletion = new EmergencyServiceListPage(driver);
+        }
+        return emergencyServiceListPageAfterDeletion;
     }
 
     public EmergencyServiceListPage doNotRemoveLineByDate(LocalDate localDate) {
@@ -161,11 +181,17 @@ public class EmergencyServiceListPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        // <h1>Hello userName</h1>
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
-
-        return driver.findElement(user_name_spanBy).getText();
+        WebElement userNameSpanElement;
+        try {
+            userNameSpanElement = driver.findElement(user_name_spanBy);
+        } catch (NoSuchElementException noSuchElementException) {
+            wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
+            userNameSpanElement = driver.findElement(user_name_spanBy);
+        }
+        String userName = userNameSpanElement.getText();
+        return userName;
     }
 
 }

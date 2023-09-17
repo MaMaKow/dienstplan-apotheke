@@ -21,11 +21,13 @@ package Selenium;
 import java.util.HashMap;
 import java.util.Map;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 /**
  *
@@ -77,6 +79,8 @@ public class MenuFragment {
     public static Map<By, By> menuMap = new HashMap<By, By>();
 
     public static void navigateTo(WebDriver driver, By target) {
+
+        WebDriverWait wait = new WebDriverWait(driver, 20);
         menuMap.put(MenuLinkToRosterWeekTable, MenuListItemWeek);
         menuMap.put(MenuLinkToRosterWeekImages, MenuListItemWeek);
         menuMap.put(MenuLinkToRosterDayEdit, MenuListItemDay);
@@ -109,7 +113,21 @@ public class MenuFragment {
          * Mit der Map von oben im Folgenden das richtige Item zum hovern
          * auswählen...
          */
-        WebElement linkElement = driver.findElement(target);
+        WebElement linkElement = null;
+        int attempts = 0;
+        while (attempts < 7) {
+            attempts++;
+            try {
+                linkElement = wait.until(ExpectedConditions.presenceOfElementLocated(target));
+                break;
+            } catch (NoSuchElementException noSuchElementException) {
+            } catch (Exception exception) {
+                throw exception;
+            }
+        }
+        if (null == linkElement) {
+            Assert.fail("linkElement not found.");
+        }
         Actions actions = new Actions(driver);
         /**
          * <p lang=de>
@@ -119,8 +137,12 @@ public class MenuFragment {
          * </p>
          */
         By menuListItemBy = menuMap.get(target);
-        WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(menuListItemBy));
+        /**
+         * @todo: Can we remove one of th following wait lines?
+         */
+        wait.until(ExpectedConditions.elementToBeClickable(menuListItemBy));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
 
         WebElement menuListItem = driver.findElement(menuListItemBy);
         wait.until(ExpectedConditions.presenceOfElementLocated(target));
@@ -136,6 +158,5 @@ public class MenuFragment {
              */
             actions.moveByOffset(-menuListItem.getLocation().getX(), -menuListItem.getLocation().getY()).perform();
         }
-
     }
 }

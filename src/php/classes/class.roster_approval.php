@@ -66,7 +66,10 @@ abstract class roster_approval {
             /*
              * no valid state is given.
              */
-            throw new Exception("An Error has occurred during approval!");
+            throw new Exception("An Error has occurred during approval. No valid state was given.");
+        }
+        if ("" == $date_sql) {
+            throw new Exception("An Error has occurred during approval. The date MUST NOT be empty!");
         }
         $sql_query = "INSERT INTO `approval` (date, branch, state, user) "
                 . "values (:date, :branch_id, :state, :user) "
@@ -78,5 +81,4 @@ abstract class roster_approval {
         ));
         return $result;
     }
-
 }

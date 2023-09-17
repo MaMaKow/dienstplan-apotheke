@@ -20,11 +20,15 @@ package Selenium.absencepages;
 
 import Selenium.Absence;
 import Selenium.MenuFragment;
+import Selenium.driver.Wrapper;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
@@ -157,10 +161,8 @@ public class AbsenceEmployeePage {
         approvalInputSelectElement = new Select(driver.findElement(approvalInputSelectBy));
         createNewAbsenceSubmitButtonElement = driver.findElement(createNewAbsenceSubmitButtonBy);
 
-        startDateInputElement.clear();
-        startDateInputElement.sendKeys(startDate);
-        endDateInputElement.clear();
-        endDateInputElement.sendKeys(endDate);
+        Wrapper.fillDateInput(startDateInputElement, startDate);
+        Wrapper.fillDateInput(endDateInputElement, endDate);
         reasonIdInputSelectByElement.selectByValue(String.valueOf(reasonId));
         commentInputElement.clear();
         commentInputElement.sendKeys(comment);
@@ -193,7 +195,15 @@ public class AbsenceEmployeePage {
              * Press the OK button:
              */
             alert.accept();
-            return new AbsenceEmployeePage();
+            AbsenceEmployeePage newAbsenceEmployeePage;
+            try {
+                newAbsenceEmployeePage = new AbsenceEmployeePage();
+            } catch (StaleElementReferenceException exception) {
+                newAbsenceEmployeePage = new AbsenceEmployeePage();
+            } catch (NoSuchElementException noSuchElementException) {
+                newAbsenceEmployeePage = new AbsenceEmployeePage();
+            }
+            return newAbsenceEmployeePage;
         }
         return new AbsenceEmployeePage();
 
@@ -209,11 +219,9 @@ public class AbsenceEmployeePage {
             WebElement editButton = absenceRowElement.findElement(editButtonBy);
             editButton.click();
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/input[1]"));
-            startDateElement.clear();
-            startDateElement.sendKeys(startDate);
+            Wrapper.fillDateInput(startDateElement, startDate);
             WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/input[1]"));
-            endDateElement.clear();
-            endDateElement.sendKeys(endDate);
+            Wrapper.fillDateInput(endDateElement, endDate);
             Select reasonSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             reasonSelectElement.selectByValue(String.valueOf(reasonId));
             WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/input"));
@@ -281,11 +289,9 @@ public class AbsenceEmployeePage {
             WebElement editButton = absenceRowElement.findElement(editButtonBy);
             editButton.click();
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/input[1]"));
-            startDateElement.clear();
-            startDateElement.sendKeys(startDate);
+            Wrapper.fillDateInput(startDateElement, startDate);
             WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/input[1]"));
-            endDateElement.clear();
-            endDateElement.sendKeys(endDate);
+            Wrapper.fillDateInput(endDateElement, endDate);
             Select reasonSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             reasonSelectElement.selectByValue(String.valueOf(reasonId));
             WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/input"));

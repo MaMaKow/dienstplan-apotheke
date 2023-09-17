@@ -19,7 +19,9 @@ require '../../../default.php';
 /*
  * TODO: rename this file workforce-management. I think, I like this term much more
  */
-human_resource_management::write_employee_data_to_database(); //$success = write_employee_data_to_database();
+if ($session->user_has_privilege(sessions::PRIVILEGE_ADMINISTRATION)) {
+    human_resource_management::write_employee_data_to_database(); //$success = write_employee_data_to_database();
+}
 $workforce = new workforce();
 $employee_key = user_input::convert_post_empty_to_php_null(user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key()));
 create_cookie('employee_key', $employee_key, 1);

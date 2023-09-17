@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
 public class PropertyFile {
 
     private Properties properties;
-    private final String propertyFilePath = "./Configuration.properties";
+    private final String propertyFilePath = "Configuration.properties";
 
     public PropertyFile() {
         FileInputStream fileInputStream = null;

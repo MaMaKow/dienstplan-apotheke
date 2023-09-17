@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright (C) 2018 Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * Copyright (C) 2023 Mandelkow
+ *
+ * Dienstplan Apotheke
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,48 +16,18 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+namespace PDR\Output\HTML;
 
 /**
- * Container class for the functions neseccary for configuration
+ * Description of configurationManager
  *
- * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @author Mandelkow
  */
-class configuration {
-    /*
-     * TODO: Documentation for the new array SMTP
-     * Configuration GUI for SMTP
-     */
+class configurationManager {
 
-    /**
-     * @var array $List_of_configuration_parameters <p>The array contains all available configuration paramaters and their default values.</p>
-     */
-    public static $List_of_configuration_parameters = array(
-        'application_name' => 'PDR',
-        'database_management_system' => 'mysql',
-        'database_host' => 'localhost',
-        'database_name' => '',
-        'database_port' => 3306,
-        'database_user' => '',
-        'database_password' => '',
-        'session_secret' => '',
-        'error_reporting' => E_ALL,
-        'display_errors' => 0,
-        'log_errors' => 1,
-        'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
-        'LC_TIME' => 'C',
-        'timezone' => 'Europe/Berlin',
-        'language' => 'de-DE',
-        'mb_internal_encoding' => 'UTF-8',
-        'contact_email' => '',
-        'hide_disapproved' => FALSE, //We set it up to false in order not to disconcert new administrators.
-        'email_method' => 'mail',
-        'email_smtp_host' => NULL, /* e.g. smtp.example.com */
-        'email_smtp_port' => 587, /* 587 for ssl */
-        'email_smtp_username' => NULL,
-        'email_smtp_password' => NULL,
-    );
     private static $List_of_configuration_parameter_types = array(
         'application_name' => FILTER_SANITIZE_STRING,
         'database_management_system' => FILTER_SANITIZE_STRING,
@@ -186,17 +158,23 @@ class configuration {
      * @return array $new_config
      */
     public static function handle_user_input($config) {
-        $user_dialog = new user_dialog();
+        $user_dialog = new \user_dialog();
         $configuration_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php';
         /*
          * Read the POST values:
          */
-        foreach (self::$List_of_configuration_parameters as $key => $default_value) {
+        foreach (\PDR\Application\configuration::$List_of_configuration_parameters as $key => $default_value) {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
                         $user_dialog->add_message(gettext('The passwords do not match.'));
-                        $new_config[$key] = $config[$key];
+                        $new_config[$key] = $config[$key]; // revert to old password
+                        continue;
+                    }
+                    $have_i_been_pwned = new \have_i_been_pwned();
+                    if (!$have_i_been_pwned->password_is_secure($_POST['database_password'])) {
+                        $user_dialog->add_message($have_i_been_pwned->get_user_information_string());
+                        $new_config[$key] = $config[$key]; // revert to old password
                         continue;
                     }
                 }
@@ -217,11 +195,10 @@ class configuration {
             }
         }
         if (file_exists($configuration_file)) {
-            rename($configuration_file, $configuration_file . '_' . date(DateTime::ATOM));
+            rename($configuration_file, $configuration_file . '_' . date(\DateTime::ATOM));
         }
         $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($new_config, true) . ';');
         chmod($configuration_file, 0660);
         return $new_config;
     }
-
 }

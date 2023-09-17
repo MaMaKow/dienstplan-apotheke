@@ -365,7 +365,7 @@ class install {
          */
         $user_base = new PDR\Workforce\user_base();
         $user = $user_base->guess_user_by_identifier($this->Config["admin"]["user_name"]);
-        if (false === $user or!$user->exists()) {
+        if (false === $user or !$user->exists()) {
             $user_creation_result = $user_base->create_new_user($this->Config["admin"]["employee_key"], $this->Config["admin"]["user_name"], $password_hash, $this->Config["admin"]["email"], 'active');
             if (FALSE === $user_creation_result) {
                 /*
@@ -875,5 +875,4 @@ class install {
         }
         return FALSE;
     }
-
 }

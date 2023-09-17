@@ -52,36 +52,26 @@ abstract class human_resource_management {
             $Worker["start_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_STRING));
             $Worker["end_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_STRING));
 
-            $sql_query = "INSERT INTO `employees` (
-        `primary_key`, `first_name`, `last_name`, `profession`,
+
+            $sql_query_deletion = "DELETE FROM `employees` WHERE `primary_key` = :employee_key;";
+            $sql_query_insertion = "INSERT INTO `employees` (
+        `first_name`, `last_name`, `profession`,
         `working_week_hours`, `holidays`, `lunch_break_minutes`,
         `goods_receipt`, `compounding`,
         `branch`,
         `start_of_employment`, `end_of_employment`
         )
         VALUES (
-:employee_key, :first_name, :last_name, :profession,
+:first_name, :last_name, :profession,
 :working_week_hours, :holidays, :lunch_break_minutes,
 :goods_receipt, :compounding, :branch,
 :start_of_employment, :end_of_employment)
-ON DUPLICATE KEY UPDATE
-`primary_key` = :employee_key2,
-`first_name` = :first_name2,
-`last_name` = :last_name2,
-`profession` = :profession2,
- `working_week_hours` = :working_week_hours2,
-`holidays` = :holidays2,
- `lunch_break_minutes` = :lunch_break_minutes2,
-`goods_receipt` = :goods_receipt2,
- `compounding` = :compounding2,
-`branch` = :branch2,
- `start_of_employment` = :start_of_employment2,
-`end_of_employment` = :end_of_employment2
 ";
 
 
-            $result = database_wrapper::instance()->run($sql_query, array(
-                'employee_key' => $Worker['employee_key'],
+            database_wrapper::instance()->beginTransaction();
+            $result_deletion = database_wrapper::instance()->run($sql_query_deletion, array('employee_key' => $Worker['employee_key']));
+            $result_insertion = database_wrapper::instance()->run($sql_query_insertion, array(
                 'first_name' => $Worker['first_name'],
                 'last_name' => $Worker['last_name'],
                 'profession' => $Worker['profession'],
@@ -93,20 +83,9 @@ ON DUPLICATE KEY UPDATE
                 'branch' => $Worker['branch'],
                 'start_of_employment' => $Worker['start_of_employment'],
                 'end_of_employment' => $Worker['end_of_employment'],
-                'employee_key2' => $Worker['employee_key'],
-                'first_name2' => $Worker['first_name'],
-                'last_name2' => $Worker['last_name'],
-                'profession2' => $Worker['profession'],
-                'working_week_hours2' => $Worker['working_week_hours'],
-                'holidays2' => $Worker['holidays'],
-                'lunch_break_minutes2' => $Worker['lunch_break_minutes'],
-                'goods_receipt2' => $Worker['goods_receipt'],
-                'compounding2' => $Worker['compounding'],
-                'branch2' => $Worker['branch'],
-                'start_of_employment2' => $Worker['start_of_employment'],
-                'end_of_employment2' => $Worker['end_of_employment']
             ));
-            return $result;
+            database_wrapper::instance()->commit();
+            return $result_insertion;
         } else {
             return FALSE;
         }
