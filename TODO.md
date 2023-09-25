@@ -2,15 +2,7 @@
 
 ## Errors
 
-### Security
-
-Wenn ein Login fehlschlägt, darf der "Angreifer" nicht erfahren, ob der Benutzer existiert!
-
 ### Failure of functions
-
-Beim Speichern der Grundpläne erkennt das Programm nicht, wenn jemand gelöscht wurde.
-
-principle-roster-employee.php input does not work AGAIN!
 
 
 Mitarbeiter anlegen und speichern: Leere Werte für Urlaub ergeben einen Datenbankfehler. Bitte im Frontend vorher Werte >0 erzwingen

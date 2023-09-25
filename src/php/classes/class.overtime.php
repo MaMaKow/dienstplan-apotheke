@@ -31,7 +31,7 @@ class overtime {
         $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         list($balance_old, $date_old) = overtime::get_current_balance($employee_key);
         $first_balance_row = overtime::get_first_balance($employee_key);
-        /*
+        /**
          * In case the user inserts a date, that is before the last inserted date, a warning is shown.
          * If the user still wishes to enter the data, the flag user_has_been_warned_about_date_sequence is set to 1.
          * We cancel the execution if that warning has not been approved.
@@ -48,7 +48,7 @@ class overtime {
         }
         $balance_new = $balance_old + $overtime_hours_new;
 
-        if ($first_balance_row->Datum > $date) {
+        if (FALSE !== $first_balance_row and $first_balance_row->Datum > $date) {
             /*
              * The new entry lies before the very first entry.
              * This is a special case.
@@ -220,12 +220,13 @@ class overtime {
                 $table_rows .= "<tr class='$class'>";
                 $table_rows .= "<td>" . $row->employee_key . " " . $workforce->List_of_employees[$row->employee_key]->last_name . "</td>";
                 $table_rows .= "<td>" . $row->Saldo . "</td>";
-                $table_rows .= "<td>" . strftime('%x', strtotime($row->Datum)) . "</td>";
+                $date_object = new DateTime($row->Datum);
+                $date_string = $date_object->format('d.m.Y');
+                $table_rows .= "<td>" . $date_string . "</td>";
                 $table_rows .= "</tr>\n";
             }
         }
         $table_rows .= "</tbody>\n";
         return $table_rows;
     }
-
 }

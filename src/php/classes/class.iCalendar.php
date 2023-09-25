@@ -144,8 +144,8 @@ class iCalendar {
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         $branch_name = $List_of_branch_objects[$branch_id]->name;
 
-        //$locale = 'de_DE';   // Set your desired locale (German in this case)
-        $locale = \PDR\Application\configuration::getLanguage(); // e.g. de-DE
+        $configuration = new \PDR\Application\configuration();
+        $locale = $configuration->getLanguage(); // e.g. de-DE
         $formatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
         $formatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
         $date_weekday_name = $formatter->format($date_unix);

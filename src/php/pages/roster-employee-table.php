@@ -61,9 +61,10 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
+$dateString = $date_start_object->format('W');
 echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> "
- . gettext("calendar week")
- . strftime(' %V', $date_unix)
+ . gettext("calendar week") . '&nbsp;'
+ . $dateString
  . '&nbsp;' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))
  . "</a><br>\n";
 
@@ -103,7 +104,6 @@ $table_foot_html .= "</tr>\n";
 $table_foot_html .= "</tfoot>\n";
 echo "$table_foot_html";
 echo "</table>\n";
-
 
 $Working_week_hours_have = roster::calculate_working_weekly_hours_from_branch_roster($Branch_roster);
 $Working_week_hours_should = build_html_roster_views::calculate_working_week_hours_should($Roster, $workforce);

@@ -79,7 +79,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
         $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
         $user_dialog->add_message($message);
         $Roster = $Principle_roster;
-    } elseif (6 == strftime('%u', $date_unix)) {
+    } elseif (6 == $date_object->format("N")) {
         try {
             $saturday_rotation = new saturday_rotation($branch_id);
             $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_object);
@@ -153,18 +153,25 @@ $html_text .= "<tr>\n";
 $html_text .= "<td>";
 $html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
 $html_text .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
-$html_text .= strftime('%d.%m. ', $date_unix);
+$html_text .= $date_object->format("d.m.");
 /*
  * Weekday:
  */
-$html_text .= strftime('%A ', $date_unix);
+$configuration = new \PDR\Application\configuration();
+$locale = $configuration->getLanguage();
+$weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+$weekdayFormatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
+
+$html_text .= " ";
+$html_text .= $weekdayFormatter->format($date_unix);
 if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
 $html_text .= "<br>";
-$html_text .= ""
-        . strftime(gettext("calendar week")
-                . ' %V', $date_unix)
+$dateString = $date_object->format('W');
+$html_text .= gettext("calendar week")
+        . '&nbsp;'
+        . $dateString
         . '&nbsp;'
         . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_object));
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);

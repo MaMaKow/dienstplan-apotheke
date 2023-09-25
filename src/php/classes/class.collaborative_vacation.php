@@ -25,7 +25,7 @@ class collaborative_vacation {
      * @return void
      */
     public function handle_user_data_input($session) {
-        if (!$session->user_has_privilege('request_own_absence') and!$session->user_has_privilege('create_absence')) {
+        if (!$session->user_has_privilege('request_own_absence') and !$session->user_has_privilege('create_absence')) {
             return FALSE;
         }
 
@@ -398,12 +398,24 @@ class collaborative_vacation {
         return $absent_employees_containers;
     }
 
+    /**
+     *
+     * @param workforce $workforce
+     * @param array $Absence
+     * @return string
+     * @todo Perhaps build a real absence object from a real absence class.
+     */
     private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence) {
         $absence_title_text = $workforce->get_employee_last_name($Absence['employee_key']) . "\n";
         $absence_title_text .= absence::get_reason_string_localized($Absence['reason_id']) . "\n";
         $absence_title_text .= $Absence['comment'] . "\n";
-        $absence_title_text .= gettext('from') . ' ' . strftime('%x', strtotime($Absence['start'])) . "\n";
-        $absence_title_text .= gettext('to') . ' ' . strftime('%x', strtotime($Absence['end'])) . "\n";
+        $dateObjectAbenceStart = new DateTime($Absence['start']);
+        $dateObjectAbenceEnd = new DateTime($Absence['end']);
+        $dateStringAbenceStart = $dateObjectAbenceStart->format('d.m.Y'); // Format for time (hours, minutes, seconds)
+        $dateStringAbenceEnd = $dateObjectAbenceEnd->format('d.m.Y'); // Format for time (hours, minutes, seconds)
+
+        $absence_title_text .= gettext('from') . ' ' . $dateStringAbenceStart . "\n";
+        $absence_title_text .= gettext('to') . ' ' . $dateStringAbenceEnd . "\n";
         $absence_title_text .= sprintf(gettext('%1$s days taken'), $Absence['days']) . "\n";
         $absence_title_text .= localization::gettext($Absence['approval']) . "";
         return $absence_title_text;
@@ -412,7 +424,7 @@ class collaborative_vacation {
     private function get_classes_of_day_paragraph($date_object, $is_holiday, $input_date_object) {
 
         $Paragraph_class = array('day_paragraph');
-        if ($date_object->format('N') < 6 and!$is_holiday) {
+        if ($date_object->format('N') < 6 and !$is_holiday) {
             $Paragraph_class[] = 'weekday';
         } else {
             $Paragraph_class[] = 'weekend';
@@ -437,5 +449,4 @@ class collaborative_vacation {
         $Month_names = localization::get_month_names();
         return $Month_names[$date_object->format("n")];
     }
-
 }

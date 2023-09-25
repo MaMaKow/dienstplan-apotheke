@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.martin-mandelkow.pdr.tests.selenium</groupId>
     <artifactId>selenium</artifactId>
-    <version>0.20.1</version>
+    <version>0.20.2</version>
     <name>SeleniumTest</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,7 +72,13 @@
             <artifactId>commons-io</artifactId>
             <version>2.9.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

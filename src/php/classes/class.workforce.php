@@ -48,6 +48,7 @@ class workforce {
     public $List_of_qualified_pharmacist_employees;
     public $List_of_goods_receipt_employees;
     public $List_of_compounding_employees;
+    public $List_of_branch_employees;
     private static $List_of_short_descriptors;
     private static $List_of_all_employees;
 
@@ -352,5 +353,4 @@ class workforce {
         $employee = new employee($private_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $compounding, $goods_receipt, $branch, $start_of_employment, $end_of_employment, $holidays);
         return $employee;
     }
-
 }

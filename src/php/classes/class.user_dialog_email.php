@@ -117,7 +117,8 @@ class user_dialog_email {
                 }
 
                 if (!empty($Deleted_roster_employee_key_list[$date_unix]) and in_array($roster_item_object->employee_key, $Deleted_roster_employee_key_list[$date_unix])) {
-                    $message = sprintf(gettext('You are not in the roster anymore on %1$s.'), strftime('%x', $roster_item_object->date_unix)) . PHP_EOL;
+                    $dateString = $roster_item_object->date_object->format("d.m.Y");
+                    $message = sprintf(gettext('You are not in the roster anymore on %1$s.'), $dateString) . PHP_EOL;
                     $ics_file = ""; // TODO: Right now iCalendar can not handle events with the STATUS:CANCELED
                     self::save_notification_about_changed_roster_to_database(user::guess_user_key_by_employee_key($roster_item_object->employee_key), $roster_item_object->date_sql, $message, $ics_file);
                 }
@@ -299,7 +300,7 @@ class user_dialog_email {
             /*
              * Attachments
              */
-            if (NULL !== $attachment_string and!empty($attachment_string)and!empty($attachment_filename)) {
+            if (NULL !== $attachment_string and !empty($attachment_string) and !empty($attachment_filename)) {
                 $mail->addStringAttachment($attachment_string, $attachment_filename);
             }
             /*
@@ -321,5 +322,4 @@ class user_dialog_email {
             return FALSE;
         }
     }
-
 }

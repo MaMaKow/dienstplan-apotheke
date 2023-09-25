@@ -51,17 +51,25 @@ echo form_element_builder::build_html_select_year($year);
      * TODO: Use date object
      * TODO: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_key] equals/contains/holds a reason_id for the absence.
      */
+    $configuration = new \PDR\Application\configuration();
+    $locale = $configuration->getLanguage();
+    $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+
     for ($date_unix = $start_date_unix; $date_unix < strtotime('+ 1 month', $start_date_unix); $date_unix = $date_unix + PDR_ONE_DAY_IN_SECONDS) {
         $date_sql = date("Y-m-d", $date_unix);
         if (date('N', $date_unix) >= 6) {
-            echo '<TR class=wochenende><TD style="padding-bottom: 0">' . strftime('%a %d.%m.', $date_unix) . '</TD>';
+            $dateFormatter->setPattern('EEE dd.MM.');
+            $dateString = $dateFormatter->format($date_unix);
+            echo '<TR class=wochenende><TD style="padding-bottom: 0">' . $dateString . '</TD>';
             foreach (array_keys($workforce->List_of_employees) as $employee_key) {
                 echo '<TD></TD>';
             }
         } else {
             $Absentees = absence::read_absentees_from_database($date_sql);
             $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
-            echo '<TR><TD style="padding-bottom: 0">' . strftime('%a %d.%m.%Y', $date_unix) . '</TD>';
+            $dateFormatter->setPattern('EEE dd.MM.YYYY');
+            $dateString = $dateFormatter->format($date_unix);
+            echo '<TR><TD style="padding-bottom: 0">' . $dateString . '</TD>';
             //TODO: The following part is not localized. It will not wrk in any other language:
             foreach (array_keys($workforce->List_of_employees) as $employee_key) {
                 if (isset($Absentees[$employee_key])) {

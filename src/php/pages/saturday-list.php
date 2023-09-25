@@ -60,7 +60,6 @@ $html .= $html_select_branch;
 $html .= $user_dialog->build_messages();
 $html .= $table;
 
-
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
@@ -127,10 +126,8 @@ function build_table_row(DateTime $date_object, int $branch_id) {
     $Absentees = absence::read_absentees_from_database($date_object->format('Y-m-d'));
     $Roster = roster::read_roster_from_database($branch_id, $date_object->format('Y-m-d'));
 
-
     $table_row = "";
     $holiday = holidays::is_holiday($date_object);
-    //$date_string = strftime('%a %x', $date_object->getTimestamp());
     $date_string = $date_object->format("D d.m.Y");
     if (FALSE !== $holiday) {
         $table_row .= "<tr class='saturday_list_row_holiday'>";

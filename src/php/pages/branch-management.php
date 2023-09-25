@@ -137,7 +137,6 @@ $new_branch = new \PDR\Pharmacy\Branch(null);
 $List_of_branch_objects[] = $new_branch;
 echo build_html_navigation_elements::build_select_branch($current_branch_id, $List_of_branch_objects, NULL);
 
-
 /**
  * <p>Define the $branch_object which will be edited.
  * In case there is no branch object yet, we will create an empty one.
@@ -230,7 +229,7 @@ function build_branch_input_opening_times($branch_object) {
                  class="inline-image"
                  title="<?= gettext("This is a short unofficial nickname for your pharmacy. It is used in pages with limited space. Please choose no more than 12 letters.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" value="<?= $branch_object->short_name ?>">
+            <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" maxlength="16" value="<?= $branch_object->short_name ?>">
         </p><p>
             <label for="branch_address"><?= gettext('Branch address') ?>: </label>
             <br>

@@ -184,7 +184,9 @@ class roster {
         /*
          * Remove empty and null values from the array:
          */
-        $Clean_changing_times = array_filter($Unique_changing_times, 'strlen');
+        $Clean_changing_times = array_filter($Unique_changing_times, function ($value) {
+            return $value !== null && strlen($value) > 0;
+        });
         return $Clean_changing_times;
     }
 
@@ -316,5 +318,4 @@ class roster {
         }
         return TRUE;
     }
-
 }

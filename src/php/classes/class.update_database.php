@@ -80,7 +80,7 @@ class update_database {
     }
 
     private function refactor_opening_times_special_table() {
-        if (database_wrapper::database_table_exists('Sonderöffnungszeiten') and!database_wrapper::database_table_exists('opening_times_special')) {
+        if (database_wrapper::database_table_exists('Sonderöffnungszeiten') and !database_wrapper::database_table_exists('opening_times_special')) {
             database_wrapper::instance()->run("RENAME TABLE `Sonderöffnungszeiten` TO `opening_times_special`;");
             $sql_query = "ALTER TABLE `opening_times_special` "
                     . "CHANGE `Datum` `date` DATE NOT NULL, "
@@ -147,7 +147,7 @@ class update_database {
     }
 
     private function refactor_duty_roster_table() {
-        if (database_wrapper::database_table_exists('Dienstplan') and!database_wrapper::database_table_exists('roster')) {
+        if (database_wrapper::database_table_exists('Dienstplan') and !database_wrapper::database_table_exists('roster')) {
             $sql_query_list = array();
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `employee_key` `employee_id` TINYINT UNSIGNED NOT NULL ";
             $sql_query_list[] = "ALTER TABLE `Dienstplan` CHANGE `Datum` `date` DATE NOT NULL";
@@ -175,7 +175,7 @@ class update_database {
 
     private function refactor_receive_emails_on_changed_roster() {
         $database_name = database_wrapper::get_database_name();
-        if (database_wrapper::database_table_exists('users') and!database_wrapper::database_table_column_exists($database_name, 'users', 'receive_emails_on_changed_roster')) {
+        if (database_wrapper::database_table_exists('users') and !database_wrapper::database_table_column_exists($database_name, 'users', 'receive_emails_on_changed_roster')) {
             $sql_query = "ALTER TABLE `users`  ADD `receive_emails_on_changed_roster` BOOLEAN NOT NULL DEFAULT FALSE  AFTER `failed_login_attempt_time`;";
             database_wrapper::instance()->run($sql_query);
         }
@@ -187,7 +187,7 @@ class update_database {
             database_wrapper::instance()->run($sql_query);
         }
         $database_name = database_wrapper::get_database_name();
-        if (database_wrapper::database_table_exists('user_email_notification_cache') and!database_wrapper::database_table_column_exists($database_name, 'user_email_notification_cache', 'date')) {
+        if (database_wrapper::database_table_exists('user_email_notification_cache') and !database_wrapper::database_table_column_exists($database_name, 'user_email_notification_cache', 'date')) {
             $sql_query = "ALTER TABLE `user_email_notification_cache` ADD `date` DATE NOT NULL AFTER `employee_id`;";
             database_wrapper::instance()->run($sql_query);
         }
@@ -195,7 +195,7 @@ class update_database {
 
     private function refactor_pdr_self() {
         $database_name = database_wrapper::get_database_name();
-        if (database_wrapper::database_table_exists('pdr_self') and!database_wrapper::database_table_column_exists($database_name, 'pdr_self', 'principle_roster_start_date')) {
+        if (database_wrapper::database_table_exists('pdr_self') and !database_wrapper::database_table_column_exists($database_name, 'pdr_self', 'principle_roster_start_date')) {
             $sql_query = "ALTER TABLE `pdr_self` ADD `principle_roster_start_date` date DEFAULT NULL AFTER `last_execution_of_maintenance`;";
             database_wrapper::instance()->run($sql_query);
         }
@@ -457,7 +457,6 @@ class update_database {
                 . " WHERE users.employee_key IS NULL"
                 . " AND employees.end_of_employment > NOW();";
 
-
         /**
          * <p lang=de>Die neuen Keys in die Daten-Tabellen einfügen:</p>
          */
@@ -573,7 +572,6 @@ class update_database {
                 . " WHERE principle_roster.employee_key IS NULL AND NOW() <= employees.end_of_employment;";
         $Sql_query_array[] = "DELETE FROM `principle_roster` WHERE `employee_key` IS NULL;";
 
-
         /**
          * principle_roster_archive
          */
@@ -646,6 +644,8 @@ class update_database {
         // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `users_privileges` WHERE `user_key` IS NULL;";
         $Sql_query_array[] = "ALTER TABLE `users_privileges` DROP PRIMARY KEY, ADD PRIMARY KEY (`user_key`,`privilege`);";
+
+        $Sql_query_array[] = "ALTER TABLE `branch` MODIFY COLUMN `short_name` varchar(32) NOT NULL;";
         /**
          * DROP some columns:
          */
@@ -741,5 +741,4 @@ class update_database {
         }
         database_wrapper::instance()->commit();
     }
-
 }

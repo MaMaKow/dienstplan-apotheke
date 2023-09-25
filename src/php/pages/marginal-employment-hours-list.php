@@ -92,10 +92,15 @@ create_cookie('employee_key', $employee_key, 1);
 if (!$workforce->employee_exists($employee_key)) {
     $employee_key = $workforce->get_default_employee_key();
 }
+$configuration = new \PDR\Application\configuration();
+$locale = $configuration->getLanguage();
+$monthFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+$monthFormatter->setPattern('MMMM');
 
 $Months = array();
 for ($i = 1; $i <= 12; $i++) {
-    $Months[$i] = strftime('%B', mktime(0, 0, 0, $i, 1));
+    $date = mktime(0, 0, 0, $i, 1);
+    $Months[$i] = $monthFormatter->format($date);
 }
 $Years = absence::get_rostering_years();
 $table_body_html = "<tbody>";
@@ -112,8 +117,12 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
     $table_body_html .= "<td>" . $date_object->format('D d.m.Y') . "</td>";
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         //There should only be one row here.
-        $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['start'])) . "</td>";
-        $table_body_html .= "<td>" . strftime('%H:%M', strtotime($row['end'])) . "</td>";
+        $timeStartObject = new DateTime($row['start']);
+        $timeStartString = $timeStartObject->format("H:i");
+        $timeEndObject = new DateTime($row['end']);
+        $timeEndString = $timeEndObject->format("H:i");
+        $table_body_html .= "<td>" . $timeStartString . "</td>";
+        $table_body_html .= "<td>" . $timeEndString . "</td>";
         $table_body_html .= "<td>" . round($row['hours'], 2);
         if (isset($workforce->List_of_employees[$employee_key])) {
             $employee_object = $workforce->List_of_employees[$employee_key];

@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.text.StringEscapeUtils;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -201,7 +202,8 @@ public class TestRosterEmployeePage extends TestPage {
                  */
                 NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
                 String branchName = networkOfBranchOffices.getBranchById(rosterItem.getBranchId()).getBranchName();
-                Assert.assertTrue(summary.contains(branchName));
+                String escapedBranchName = StringEscapeUtils.escapeHtml4(branchName);
+                Assert.assertTrue(summary.contains(escapedBranchName));
             }
 
             /**

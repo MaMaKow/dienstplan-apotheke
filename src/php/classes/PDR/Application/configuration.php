@@ -36,7 +36,8 @@ class configuration {
     public function __construct() {
         if (null == self::$loadedConfig) {
             // Load the configuration file
-            require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "../../../config/config.php";
+            $config = array();
+            require PDR_FILE_SYSTEM_APPLICATION_PATH . "/config/config.php";
 
             // Assign the loaded configuration to the class property
             self::$loadedConfig = $config;
@@ -52,7 +53,7 @@ class configuration {
         }
     }
 
-    public static function getDatabaseManagementSystem() {
+    public function getDatabaseManagementSystem() {
         if (isset(self::$loadedConfig['database_management_system'])) {
             return self::$loadedConfig['database_management_system'];
         } else {
@@ -60,7 +61,7 @@ class configuration {
         }
     }
 
-    public static function getDatabaseHost() {
+    public function getDatabaseHost() {
         if (isset(self::$loadedConfig['database_host'])) {
             return self::$loadedConfig['database_host'];
         } else {
@@ -68,7 +69,7 @@ class configuration {
         }
     }
 
-    public static function getDatabaseName() {
+    public function getDatabaseName() {
         if (isset(self::$loadedConfig['database_name'])) {
             return self::$loadedConfig['database_name'];
         } else {
@@ -76,7 +77,7 @@ class configuration {
         }
     }
 
-    public static function getDatabasePort() {
+    public function getDatabasePort() {
         if (isset(self::$loadedConfig['database_port'])) {
             return self::$loadedConfig['database_port'];
         } else {
@@ -84,7 +85,7 @@ class configuration {
         }
     }
 
-    public static function getDatabaseUser() {
+    public function getDatabaseUser() {
         if (isset(self::$loadedConfig['database_user'])) {
             return self::$loadedConfig['database_user'];
         } else {
@@ -92,7 +93,7 @@ class configuration {
         }
     }
 
-    public static function getDatabasePassword() {
+    public function getDatabasePassword() {
         if (isset(self::$loadedConfig['database_password'])) {
             return self::$loadedConfig['database_password'];
         } else {
@@ -100,7 +101,7 @@ class configuration {
         }
     }
 
-    public static function getSessionSecret() {
+    public function getSessionSecret() {
         if (isset(self::$loadedConfig['session_secret'])) {
             return self::$loadedConfig['session_secret'];
         } else {
@@ -108,7 +109,7 @@ class configuration {
         }
     }
 
-    public static function getErrorReporting() {
+    public function getErrorReporting() {
         if (isset(self::$loadedConfig['error_reporting'])) {
             return self::$loadedConfig['error_reporting'];
         } else {
@@ -116,7 +117,7 @@ class configuration {
         }
     }
 
-    public static function getDisplayErrors() {
+    public function getDisplayErrors() {
         if (isset(self::$loadedConfig['display_errors'])) {
             return self::$loadedConfig['display_errors'];
         } else {
@@ -124,7 +125,7 @@ class configuration {
         }
     }
 
-    public static function getLogErrors() {
+    public function getLogErrors() {
         if (isset(self::$loadedConfig['log_errors'])) {
             return self::$loadedConfig['log_errors'];
         } else {
@@ -132,7 +133,7 @@ class configuration {
         }
     }
 
-    public static function getErrorLog() {
+    public function getErrorLog() {
         if (isset(self::$loadedConfig['error_log'])) {
             return self::$loadedConfig['error_log'];
         } else {
@@ -140,7 +141,7 @@ class configuration {
         }
     }
 
-    public static function getLC_TIME() {
+    public function getLC_TIME() {
         if (isset(self::$loadedConfig['LC_TIME'])) {
             return self::$loadedConfig['LC_TIME'];
         } else {
@@ -148,7 +149,7 @@ class configuration {
         }
     }
 
-    public static function getTimezone() {
+    public function getTimezone() {
         if (isset(self::$loadedConfig['timezone'])) {
             return self::$loadedConfig['timezone'];
         } else {
@@ -156,7 +157,7 @@ class configuration {
         }
     }
 
-    public static function getLanguage() {
+    public function getLanguage() {
         if (isset(self::$loadedConfig['language'])) {
             return self::$loadedConfig['language'];
         } else {
@@ -164,7 +165,7 @@ class configuration {
         }
     }
 
-    public static function getMb_internal_encoding() {
+    public function getMb_internal_encoding() {
         if (isset(self::$loadedConfig['mb_internal_encoding'])) {
             return self::$loadedConfig['mb_internal_encoding'];
         } else {
@@ -172,7 +173,7 @@ class configuration {
         }
     }
 
-    public static function getContactEmail() {
+    public function getContactEmail() {
         if (isset(self::$loadedConfig['contact_email'])) {
             return self::$loadedConfig['contact_email'];
         } else {
@@ -180,7 +181,7 @@ class configuration {
         }
     }
 
-    public static function getHideDisapproved() {
+    public function getHideDisapproved() {
         if (isset(self::$loadedConfig['hide_disapproved'])) {
             return self::$loadedConfig['hide_disapproved'];
         } else {
@@ -188,7 +189,7 @@ class configuration {
         }
     }
 
-    public static function getEmailMethod() {
+    public function getEmailMethod() {
         if (isset(self::$loadedConfig['email_method'])) {
             return self::$loadedConfig['email_method'];
         } else {
@@ -196,7 +197,7 @@ class configuration {
         }
     }
 
-    public static function getEmailSmtpHost() {
+    public function getEmailSmtpHost() {
         if (isset(self::$loadedConfig['email_smtp_host'])) {
             return self::$loadedConfig['email_smtp_host'];
         } else {
@@ -204,7 +205,7 @@ class configuration {
         }
     }
 
-    public static function getEmailSmtpPort() {
+    public function getEmailSmtpPort() {
         if (isset(self::$loadedConfig['email_smtp_port'])) {
             return self::$loadedConfig['email_smtp_port'];
         } else {
@@ -212,7 +213,7 @@ class configuration {
         }
     }
 
-    public static function getEmailSmtpUsername() {
+    public function getEmailSmtpUsername() {
         if (isset(self::$loadedConfig['email_smtp_username'])) {
             return self::$loadedConfig['email_smtp_username'];
         } else {
@@ -220,7 +221,7 @@ class configuration {
         }
     }
 
-    public static function getEmailSmtpPassword() {
+    public function getEmailSmtpPassword() {
         if (isset(self::$loadedConfig['email_smtp_password'])) {
             return self::$loadedConfig['email_smtp_password'];
         } else {

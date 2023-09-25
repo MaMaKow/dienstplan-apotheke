@@ -23,12 +23,23 @@ class roster_image_bar_plot {
     private $total_number_of_lines;
     private $first_start;
     private $last_end;
-    private $bar_width_factor;
+
+    /**
+     * @var bar_width_factor int describes the width of one hour in pixels.
+     */
+    private $bar_width_factor = 40;
     private $font_size;
     private $outer_margin_x;
     private $outer_margin_y;
     private $inner_margin_x;
     private $inner_margin_y;
+    /*
+     * margins and default lengths:
+     */
+    private $bar_height = 20;
+    private $svg_outer_width;
+    private $svg_inner_height;
+    private $svg_outer_height;
 
     public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
         foreach ($Roster as $Roster_day_array) {
@@ -46,14 +57,6 @@ class roster_image_bar_plot {
             return FALSE;
         }
         $this->set_start_end_times($Roster);
-        /*
-         * margins and default lengths:
-         */
-        $this->bar_height = 20;
-        /**
-         * @var bar_width_factor int describes the width of one hour in pixels.
-         */
-        $this->bar_width_factor = 40;
         $this->font_size = $this->bar_height * 0.6;
         $this->outer_margin_x = 20;
         $this->outer_margin_y = 20;
@@ -75,8 +78,7 @@ class roster_image_bar_plot {
      * @return string The svg element
      */
     private function draw_image_dienstplan($Roster, $svg_width, $svg_height) {
-        $this->line = 0;
-
+        $line = 0;
 
         $svg_viewBox_x_start = $this->first_start * $this->bar_width_factor;
         $svg_viewBox_y_start = 0;
@@ -97,7 +99,6 @@ class roster_image_bar_plot {
                 . "data-bar_width_factor=$this->bar_width_factor"
                 . ">\n";
 
-
         foreach ($Roster as $date_unix => $Roster_day_array) {
             $workforce = new workforce(date('Y-m-d', $date_unix));
 
@@ -107,13 +108,17 @@ class roster_image_bar_plot {
                  * Insert the name of the weekday if there is more than one day in the plot:
                  */
                 $x_pos_svg_weekday_text = $this->outer_margin_x + $this->inner_margin_x;
-                $y_pos_svg_weekday_text = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
+                $y_pos_svg_weekday_text = $this->outer_margin_y + ($this->inner_margin_y * ($line + 1)) + ($this->bar_height * $line);
+                $configuration = new \PDR\Application\configuration();
+                $locale = $configuration->getLanguage();
+                $formatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE, null, null, 'EEEE');
+                $weekday_string = $formatter->format($date_unix);
                 $svg_text .= "<g id=svg_weekday_text_$date_unix x='$x_pos_svg_weekday_text' y='$y_pos_svg_weekday_text' width='100%' height='$this->bar_height'>"
                         . "<text xmlns='http://www.w3.org/1999/xhtml' style='margin-top: 0px;'>"
-                        . strftime('%A', $date_unix)
+                        . $weekday_string
                         . "</text>"
                         . "</g>";
-                $this->line++;
+                $line++;
             }
             /*
              * Draw the bars from start to end for every employee:
@@ -139,24 +144,24 @@ class roster_image_bar_plot {
 
                 $x_pos_box = $this->outer_margin_x + $this->inner_margin_x + ($dienst_beginn) * $this->bar_width_factor;
                 $x_pos_break_box = $x_pos_box + (($break_start - $dienst_beginn) * $this->bar_width_factor);
-                $this->x_pos_text = $x_pos_box;
-                $y_pos_box = $this->outer_margin_y + ($this->inner_margin_y * ($this->line + 1)) + ($this->bar_height * $this->line);
+                $x_pos_text = $x_pos_box;
+                $y_pos_box = $this->outer_margin_y + ($this->inner_margin_y * ($line + 1)) + ($this->bar_height * $line);
                 $y_pos_text = $y_pos_box + $this->bar_height / 2;
                 $width = $width_in_hours * $this->bar_width_factor;
                 $break_width = $break_width_in_hours * $this->bar_width_factor;
-                $work_box_id = "work_box_" . $this->line . '_' . $roster_item->date_unix;
-                $break_box_id = "break_box_" . $this->line . '_' . $roster_item->date_unix;
+                $work_box_id = "work_box_" . $line . '_' . $roster_item->date_unix;
+                $break_box_id = "break_box_" . $line . '_' . $roster_item->date_unix;
 
                 $svg_box_text .= "<g id=$work_box_id class='work_box' "
                         . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt)' "
-                        . " data-line='$this->line' "
+                        . " data-line='$line' "
                         . " data-date_unix='$date_unix' "
                         . " data-employee_key='$employee_key' "
                         . " data-box_type='work_box' "
                         . " >\n"
                         . "<rect class='$employee_style_class' data-employee_key='$employee_key' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' />";
                 //$svg_box_text .= "\n    <text class='$employee_style_class' x='$x_pos_box' y='$y_pos_box'  text-anchor='middle' alignment-baseline='middle'>";
-                $svg_box_text .= "\n    <text x='$x_pos_box' y='" . $y_pos_text . "'  alignment-baseline='middle'>";
+                $svg_box_text .= "\n    <text x='$x_pos_text' y='" . $y_pos_text . "'  alignment-baseline='middle'>";
                 if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
                     $svg_box_text .= $workforce->List_of_employees[$employee_key]->last_name;
                 } else {
@@ -169,14 +174,14 @@ class roster_image_bar_plot {
                 $svg_box_text .= "<g class='break_box' "
                         . " onmousedown='roster_change_table_on_drag_of_bar_plot(evt)' "
                         . " data-box_type='break_box' "
-                        . " data-line='$this->line' "
+                        . " data-line='$line' "
                         . " data-employee_key=$employee_key "
                         . " data-date_unix=$date_unix "
                         . "><!--This group exists, beacause the work_box also has to be in a group.--><rect id='$break_box_id' data-employee_key='$employee_key' "
                         . " x='$x_pos_break_box' y='$y_pos_box' width='$break_width' height='$this->bar_height' "
                         . " "
                         . "/><text><!--This text is intentionally left blank.--><text></g>\n";
-                $this->line++;
+                $line++;
             }
             $svg_text .= $svg_box_text;
             $svg_text .= "</g>\n";
@@ -193,14 +198,14 @@ class roster_image_bar_plot {
         for ($time = floor($this->first_start); $time <= ceil($this->last_end); $time = $time + 2) {
             $x_pos = $this->outer_margin_x + $this->inner_margin_x + ($time * $this->bar_width_factor);
             $x_pos_secondary = $x_pos + ($this->bar_width_factor / 1);
-            $this->x_pos_text = $x_pos;
+            $x_pos_text = $x_pos;
             $y_pos_text = $this->font_size;
             $y_pos_grid_start = $this->outer_margin_y;
             $y_pos_grid_end = $this->outer_margin_y + $this->svg_inner_height;
             $svg_grid_text .= "<line class='grid_line' x1='$x_pos' y1='$y_pos_grid_start' x2='$x_pos' y2='$y_pos_grid_end'  />\n";
             $svg_grid_text .= "<line class='grid_line_secondary' x1='$x_pos_secondary' y1='$y_pos_grid_start' x2='$x_pos_secondary' y2='$y_pos_grid_end' />\n";
-            $svg_grid_text .= "<text x='$this->x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
-            $svg_grid_text .= "<text x='$this->x_pos_text' y='$this->svg_outer_height' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
+            $svg_grid_text .= "<text x='$x_pos_text' y='$y_pos_text' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
+            $svg_grid_text .= "<text x='$x_pos_text' y='$this->svg_outer_height' font-family='sans-serif' font-size='$this->font_size' alignment-baseline='ideographic' text-anchor='middle'> $time:00 </text>\n";
         }
         return $svg_grid_text;
     }
@@ -220,5 +225,4 @@ class roster_image_bar_plot {
 
         return NULL;
     }
-
 }

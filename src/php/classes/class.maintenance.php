@@ -28,6 +28,7 @@ class maintenance {
      * @var int MAINTENANCE_PERIOD_IN_SECONDS the minimum time between two maintenance executions
      */
     const MAINTENANCE_PERIOD_IN_SECONDS = 24 * 60 * 60;
+    const MAINTENANCE_PERIOD_DATE_INTERVAL_STRING = 'P1D';
 
     /**
      * @var int <p>unix time stamp of the last execution time of the maintenance functions</p>
@@ -91,9 +92,15 @@ class maintenance {
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         } else {
             $message = date('Y-m-d') . ': ' . 'Nothing to do for general maintenance.' . PHP_EOL;
-            $message .= 'Time: ' . strftime('%c', time()) . PHP_EOL;
-            $message .= 'Last execution: ' . strftime('%c', $this->last_execution) . PHP_EOL;
-            $message .= 'Earliest next execution: ' . strftime('%c', $this->last_execution + self::MAINTENANCE_PERIOD_IN_SECONDS) . PHP_EOL;
+            $dateObjectNow = new DateTime("now");
+            $dateObjectLastExecution = new DateTime('@' . $this->last_execution);
+            $dateStringNow = $dateObjectNow->format("d.m.Y H:i:s");
+            $dateStringLastExecution = $dateObjectLastExecution->format("d.m.Y H:i:s");
+            $message .= 'Time: ' . $dateStringNow . PHP_EOL;
+            $message .= 'Last execution: ' . $dateStringLastExecution . PHP_EOL;
+            $dateObjectNextExecution = (clone $dateObjectLastExecution)->add(new DateInterval(self::MAINTENANCE_PERIOD_DATE_INTERVAL_STRING));
+            $dateStringNextExecution = $dateObjectNextExecution->format("d.m.Y H:i:s");
+            $message .= 'Earliest next execution: ' . $dateStringNextExecution . PHP_EOL;
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         }
     }
@@ -208,5 +215,4 @@ class maintenance {
         $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `date` <= NOW() - INTERVAL 1 DAY;";
         database_wrapper::instance()->run($sql_query);
     }
-
 }

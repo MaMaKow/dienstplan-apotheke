@@ -23,6 +23,10 @@ class examine_roster {
     private $Approbierten_anwesende;
     private $Wareneingang_Anwesende;
     private $Changing_times;
+    private $Roster_of_all_employees;
+    private $Roster_of_qualified_pharmacist_employees;
+    private $Roster_of_goods_receipt_employees;
+    private $Opening_times;
 
     public function __construct(array $Roster, int $date_unix, int $branch_id, workforce $workforce) {
 
@@ -172,5 +176,4 @@ class examine_roster {
             }
         }
     }
-
 }

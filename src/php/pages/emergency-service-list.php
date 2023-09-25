@@ -107,77 +107,84 @@ $user_dialog->build_messages();
 ?>
 <table id="emergency_service_table" class="table_with_border">
     <tr><th><?= gettext('Date') ?></th><th><?= gettext('Weekday') ?></th><th><?= gettext('Name') ?></th><th class='replacement_td'><?= gettext('Replacement') ?></th></tr>
-            <?php
-            if (isset($Emergency_services)) {
-                foreach ($Emergency_services['Datum'] as $key => $date_sql) {
-                    $date_unix = strtotime($date_sql);
-                    $is_holiday = holidays::is_holiday($date_unix);
-                    $holiday_string = "";
-                    $holiday_class = "";
-                    $weekday = date('w', $date_unix);
-                    switch ($weekday) {
-                        case 6:
-                            $holiday_class .= " saturday ";
-                            break;
-                        case 0:
-                            $holiday_class .= " sunday ";
-                            break;
-                        default:
-                            break;
-                    }
-                    if (FALSE !== $is_holiday) {
-                        $holiday_string .= "<br>" . $is_holiday;
-                        $holiday_class .= " holiday ";
-                    }
-                    echo "\n<tr data-iterator=$key><form method='post'>";
-                    if ($session->user_has_privilege('create_roster')) {
-                        /**
-                         * Date:
-                         */
-                        echo "\n<td>\n"
-                        . "<input type='date' name='emergency_service_date' value='$date_sql' min='$year-01-01' max='$year-12-31' onChange='unhideButtonOnChange(this)'>"
-                        . "</td>\n";
-                        /**
-                         * Weekday:
-                         */
-                        echo "\n<td class='$holiday_class'>" . strftime('%a&nbsp;', $date_unix) . $holiday_string . "</td>";
-                        /**
-                         * Employee:
-                         */
-                        echo "<td>\n";
-                        echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($Emergency_services['employee_key'][$key], $branch_id, $date_sql);
-                        echo "</td>\n";
-                        /**
-                         * Buttons:
-                         */
-                        echo "<td>\n";
-                        echo "<button type='submit' id='save_$key' class='button_small no_print' onClick='enableLeavingPage();' title='" . gettext("Save changes to this line") . "' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
-                        . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' alt='" . gettext("Save changes to this line") . "'>\n"
-                        . "</button>\n";
-                        echo "<button type='submit' id='delete_$key' class='button_small no_print' onClick='enableLeavingPage(); return confirmDelete();' title='" . gettext("Remove this line") . "' name='command' value='delete' style='border-radius: 32px; background-color: transparent;'>\n"
-                        . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='" . gettext("Remove this line") . "'>\n"
-                        . "</button>\n";
-                        echo "</td>\n";
-                    } else {
-                        echo "\n<td>" . strftime('%x', $date_unix) . "</td>\n";
-                        echo "<td>\n";
-                        echo (isset($workforce->List_of_employees[$Emergency_services['employee_key'][$key]])) ? $workforce->List_of_employees[$Emergency_services['employee_key'][$key]]->last_name : "?";
-                        echo "</td>\n";
-                    }
-                    echo "<td class='replacement_td'></td>\n</form>\n</tr>\n";
-                }
+    <?php
+    if (isset($Emergency_services)) {
+        foreach ($Emergency_services['Datum'] as $key => $date_sql) {
+            $date_unix = strtotime($date_sql);
+            $dateObject = new DateTime($date_sql);
+            $is_holiday = holidays::is_holiday($date_unix);
+            $holiday_string = "";
+            $holiday_class = "";
+            $weekday = date('w', $date_unix);
+            switch ($weekday) {
+                case 6:
+                    $holiday_class .= " saturday ";
+                    break;
+                case 0:
+                    $holiday_class .= " sunday ";
+                    break;
+                default:
+                    break;
             }
+            if (FALSE !== $is_holiday) {
+                $holiday_string .= "<br>" . $is_holiday;
+                $holiday_class .= " holiday ";
+            }
+            echo "\n<tr data-iterator=$key><form method='post'>";
             if ($session->user_has_privilege('create_roster')) {
-                echo "\n<tr class='no_print'>";
-                echo "\n<td>" . gettext("Add line") . "</td><td colspan=2></td>";
-                echo "\n</tr>";
-                echo "\n<tr class='no_print'><form method='post'>";
-                echo "\n<td><input type='date' id='add_new_line_date' name='emergency_service_date' value='' min='$year-01-01' max='$year-12-31'></td>";
-                echo "\n<td><input type='submit' id='add_new_line_submit' value='" . gettext("Add line") . "'></td>";
-                echo "\n<td><input type='hidden' name=emergency_service_branch value='$branch_id'></td>";
-                echo "\n</form></tr>";
+                /**
+                 * Date:
+                 */
+                echo "\n<td>\n"
+                . "<input type='date' name='emergency_service_date' value='$date_sql' min='$year-01-01' max='$year-12-31' onChange='unhideButtonOnChange(this)'>"
+                . "</td>\n";
+                /**
+                 * Weekday:
+                 */
+                $configuration = new \PDR\Application\configuration();
+                $locale = $configuration->getLanguage();
+                $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+                $dateFormatter->setPattern('EEE');
+                $dateString = $dateFormatter->format($date_unix);
+                echo "\n<td class='$holiday_class'>" . $dateString . "&nbsp;" . $holiday_string . "</td>";
+                /**
+                 * Employee:
+                 */
+                echo "<td>\n";
+                echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($Emergency_services['employee_key'][$key], $branch_id, $date_sql);
+                echo "</td>\n";
+                /**
+                 * Buttons:
+                 */
+                echo "<td>\n";
+                echo "<button type='submit' id='save_$key' class='button_small no_print' onClick='enableLeavingPage();' title='" . gettext("Save changes to this line") . "' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+                . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' alt='" . gettext("Save changes to this line") . "'>\n"
+                . "</button>\n";
+                echo "<button type='submit' id='delete_$key' class='button_small no_print' onClick='enableLeavingPage(); return confirmDelete();' title='" . gettext("Remove this line") . "' name='command' value='delete' style='border-radius: 32px; background-color: transparent;'>\n"
+                . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='" . gettext("Remove this line") . "'>\n"
+                . "</button>\n";
+                echo "</td>\n";
+            } else {
+                $dateString = $dateObject->format("d.m.Y");
+                echo "\n<td>" . $dateString . "</td>\n";
+                echo "<td>\n";
+                echo (isset($workforce->List_of_employees[$Emergency_services['employee_key'][$key]])) ? $workforce->List_of_employees[$Emergency_services['employee_key'][$key]]->last_name : "?";
+                echo "</td>\n";
             }
-            ?>
+            echo "<td class='replacement_td'></td>\n</form>\n</tr>\n";
+        }
+    }
+    if ($session->user_has_privilege('create_roster')) {
+        echo "\n<tr class='no_print'>";
+        echo "\n<td>" . gettext("Add line") . "</td><td colspan=2></td>";
+        echo "\n</tr>";
+        echo "\n<tr class='no_print'><form method='post'>";
+        echo "\n<td><input type='date' id='add_new_line_date' name='emergency_service_date' value='' min='$year-01-01' max='$year-12-31'></td>";
+        echo "\n<td><input type='submit' id='add_new_line_submit' value='" . gettext("Add line") . "'></td>";
+        echo "\n<td><input type='hidden' name=emergency_service_branch value='$branch_id'></td>";
+        echo "\n</form></tr>";
+    }
+    ?>
 
 </table>
 </div><!-- id=main_area_centered-->

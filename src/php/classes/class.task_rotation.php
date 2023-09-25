@@ -38,9 +38,14 @@ abstract class task_rotation {
         $number_of_filled_days = 0;
         $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
         $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
+        $configuration = new \PDR\Application\configuration();
+        $locale = $configuration->getLanguage();
+        $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+        $weekdayFormatter->setPattern('EEE'); // 'EEEE' represents the full weekday name
         foreach ($Dates_unix as $date_unix) {
             $rotation_employee_key = self::task_rotation_get_worker($date_unix, $task, $branch_id);
-            $weekly_rotation_div_html .= strftime("%a", $date_unix) . ": ";
+            $dateString = $weekdayFormatter->format($date_unix);
+            $weekly_rotation_div_html .= $dateString . ": ";
             if (NULL !== $rotation_employee_key) {
                 $number_of_filled_days++;
                 $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_employee_key]->last_name;
@@ -238,7 +243,7 @@ abstract class task_rotation {
          * The empty option is necessary to enable the deletion of employees:
          */
         $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$task_employee_key]->last_name) or!isset($task_employee_key)) {
+        if (isset($workforce->List_of_employees[$task_employee_key]->last_name) or !isset($task_employee_key)) {
             foreach ($workforce->List_of_compounding_employees as $employee_key) {
                 $employee_object = $workforce->List_of_employees[$employee_key];
                 if ($task_employee_key == $employee_key and NULL !== $task_employee_key) {
@@ -310,5 +315,4 @@ abstract class task_rotation {
         ));
         return $result;
     }
-
 }

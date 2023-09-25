@@ -64,7 +64,7 @@ abstract class build_html_roster_views {
         $date_object = DateTime::createFromFormat('U', $day_iterator);
         $alternation_id = alternating_week::get_alternating_week_for_date($date_object->sub(new DateInterval('P' . $date_object->format('w') . 'D')));
         $alternation_factor = $alternation_id;
-        if (!isset($Roster[$day_iterator]) or!isset($Roster[$day_iterator][$roster_row_iterator])) {
+        if (!isset($Roster[$day_iterator]) or !isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
              * It contains a valid date and branch.
@@ -255,7 +255,7 @@ abstract class build_html_roster_views {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$roster_employee_key]->last_name) or!isset($roster_employee_key)) {
+        if (isset($workforce->List_of_employees[$roster_employee_key]->last_name) or !isset($roster_employee_key)) {
             foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
                 if ($roster_employee_key == $employee_key and NULL !== $roster_employee_key) {
                     $roster_input_row_employee_select .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
@@ -329,20 +329,30 @@ abstract class build_html_roster_views {
         $head_table_html = "";
         $head_table_html .= "<thead>\n";
         $head_table_html .= "<tr>\n";
+
+        $configuration = new \PDR\Application\configuration();
+        $locale = $configuration->getLanguage();
+        $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+        $weekdayFormatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
+
         foreach (array_keys($Roster) as $date_unix) {//Datum
             $date_sql = date('Y-m-d', $date_unix);
             $head_table_html .= "<td>";
             $head_table_html .= "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-day-read.php?datum=$date_sql'>";
-            $head_table_html .= strftime('%A', $date_unix);
+            $weekday_string = $weekdayFormatter->format($date_unix);
+            $head_table_html .= $weekday_string;
             $head_table_html .= " \n";
-            $head_table_html .= strftime('%d.%m.', $date_unix);
+            $dateObject = new DateTime($date_sql);
+            $dateString = $dateObject->format("d.m.");
+            $head_table_html .= $dateString;
             $holiday = holidays::is_holiday($date_unix);
             if (FALSE !== $holiday) {
                 $head_table_html .= "<br>$holiday";
             }
             $head_table_html .= "</a>";
             if (in_array(self::OPTION_SHOW_CALENDAR_WEEK, $Options)) {
-                $head_table_html .= "<br><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . $date_sql . "'>" . gettext("calendar week") . strftime(' %V', strtotime($date_sql)) . "</a>\n";
+                $weekNumber = $dateObject->format('W');
+                $head_table_html .= "<br><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . $date_sql . "'>" . gettext("calendar week") . $weekNumber . "</a>\n";
             }
 
             $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
@@ -512,8 +522,6 @@ abstract class build_html_roster_views {
                 $table_html .= "<td class=roster_employee_table_cell>";
                 $zeile = "";
 
-
-
                 $zeile .= "<span class='duty_time'>";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_start_sql');
                 $zeile .= " - ";
@@ -637,7 +645,7 @@ abstract class build_html_roster_views {
              */
             return 0;
         }
-        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and!empty($employee_object->working_week_days)) {
+        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and !empty($employee_object->working_week_days)) {
             /**
              * <p lang=de>
              * Wir müssen hier noch einen Spezialfall beachten!
@@ -684,5 +692,4 @@ abstract class build_html_roster_views {
         }
         return FALSE;
     }
-
 }

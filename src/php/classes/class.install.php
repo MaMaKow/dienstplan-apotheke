@@ -298,12 +298,12 @@ class install {
     }
 
     public function handle_user_input_administration() {
-        $this->Config["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["admin"]["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["admin"]["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, $options = null);
-        $this->Config["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
+        $this->Config["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["admin"]["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["admin"]["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, FILTER_NULL_ON_FAILURE);
+        $this->Config["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
         if ($this->Config["admin"]["password"] !== $this->Config["admin"]["password2"]) {
             $this->Error_message[] = gettext("The passwords aren't the same.");
             unset($this->Config["admin"]["password"], $this->Config["admin"]["password2"]); //We get rid of this values as fast as possible.
@@ -589,12 +589,12 @@ class install {
     }
 
     public function handle_user_input_database() {
-        $this->Config["database_management_system"] = filter_input(INPUT_POST, "database_management_system", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["database_host"] = filter_input(INPUT_POST, "database_host", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["database_name"] = filter_input(INPUT_POST, "database_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["database_port"] = filter_input(INPUT_POST, "database_port", FILTER_SANITIZE_NUMBER_INT, $options = null);
-        $this->Config["database_user"] = filter_input(INPUT_POST, "database_user", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
-        $this->Config["database_password"] = filter_input(INPUT_POST, "database_password", FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null);
+        $this->Config["database_management_system"] = filter_input(INPUT_POST, "database_management_system", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["database_host"] = filter_input(INPUT_POST, "database_host", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["database_name"] = filter_input(INPUT_POST, "database_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["database_port"] = filter_input(INPUT_POST, "database_port", FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE);
+        $this->Config["database_user"] = filter_input(INPUT_POST, "database_user", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $this->Config["database_password"] = filter_input(INPUT_POST, "database_password", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
         $this->write_config_to_session();
         if (!in_array($this->Config["database_management_system"], PDO::getAvailableDrivers())) {
             $this->Error_messages[] = htmlentities($this->Config["database_management_system"]) . "is not available on this server. Please check the configuration!";
@@ -869,7 +869,7 @@ class install {
             "database_user_name" => "'" . $database_user_name . "'@%",
         ));
         while ($row = $statement->fetch(PDO::FETCH_OBJ)) {
-            if (1 <= $row->exists) {
+            if (1 <= $row->user_exists) {
                 return TRUE;
             }
         }

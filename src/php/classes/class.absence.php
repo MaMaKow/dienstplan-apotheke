@@ -370,7 +370,7 @@ class absence {
                      * Holidays are not counted
                      * Also we inform the user about not counting those days.
                      */
-                    $date_string = strftime('%x', $date_object->getTimestamp());
+                    $date_string = $date_object->format('d.m.Y'); // Format for time (hours, minutes, seconds)
                     $message = $date_string . " " . gettext('is a holiday') . " (" . $holiday . ") " . gettext('and will not be counted.');
                     $user_dialog->add_message($message, E_USER_NOTICE);
                 } else {
@@ -380,7 +380,7 @@ class absence {
                     $days++;
                 }
             } else {
-                $date_string = strftime('%a %x', $date_object->getTimestamp());
+                $date_string = $date_object->format('D d.m.Y'); // Format for abbreviated weekday, day, month, and year
                 $message = sprintf(gettext('%1$s is not a working day for %2$s and will not be counted.'), $date_string, $employee_object->full_name);
                 $user_dialog->add_message($message, E_USER_NOTICE);
             }
@@ -521,5 +521,4 @@ class absence {
         $number_of_holidays_taken = (int) $result->fetch(PDO::FETCH_COLUMN);
         return $number_of_holidays_taken;
     }
-
 }

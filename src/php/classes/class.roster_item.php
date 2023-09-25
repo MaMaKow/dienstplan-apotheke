@@ -283,7 +283,9 @@ class roster_item implements \JsonSerializable {
         $message .= gettext('Date');
         $message .= ":";
         $message .= PHP_EOL;
-        $message .= strftime('%x', $this->date_unix) . PHP_EOL;
+        $dateObject = new DateTime('@' . $this->date_unix);
+        $dateString = $dateObject->format("d.m.Y");
+        $message .= $dateString . PHP_EOL;
         $message .= $context_string . PHP_EOL;
         $message .= gettext('You work at the following times:') . PHP_EOL;
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
@@ -309,7 +311,7 @@ class roster_item implements \JsonSerializable {
         return $message;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return get_object_vars($this);
     }
 }
