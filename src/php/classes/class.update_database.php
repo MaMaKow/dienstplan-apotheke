@@ -739,6 +739,8 @@ class update_database {
                 return FALSE;
             }
         }
-        database_wrapper::instance()->commit();
+        if (true === database_wrapper::instance()->inTransaction()) {
+            database_wrapper::instance()->commit();
+        }
     }
 }

@@ -104,6 +104,9 @@ for ($i = 1; $i <= 12; $i++) {
 }
 $Years = absence::get_rostering_years();
 $table_body_html = "<tbody>";
+$weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+$weekdayFormatter->setPattern('EEE'); // 'EEEE' represents the full weekday name
+
 for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
     $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"
             . "FROM `Dienstplan` "
@@ -113,8 +116,11 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
     $result = database_wrapper::instance()->run($sql_query, array(
         'employee_key' => $employee_key,
         'date' => $date_object->format('Y-m-d')));
+    $Absence = absence::get_absence_data_specific($date_object->format('Y-m-d'), $employee_key);
+
     $table_body_html .= "<tr>";
-    $table_body_html .= "<td>" . $date_object->format('D d.m.Y') . "</td>";
+    $dateString = $weekdayFormatter->format($date_object->getTimestamp());
+    $table_body_html .= "<td>" . $dateString . "</td>";
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         //There should only be one row here.
         $timeStartObject = new DateTime($row['start']);
@@ -127,7 +133,18 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
         if (isset($workforce->List_of_employees[$employee_key])) {
             $employee_object = $workforce->List_of_employees[$employee_key];
             $principle_working_hours = $employee_object->get_principle_roster_on_date($date_object)[0]->working_hours;
+            /**
+             * <p lang=de>Die folgende Rechnung ist allein nicht ganz korrekt:
+             * $overtime_hours = $row['hours'] - $principle_working_hours;
+             * Sie berücksichtigt z.B. nicht "Kind krank"
+             * Daher ergänzen wir im nächsten Schritt noch den Blick auf die Abwesenheit.
+             * </p>
+             */
             $overtime_hours = $row['hours'] - $principle_working_hours;
+            if (array() !== $Absence and !in_array($Absence['reason_id'], array(absence::REASON_TAKEN_OVERTIME))) {
+                $overtime_hours += $principle_working_hours;
+            }
+
             $overtime_hours_round = round($overtime_hours, 2);
             if ($overtime_hours_round > 0) {
                 $table_body_html .= "<span> (+$overtime_hours_round)</span>";
@@ -137,7 +154,6 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
         }
         $table_body_html .= "</td>";
     }
-    $Absence = absence::get_absence_data_specific($date_object->format('Y-m-d'), $employee_key);
     if (array() !== $Absence) {
         $table_body_html .= "<td colspan='3'>" . absence::get_reason_string_localized($Absence['reason_id']) . "</td>";
     }

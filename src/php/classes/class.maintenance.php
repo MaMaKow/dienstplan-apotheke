@@ -25,6 +25,7 @@
 class maintenance {
 
     /**
+     * @todo remove MAINTENANCE_PERIOD_IN_SECONDS and use a DateTime object instead!
      * @var int MAINTENANCE_PERIOD_IN_SECONDS the minimum time between two maintenance executions
      */
     const MAINTENANCE_PERIOD_IN_SECONDS = 24 * 60 * 60;
