@@ -128,7 +128,12 @@ function build_table_row(DateTime $date_object, int $branch_id) {
 
     $table_row = "";
     $holiday = holidays::is_holiday($date_object);
-    $date_string = $date_object->format("D d.m.Y");
+    $configuration = new \PDR\Application\configuration();
+    $locale = $configuration->getLanguage();
+    $dayFormatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
+    $dayFormatter->setPattern('EEE dd.MM.YYYY'); // 'EEEE' represents the full weekday name
+
+    $date_string = $dayFormatter->format($date_object->getTimestamp());
     if (FALSE !== $holiday) {
         $table_row .= "<tr class='saturday_list_row_holiday'>";
         $table_row .= "<td colspan='99'>";

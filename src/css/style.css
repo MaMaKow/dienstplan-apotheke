@@ -23,7 +23,7 @@ html {
 }
 
 body {
-    background-color: #ECE7E8;
+    /*background-color: #ECE7E8;*/
     font-family: sans-serif;
 }
 
@@ -55,7 +55,8 @@ table.table_with_border td {
 }
 
 td {
-    white-space: nowrap; vertical-align: top;
+    white-space: nowrap;
+    vertical-align: top;
 }
 
 th {

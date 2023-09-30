@@ -194,12 +194,21 @@ class overtime {
     }
 
     private static function build_overview_table_body() {
-        $workforce = new workforce();
+        $startDateObject = new DateTime("October last year");
+        $endDateObject = new DateTime("last day of December this year");
+        $workforce = new workforce($startDateObject->format("Y-m-d"), $endDateObject->format("Y-m-d"));
         $table_rows = "<tbody>";
+        // Create a DateTime object for the current date
+        $currentDate = new DateTime();
+
+        // Calculate the date three months ago
+        $threeMonthsAgo = clone $currentDate; // Create a copy of the current date
+        $threeMonthsAgo->modify('-3 months'); // Subtract three months
         foreach (array_keys($workforce->List_of_employees) as $employee_key) {
             $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` DESC LIMIT 1";
             $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+                $date_object = new DateTime($row->Datum);
                 switch (TRUE) {
                     case 40 < $row->Saldo:
                         $class = "positive_very_high";
@@ -217,10 +226,13 @@ class overtime {
                         $class = "positive";
                         break;
                 }
+
+                if ($date_object < $threeMonthsAgo) {
+                    $class .= " " . "not_updated";
+                }
                 $table_rows .= "<tr class='$class'>";
                 $table_rows .= "<td>" . $row->employee_key . " " . $workforce->List_of_employees[$row->employee_key]->last_name . "</td>";
                 $table_rows .= "<td>" . $row->Saldo . "</td>";
-                $date_object = new DateTime($row->Datum);
                 $date_string = $date_object->format('d.m.Y');
                 $table_rows .= "<td>" . $date_string . "</td>";
                 $table_rows .= "</tr>\n";

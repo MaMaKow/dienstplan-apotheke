@@ -8,9 +8,9 @@ I hope it will fulfill your expectations.
 
 ## Testing PDR
 There is a public instance of PDR:
-https://martin-mandelkow.de/apotheke/dienstplan-public/  
-Username: Besucher  
-Password: 1234  
+https://martin-mandelkow.de/apotheke/dienstplan-public/
+Username: Besucher
+Password: 1234
 The user Besucher has enough privileges to look around. If you want to test more features, just write a mail to public_pdr@martin-mandelkow.de
 
 
@@ -26,7 +26,7 @@ PHP and the webserver must have read access to all the files and folders.
 It also needs write access to the subdirectories `upload`, `tmp` and `config`.
 You might want to change the owner of the directory to the webservers user with e.g.:
 ```
-chown -R www-data:www-data /var/www/html/pdr/`
+chown -R www-data:www-data /var/www/html/pdr/
 ```
 
 ## License

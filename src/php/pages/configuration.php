@@ -88,7 +88,7 @@ echo $user_dialog->build_messages();
                 <label><?= gettext('Database user') ?></label>
                 <br><input type="text" name="database_user" value="<?php echo isset($config['database_user']) ? $config['database_user'] : '' ?>">
                 <br>
-                <label><?= gettext('Database user password') ?></label>
+                <label><?= gettext('Database user passphrase') ?></label>
                 <!-- Confuse the browser in order to stop it from auto-inserting the user password in the database password field-->
                 <input type="password" name="fake_password_input" id="fake_pass" hidden="true" style="display: none;">
                 <br>
@@ -104,7 +104,7 @@ echo $user_dialog->build_messages();
                 <img id="approve_pass_img"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_up-24px.svg" height="20">
                 <img id="disapprove_pass_img" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_down-24px.svg" height="20">
                 <br>
-                <label><?= gettext('Repeat password') ?></label>
+                <label><?= gettext('Repeat passphrase') ?></label>
                 <br>
                 <input type="password" name="database_password_second" id="second_pass"
                        onchange="compare_passwords()"
