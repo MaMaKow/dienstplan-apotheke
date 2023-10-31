@@ -147,12 +147,11 @@ public class RosterHoursPage {
         List<WebElement> listOfRowsElements = driver.findElements(listOfRowsBy);
         String dateString;
         WebElement rosterItemDateElement;
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd.MM.yyyy", Locale.GERMANY);
+        String targetDateCalendarString = targetLocalDate.format(dateTimeFormatter);
         for (WebElement rowElement : listOfRowsElements) {
             rosterItemDateElement = rowElement.findElement(rosterItemDateBy);
             dateString = rosterItemDateElement.getText();
-
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd.MM.yyyy", Locale.ENGLISH);
-            String targetDateCalendarString = targetLocalDate.format(dateTimeFormatter);
             if (!dateString.equals(targetDateCalendarString)) {
                 continue;
             }

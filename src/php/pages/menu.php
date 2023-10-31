@@ -119,6 +119,10 @@
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/pencil-pictogram.svg class="inline-image" alt="edit-button" title="Edit">
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_date_range-24px.svg class="inline-image" alt="month-button" title="Edit month">
                     </a>
+                    <a id="MenuLinkToAbsenceOverview" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/remaining-vacation-overview.php title="Remaining Vacation Overview">
+                        <?= gettext("Remaining Vacation Overview") ?>
+                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg class="inline-image" alt="overview-button" title="Remaining Vacation Overview">
+                    </a>
                 </li>
             </ul>
         </li>

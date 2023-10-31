@@ -86,7 +86,7 @@ class database_wrapper {
      *  A classical static method to make it universally available
      *  @return PDO Object of class PDO
      */
-    public static function instance() {
+    public static function instance(): database_wrapper {
         if (null === self::$instance) {
             self::$instance = new self;
         }
@@ -124,7 +124,7 @@ class database_wrapper {
      *  @param string $sql_query An SQL string to be queried against the database. It may contain placeholders which will be replaced by $arguments.
      *  @param array $arguments An array of values to be replaced into the placeholders.
      */
-    public function run($sql_query, $arguments = []) {
+    public function run($sql_query, $arguments = []): PDOStatement {
         try {
             $statement = $this->pdo->prepare($sql_query);
             /*
@@ -147,7 +147,7 @@ class database_wrapper {
      *
      * @param string $filename A fully qualified filename consisting of the folder, filename and the extension.
      */
-    protected static function create_table_from_template($filename) {
+    protected static function create_table_from_template($filename): void {
         $create_statement = file_get_contents($filename);
         self::instance()->query($create_statement);
     }
@@ -161,7 +161,7 @@ class database_wrapper {
      * @before create_table_from_template
      * @param string $table_name
      */
-    protected static function create_table_insert_from_old_table($table_name) {
+    protected static function create_table_insert_from_old_table($table_name): void {
         switch ($table_name) {
             case 'opening_times':
                 /*
@@ -186,7 +186,7 @@ class database_wrapper {
      * @param string $table Table to search for.
      * @return bool TRUE if table exists, FALSE if no table found.
      */
-    public static function database_table_exists($table_name) {
+    public static function database_table_exists($table_name): bool {
         /*
          *  Try a select statement against the table.
          *  Run it in try/catch in case PDO is in ERRMODE_EXCEPTION.
@@ -206,7 +206,7 @@ class database_wrapper {
         return $result !== FALSE;
     }
 
-    public static function database_table_column_exists($database_name, $table_name, $column_name) {
+    public static function database_table_column_exists($database_name, $table_name, $column_name): bool {
         $sql_query = "SELECT * FROM information_schema.COLUMNS "
                 . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name";
         $result = self::instance()->run($sql_query, array(
@@ -220,7 +220,7 @@ class database_wrapper {
         return FALSE;
     }
 
-    public static function database_table_index_exists($database_name, $table_name, $index_name) {
+    public static function database_table_index_exists($database_name, $table_name, $index_name): bool {
         $sql_query = "SELECT count(*) as index_exists FROM information_schema.statistics "
                 . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND index_name = :index_name";
         $result = self::instance()->run($sql_query, array(
@@ -236,7 +236,7 @@ class database_wrapper {
         return FALSE;
     }
 
-    public static function table_has_constraints($table_name) {
+    public static function table_has_constraints($table_name): bool {
         $constraints = self::find_table_constraints($table_name);
         if (array() == $constraints) {
             return FALSE;
@@ -244,7 +244,7 @@ class database_wrapper {
         return TRUE;
     }
 
-    private static function find_table_constraints($referenced_table_name) {
+    private static function find_table_constraints($referenced_table_name): array {
         $table_constraints = array();
         $sql_query = "SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
             FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
@@ -260,18 +260,18 @@ class database_wrapper {
         return $table_constraints;
     }
 
-    public static function database_table_constraint_exists($table_name, $constraint_name) {
+    public static function database_table_constraint_exists($table_name, $constraint_name): bool {
         $table_constraints = self::find_table_constraints($table_name);
         foreach ($table_constraints as $table_constraint_object) {
-            $message = "Found constraint: " . $table_constraint_object->CONSTRAINT_NAME;
-            error_log($message);
-            print_debug_variable_to_screen($table_constraint_object);
-            echo $message;
+            /**
+             * $message = "Found constraint: " . $table_constraint_object->CONSTRAINT_NAME;
+             * error_log($message);
+             */
             if ($constraint_name == $table_constraint_object->CONSTRAINT_NAME) {
                 return true;
             }
-            return false;
         }
+        return false;
     }
 
     /**
@@ -279,7 +279,7 @@ class database_wrapper {
      * @param string $field database identifier (i.e. database name, table name, column name)
      * @return string securely quoted identifier
      */
-    public static function quote_identifier($field) {
+    public static function quote_identifier(string $field): string {
         return "`" . str_replace("`", "``", $field) . "`";
     }
 
@@ -310,17 +310,21 @@ class database_wrapper {
              * The database table does not match the expected layout.
              * We try to update the database.
              * CAVE: This will not be called on querys, which are inside a transaction.
+             * Eigentlich könnte man versuchen, jetzt die Datenbank per update zu korrigieren.
+             * Aber das funktioniert leider nicht vernünftig. Es führt dazu, dass Fehler genau bei update_database() wieder hierher zurück führen.
              */
-            if (3 <= self::$unknown_column_iterator++) {
-                $message = gettext('There was an error while querying the database.')
-                        . " " . gettext('Please see the error log for more details!')
-                        . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
-                die("<p>$message</p>");
-            }
-            new update_database();
-            $statement = $this->pdo->prepare($sql_query);
-            $statement->execute($arguments);
-            return $statement;
+            //if (3 <= self::$unknown_column_iterator++) {
+            $message = gettext('There was an error while querying the database.')
+                    . " " . gettext('Please see the error log for more details!')
+                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+            die("<p>$message</p>");
+            //}
+            /*
+              new update_database();
+              $statement = $this->pdo->prepare($sql_query);
+              $statement->execute($arguments);
+              return $statement;
+             */
         } elseif ('42S02' == $exception->getCode() and 1146 === $exception->errorInfo[1]) {
             /*
              * Base table or view not found: 1146 Table doesn't exist
@@ -382,5 +386,4 @@ class database_wrapper {
             return $value;
         }
     }
-
 }

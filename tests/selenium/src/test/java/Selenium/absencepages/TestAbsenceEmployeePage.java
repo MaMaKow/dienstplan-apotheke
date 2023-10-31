@@ -40,8 +40,11 @@ public class TestAbsenceEmployeePage extends TestPage {
          * Create a new absence:
          */
         int employeeKey = 7;
-        absenceEmployeePage = absenceEmployeePage.goToYear(2020);
+        int year = 2020;
+        absenceEmployeePage = absenceEmployeePage.goToYear(year);
         absenceEmployeePage = absenceEmployeePage.goToEmployee(employeeKey);
+        assertEquals(absenceEmployeePage.getYear(), year);
+        assertEquals(absenceEmployeePage.getEmployeeKey(), employeeKey);
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", Absence.REASON_VACATION, "Foo comment", "not_yet_approved"); // 1 = Urlaub
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.01.2020", Absence.REASON_VACATION, "Neujahr", "not_yet_approved"); //gesetzlicher Feiertag
         /**

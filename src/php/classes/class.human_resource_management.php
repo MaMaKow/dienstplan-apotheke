@@ -52,43 +52,116 @@ abstract class human_resource_management {
             $Worker["start_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_FULL_SPECIAL_CHARS));
             $Worker["end_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_FULL_SPECIAL_CHARS));
 
-
-            $sql_query_deletion = "DELETE FROM `employees` WHERE `primary_key` = :employee_key;";
-            $sql_query_insertion = "INSERT INTO `employees` (
-        `first_name`, `last_name`, `profession`,
-        `working_week_hours`, `holidays`, `lunch_break_minutes`,
-        `goods_receipt`, `compounding`,
-        `branch`,
-        `start_of_employment`, `end_of_employment`
-        )
-        VALUES (
-:first_name, :last_name, :profession,
-:working_week_hours, :holidays, :lunch_break_minutes,
-:goods_receipt, :compounding, :branch,
-:start_of_employment, :end_of_employment)
-";
-
-
-            database_wrapper::instance()->beginTransaction();
-            $result_deletion = database_wrapper::instance()->run($sql_query_deletion, array('employee_key' => $Worker['employee_key']));
-            $result_insertion = database_wrapper::instance()->run($sql_query_insertion, array(
-                'first_name' => $Worker['first_name'],
-                'last_name' => $Worker['last_name'],
-                'profession' => $Worker['profession'],
-                'working_week_hours' => $Worker['working_week_hours'],
-                'holidays' => $Worker['holidays'],
-                'lunch_break_minutes' => $Worker['lunch_break_minutes'],
-                'goods_receipt' => $Worker['goods_receipt'],
-                'compounding' => $Worker['compounding'],
-                'branch' => $Worker['branch'],
-                'start_of_employment' => $Worker['start_of_employment'],
-                'end_of_employment' => $Worker['end_of_employment'],
-            ));
-            database_wrapper::instance()->commit();
+            $workforce = new workforce();
+            if (null != $Worker["employee_key"] and $workforce->employee_exists($Worker["employee_key"])) {
+                $result_archive = self::archiveExistingEmployee($Worker);
+                $result_update = self::updateExistingEmployee($Worker);
+                return $result_update;
+            }
+            $result_insertion = self::insertNewEmployee($Worker);
             return $result_insertion;
         } else {
             return FALSE;
         }
+    }
+
+    private static function insertNewEmployee($Worker): PDOStatement {
+        $sql_query_insertion = "INSERT INTO `employees` (
+            `first_name`, `last_name`, `profession`,
+            `working_week_hours`, `holidays`, `lunch_break_minutes`,
+            `goods_receipt`, `compounding`,
+            `branch`,
+            `start_of_employment`, `end_of_employment`
+            )
+            VALUES (
+            :first_name, :last_name, :profession,
+            :working_week_hours, :holidays, :lunch_break_minutes,
+            :goods_receipt, :compounding, :branch,
+            :start_of_employment, :end_of_employment)
+            ";
+
+        $result_insertion = database_wrapper::instance()->run($sql_query_insertion, array(
+            'first_name' => $Worker['first_name'],
+            'last_name' => $Worker['last_name'],
+            'profession' => $Worker['profession'],
+            'working_week_hours' => $Worker['working_week_hours'],
+            'holidays' => $Worker['holidays'],
+            'lunch_break_minutes' => $Worker['lunch_break_minutes'],
+            'goods_receipt' => $Worker['goods_receipt'],
+            'compounding' => $Worker['compounding'],
+            'branch' => $Worker['branch'],
+            'start_of_employment' => $Worker['start_of_employment'],
+            'end_of_employment' => $Worker['end_of_employment'],
+        ));
+        return $result_insertion;
+    }
+
+    private static function archiveExistingEmployee($Worker): PDOStatement {
+        $sql_query_archive = "INSERT INTO `employees_archive` (
+                    `primary_key`,
+                    `first_name`, `last_name`, `profession`,
+                    `working_week_hours`, `holidays`, `lunch_break_minutes`,
+                    `goods_receipt`, `compounding`,
+                    `branch`,
+                    `start_of_employment`, `end_of_employment`
+                    )
+                    VALUES (
+                    :employee_key,
+                    :first_name, :last_name, :profession,
+                    :working_week_hours, :holidays, :lunch_break_minutes,
+                    :goods_receipt, :compounding, :branch,
+                    :start_of_employment, :end_of_employment)
+                    ";
+
+        $result_archive = database_wrapper::instance()->run($sql_query_archive, array(
+            'employee_key' => $Worker['employee_key'],
+            'first_name' => $Worker['first_name'],
+            'last_name' => $Worker['last_name'],
+            'profession' => $Worker['profession'],
+            'working_week_hours' => $Worker['working_week_hours'],
+            'holidays' => $Worker['holidays'],
+            'lunch_break_minutes' => $Worker['lunch_break_minutes'],
+            'goods_receipt' => $Worker['goods_receipt'],
+            'compounding' => $Worker['compounding'],
+            'branch' => $Worker['branch'],
+            'start_of_employment' => $Worker['start_of_employment'],
+            'end_of_employment' => $Worker['end_of_employment'],
+        ));
+        return $result_archive;
+    }
+
+    private static function updateExistingEmployee($Worker): PDOStatement {
+        $sql_query_update = "UPDATE employees
+                SET
+                    first_name = :first_name,
+                    last_name = :last_name,
+                    profession = :profession,
+                    working_week_hours = :working_week_hours,
+                    holidays = :holidays,
+                    lunch_break_minutes = :lunch_break_minutes,
+                    goods_receipt = :goods_receipt,
+                    compounding = :compounding,
+                    branch = :branch,
+                    start_of_employment = :start_of_employment,
+                    end_of_employment = :end_of_employment
+                WHERE
+                    primary_key = :employee_key
+                ";
+        $result_update = database_wrapper::instance()->run($sql_query_update, array(
+            'first_name' => $Worker['first_name'],
+            'last_name' => $Worker['last_name'],
+            'profession' => $Worker['profession'],
+            'working_week_hours' => $Worker['working_week_hours'],
+            'holidays' => $Worker['holidays'],
+            'lunch_break_minutes' => $Worker['lunch_break_minutes'],
+            'goods_receipt' => $Worker['goods_receipt'],
+            'compounding' => $Worker['compounding'],
+            'branch' => $Worker['branch'],
+            'start_of_employment' => $Worker['start_of_employment'],
+            'end_of_employment' => $Worker['end_of_employment'],
+            'employee_key' => $Worker["employee_key"],
+        ));
+        return $result_update;
     }
 
     public static function make_radio_profession_list($checked) {
@@ -164,5 +237,4 @@ abstract class human_resource_management {
         $text .= ">";
         return $text;
     }
-
 }

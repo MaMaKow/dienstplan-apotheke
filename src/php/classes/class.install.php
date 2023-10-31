@@ -36,7 +36,7 @@ class install {
      * The requirements have been calculated by phpcompatinfo-5.0.12
      * for commit cd2423025433eeedf8d504c5fdeb05602ce71c24
      */
-    const PHP_VERSION_ID_REQUIRED = 70300;
+    const PHP_VERSION_ID_REQUIRED = 80000;
 
     function __construct() {
         $this->Error_message = array();
@@ -479,8 +479,26 @@ class install {
          * Windows does not and can not have it. Linux has it by default.
          */
         $Required_extensions = array(
-            'Core', 'PDO', 'calendar', 'date', 'filter', 'gettext', 'hash', 'iconv', 'json', 'mbstring',
-            'openssl', 'pcre', 'session', 'standard', 'xml',
+            'calendar',
+            'core',
+            'ctype',
+            'curl',
+            'date',
+            'filter',
+            'gettext',
+            'hash',
+            'iconv',
+            'imap',
+            'intl',
+            'json',
+            'mbstring',
+            'openssl',
+            'pcre',
+            'pdo',
+            'posix',
+            'session',
+            'spl',
+            'standard',
         );
         $success = TRUE;
         foreach ($Required_extensions as $required_extension) {

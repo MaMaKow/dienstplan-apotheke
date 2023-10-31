@@ -349,7 +349,7 @@ class workforce {
         $branch = $networkOfBranchOffices->get_main_branch_id();
         $start_of_employment = null;
         $end_of_employment = null;
-        $holidays = null;
+        $holidays = 28;
         $employee = new employee($private_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $compounding, $goods_receipt, $branch, $start_of_employment, $end_of_employment, $holidays);
         return $employee;
     }

@@ -35,6 +35,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Point;
 
 /**
  *
@@ -484,6 +486,16 @@ public class DayPage {
          */
         double elementOffsetDouble = -1 * ((rosterPlotElement.getSize().getWidth() - 5) / 2) * 0.9;
         int elementOffset = (int) Math.round(elementOffsetDouble);
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        long scrollY = (long) js.executeScript("return window.scrollY");
+        Point elementLocation = rosterPlotElement.getLocation();
+        int elementY = elementLocation.getY();
+        // Calculate the scroll amount needed to bring the element into view
+        int scrollAmount = elementY - (int) scrollY;
+        // Scroll to the element
+        js.executeScript("window.scrollBy(0, arguments[0]);", scrollAmount);
+
         actions.moveToElement(rosterPlotElement, elementOffset, 0).build().perform();
         actions.clickAndHold().build().perform();
         actions.moveByOffset(offsetPixels, 0).build().perform();

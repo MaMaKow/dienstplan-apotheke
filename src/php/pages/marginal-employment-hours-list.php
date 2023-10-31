@@ -86,12 +86,19 @@ if ($month_or_part <= 12) {
     }
 }
 
-$workforce = new workforce($date_start_object->format('Y-m-d'));
+$workforce = new workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 create_cookie('employee_key', $employee_key, 1);
 if (!$workforce->employee_exists($employee_key)) {
     $employee_key = $workforce->get_default_employee_key();
 }
+if (isset($_POST) && !empty($_POST)) {
+    // POST data has been submitted
+    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/marginal-employment-hours-list.php' . "?year=$year&month_or_part=$month_or_part&employee_key=$employee_key";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
+}
+
 $configuration = new \PDR\Application\configuration();
 $locale = $configuration->getLanguage();
 $monthFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
@@ -105,7 +112,7 @@ for ($i = 1; $i <= 12; $i++) {
 $Years = absence::get_rostering_years();
 $table_body_html = "<tbody>";
 $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
-$weekdayFormatter->setPattern('EEE'); // 'EEEE' represents the full weekday name
+$weekdayFormatter->setPattern('EEE dd.MM.yyyy'); // 'EEEE' represents the full weekday name
 
 for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
     $sql_query = "SELECT `Datum` as `date`, MIN(`Dienstbeginn`) as `start`, MAX(`Dienstende`) as `end`, SUM(`Stunden`) as `hours`"

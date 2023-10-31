@@ -58,17 +58,21 @@ class update_database {
             return FALSE;
         }
         $this->employee_refactor_primary_key();
-        /*
+        /**
          * Write new pdr_database_version_hash into the database:
          */
+        $message = date('Y-m-d') . ': ' . 'Write new pdr_database_version_hash into the database:' . PHP_EOL;
+        error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         $sql_query = 'REPLACE INTO `pdr_self` (`pdr_database_version_hash`) VALUES (:pdr_database_version_hash);';
         $result = database_wrapper::instance()->run($sql_query, array(
             'pdr_database_version_hash' => PDR_DATABASE_VERSION_HASH
         ));
+        $message = date('Y-m-d') . ': ' . 'Done with update_database' . PHP_EOL;
+        error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
     }
 
     private function rename_database_table($table_name_old, $table_name_new) {
-        /*
+        /**
          * The table will be automatically locked during the command.
          *
          */
@@ -236,7 +240,7 @@ class update_database {
             /**
              * <p lang=de>Die Tabelle ist bereits auf dem aktuellen Stand (1.0.0)</p>
              */
-            return;
+            return null;
         }
         $sql_query_insert = "INSERT INTO `principle_roster_archive` (SELECT `primary_key`, `alternating_week_id`, `employee_id`, `weekday`, `duty_start`, `duty_end`, `break_start`, `break_end`, `comment`, `working_hours`, `branch_id`, `valid_until` FROM `principle_roster` WHERE `valid_until` IS NOT NULL)";
         $sql_query_delete = "DELETE FROM `principle_roster`  WHERE `valid_until` IS NOT NULL";
@@ -399,19 +403,18 @@ class update_database {
         $Sql_query_array[] = "ALTER TABLE `employees` DROP `working_hours`;";
         $Sql_query_array[] = "UPDATE `employees_backup` SET `employees_backup`.`working_week_hours` = `employees_backup`.`working_hours`;";
         $Sql_query_array[] = "ALTER TABLE `employees_backup` DROP `working_hours`;";
-
         /**
          * <p lang=de>Alte Mitarbeiter zurück in die employees table holen:</p>
          */
         $Sql_query_array[] = "DROP TRIGGER IF EXISTS `backup_employee_data`;";
         $Sql_query_array[] = "DELETE `employees_backup` FROM `employees`  LEFT JOIN `employees_backup` ON `employees`.`primary_key` = `employees_backup`.`backup_id` WHERE `employees`.`last_name` = `employees_backup`.`last_name` AND `employees`.`first_name` = `employees_backup`.`first_name`;";
-        $Sql_query_array[] = "INSERT IGNORE INTO employees (SELECT * FROM `employees_backup`);";
-        $Sql_query_array[] = "INSERT IGNORE INTO employees (`id`, `last_name`, `first_name`, `profession`,
-  `working_week_hours`, `holidays`, `lunch_break_minutes`, `goods_receipt`, `compounding`,
-  `branch`, `start_of_employment`, `end_of_employment`, `timestamp`) (SELECT `id`, `last_name`, `first_name`, `profession`,
-  `working_week_hours`, `holidays`, `lunch_break_minutes`, `goods_receipt`, `compounding`,
-  `branch`, `start_of_employment`, `end_of_employment`, `timestamp`
- FROM `employees_backup`);";
+        $Sql_query_array[] = "INSERT INTO employees (`id`, `last_name`, `first_name`, `profession`,
+          `working_week_hours`, `holidays`, `lunch_break_minutes`, `goods_receipt`, `compounding`,
+          `branch`, `start_of_employment`, `end_of_employment`, `timestamp`) (SELECT `id`, `last_name`, `first_name`, `profession`,
+          `working_week_hours`, `holidays`, `lunch_break_minutes`, `goods_receipt`, `compounding`,
+          `branch`, `start_of_employment`, `end_of_employment`, `timestamp`
+          FROM `employees_backup`) ORDER BY `employees_backup`.`backup_id` DESC;";
+
         /**
          * Delete employees with same id and last name;
          * Delete employees with same id and first name;
@@ -420,15 +423,12 @@ class update_database {
         $Sql_query_array[] = "UPDATE `employees` SET start_of_employment = NULL WHERE start_of_employment = '0000-00-00';";
         $Sql_query_array[] = "UPDATE `employees` SET end_of_employment = NULL WHERE end_of_employment = '0000-00-00';";
 
-        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.last_name = t2.last_name AND t1.start_of_employment = t2.start_of_employment";
+        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.last_name = t2.last_name AND t1.start_of_employment = t2.start_of_employment;";
         $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.first_name = t2.first_name AND t1.start_of_employment = t2.start_of_employment;";
+        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.last_name = t2.last_name AND t1.end_of_employment = t2.end_of_employment;";
+        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.first_name = t2.first_name AND t1.end_of_employment = t2.end_of_employment;";
 
-        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.last_name = t2.last_name";
-        $Sql_query_array[] = "DELETE t1 FROM `employees` t1 INNER JOIN `employees` t2 WHERE t1.primary_key < t2.primary_key AND t1.id = t2.id AND t1.first_name = t2.first_name";
-
-        $Sql_query_array[] = "TRUNCATE TABLE `employees_backup`";
-
-        if (!database_wrapper::database_table_column_exists($config['database_name'], "users", "primary_key")) {
+        if (!database_wrapper::database_table_column_exists($config['database_name'], "users", "backup_id")) {
             /**
              * <p lang=de>Die Tabelle ist nicht auf dem aktuellen Stand (0.17.1)</p>
              */
@@ -438,7 +438,7 @@ class update_database {
             if (database_wrapper::database_table_constraint_exists("users", "users_ibfk_1")) {
                 /**
                  * Alternativ vielleicht eine Funktion, die geziehlt nach referenzierten Columns sucht
-                 *  oder einfach alle constraints von einer Tabelle lÃ¶scht?
+                 *  oder einfach alle constraints von einer Tabelle löscht?
                  */
                 $Sql_query_array[] = "ALTER TABLE `users` DROP FOREIGN KEY `users_ibfk_1`;";
             }
@@ -483,7 +483,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `Dienstplan` LEFT JOIN `employees` ON Dienstplan.VK=employees.id"
                 . " SET Dienstplan.employee_key = employees.primary_key"
                 . " WHERE Dienstplan.employee_key IS NULL AND employees.start_of_employment IS NULL AND employees.end_of_employment IS NULL;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `Dienstplan` WHERE `employee_key` IS NULL;";
         $Sql_query_array[] = "ALTER TABLE `Dienstplan` DROP PRIMARY KEY, ADD PRIMARY KEY(`employee_key`,`Datum`,`Dienstbeginn`);";
 
@@ -507,7 +507,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `Notdienst` LEFT JOIN `employees` ON Notdienst.VK=employees.id"
                 . " SET Notdienst.employee_key = employees.primary_key"
                 . " WHERE Notdienst.employee_key IS NULL AND employees.start_of_employment IS NULL AND employees.end_of_employment IS NULL;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `Notdienst` WHERE `employee_key` IS NULL;";
 
         /**
@@ -530,7 +530,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `Stunden` LEFT JOIN `employees` ON Stunden.VK=employees.id"
                 . " SET Stunden.employee_key = employees.primary_key"
                 . " WHERE Stunden.employee_key IS NULL AND employees.start_of_employment IS NULL AND employees.end_of_employment IS NULL;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `Stunden` WHERE `employee_key` IS NULL;";
         $Sql_query_array[] = "ALTER TABLE `Stunden` DROP PRIMARY KEY, ADD PRIMARY KEY (`employee_key`,`Datum`);";
 
@@ -554,7 +554,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `absence` LEFT JOIN `employees` ON absence.employee_id=employees.id"
                 . " SET absence.employee_key = employees.primary_key"
                 . " WHERE absence.employee_key IS NULL AND employees.start_of_employment IS NULL AND employees.end_of_employment IS NULL;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `absence` WHERE `employee_key` IS NULL;";
         $Sql_query_array[] = "ALTER TABLE `absence` DROP PRIMARY KEY, ADD PRIMARY KEY (`employee_key`,`start`);";
 
@@ -592,7 +592,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `principle_roster_archive` LEFT JOIN `employees` ON principle_roster_archive.employee_id=employees.id"
                 . " SET principle_roster_archive.employee_key = employees.primary_key"
                 . " WHERE principle_roster_archive.employee_key IS NULL AND employees.start_of_employment IS NULL AND employees.end_of_employment IS NULL;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `principle_roster_archive` WHERE `employee_key` IS NULL;";
 
         //saturday_rotation_teams
@@ -605,7 +605,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `saturday_rotation_teams` LEFT JOIN `employees` ON saturday_rotation_teams.employee_id=employees.id"
                 . " SET saturday_rotation_teams.employee_key = employees.primary_key"
                 . " WHERE saturday_rotation_teams.employee_key IS NULL AND NOW() <= employees.end_of_employment;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `saturday_rotation_teams` WHERE `employee_key` IS NULL;";
         $Sql_query_array[] = "ALTER TABLE `saturday_rotation_teams` DROP PRIMARY KEY, ADD PRIMARY KEY (`team_id`,`employee_key`,`branch_id`);";
 
@@ -619,7 +619,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `task_rotation` LEFT JOIN `employees` ON task_rotation.VK=employees.id"
                 . " SET task_rotation.employee_key = employees.primary_key"
                 . " WHERE task_rotation.employee_key IS NULL AND NOW() <= employees.end_of_employment;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `task_rotation` WHERE `employee_key` IS NULL;";
 
         //user_email_notification_cache
@@ -641,7 +641,7 @@ class update_database {
         $Sql_query_array[] = "UPDATE `users_privileges` LEFT JOIN `users` ON users_privileges.employee_id=users.employee_id"
                 . " SET users_privileges.user_key = users.primary_key"
                 . " WHERE users_privileges.user_key IS NULL;";
-        // Wenn nun noch EintrÃ¤ge übrig sind, werden sie gelÃ¶scht. Sie sind nicht zuzuordnen.
+        // Wenn nun noch Einträge übrig sind, werden sie gelöscht. Sie sind nicht zuzuordnen.
         $Sql_query_array[] = "DELETE FROM `users_privileges` WHERE `user_key` IS NULL;";
         $Sql_query_array[] = "ALTER TABLE `users_privileges` DROP PRIMARY KEY, ADD PRIMARY KEY (`user_key`,`privilege`);";
 
@@ -706,22 +706,10 @@ class update_database {
 
         $Sql_query_array[] = "ALTER TABLE `users_privileges` ADD FOREIGN KEY (`user_key`) REFERENCES `users`(`primary_key`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
 
-        /**
-         * @todo <p lang=de>Leider gibt es eine Inkonstistenz zwischen den beiden Tabellen employees und employees_backup.
-         * In den backup Daten liegt z.B. die backup_id von 57 bei VK1 als Pharmazieingenieur Gu. Schep.
-         * Durch ein UPDATE wurde in der employee Tabelle für die pseudo_id (jetzt neu primary_key) der Wert für 57 bei VK1 beibehalten,
-         * aber die PTA St. Mö. eingetragen.
-         * Dadurch können beide Tabellen nicht ohne weiteres wieder vereint werden.
-         * Wahrscheinlich kann man die Werte der backup Tabelle einfach als INSERT an die employees Tabelle übergeben
-         * und diese dann neue primary keys setzen lassen.
-         * Lassen sich die Werte dann konsistent auslesen?
-         * Sind die alten employees wirklich raus aus dem Dienstplan der Zukunft,
-         * werden aber sichtbar im Plan der Vergangenheit?
-         * </p>
-         */
         $Sql_query_array[] = "DROP TABLE IF EXISTS `Feiertage`;";
         $Sql_query_array[] = "DROP TABLE IF EXISTS `Schulferien`;";
         $Sql_query_array[] = "DROP TABLE IF EXISTS `opening_times_special`;";
+        $Sql_query_array[] = "DROP TABLE IF EXISTS `employees_backup`";
         /**
          * @todo <p lang=de>Was machen wir mit dem gleichen Mitarbeiter, der verschiedene Arbeitszeiten hinterlegt hat?
          * Löschen wir diese Informationen zu working_hours?
@@ -730,12 +718,13 @@ class update_database {
          * Soll ein Mitarbeiter verschiedene Instanzen haben? Ich denke nicht. Das ist im UI nicht abbildbar.
          * </p>
          */
-        database_wrapper::instance()->beginTransaction();
+        //database_wrapper::instance()->beginTransaction();
         foreach ($Sql_query_array as $sql_query) {
-            //error_log($sql_query);
+            error_log($sql_query . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             $result = database_wrapper::instance()->run($sql_query);
+            error_log("result->errorInfo(): " . implode(":", $result->errorInfo()) . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             if ('00000' !== $result->errorCode()) {
-                database_wrapper::instance()->rollBack();
+                //database_wrapper::instance()->rollBack();
                 return FALSE;
             }
         }

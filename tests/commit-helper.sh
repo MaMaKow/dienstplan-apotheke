@@ -26,6 +26,8 @@ echo "";
 echo "Showing git status: "; 
 git status;
 
+
+
 # Determine the correct tag for this commit:
 echo "";
 read -p "Will this commit be tagged as a new MAJOR version? [y/n] " -N 1 decision_git_tag_major;
@@ -75,6 +77,13 @@ php "tests/calculate_database_version_hash.php"
 echo "Created a new database version hash:"
 cat ./src/php/database_version_hash.php
 git add "./src/php/database_version_hash.php"
+
+# Pfad zur messages.po-Datei
+po_file="./locale/de_DE/LC_MESSAGES/messages.po"
+# Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
+sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
+echo "In Kommentaren wurden Zeilenangaben aus der $po_file-Datei entfernt."
+git add "$po_file"
 
 read -p "Ready to COMMIT and sign the changes? [y/n] " -N 1 decision_commit;
 if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]

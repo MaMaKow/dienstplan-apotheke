@@ -19,13 +19,21 @@ require '../../../default.php';
 /*
  * TODO: Edit option for existing entries
  */
-$workforce = new workforce();
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
+$dateStartObject = new DateTime("$year-01-01");
+$dateEndObject = new DateTime("$year-12-31");
+$workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
 create_cookie('year', $year, 1);
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 create_cookie('employee_key', $employee_key, 1);
 
 overtime::handle_user_input($session, $employee_key);
+if (isset($_POST) && !empty($_POST)) {
+    // POST data has been submitted
+    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/overtime-edit.php' . "?year=$year&employee_key=$employee_key";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
+}
 list($balance, $date_old) = overtime::get_current_balance($employee_key);
 /*
  * Get the overtime data for the chosen year:
@@ -54,8 +62,6 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $i++;
 }
 $tablebody .= "</tbody>\n";
-
-
 
 //Start of output:
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';

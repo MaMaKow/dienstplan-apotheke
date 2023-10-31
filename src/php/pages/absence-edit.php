@@ -16,14 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-$workforce = new workforce();
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
+
+$dateStartObject = new DateTime("$year-01-01");
+$dateEndObject = new DateTime("$year-12-31");
+$workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 create_cookie('year', $year, 1);
 create_cookie('employee_key', $employee_key, 30);
-absence::handle_user_input();
-
-
+if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ABSENCE)) {
+    absence::handle_user_input();
+}
+if (isset($_POST) && !empty($_POST)) {
+    // POST data has been submitted
+    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/absence-edit.php' . "?year=$year&employee_key=$employee_key";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
+}
 /*
  * TODO: Find overlapping absences.
  */

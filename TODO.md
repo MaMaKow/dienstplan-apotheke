@@ -325,7 +325,6 @@ Dadurch kommt es mitunter zu Kommunikation aus scannern, die die website untersu
 
 Vielleicht sollte ich für register.php auch ein rate-limiting einsetzen. und für vergessene Passwörter auch. Da kamen am 04.10.2022 sehr viele Emails von einem bot, der den Dienstplan tiefgehend untersucht hat.
 
-#### Übersicht Resturlaubstage aus den vergangenen 3 Jahren für das Steuerbüro
 
 Write selenium tests for user-management.php
 Write selenium tests for maintenance
@@ -337,3 +336,9 @@ Logviewer für das error.log in die / in eine Administraor-Ansicht einbauen.
 Löschen von Usern inklusive Löschen von Benutzerberechtigungen
 
 Get rid of PDR_ONE_DAY_IN_SECONDS!
+
+In marginal-employment-hours-list.php Feiertage mit Einbauen
+Datei umbenennen z.B. employmee-hours-list.php
+Hochformat für den Druck
+
+In overtime-edit.php die Möglichkeit einbauen, einzelne Überstunden zu ändern.

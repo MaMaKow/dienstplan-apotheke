@@ -1,12 +1,12 @@
-% This file was generated with po4a. Translate the source file.
-%
 \chapter{Entwicklerhandbuch}
 
 
 \section{Kernentwicklung}
 Alle PHP-Skripte laden eine gemeinsame Datei \texttt{default.php}, die die
-Standardeinstellungen vornimmt. Sie befindet sich in ./, welches der
-\texttt{PDR\_FILE\_SYSTEM\_APPLICATION\_PATH} ist. Siehe folgende Datei:
+Standardeinstellungen vornimmt.
+Sie befindet sich in \directory{./}, welches der
+\texttt{PDR\_FILE\_SYSTEM\_APPLICATION\_PATH} ist.
+Siehe folgende Datei:
 \lstinputlisting[language=PHP]{../default.php}
 
 \subsection{Ordnerstruktur}
@@ -36,26 +36,20 @@ usw. zu sehen.
 \item \directory{tests/} Tests, um Fehler im Quellcode zu finden; Dieser Ordner
 ist in .gitignore aufgeführt. Nur einige Dateien sind Teil der sichtbaren
 Quelle.
-\item \directory{tmp/} Ein Verzeichnis für temporäre Dateien. Es gibt noch keine
-automatische Bereinigung.
+\item \directory{tmp/} Ein Verzeichnis für temporäre Dateien. Es gibt noch keine automatische Bereinigung.
 \item \directory{upload/} Das Ziel für hochgeladene Inhalte. Momentan werden nur
-spezifische *.PEP-Dateien verstanden, die von Awta ASYS Smart erstellt
-wurden. Diese Dateien enthalten Informationen über die Anzahl der Kunden,
-die in der Vergangenheit bedient wurden.
+spezifische *.PEP-Dateien verstanden, die von AwintaOne erstellt wurden.
+Diese Dateien enthalten Informationen über die Anzahl der Kunden, die in der Vergangenheit bedient wurden.
 \end{itemize}
 
 \subsection{Programmierstil}
 Dieses Projekt versucht, einem Programmierstil zu folgen.
 \begin{itemize}
-\item Bitte vermeiden Sie StudlyCaps und camelCase (Binnenmajuskel).
 \item Klassenkonstanten MÜSSEN in Großbuchstaben mit Unterstrichtrennzeichen
 deklariert werden.
-\item Eigenschaftsnamen MÜSSEN in Unter\_strichen geschrieben werden.
 \item Einfache Variablen und Objekte werden in Kleinbuchstaben geschrieben.
 \item Array-Namen beginnen mit einem einzelnen Großbuchstaben, gefolgt von
 Kleinbuchstaben.
-\item Methodennamen müssen mit Unter\_strichen geschrieben werden.
-
 \item Der Code MUSS 4 Leerzeichen zum Einrücken verwenden, keine Tabulatoren.
 \item Öffnende geschweifte Klammern für Klassen und Funktionen MÜSSEN in derselben
 Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
@@ -64,9 +58,8 @@ Zeile nach dem Text beginnen.
 Zeile stehen, und das Schließen geschweifter Klammern MUSS in der nächsten
 Zeile nach dem Text beginnen.
 \end{itemize}
-Festplattenplatz ist nicht mehr knapp. IDEs helfen mit
-Autovervollständigung. Es ist nicht nötig, Dinge abzukürzen. Bitte verwenden
-Sie lange Begriffe wie  \lstinline|user_email_notification_cache|  statt
+Festplattenplatz ist nicht mehr knapp. IDEs helfen mit Autovervollständigung. Es ist nicht nötig, Dinge abzukürzen.
+Bitte verwenden Sie lange Begriffe wie \lstinline|user_email_notification_cache| statt
 \lstinline|usr_ml_ntfcn_ca| oder \lstinline|u_e_n_c|.
 
 \subsection{Die Datenbank}
@@ -150,9 +143,10 @@ PDO-Datenbankabfrage eine Ausnahme mit dem Code 42S02 und dem MySQL-Fehler
 
 \subsection{Klassen}
 Die Klassen werden im Ordner \directory{src/php/classes/} oder
-\directory{src/php/3rdparty/} gespeichert. Der Autoloader lädt nur Klassen
-aus \directory{\lstinline|src/php/classes/class.\$class_name.php|}. Jede
-andere Klasse muss manuell geladen werden.
+\directory{src/php/3rdparty/} gespeichert. Der PHP Autoloader lädt die Klassen
+aus \directory{\lstinline|src/php/classes/|}. 
+\\Die alte Notation war \directory{\lstinline|class.\$class_name.php|}.
+Inzwischen werden auch namespaces unterstützt. 
 
 \subsubsection{DateTime}
 \emph{Warum werden die DateTime Objecte überall als clone an die Funktionen übergeben?}
@@ -161,40 +155,19 @@ Weil Objekte stets als Referenz übergeben werden.
 
 
 \subsubsection{Benutzer}
-Die Klasse user stellt einen Mitarbeiter dar, der ein Benutzerkonto in PDR
-registriert hat.
+Die Klasse "user" repräsentiert eine Person, die ein Benutzerkonto in PDR registriert hat. Diese Person kann eine Angestellte sein, aber es sind auch Benutzerkonten ohne Verbindung zu Angestellten möglich.
 
 \subsubsection{user\_input}
 \paragraph{\lstinline|user_input::get_variable_from_any_input|}
 Diese Funktion liest die Benutzereingaben von POST, GET oder COOKIE in
-dieser Reihenfolge.Wenn die angeforderten Informationen in einer der Quellen
-gefunden werden, werden die anderen ignoriert.Aus Sicherheitsgründen werden
+dieser Reihenfolge. Wenn die angeforderten Informationen in einer der Quellen
+gefunden werden, werden die anderen ignoriert. Aus Sicherheitsgründen werden
 alle Informationen gefiltert. Standardmäßig wird
 \lstinline|FILTER_SANITIZE_FULL_SPECIAL_CHARS| eingesetzt. Jeder andere Filter kann als
-zweiter Parameter angegeben werden.Wenn in keiner der Quellen Informationen
+zweiter Parameter angegeben werden. Wenn in keiner der Quellen Informationen
 gefunden werden, wird ein Standardwert (der dritte Parameter) zurückgegeben.
 
-\paragraph{\lstinline|escape_sql_value|} foo \paragraph{\lstinline|convert_post_empty_to_php_null|} foo
-\paragraph{\lstinline|principle_employee_roster_write_user_input_to_database|}
-foo \paragraph{\lstinline|principle_roster_write_user_input_to_database|}
-foo \paragraph{\lstinline|get_Roster_from_POST_secure|} foo
-\paragraph{\lstinline|remove_changed_entries_from_database|} foo
-\paragraph{\lstinline|remove_changed_entries_from_database_principle_roster|}
-foo
-\paragraph{\lstinline|insert_changed_entries_into_database_principle_roster|}
-foo \paragraph{\lstinline|insert_new_approval_into_database|} foo
-\paragraph{\lstinline|old_write_approval_to_database|} foo
-\paragraph{\lstinline|get_changed_roster_employee_id_list|} foo
-\paragraph{\lstinline|get_deleted_roster_employee_id_list|} foo
-\paragraph{\lstinline|get_inserted_roster_employee_id_list|} foo
-\paragraph{\lstinline|roster_write_user_input_to_database|} foo
 
-
-
-
-
-
-\subsection{Web-Interface}
 
 \subsection{Kalender API}
 Das Skript unterscheidet nicht zwischen Informationen, die von POST, GET
@@ -207,14 +180,14 @@ Details.
 
 
 \section{Dokumentation}
-Diese Dokumentation über ein Programm, eine App oder ein Skript ist
-unvollständig. Sie können diesem Projekt helfen, indem Sie es erweitern. Im
-Ernst, wenn es etwas gibt, das sich nicht genug erklärt, schickt mir einfach
-eine E-Mail oder kontaktiert mich bei GitHub!
-
+Die Dokumentation ist noch nicht vollständig.
+Sie können dazu beitragen, dieses Projekt zu erweitern.
+Falls Sie Fragen haben oder eine ausführlichere Erklärung benötigen, zögern Sie nicht, mir eine E-Mail zu schreiben oder mich auf GitHub zu kontaktieren.
 
 \section{Testen}
-
+Für die Tests verwende ich Selenium. Die Tests sind in JAVA geschrieben.
+Maven wird als Build-Management-Tool eingesetzt.
+Um die Tests zu starten muss daher im Verzeichnis \directory{\lstinline|./tests/selenium/|} der Befehl \lstinline|mvn test| aufgerufen werden.
 
 \section{Bug Tracker}
 Fehler und Probleme werden bei GitHub verfolgt
@@ -222,11 +195,15 @@ Fehler und Probleme werden bei GitHub verfolgt
 
 
 \section{Übersetzung}
-Übersetzungen werden mit gettext () verwaltet.
-
-Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments:
-\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
+Übersetzungen werden mit \lstinline|gettext()| verwaltet.
+Ich nutze Poedit um die Datei \directory{\lstinline|./locale/de_DE/LC_MESSAGES/messages.po|} zu bearbeiten.
+%%Lesen Sie diesen Artikel über po4a für die Übersetzung dieses Dokuments:
+%%\url{https://maltris.org/mehrsprachigkeit-fur-fast-alles-po4a-7317.html}
 
 \subsection{Internationalisierung}
 Verschiedene Länder haben unterschiedliche Gesetze in Bezug auf Apotheken
-und Beschäftigung. Sie haben auch unterschiedliche Feiertage.
+und Beschäftigung.
+Sie haben auch unterschiedliche Feiertage.
+Momentan ist es noch nicht möglich, Länder oder Bundesländer in der Konfiguration zu hinterlegen.
+Es wird daher von Mecklenburg/Vorpommern in Deutschland ausgegangen.
+

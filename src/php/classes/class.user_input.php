@@ -27,6 +27,13 @@ abstract class user_input {
     const EXCEPTION_CODE_DUTY_START_INVALID = 1001;
     const EXCEPTION_CODE_DUTY_END_INVALID = 1002;
 
+    /**
+     *
+     * @param type $variable_name as given from POST/GET/COOKIE
+     * @param type $filter e.g. FILTER_SANITIZE_FULL_SPECIAL_CHARS
+     * @param type $default_value
+     * @return type
+     */
     public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS, $default_value = null) {
         $List_of_input_sources = array(INPUT_POST, INPUT_GET, INPUT_COOKIE);
         foreach ($List_of_input_sources as $input_source) {
@@ -102,7 +109,7 @@ abstract class user_input {
                      * Daher wird diese Zeile in diesem Fall nicht erreicht.
                      * </p>
                      */
-                    if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                    if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
                         /**
                          * <p lang=de>
                          * Sowohl Beginn als auch Ende wurden als leer übertragen. Dieses roster item wurde also gelöscht.
@@ -113,7 +120,7 @@ abstract class user_input {
                     }
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_key, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
@@ -196,10 +203,10 @@ abstract class user_input {
                      */
                     continue;
                 }
-                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
-                if (!isset($Principle_roster_row_array['primary_key']) or!is_numeric($Principle_roster_row_array['primary_key'])) {
+                if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
                     /**
                      * <p lang=de>Wenn an einem Tag bisher kein Grundplan hinterlegt war,
                      *  dann wird dort auch kein primary key übertragen.
@@ -249,7 +256,7 @@ abstract class user_input {
                 if (!validate_date($date_sql, 'Y-m-d')) {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
-                if (NULL === $employee_key OR!is_numeric($employee_key)) {
+                if (NULL === $employee_key OR !is_numeric($employee_key)) {
                     /**
                      * Es wurde kein Mitarbeiter übergeben.
                      * Dieses Item ist ungültig und wird übersprungen:
@@ -264,7 +271,7 @@ abstract class user_input {
                      * oder es wurde ein neuer Eintrag nicht korrekt übergeben.
                      * </p>
                      */
-                    if (isset($Principle_roster_row_array['primary_key']) and!validate_date($duty_end_sql, 'H:i')) {
+                    if (isset($Principle_roster_row_array['primary_key']) and !validate_date($duty_end_sql, 'H:i')) {
                         /**
                          * <p lang=de>
                          * Dienstzeit wurde gerade gelöscht.
@@ -283,10 +290,10 @@ abstract class user_input {
                      */
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
-                if (!isset($Principle_roster_row_array['primary_key']) or!is_numeric($Principle_roster_row_array['primary_key'])) {
+                if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
                     /**
                      * <p lang=de>Wenn für diesen Mitarbeiter bisher kein Grundplan hinterlegt war,
                      *  dann wird dort auch kein primary key übertragen.
@@ -698,5 +705,4 @@ abstract class user_input {
             //$user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_key_list, $Changed_roster_employee_key_list, $Deleted_roster_employee_key_list);
         }
     }
-
 }
