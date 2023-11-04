@@ -33,7 +33,7 @@ class user {
      */
     private $primary_key;
 
-    public function get_primary_key() {
+    public function get_primary_key(): int {
         return $this->primary_key;
     }
 
@@ -42,7 +42,7 @@ class user {
      */
     public $employee_key;
 
-    public function get_employee_key() {
+    public function get_employee_key(): int|null {
         /**
          * @todo handle the case of empty ids!
          */
@@ -67,7 +67,7 @@ class user {
      */
     public $email;
 
-    public function get_email() {
+    public function get_email(): string {
         return $this->email;
     }
 
@@ -86,6 +86,10 @@ class user {
      * But no other transitions are possible.</p>
      */
     public $status;
+
+    public function get_status(): string {
+        return $this->status;
+    }
 
     /**
      *
@@ -217,16 +221,45 @@ class user {
      *
      * @param array $privileges
      */
-    public function write_new_privileges_to_database($privileges = array()) {
+    public function write_new_privileges_to_database($privileges = array()): void {
         database_wrapper::instance()->beginTransaction();
         $sql_query = "DELETE FROM `users_privileges` WHERE `user_key`  = :user_key";
         database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key()));
-        foreach ($privileges as $privilege) {
-            $sql_query = "INSERT INTO `users_privileges` (`user_key`, `privilege`) VALUES (:user_key, :privilege)";
-            database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key(), 'privilege' => $privilege));
+        if (null !== $privileges) {
+            foreach ($privileges as $privilege) {
+                $sql_query = "INSERT INTO `users_privileges` (`user_key`, `privilege`) VALUES (:user_key, :privilege)";
+                database_wrapper::instance()->run($sql_query, array('user_key' => $this->get_primary_key(), 'privilege' => $privilege));
+            }
         }
         database_wrapper::instance()->commit();
         $this->read_privileges_from_database();
+    }
+
+    public function write_new_employee_key_to_database($employee_key): void {
+        $sql_query = "UPDATE `users` SET `employee_key` = :employee_key WHERE `primary_key` = :user_key";
+        database_wrapper::instance()->run($sql_query, array(
+            'user_key' => $this->get_primary_key(),
+            'employee_key' => database_wrapper::null_from_post_to_mysql($employee_key)),
+        );
+        $this->employee_key = $employee_key;
+    }
+
+    public function write_new_user_name_to_database($user_name): void {
+        $sql_query = "UPDATE `users` SET `user_name` = :user_name WHERE `primary_key` = :user_key";
+        database_wrapper::instance()->run($sql_query, array(
+            'user_key' => $this->get_primary_key(),
+            'user_name' => $user_name)
+        );
+        $this->user_name = $user_name;
+    }
+
+    public function write_new_status_to_database($status): void {
+        $sql_query = "UPDATE `users` SET `status` = :user_status WHERE `primary_key` = :user_key";
+        database_wrapper::instance()->run($sql_query, array(
+            'user_key' => $this->get_primary_key(),
+            'user_status' => $status)
+        );
+        $this->status = $status;
     }
 
     /**
@@ -335,21 +368,23 @@ class user {
     }
 
     public function activate() {
-        return $this->set_status('active');
+        return $this->write_new_status_to_database('active');
     }
 
     public function block() {
-        return $this->set_status('blocked');
+        return $this->write_new_status_to_database('blocked');
     }
 
     public function delete() {
-        return $this->set_status('deleted');
+        return $this->write_new_status_to_database('deleted');
     }
 
-    private function set_status($new_status) {
-        $sql_query = "UPDATE `users` SET `status` = :status WHERE `primary_key` = :primary_key";
-        $result = database_wrapper::instance()->run($sql_query, array('primary_key' => $this->primary_key, 'status' => $new_status));
-        return '00000' === $result->errorCode();
+    private function set_status(string $new_status): void {
+        $this->status = $new_status;
+    }
+
+    private function set_employee_key(int $new_employee_key): void {
+        $this->employee_key = $new_employee_key;
     }
 
     /**
@@ -412,5 +447,4 @@ class user {
                 . " WHERE `user_name` = :user_name";
         database_wrapper::instance()->run($sql_query, array('user_name' => $this->user_name));
     }
-
 }

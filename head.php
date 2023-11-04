@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/emergency-service-list.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/saturday-rotation.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/drag-and-drop.js" ></SCRIPT>
+        <?= includeSpecificJSForPage(); ?>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/style.css" media="all">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/print.css" media="print">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/form_and_input.css">
@@ -90,5 +91,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $cssText .= '       <LINK rel="stylesheet" type="text/css" href="' . PDR_HTTP_SERVER_APPLICATION_PATH . "src/css/" . $cssFile . '" media="all">' . PHP_EOL;
             }
             return $cssText;
+        }
+
+        /**
+         * Include specific JavaScript files based on the current page.
+         *
+         * @return string The HTML code to include the specified JavaScript files.
+         */
+        function includeSpecificJSForPage(): string {
+            $jsText = '<!-- Electively include specific JS files: -->' . PHP_EOL;
+            // Initialize the $jsFiles array
+            $jsFiles = array();
+            // Determine the current page's file name
+            $currentFile = basename($_SERVER['SCRIPT_FILENAME']);
+            switch ($currentFile) {
+                case 'user-management.php':
+                    $jsFiles[] = 'unsaved-changes-prompt.js';
+                    break;
+            }
+
+            // Include JavaScript files
+            foreach ($jsFiles as $jsFile) {
+                $jsText .= '        <script src="' . PDR_HTTP_SERVER_APPLICATION_PATH . "src/js/" . $jsFile . '"></script>' . PHP_EOL;
+            }
+            return $jsText;
         }
         ?>
