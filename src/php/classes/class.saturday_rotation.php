@@ -121,8 +121,7 @@ class saturday_rotation {
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $last_team_id = (int) $row->team_id;
-            $last_date_sql = $row->date;
-            $last_date_object = new DateTime($last_date_sql);
+            $last_date_object = new DateTime($row->date);
         }
         if (NULL === $last_team_id) {
             if (NULL !== $last_date_object) {
@@ -244,7 +243,6 @@ class saturday_rotation {
         $break_start = NULL;
         $break_end = NULL;
 
-
         foreach ($this->List_of_teams[$team_id] as $employee_key) {
             $Roster[$date_unix][] = new roster_item($this->target_date_object->format('Y-m-d'), $employee_key, $this->branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
         }
@@ -275,7 +273,7 @@ class saturday_rotation {
                 $roster_input_row_employee_select .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
             }
         }
-        if (NULL !== $roster_employee_key and!isset($workforce->List_of_employees[$roster_employee_key]->last_name)) {
+        if (NULL !== $roster_employee_key and !isset($workforce->List_of_employees[$roster_employee_key]->last_name)) {
             /*
              * Unknown employee, probably someone from the past.
              */
@@ -338,8 +336,6 @@ class saturday_rotation {
         $buildSaturdayRotationTeamsAddTeamHtml .= "</form>";
         $buildSaturdayRotationTeamsAddTeamHtml .= "</td>";
         $buildSaturdayRotationTeamsAddTeamHtml .= "</tr>";
-
-
 
         return $buildSaturdayRotationTeamsAddTeamHtml;
     }
@@ -429,5 +425,4 @@ class saturday_rotation {
             $team_id_should++;
         }
     }
-
 }

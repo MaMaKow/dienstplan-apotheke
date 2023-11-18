@@ -19,12 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
-import com.google.common.base.CharMatcher;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
@@ -77,14 +72,14 @@ public class UploadPepPage {
 
     public boolean expectationIsPresent() {
         WebElement expectationElement;
-        String expectationString = "";
+        String expectationString = null;
         WebDriverWait wait = new WebDriverWait(driver, 20);
         int attempts = 0;
         while (attempts < 5) {
             try {
                 expectationElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id=\"expectation\"]")));
                 expectationString = expectationElement.getAttribute("data-expectation");
-                break;
+                return !expectationString.equals("[]");
             } catch (StaleElementReferenceException | NullPointerException exception) {
                 System.err.println(exception.getMessage());
                 System.err.println(Arrays.toString(exception.getStackTrace()));
@@ -95,7 +90,7 @@ public class UploadPepPage {
         /**
          * The expectation is filled with something other than "[]":
          */
-        return !expectationString.equals("[]");
+        return !"[]".equals(expectationString);
     }
 
     public boolean expectationIsPresentAfterWaiting(int maximumReloads) {

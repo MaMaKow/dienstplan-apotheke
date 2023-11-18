@@ -86,7 +86,7 @@ function build_checkbox_permission($privilege, $checked) {
 <form method='POST' id='user_management' onchange="enableUnsavedChangesPrompt(this); changesMadeInForm = true;">
     <fieldset id="identifier_group" class="privilege-group">
         <legend><?= gettext("Identifier"); ?></legend>
-        <input type='text' name='user_key' id="user_key" value="<?= $user->get_primary_key(); ?>" hidden='true'>
+        <input type='text' name='user_key' id="user_key_hidden_input" value="<?= $user->get_primary_key(); ?>" hidden='true'>
         <div>
             <label for="user_email"><?= gettext("User Email"); ?>:</label>
             <input type="email" name="user_email" id="user_email" value="<?= $user->get_email(); ?>" disabled>
@@ -131,7 +131,7 @@ function build_checkbox_permission($privilege, $checked) {
 
     </fieldset>
     <div>
-        <input type=submit id=save_new class='no_print' name=submit_user_data form='user_management'>
+        <input type=submit id=user_management_form_submit class='no_print' name=submit_user_data form='user_management'>
     </div>
 
 </form>

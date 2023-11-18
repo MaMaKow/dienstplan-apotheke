@@ -33,9 +33,8 @@
             <!--
             -->
             <class name="Selenium.administrationpages.TestSaturdayRotationTeamsPage" />
-            <!--
             <class name="Selenium.administrationpages.TestSaturdayListPage" />
-            -->
+            <class name="Selenium.administrationpages.TestUserManagementPage" />
             <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestConfigurationPage" />
             <!--

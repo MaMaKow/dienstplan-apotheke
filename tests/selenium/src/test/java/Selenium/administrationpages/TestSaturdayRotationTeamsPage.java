@@ -62,17 +62,7 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
          * verwalten und zum Lesen dieser Datei eine weitere Klasse
          * erschaffen.</p>
          */
-        HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = new HashMap<>();
-        SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null, new int[]{5, 12});
-        SaturdayRotationTeam saturdayRotationTeam1 = new SaturdayRotationTeam(null, new int[]{3, 15});
-        SaturdayRotationTeam saturdayRotationTeam2 = new SaturdayRotationTeam(null, new int[]{7, 14});
-        SaturdayRotationTeam saturdayRotationTeam3 = new SaturdayRotationTeam(null, new int[]{4, 8});
-        SaturdayRotationTeam saturdayRotationTeam4 = new SaturdayRotationTeam(null, new int[]{16, 9});
-        saturdayTeamList.put(0, saturdayRotationTeam0);
-        saturdayTeamList.put(1, saturdayRotationTeam1);
-        saturdayTeamList.put(2, saturdayRotationTeam2);
-        saturdayTeamList.put(3, saturdayRotationTeam3);
-        saturdayTeamList.put(4, saturdayRotationTeam4);
+        HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = SaturdayRotationTeam.getSaturdayTeams();
         for (Map.Entry<Integer, SaturdayRotationTeam> saturdayTeamEntry : saturdayTeamList.entrySet()) {
             SaturdayRotationTeam saturdayRotationTeamShould = saturdayTeamEntry.getValue();
 
@@ -90,4 +80,5 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
         }
 
     }
+
 }

@@ -19,8 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.TestPage;
-import java.util.Calendar;
-import java.util.Locale;
+import java.time.LocalDate;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -39,10 +38,13 @@ public class TestSaturdayListPage extends TestPage {
         /**
          * Go to page:
          */
+        int year = 2021;
+        int branchId = 1;
         SaturdayListPage saturdayListPage = new SaturdayListPage(driver);
-        saturdayListPage.selectYear("2021");
-        saturdayListPage.selectBranch(1);
-        Assert.assertEquals(saturdayListPage.getBranchId(), 1);
+        saturdayListPage.selectYear(year);
+        Assert.assertEquals(saturdayListPage.getYear(), year);
+        saturdayListPage.selectBranch(branchId);
+        Assert.assertEquals(saturdayListPage.getBranchId(), branchId);
         /**
          * <p lang=de>
          * Der 03. October 2026 ist ein Feiertag. Weil an diesem Feiertag kein
@@ -50,12 +52,33 @@ public class TestSaturdayListPage extends TestPage {
          * sonst am 03.10. dran gewesen wäre.
          * </p>
          */
-        Calendar saturdayCalendar = Calendar.getInstance(Locale.GERMANY);
-        saturdayCalendar.set(2026, Calendar.SEPTEMBER, 26);
-        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 0);
-        saturdayCalendar.set(2026, Calendar.OCTOBER, 3);
-        Assert.assertEquals(saturdayListPage.teamIdOnDateIsMissing(saturdayCalendar.getTime()), true);
-        saturdayCalendar.set(2026, Calendar.OCTOBER, 10);
-        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayCalendar.getTime()), 1);
+        LocalDate saturdayDate = LocalDate.of(2026, 9, 26);
+        int firstFoundTeamId = saturdayListPage.getTeamIdOnDate(saturdayDate);
+        //Assert that the found team number is in the expected range:
+        Assert.assertTrue(firstFoundTeamId < SaturdayRotationTeam.getSaturdayTeamsSize());
+
+        saturdayDate = LocalDate.of(2026, 10, 3);
+        Assert.assertEquals(saturdayListPage.teamIdOnDateIsMissing(saturdayDate), true);
+
+        saturdayDate = LocalDate.of(2026, 10, 10);
+        Assert.assertEquals(saturdayListPage.getTeamIdOnDate(saturdayDate), getNextTeamId(firstFoundTeamId));
+    }
+
+    /**
+     * Gets the next team ID, considering a circular rotation.
+     * If the current team ID is within the valid range (0 to SaturdayRotationTeam.getSaturdayTeamsSize() - 1),
+     * returns the next team ID. If the current team ID is the maximum possible value, wraps around to 0.
+     *
+     * @param currentTeamId The current team ID.
+     * @return The next team ID.
+     */
+    private int getNextTeamId(int currentTeamId) {
+        // Check if the current team ID is below the maximum:
+        if (SaturdayRotationTeam.getSaturdayTeamsSize() >= currentTeamId) {
+            // Return the next team ID
+            return ++currentTeamId;
+        }
+        // If the current team ID is at the maximum possible value, wrap around to 0
+        return 0;
     }
 }

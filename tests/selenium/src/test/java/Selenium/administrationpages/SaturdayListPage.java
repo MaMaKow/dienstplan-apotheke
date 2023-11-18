@@ -19,10 +19,10 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 import java.util.Locale;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -64,10 +64,17 @@ public class SaturdayListPage {
 
     }
 
-    public void selectYear(String yearString) {
+    public void selectYear(int year) {
         WebElement selectYearSelectElement = driver.findElement(selectYearSelectBy);
         Select selectYearSelect = new Select(selectYearSelectElement);
-        selectYearSelect.selectByVisibleText(yearString);
+        selectYearSelect.selectByVisibleText(String.valueOf(year));
+    }
+
+    public int getYear() {
+        WebElement selectYearSelectElement = driver.findElement(selectYearSelectBy);
+        Select selectYearSelect = new Select(selectYearSelectElement);
+        String yearValue = selectYearSelect.getFirstSelectedOption().getAttribute("value");
+        return Integer.parseInt(yearValue);
     }
 
     public void selectBranch(int branchId) {
@@ -81,29 +88,28 @@ public class SaturdayListPage {
         return branchId;
     }
 
-    private WebElement getSaturdayRowElementByDate(Date targetDate) {
+    private WebElement getSaturdayRowElementByDate(LocalDate targetDate) {
         List<WebElement> saturdayRowListElements = driver.findElements(saturdayRowListBy);
 
         for (WebElement saturdayRowElement : saturdayRowListElements) {
             WebElement saturdayRowDateElement = saturdayRowElement.findElement(saturdayRowDateBy);
             String saturdayRowDateString = saturdayRowDateElement.getText().substring(4, 14);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN);
-            if (simpleDateFormat.format(targetDate).equals(saturdayRowDateString)) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN);
+            if (targetDate.format(formatter).equals(saturdayRowDateString)) {
                 return saturdayRowElement;
             }
         }
         return null;
     }
 
-    public int getTeamIdOnDate(Date targetDate) {
-        SimpleDateFormat simpleDateFormatYear = new SimpleDateFormat("yyyy", Locale.GERMAN);
-        selectYear(simpleDateFormatYear.format(targetDate)); //Make sure, that we are in the right year.
+    public int getTeamIdOnDate(LocalDate targetDate) {
+        selectYear(targetDate.getYear()); // Make sure, that we are in the right year.
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement teamIdWebElement = saturdayRowElement.findElement(saturdayRowTeamIdBy);
-        return Integer.valueOf(teamIdWebElement.getText());
+        return Integer.parseInt(teamIdWebElement.getText());
     }
 
-    public boolean teamIdOnDateIsMissing(Date targetDate) {
+    public boolean teamIdOnDateIsMissing(LocalDate targetDate) {
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         try {
             WebElement teamIdWebElement = saturdayRowElement.findElement(saturdayRowTeamIdBy);
@@ -119,7 +125,7 @@ public class SaturdayListPage {
         }
     }
 
-    public ArrayList<String> getTeamMembersOnDate(Date targetDate) {
+    public ArrayList<String> getTeamMembersOnDate(LocalDate targetDate) {
         ArrayList<String> teamMembers = new ArrayList<>();
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement teamMembersWebElement = saturdayRowElement.findElement(saturdayRowTeamMembersBy);
@@ -131,7 +137,7 @@ public class SaturdayListPage {
         return teamMembers;
     }
 
-    public ArrayList<String> getScheduledEmployeesOnDate(Date targetDate) {
+    public ArrayList<String> getScheduledEmployeesOnDate(LocalDate targetDate) {
         ArrayList<String> scheduledEmployees = new ArrayList<>();
         WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
         WebElement scheduledEmployeesWebElement = saturdayRowElement.findElement(saturdayRowScheduledEmployeesBy);
