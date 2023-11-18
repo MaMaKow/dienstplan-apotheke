@@ -109,6 +109,15 @@ class configuration {
         }
     }
 
+    public function getSecretKey() {
+        if (isset(self::$loadedConfig['secret_key'])) {
+            return self::$loadedConfig['secret_key'];
+        } else {
+            $secretKey = bin2hex(random_bytes(64));
+            $this->write_new_config_entry('secret_key', $secretKey);
+        }
+    }
+
     public function getErrorReporting() {
         if (isset(self::$loadedConfig['error_reporting'])) {
             return self::$loadedConfig['error_reporting'];
@@ -257,4 +266,14 @@ class configuration {
         'email_smtp_username' => NULL,
         'email_smtp_password' => NULL,
     );
+
+    private function write_new_config_entry(string $key, $value): void {
+        $configuration_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php';
+        self::$loadedConfig[$key] = $value;
+        if (file_exists($configuration_file)) {
+            rename($configuration_file, $configuration_file . '_' . date(\DateTime::ATOM));
+        }
+        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($this->loadedConfig, true) . ';');
+        chmod($configuration_file, 0660);
+    }
 }

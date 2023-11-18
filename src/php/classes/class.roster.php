@@ -318,4 +318,38 @@ class roster {
         }
         return TRUE;
     }
+
+    /**
+     * Codiert die Dienstplan-Daten in das JSON-Format.
+     *
+     * @return string JSON-codierter Dienstplan
+     */
+    public function encodeToJson() {
+        $jsonArray = array();
+
+        foreach ($this->array_of_days_of_roster_items as $dateUnix => $rosterDayArray) {
+            $jsonDayArray = array();
+
+            foreach ($rosterDayArray as $rosterItem) {
+                $jsonDayArray[] = array(
+                    'date' => $rosterItem->date,
+                    'employee_key' => $rosterItem->employee_key,
+                    'branch_id' => $rosterItem->branch_id,
+                    'duty_start' => $rosterItem->duty_start,
+                    'duty_end' => $rosterItem->duty_end,
+                    'break_start' => $rosterItem->break_start,
+                    'break_end' => $rosterItem->break_end,
+                    'comment' => $rosterItem->comment,
+                    'working_hours' => $rosterItem->working_hours,
+                );
+            }
+
+            $jsonArray[] = array(
+                'date_unix' => $dateUnix,
+                'roster' => $jsonDayArray,
+            );
+        }
+
+        return json_encode($jsonArray);
+    }
 }
