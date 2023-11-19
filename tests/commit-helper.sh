@@ -101,7 +101,7 @@ if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]
 then
     clear
     git commit --gpg-sign
-    if [ "true" == $featureBranch ]
+    if [ "false" == $featureBranch ]
     then
         git tag "$new_version"
     fi
