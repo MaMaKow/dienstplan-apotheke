@@ -44,7 +44,7 @@ import static org.testng.Assert.assertEquals;
  */
 public class TestRosterDayEditPage extends TestPage {
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = true)
     public void testDateNavigation() {
         /**
          * Sign in:

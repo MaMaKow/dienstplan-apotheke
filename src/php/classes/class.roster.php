@@ -331,14 +331,17 @@ class roster {
             $jsonDayArray = array();
 
             foreach ($rosterDayArray as $rosterItem) {
+                if ($rosterItem instanceof roster_item_empty) {
+                    continue;
+                }
                 $jsonDayArray[] = array(
-                    'date' => $rosterItem->date,
+                    'date' => $rosterItem->date_object,
                     'employee_key' => $rosterItem->employee_key,
                     'branch_id' => $rosterItem->branch_id,
-                    'duty_start' => $rosterItem->duty_start,
-                    'duty_end' => $rosterItem->duty_end,
-                    'break_start' => $rosterItem->break_start,
-                    'break_end' => $rosterItem->break_end,
+                    'duty_start' => $rosterItem->dutyStartDateTime,
+                    'duty_end' => $rosterItem->dutyEndDateTime,
+                    'break_start' => $rosterItem->break_start_sql,
+                    'break_end' => $rosterItem->break_end_sql,
                     'comment' => $rosterItem->comment,
                     'working_hours' => $rosterItem->working_hours,
                 );
