@@ -34,10 +34,10 @@ git status;
 # Check if the current branch is one of the allowed branches for tagging:
 if [ "$current_branch" != "development" ] && [ "$current_branch" != "testing" ] && [ "$current_branch" != "master" ]
 then
-    featureBranch=true;
+    featureBranch="true";
     echo "$current_branch probably is a feature branch: We will only tag commits on the 'development,' 'testing,' or 'master' branches."
 else
-    featureBranch=false;
+    featureBranch="false";
     # Determine the correct tag for this commit:
     echo "";
     read -p "Will this commit be tagged as a new MAJOR version? [y/n] " -N 1 decision_git_tag_major;
@@ -101,7 +101,7 @@ if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]
 then
     clear
     git commit --gpg-sign
-    if [ true == $featureBranch ]
+    if [ "true" == $featureBranch ]
     then
         git tag "$new_version"
     fi
