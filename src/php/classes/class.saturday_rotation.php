@@ -97,7 +97,7 @@ class saturday_rotation {
     protected function read_teams_from_database() {
         $this->adjust_team_ids();
         $List_of_teams = array();
-        $sql_query = 'SELECT `team_id`, `employee_id` FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id ORDER BY `team_id`';
+        $sql_query = 'SELECT `team_id`, `employee_key` FROM `saturday_rotation_teams` WHERE `branch_id` = :branch_id ORDER BY `team_id`';
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id));
         /**
          * <p lang=de>
@@ -106,7 +106,7 @@ class saturday_rotation {
          * </p>
          */
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $List_of_teams[$row->team_id][] = $row->employee_id;
+            $List_of_teams[$row->team_id][] = $row->employee_key;
         }
         return $List_of_teams;
     }
@@ -121,8 +121,7 @@ class saturday_rotation {
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $last_team_id = (int) $row->team_id;
-            $last_date_sql = $row->date;
-            $last_date_object = new DateTime($last_date_sql);
+            $last_date_object = new DateTime($row->date);
         }
         if (NULL === $last_team_id) {
             if (NULL !== $last_date_object) {
@@ -244,14 +243,13 @@ class saturday_rotation {
         $break_start = NULL;
         $break_end = NULL;
 
-
-        foreach ($this->List_of_teams[$team_id] as $employee_id) {
-            $Roster[$date_unix][] = new roster_item($this->target_date_object->format('Y-m-d'), $employee_id, $this->branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
+        foreach ($this->List_of_teams[$team_id] as $employee_key) {
+            $Roster[$date_unix][] = new roster_item($this->target_date_object->format('Y-m-d'), $employee_key, $this->branch_id, $duty_start, $duty_end, $break_start, $break_end, $comment);
         }
         return $Roster;
     }
 
-    public function build_input_row_employee_select(int $roster_employee_id = null, int $team_id, int $roster_row_iterator = null, $session) {
+    public function build_input_row_employee_select(int $roster_employee_key = null, int $team_id, int $roster_row_iterator = null, $session) {
         $workforce = new workforce();
         $option_set_select_disabled_for_unprivileged_user = "";
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
@@ -260,7 +258,7 @@ class saturday_rotation {
 
         $roster_input_row_employee_select = "<select "
                 . " $option_set_select_disabled_for_unprivileged_user "
-                . " name=Saturday_rotation_team[" . $team_id . "][" . $roster_row_iterator . "][employee_id] "
+                . " name=Saturday_rotation_team[" . $team_id . "][" . $roster_row_iterator . "][employee_key] "
                 . " data-team_id='$team_id' "
                 . " onChange='this.form.submit();' "
                 . ">";
@@ -268,18 +266,18 @@ class saturday_rotation {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-            if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
-                $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+        foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
+            if ($roster_employee_key == $employee_key and NULL !== $roster_employee_key) {
+                $roster_input_row_employee_select .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
             } else {
-                $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                $roster_input_row_employee_select .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
             }
         }
-        if (NULL !== $roster_employee_id and!isset($workforce->List_of_employees[$roster_employee_id]->last_name)) {
+        if (NULL !== $roster_employee_key and !isset($workforce->List_of_employees[$roster_employee_key]->last_name)) {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $roster_input_row_employee_select .= "<option value=$roster_employee_id selected>" . $roster_employee_id . " " . gettext("Unknown employee") . "</option>";
+            $roster_input_row_employee_select .= "<option value=$roster_employee_key selected>" . $roster_employee_key . " " . gettext("Unknown employee") . "</option>";
         }
 
         $roster_input_row_employee_select .= "</select>\n";
@@ -319,10 +317,10 @@ class saturday_rotation {
         $buildSaturdayRotationTeamsAddTeamHtml .= "<input type='hidden' name='mandant' value='$branch_id'>";
 
         $roster_row_iterator = 0;
-        foreach ($team_array as $employee_id) {
+        foreach ($team_array as $employee_key) {
 
             $buildSaturdayRotationTeamsAddTeamHtml .= "<span>";
-            $buildSaturdayRotationTeamsAddTeamHtml .= $saturday_rotation->build_input_row_employee_select($employee_id, $team_id, $roster_row_iterator, $session);
+            $buildSaturdayRotationTeamsAddTeamHtml .= $saturday_rotation->build_input_row_employee_select($employee_key, $team_id, $roster_row_iterator, $session);
             $buildSaturdayRotationTeamsAddTeamHtml .= "</span>";
 
             $roster_row_iterator++;
@@ -339,8 +337,6 @@ class saturday_rotation {
         $buildSaturdayRotationTeamsAddTeamHtml .= "</td>";
         $buildSaturdayRotationTeamsAddTeamHtml .= "</tr>";
 
-
-
         return $buildSaturdayRotationTeamsAddTeamHtml;
     }
 
@@ -352,15 +348,15 @@ class saturday_rotation {
             'branch_id' => $branch_id,
         ));
         foreach ($team_array as $roster_row) {
-            $employee_id = $roster_row["employee_id"];
-            if ("" == $employee_id) {
+            $employee_key = $roster_row["employee_key"];
+            if ("" == $employee_key) {
                 continue;
             }
-            $sql_query_insert = "INSERT INTO `saturday_rotation_teams` (`branch_id`, `team_id`, `employee_id`) VALUES (:branch_id, :team_id, :employee_id)";
+            $sql_query_insert = "INSERT INTO `saturday_rotation_teams` (`branch_id`, `team_id`, `employee_key`) VALUES (:branch_id, :team_id, :employee_key)";
             database_wrapper::instance()->run($sql_query_insert, array(
                 'branch_id' => $branch_id,
                 'team_id' => $team_id,
-                'employee_id' => $employee_id,
+                'employee_key' => $employee_key,
             ));
         }
         database_wrapper::instance()->commit();
@@ -429,5 +425,4 @@ class saturday_rotation {
             $team_id_should++;
         }
     }
-
 }

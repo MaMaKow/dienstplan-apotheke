@@ -24,7 +24,7 @@
  */
 class pharmacy_emergency_service_builder {
 
-    public static function build_emergency_service_table_employee_select($employee_id_selected, $branch_id, $date_sql) {
+    public static function build_emergency_service_table_employee_select($employee_key_selected, $branch_id, $date_sql) {
         global $workforce;
         if (NULL === $workforce) {
             $workforce = new workforce();
@@ -37,20 +37,20 @@ class pharmacy_emergency_service_builder {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $table_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$employee_id_selected]->last_name) or!isset($employee_id_selected)) {
-            foreach ($workforce->List_of_qualified_pharmacist_employees as $employee_id) {
-                $employee_object = $workforce->List_of_employees[$employee_id];
-                if ($employee_id_selected == $employee_id and NULL !== $employee_id_selected) {
-                    $table_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+        if (isset($workforce->List_of_employees[$employee_key_selected]->last_name) or!isset($employee_key_selected)) {
+            foreach ($workforce->List_of_qualified_pharmacist_employees as $employee_key) {
+                $employee_object = $workforce->List_of_employees[$employee_key];
+                if ($employee_key_selected == $employee_key and NULL !== $employee_key_selected) {
+                    $table_employee_select .= "<option value=$employee_key selected>" . $employee_key . " " . $employee_object->last_name . "</option>";
                 } else {
-                    $table_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>\n";
+                    $table_employee_select .= "<option value=$employee_key>" . $employee_key . " " . $employee_object->last_name . "</option>\n";
                 }
             }
         } else {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $table_employee_select .= "<option value=$employee_id_selected selected>" . $employee_id_selected . " " . gettext("Unknown employee") . "</option>";
+            $table_employee_select .= "<option value=$employee_key_selected selected>" . $employee_key_selected . " " . gettext("Unknown employee") . "</option>";
         }
         $table_employee_select .= "</select>";
         $table_employee_select .= "";

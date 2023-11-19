@@ -19,16 +19,27 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import Selenium.MenuFragment;
+import Selenium.driver.Wrapper;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
 
 /**
+ * Represents the Selenium page object for Absence Employee Page.
+ * Handles navigation, creation, editing, and deletion of absences.
  *
  * @author Mandelkow
  */
@@ -41,7 +52,6 @@ public class AbsenceEmployeePage {
      */
     private final By goToYearSelectBy;
     private WebElement goToYearSelectElement;
-    private Select yearFormSelect;
     private final By goToEmployeeSelectBy;
     private WebElement goToEmployeeSelectElement;
     private Select employeeFormSelect;
@@ -73,9 +83,13 @@ public class AbsenceEmployeePage {
     private final By editButtonBy = By.xpath(".//td[7]/button[3]");
     private final By saveButtonBy = By.xpath(".//td[7]/button[4]");
 
+    /**
+     * Constructor for the AbsenceEmployeePage class.
+     */
     public AbsenceEmployeePage() {
 
         driver = Selenium.driver.Wrapper.getDriver();
+        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceEdit);
 
         listOfAbsenceReasons = new HashMap<>();
         listOfAbsenceReasons.put(1, "Urlaub");
@@ -91,7 +105,6 @@ public class AbsenceEmployeePage {
          */
         goToYearSelectBy = By.xpath("/html/body/div[2]/form[@id=\"select_year\"]/select");
         goToYearSelectElement = driver.findElement(goToYearSelectBy);
-        yearFormSelect = new Select(goToYearSelectElement);
         /**
          * Choose employee:
          */
@@ -124,29 +137,91 @@ public class AbsenceEmployeePage {
         By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'notification')]/p/");
     }
 
+    /**
+     * Navigates to a specific year on the Absence Employee Page.
+     *
+     * @param year The year to navigate to.
+     * @return A new instance of the AbsenceEmployeePage representing the selected year.
+     */
     public AbsenceEmployeePage goToYear(int year) {
+        // Select the desired year from the dropdown menu
+        Select yearFormSelect = getYearFormSelect();
         yearFormSelect.selectByValue(String.valueOf(year));
+        // Wait until the year dropdown's value attribute reflects the selected year
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.attributeToBe(goToYearSelectBy, "value", String.valueOf(year)));
+        // Assert that the selected year matches the expected year
+        assertEquals(this.getYear(), year);
         return new AbsenceEmployeePage();
     }
 
+    /**
+     * Retrieves the currently selected year from the year dropdown menu on the Absence Employee Page.
+     *
+     * @return The currently selected year as an integer.
+     */
     public int getYear() {
+        // Get the Select element for the year dropdown
+        Select yearFormSelect = getYearFormSelect();
+        // Get the WebElement representing the currently selected year
         WebElement yearElement = yearFormSelect.getFirstSelectedOption();
+        // Extract the text of the selected year and parse it as an integer
         String year = yearElement.getText();
         return Integer.parseInt(year);
     }
 
-    public AbsenceEmployeePage goToEmployee(int employeeId) {
-        employeeFormSelect.selectByValue(String.valueOf(employeeId));
+    /**
+     * Selects a specific employee from the employee dropdown menu on the Absence Employee Page.
+     *
+     * @param employeeKey The key or identifier of the employee to select.
+     * @return A new instance of the AbsenceEmployeePage representing the selected employee.
+     */
+    public AbsenceEmployeePage goToEmployee(int employeeKey) {
+        // Select the desired employee using their key or identifier
+        employeeFormSelect.selectByValue(String.valueOf(employeeKey));
+        // Return a new instance of the AbsenceEmployeePage for the selected employee
         return new AbsenceEmployeePage();
     }
 
-    public int getEmployeeId() {
+    /**
+     * Retrieves the key or identifier of the currently selected employee from the employee dropdown menu.
+     *
+     * @return The key or identifier of the currently selected employee as an integer.
+     */
+    public int getEmployeeKey() {
+        // Get the WebElement representing the currently selected employee
         WebElement yearElement = employeeFormSelect.getFirstSelectedOption();
-        String employeeId = yearElement.getAttribute("value");
-        return Integer.parseInt(employeeId);
+        // Get the employeeKey of the selected employee and parse it as an integer
+        String employeeKey = yearElement.getAttribute("value");
+        return Integer.parseInt(employeeKey);
     }
 
+    /**
+     * Retrieves and returns a Select element representing the year dropdown menu.
+     *
+     * This function finds the WebElement for the year dropdown menu using the provided
+     * 'goToYearSelectBy' locator, creates a Select object for it, and returns it.
+     *
+     * @return A Select object representing the year dropdown menu.
+     */
+    private Select getYearFormSelect() {
+        goToYearSelectElement = driver.findElement(goToYearSelectBy);
+        Select yearFormSelect = new Select(goToYearSelectElement);
+        return yearFormSelect;
+    }
+
+    /**
+     * Creates a new absence record with the specified details on the Absence Employee Page.
+     *
+     * @param startDate The start date of the absence.
+     * @param endDate The end date of the absence.
+     * @param reasonId The reason code or identifier for the absence.
+     * @param comment Any additional comments or notes for the absence.
+     * @param approval The approval status for the absence.
+     * @return A new instance of the AbsenceEmployeePage after creating the absence.
+     */
     public AbsenceEmployeePage createNewAbsence(String startDate, String endDate, int reasonId, String comment, String approval) {
+        // Locate and initialize the necessary input elements and buttons
         startDateInputElement = driver.findElement(startDateInputBy);
         endDateInputElement = driver.findElement(endDateInputBy);
         reasonIdInputSelectByElement = new Select(driver.findElement(reasonIdInputSelectBy));
@@ -155,63 +230,109 @@ public class AbsenceEmployeePage {
         approvalInputSelectElement = new Select(driver.findElement(approvalInputSelectBy));
         createNewAbsenceSubmitButtonElement = driver.findElement(createNewAbsenceSubmitButtonBy);
 
-        startDateInputElement.clear();
-        startDateInputElement.sendKeys(startDate);
-        endDateInputElement.clear();
-        endDateInputElement.sendKeys(endDate);
+        // Fill in the start and end date inputs
+        Wrapper.fillDateInput(startDateInputElement, startDate);
+        Wrapper.fillDateInput(endDateInputElement, endDate);
+
+        // Select the reason from the dropdown menu
         reasonIdInputSelectByElement.selectByValue(String.valueOf(reasonId));
+
+        // Clear and enter the comment
         commentInputElement.clear();
         commentInputElement.sendKeys(comment);
+
+        // Select the approval status from the dropdown menu
         approvalInputSelectElement.selectByValue(approval);
+        // Click the submit button to create the absence
         createNewAbsenceSubmitButtonElement.click();
+
+        // Return a new instance of the AbsenceEmployeePage after creating the absence
         return new AbsenceEmployeePage();
         // String durationString = durationOutputElement.getText();
         //int duration = Integer.parseInt(durationString);
 
     }
 
+    /**
+     * Creates a new absence record with the specified start and end dates and reason ID,
+     * with optional empty comment and "not_yet_approved" as the default approval status.
+     *
+     * @param startDate The start date of the absence.
+     * @param endDate The end date of the absence.
+     * @param reasonId The reason code or identifier for the absence.
+     */
     public void createNewAbsence(String startDate, String endDate, int reasonId) {
+        // Call the main createNewAbsence method with default empty comment and approval status
         this.createNewAbsence(startDate, endDate, reasonId, "", "not_yet_approved");
     }
 
+    /**
+     * Deletes an existing absence record with the specified start date on the Absence Employee Page.
+     *
+     * @param startDate The start date of the absence to be deleted.
+     * @return A new instance of the AbsenceEmployeePage after deleting the absence (or if no matching absence was found).
+     */
     public AbsenceEmployeePage deleteExistingAbsence(String startDate) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
             WebElement absenceOutDiv = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String dateString = absenceOutDiv.getText();
+            // Check if the start date of the absence matches the provided start date
             if (!startDate.equals(dateString)) {
-                continue;
+                continue; // Skip to the next row if there is no match
             }
             WebElement deleteButton = absenceRowElement.findElement(deleteButtonBy);
             deleteButton.click();
             /**
+             * Handle the confirmation alert
              * Alert will display: "Really delete this dataset?"
              */
             Alert alert = driver.switchTo().alert();
             /**
              * Press the OK button:
              */
-            alert.accept();
-            return new AbsenceEmployeePage();
+            alert.accept(); // Confirm the deletion
+            // Create a new instance of AbsenceEmployeePage and return it
+            AbsenceEmployeePage newAbsenceEmployeePage;
+            try {
+                newAbsenceEmployeePage = new AbsenceEmployeePage();
+            } catch (StaleElementReferenceException exception) {
+                newAbsenceEmployeePage = new AbsenceEmployeePage();
+            } catch (NoSuchElementException noSuchElementException) {
+                newAbsenceEmployeePage = new AbsenceEmployeePage();
+            }
+            return newAbsenceEmployeePage;
         }
+        // Return a new instance of AbsenceEmployeePage if no matching absence was found
         return new AbsenceEmployeePage();
-
     }
 
+    /**
+     * Edits an existing absence record with the specified start date, updating its details on the Absence Employee Page.
+     *
+     * @param startDateOld The old start date of the absence to be edited.
+     * @param startDate The new start date for the edited absence.
+     * @param endDate The new end date for the edited absence.
+     * @param reasonId The new reason code or identifier for the edited absence.
+     * @param comment The new comment or notes for the edited absence.
+     * @param approval The new approval status for the edited absence.
+     * @return A new instance of the AbsenceEmployeePage after editing the absence (or if no matching absence was found).
+     */
     public AbsenceEmployeePage editExistingAbsence(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
             WebElement absenceOutDiv = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String dateString = absenceOutDiv.getText();
+            // Check if the start date of the absence matches the provided old start date
             if (!startDateOld.equals(dateString)) {
-                continue;
+                continue; // Skip to the next row if there is no match
             }
             WebElement editButton = absenceRowElement.findElement(editButtonBy);
             editButton.click();
+
+            // Locate and update the input elements with new values
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/input[1]"));
-            startDateElement.clear();
-            startDateElement.sendKeys(startDate);
+            Wrapper.fillDateInput(startDateElement, startDate);
             WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/input[1]"));
-            endDateElement.clear();
-            endDateElement.sendKeys(endDate);
+            Wrapper.fillDateInput(endDateElement, endDate);
             Select reasonSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             reasonSelectElement.selectByValue(String.valueOf(reasonId));
             WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/input"));
@@ -223,25 +344,48 @@ public class AbsenceEmployeePage {
             approvalSelectElement.selectByValue(approval);
             WebElement submitButtonElement = absenceRowElement.findElement(saveButtonBy);
             submitButtonElement.click();
+
+            // Return a new instance of the AbsenceEmployeePage after editing the absence
             return new AbsenceEmployeePage();
-
         }
+        // Return a new instance of AbsenceEmployeePage if no matching absence was found
         return new AbsenceEmployeePage();
-
     }
 
-    public Absence getExistingAbsence(String startDate, int employeeId) {
+    /**
+     * Retrieves an existing absence record based on the start date and employee key on the Absence Employee Page.
+     *
+     * @param startDate The start date of the absence to retrieve.
+     * @param employeeKey The key or identifier of the employee associated with the absence.
+     * @return An Absence object representing the retrieved absence record, or null if no matching absence was found.
+     */
+    public Absence getExistingAbsence(String startDate, int employeeKey) {
+        // Navigate to the employee and year related to the absence
+        this.goToEmployee(employeeKey);
+        LocalDate startDateLocalDate = LocalDate.parse(startDate, Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        int year = startDateLocalDate.getYear();
+        this.goToYear(year);
+
+        // Ensure that the selected employee and year match the provided values
+        Assert.assertEquals(this.getEmployeeKey(), employeeKey);
+        Assert.assertEquals(this.getYear(), year);
+
+        // Iterate through absence rows to find the one with the matching start date
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String startDateString = startDateElement.getText();
+
+            // Check if the start date of the absence matches the provided start date
             if (!startDate.equals(startDateString)) {
-                continue;
+                continue; // Skip to the next row if there is no match
             }
+
+            // Retrieve information about the matching absence
             WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/div"));
             String endDateString = endDateElement.getText();
             WebElement reasonElement = absenceRowElement.findElement(By.xpath(".//td[3]/div"));
             //String reasonString = reasonElement.getText();
-            int reasonId = Integer.valueOf(reasonElement.getAttribute("data-reason_id"));
+            int reasonId = Integer.parseInt(reasonElement.getAttribute("data-reason_id"));
             WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/div"));
             String commentString = commentElement.getText();
             WebElement durationElement = absenceRowElement.findElement(By.xpath(".//td[5]"));
@@ -249,41 +393,41 @@ public class AbsenceEmployeePage {
             WebElement approvalElement = absenceRowElement.findElement(By.xpath(".//td[6]/span"));
             String approvalString = approvalElement.getAttribute("data-absence_approval");
             //String approvalStringLocalized = approvalElement.getText();
-            Absence absence = new Absence(employeeId, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
+
+            // Create and return an Absence object representing the retrieved absence record
+            Absence absence = new Absence(employeeKey, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
             return absence;
         }
+        // Return null if no matching absence was found
         return null;
     }
 
     /**
-     * There is a cancel button for the edit function.Does it work?
+     * Cancels the editing of an existing absence record without making any changes.
+     * There is a cancel button for the edit function. Test if it works.
      *
-     * @param startDateOld
-     * @param startDate
-     * @param endDate
-     * @param reasonId
-     * @param comment
-     * @param approval
-     * @return true if element with matching date was found.
-     *
-     * TODO: Should the date be a dateObject in order to make sure that there is
-     * no problem with formatting?
+     * @param startDateOld The start date of the absence to be edited (for identifying the absence to edit).
+     * @param startDate The new start date for the edited absence (not used in this method).
+     * @param endDate The new end date for the edited absence (not used in this method).
+     * @param reasonId The new reason code or identifier for the edited absence (not used in this method).
+     * @param comment The new comment or notes for the edited absence (not used in this method).
+     * @param approval The new approval status for the edited absence (not used in this method).
+     * @return A new instance of the AbsenceEmployeePage after canceling the editing (or if no matching absence was found).
      */
     public AbsenceEmployeePage editExistingAbsenceNot(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
             WebElement absenceOutDiv = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String dateString = absenceOutDiv.getText();
+            // Check if the start date of the absence matches the provided start date
             if (!startDate.equals(dateString)) {
-                continue;
+                continue; // Skip to the next row if there is no match
             }
             WebElement editButton = absenceRowElement.findElement(editButtonBy);
             editButton.click();
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/input[1]"));
-            startDateElement.clear();
-            startDateElement.sendKeys(startDate);
+            Wrapper.fillDateInput(startDateElement, startDate);
             WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/input[1]"));
-            endDateElement.clear();
-            endDateElement.sendKeys(endDate);
+            Wrapper.fillDateInput(endDateElement, endDate);
             Select reasonSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[3]/select")));
             reasonSelectElement.selectByValue(String.valueOf(reasonId));
             WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/input"));
@@ -293,11 +437,13 @@ public class AbsenceEmployeePage {
             //String durationString = durationElement.getText();
             Select approvalSelectElement = new Select(absenceRowElement.findElement(By.xpath(".//td[6]/select")));
             approvalSelectElement.selectByValue(approval);
+            // Locate and cancel the editing by clicking the cancel button
             WebElement cancelButtonElement = absenceRowElement.findElement(cancelButtonBy);
             cancelButtonElement.click();
+            // Return a new instance of the AbsenceEmployeePage after canceling the editing
             return new AbsenceEmployeePage();
-
         }
+        // Return a new instance of AbsenceEmployeePage if no matching absence was found
         return new AbsenceEmployeePage();
 
     }

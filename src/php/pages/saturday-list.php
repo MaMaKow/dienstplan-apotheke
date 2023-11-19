@@ -19,7 +19,7 @@
 
 require '../../../default.php';
 
-$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_STRING, date('Y'));
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y'));
 create_cookie("year", $year, 1);
 $date_object_start = new DateTime("first sat of jan $year");
 $date_object_end = new DateTime("last sat of dec $year");
@@ -60,7 +60,6 @@ $html .= $html_select_branch;
 $html .= $user_dialog->build_messages();
 $html .= $table;
 
-
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
@@ -84,19 +83,19 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
     }
 
     $Saturday_rotation_team_member_names = array();
-    foreach ($Saturday_rotation_team_member_ids as $employee_id) {
+    foreach ($Saturday_rotation_team_member_ids as $employee_key) {
 
-        if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
+        if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
             $prefix = '<span>';
             $suffix = '</span>';
-            if (in_array($employee_id, array_keys($Absentees))) {
+            if (in_array($employee_key, array_keys($Absentees))) {
                 $prefix = '<span class="absent">';
-                $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$employee_id]) . ')</span>';
+                $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$employee_key]) . ')</span>';
             }
 
-            $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_id]->last_name . $suffix;
+            $Saturday_rotation_team_member_names[] = $prefix . $workforce->List_of_employees[$employee_key]->last_name . $suffix;
         } else {
-            $Saturday_rotation_team_member_names[] = "$employee_id???";
+            $Saturday_rotation_team_member_names[] = "$employee_key???";
         }
     }
     return $Saturday_rotation_team_member_names;
@@ -106,14 +105,14 @@ function get_rostered_employees_names(array $Roster, workforce $workforce, array
     $Rostered_employees = array();
     foreach ($Roster as $Roster_day_array) {
         foreach ($Roster_day_array as $roster_item) {
-            if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
+            if (isset($workforce->List_of_employees[$roster_item->employee_key]->last_name)) {
                 $prefix = '<span>';
                 $suffix = '</span>';
-                if (in_array($roster_item->employee_id, array_keys($Absentees))) {
+                if (in_array($roster_item->employee_key, array_keys($Absentees))) {
                     $prefix = '<span class="absent">';
-                    $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$roster_item->employee_id]) . ')</span>';
+                    $suffix = "&nbsp;(" . absence::get_reason_string_localized($Absentees[$roster_item->employee_key]) . ')</span>';
                 }
-                $Rostered_employees[$roster_item->employee_id] = $prefix . $workforce->List_of_employees[$roster_item->employee_id]->last_name . $suffix;
+                $Rostered_employees[$roster_item->employee_key] = $prefix . $workforce->List_of_employees[$roster_item->employee_key]->last_name . $suffix;
             }
         }
     }
@@ -127,11 +126,14 @@ function build_table_row(DateTime $date_object, int $branch_id) {
     $Absentees = absence::read_absentees_from_database($date_object->format('Y-m-d'));
     $Roster = roster::read_roster_from_database($branch_id, $date_object->format('Y-m-d'));
 
-
     $table_row = "";
     $holiday = holidays::is_holiday($date_object);
-    //$date_string = strftime('%a %x', $date_object->getTimestamp());
-    $date_string = $date_object->format("D d.m.Y");
+    $configuration = new \PDR\Application\configuration();
+    $locale = $configuration->getLanguage();
+    $dayFormatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
+    $dayFormatter->setPattern('EEE dd.MM.YYYY'); // 'EEEE' represents the full weekday name
+
+    $date_string = $dayFormatter->format($date_object->getTimestamp());
     if (FALSE !== $holiday) {
         $table_row .= "<tr class='saturday_list_row_holiday'>";
         $table_row .= "<td colspan='99'>";

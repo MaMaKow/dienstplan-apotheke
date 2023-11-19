@@ -19,6 +19,7 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import Selenium.driver.Wrapper;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -75,31 +76,27 @@ public class AbsenceYearPage {
         return null;
     }
 
-    public Absence getAbsence(String startDateString, int employeeId) {
+    public Absence getAbsence(String startDateString, int employeeKey) {
         WebElement dayParagraphElement = getDayParagraphElement(startDateString);
         List<WebElement> listOfAbsenceSpans = dayParagraphElement.findElements(By.xpath("span"));
         for (WebElement absenceSpan : listOfAbsenceSpans) {
             String absenceDataJson = absenceSpan.getAttribute("data-absence_details");
-            //String absenceDataJson = "{\"employee_id\":5," + "\"reason_id\":8," + "\"comment\":\"\"," + "\"start\":\"2020-05-22\"," + "\"end\":\"2020-06-21\"," + "\"days\":29," + "\"approval\":\"approved\"}";
             Object object = JSONValue.parse(absenceDataJson);
             JSONObject jsonObject = (JSONObject) object;
-            if (employeeId != (int) jsonObject.get("employee_id")) {
+            if (employeeKey != (int) jsonObject.get("employee_key")) {
                 continue;
             }
-            //int employeeId = (int) jsonObject.get("employee_id");
-            //String startDateString = (String) jsonObject.get("start");
             String endDateString = (String) jsonObject.get("end");
             int reasonId = (int) jsonObject.get("reason_id");
-            //String reasonString = Absence.absenceReasonsMap.get(reasonId);
             String comment = (String) jsonObject.get("comment");
             String duration = (String) jsonObject.get("days");
             String approvalString = (String) jsonObject.get("approval");
-            return new Absence(employeeId, startDateString, endDateString, reasonId, comment, duration, approvalString);
+            return new Absence(employeeKey, startDateString, endDateString, reasonId, comment, duration, approvalString);
         }
         return null;
     }
 
-    public void createNewAbsence(int employeeId, String startDateString, String endDateString, String reasonString, String commentString, String approvalString) {
+    public void createNewAbsence(int employeeKey, String startDateString, String endDateString, String reasonString, String commentString, String approvalString) {
 
         WebElement dayParagraphElement = getDayParagraphElement(startDateString);
         dayParagraphElement.click();
@@ -107,13 +104,13 @@ public class AbsenceYearPage {
          * Cicking on the dayParagraphElement will open a form. This form is
          * requested from the server via XMLHttpRequest()
          */
-        By absenceFormEmployeeIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[1]/select[@id=\"employee_id_select\"]");
+        By absenceFormEmployeeKeyBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[1]/select[@id=\"employee_key_select\"]");
         By absenceFormStartIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[2]/input[@id=\"input_box_form_start_date\"]");
         By absenceFormEndIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[3]/input[@id=\"input_box_form_end_date\"]");
         By absenceFormReasonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[4]/select[@id=\"absence_reason_input_select\"]");
         By absenceFormCommentIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[5]/input[@id=\"input_box_form_comment\"]");
         By absenceFormSubmitButtonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[6]/button");
-        Select absenceFormEmployeeIdElement = (Select) driver.findElement(absenceFormEmployeeIdBy);
+        Select absenceFormEmployeeKeyElement = (Select) driver.findElement(absenceFormEmployeeKeyBy);
         WebElement absenceFormStartIdElement = driver.findElement(absenceFormStartIdBy);
         WebElement absenceFormEndIdElement = driver.findElement(absenceFormEndIdBy);
         Select absenceFormReasonIdElement = (Select) driver.findElement(absenceFormReasonIdBy);
@@ -122,11 +119,9 @@ public class AbsenceYearPage {
         /**
          * Send the data:
          */
-        absenceFormEmployeeIdElement.selectByValue(String.valueOf(employeeId));
-        absenceFormStartIdElement.clear();
-        absenceFormStartIdElement.sendKeys(startDateString);
-        absenceFormEndIdElement.clear();
-        absenceFormEndIdElement.sendKeys(endDateString);
+        absenceFormEmployeeKeyElement.selectByValue(String.valueOf(employeeKey));
+        Wrapper.fillDateInput(absenceFormStartIdElement, startDateString);
+        Wrapper.fillDateInput(absenceFormEndIdElement, endDateString);
         absenceFormReasonIdElement.selectByVisibleText(reasonString);
         absenceFormCommentIdElement.clear();
         absenceFormCommentIdElement.sendKeys(commentString);
@@ -136,28 +131,27 @@ public class AbsenceYearPage {
         absenceFormSubmitButtonIdElement.click();
     }
 
-    public void editExistingAbsence(int employeeIdOld, String startDateStringOld, int employeeId, String startDateString, String endDateString, String reasonString, String commentString, String approvalString) {
+    public void editExistingAbsence(int employeeKeyOld, String startDateStringOld, int employeeKey, String startDateString, String endDateString, String reasonString, String commentString, String approvalString) {
         WebElement dayParagraphElement = getDayParagraphElement(startDateString);
         List<WebElement> listOfAbsenceSpans = dayParagraphElement.findElements(By.xpath("span"));
         for (WebElement absenceSpan : listOfAbsenceSpans) {
             String absenceDataJson = absenceSpan.getAttribute("data-absence_details");
-            //String absenceDataJson = "{\"employee_id\":5," + "\"reason_id\":8," + "\"comment\":\"\"," + "\"start\":\"2020-05-22\"," + "\"end\":\"2020-06-21\"," + "\"days\":29," + "\"approval\":\"approved\"}";
             Object object = JSONValue.parse(absenceDataJson);
             JSONObject jsonObject = (JSONObject) object;
-            if (employeeIdOld != (int) jsonObject.get("employee_id")) {
+            if (employeeKeyOld != (int) jsonObject.get("employee_key")) {
                 continue;
             }
             /**
              * Cicking on the dayParagraphElement will open a form. This form is
              * requested from the server via XMLHttpRequest()
              */
-            By absenceFormEmployeeIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[1]/select[@id=\"employee_id_select\"]");
+            By absenceFormEmployeeKeyBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[1]/select[@id=\"employee_key_select\"]");
             By absenceFormStartIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[2]/input[@id=\"input_box_form_start_date\"]");
             By absenceFormEndIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[3]/input[@id=\"input_box_form_end_date\"]");
             By absenceFormReasonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[4]/select[@id=\"absence_reason_input_select\"]");
             By absenceFormCommentIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[5]/input[@id=\"input_box_form_comment\"]");
             By absenceFormSubmitButtonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[6]/button");
-            Select absenceFormEmployeeIdElement = (Select) driver.findElement(absenceFormEmployeeIdBy);
+            Select absenceFormEmployeeKeyElement = (Select) driver.findElement(absenceFormEmployeeKeyBy);
             WebElement absenceFormStartIdElement = driver.findElement(absenceFormStartIdBy);
             WebElement absenceFormEndIdElement = driver.findElement(absenceFormEndIdBy);
             Select absenceFormReasonIdElement = (Select) driver.findElement(absenceFormReasonIdBy);
@@ -166,11 +160,9 @@ public class AbsenceYearPage {
             /**
              * Send the data:
              */
-            absenceFormEmployeeIdElement.selectByValue(String.valueOf(employeeId));
-            absenceFormStartIdElement.clear();
-            absenceFormStartIdElement.sendKeys(startDateString);
-            absenceFormEndIdElement.clear();
-            absenceFormEndIdElement.sendKeys(endDateString);
+            absenceFormEmployeeKeyElement.selectByValue(String.valueOf(employeeKey));
+            Wrapper.fillDateInput(absenceFormStartIdElement, startDateString);
+            Wrapper.fillDateInput(absenceFormEndIdElement, endDateString);
             absenceFormReasonIdElement.selectByVisibleText(reasonString);
             absenceFormCommentIdElement.clear();
             absenceFormCommentIdElement.sendKeys(commentString);

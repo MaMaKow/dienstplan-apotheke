@@ -19,55 +19,42 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
-import Selenium.MenuFragment;
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
-import org.openqa.selenium.WebDriver;
+import Selenium.TestPage;
 import static org.testng.Assert.assertEquals;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestAbsenceEmployeePage {
+public class TestAbsenceEmployeePage extends TestPage {
 
-    WebDriver driver;
-
-    @org.testng.annotations.Test(enabled = true)/*passed*/
+    @Test(enabled = true)/*passed*/
     public void testCreateAbsence() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-
-        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceEdit);
+        super.signIn();
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         /**
          * Create a new absence:
          */
-        absenceEmployeePage = absenceEmployeePage.goToYear(2020);
-        absenceEmployeePage = absenceEmployeePage.goToEmployee(5);
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", 1, "Foo comment", "not_yet_approved"); // 1 = Urlaub
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.01.2020", 1, "Neujahr", "not_yet_approved"); //gesetzlicher Feiertag
+        int employeeKey = 7;
+        int year = 2020;
+        absenceEmployeePage = absenceEmployeePage.goToYear(year);
+        absenceEmployeePage = absenceEmployeePage.goToEmployee(employeeKey);
+        assertEquals(absenceEmployeePage.getYear(), year);
+        assertEquals(absenceEmployeePage.getEmployeeKey(), employeeKey);
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", Absence.REASON_VACATION, "Foo comment", "not_yet_approved"); // 1 = Urlaub
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.01.2020", Absence.REASON_VACATION, "Neujahr", "not_yet_approved"); //gesetzlicher Feiertag
         /**
          * Check this absence:
          */
         Absence currentAbsence;
-        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", 5);
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
         assertEquals(currentAbsence.getCommentString(), "Foo comment");
         assertEquals(currentAbsence.getDurationString(), "1");
-        assertEquals(currentAbsence.getEmployeeId(), 5);
+        assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
         assertEquals(currentAbsence.getStartDateString(), "01.07.2020");
         assertEquals(currentAbsence.getEndDateString(), "01.07.2020");
         assertEquals(currentAbsence.getReasonString(), "Urlaub");
@@ -75,48 +62,41 @@ public class TestAbsenceEmployeePage {
         /**
          * Manipulate this absence: 1. No manipulation:
          */
-        absenceEmployeePage = absenceEmployeePage.editExistingAbsenceNot("01.07.2020", "02.07.2020", "03.07.2020", 5, "Changed Foo comment", "approved");
-        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", 5);
+        absenceEmployeePage = absenceEmployeePage.editExistingAbsenceNot("01.07.2020", "02.07.2020", "03.07.2020", Absence.REASON_TAKEN_OVERTIME, "Changed Foo comment", "approved");
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
         assertEquals(currentAbsence.getCommentString(), "Foo comment");
         assertEquals(currentAbsence.getDurationString(), "1");
-        assertEquals(currentAbsence.getEmployeeId(), 5);
+        assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
         assertEquals(currentAbsence.getStartDateString(), "01.07.2020");
         assertEquals(currentAbsence.getEndDateString(), "01.07.2020");
         assertEquals(currentAbsence.getReasonString(), "Urlaub");
+        assertEquals(currentAbsence.getReasonString(), Absence.absenceReasonsMap.get(Absence.REASON_VACATION)); //This is the same as the line above, but using the Absence class for help with the string.
         assertEquals(currentAbsence.getapprovalStringString(), "not_yet_approved");
         /**
          * 2. Edit
          */
-        absenceEmployeePage = absenceEmployeePage.editExistingAbsence("01.07.2020", "02.07.2020", "03.07.2020", 5, "Changed Foo comment", "approved");
-        currentAbsence = absenceEmployeePage.getExistingAbsence("02.07.2020", 5);
+        absenceEmployeePage = absenceEmployeePage.editExistingAbsence("01.07.2020", "02.07.2020", "03.07.2020", Absence.REASON_TAKEN_OVERTIME, "Changed Foo comment", "approved");
+        currentAbsence = absenceEmployeePage.getExistingAbsence("02.07.2020", employeeKey);
         assertEquals(currentAbsence.getCommentString(), "Changed Foo comment");
         assertEquals(currentAbsence.getDurationString(), "2");
-        assertEquals(currentAbsence.getEmployeeId(), 5);
+        assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
         assertEquals(currentAbsence.getStartDateString(), "02.07.2020");
         assertEquals(currentAbsence.getEndDateString(), "03.07.2020");
         assertEquals(currentAbsence.getReasonString(), "Überstunden genommen");
+        assertEquals(currentAbsence.getReasonString(), Absence.absenceReasonsMap.get(Absence.REASON_TAKEN_OVERTIME)); //This is the same as the line above, but using the Absence class for help with the string.
         assertEquals(currentAbsence.getapprovalStringString(), "approved");
         /**
          * Remove the absence:
          */
         absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.07.2020");
-        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", 5);
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
         assertEquals(currentAbsence, null);
         absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("02.07.2020");
-        currentAbsence = absenceEmployeePage.getExistingAbsence("02.07.2020", 5);
+        currentAbsence = absenceEmployeePage.getExistingAbsence("02.07.2020", employeeKey);
         assertEquals(currentAbsence, null);
 
         absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
-        currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", 5);
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", employeeKey);
         assertEquals(currentAbsence, null);
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
     }
 }

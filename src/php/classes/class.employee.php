@@ -19,17 +19,19 @@
 
 /**
  * An employee is someone, who works on one of the branches. The person can be scheduled into rosters, take vacation and collect overtime hours.
- *   An employee may register as a \user. The user_id will be the same, as the employee_id.
+ *   An employee may register as a \user. The user_key WILL NOT be the the employee_key.
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class employee {
 
-    public $employee_id;
+    private $primary_key;
     public $first_name;
     public $last_name;
     public $full_name;
     public $profession;
+    private $goods_receipt;
+    private $compounding;
 
     /**
      *
@@ -79,20 +81,22 @@ class employee {
      */
     private $Principle_roster;
 
-    public function __construct($employee_id, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch, $start_of_employment, $end_of_employment, $holidays) {
-        $this->employee_id = $employee_id;
+    public function __construct($private_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $compounding, $goods_receipt, $branch, $start_of_employment, $end_of_employment, $holidays) {
+        $this->primary_key = $private_key;
         $this->last_name = $last_name;
         $this->first_name = $first_name;
         $this->full_name = $first_name . " " . $last_name;
         $this->working_week_hours = $working_week_hours;
         $this->lunch_break_minutes = $lunch_break_minutes;
         $this->profession = $profession;
+        $this->compounding = $compounding;
+        $this->goods_receipt = $goods_receipt;
         $this->start_of_employment = $start_of_employment;
         $this->end_of_employment = $end_of_employment;
         $this->holidays = $holidays;
         $this->principle_branch_id = $branch;
         $this->Principle_roster = array();
-        $this->working_week_days = principle_roster::get_working_week_days($this->employee_id);
+        $this->working_week_days = principle_roster::get_working_week_days($this->primary_key);
     }
 
     public function get_principle_roster_on_date(DateTime $date_object) {
@@ -101,10 +105,26 @@ class employee {
          */
         $date_unix = $date_object->getTimestamp();
         if (empty($this->Principle_roster[$date_unix])) {
-            $Example_roster = principle_roster::read_current_principle_employee_roster_from_database($this->employee_id, clone $date_object, clone $date_object);
+            $Example_roster = principle_roster::read_current_principle_employee_roster_from_database($this->primary_key, clone $date_object, clone $date_object);
             $this->Principle_roster[$date_unix] = $Example_roster[$date_unix];
         }
         return $this->Principle_roster[$date_unix];
+    }
+
+    public function get_employee_key() {
+        return $this->primary_key;
+    }
+
+    public function get_principle_branch_id() {
+        return $this->principle_branch_id;
+    }
+
+    public function can_do_goods_receipt() {
+        return $this->goods_receipt;
+    }
+
+    public function can_do_compounding() {
+        return $this->compounding;
     }
 
 }

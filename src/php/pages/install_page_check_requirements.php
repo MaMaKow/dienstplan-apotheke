@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FILTER_SANITIZE_STRING)) {
+if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
     /*
      * https://de.wikipedia.org/wiki/Post/Redirect/Get
      */

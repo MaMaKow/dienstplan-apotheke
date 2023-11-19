@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `Dienstplan` (
-  `VK` tinyint(3) unsigned NOT NULL,
+  `employee_key` int(10) unsigned NOT NULL,
   `Datum` date NOT NULL,
   `Dienstbeginn` time NOT NULL DEFAULT '00:00:00',
   `Dienstende` time DEFAULT NULL,
@@ -10,6 +10,6 @@ CREATE TABLE IF NOT EXISTS `Dienstplan` (
   `Mandant` int(11) NOT NULL DEFAULT 1,
   `user` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`VK`,`Datum`,`Dienstbeginn`),
-  CONSTRAINT `Dienstplan_ibfk_1` FOREIGN KEY (`VK`) REFERENCES `employees` (`id`)
+  PRIMARY KEY (`employee_key`,`Datum`,`Dienstbeginn`),
+  CONSTRAINT `Dienstplan_ibfk_1` FOREIGN KEY (`employee_key`) REFERENCES `employees` (`primary_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

@@ -127,7 +127,7 @@ public class BranchAdministrationPage {
          * Select the new branch:
          */
         Select branchFormSelect = new Select(driver.findElement(formElementBranchSelectBy));
-        branchFormSelect.selectByVisibleText("create new branch");
+        branchFormSelect.selectByVisibleText("neue Filiale anlegen");
         /**
          * Form elements:
          */

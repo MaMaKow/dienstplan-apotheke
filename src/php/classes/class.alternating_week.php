@@ -145,19 +145,18 @@ class alternating_week {
 
     private static function get_alternation_start_date() {
         if (!isset(self::$alternation_start_date)) {
-            self::read_alternation_start_date_from_database();
+            self::getAlternationStartDate();
         }
         return self::$alternation_start_date;
     }
 
-    private static function read_alternation_start_date_from_database() {
-        $sql_query = "SELECT `principle_roster_start_date` FROM `pdr_self`;";
-        $result = database_wrapper::instance()->run($sql_query);
-        self::$alternation_start_date = new DateTime('@0'); //Just in case there is no date set yet, we want a reproducible default.
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            self::$alternation_start_date->createFromFormat('Y-m-d', $row->principle_roster_start_date);
-            return TRUE;
-        }
+    /**
+     *
+     * @return bool
+     * @todo Remove principle_roster_start_date from database table pdr_self!
+     */
+    private static function getAlternationStartDate(): void {
+        self::$alternation_start_date = new DateTime('@0'); //We want a reproducible default.
     }
 
     private static function date_difference_in_weeks(DateTime $first_date, DateTime $second_date) {
@@ -190,7 +189,7 @@ class alternating_week {
     public static function create_alternation_copy_from_principle_roster($principle_roster_copy_from) {
         $new_alternating_week_id = self::get_principle_roster_new_alternating_week_id();
         $sql_query = "INSERT INTO `principle_roster` "
-                . "(SELECT NULL, :new_alternating_week_id, `employee_id`, `weekday`, "
+                . "(SELECT NULL, :new_alternating_week_id, `employee_key`, `weekday`, "
                 . "`duty_start`, `duty_end`, `break_start`, `break_end`, "
                 . "`comment`, `working_hours`, "
                 . "`branch_id` "
@@ -265,5 +264,4 @@ class alternating_week {
         $human_readable_string = chr(65 + $alternating_week_id) . '-' . gettext('week');
         return $human_readable_string;
     }
-
 }

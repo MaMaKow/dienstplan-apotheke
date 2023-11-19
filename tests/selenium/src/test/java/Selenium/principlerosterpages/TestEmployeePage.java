@@ -18,10 +18,8 @@ package Selenium.principlerosterpages;
 
 import Selenium.PrincipleRoster;
 import Selenium.PrincipleRosterDay;
-import Selenium.PropertyFile;
 import Selenium.RosterItem;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
+import Selenium.TestPage;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -30,55 +28,34 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 /**
  *
  * @author Martin Mandelkow <netbeans@martin-mandelkow.de>
  */
-public class TestEmployeePage {
-
-    WebDriver driver;
-    SoftAssert softAssert = new SoftAssert();
-    private PropertyFile propertyFile;
+public class TestEmployeePage extends TestPage {
 
     @Test(enabled = true)/*new*/
     public void testEmployeePageRead() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         EmployeePage employeePage = new EmployeePage(driver);
-        Assert.assertEquals(employeePage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific employee:
          */
-        int employeeId = 1;
-        employeePage.selectEmployee(employeeId);
-        Assert.assertEquals(employeeId, employeePage.getEmployeeId());
+        int employeeKey = 3;
+        employeePage.selectEmployee(employeeKey);
+        Assert.assertEquals(employeeKey, employeePage.getEmployeeKey());
 
         int alternationId = 0;
         int branchId = 1;
         PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
-        HashMap<DayOfWeek, PrincipleRosterDay> principleEmployeeRoster = principleRoster.getPrincipleRosterByEmployee(employeeId);
+        HashMap<DayOfWeek, PrincipleRosterDay> principleEmployeeRoster = principleRoster.getPrincipleRosterByEmployee(employeeKey);
         principleEmployeeRoster.entrySet().forEach(principleRosterDayEntry -> {
             principleRosterDayEntry.getValue().getlistOfPrincipleRosterItems().values().forEach((principleRosterItemShould) -> {
                 /**
@@ -87,7 +64,7 @@ public class TestEmployeePage {
                 Set<RosterItem> setOfRosterItemsFound = employeePage.getSetOfRosterItems(alternationId, principleRosterDayEntry.getKey());
                 HashSet<RosterItem> setOfEqualItems = new HashSet();
                 setOfRosterItemsFound.stream().map(rosterItemFound -> {
-                    if (rosterItemFound.getEmployeeId() == principleRosterItemShould.getEmployeeId()
+                    if (rosterItemFound.getEmployeeKey() == principleRosterItemShould.getEmployeeKey()
                             && rosterItemFound.getBranchId() == principleRosterItemShould.getBranchId()
                             && rosterItemFound.getLocalDate().getDayOfWeek().equals(principleRosterItemShould.getWeekday())
                             && rosterItemFound.getDutyStartLocalDateTime().toLocalTime().equals(principleRosterItemShould.getDutyStart())
@@ -108,31 +85,25 @@ public class TestEmployeePage {
 
     @Test(dependsOnMethods = {"testEmployeePageRead"}, enabled = true)/*new*/
     public void testEmployeePageWrite() throws ParseException, Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         EmployeePage employeePage = new EmployeePage(driver);
-        Assert.assertEquals(employeePage.getUserNameText(), pdr_user_name);
 
         /**
          * Move to specific employee:
          */
-        employeePage.selectEmployee(1);
-        Assert.assertEquals(1, employeePage.getEmployeeId());
+        int employeeKey = 3;
+        int branchId = 1;
+        employeePage.selectEmployee(employeeKey);
+        Assert.assertEquals(employeeKey, employeePage.getEmployeeKey());
         /**
          * Set a new roster item:
          */
 
         LocalDate localDate = LocalDate.of(2021, Month.SEPTEMBER, 21);
-        RosterItem rosterItemNew = new RosterItem(1, localDate, "10:30", "19:00", "12:30", "13:30", null, 1);
+        RosterItem rosterItemNew = new RosterItem(employeeKey, localDate, "10:30", "19:00", "12:30", "13:30", null, branchId);
         //RosterItem rosterItemOld = employeePage.getRosterItem(1, 1, 1);
         HashSet<RosterItem> rosterItemsOldSet = employeePage.getSetOfRosterItems(0, DayOfWeek.MONDAY);
         Optional<RosterItem> rosterItemOldOptional = rosterItemsOldSet.stream().findFirst();
@@ -159,34 +130,4 @@ public class TestEmployeePage {
         employeePage.setRosterItem(1, 1, 1, rosterItemOld);
         softAssert.assertAll();
     }
-
-    @BeforeMethod
-    public void setUp() {
-        //Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @BeforeSuite
-    public void setUpSuite() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        /**
-         * Refresh the page contents from the nextcloud data:
-         */
-        propertyFile = new PropertyFile();
-        String testPageFolderPath = propertyFile.getUrlInstallTest();
-        driver.get(testPageFolderPath + "selenium-refresh.php");
-        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-        //driver.quit();
-    }
-
 }

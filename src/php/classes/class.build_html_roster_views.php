@@ -27,7 +27,7 @@ abstract class build_html_roster_views {
     /**
      * Build one table row for a daily view
      *
-     * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (int)id_of_reason_for_absence)
+     * @param $Absentees array expects an array of absent employees in the format array((int)employee_key => (int)id_of_reason_for_absence)
      *
      * @return string HTML table row
      */
@@ -45,15 +45,15 @@ abstract class build_html_roster_views {
      * Build one table column for a weekly view
      *
      * used by: src/php/pages/roster-week-table.php
-     * @param $Absentees array expects an array of absent employees in the format array((int)employee_id => (int)id_of_reason_for_absence)
+     * @param $Absentees array expects an array of absent employees in the format array((int)employee_key => (int)id_of_reason_for_absence)
      *
      * @return string HTML table column
      */
     public static function build_absentees_column($Absentees) {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
-        foreach ($Absentees as $employee_id => $reason_id) {
-            $text .= $workforce->List_of_employees[$employee_id]->last_name . " (" . absence::get_reason_string_localized($reason_id) . ")<br>";
+        foreach ($Absentees as $employee_key => $reason_id) {
+            $text .= $workforce->List_of_employees[$employee_key]->last_name . " (" . absence::get_reason_string_localized($reason_id) . ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -64,15 +64,15 @@ abstract class build_html_roster_views {
         $date_object = DateTime::createFromFormat('U', $day_iterator);
         $alternation_id = alternating_week::get_alternating_week_for_date($date_object->sub(new DateInterval('P' . $date_object->format('w') . 'D')));
         $alternation_factor = $alternation_id;
-        if (!isset($Roster[$day_iterator]) or!isset($Roster[$day_iterator][$roster_row_iterator])) {
+        if (!isset($Roster[$day_iterator]) or !isset($Roster[$day_iterator][$roster_row_iterator])) {
             /*
              * Insert a prefilled pseudo roster_item.
              * It contains a valid date and branch.
              */
             $Roster[$day_iterator][$roster_row_iterator] = new roster_item_empty(date('Y-m-d', $day_iterator), $branch_id);
         }
-        if (NULL === $Roster[$day_iterator][$roster_row_iterator]->employee_id and isset($Options['add_hidden_employee'])) {
-            $Roster[$day_iterator][$roster_row_iterator]->employee_id = $Options['add_hidden_employee'];
+        if (NULL === $Roster[$day_iterator][$roster_row_iterator]->employee_key and isset($Options['add_hidden_employee'])) {
+            $Roster[$day_iterator][$roster_row_iterator]->employee_key = $Options['add_hidden_employee'];
         }
         $roster_input_row = "<td class='roster_input_row' "
                 . " data-roster_row_iterator=" . $roster_row_iterator
@@ -90,14 +90,14 @@ abstract class build_html_roster_views {
         /*
          * employee input:
          */
-        $roster_employee_id = $Roster[$day_iterator][$roster_row_iterator]->employee_id;
-        $roster_input_row_employee = "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][employee_id] value=" . $Roster[$day_iterator][$roster_row_iterator]->employee_id . ">\n";
+        $roster_employee_key = $Roster[$day_iterator][$roster_row_iterator]->employee_key;
+        $roster_input_row_employee = "<input type=hidden name=Roster[" . $day_iterator . "][" . $roster_row_iterator . "][employee_key] value=" . $Roster[$day_iterator][$roster_row_iterator]->employee_key . ">\n";
         if (in_array('add_select_employee', $Options)) {
             /*
              * Change $roster_input_row_branch from the above hidden input into a visible select element:
              */
             $roster_input_row_employee = "<span>";
-            $roster_input_row_employee .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_id, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
+            $roster_input_row_employee .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_key, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
             $roster_input_row_employee .= "</span>";
         }
         $roster_input_row .= $roster_input_row_employee;
@@ -136,6 +136,12 @@ abstract class build_html_roster_views {
                 . " value='";
         $roster_input_row .= roster::get_duty_end_from_roster($Roster, $day_iterator, $roster_row_iterator);
         $roster_input_row .= "'>\n";
+        /*
+         * working hours:
+         */
+        $roster_input_row .= " <span class='working_hours_span' id=Dienstplan[" . $day_iterator . "][working_hours_span][" . $roster_row_iterator . "]>";
+        $roster_input_row .= roster::get_working_hours_from_roster($Roster, $day_iterator, $roster_row_iterator);
+        $roster_input_row .= "</span><span class='unit_of_time'>&nbsp h</span>\n";
         $roster_input_row .= "<br>\n";
 
         /*
@@ -231,37 +237,37 @@ abstract class build_html_roster_views {
         return $branch_select;
     }
 
-    private static function build_roster_input_row_employee_select($roster_employee_id, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
+    private static function build_roster_input_row_employee_select($roster_employee_key, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
         $day_of_week = (int) date('N', $date_unix);
         $date_object = DateTime::createFromFormat('U', $date_unix);
         $alternation_id = alternating_week::get_alternating_week_for_date($date_object);
         $alternation_factor = $alternation_id;
         $workforce = new workforce(date('Y-m-d', $date_unix));
         $roster_input_row_employee_select = "<select "
-                . " name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_id] "
+                . " name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_key] "
                 . " tabindex=" . (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 1)
                 . " data-date_unix='$date_unix' "
                 . " data-roster_row_iterator='$roster_row_iterator' "
-                . " data-roster_column_name='employee_id' "
+                . " data-roster_column_name='employee_key' "
                 . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
                 . ">";
         /*
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$roster_employee_id]->last_name) or!isset($roster_employee_id)) {
-            foreach ($workforce->List_of_employees as $employee_id => $employee_object) {
-                if ($roster_employee_id == $employee_id and NULL !== $roster_employee_id) {
-                    $roster_input_row_employee_select .= "<option value=$employee_id selected>" . $employee_id . " " . $employee_object->last_name . "</option>";
+        if (isset($workforce->List_of_employees[$roster_employee_key]->last_name) or !isset($roster_employee_key)) {
+            foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
+                if ($roster_employee_key == $employee_key and NULL !== $roster_employee_key) {
+                    $roster_input_row_employee_select .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
                 } else {
-                    $roster_input_row_employee_select .= "<option value=$employee_id>" . $employee_id . " " . $employee_object->last_name . "</option>";
+                    $roster_input_row_employee_select .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
                 }
             }
         } else {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $roster_input_row_employee_select .= "<option value=$roster_employee_id selected>" . $roster_employee_id . " " . gettext("Unknown employee") . "</option>";
+            $roster_input_row_employee_select .= "<option value=$roster_employee_key selected>" . $roster_employee_key . " " . gettext("Unknown employee") . "</option>";
         }
 
         $roster_input_row_employee_select .= "</select>\n";
@@ -323,20 +329,30 @@ abstract class build_html_roster_views {
         $head_table_html = "";
         $head_table_html .= "<thead>\n";
         $head_table_html .= "<tr>\n";
+
+        $configuration = new \PDR\Application\configuration();
+        $locale = $configuration->getLanguage();
+        $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+        $weekdayFormatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
+
         foreach (array_keys($Roster) as $date_unix) {//Datum
             $date_sql = date('Y-m-d', $date_unix);
             $head_table_html .= "<td>";
             $head_table_html .= "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-day-read.php?datum=$date_sql'>";
-            $head_table_html .= strftime('%A', $date_unix);
+            $weekday_string = $weekdayFormatter->format($date_unix);
+            $head_table_html .= $weekday_string;
             $head_table_html .= " \n";
-            $head_table_html .= strftime('%d.%m.', $date_unix);
+            $dateObject = new DateTime($date_sql);
+            $dateString = $dateObject->format("d.m.");
+            $head_table_html .= $dateString;
             $holiday = holidays::is_holiday($date_unix);
             if (FALSE !== $holiday) {
                 $head_table_html .= "<br>$holiday";
             }
             $head_table_html .= "</a>";
             if (in_array(self::OPTION_SHOW_CALENDAR_WEEK, $Options)) {
-                $head_table_html .= "<br><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . $date_sql . "'>" . gettext("calendar week") . strftime(' %V', strtotime($date_sql)) . "</a>\n";
+                $weekNumber = $dateObject->format('W');
+                $head_table_html .= "<br><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . $date_sql . "'>" . gettext("calendar week") . $weekNumber . "</a>\n";
             }
 
             $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
@@ -344,8 +360,8 @@ abstract class build_html_roster_views {
                 $head_table_html .= "<br><em>" . gettext("EMERGENCY SERVICE") . "</em><br>";
                 if (in_array(self::OPTION_SHOW_EMERGENCY_SERVICE_NAME, $Options)) {
                     $workforce = new workforce($date_sql);
-                    if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
-                        $head_table_html .= $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name;
+                    if (isset($workforce->List_of_employees[$having_emergency_service['employee_key']])) {
+                        $head_table_html .= $workforce->List_of_employees[$having_emergency_service['employee_key']]->last_name;
                     } else {
                         $head_table_html .= "???";
                     }
@@ -380,7 +396,7 @@ abstract class build_html_roster_views {
             $table_html .= "<tr>\n";
             foreach (array_keys($Roster) as $date_unix) {
                 $date_sql = date('Y-m-d', $date_unix);
-                if (!isset($Roster[$date_unix][$table_row_iterator]) or NULL === $Roster[$date_unix][$table_row_iterator]->employee_id) {
+                if (!isset($Roster[$date_unix][$table_row_iterator]) or NULL === $Roster[$date_unix][$table_row_iterator]->employee_key) {
                     $table_html .= "<td><!--No more data in roster--></td>\n";
                     continue;
                 }
@@ -399,15 +415,15 @@ abstract class build_html_roster_views {
 
                 $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlentities($roster_item->date_sql)
-                        . "&employee_id=" . htmlentities($roster_item->employee_id)
-                        . "' data-employee_id='" . htmlentities($roster_item->employee_id)
+                        . "&employee_key=" . htmlentities($roster_item->employee_key)
+                        . "' data-employee_key='" . htmlentities($roster_item->employee_key)
                         . "' data-branch_id='" . htmlentities($roster_item->branch_id)
                         . "' data-date_sql='" . htmlentities($roster_item->date_sql)
                         . "'>";
-                if (isset($workforce->List_of_employees[$roster_item->employee_id]->last_name)) {
-                    $zeile .= $workforce->List_of_employees[$roster_item->employee_id]->last_name;
+                if (isset($workforce->List_of_employees[$roster_item->employee_key]->last_name)) {
+                    $zeile .= $workforce->List_of_employees[$roster_item->employee_key]->last_name;
                 } else {
-                    $zeile .= gettext("Unknown employee") . ":" . $roster_item->employee_id;
+                    $zeile .= gettext("Unknown employee") . ":" . $roster_item->employee_key;
                 }
                 $zeile .= "</a></b> / <span class='roster_working_hours'>";
                 $zeile .= htmlentities($roster_item->working_hours);
@@ -489,7 +505,7 @@ abstract class build_html_roster_views {
             $table_html .= "<tr>\n";
             foreach (array_keys($Roster) as $date_unix) {
                 $date_sql = date('Y-m-d', $date_unix);
-                if (!isset($Roster[$date_unix][$table_row_iterator]) or NULL === $Roster[$date_unix][$table_row_iterator]->employee_id) {
+                if (!isset($Roster[$date_unix][$table_row_iterator]) or NULL === $Roster[$date_unix][$table_row_iterator]->employee_key) {
                     $table_html .= "<td><!--No more data in roster--></td>\n";
                     continue;
                 }
@@ -505,8 +521,6 @@ abstract class build_html_roster_views {
                 }
                 $table_html .= "<td class=roster_employee_table_cell>";
                 $zeile = "";
-
-
 
                 $zeile .= "<span class='duty_time'>";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_start_sql');
@@ -547,8 +561,8 @@ abstract class build_html_roster_views {
         return $table_html;
     }
 
-    public static function build_roster_working_hours_div($Working_hours_week_have, $Working_hours_week_should, $workforce, $Options = NULL) {
-        if (array() === $Working_hours_week_have) {
+    public static function build_roster_working_week_hours_div($Working_week_hours_have, $Working_week_hours_should, $workforce, $Options = NULL) {
+        if (array() === $Working_week_hours_have) {
             return FALSE;
         }
         $week_hours_table_html = "<div id=week_hours_table_div>\n";
@@ -560,29 +574,24 @@ abstract class build_html_roster_views {
         $week_hours_table_html .= "<th>" . gettext('Target') . "</th>";
         $week_hours_table_html .= "<th>" . gettext('Deviation') . "</th>";
         $week_hours_table_html .= "</tr>";
-        foreach ($Working_hours_week_have as $employee_id => $working_hours_have) {
-            if (isset($Options['employee_id']) and $employee_id !== $Options['employee_id']) {
+        foreach ($Working_week_hours_have as $employee_key => $working_hours_have) {
+            if (isset($Options['employee_key']) and $employee_key !== $Options['employee_key']) {
                 continue; /* Only the specified employees are shown. */
             }
             $week_hours_table_html .= "<tr>";
             $week_hours_table_html .= "<td>";
-            if (isset($workforce->List_of_employees[$employee_id]->last_name)) {
-                $week_hours_table_html .= $workforce->List_of_employees[$employee_id]->last_name;
+            if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
+                $week_hours_table_html .= $workforce->List_of_employees[$employee_key]->last_name;
             } else {
-                $week_hours_table_html .= gettext("Unknown employee") . ":" . $employee_id;
+                $week_hours_table_html .= gettext("Unknown employee") . ":" . $employee_key;
             }
             $week_hours_table_html .= "</td>";
             $week_hours_table_html .= "<td>" . round($working_hours_have * 4, 0) / 4;
             $week_hours_table_html .= " </td><td> ";
-            if (isset($Working_hours_week_should[$employee_id])) {
-                $week_hours_table_html .= round($Working_hours_week_should[$employee_id], 1) . "\n";
-                $differenz = $working_hours_have - $Working_hours_week_should[$employee_id];
+            if (isset($Working_week_hours_should[$employee_key])) {
+                $week_hours_table_html .= round($Working_week_hours_should[$employee_key], 1) . "\n";
+                $differenz = $working_hours_have - $Working_week_hours_should[$employee_key];
             } else {
-                /**
-                 * TODO: Dieser Teil ist komplett kaputt!
-                 * $List_of_employee_working_week_hours wird nirgendwo definiert.
-                 * Der Array existiert gar nicht.
-                 */
                 $week_hours_table_html .= "???" . "\n";
                 $differenz = 0;
             }
@@ -611,7 +620,7 @@ abstract class build_html_roster_views {
     }
 
     private static function calculate_working_hours_day_employee_should(DateTime $date_object, employee $employee_object, array $Absentees) {
-        if (array_key_exists($employee_object->employee_id, $Absentees)) {
+        if (array_key_exists($employee_object->get_employee_key(), $Absentees)) {
             /**
              * <p lang=de>
              * Wer Abwesend ist muss nicht arbeiten.
@@ -624,7 +633,7 @@ abstract class build_html_roster_views {
              */
             $List_of_non_respected_absence_reason_ids = array(absence::REASON_TAKEN_OVERTIME);
 
-            if (!in_array($Absentees[$employee_object->employee_id], $List_of_non_respected_absence_reason_ids)) {
+            if (!in_array($Absentees[$employee_object->get_employee_key()], $List_of_non_respected_absence_reason_ids)) {
                 return 0;
             }
         }
@@ -636,7 +645,7 @@ abstract class build_html_roster_views {
              */
             return 0;
         }
-        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and!empty($employee_object->working_week_days)) {
+        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and !empty($employee_object->working_week_days)) {
             /**
              * <p lang=de>
              * Wir müssen hier noch einen Spezialfall beachten!
@@ -657,22 +666,22 @@ abstract class build_html_roster_views {
         return $employee_object->working_week_hours / $employee_object->working_week_days;
     }
 
-    public static function calculate_working_hours_week_should(array $Roster, workforce $workforce) {
+    public static function calculate_working_week_hours_should(array $Roster, workforce $workforce) {
 
         foreach ($workforce->List_of_employees as $employee_object) {
             $Working_hours_employee_should = self::calculate_working_hours_employee_should($Roster, $employee_object);
-            $Working_hours_week_should[$employee_object->employee_id] = $Working_hours_employee_should;
+            $Working_week_hours_should[$employee_object->get_employee_key()] = $Working_hours_employee_should;
         }
-        return $Working_hours_week_should;
+        return $Working_week_hours_should;
     }
 
     public static function equals_principle_roster(roster_item $roster_item, string $parameter) {
         $workforce = new workforce($roster_item->date_sql);
-        $employee_id = $roster_item->employee_id;
-        if (!isset($workforce->List_of_employees[$employee_id])) {
+        $employee_key = $roster_item->employee_key;
+        if (!isset($workforce->List_of_employees[$employee_key])) {
             return FALSE;
         }
-        $Principle_roster_on_date = $workforce->List_of_employees[$employee_id]->get_principle_roster_on_date($roster_item->date_object);
+        $Principle_roster_on_date = $workforce->List_of_employees[$employee_key]->get_principle_roster_on_date($roster_item->date_object);
         if (null === $Principle_roster_on_date) {
             return FALSE;
         }
@@ -683,5 +692,4 @@ abstract class build_html_roster_views {
         }
         return FALSE;
     }
-
 }

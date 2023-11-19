@@ -25,9 +25,11 @@
 class maintenance {
 
     /**
+     * @todo remove MAINTENANCE_PERIOD_IN_SECONDS and use a DateTime object instead!
      * @var int MAINTENANCE_PERIOD_IN_SECONDS the minimum time between two maintenance executions
      */
-    const MAINTENANCE_PERIOD_IN_SECONDS = PDR_ONE_DAY_IN_SECONDS;
+    const MAINTENANCE_PERIOD_IN_SECONDS = 24 * 60 * 60;
+    const MAINTENANCE_PERIOD_DATE_INTERVAL_STRING = 'P1D';
 
     /**
      * @var int <p>unix time stamp of the last execution time of the maintenance functions</p>
@@ -67,10 +69,21 @@ class maintenance {
             /*
              * Cleanup of database tables:
              */
-            $this->cleanup_absence();
-            $this->cleanup_overtime();
-            $this->cleanup_database_table_saturday_rotation();
             alternating_week::reorganize_ids();
+            $this->cleanup_database_table_saturday_rotation();
+            $this->cleanup_database_table_task_rotation();
+            $this->cleanup_database_table_overtime();
+            $this->cleanup_database_table_absence();
+            $this->cleanup_database_table_emergency_service();
+            $this->cleanup_database_table_approval();
+            $this->cleanup_database_table_principle_roster();
+            $this->cleanup_database_table_principle_roster_archive();
+            $this->cleanup_database_table_saturday_rotation_teams();
+            $this->cleanup_database_table_roster();
+            $this->cleanup_database_table_users_lost_password_token();
+            $this->cleanup_database_table_user_email_notification_cache();
+            $this->cleanup_database_table_users();
+            $this->cleanup_database_table_employees();
             /*
              * __destruct():
              */
@@ -80,39 +93,17 @@ class maintenance {
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         } else {
             $message = date('Y-m-d') . ': ' . 'Nothing to do for general maintenance.' . PHP_EOL;
-            $message .= 'Time: ' . strftime('%c', time()) . PHP_EOL;
-            $message .= 'Last execution: ' . strftime('%c', $this->last_execution) . PHP_EOL;
-            $message .= 'Earliest next execution: ' . strftime('%c', $this->last_execution + self::MAINTENANCE_PERIOD_IN_SECONDS) . PHP_EOL;
+            $dateObjectNow = new DateTime("now");
+            $dateObjectLastExecution = new DateTime('@' . $this->last_execution);
+            $dateStringNow = $dateObjectNow->format("d.m.Y H:i:s");
+            $dateStringLastExecution = $dateObjectLastExecution->format("d.m.Y H:i:s");
+            $message .= 'Time: ' . $dateStringNow . PHP_EOL;
+            $message .= 'Last execution: ' . $dateStringLastExecution . PHP_EOL;
+            $dateObjectNextExecution = (clone $dateObjectLastExecution)->add(new DateInterval(self::MAINTENANCE_PERIOD_DATE_INTERVAL_STRING));
+            $dateStringNextExecution = $dateObjectNextExecution->format("d.m.Y H:i:s");
+            $message .= 'Earliest next execution: ' . $dateStringNextExecution . PHP_EOL;
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         }
-    }
-
-    private function cleanup_absence() {
-        /*
-         * Cleanup absence data of employees, who left the company:
-         */
-        $sql_query = "SELECT * FROM `absence` LEFT JOIN `employees` ON `employees`.`id`= `absence`.`employee_id` WHERE `employees`.`end_of_employment` < `absence`.`start`";
-        database_wrapper::instance()->run($sql_query);
-        /*
-         * TODO: Cleanup absences of existing employees, that happened before they entered the company.
-         * Those are from former employees with the same employee_id
-         * Take care, not to delete data from employees with unkown employment start/end date
-         * Make an archive table to store the old data.
-         */
-    }
-
-    private function cleanup_overtime() {
-        /*
-         * Cleanup overtime data of employees, who left the company:
-         */
-        $sql_query = "SELECT * FROM `Stunden` LEFT JOIN `employees` ON `employees`.`id` = `Stunden`.`VK` WHERE `employees`.`start_of_employment` > `Stunden`.`Datum`";
-        database_wrapper::instance()->run($sql_query);
-        /*
-         * TODO: Cleanup overtime of existing employees, that happened before they entered the company.
-         * Those are from former employees with the same employee_id
-         * Take care, not to delete data from employees with unkown employment start/end date
-         * Make an archive table to store the old data.
-         */
     }
 
     /**
@@ -120,9 +111,109 @@ class maintenance {
      *
      * @return void
      */
-    protected function cleanup_database_table_saturday_rotation() {
-        $sql_query = "DELETE FROM `saturday_rotation` WHERE `date` <= now()-interval 12 month";
+    private function cleanup_database_table_saturday_rotation() {
+        $sql_query = "DELETE FROM `saturday_rotation` WHERE YEAR(`date`) < YEAR(now()-interval 24 month);";
         database_wrapper::instance()->run($sql_query);
     }
 
+    /**
+     * @see Arbeitszeitgesetz / § 16 Aushang und Arbeitszeitnachweise
+     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
+     *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
+     */
+    private function cleanup_database_table_overtime() {
+        $sql_query = "DELETE FROM `Stunden` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * @see Arbeitszeitgesetz / § 16 Aushang und Arbeitszeitnachweise
+     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
+     *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
+     */
+    private function cleanup_database_table_absence() {
+        $sql_query = "DELETE FROM `absence` WHERE YEAR(`end`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * @see Arbeitszeitgesetz / § 16 Aushang und Arbeitszeitnachweise
+     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
+     *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
+     */
+    private function cleanup_database_table_emergency_service() {
+        $sql_query = "DELETE FROM `Notdienst` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * Wie lange müssen Zeiterfassungsdaten aufbewahrt werden?
+     * In Deutschland müssen Arbeitszeitaufzeichnungen 2 Jahre aufbewahrt werden.
+     */
+    private function cleanup_database_table_roster() {
+        $sql_query = "DELETE FROM `Dienstplan` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_principle_roster() {
+        $sql_query = "DELETE principle_roster FROM principle_roster LEFT JOIN employees
+            ON principle_roster.employee_key = employees.primary_key
+            WHERE employees.end_of_employment < NOW();";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_principle_roster_archive() {
+        $sql_query = "DELETE principle_roster_archive FROM principle_roster_archive LEFT JOIN employees
+            ON principle_roster_archive.employee_key = employees.primary_key
+            WHERE YEAR(employees.end_of_employment) < YEAR(NOW() - INTERVAL 48 month);";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_users() {
+        $sql_query = "DELETE users FROM users LEFT JOIN employees
+            ON users.employee_key = employees.primary_key
+            WHERE employees.end_of_employment < NOW() - INTERVAL 1 month;";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_saturday_rotation_teams() {
+        $sql_query = "DELETE saturday_rotation_teams FROM saturday_rotation_teams LEFT JOIN employees
+            ON saturday_rotation_teams.employee_key = employees.primary_key
+            WHERE employees.end_of_employment < NOW() - INTERVAL 1 month;";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * Wie lange müssen Zeiterfassungsdaten aufbewahrt werden?
+     * In Deutschland müssen Arbeitszeitaufzeichnungen 2 Jahre aufbewahrt werden.
+     */
+    private function cleanup_database_table_approval() {
+        $sql_query = "DELETE FROM `approval` WHERE YEAR(`date`) < YEAR(now()-interval 48 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_task_rotation() {
+        $sql_query = "DELETE FROM `task_rotation` WHERE YEAR(`date`) < YEAR(now()-interval 12 month)";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    /**
+     * Employees are bound in multiple tables through CONSTRAINTs.
+     * An employee can only be deleted, if all of its rosters, absences, overtimes etc. are deleted beforehand.
+     * This data is typically deleted after four years (now()-interval 48 month)
+     */
+    private function cleanup_database_table_employees() {
+        $sql_query = "DELETE IGNORE FROM employees WHERE end_of_employment < now();";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_users_lost_password_token() {
+        $sql_query = "DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY;";
+        database_wrapper::instance()->run($sql_query);
+    }
+
+    private function cleanup_database_table_user_email_notification_cache() {
+        $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `date` <= NOW() - INTERVAL 1 DAY;";
+        database_wrapper::instance()->run($sql_query);
+    }
 }

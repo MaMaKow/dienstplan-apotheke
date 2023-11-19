@@ -18,70 +18,20 @@
  */
 package Selenium;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestAboutPage {
-
-    WebDriver driver;
-    private PropertyFile propertyFile;
+public class TestAboutPage extends TestPage {
 
     @Test(enabled = true)
     public void testGetVersion() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-        Selenium.signin.SignInPage signInPage = new Selenium.signin.SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToApplicationAbout);
-        //driver.get(propertyFile.getUrlPageTest() + "src/php/pages/about.php");
+        super.signIn();
         AboutPage aboutPage = new AboutPage();
         String versionString = aboutPage.getVersion();
-        Assert.assertEquals(versionString, getVersionStingShould());
-    }
-
-    private String getVersionStingShould() {
-        try {
-            String command = "git describe --abbrev=0 --tags";
-            Process process = Runtime.getRuntime().exec(command);
-            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = input.readLine()) != null) {
-                return line;
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(TestAboutPage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
+        Assert.assertEquals(versionString, aboutPage.getVersionStingShould());
     }
 }

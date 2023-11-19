@@ -33,7 +33,7 @@ abstract class examine_attendance {
         $Roster_workers = array();
         foreach ($Roster as $Roster_day) {
             foreach ($Roster_day as $roster_object) {
-                $Roster_workers[] = $roster_object->employee_id;
+                $Roster_workers[] = $roster_object->employee_key;
             }
         }
         foreach (array_keys($Abwesende) as $abwesender) {
@@ -45,8 +45,14 @@ abstract class examine_attendance {
         }
         if (isset($Arbeitende_abwesende)) {
             foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
-                $message = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'), $workforce->List_of_employees[$arbeitender_abwesender]->last_name, absence::get_reason_string_localized($Abwesende[$arbeitender_abwesender]));
+                $message = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'),
+                        $workforce->List_of_employees[$arbeitender_abwesender]->last_name,
+                        absence::get_reason_string_localized($Abwesende[$arbeitender_abwesender]));
                 $user_dialog->add_message($message);
+                /**
+                 * TODO: Add a button to directly remove the employee from the roster!
+                 *   That button shoud have a symbol and a descriptive caption.
+                 */
             }
         }
     }
@@ -91,7 +97,7 @@ abstract class examine_attendance {
         $user_dialog->add_message($message, E_USER_WARNING);
         foreach ($Mitarbeiter_differenz as $arbeiter) {
             foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
-                if ($arbeiter == $principle_roster_object->employee_id) {
+                if ($arbeiter == $principle_roster_object->employee_key) {
                     //TODO: Set a link to add the employee via JavaScript?
                     $duty_start = $principle_roster_object->duty_start_sql;
                     $duty_end = $principle_roster_object->duty_end_sql;
@@ -111,9 +117,9 @@ abstract class examine_attendance {
      * @param type $date_object
      */
     private static function trim_rescheduled_employees(&$Mitarbeiter_differenz, $date_object) {
-        foreach ($Mitarbeiter_differenz as $key => $employee_id) {
-            $working_hours = roster::get_working_hours_in_all_branches($date_object->format('Y-m-d'), $employee_id);
-            $working_hours_should = principle_roster::get_working_hours_should(clone $date_object, $employee_id);
+        foreach ($Mitarbeiter_differenz as $key => $employee_key) {
+            $working_hours = roster::get_working_hours_in_all_branches($date_object->format('Y-m-d'), $employee_key);
+            $working_hours_should = principle_roster::get_working_hours_should(clone $date_object, $employee_key);
             if ($working_hours >= $working_hours_should) {
                 unset($Mitarbeiter_differenz[$key]);
             }
@@ -136,10 +142,9 @@ abstract class examine_attendance {
         $Roster_workers = array();
         foreach ($Roster as $Roster_day) {
             foreach ($Roster_day as $roster_object) {
-                $Roster_workers[] = $roster_object->employee_id;
+                $Roster_workers[] = $roster_object->employee_key;
             }
         }
         return $Roster_workers;
     }
-
 }

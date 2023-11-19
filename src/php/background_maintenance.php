@@ -23,8 +23,7 @@
  * It is the responsibility of the classes to check if there is work to do and how much.
  */
 chdir(dirname(__DIR__, 2));
-require_once 'default.php';
-session_destroy();
+require_once 'bootstrap.php';
 new update_database();
 new maintenance();
 //new auto_upgrader();

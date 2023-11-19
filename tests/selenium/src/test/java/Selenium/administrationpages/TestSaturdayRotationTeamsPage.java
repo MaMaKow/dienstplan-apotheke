@@ -18,18 +18,11 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.PropertyFile;
-import Selenium.ScreenShot;
-import Selenium.signin.SignInPage;
+import Selenium.TestPage;
 import java.util.HashMap;
 import java.util.Map;
 import org.testng.annotations.Test;
 import org.testng.Assert;
-
-import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 /**
  *
@@ -41,25 +34,15 @@ import org.testng.annotations.BeforeMethod;
  * der Samstagsplan für 2026 nicht mehr korrekt passen.
  * </p>
  */
-public class TestSaturdayRotationTeamsPage {
-
-    WebDriver driver;
+public class TestSaturdayRotationTeamsPage extends TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testBranchNavigation() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser();
+        super.signIn();
         SaturdayRotationTeamsPage saturdayRotationTeamsPage = new SaturdayRotationTeamsPage(driver);
-        Assert.assertEquals(saturdayRotationTeamsPage.getUserNameText(), pdr_user_name);
         saturdayRotationTeamsPage.selectBranch(2);
         Assert.assertEquals(saturdayRotationTeamsPage.getBranchId(), 2);
         saturdayRotationTeamsPage.selectBranch(1);
@@ -68,37 +51,18 @@ public class TestSaturdayRotationTeamsPage {
 
     @Test(enabled = true)
     public void testAddingTeams() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
-
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser();
+        super.signIn();
         SaturdayRotationTeamsPage saturdayRotationTeamsPage = new SaturdayRotationTeamsPage(driver);
-        Assert.assertEquals(saturdayRotationTeamsPage.getUserNameText(), pdr_user_name);
-
         /**
          * <p lang=de>
          * Wenn man wollte, könnte man die saturdayTeamList in einer json Datei
          * verwalten und zum Lesen dieser Datei eine weitere Klasse
          * erschaffen.</p>
          */
-        HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = new HashMap<>();
-        SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null, new int[]{3, 10});
-        SaturdayRotationTeam saturdayRotationTeam1 = new SaturdayRotationTeam(null, new int[]{1, 13});
-        SaturdayRotationTeam saturdayRotationTeam2 = new SaturdayRotationTeam(null, new int[]{5, 12});
-        SaturdayRotationTeam saturdayRotationTeam3 = new SaturdayRotationTeam(null, new int[]{2, 6});
-        SaturdayRotationTeam saturdayRotationTeam4 = new SaturdayRotationTeam(null, new int[]{14, 7});
-        saturdayTeamList.put(0, saturdayRotationTeam0);
-        saturdayTeamList.put(1, saturdayRotationTeam1);
-        saturdayTeamList.put(2, saturdayRotationTeam2);
-        saturdayTeamList.put(3, saturdayRotationTeam3);
-        saturdayTeamList.put(4, saturdayRotationTeam4);
+        HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = SaturdayRotationTeam.getSaturdayTeams();
         for (Map.Entry<Integer, SaturdayRotationTeam> saturdayTeamEntry : saturdayTeamList.entrySet()) {
             SaturdayRotationTeam saturdayRotationTeamShould = saturdayTeamEntry.getValue();
 
@@ -115,20 +79,6 @@ public class TestSaturdayRotationTeamsPage {
             Assert.assertEquals(saturdayRotationTeamFound.getListOfTeamMembers(), saturdayRotationTeamShould.getListOfTeamMembers());
         }
 
-    }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
     }
 
 }

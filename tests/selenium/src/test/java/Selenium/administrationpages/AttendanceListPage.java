@@ -72,10 +72,10 @@ public class AttendanceListPage {
         return null;
     }
 
-    public String getAbsenceString(String dateString, int employeeId) {
+    public String getAbsenceString(String dateString, int employeeKey) {
         WebElement attendanceRowElement = getAttendanceRowElement(dateString);
         Map<Integer, Integer> employeeMap = getEmployeeMap();
-        int columnInt = employeeMap.get(employeeId);
+        int columnInt = employeeMap.get(employeeKey);
         By listOfAttendanceColumnsBy = By.xpath("/td[" + columnInt + "]");
         WebElement attendanceColumnElement = attendanceRowElement.findElement(listOfAttendanceColumnsBy);
         String absenceString = attendanceColumnElement.getText();
@@ -95,8 +95,8 @@ public class AttendanceListPage {
          * employee.
          */
         for (int i = 1; i <= listOfEmployeeColumnElements.size(); i++) {
-            int someEmployeeId = Integer.parseInt(listOfEmployeeColumnElements.get(i).getText());
-            columnMap.put(someEmployeeId, i);
+            int someEmployeeKey = Integer.parseInt(listOfEmployeeColumnElements.get(i).getText());
+            columnMap.put(someEmployeeKey, i);
         }
         return columnMap;
     }

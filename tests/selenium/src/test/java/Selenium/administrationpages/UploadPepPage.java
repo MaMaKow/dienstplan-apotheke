@@ -19,13 +19,11 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -54,8 +52,9 @@ public class UploadPepPage {
     public void uploadFile() {
         By selectFileBy = By.xpath("//*[@id=\"file_to_upload\"]");
         WebElement selectFileElement = driver.findElement(selectFileBy);
-        Path filePath = Paths.get("PepData.asy").toAbsolutePath();
-        selectFileElement.sendKeys(filePath.toString());
+        //Path filePath = Paths.get("PepData.asy").toAbsolutePath();
+        String filePathString = "/home/seluser/selenium/PepData.asy";
+        selectFileElement.sendKeys(filePathString);
     }
 
     /**
@@ -72,30 +71,42 @@ public class UploadPepPage {
     }
 
     public boolean expectationIsPresent() {
-        WebElement expectationElement = driver.findElement(By.xpath("//div[@id=\"expectation\"]"));
-        String expectationString = expectationElement.getAttribute("data-expectation");
+        WebElement expectationElement;
+        String expectationString = null;
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        int attempts = 0;
+        while (attempts < 5) {
+            try {
+                expectationElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id=\"expectation\"]")));
+                expectationString = expectationElement.getAttribute("data-expectation");
+                return !expectationString.equals("[]");
+            } catch (StaleElementReferenceException | NullPointerException exception) {
+                System.err.println(exception.getMessage());
+                System.err.println(Arrays.toString(exception.getStackTrace()));
+            }
+            attempts++;
+        }
+
         /**
          * The expectation is filled with something other than "[]":
          */
-        return !expectationString.equals("[]");
+        return !"[]".equals(expectationString);
     }
 
     public boolean expectationIsPresentAfterWaiting(int maximumReloads) {
-        int refreshCount = maximumReloads;
-        for (int i = 0; i < refreshCount; i++) {
+        for (int refreshCount = 0; refreshCount < maximumReloads; refreshCount++) {
             if (expectationIsPresent()) {
-                System.out.println("Success after " + refreshCount + " tries.");
                 return true;
             } else {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                     driver.navigate().refresh();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(UploadPepPage.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UploadPepPage.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
         return false;
     }
-
 }

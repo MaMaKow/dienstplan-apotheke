@@ -27,11 +27,7 @@
     I hope it will fulfill your expectations.</p>
 
 <p>
-    This installation system will guide you through installing PDR.
-
-    For more information, I encourage you to read the installation guide.
-
-    To read the PDR license or learn about obtaining support and our stance on it, please select the respective options from the side menu. To continue, please select the appropriate tab above.
+    These installation pages will guide you through installing PDR. For more information, I encourage you to read the installation guide.
 </p>
 
 <form action="install_page_welcome.php" method="post">

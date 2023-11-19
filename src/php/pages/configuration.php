@@ -16,12 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once '../../../default.php';
+$configurationManager = new \PDR\Output\HTML\configurationManager();
+
 /*
  * TODO: Handle all the configuration parameters
  */
 $session->exit_on_missing_privilege('administration');
 if (!empty($_POST)) {
-    $config = configuration::handle_user_input($config);
+    $config = \PDR\Output\HTML\configurationManager::handle_user_input($config);
 }
 
 /*
@@ -44,20 +46,20 @@ $error_warning_checked = "";
 $error_error_checked = "";
 $other_error = NULL;
 
-if (configuration::ERROR_ALL <= $config['error_reporting']) {
+if (\PDR\Output\HTML\configurationManager::ERROR_ALL <= $config['error_reporting']) {
     $error_all_checked = "checked";
-} elseif (configuration::ERROR_NOTICE <= $config['error_reporting']) {
+} elseif (\PDR\Output\HTML\configurationManager::ERROR_NOTICE <= $config['error_reporting']) {
     $error_notice_checked = "checked";
-} elseif (configuration::ERROR_WARNING <= $config['error_reporting']) {
+} elseif (\PDR\Output\HTML\configurationManager::ERROR_WARNING <= $config['error_reporting']) {
     $error_warning_checked = "checked";
-} elseif (configuration::ERROR_ERROR <= $config['error_reporting']) {
+} elseif (\PDR\Output\HTML\configurationManager::ERROR_ERROR <= $config['error_reporting']) {
     $error_error_checked = "checked";
 } else {
-    $other_error = configuration::friendly_error_type($config['error_reporting']);
+    $other_error = \PDR\Output\HTML\configurationManager::friendly_error_type($config['error_reporting']);
 }
-$datalist_encodings = configuration::build_supported_encodings_datalist();
-$datalist_locales = configuration::build_supported_locales_datalist();
-$error_error = configuration::ERROR_ERROR;
+$datalist_encodings = \PDR\Output\HTML\configurationManager::build_supported_encodings_datalist();
+$datalist_locales = \PDR\Output\HTML\configurationManager::build_supported_locales_datalist();
+$error_error = \PDR\Output\HTML\configurationManager::ERROR_ERROR;
 
 $email_method = $config['email_method'];
 
@@ -86,7 +88,7 @@ echo $user_dialog->build_messages();
                 <label><?= gettext('Database user') ?></label>
                 <br><input type="text" name="database_user" value="<?php echo isset($config['database_user']) ? $config['database_user'] : '' ?>">
                 <br>
-                <label><?= gettext('Database user password') ?></label>
+                <label><?= gettext('Database user passphrase') ?></label>
                 <!-- Confuse the browser in order to stop it from auto-inserting the user password in the database password field-->
                 <input type="password" name="fake_password_input" id="fake_pass" hidden="true" style="display: none;">
                 <br>
@@ -102,7 +104,7 @@ echo $user_dialog->build_messages();
                 <img id="approve_pass_img"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_up-24px.svg" height="20">
                 <img id="disapprove_pass_img" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_down-24px.svg" height="20">
                 <br>
-                <label><?= gettext('Repeat password') ?></label>
+                <label><?= gettext('Repeat passphrase') ?></label>
                 <br>
                 <input type="password" name="database_password_second" id="second_pass"
                        onchange="compare_passwords()"
@@ -131,7 +133,7 @@ echo $user_dialog->build_messages();
                 </p>
                 <label><?= gettext('Language') ?></label><br>
                 <select name="language"><?php
-                    foreach (configuration::$List_of_supported_languages as $language_code => $language_name) {
+                    foreach (\PDR\Output\HTML\configurationManager::$List_of_supported_languages as $language_code => $language_name) {
                         ?>
                         <option value=<?=
                         $language_code === $config['language'] ? '"' . $language_code . '" selected' : '"' . $language_code . '"';
@@ -158,24 +160,24 @@ echo $user_dialog->build_messages();
             <fieldset>
                 <legend> <?= gettext('Debugging') ?></legend>
                 <p class="hint"> <?= gettext('Which types of errors should be reported to the user?') ?></p>
-                <input type="radio" id="error_reporting_error" name="error_reporting" value="<?= configuration::ERROR_ERROR . '" ' . $error_error_checked; ?>">
+                <input type="radio" id="error_reporting_error" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_ERROR . '" ' . $error_error_checked; ?>">
                 <label for="error_reporting_error"><?= gettext('Only fatal errors') ?></label>
                 <br>
                 <br>
-                <input type="radio" id="error_reporting_warning" name="error_reporting" value="<?= configuration::ERROR_WARNING . '" ' . $error_warning_checked; ?>">
+                <input type="radio" id="error_reporting_warning" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_WARNING . '" ' . $error_warning_checked; ?>">
                 <label for="error_reporting_warning"><?= gettext('Also warnings') ?></label>
                 <br>
                 <br>
-                <input type="radio" id="error_reporting_notice" name="error_reporting" value="<?= configuration::ERROR_NOTICE . '" ' . $error_notice_checked; ?>">
+                <input type="radio" id="error_reporting_notice" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_NOTICE . '" ' . $error_notice_checked; ?>">
                 <label for="error_reporting_notice"><?= gettext('And notices') ?></label>
                 <br>
                 <br>
-                <input type="radio" id="error_reporting_all" name="error_reporting" value="<?= configuration::ERROR_ALL . '" ' . $error_all_checked; ?>">
+                <input type="radio" id="error_reporting_all" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_ALL . '" ' . $error_all_checked; ?>">
                 <label for="error_reporting_all"><?= gettext('Everything') ?></label>
                 <br>
                 <br>
                 <?php
-                if (FALSE and!empty($other_error)) {
+                if (FALSE and !empty($other_error)) {
                     ?>
                     <input type="radio" id="error_reporting_<?= $other_error ?>" name="error_reporting" value="<?= $config['error_reporting'] . '" checked'; ?>">
                     <label for="error_reporting_<?= $other_error ?>"><?= $other_error . ' ' . gettext('(current value)') ?></label>

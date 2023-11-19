@@ -162,13 +162,14 @@ class NetworkOfBranchOffices {
      * @return void
      */
     private function redirect_to_branch_management_form() {
-        if (!isset($_SESSION['user_object']->employee_id)) {
+        global $session;
+        if (false === $session->user_is_logged_in()) {
             /*
              * If we are not logged in yet, then there is no sense in redirecting.
              */
             return FALSE;
         }
-        $script_name = \filter_input(\INPUT_SERVER, 'SCRIPT_NAME', \FILTER_SANITIZE_STRING);
+        $script_name = \filter_input(\INPUT_SERVER, 'SCRIPT_NAME', \FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         if (in_array(basename($script_name), array('branch-management.php'))) {
             /*
              * If we are already on the page, then there is no sense in redirecting.

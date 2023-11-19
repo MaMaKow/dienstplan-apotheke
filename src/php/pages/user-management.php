@@ -16,31 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-$workforce = new workforce();
+//$workforce = new workforce();
 $user_dialog = new user_dialog();
 
-$employee_id = user_input::get_variable_from_any_input('employee_id', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->employee_id);
-$User_list = read_user_list_from_database();
-if (FALSE === in_array($employee_id, array_keys($User_list))) {
-    /* This happens if a coworker does not have a user account (yet).
-     * He can still be chosen within other pages.
-     * Therefore we might get his/her id in the cookie.
-     * Now we just change it to someone, who does have a user account:
-     */
-    $employee_id = min(array_keys($User_list));
-}
-$user = new user($employee_id);
-create_cookie('employee_id', $employee_id, 30);
+$user_key = user_input::get_variable_from_any_input('user_key', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->get_primary_key());
+$user = new user($user_key);
+create_cookie('user_key', $user_key, 30);
 
-function insert_user_data_into_database(&$user) {
+function insert_user_data_into_database(user &$user) {
     global $session;
     if (!$session->user_has_privilege('administration')) {
         return FALSE;
     }
 
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-    $privileges = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-    if ($_SESSION['user_object']->employee_id == $user->employee_id and $session->user_has_privilege('administration')) {
+    $privileges = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+    $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
+    $status = filter_input(INPUT_POST, 'user_status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    if ($_SESSION['user_object']->get_primary_key() == $user->get_primary_key() and $session->user_has_privilege('administration')) {
         /*
          * We want to avoid an administrator loosing the administration privilege by accident.
          * The privilege can only be lost, if an other administrator is taking it away.
@@ -53,35 +45,32 @@ function insert_user_data_into_database(&$user) {
         }
     }
     $user->write_new_privileges_to_database($privileges);
+    // Update the user's properties in the object
+    if ($user->employee_key != $employee_key) {
+        $user->write_new_employee_key_to_database($employee_key);
+    }
+    if ($user->status != $status) {
+        $user->write_new_status_to_database($status);
+    }
 }
 
 if (filter_has_var(INPUT_POST, 'submit_user_data')) {
     insert_user_data_into_database($user);
 }
-
-/**
- * Get a list of users
- *
- * @return array of \employee objects
- */
-function read_user_list_from_database() {
-    $sql_query = "SELECT `employee_id`, `user_name` FROM `users` ORDER BY `employee_id` ASC";
-    $result = database_wrapper::instance()->run($sql_query);
-    while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-        $User_list[$row->employee_id] = $row->user_name;
-        $User_list[$row->employee_id] = new employee((int) $row->employee_id, $row->user_name, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    }
-    return $User_list;
+if (isset($_POST) && !empty($_POST)) {
+    // POST data has been submitted
+    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/user-management.php' . "?user_key=$user_key";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
+
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
 echo $user_dialog->build_messages();
 
-
-
-echo build_html_navigation_elements::build_select_employee($employee_id, $User_list);
+echo build_html_navigation_elements::build_select_user($user_key);
 
 function build_checkbox_permission($privilege, $checked) {
     $privilege_name = localization::gettext(str_replace('_', ' ', $privilege));
@@ -94,19 +83,56 @@ function build_checkbox_permission($privilege, $checked) {
     return $text;
 }
 ?>
-<form method='POST' id='user_management'>
-    <input type='text' name='employee_id' id="employee_id" value="<?= $user->employee_id ?>" hidden='true'>
-    <p>
+<form method='POST' id='user_management' onchange="enableUnsavedChangesPrompt(this); changesMadeInForm = true;">
+    <fieldset id="identifier_group" class="privilege-group">
+        <legend><?= gettext("Identifier"); ?></legend>
+        <input type='text' name='user_key' id="user_key_hidden_input" value="<?= $user->get_primary_key(); ?>" hidden='true'>
+        <div>
+            <label for="user_email"><?= gettext("User Email"); ?>:</label>
+            <input type="email" name="user_email" id="user_email" value="<?= $user->get_email(); ?>" disabled>
+        </div>
+        <div>
+            <label for="employee_key"><?= gettext("Employee Key"); ?>:</label>
+            <select name="employee_key" id="employee_key">
+                <?php
+                $workforce = new workforce(date("Y-m-d"), date("Y-12-31"));
+                $employeeKey = $user->get_employee_key();
+
+                $selected = (null == $user->get_employee_key()) ? 'selected' : '';
+                echo '<option value="" ' . $selected . '></option>';
+                //Add all currently existing employees:
+                foreach ($workforce->List_of_employees as $employee_key => $employee) {
+                    // Display the first name and last name as the option text.
+                    $employeeName = $employee->first_name . ' ' . $employee->last_name;
+                    $selected = ($employee_key == $user->get_employee_key()) ? 'selected' : '';
+                    echo '<option value="' . $employee_key . '" ' . $selected . '>' . htmlspecialchars($employeeName) . '</option>';
+                }
+                ?>
+            </select>
+        </div>
+        <div>
+            <label for="user_status"><?= gettext("User Status:"); ?></label>
+            <select name="user_status" id="user_status">
+                <option value="deleted" <?= ($user->get_status() === 'deleted') ? 'selected' : ''; ?>>Deleted</option>
+                <option value="blocked" <?= ($user->get_status() === 'blocked') ? 'selected' : ''; ?>>Blocked</option>
+                <option value="inactive" <?= ($user->get_status() === 'inactive') ? 'selected' : ''; ?>>Inactive</option>
+                <option value="active" <?= ($user->get_status() === 'active') ? 'selected' : ''; ?>>Active</option>
+            </select>
+        </div>
+    </fieldset>
+    <fieldset id="privilege_group" class="privilege-group">
+        <legend><?= gettext("Privileges"); ?>:</legend>
         <?php
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
-            echo build_checkbox_permission($privilege, in_array($privilege, $user->privileges));
+            echo build_checkbox_permission($privilege, array_key_exists($privilege, $user->privileges));
             echo "<br>";
         }
         ?>
-    </p><p>
 
-        <input type=submit id=save_new class='no_print' name=submit_user_data value='Eintragen' form='user_management'>
-    </p>
+    </fieldset>
+    <div>
+        <input type=submit id=user_management_form_submit class='no_print' name=submit_user_data form='user_management'>
+    </div>
 
 </form>
 <?php

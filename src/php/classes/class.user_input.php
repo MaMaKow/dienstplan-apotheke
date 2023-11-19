@@ -27,7 +27,14 @@ abstract class user_input {
     const EXCEPTION_CODE_DUTY_START_INVALID = 1001;
     const EXCEPTION_CODE_DUTY_END_INVALID = 1002;
 
-    public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_STRING, $default_value = null) {
+    /**
+     *
+     * @param type $variable_name as given from POST/GET/COOKIE
+     * @param type $filter e.g. FILTER_SANITIZE_FULL_SPECIAL_CHARS
+     * @param type $default_value
+     * @return type
+     */
+    public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS, $default_value = null) {
         $List_of_input_sources = array(INPUT_POST, INPUT_GET, INPUT_COOKIE);
         foreach ($List_of_input_sources as $input_source) {
             if (filter_has_var($input_source, $variable_name)) {
@@ -63,7 +70,7 @@ abstract class user_input {
      * @throws Exception
      */
     public static function get_Roster_from_POST_secure() {
-        $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         $Roster = array();
         if (empty($Roster_from_post)) {
             return FALSE;
@@ -76,27 +83,21 @@ abstract class user_input {
                 if (!is_numeric($roster_row_iterator)) {
                     throw new Exception('$roster_row_iterator must be an integer!');
                 }
-                $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
-                $employee_id = filter_var($Roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT);
+                $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $employee_key = filter_var($Roster_row_array['employee_key'], FILTER_SANITIZE_NUMBER_INT);
                 $branch_id = filter_var($Roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
-                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING));
-                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING));
-                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
-                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
-                $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_STRING));
-                if (isset($Roster_row_array['primary_key'])) {
-                    /*
-                     * Dies scheint ein principle_roster zu sein:
-                     */
-                    $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['primary_key'], FILTER_SANITIZE_STRING));
-                }
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
                 if (!validate_date($date_sql, 'Y-m-d')) {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
-                if ('' === $employee_id) {
+                if ('' === $employee_key) {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                     continue;
                 }
@@ -104,24 +105,25 @@ abstract class user_input {
                     /**
                      * <p lang=de>
                      * Bei der Übertragung von roster items können leere Items übertragen werden.
-                     * Diese haben aber IMMER eine leere employee_id.
+                     * Diese haben aber IMMER eine leere employee_key.
                      * Daher wird diese Zeile in diesem Fall nicht erreicht.
                      * </p>
                      */
+                    if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
+                        /**
+                         * <p lang=de>
+                         * Sowohl Beginn als auch Ende wurden als leer übertragen. Dieses roster item wurde also gelöscht.
+                         * </p>
+                         */
+                        $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                        continue;
+                    }
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
-                if (!empty($primary_key) && is_numeric($primary_key)) {
-                    /*
-                     * This one is a principle roster item.
-                     * @todo: There will come a time, when simple roster_items will also have a numeric primary_key.
-                     */
-                    $Roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
-                    continue;
-                }
-                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
+                $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_key, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 $Roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
             }
         }
@@ -138,7 +140,7 @@ abstract class user_input {
      * @throws Exception
      */
     public static function get_principle_employee_roster_from_POST_secure() {
-        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         $Principle_roster = array();
         if (empty($Principle_roster_from_post)) {
             return FALSE;
@@ -154,14 +156,14 @@ abstract class user_input {
                 if (!is_numeric($roster_row_iterator)) {
                     throw new Exception('$roster_row_iterator must be an integer!');
                 }
-                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
-                $employee_id = filter_var($Principle_roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT);
+                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $employee_key = filter_var($Principle_roster_row_array['employee_key'], FILTER_SANITIZE_NUMBER_INT);
                 $branch_id = filter_var($Principle_roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
-                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING));
-                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING));
-                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
-                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
-                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_STRING));
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
@@ -169,7 +171,7 @@ abstract class user_input {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
                 /*
-                  if ('' === $employee_id) {
+                  if ('' === $employee_key) {
                   $Principle_roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                   continue;
                   }
@@ -201,10 +203,10 @@ abstract class user_input {
                      */
                     continue;
                 }
-                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
-                if (!isset($Principle_roster_row_array['primary_key']) or!is_numeric($Principle_roster_row_array['primary_key'])) {
+                if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
                     /**
                      * <p lang=de>Wenn an einem Tag bisher kein Grundplan hinterlegt war,
                      *  dann wird dort auch kein primary key übertragen.
@@ -216,7 +218,7 @@ abstract class user_input {
                     $Principle_roster_row_array['primary_key'] = null;
                 }
                 $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_NUMBER_INT));
-                $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
+                $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_key, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 $Principle_roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
             }
         }
@@ -224,7 +226,7 @@ abstract class user_input {
     }
 
     public static function get_principle_roster_day_from_POST_secure() {
-        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         $Principle_roster = array();
         if (empty($Principle_roster_from_post)) {
             return FALSE;
@@ -240,21 +242,21 @@ abstract class user_input {
                 if (!is_numeric($roster_row_iterator)) {
                     throw new Exception('$roster_row_iterator must be an integer!');
                 }
-                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_STRING);
-                $employee_id = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['employee_id'], FILTER_SANITIZE_NUMBER_INT));
+                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $employee_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['employee_key'], FILTER_SANITIZE_NUMBER_INT));
                 $branch_id = filter_var($Principle_roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
-                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_STRING));
-                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_STRING));
-                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_STRING));
-                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_STRING));
-                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_STRING));
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
                 if (!validate_date($date_sql, 'Y-m-d')) {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
-                if (NULL === $employee_id OR!is_numeric($employee_id)) {
+                if (NULL === $employee_key OR !is_numeric($employee_key)) {
                     /**
                      * Es wurde kein Mitarbeiter übergeben.
                      * Dieses Item ist ungültig und wird übersprungen:
@@ -269,7 +271,7 @@ abstract class user_input {
                      * oder es wurde ein neuer Eintrag nicht korrekt übergeben.
                      * </p>
                      */
-                    if (isset($Principle_roster_row_array['primary_key']) and!validate_date($duty_end_sql, 'H:i')) {
+                    if (isset($Principle_roster_row_array['primary_key']) and !validate_date($duty_end_sql, 'H:i')) {
                         /**
                          * <p lang=de>
                          * Dienstzeit wurde gerade gelöscht.
@@ -288,10 +290,10 @@ abstract class user_input {
                      */
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR!validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
-                if (!isset($Principle_roster_row_array['primary_key']) or!is_numeric($Principle_roster_row_array['primary_key'])) {
+                if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
                     /**
                      * <p lang=de>Wenn für diesen Mitarbeiter bisher kein Grundplan hinterlegt war,
                      *  dann wird dort auch kein primary key übertragen.
@@ -304,41 +306,41 @@ abstract class user_input {
                 }
 
                 $primary_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['primary_key'], FILTER_SANITIZE_NUMBER_INT));
-                $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_id, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
+                $Principle_roster[$date_unix][$roster_row_iterator] = new principle_roster_item($primary_key, $date_sql, $employee_key, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
                 $Principle_roster[$date_unix][$roster_row_iterator]->check_roster_item_sequence();
             }
         }
         return $Principle_roster;
     }
 
-    private static function remove_changed_entries_from_database($branch_id, $Employee_id_list) {
+    private static function remove_changed_entries_from_database($branch_id, $Employee_key_list) {
         $sql_query = "DELETE FROM `Dienstplan`"
                 . " WHERE `Datum` = :date"
-                . " AND `VK` = :employee_id"
+                . " AND `employee_key` = :employee_key"
                 . " AND `Mandant` = :branch_id";
         $statement = database_wrapper::instance()->prepare($sql_query);
-        foreach ($Employee_id_list as $date_unix => $Employee_id_list_day) {
+        foreach ($Employee_key_list as $date_unix => $Employee_key_list_day) {
             $date_sql = date('Y-m-d', $date_unix);
-            foreach ($Employee_id_list_day as $employee_id) {
-                $statement->execute(array('employee_id' => $employee_id, 'date' => $date_sql, 'branch_id' => $branch_id));
+            foreach ($Employee_key_list_day as $employee_key) {
+                $statement->execute(array('employee_key' => $employee_key, 'date' => $date_sql, 'branch_id' => $branch_id));
             }
         }
     }
 
-    private static function insert_changed_roster_into_database($Roster, $Changed_roster_employee_id_list) {
+    private static function insert_changed_roster_into_database($Roster, $Changed_roster_employee_key_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
-            if (!isset($Changed_roster_employee_id_list[$date_unix])) {
+            if (!isset($Changed_roster_employee_key_list[$date_unix])) {
                 /* There are no changes. */
                 continue;
             }
             foreach ($Roster_day_array as $roster_row_object) {
-                if (!in_array($roster_row_object->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
+                if (!in_array($roster_row_object->employee_key, $Changed_roster_employee_key_list[$date_unix])) {
                     continue;
                 }
-                if (NULL === $roster_row_object->employee_id) {
+                if (NULL === $roster_row_object->employee_key) {
                     /*
                      * This is the case, if there is an empty roster_item produced.
-                     * e.g. inside user_input::get_Roster_from_POST_secure() if ('' !== $employee_id)
+                     * e.g. inside user_input::get_Roster_from_POST_secure() if ('' !== $employee_key)
                      *
                      */
                     continue;
@@ -348,10 +350,10 @@ abstract class user_input {
                  * Are there any advantages to that?
                  */
                 $sql_query = 'REPLACE INTO `Dienstplan` '
-                        . ' (VK, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user) '
-                        . ' VALUES (:employee_id, :date_sql, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment, :user_name)';
+                        . ' (employee_key, Datum, Dienstbeginn, Dienstende, Mittagsbeginn, Mittagsende, Stunden, Mandant, Kommentar, user) '
+                        . ' VALUES (:employee_key, :date_sql, :duty_start_sql, :duty_end_sql, :break_start_sql, :break_end_sql, :working_hours, :branch_id, :comment, :user_name)';
                 database_wrapper::instance()->run($sql_query, array(
-                    'employee_id' => $roster_row_object->employee_id,
+                    'employee_key' => $roster_row_object->employee_key,
                     'date_sql' => $roster_row_object->date_sql,
                     'duty_start_sql' => $roster_row_object->duty_start_sql,
                     'duty_end_sql' => $roster_row_object->duty_end_sql,
@@ -372,7 +374,7 @@ abstract class user_input {
      * <p lang="de">
      * CAVE! Gelöschte Einträge fehlen hier.
      *   Wenn ein Tag im neuen $Roster nicht mehr existiert, so wird er auch hier nicht mit erscheinen.
-     *   get_deleted_roster_employee_id_list ist für die Aufgabe gedacht.
+     *   get_deleted_roster_employee_key_list ist für die Aufgabe gedacht.
      * </p>
      *
      * @param type $Principle_roster_new
@@ -409,7 +411,7 @@ abstract class user_input {
                     if (self::principle_roster_item_has_changed($roster_item, $Principle_roster_old)) {
                         /**
                          * The roster for the employee has changed for this day.
-                         * The employee_id will be added to Changed_roster_employee_id_list
+                         * The employee_key will be added to Changed_roster_employee_key_list
                          */
                         $Changed_roster_primary_key_list[$date_unix][] = $roster_item->get_primary_key();
                     }
@@ -425,42 +427,42 @@ abstract class user_input {
      * <p lang="de">
      * CAVE! Gelöschte Einträge fehlen hier.
      *   Wenn ein Tag im neuen $Roster nicht mehr existiert, so wird er auch hier nicht mit erscheinen.
-     *   get_deleted_roster_employee_id_list ist für die Aufgabe gedacht.
+     *   get_deleted_roster_employee_key_list ist für die Aufgabe gedacht.
      * </p>
      *
      * @param type $Roster
      * @param type $Roster_old
      * @return type
      */
-    public static function get_changed_roster_employee_id_list($Roster, $Roster_old) {
-        $Changed_roster_employee_id_list = array();
+    public static function get_changed_roster_employee_key_list($Roster, $Roster_old) {
+        $Changed_roster_employee_key_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Roster_old[$date_unix]) or roster::is_empty_roster_day_array($Roster_old[$date_unix])) {
                 /**
                  * There is no old roster. Every entry is new:
                  */
                 foreach ($Roster_day_array as $roster_item) {
-                    if (NULL === $roster_item->employee_id) {
+                    if (NULL === $roster_item->employee_key) {
                         continue;
                     }
-                    $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
+                    $Changed_roster_employee_key_list[$date_unix][] = $roster_item->employee_key;
                 }
             } else {
                 foreach ($Roster_day_array as $roster_item) {
-                    if (NULL === $roster_item->employee_id) {
+                    if (NULL === $roster_item->employee_key) {
                         continue;
                     }
-                    if (self::principle_roster_item_has_changed($roster_item, $Roster_old)) {
+                    if (self::roster_item_has_changed($roster_item, $Roster_old)) {
                         /**
                          * The roster for the employee has changed for this day.
-                         * The employee_id will be added to Changed_roster_employee_id_list
+                         * The employee_key will be added to Changed_roster_employee_key_list
                          */
-                        $Changed_roster_employee_id_list[$date_unix][] = $roster_item->employee_id;
+                        $Changed_roster_employee_key_list[$date_unix][] = $roster_item->employee_key;
                     }
                 }
             }
         }
-        return $Changed_roster_employee_id_list;
+        return $Changed_roster_employee_key_list;
     }
 
     /**
@@ -480,7 +482,7 @@ abstract class user_input {
             if ($principle_roster_item_new->get_primary_key() != $roster_item_old->get_primary_key()) {
                 continue;
             }
-            if ($principle_roster_item_new->get_employee_id() != $roster_item_old->get_employee_id()) {
+            if ($principle_roster_item_new->get_employee_key() != $roster_item_old->get_employee_key()) {
                 continue;
             }
             if ($principle_roster_item_new->get_branch_id() != $roster_item_old->get_branch_id()) {
@@ -528,8 +530,8 @@ abstract class user_input {
         return TRUE;
     }
 
-    public static function get_deleted_roster_employee_id_list($Roster, $Roster_old) {
-        $Deleted_roster_employee_id_list = array();
+    public static function get_deleted_roster_employee_key_list($Roster, $Roster_old) {
+        $Deleted_roster_employee_key_list = array();
         foreach ($Roster as $date_unix => $Roster_day_array) {
             $List_of_employees_in_Roster = array();
             $List_of_employees_in_Roster_old = array();
@@ -539,10 +541,10 @@ abstract class user_input {
                  * Alle alten Einträge sind gelöschte Einträge.
                  */
                 foreach ($Roster_old[$date_unix] as $roster_row_object) {
-                    if (NULL === $roster_row_object->employee_id) {
+                    if (NULL === $roster_row_object->employee_key) {
                         continue;
                     }
-                    $Deleted_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
+                    $Deleted_roster_employee_key_list[$date_unix][] = $roster_row_object->employee_key;
                 }
             } else {
                 if (!isset($Roster_old[$date_unix])) {
@@ -550,29 +552,29 @@ abstract class user_input {
                     $List_of_employees_in_Roster_old = array();
                 } else {
                     foreach ($Roster_old[$date_unix] as $roster_row_object) {
-                        if (NULL === $roster_row_object->employee_id) {
+                        if (NULL === $roster_row_object->employee_key) {
                             continue;
                         }
-                        $List_of_employees_in_Roster_old[] = $roster_row_object->employee_id;
+                        $List_of_employees_in_Roster_old[] = $roster_row_object->employee_key;
                     }
                 }
                 foreach ($Roster[$date_unix] as $roster_row_object) {
-                    if (NULL === $roster_row_object->employee_id) {
+                    if (NULL === $roster_row_object->employee_key) {
                         continue;
                     }
-                    $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
+                    $List_of_employees_in_Roster[] = $roster_row_object->employee_key;
                 }
-                $Deleted_roster_employee_ids = array_diff($List_of_employees_in_Roster_old, $List_of_employees_in_Roster);
-                if (array(0 => NULL) === $Deleted_roster_employee_ids) {
+                $Deleted_roster_employee_keys = array_diff($List_of_employees_in_Roster_old, $List_of_employees_in_Roster);
+                if (array(0 => NULL) === $Deleted_roster_employee_keys) {
                     continue;
                 }
-                if (array() === $Deleted_roster_employee_ids) {
+                if (array() === $Deleted_roster_employee_keys) {
                     continue;
                 }
-                $Deleted_roster_employee_id_list[$date_unix] = $Deleted_roster_employee_ids;
+                $Deleted_roster_employee_key_list[$date_unix] = $Deleted_roster_employee_keys;
             }
         }
-        return $Deleted_roster_employee_id_list;
+        return $Deleted_roster_employee_key_list;
     }
 
     /**
@@ -602,7 +604,7 @@ abstract class user_input {
                 if ($roster_item->primary_key !== $Roster_new[$date_unix][$roster_row_iterator]->primary_key) {
                     throw new Exception("<p lang=de>Ich erwarte, dass der primary key zwischen den Plänen unverändert bleibt.</p>");
                 }
-                if ($roster_item->employee_id !== $Roster_new[$date_unix][$roster_row_iterator]->employee_id) {
+                if ($roster_item->employee_key !== $Roster_new[$date_unix][$roster_row_iterator]->employee_key) {
                     $Changed_roster_item_list[] = $roster_item->primary_key;
                 }
             }
@@ -623,14 +625,14 @@ abstract class user_input {
          */
         foreach ($Roster_old as $Roster_old_day_array) {
             foreach ($Roster_old_day_array as $roster_old_item) {
-                if (isset($roster_old_item->employee_id)) {
+                if (isset($roster_old_item->employee_key)) {
                     $List_of_primary_keys_in_old_roster[] = $roster_old_item->primary_key;
                 }
             }
         }
         foreach ($Roster_new as $Roster_new_day_array) {
             foreach ($Roster_new_day_array as $roster_new_item) {
-                if (isset($roster_new_item->employee_id) and isset($roster_new_item->primary_key)) {
+                if (isset($roster_new_item->employee_key) and isset($roster_new_item->primary_key)) {
                     $List_of_primary_keys_in_new_roster[] = $roster_new_item->primary_key;
                 }
             }
@@ -639,24 +641,24 @@ abstract class user_input {
         return $Deleted_roster_primary_key_list;
     }
 
-    private static function get_inserted_roster_employee_id_list($Roster, $Roster_old) {
-        $Inserted_roster_employee_id_list = array();
+    private static function get_inserted_roster_employee_key_list($Roster, $Roster_old) {
+        $Inserted_roster_employee_key_list = array();
         foreach ($Roster_old as $date_unix => $Roster_old_day_array) {
             if (empty($Roster_old_day_array)) {
                 foreach ($Roster[$date_unix] as $roster_row_object) {
-                    $Inserted_roster_employee_id_list[$date_unix][] = $roster_row_object->employee_id;
+                    $Inserted_roster_employee_key_list[$date_unix][] = $roster_row_object->employee_key;
                 }
             } else {
                 foreach ($Roster_old[$date_unix] as $roster_row_object) {
-                    $List_of_employees_in_Roster_old[] = $roster_row_object->employee_id;
+                    $List_of_employees_in_Roster_old[] = $roster_row_object->employee_key;
                 }
                 foreach ($Roster[$date_unix] as $roster_row_object) {
-                    $List_of_employees_in_Roster[] = $roster_row_object->employee_id;
+                    $List_of_employees_in_Roster[] = $roster_row_object->employee_key;
                 }
-                $Inserted_roster_employee_id_list[$date_unix] = array_diff($List_of_employees_in_Roster, $List_of_employees_in_Roster_old);
+                $Inserted_roster_employee_key_list[$date_unix] = array_diff($List_of_employees_in_Roster, $List_of_employees_in_Roster_old);
             }
         }
-        return $Inserted_roster_employee_id_list;
+        return $Inserted_roster_employee_key_list;
     }
 
     public static function get_inserted_principle_roster_item_list($Principle_roster_new) {
@@ -690,18 +692,17 @@ abstract class user_input {
              * Remove deleted data rows:
              * TODO: Find the changed or the deleted rows:
              */
-            $Changed_roster_employee_id_list = user_input::get_changed_roster_employee_id_list($Roster, $Roster_old);
-            $Deleted_roster_employee_id_list = user_input::get_deleted_roster_employee_id_list($Roster, $Roster_old);
-            $Inserted_roster_employee_id_list = user_input::get_inserted_roster_employee_id_list($Roster, $Roster_old);
+            $Changed_roster_employee_key_list = user_input::get_changed_roster_employee_key_list($Roster, $Roster_old);
+            $Deleted_roster_employee_key_list = user_input::get_deleted_roster_employee_key_list($Roster, $Roster_old);
+            $Inserted_roster_employee_key_list = user_input::get_inserted_roster_employee_key_list($Roster, $Roster_old);
             database_wrapper::instance()->beginTransaction();
-            user_input::remove_changed_entries_from_database($branch_id, $Deleted_roster_employee_id_list);
-            user_input::remove_changed_entries_from_database($branch_id, $Changed_roster_employee_id_list);
-            user_input::insert_changed_roster_into_database($Roster, $Changed_roster_employee_id_list);
-            user_input::insert_changed_roster_into_database($Roster, $Inserted_roster_employee_id_list);
+            user_input::remove_changed_entries_from_database($branch_id, $Deleted_roster_employee_key_list);
+            user_input::remove_changed_entries_from_database($branch_id, $Changed_roster_employee_key_list);
+            user_input::insert_changed_roster_into_database($Roster, $Changed_roster_employee_key_list);
+            user_input::insert_changed_roster_into_database($Roster, $Inserted_roster_employee_key_list);
             database_wrapper::instance()->commit();
-            $user_dialog_email = new user_dialog_email();
-            $user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_id_list, $Changed_roster_employee_id_list, $Deleted_roster_employee_id_list);
+            //$user_dialog_email = new user_dialog_email();
+            //$user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_key_list, $Changed_roster_employee_key_list, $Deleted_roster_employee_key_list);
         }
     }
-
 }

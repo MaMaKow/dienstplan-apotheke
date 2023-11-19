@@ -18,16 +18,16 @@
 require '../../../default.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
 
-function clean_up_after_password_change($employee_id) {
-    database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `employee_id` = :employee_id", array('employee_id' => $employee_id));
+function clean_up_after_password_change($user_key) {
+    database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `user_key` = :user_key", array('user_key' => $user_key));
 }
 
-function lost_password_token_is_valid($employee_id, $token) {
+function lost_password_token_is_valid($user_key, $token) {
     $user_dialog = new user_dialog();
-    $sql_query = "SELECT `employee_id` FROM `users_lost_password_token` WHERE `employee_id` = :employee_id and `token` = UNHEX(:token)";
-    $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
+    $sql_query = "SELECT `user_key` FROM `users_lost_password_token` WHERE `user_key` = :user_key and `token` = UNHEX(:token)";
+    $result = database_wrapper::instance()->run($sql_query, array('user_key' => $user_key, 'token' => $token));
     $row = $result->fetch(PDO::FETCH_OBJ);
-    if (!empty($row->employee_id) and $employee_id == $row->employee_id) {
+    if (!empty($row->user_key) and $user_key == $row->user_key) {
         return TRUE; //The form is shown
     } else {
         $user_dialog->add_message(gettext('Invalid token'), E_USER_ERROR);
@@ -36,19 +36,19 @@ function lost_password_token_is_valid($employee_id, $token) {
     }
 }
 
-function build_lost_password_form($employee_id, $token) {
+function build_lost_password_form($user_key, $token) {
     $user_dialog = new user_dialog();
     global $config;
-    $user = new user($employee_id);
+    $user = new user($user_key);
 
-    if (lost_password_token_is_valid($employee_id, $token)) {
+    if (lost_password_token_is_valid($user_key, $token)) {
         ?>
         <div class=centered_form_div>
             <H1><?= $config['application_name'] ?> </H1>
             <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
                 <p><strong><?= $user->user_name ?></strong></p>
                 <p><?= gettext('You can change your password here. Please enter your new password twice below.') ?></p>
-                <input type='hidden' name='employee_id' value='<?= $employee_id ?>'>
+                <input type='hidden' name='user_key' value='<?= $user_key ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>
                 <input type="password" size="40" name="password" required placeholder="Passwort" minlength="8"><br>
                 <input type="password" size="40" maxlength="250" name="password2" required placeholder="Passwort wiederholen" title="Passwort wiederholen"><br><br>
@@ -62,19 +62,19 @@ function build_lost_password_form($employee_id, $token) {
     } //End of if($show_formular)
 }
 
-if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_id')) {
-    $employee_id = filter_input(INPUT_GET, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-    $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
+if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'user_key')) {
+    $user_key = filter_input(INPUT_GET, 'user_key', FILTER_SANITIZE_NUMBER_INT);
+    $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     /*
      * Remove expired tokens:
      */
     database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
-    build_lost_password_form($employee_id, $token);
-} elseif (filter_has_var(INPUT_POST, 'employee_id')) {
+    build_lost_password_form($user_key, $token);
+} elseif (filter_has_var(INPUT_POST, 'user_key')) {
     $error = FALSE;
-    $employee_id = filter_input(INPUT_POST, 'employee_id', FILTER_SANITIZE_NUMBER_INT);
-    $token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING);
+    $user_key = filter_input(INPUT_POST, 'user_key', FILTER_SANITIZE_NUMBER_INT);
+    $token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
 
@@ -91,22 +91,22 @@ if (filter_has_var(INPUT_GET, 'token') and filter_has_var(INPUT_GET, 'employee_i
      * No error, we can update the password in the database.
      * TODO: Check if the password is secure!
      */
-    if (!$error and lost_password_token_is_valid($employee_id, $token)) {
+    if (!$error and lost_password_token_is_valid($user_key, $token)) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
         /*
          * TODO: Move this into the user class!
          */
-        $sql_query = "UPDATE users SET password = :password WHERE `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'password' => $password_hash));
+        $sql_query = "UPDATE users SET password = :password WHERE `primary_key` = :primary_key";
+        $result = database_wrapper::instance()->run($sql_query, array('primary_key' => $user_key, 'password' => $password_hash));
 
         if ($result) {
-            clean_up_after_password_change($employee_id);
+            clean_up_after_password_change($user_key);
             echo gettext('Your password has successfully been changed.'), " <a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "/src/php/login.php'>" . gettext("Login") . "</a>";
         } else {
             error_log(gettext('There was an error while saving the data.') . print_r($statement->errorInfo(), TRUE));
             $user_dialog->add_message(gettext('There was an error while saving the data.'));
             $user_dialog->add_message(gettext('Please see the error log for more details!'));
-            build_lost_password_form($employee_id, $token);
+            build_lost_password_form($user_key, $token);
         }
     }
 } else {

@@ -21,11 +21,14 @@ package Selenium.overtimepages;
 import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.Overtime;
+import Selenium.driver.Wrapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -69,9 +72,16 @@ public class OvertimeEmployeePage {
     public String getUserNameText() {
         final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
         WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-
-        return driver.findElement(userNameSpanBy).getText();
+        WebElement userNameSpanElement;
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
+            userNameSpanElement = driver.findElement(userNameSpanBy);
+        } catch (NoSuchElementException noSuchElementException) {
+            wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
+            userNameSpanElement = driver.findElement(userNameSpanBy);
+        }
+        String userNameString = userNameSpanElement.getText();
+        return userNameString;
     }
 
     public OvertimeEmployeePage selectYear(int year) {
@@ -81,10 +91,10 @@ public class OvertimeEmployeePage {
         return new OvertimeEmployeePage(driver);
     }
 
-    public OvertimeEmployeePage selectEmployee(int employeeId) {
+    public OvertimeEmployeePage selectEmployee(int employeeKey) {
         WebElement selectEmployeeElement = driver.findElement(employeeFormSelectBy);
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
-        selectEmployeeSelect.selectByValue(String.valueOf(employeeId));
+        selectEmployeeSelect.selectByValue(String.valueOf(employeeKey));
         return new OvertimeEmployeePage(driver);
     }
 
@@ -104,7 +114,7 @@ public class OvertimeEmployeePage {
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
-            if (dateElement.getText().equals(localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR))) {
+            if (dateElement.getText().equals(localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR))) {
                 return overtimeRowElement;
             }
         }
@@ -132,15 +142,18 @@ public class OvertimeEmployeePage {
         return addNewOvertime(localDate, hours, reason);
     }
 
+    public OvertimeEmployeePage addNewOvertimeForEmployee(int employeeKey, LocalDate localDate, float hours, String reason) {
+        this.selectEmployee(employeeKey);
+        return addNewOvertime(localDate, hours, reason);
+    }
+
     public OvertimeEmployeePage addNewOvertime(LocalDate localDate, float hours, String reason) {
         /**
          * date:
          */
-        //String dateString = simpleDateFormat.format(calendar.getTime());
-        String dateString = localDate.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        //String dateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         WebElement dateInputElement = driver.findElement(dateInputBy);
-        dateInputElement.clear();
-        dateInputElement.sendKeys(dateString);
+        Wrapper.fillDateInput(dateInputElement, localDate);
         /**
          * hours:
          */
@@ -169,7 +182,13 @@ public class OvertimeEmployeePage {
             System.err.println(exception.getLocalizedMessage());
         }
 
-        return new OvertimeEmployeePage(driver);
+        OvertimeEmployeePage newOvertimeEmployeePage;
+        try {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        } catch (StaleElementReferenceException staleElementReferenceException) {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        }
+        return newOvertimeEmployeePage;
 
     }
 
@@ -186,7 +205,13 @@ public class OvertimeEmployeePage {
          *
          */
         driver.switchTo().alert().accept();
-        return new OvertimeEmployeePage(driver);
+        OvertimeEmployeePage newOvertimeEmployeePage;
+        try {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        } catch (StaleElementReferenceException | NoSuchElementException staleElementReferenceException) {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        }
+        return newOvertimeEmployeePage;
     }
 
 }

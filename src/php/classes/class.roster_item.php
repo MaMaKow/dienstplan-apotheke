@@ -28,7 +28,7 @@ class roster_item implements \JsonSerializable {
     public $date_sql;
     public $date_unix;
     public $date_object;
-    public $employee_id;
+    public $employee_key;
     public $branch_id;
     public $comment;
     protected $duty_start_int;
@@ -85,8 +85,8 @@ class roster_item implements \JsonSerializable {
         return $this->date_object;
     }
 
-    public function get_employee_id() {
-        return $this->employee_id;
+    public function get_employee_key() {
+        return $this->employee_key;
     }
 
     public function get_branch_id() {
@@ -157,11 +157,11 @@ class roster_item implements \JsonSerializable {
         return $this->weekday;
     }
 
-    public function __construct(string $date_sql, int $employee_id = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
-        $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
+    public function __construct(string $date_sql, int $employee_key = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
+        $this->date_sql = $this->format_time_string_correct($date_sql, 'Y-m-d');
         $this->date_object = new DateTime($date_sql);
         $this->date_unix = $this->date_object->getTimestamp();
-        $this->employee_id = $employee_id;
+        $this->employee_key = $employee_key;
         $this->branch_id = (int) $branch_id;
         $this->duty_start_sql = $this->format_time_string_correct($duty_start);
         $this->duty_start_int = $this->convert_time_to_seconds($duty_start);
@@ -197,15 +197,17 @@ class roster_item implements \JsonSerializable {
         $this->working_hours = round($this->working_seconds / 3600, 2);
     }
 
-    public static function format_time_string_correct(string $time_string = NULL, string $format = '%H:%M') {
-        /*
-         * TODO: This could be part of a namespaced DateTime class.
-         */
-        $time_int = strtotime($time_string);
-        if (FALSE === $time_int) {
-            return $time_string;
+    public static function format_time_string_correct(string $time_string = null, string $format = 'H:i'): ?string {
+        if (null === $time_string || '' === $time_string) {
+            return null;
         }
-        return strftime($format, $time_int);
+
+        try {
+            $dateTime = new DateTime($time_string);
+            return $dateTime->format($format);
+        } catch (Exception $e) {
+            return $time_string; // Return the original string if parsing fails.
+        }
     }
 
     /*
@@ -253,20 +255,21 @@ class roster_item implements \JsonSerializable {
 
     public function check_roster_item_sequence() {
         $user_dialog = new user_dialog();
+        $workforce = new workforce();
         if ($this->break_end_int > $this->duty_end_int) {
-            $error_message = sprintf(gettext('The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if (!empty($this->break_start_int) and $this->break_start_int < $this->duty_start_int) {
-            $error_message = sprintf(gettext('The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if ($this->break_end_int < $this->break_start_int) {
-            $error_message = sprintf(gettext('The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if ($this->duty_end_int < $this->duty_start_int) {
-            $error_message = sprintf(gettext('The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $this->employee_id, $this->duty_start_sql);
+            $error_message = sprintf(gettext('The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
     }
@@ -280,7 +283,9 @@ class roster_item implements \JsonSerializable {
         $message .= gettext('Date');
         $message .= ":";
         $message .= PHP_EOL;
-        $message .= strftime('%x', $this->date_unix) . PHP_EOL;
+        $dateObject = new DateTime('@' . $this->date_unix);
+        $dateString = $dateObject->format("d.m.Y");
+        $message .= $dateString . PHP_EOL;
         $message .= $context_string . PHP_EOL;
         $message .= gettext('You work at the following times:') . PHP_EOL;
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
@@ -291,7 +296,7 @@ class roster_item implements \JsonSerializable {
         $message .= PHP_EOL;
         $message .= sprintf(gettext('From %1$s to %2$s'), $this->duty_start_sql, $this->duty_end_sql);
         $message .= PHP_EOL;
-        if (!empty($this->break_start_sql) and!empty($this->break_end_sql)) {
+        if (!empty($this->break_start_sql) and !empty($this->break_end_sql)) {
             $message .= gettext('Start and end of lunch break');
             $message .= ":";
             $message .= PHP_EOL;
@@ -306,8 +311,7 @@ class roster_item implements \JsonSerializable {
         return $message;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return get_object_vars($this);
     }
-
 }

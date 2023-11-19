@@ -33,6 +33,31 @@ input[type="time"]:hover {
     border: 3px dotted #BDE682;
 }
 
+div.centered_form_div {
+    text-align: center;
+    padding: 10px;
+    border: 3px solid #73AC22;
+    max-width: 465px;
+    margin: auto;
+}
+
+div.centered_form_div form input {
+    margin-bottom: 1em;
+}
+
+div.centered_form_div form input[type="text"], input[type="password"], input[type="email"] {
+    /**
+     * we exclude input[type="number"]
+     */
+    width: 200px;
+}
+
+div.centered_form_div form fieldset {
+    text-align: left;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
 input[type=number] {
     /*
      * We are dealing with numbers only up to 60 in our input boxes.

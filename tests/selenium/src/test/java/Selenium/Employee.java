@@ -18,21 +18,51 @@
  */
 package Selenium;
 
+import Selenium.driver.Wrapper;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
+ * The Employee class represents an individual employee's information and attributes.
+ * It provides constructors and methods to create, access, and manage employee data.
+ * Employees' personal information, employment details, and branch affiliations are stored within instances of this class.
+ *
+ * Attributes:
+ * - employeeKey: Unique identifier for the employee.
+ * - employeeLastName: Last name of the employee.
+ * - employeeFirstName: First name of the employee.
+ * - employeeProfession: Job profession of the employee.
+ * - employeeWorkingHours: Weekly working hours of the employee.
+ * - employeeLunchBreakMinutes: Duration of the employee's lunch break in minutes.
+ * - employeeHolidays: Number of holidays allocated to the employee.
+ * - employeeBranchString: Name of the branch where the employee is assigned.
+ * - employeeBranchId: Identifier of the branch where the employee is assigned.
+ * - employeeAbilitiesGoodsReceipt: Indicates whether the employee can handle goods receipt tasks.
+ * - employeeAbilitiesCompounding: Indicates whether the employee can perform compounding tasks.
+ * - employeeStartOfEmployment: Start date of the employee's employment.
+ * - employeeEndOfEmployment: End date of the employee's employment (if applicable).
+ *
+ * Constructors:
+ * - Employee(employeeKey, employeeLastName, employeeFirstName, employeeProfession, employeeWorkingHours, employeeLunchBreakMinutes, employeeHolidays, employeeBranch, employeeAbilitiesGoodsReceipt, employeeAbilitiesCompounding, employeeStartOfEmployment, employeeEndOfEmployment):
+ * Initializes attributes based on provided parameters.
+ *
+ * - Employee(employeeHashMap):
+ * Initializes attributes based on values provided in a HashMap containing employee details.
+ *
+ * Getter Methods:
+ * - Various getter methods are provided to access individual attributes of an employee object.
+ *
+ * Note:
+ * - Date parsing is used to convert date strings to LocalDate objects for employment start and end dates.
+ * - Branch information is fetched from a NetworkOfBranchOffices using either branch name or branch ID.
+ * - Various data types are parsed from strings using appropriate conversion methods.
  *
  * @author Mandelkow
+ * @since 2021-11-10
  */
 public class Employee {
 
-    public static final DateTimeFormatter DATE_TIME_FORMATTER_DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY);
-    public static final DateTimeFormatter DATE_TIME_FORMATTER_YEAR_MONTH_DAY = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY);
-
-    private int employeeId;
+    private int employeeKey;
     private String employeeLastName;
     private String employeeFirstName;
     private String employeeProfession;
@@ -46,7 +76,7 @@ public class Employee {
     private LocalDate employeeStartOfEmployment;
     private LocalDate employeeEndOfEmployment;
 
-    public Employee(String employeeId,
+    public Employee(String employeeKey,
             String employeeLastName,
             String employeeFirstName,
             String employeeProfession,
@@ -59,7 +89,7 @@ public class Employee {
             String employeeStartOfEmployment,
             String employeeEndOfEmployment
     ) {
-        this.employeeId = Integer.valueOf(employeeId);
+        this.employeeKey = Integer.valueOf(employeeKey);
         this.employeeLastName = employeeLastName;
         this.employeeFirstName = employeeFirstName;
         this.employeeProfession = employeeProfession;
@@ -77,12 +107,12 @@ public class Employee {
          */
         this.employeeStartOfEmployment = null;
         this.employeeEndOfEmployment = null;
-        this.employeeStartOfEmployment = LocalDate.parse(employeeStartOfEmployment, DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
-        this.employeeEndOfEmployment = LocalDate.parse(employeeEndOfEmployment, DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        this.employeeStartOfEmployment = LocalDate.parse(employeeStartOfEmployment, Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        this.employeeEndOfEmployment = LocalDate.parse(employeeEndOfEmployment, Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
     }
 
-    public int getEmployeeId() {
-        return employeeId;
+    public int getEmployeeKey() {
+        return employeeKey;
     }
 
     public String getLastName() {
@@ -134,7 +164,7 @@ public class Employee {
     }
 
     public Employee(HashMap<String, String> employeeHashMap) {
-        this.employeeId = Integer.valueOf(employeeHashMap.get("employeeId"));
+        this.employeeKey = Integer.valueOf(employeeHashMap.get("employeeKey"));
         this.employeeLastName = employeeHashMap.get("employeeLastName");
         this.employeeFirstName = employeeHashMap.get("employeeFirstName");
         this.employeeProfession = employeeHashMap.get("employeeProfession");
@@ -158,10 +188,10 @@ public class Employee {
         this.employeeStartOfEmployment = null;
         this.employeeEndOfEmployment = null;
         if (!"".equals(employeeHashMap.get("employeeStartOfEmployment"))) {
-            this.employeeStartOfEmployment = LocalDate.parse(employeeHashMap.get("employeeStartOfEmployment"), DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+            this.employeeStartOfEmployment = LocalDate.parse(employeeHashMap.get("employeeStartOfEmployment"), Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
         }
         if (!"".equals(employeeHashMap.get("employeeEndOfEmployment"))) {
-            this.employeeEndOfEmployment = LocalDate.parse(employeeHashMap.get("employeeEndOfEmployment"), DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+            this.employeeEndOfEmployment = LocalDate.parse(employeeHashMap.get("employeeEndOfEmployment"), Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
         }
 
     }

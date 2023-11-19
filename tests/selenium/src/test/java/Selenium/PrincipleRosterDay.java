@@ -44,19 +44,19 @@ public class PrincipleRosterDay {
         return listOfPrincipleRosterItems.get(rowNumber);
     }
 
-    public PrincipleRosterItem getPrincipleRosterItemByEmployeeId(int employeeId) {
+    public PrincipleRosterItem getPrincipleRosterItemByEmployeeKey(int employeeKey) {
         for (PrincipleRosterItem principleRosterItem : listOfPrincipleRosterItems.values()) {
-            if (principleRosterItem.getEmployeeId() == employeeId) {
+            if (principleRosterItem.getEmployeeKey() == employeeKey) {
                 return principleRosterItem;
             }
         }
         return null;
     }
 
-    public PrincipleRosterDay getPrincipleRosterDayByEmployeeId(int employeeId) {
+    public PrincipleRosterDay getPrincipleRosterDayByEmployeeKey(int employeeKey) {
         PrincipleRosterDay principleEmployeeDay = new PrincipleRosterDay();
         listOfPrincipleRosterItems.values().stream()
-                .filter(principleRosterItem -> (principleRosterItem.getEmployeeId() == employeeId))
+                .filter(principleRosterItem -> (principleRosterItem.getEmployeeKey() == employeeKey))
                 .forEachOrdered(principleRosterItem -> {
                     principleEmployeeDay.put(principleRosterItem);
                 });

@@ -76,15 +76,15 @@ public class EmployeePage {
         return new EmployeePage(driver);
     }
 
-    public void selectEmployee(int employeeId) {
+    public void selectEmployee(int employeeKey) {
         Select employeeFormSelect = new Select(driver.findElement(employeeFormSelectBy));
-        employeeFormSelect.selectByValue(String.valueOf(employeeId));
+        employeeFormSelect.selectByValue(String.valueOf(employeeKey));
     }
 
-    public int getEmployeeId() {
+    public int getEmployeeKey() {
         Select employeeFormSelect = new Select(driver.findElement(employeeFormSelectBy));
-        int employeeId = Integer.parseInt(employeeFormSelect.getFirstSelectedOption().getAttribute("value"));
-        return employeeId;
+        int employeeKey = Integer.parseInt(employeeFormSelect.getFirstSelectedOption().getAttribute("value"));
+        return employeeKey;
     }
 
     public String getEmployeeName() {
@@ -109,8 +109,8 @@ public class EmployeePage {
     }
 
     private By getRosterItemWeekdayXpathBy(int column) {
-        By rosterItemEmployeeIdXpathBy = By.xpath("/html/body/div/table/thead/tr/td[" + column + "]");
-        return rosterItemEmployeeIdXpathBy;
+        By rosterItemEmployeeKeyXpathBy = By.xpath("/html/body/div/table/thead/tr/td[" + column + "]");
+        return rosterItemEmployeeKeyXpathBy;
     }
 
     private By getRosterItemDutyStartXpathBy(int alternationId, int column, Integer row) {
@@ -145,7 +145,7 @@ public class EmployeePage {
 
     public RosterItem getRosterItem(int alternationId, int column, int row) throws ParseException {
 
-        int employeeId = getEmployeeId();
+        int employeeKey = getEmployeeKey();
         WebElement rosterItemColumn = driver.findElement(getRosterItemColumnXpathBy(alternationId, column));
         String dateString = rosterItemColumn.getAttribute("data-date_sql");
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(alternationId, column, row)).getAttribute("value");
@@ -157,14 +157,14 @@ public class EmployeePage {
         int branchId = Integer.valueOf(branchNameSelect.getFirstSelectedOption().getAttribute("value"));
         String comment = null; //TODO: add comment
         LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
-        RosterItem rosterItem = new Selenium.RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new Selenium.RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 
     public HashSet<RosterItem> getSetOfRosterItems(int alternationId, DayOfWeek dayOfWeek) {
         HashSet<RosterItem> setOfRosterItems = new HashSet();
         dayOfWeek.getValue();
-        int employeeId = getEmployeeId();
+        int employeeKey = getEmployeeKey();
         WebElement rosterItemColumn = driver.findElement(getRosterItemColumnXpathBy(alternationId, dayOfWeek.getValue()));
         String dateString = rosterItemColumn.getAttribute("data-date_sql");
 
@@ -186,7 +186,7 @@ public class EmployeePage {
             //LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
             LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
             String comment = null; //TODO: add comment
-            RosterItem rosterItem = new Selenium.RosterItem(employeeId, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+            RosterItem rosterItem = new Selenium.RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
             setOfRosterItems.add(rosterItem);
         });
         return setOfRosterItems;

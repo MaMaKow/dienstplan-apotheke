@@ -20,12 +20,9 @@ package Selenium.administrationpages;
 
 import Selenium.Employee;
 import Selenium.MenuFragment;
-import java.text.SimpleDateFormat;
+import Selenium.driver.Wrapper;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -41,32 +38,38 @@ public class WorkforceManagementPage {
 
     protected static WebDriver driver;
 
-    By user_name_spanBy = By.id("MenuListItemApplicationUsername");
-    By selectEmployeeBy = By.xpath("/html/body/div[2]/form[@id=\"select_employee\"]/select[@name=\"employee_id\"]");
+    private final By user_name_spanBy = By.id("MenuListItemApplicationUsername");
+    private final By selectEmployeeBy = By.xpath("/html/body/div[2]/form[@id=\"select_employee\"]/select[@name=\"employee_key\"]");
+
+    private final By employeeLastNameInputBy = By.xpath("//*[@id=\"last_name\"]");
+    private final By employeeFirstNameInputBy = By.xpath("//*[@id=\"first_name\"]");
+    private final By employeeWeeklyWorkingHoursBy = By.xpath("//*[@id=\"working_week_hours\"]");
+    private final By employeeLunchBreakMinutesBy = By.xpath("//*[@id=\"lunch_break_minutes\"]");
+    private final By employeeHolidaysBy = By.xpath("//*[@id=\"holidays\"]");
+    private final By employeeAbilitiesGoodsReceiptBy = By.xpath("//*[@id=\"goods_receipt\"]");
+    private final By employeeAbilitiesCompoundingBy = By.xpath("//*[@id=\"compounding\"]");
+    private final By employeeKeyInputBy = By.xpath("//*[@id=\"employee_key\"]");
 
     public WorkforceManagementPage(WebDriver driver) {
-
         this.driver = driver;
-
         if (getUserNameText().isEmpty()) {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToManageEmployee);
-
     }
 
-    public WorkforceManagementPage selectEmployee(int employeeId) {
+    public WorkforceManagementPage selectEmployee(Employee employee) {
         WebElement selectEmployeeElement = driver.findElement(selectEmployeeBy);
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
-        selectEmployeeSelect.selectByValue(String.valueOf(employeeId));
+        selectEmployeeSelect.selectByVisibleText(employee.getFirstName() + " " + employee.getLastName());
         return new WorkforceManagementPage(driver);
     }
 
-    public void selectEmployee(String employeeIdValueString) {
+    public void selectEmployee(String employeeKeyValueString) {
         WebElement selectEmployeeElement = driver.findElement(selectEmployeeBy);
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
-        selectEmployeeSelect.selectByValue(employeeIdValueString);
+        selectEmployeeSelect.selectByValue(employeeKeyValueString);
         /**
          * <p lang=de>Hier darf keine neue Page returned werden. Es ist wichtig,
          * dass die Seite nicht nach dem select ein zweites Mal neu geladen
@@ -76,23 +79,14 @@ public class WorkforceManagementPage {
 
     public WorkforceManagementPage setEmployeeData(Employee employeeObject) {
         /**
-         * employeeId:
-         */
-        By employeeIdInputBy = By.xpath("//*[@id=\"employee_id\"]");
-        WebElement employeeIdInputElement = driver.findElement(employeeIdInputBy);
-        employeeIdInputElement.clear();
-        employeeIdInputElement.sendKeys(String.valueOf(employeeObject.getEmployeeId()));
-        /**
          * last name:
          */
-        By employeeLastNameInputBy = By.xpath("//*[@id=\"last_name\"]");
         WebElement employeeLastNameInputElement = driver.findElement(employeeLastNameInputBy);
         employeeLastNameInputElement.clear();
         employeeLastNameInputElement.sendKeys(employeeObject.getLastName());
         /**
          * first name:
          */
-        By employeeFirstNameInputBy = By.xpath("//*[@id=\"first_name\"]");
         WebElement employeeFirstNameInputElement = driver.findElement(employeeFirstNameInputBy);
         employeeFirstNameInputElement.clear();
         employeeFirstNameInputElement.sendKeys(employeeObject.getFirstName());
@@ -105,17 +99,14 @@ public class WorkforceManagementPage {
         /**
          * hours:
          */
-        By employeeWeeklyWorkingHoursBy = By.xpath("//*[@id=\"working_hours\"]");
         WebElement employeeWeeklyWorkingHoursElement = driver.findElement(employeeWeeklyWorkingHoursBy);
         employeeWeeklyWorkingHoursElement.clear();
         employeeWeeklyWorkingHoursElement.sendKeys(String.valueOf(employeeObject.getWorkingHours()));
 
-        By employeeLunchBreakMinutesBy = By.xpath("//*[@id=\"lunch_break_minutes\"]");
         WebElement employeeLunchBreakMinutesElement = driver.findElement(employeeLunchBreakMinutesBy);
         employeeLunchBreakMinutesElement.clear();
         employeeLunchBreakMinutesElement.sendKeys(String.valueOf(employeeObject.getLunchBreakMinutes()));
 
-        By employeeHolidaysBy = By.xpath("//*[@id=\"holidays\"]");
         WebElement employeeHolidaysElement = driver.findElement(employeeHolidaysBy);
         employeeHolidaysElement.clear();
         employeeHolidaysElement.sendKeys(String.valueOf(employeeObject.getHolidays()));
@@ -130,7 +121,6 @@ public class WorkforceManagementPage {
         /**
          * abilities:
          */
-        By employeeAbilitiesGoodsReceiptBy = By.xpath("//*[@id=\"goods_receipt\"]");
         WebElement employeeAbilitiesGoodsReceiptElement = driver.findElement(employeeAbilitiesGoodsReceiptBy);
         if (null == employeeAbilitiesGoodsReceiptElement.getAttribute("checked")) {
             if (true == employeeObject.getAbilitiesGoodsReceipt()) {
@@ -140,10 +130,8 @@ public class WorkforceManagementPage {
             if (false == employeeObject.getAbilitiesGoodsReceipt()) {
                 employeeAbilitiesGoodsReceiptElement.click();
             }
-
         }
 
-        By employeeAbilitiesCompoundingBy = By.xpath("//*[@id=\"compounding\"]");
         WebElement employeeAbilitiesCompoundingElement = driver.findElement(employeeAbilitiesCompoundingBy);
         if (null == employeeAbilitiesCompoundingElement.getAttribute("checked")) {
             if (true == employeeObject.getAbilitiesCompounding()) {
@@ -159,24 +147,16 @@ public class WorkforceManagementPage {
          */
         By employeeStartOfEmploymentBy = By.xpath("//*[@id=\"start_of_employment\"]");
         WebElement employeeStartOfEmploymentElement = driver.findElement(employeeStartOfEmploymentBy);
-        employeeStartOfEmploymentElement.clear();
-        LocalDate dateThing = employeeObject.getStartOfEmployment();
-        String dateStartString = "";
-        if (null != dateThing) {
-            dateStartString = dateThing.format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        LocalDate dateStartThing = employeeObject.getStartOfEmployment();
+        if (null != dateStartThing) {
+            Wrapper.fillDateInput(employeeStartOfEmploymentElement, dateStartThing);
         }
-        employeeStartOfEmploymentElement.sendKeys(dateStartString);
-
         By employeeEndOfEmploymentBy = By.xpath("//*[@id=\"end_of_employment\"]");
         WebElement employeeEndOfEmploymentElement = driver.findElement(employeeEndOfEmploymentBy);
-        employeeEndOfEmploymentElement.clear();
         LocalDate dateEndThing = employeeObject.getEndOfEmployment();
-        String dateEndString = "";
         if (null != dateEndThing) {
-            dateEndString = employeeObject.getEndOfEmployment().format(Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+            Wrapper.fillDateInput(employeeEndOfEmploymentElement, dateEndThing);
         }
-        employeeEndOfEmploymentElement.sendKeys(dateEndString);
-
         /**
          * Finally submit
          */
@@ -184,29 +164,37 @@ public class WorkforceManagementPage {
     }
 
     public WorkforceManagementPage createEmployee(Employee employeeObject) {
+        try {
+            selectEmployee(employeeObject);
+            /**
+             * If this employee exists, it will not be created again. Instead we
+             * will adapt the values:
+             */
+            return setEmployeeData(employeeObject);
+        } catch (Exception e) {
+            /**
+             * The employee does not exist yet. It will be created.
+             */
+        }
         selectEmployee("");//Select the empty new employee
         return setEmployeeData(employeeObject);
-        //return new WorkforceManagementPage(driver);
     }
 
     public Employee getEmployeeObject() {
         HashMap<String, String> employeeData = new HashMap<>();
         /**
-         * employeeId:
+         * employeeKey:
          */
-        By employeeIdInputBy = By.xpath("//*[@id=\"employee_id\"]");
-        WebElement employeeIdInputElement = driver.findElement(employeeIdInputBy);
-        employeeData.put("employeeId", employeeIdInputElement.getAttribute("value"));
+        WebElement employeeKeyInputElement = driver.findElement(employeeKeyInputBy);
+        employeeData.put("employeeKey", employeeKeyInputElement.getAttribute("value"));
         /**
          * last name:
          */
-        By employeeLastNameInputBy = By.xpath("//*[@id=\"last_name\"]");
         WebElement employeeLastNameInputElement = driver.findElement(employeeLastNameInputBy);
         employeeData.put("employeeLastName", employeeLastNameInputElement.getAttribute("value"));
         /**
          * first name:
          */
-        By employeeFirstNameInputBy = By.xpath("//*[@id=\"first_name\"]");
         WebElement employeeFirstNameInputElement = driver.findElement(employeeFirstNameInputBy);
         employeeData.put("employeeFirstName", employeeFirstNameInputElement.getAttribute("value"));
         /**
@@ -218,15 +206,12 @@ public class WorkforceManagementPage {
         /**
          * hours:
          */
-        By employeeWeeklyWorkingHoursBy = By.xpath("//*[@id=\"working_hours\"]");
         WebElement employeeWeeklyWorkingHoursElement = driver.findElement(employeeWeeklyWorkingHoursBy);
         employeeData.put("employeeWorkingHours", employeeWeeklyWorkingHoursElement.getAttribute("value"));
 
-        By employeeLunchBreakMinutesBy = By.xpath("//*[@id=\"lunch_break_minutes\"]");
         WebElement employeeLunchBreakMinutesElement = driver.findElement(employeeLunchBreakMinutesBy);
         employeeData.put("employeeLunchBreakMinutes", employeeLunchBreakMinutesElement.getAttribute("value"));
 
-        By employeeHolidaysBy = By.xpath("//*[@id=\"holidays\"]");
         WebElement employeeHolidaysElement = driver.findElement(employeeHolidaysBy);
         employeeData.put("employeeHolidays", employeeHolidaysElement.getAttribute("value"));
 
@@ -243,11 +228,9 @@ public class WorkforceManagementPage {
         /**
          * abilities:
          */
-        By employeeAbilitiesGoodsReceiptBy = By.xpath("//*[@id=\"goods_receipt\"]");
         WebElement employeeAbilitiesGoodsReceiptElement = driver.findElement(employeeAbilitiesGoodsReceiptBy);
         employeeData.put("employeeAbilitiesGoodsReceipt", employeeAbilitiesGoodsReceiptElement.getAttribute("checked"));
 
-        By employeeAbilitiesCompoundingBy = By.xpath("//*[@id=\"compounding\"]");
         WebElement employeeAbilitiesCompoundingElement = driver.findElement(employeeAbilitiesCompoundingBy);
         employeeData.put("employeeAbilitiesCompounding", employeeAbilitiesCompoundingElement.getAttribute("checked"));
 
@@ -272,7 +255,6 @@ public class WorkforceManagementPage {
         By submitButtonBy = By.xpath("//*[@id=\"save_new\"]");
         WebElement submitButtonElement = driver.findElement(submitButtonBy);
         submitButtonElement.click();
-
         return new WorkforceManagementPage(driver);
     }
 

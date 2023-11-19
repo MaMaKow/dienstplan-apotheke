@@ -27,7 +27,7 @@ $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 create_cookie("mandant", $branch_id, 30);
 
-$date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_STRING, date('Y-m-d'));
+$date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y-m-d'));
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 $date_object = new DateTime($date_sql);
@@ -79,7 +79,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
         $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
         $user_dialog->add_message($message);
         $Roster = $Principle_roster;
-    } elseif (6 == strftime('%u', $date_unix)) {
+    } elseif (6 == $date_object->format("N")) {
         try {
             $saturday_rotation = new saturday_rotation($branch_id);
             $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_object);
@@ -96,7 +96,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
 /*
  * Examine roster for errors and irregularities:
  */
-if ("7" !== date('N', $date_unix) and!holidays::is_holiday($date_unix)) {
+if ("7" !== date('N', $date_unix) and !holidays::is_holiday($date_unix)) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     $examine_roster->check_for_overlap($date_sql, $List_of_branch_objects, $workforce);
     $examine_roster->check_for_sufficient_employee_count();
@@ -153,24 +153,31 @@ $html_text .= "<tr>\n";
 $html_text .= "<td>";
 $html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
 $html_text .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
-$html_text .= strftime('%d.%m. ', $date_unix);
+$html_text .= $date_object->format("d.m.");
 /*
  * Weekday:
  */
-$html_text .= strftime('%A ', $date_unix);
+$configuration = new \PDR\Application\configuration();
+$locale = $configuration->getLanguage();
+$weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+$weekdayFormatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
+
+$html_text .= " ";
+$html_text .= $weekdayFormatter->format($date_unix);
 if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
 $html_text .= "<br>";
-$html_text .= ""
-        . strftime(gettext("calendar week")
-                . ' %V', $date_unix)
+$dateString = $date_object->format('W');
+$html_text .= gettext("calendar week")
+        . '&nbsp;'
+        . $dateString
         . '&nbsp;'
         . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_object));
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
-    if (isset($workforce->List_of_employees[$having_emergency_service['employee_id']])) {
-        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $workforce->List_of_employees[$having_emergency_service['employee_id']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+    if (isset($workforce->List_of_employees[$having_emergency_service['employee_key']])) {
+        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $workforce->List_of_employees[$having_emergency_service['employee_key']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     } else {
         $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
     }
@@ -209,7 +216,6 @@ $html_text .= "<tr><td></td></tr>\n";
 $html_text .= build_html_roster_views::build_absentees_row($Absentees);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
-
 
 if (!empty($Roster)) {
     if (!isset($examine_roster)) {

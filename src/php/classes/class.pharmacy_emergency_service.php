@@ -33,7 +33,7 @@ abstract class pharmacy_emergency_service {
      * The preparation for emergency services involves all branches. Therefore the function does not primarily discriminate between branches.
      *
      * @param $date_sql string date in the form 'Y-m-d'
-     * @return bool|array FALSE if none of the branches are having emergency service. An array('vk' => employee_id, mandant => branch_id) if one of the branches has emergency service
+     * @return bool|array FALSE if none of the branches are having emergency service. An array('vk' => employee_key, mandant => branch_id) if one of the branches has emergency service
      */
     public static function having_emergency_service($date_sql) {
         $sql_query = "SELECT *
@@ -41,7 +41,7 @@ abstract class pharmacy_emergency_service {
 		WHERE `Datum` = :date";
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $having_emergency_service["employee_id"] = $row->VK;
+            $having_emergency_service["employee_key"] = $row->employee_key;
             $having_emergency_service["branch_id"] = $row->Mandant;
         }
         if (!empty($having_emergency_service)) {
@@ -58,7 +58,7 @@ abstract class pharmacy_emergency_service {
 		WHERE `Datum` >= :date_start AND `Datum` <= :date_end";
         $result = database_wrapper::instance()->run($sql_query, array('date_start' => $date_start_sql, 'date_end' => $date_end_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Emergency_services[$row->Datum]["employee_id"] = $row->VK;
+            $Emergency_services[$row->Datum]["employee_key"] = $row->employee_key;
             $Emergency_services[$row->Datum]["branch_id"] = $row->Mandant;
         }
         return $Emergency_services;

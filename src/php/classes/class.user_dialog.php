@@ -160,7 +160,7 @@ class user_dialog {
             $this->add_message($message, E_USER_NOTICE);
         } else {
             error_log(var_export(error_get_last(), TRUE));
-            $message = gettext("Error while sending the mail. I am sorry.");
+            $message = gettext("An error occured while sending the mail. I am sorry.");
             $this->add_message($message, E_USER_ERROR);
         }
         return $mail_result;
@@ -178,15 +178,15 @@ class user_dialog {
         $paragraph_separator = "\n\n\n\n";
         $message = "";
         $message .= "________ " . gettext('Message') . " ________\n";
-        $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
+        $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('Sender') . " ________\n";
-        $message .= $workforce->List_of_employees[$_SESSION['user_object']->employee_id]->full_name;
+        $message .= $_SESSION['user_object']->get_user_name();
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('File') . " ________\n";
-        $message .= filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_STRING);
+        $message .= filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $message .= $paragraph_separator;
 
         return $message;

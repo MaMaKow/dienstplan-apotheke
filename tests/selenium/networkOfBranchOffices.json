@@ -1,71 +1,71 @@
 [
-  {
-    "branchId": 1,
-    "branchPepId": 1,
-    "branchName": "Hauptapotheke am großen Platz",
-    "branchShortName": "Hauptapotheke",
-    "branchAddress": "Hauptplatz 4\n12345 Berlin",
-    "branchManager": "Zeidler",
-    "openingTimesMap": {
-      "1": [
-        "08:00",
-        "18:00"
-      ],
-      "2": [
-        "08:00",
-        "18:00"
-      ],
-      "3": [
-        "08:00",
-        "18:00"
-      ],
-      "4": [
-        "08:00",
-        "18:00"
-      ],
-      "5": [
-        "08:00",
-        "18:00"
-      ]
+    {
+        "branchId": 1,
+        "branchPepId": 1,
+        "branchName": "Hauptapotheke am großen Platz",
+        "branchShortName": "Hauptapotheke",
+        "branchAddress": "Hauptplatz 4\n12345 Berlin",
+        "branchManager": "Zeidler",
+        "openingTimesMap": {
+            "1": [
+                "08:00",
+                "18:00"
+            ],
+            "2": [
+                "08:00",
+                "18:00"
+            ],
+            "3": [
+                "08:00",
+                "18:00"
+            ],
+            "4": [
+                "08:00",
+                "18:00"
+            ],
+            "5": [
+                "08:00",
+                "18:00"
+            ]
+        }
+    },
+    {
+        "branchId": 2,
+        "branchPepId": 2,
+        "branchName": "Filiale in der Nebenstraße",
+        "branchShortName": "Filiale",
+        "branchAddress": "Nebenstraße 5\n12345 Berlin",
+        "branchManager": "Porsch",
+        "openingTimesMap": {
+            "1": [
+                "08:00",
+                "18:00"
+            ],
+            "2": [
+                "08:00",
+                "18:00"
+            ],
+            "3": [
+                "08:00",
+                "18:00"
+            ],
+            "4": [
+                "08:00",
+                "18:00"
+            ],
+            "5": [
+                "08:00",
+                "18:00"
+            ]
+        }
+    },
+    {
+        "branchId": 99,
+        "branchPepId": 99,
+        "branchName": "Unterwegs im Außendienst",
+        "branchShortName": "Aussendienst",
+        "branchAddress": "Überall\nim Umkreis",
+        "branchManager": "Zeidler",
+        "openingTimesMap": {}
     }
-  },
-  {
-    "branchId": 2,
-    "branchPepId": 2,
-    "branchName": "Filiale in der Nebenstraße",
-    "branchShortName": "Filiale",
-    "branchAddress": "Nebenstraße 5\n12345 Berlin",
-    "branchManager": "Porsch",
-    "openingTimesMap": {
-      "1": [
-        "08:00",
-        "18:00"
-      ],
-      "2": [
-        "08:00",
-        "18:00"
-      ],
-      "3": [
-        "08:00",
-        "18:00"
-      ],
-      "4": [
-        "08:00",
-        "18:00"
-      ],
-      "5": [
-        "08:00",
-        "18:00"
-      ]
-    }
-  },
-  {
-    "branchId": 99,
-    "branchPepId": 99,
-    "branchName": "Unterwegs im Außendienst",
-    "branchShortName": "Außendienst",
-    "branchAddress": "Überall\nim Umkreis",
-    "branchManager": "Zeidler",
-    "openingTimesMap": {}
-  }
 ]

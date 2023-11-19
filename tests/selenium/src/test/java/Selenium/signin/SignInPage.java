@@ -73,12 +73,7 @@ public class SignInPage {
              *
              */
             if (!getUserNameText().isEmpty()) {
-                /*
-
-                throw new IllegalStateException("This is already a logged in state,"
-                        + " current page is: " + driver.getCurrentUrl());
-                 */
-                //System.out.println("We have already been logged in. Nothing to do here.");
+                //We have already been logged in. Nothing to do here.
                 return new HomePage(driver);
             } else {
                 /**

@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS `users` (
-  `employee_id` tinyint(3) unsigned NOT NULL,
+  `primary_key`  int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `employee_key` int(10) unsigned NULL,
   `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -9,8 +10,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `receive_emails_on_changed_roster` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`employee_id`),
+  PRIMARY KEY (`primary_key`),
   UNIQUE KEY `user_name` (`user_name`),
   UNIQUE KEY `email` (`email`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`employee_key`) REFERENCES `employees` (`primary_key`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

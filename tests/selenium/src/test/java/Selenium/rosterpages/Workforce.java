@@ -29,8 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,8 +40,6 @@ public class Workforce {
 
     private HashMap<Integer, Employee> listOfEmployees = new HashMap<>();
 
-    ;
-
     public Workforce() {
         listOfEmployees = readJsonFile();
     }
@@ -52,12 +48,12 @@ public class Workforce {
         return listOfEmployees;
     }
 
-    public Employee getEmployeeById(int employeeId) {
-        return listOfEmployees.get(employeeId);
+    public Employee getEmployeeByKey(int employeeKey) {
+        return listOfEmployees.get(employeeKey);
     }
 
-    public String getEmployeeNameById(int employeeId) {
-        return listOfEmployees.get(employeeId).getLastName();
+    public String getEmployeeNameById(int employeeKey) {
+        return listOfEmployees.get(employeeKey).getLastName();
     }
 
     private final HashMap<Integer, Employee> readJsonFile() {
@@ -69,8 +65,11 @@ public class Workforce {
             // convert JSON string to Employee object
             ArrayList<Employee> employees = new Gson().fromJson(reader, new TypeToken<ArrayList<Employee>>() {
             }.getType());
+            /**
+             * @todo: learn how to use a collector here:
+             */
             employees.forEach(employee -> {
-                readListOfEmployees.put(employee.getEmployeeId(), employee);
+                readListOfEmployees.put(employee.getEmployeeKey(), employee);
             });
         } catch (IOException ex) {
             Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);

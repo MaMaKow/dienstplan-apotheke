@@ -30,20 +30,90 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/collaborative-vacation.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/emergency-service-list.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/saturday-rotation.js" ></SCRIPT>
+        <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/drag-and-drop.js" ></SCRIPT>
+        <?= includeSpecificJSForPage(); ?>
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/style.css" media="all">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/print.css" media="print">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/overtime.css" media="all">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/roster-day-edit.css" media="all">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/principle-roster-employee.css" media="all">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/saturday_list.css" media="all">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/emergency_service.css">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/user_dialog.css">
         <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/form_and_input.css">
-        <LINK rel="stylesheet" type="text/css" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/collaborative-vacation.css" media="all">
+        <LINK rel = "stylesheet" type = "text/css" href = "<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/css/user_dialog.css">
+        <?= includeSpecificCSSForPage(); ?>
     </HEAD>
     <BODY>
         <?php
         $user_dialog = new user_dialog();
-        echo $user_dialog->build_contact_form();
-        $user_dialog->contact_form_send_mail();
+        if ($session->user_is_logged_in()) {
+            echo $user_dialog->build_contact_form();
+            $user_dialog->contact_form_send_mail();
+        }
+
+        /**
+         * Include specific CSS files based on the current page.
+         *
+         * @return string The HTML code to include the specified CSS files.
+         */
+        function includeSpecificCSSForPage(): string {
+            $cssText = '<!-- Electively include specific CSS files: -->' . PHP_EOL;
+            // Initialize the $cssFiles array
+            $cssFiles = array();
+            // Determine the current page's file name
+            $currentFile = basename($_SERVER['SCRIPT_FILENAME']);
+            switch ($currentFile) {
+                case 'overtime-overview.php':
+                    $cssFiles[] = 'overtime.css';
+                    $cssFiles[] = 'printOrientationPortrait.css';
+                    break;
+                case 'remaining-vacation-overview.php':
+                    $cssFiles[] = 'printOrientationPortrait.css';
+                    break;
+                case 'saturday-list.php':
+                    $cssFiles[] = 'saturday_list.css';
+                    $cssFiles[] = 'printOrientationPortrait.css';
+                    break;
+                case 'emergency-service-list.php':
+                    $cssFiles[] = 'emergency_service.css';
+                    $cssFiles[] = 'printOrientationPortrait.css';
+                    break;
+                case 'collaborative-vacation-month.php':
+                    $cssFiles[] = 'collaborative-vacation.css';
+                    break;
+                case 'collaborative-vacation-year.php':
+                    $cssFiles[] = 'collaborative-vacation.css';
+                    break;
+                case 'principle-roster-employee.php':
+                    $cssFiles[] = 'principle-roster-employee.css';
+                    break;
+                case 'roster-day-edit.php':
+                    $cssFiles[] = 'roster-day-edit.css';
+                    $cssFiles[] = 'printOrientationPortrait.css';
+                    break;
+            }
+            foreach ($cssFiles as $cssFile) {
+                $cssText .= '       <LINK rel="stylesheet" type="text/css" href="' . PDR_HTTP_SERVER_APPLICATION_PATH . "src/css/" . $cssFile . '" media="all">' . PHP_EOL;
+            }
+            return $cssText;
+        }
+
+        /**
+         * Include specific JavaScript files based on the current page.
+         *
+         * @return string The HTML code to include the specified JavaScript files.
+         */
+        function includeSpecificJSForPage(): string {
+            $jsText = '<!-- Electively include specific JS files: -->' . PHP_EOL;
+            // Initialize the $jsFiles array
+            $jsFiles = array();
+            // Determine the current page's file name
+            $currentFile = basename($_SERVER['SCRIPT_FILENAME']);
+            switch ($currentFile) {
+                case 'user-management.php':
+                    $jsFiles[] = 'unsaved-changes-prompt.js';
+                    break;
+            }
+
+            // Include JavaScript files
+            foreach ($jsFiles as $jsFile) {
+                $jsText .= '        <script src="' . PDR_HTTP_SERVER_APPLICATION_PATH . "src/js/" . $jsFile . '"></script>' . PHP_EOL;
+            }
+            return $jsText;
+        }
         ?>

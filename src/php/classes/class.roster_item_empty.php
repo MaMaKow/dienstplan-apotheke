@@ -26,7 +26,7 @@ class roster_item_empty extends roster_item {
 
     public $date_sql;
     public $date_unix;
-    public $employee_id;
+    public $employee_key;
     public $branch_id;
     public $comment;
     protected $duty_start_int;
@@ -46,10 +46,9 @@ class roster_item_empty extends roster_item {
     public function __construct(string $date_sql, int $branch_id = NULL) {
 
         $this->empty = TRUE;
-        $this->date_sql = $this->format_time_string_correct($date_sql, '%Y-%m-%d');
+        $this->date_sql = $this->format_time_string_correct($date_sql, 'Y-m-d');
         $this->date_object = new DateTime($date_sql);
         $this->date_unix = $this->date_object->getTimestamp();
         $this->branch_id = $branch_id;
     }
-
 }

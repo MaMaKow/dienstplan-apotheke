@@ -21,8 +21,8 @@ require '../../default.php';
  */
 
 if (filter_has_var(INPUT_POST, 'login')) {
-    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_STRING);
-    $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_STRING);
+    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     $errorMessage = $session->login($user_name, $user_password, TRUE);
 }
@@ -53,7 +53,7 @@ $user_dialog->build_messages();
 </form>
 <p class="unobtrusive"><a href="register.php"><?= gettext("Create new user account") ?></a></p>
 <p class="unobtrusive"><a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>/src/php/pages/lost_password.php"><?= gettext("Forgot password?") ?></a></p>
-    <?= '</div>' ?>
+<?= '</div>' ?>
 <script>
     var input_password = document.getElementById("login_input_user_password");
     var input_user = document.getElementById("login_input_user_name");

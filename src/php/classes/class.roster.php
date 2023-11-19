@@ -30,15 +30,15 @@ class roster {
      */
     public $array_of_days_of_roster_items = array();
 
-    function __construct(DateTime $date_start_object, DateTime $date_end_object = NULL, int $employee_id = NULL, int $branch_id = NULL, int $other_branch_id = NULL) {
+    function __construct(DateTime $date_start_object, DateTime $date_end_object = NULL, int $employee_key = NULL, int $branch_id = NULL, int $other_branch_id = NULL) {
         if (NULL === $date_start_object) {
             throw new Exception('A start date must be given for ' . __METHOD__);
         }
         if (NULL === $date_end_object) {
             $date_end_object = clone $date_start_object;
         }
-        if (NULL !== $employee_id) {
-            $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_id, clone $date_start_object, clone $date_end_object);
+        if (NULL !== $employee_key) {
+            $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_key, clone $date_start_object, clone $date_end_object);
             return TRUE;
         }
         throw new Exception('The object of the class ' . __CLASS__ . ' was not correctly constructed. Please check the parameters.');
@@ -49,7 +49,7 @@ class roster {
      * @param DateTime $date_start_object The first day, that is to be read.
      * @param DateTime $date_end_object The last day, that is to be read.
      */
-    protected function read_employee_roster_from_database(int $employee_id, DateTime $date_start_object, DateTime $date_end_object) {
+    protected function read_employee_roster_from_database(int $employee_key, DateTime $date_start_object, DateTime $date_end_object) {
         /*
          * TODO: unify this with read_roster_from_database
          * Make them both one function perhaps.
@@ -59,13 +59,13 @@ class roster {
             $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT * '
                     . 'FROM `Dienstplan` '
-                    . "WHERE `Datum` = :date and `VK` = :employee_id "
+                    . "WHERE `Datum` = :date and `employee_key` = :employee_key "
                     . 'ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
-            $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'employee_id' => $employee_id));
+            $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'employee_key' => $employee_key));
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->employee_key, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $roster_row_iterator++;
             }
             if (0 === $roster_row_iterator) {
@@ -104,7 +104,7 @@ class roster {
             $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'date' => $date_sql));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->format('U')][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->employee_key, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -135,14 +135,14 @@ class roster {
         for ($date_object = new DateTime($date_sql_start); $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
             $date_sql = $date_object->format('Y-m-d');
             $sql_query = 'SELECT DISTINCT Dienstplan.* '
-                    . ' FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.VK=employees.id '
+                    . ' FROM `Dienstplan` LEFT JOIN employees ON Dienstplan.employee_key = employees.primary_key '
                     . ' WHERE Dienstplan.Mandant = :other_branch_id AND `Datum` = :date AND employees.branch = :branch_id '
                     . ' ORDER BY `Dienstbeginn` ASC, `Dienstende` ASC, `Mittagsbeginn` ASC;';
             $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'other_branch_id' => $other_branch_id, 'date' => $date_sql));
 
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $Roster[$date_object->getTimestamp()][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->VK, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
+                $Roster[$date_object->getTimestamp()][$roster_row_iterator] = new roster_item($row->Datum, (int) $row->employee_key, $row->Mandant, $row->Dienstbeginn, $row->Dienstende, $row->Mittagsbeginn, $row->Mittagsende, $row->Kommentar);
                 $the_whole_roster_is_empty = FALSE;
                 $roster_row_iterator++;
             }
@@ -184,7 +184,9 @@ class roster {
         /*
          * Remove empty and null values from the array:
          */
-        $Clean_changing_times = array_filter($Unique_changing_times, 'strlen');
+        $Clean_changing_times = array_filter($Unique_changing_times, function ($value) {
+            return $value !== null && strlen($value) > 0;
+        });
         return $Clean_changing_times;
     }
 
@@ -196,8 +198,8 @@ class roster {
      * @return type
      * @todo Are these functions used somewhere?
      */
-    public static function get_employee_id_from_roster($Roster, $day_iterator, $roster_row_iterator) {
-        return $Roster[$day_iterator][$roster_row_iterator]->employee_id;
+    public static function get_employee_key_from_roster($Roster, $day_iterator, $roster_row_iterator) {
+        return $Roster[$day_iterator][$roster_row_iterator]->employee_key;
     }
 
     public static function get_duty_start_from_roster($Roster, $day_iterator, $roster_row_iterator) {
@@ -216,16 +218,20 @@ class roster {
         return roster_item::format_time_integer_to_string($Roster[$day_iterator][$roster_row_iterator]->break_end_int);
     }
 
+    public static function get_working_hours_from_roster(array $Roster, int $day_iterator, int $roster_row_iterator) {
+        return $Roster[$day_iterator][$roster_row_iterator]->working_hours;
+    }
+
     public static function get_comment_from_roster($Roster, $day_iterator, $roster_row_iterator) {
         return $Roster[$day_iterator][$roster_row_iterator]->comment;
     }
 
-    public static function get_working_hours_in_all_branches(string $date_string, int $employee_id) {
+    public static function get_working_hours_in_all_branches(string $date_string, int $employee_key) {
         $working_hours = 0;
-        $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `VK` = :employee_id";
+        $sql_query = "SELECT sum(`Stunden`) as `working_hours` FROM `Dienstplan` WHERE `Datum` = :date and `employee_key` = :employee_key";
         $result = database_wrapper::instance()->run($sql_query, array(
             'date' => $date_string,
-            'employee_id' => $employee_id,
+            'employee_key' => $employee_key,
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $working_hours = $row->working_hours;
@@ -251,28 +257,28 @@ class roster {
     /**
      * Calculation of the working hours of the employees:
      */
-    public static function calculate_working_hours_weekly_from_branch_roster($Branch_roster) {
+    public static function calculate_working_weekly_hours_from_branch_roster($Branch_roster) {
         /*
          * CAVE! This function expects an array of the format: $Branch_roster[$branch_id][$date_unix][$roster_item]
          * The standard $Roster array ($Roster[$date_unix][$roster_item]) will not return any usefull information.
          */
-        $Working_hours_week = array();
+        $Working_week_hours = array();
         foreach ($Branch_roster as $Branch_roster_branch_array) {
             foreach ($Branch_roster_branch_array as $Roster_day_array) {
                 foreach ($Roster_day_array as $roster_item) {
                     if (!isset($roster_item->working_hours)) {
                         continue 1;
                     }
-                    if (!isset($Working_hours_week[$roster_item->employee_id])) {
-                        $Working_hours_week[$roster_item->employee_id] = $roster_item->working_hours;
+                    if (!isset($Working_week_hours[$roster_item->employee_key])) {
+                        $Working_week_hours[$roster_item->employee_key] = $roster_item->working_hours;
                     } else {
-                        $Working_hours_week[$roster_item->employee_id] += $roster_item->working_hours;
+                        $Working_week_hours[$roster_item->employee_key] += $roster_item->working_hours;
                     }
                 }
             }
         }
-        ksort($Working_hours_week);
-        return $Working_hours_week;
+        ksort($Working_week_hours);
+        return $Working_week_hours;
     }
 
     /**
@@ -284,7 +290,7 @@ class roster {
     public static function is_empty($Roster) {
         foreach ($Roster as $Roster_day_array) {
             foreach ($Roster_day_array as $roster_object) {
-                if (NULL !== $roster_object->employee_id) {
+                if (NULL !== $roster_object->employee_key) {
                     /*
                      * In most cases we do not have to loop through the whole array.
                      * If the first element is filled, then we allready stop searching.
@@ -302,7 +308,7 @@ class roster {
 
     public static function is_empty_roster_day_array($Roster_day_array) {
         foreach ($Roster_day_array as $roster_object) {
-            if (NULL !== $roster_object->employee_id) {
+            if (NULL !== $roster_object->employee_key) {
                 /*
                  * In most cases we do not have to loop through the whole array.
                  * If the first element is filled, then we allready stop searching.
@@ -312,5 +318,4 @@ class roster {
         }
         return TRUE;
     }
-
 }

@@ -24,7 +24,7 @@ var currentMatrix = 0;
 var firstX = 0;
 var firstY = 0;
 
-function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
+function roster_change_table_on_drag_of_bar_plot(evt) {
     if (!document.getElementById('roster_form') && !document.getElementById('principle_roster_form')) {
         /*
          * If there is no roster form, then there is nothing to change by moving around.
@@ -33,13 +33,11 @@ function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
     }
 
 
-    if (moveType === 'single') {
-        selectedElement = evt.target;
-    } else if (moveType === 'group') {
-        selectedElement = evt.target.parentNode;
-    } else {
-        console.error('Error: roster_change_table_on_drag_of_bar_plot() has to be called with a moveType of either "single" or "group"!' + evt + ", " + moveType);
-    }
+    /**
+     * @todo Cange the signature of this function! movetype can be (safely) removed.
+     * We now have everything inside of groups.
+     */
+    selectedElement = evt.target.parentNode;
     firstX = evt.clientX;
     firstY = evt.clientY;
     currentX = evt.clientX;
@@ -47,7 +45,9 @@ function roster_change_table_on_drag_of_bar_plot(evt, moveType) {
     selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
     selectedElement.classList.add("selected");
     if (selectedElement.firstChild) {
-        selectedElement.firstChild.classList.add("selected");
+        if (selectedElement.firstChild.classList) { // TODO: The number of working hours is a child of the text. When the drag and drop occurs on the number, it will not have a child with a classlist.
+            selectedElement.firstChild.classList.add("selected");
+        }
     }
     selectedElement.parentNode.setAttributeNS(null, "onmousemove", "moveElement(evt)");
 }
@@ -58,7 +58,10 @@ function moveElement(evt) {
         return false;
     }
     var dx = (evt.clientX - currentX) * 0.8;
-    selectedElement.x.baseVal.value += dx;
+    var rectElement = selectedElement.children[0];
+    var textElement = selectedElement.children[1];
+    rectElement.x.baseVal.value += dx;
+    textElement.x.baseVal.value += dx;
     currentX = evt.clientX;
     currentY = evt.clientY;
     return true;
@@ -70,13 +73,14 @@ function deselectElement(evt) {
         var box_type = selectedElement.dataset.box_type;
         var date_unix = selectedElement.dataset.date_unix;
         var line = selectedElement.dataset.line;
+        var rectElement = selectedElement.children[0];
 
         var bar_width_factor = svg_element.dataset.bar_width_factor;
 
         var margin_before_bar = Number(svg_element.dataset.outer_margin_x) + Number(svg_element.dataset.inner_margin_x);
-        var start_hour_float = Math.round((selectedElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
-        selectedElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
-        var end_hour_float = (selectedElement.x.baseVal.value - margin_before_bar + selectedElement.width.baseVal.value) / bar_width_factor;
+        var start_hour_float = Math.round((rectElement.x.baseVal.value - margin_before_bar) / bar_width_factor * 2) / 2;
+        rectElement.x.baseVal.value = start_hour_float * bar_width_factor + margin_before_bar;
+        var end_hour_float = (rectElement.x.baseVal.value - margin_before_bar + rectElement.width.baseVal.value) / bar_width_factor;
         if (start_hour_float < 0 || end_hour_float >= 24) {
             /**
              * <p lang=de>
@@ -107,7 +111,9 @@ function deselectElement(evt) {
         selectedElement.removeAttributeNS(null, "onmouseup");
         selectedElement.classList.remove("selected");
         if (selectedElement.firstChild) {
-            selectedElement.firstChild.classList.remove("selected");
+            if (selectedElement.firstChild.classList) {
+                selectedElement.firstChild.classList.remove("selected");
+            }
         }
         selectedElement = 0;
         return result;
@@ -129,35 +135,39 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     var date_sql = input_object_parent.dataset.date_sql;
     var roster_row_iterator = input_object_parent.dataset.roster_row_iterator;
     var roster_column_name = input_object.dataset.roster_column_name;
-    var roster_item = Roster_array[date_unix][roster_row_iterator];
-    if (!roster_item) {
-        /*
-         * Initialize the object with zero values:
-         */
-        Roster_array[date_unix][roster_row_iterator] = {
-            branch_id: branch_id,
-            comment: null,
-            //date_sql: date_object.getFullYear() + "-" + date_object.getMonth() + "-" + date_object.getDate(),
-            date_sql: date_sql,
-            date_unix: date_unix,
-            date_object: date_object,
-            break_duration: 0,
-            break_start_int: 0,
-            break_end_int: 0,
-            duty_duration: 0,
-            duty_start_int: 0,
-            duty_end_int: 0,
-            duty_start_sql: "0:00",
-            duty_end_sql: "0:00",
-            break_start_sql: "0:00",
-            break_end_sql: "0:00",
-            employee_id: 0,
-            working_hours: 0,
-            working_seconds: 0
-        };
-        Roster_array[date_unix][roster_row_iterator][roster_column_name] = Number(input_object.value);
-        roster_item = Roster_array[date_unix][roster_row_iterator];
+    try {
+        var roster_item = Roster_array[date_unix][roster_row_iterator];
+    } catch (e) {
+        if (!roster_item) {
+            /*
+             * Initialize the object with zero values:
+             */
+            Roster_array[date_unix][roster_row_iterator] = {
+                branch_id: branch_id,
+                comment: null,
+                //date_sql: date_object.getFullYear() + "-" + date_object.getMonth() + "-" + date_object.getDate(),
+                date_sql: date_sql,
+                date_unix: date_unix,
+                date_object: date_object,
+                break_duration: 0,
+                break_start_int: 0,
+                break_end_int: 0,
+                duty_duration: 0,
+                duty_start_int: 0,
+                duty_end_int: 0,
+                duty_start_sql: "0:00",
+                duty_end_sql: "0:00",
+                break_start_sql: "0:00",
+                break_end_sql: "0:00",
+                employee_key: 0,
+                working_hours: 0,
+                working_seconds: 0
+            };
+            Roster_array[date_unix][roster_row_iterator][roster_column_name] = Number(input_object.value);
+            roster_item = Roster_array[date_unix][roster_row_iterator];
+        }
     }
+
     roster_item[roster_column_name] = input_object.value;
     /*
      * Calculate the resulting information for the other columns:
@@ -182,7 +192,12 @@ function roster_change_bar_plot_on_change_of_table(input_object) {
     roster_item['break_start_int'] = break_start_object.getHours() * 3600 + break_start_object.getMinutes() * 60;
     roster_item['break_end_int'] = break_end_object.getHours() * 3600 + break_end_object.getMinutes() * 60;
 
-    /*
+    /**
+     * Update working hours span:
+     */
+    var working_hours_span = document.getElementById("Dienstplan[" + date_unix + "][working_hours_span][" + roster_row_iterator + "]");
+    working_hours_span.innerHTML = working_hours.toFixed(2);
+    /**
      * sync the information to the bar plot:
      */
     sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_unix);
@@ -196,6 +211,9 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     var roster_item = Roster_array[date_unix][roster_row_iterator];
     var bar_element_id = 'work_box_' + roster_row_iterator + '_' + date_unix;
     var bar_element = document.getElementById(bar_element_id);
+    var rect_element = bar_element.getElementsByTagName("rect")[0];
+    var employee_name_text_element = bar_element.getElementsByTagName("text")[0];
+    var working_hours_tspan_element = employee_name_text_element.getElementsByTagName("tspan")[0];
 
     if (!bar_element) {
         /*
@@ -212,7 +230,7 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
     var duty_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_start_sql']);
     var duty_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['duty_end_sql']);
     /*
-     * TODO: Insert error handling here. When the employe is changed to null and the break is edited, there is an error, which does not recover just by again adding the employee.
+     * TODO: Insert error handling here. When the employee is changed to null and the break is edited, there is an error, which does not recover just by again adding the employee.
      */
     var break_start_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_start_sql']);
     var break_end_object = new Date(roster_item['date_sql'] + ' ' + roster_item['break_end_sql']);
@@ -223,9 +241,8 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
             -
             (duty_start_object.getHours() + duty_start_object.getMinutes() / 60)
             ) * bar_width_factor;
-
-    bar_element.setAttributeNS(null, 'x', new_bar_x);
-    bar_element.setAttributeNS(null, 'width', new_bar_width);
+    rect_element.setAttributeNS(null, 'x', new_bar_x);
+    rect_element.setAttributeNS(null, 'width', new_bar_width);
 
     /*
      * lunch break:
@@ -250,12 +267,15 @@ function sync_from_roster_array_object_to_bar_plot(roster_row_iterator, date_uni
         break_box_element.x.baseVal.value = new_box_x;
         break_box_element.width.baseVal.value = new_box_width;
     }
-    var employee_name_p_element = bar_element.childNodes[0];
-    var employee_name_text_element = bar_element.childNodes[0].childNodes[0];
-    var working_hours_span = bar_element.childNodes[0].childNodes[1];
-    employee_name_text_element.nodeValue = List_of_employee_names[roster_item['employee_id']];
-    employee_name_p_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_id']]);
-    working_hours_span.innerText = roster_item['working_hours'];
+    employee_name_text_element.textContent = List_of_employee_names[roster_item['employee_key']];
+    /**
+     * After the textContent of the <text> has been changed, the <tspan> element
+     * and its content are gone.
+     * We have to set it back as a child of the <text>:
+     */
+    employee_name_text_element.appendChild(working_hours_tspan_element);
+    working_hours_tspan_element.textContent = " " + roster_item['working_hours'];
+    rect_element.setAttributeNS(null, 'class', List_of_employee_professions[roster_item['employee_key']]);
 }
 
 function create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, parent_of_bar_elements) {

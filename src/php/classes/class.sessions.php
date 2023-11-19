@@ -20,6 +20,7 @@
 /**
  * This class handles the session management, login, logout and permissions of users.
  * TODO: Provide a static variable $instance or save the session object in the $_SESSION array!
+ * @todo maybe move const PRIVILEGE_ADMINISTRATION and the other privileges to the user class?
  * @author Martin Mandelkow
  */
 class sessions {
@@ -62,7 +63,7 @@ class sessions {
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
         global $config;
-        /*
+        /**
          * In case there are several instances of the program on the same machine,
          * we need a specific identifier for the different instances.
          * Therefore we define a specific session_name:
@@ -70,9 +71,9 @@ class sessions {
         session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
         session_start();
         if (isset($_SESSION['number_of_times_redirected'])) {
-            /*
-             * TODO: Check if this is correct!
-             * Sollte hier isset() oder !isset() stehen?
+            /**
+             * @TODO: Check if this is correct!
+             * <p lang=de>Sollte hier isset() oder !isset() stehen?
              * Was genau wird hier getestet?
              * Es geht sicherlich um die Nutzung von HTTPS.
              * Um das zu testen und zu erzwingen wurden redirects angelegt.
@@ -82,6 +83,7 @@ class sessions {
              * Was passiert denn, wenn die Variable bereits vorher gesetzt wird?
              *
              * In welchem genauen Fall soll die Bedingung jetzt wahr werden?
+             * </p>
              */
             $_SESSION['number_of_times_redirected'] = 0;
         }
@@ -91,7 +93,7 @@ class sessions {
          */
         $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
         $http_host = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
-        $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_STRING);
+        $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_URL);
 
         if ("localhost" != $http_host AND "" != $http_host) {
             header("strict-transport-security: max-age=31536000");
@@ -110,7 +112,10 @@ class sessions {
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
         $List_of_pages_accessible_without_login = array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
-        if (!isset($_SESSION['user_object']->employee_id) and!in_array(basename($script_name), $List_of_pages_accessible_without_login)) {
+        if (
+                false === $this->user_is_logged_in()
+                and !in_array(basename($script_name), $List_of_pages_accessible_without_login)
+        ) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location);
             die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
@@ -135,38 +140,12 @@ class sessions {
     }
 
     /**
-     * TODO: Move this into the user class.
-     * @return void
-     */
-    private function read_Privileges_from_database() {
-        $Privileges = array();
-        $sql_query = "SELECT * FROM users_privileges WHERE `employee_id` = :employee_id";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $_SESSION['user_object']->employee_id));
-        while ($privilege_data = $result->fetch(PDO::FETCH_ASSOC)) {
-            $Privileges[$privilege_data['privilege']] = TRUE;
-        }
-        $_SESSION['Privileges'] = $Privileges;
-        return;
-    }
-
-    /**
-     * Check if the logged-in user has a specefied permission
+     * Check if the logged-in user has a specified permission
      *
      * @return boolean TRUE for exisiting permission, FALSE for missing permission.
      */
     public function user_has_privilege($privilege) {
-        if (empty($_SESSION['Privileges'])) {
-            /*
-             * Privileges are read only once per session.
-             * If permissions are revoked or granted during a session, this will take effect only after a logout(=session_destroy()).
-             */
-            $this->read_Privileges_from_database();
-        }
-        if (isset($_SESSION['Privileges'][$privilege]) and TRUE === $_SESSION['Privileges'][$privilege]) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return ($_SESSION['user_object']->has_privilege($privilege));
     }
 
     public function exit_on_missing_privilege($privilege) {
@@ -203,10 +182,10 @@ class sessions {
         /*
          * Get user data:
          */
-        $result = database_wrapper::instance()->run("SELECT `employee_id` FROM `users` WHERE `user_name` = :user_name AND `status` = 'active'", array('user_name' => $user_name));
+        $result = database_wrapper::instance()->run("SELECT `primary_key` FROM `users` WHERE `user_name` = :user_name AND `status` = 'active'", array('user_name' => $user_name));
         $user = NULL;
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $user = new user($row->employee_id);
+            $user = new user($row->primary_key);
         }
         if (!$user instanceof user) {
             /*
@@ -219,6 +198,7 @@ class sessions {
          * Check for multiple failed login attempts
          * If a user has tried to login 3 times in a row, he is blocked for 5 minutes.
          * The number of failed attempts is reset to 0 on every successfull login.
+         * TODO: Write a selenium test for this lock!
          */
         if (3 <= $user->failed_login_attempts and strtotime('-5min') <= strtotime($user->failed_login_attempt_time)) {
             $errorMessage = "Zu viele ungültige Anmeldeversuche. Der Benutzer wird für 5 Minuten gesperrt.";
@@ -239,14 +219,6 @@ class sessions {
              * Reset failed_login_attempts
              */
             $user->reset_failed_login_attempts();
-
-            /*
-             * Start another PHP process to do maintenance tasks:
-             * Obsolete: This is now done via XMLHttpRequest() from the login page.
-              $command = get_php_binary() . ' ' . PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/background_maintenance.php';
-              execute_in_background($command);
-             */
-
 
             if (TRUE === $redirect) {
 
@@ -288,7 +260,7 @@ class sessions {
         header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php");
     }
 
-    function send_mail_about_lost_password($employee_id, $user_name, $recipient, $token) {
+    function send_mail_about_lost_password(user $user, $token) {
         $user_dialog = new user_dialog();
         global $config;
         if (isset($config['application_name'])) {
@@ -299,14 +271,17 @@ class sessions {
 
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
-                . gettext("Dear $user_name,\n\n in order to set a new password for")
+                . sprintf(gettext('Dear %1$s,\r\n\r\n in order to set a new password for'), $user->user_name)
                 . " '"
                 . $application_name
                 . "' "
-                . gettext("user name") . ": " . $user_name . ", "
+                . gettext("user name") . ": " . $user->get_user_name() . ", "
                 . gettext("please visit")
                 . " <a href='"
-                . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/reset_lost_password.php?employee_id=$employee_id&token=$token'>"
+                . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"])
+                . "/reset_lost_password.php?"
+                . "user_key=" . $user->get_primary_key()
+                . "&token=$token'>"
                 . gettext("this address")
                 . ".</a>"
                 . gettext("Your token is valid for 24 hours.")
@@ -322,19 +297,20 @@ class sessions {
          */
         $sent_result = mail($recipient, $message_subject, $message_text, $headers);
         if ($sent_result) {
-            $message = gettext("The mail was successfully sent. Thank you!");
-            $user_dialog->add_message($message, E_USER_NOTICE);
+            $message = "A lost password email was successfully sent.";
+            error_log($message);
         } else {
-            $message = gettext("An error occured while sending the mail. I am sorry.");
-            $user_dialog->add_message($message, E_USER_NOTICE);
+            $message = "An error occured while sending the mail.";
+            error_log($message);
         }
     }
 
-    public function write_lost_password_token_to_database($employee_id, $token) {
-        if (!is_null($employee_id) and!is_null($token)) {
+    public function write_lost_password_token_to_database(user $user, $token) {
+        if (!is_null($user) and !is_null($token)) {
+            $user_key = $user->user_key;
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
-            $sql_query = "INSERT INTO `users_lost_password_token` (`employee_id`, `token`) VALUES (:employee_id, UNHEX(:token))";
-            database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id, 'token' => $token));
+            $sql_query = "INSERT INTO `users_lost_password_token` (`user_key`, `token`) VALUES (:user_key, UNHEX(:token))";
+            database_wrapper::instance()->run($sql_query, array('user_key' => $user_key, 'token' => $token));
             return TRUE;
         }
         return FALSE;
@@ -364,4 +340,12 @@ class sessions {
         }
     }
 
+    public function user_is_logged_in() {
+        if (!empty($_SESSION['user_object'])
+                and $_SESSION['user_object'] instanceof user
+                and $_SESSION['user_object']->exists()) {
+            return true;
+        }
+        return false;
+    }
 }

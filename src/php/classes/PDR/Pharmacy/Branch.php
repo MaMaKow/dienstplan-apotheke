@@ -62,7 +62,7 @@ class Branch {
          * This is used in branch-management.php to create a new branch.
          */
         $this->branch_id = "";
-        $this->name = "create new branch";
+        $this->name = gettext("create new branch");
         $this->short_name = "";
         $this->address = "";
         $this->manager = "";
@@ -131,5 +131,4 @@ class Branch {
             $this->Opening_times[$weekday]['day_opening_end'] = \roster_item::format_time_string_correct($day_opening_end);
         }
     }
-
 }

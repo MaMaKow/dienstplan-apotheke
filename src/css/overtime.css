@@ -34,6 +34,9 @@ table#overtime_overview_table tr.positive_high {
     font-style: normal;
     font-weight: bold;
 }
+table#overtime_overview_table tr.not_updated {
+    background-color: #ECE7E8;
+}
 table#overtime_overview_table tr.positive_very_high {
     color: #73AC22;
     font-style: oblique;

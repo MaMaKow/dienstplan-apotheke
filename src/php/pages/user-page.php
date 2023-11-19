@@ -80,7 +80,7 @@ echo $user_dialog->build_messages();
     <form action='' method='POST' id="user_page_password_form"></form>
     <fieldset id='email_consent'>
         <legend><?= gettext('Receive emails when the roster is changed') ?></legend>
-        <?= form_element_builder::build_checkbox_switch('user_form', 'receive_emails_opt_in', $user->receive_emails_on_changed_roster); ?>
+        <?= form_element_builder::build_checkbox_switch('user_form', 'receive_emails_opt_in', $user->wants_emails_on_changed_roster()); ?>
         <img width="16px" height="16px" src="../../../img/information.svg"
              title="<?= gettext('Upon changes in the roster that are less than 2 weeks in the future a notification may be sent. A maximum of one mail per day will be sent.'); ?>"
              >

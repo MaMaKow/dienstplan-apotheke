@@ -19,14 +19,17 @@ require '../../../default.php';
 
 if (filter_has_var(INPUT_GET, 'request_new_password')) {
     $token = sha1(uniqid());
-    $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_STRING);
+    $identifier = filter_input(INPUT_POST, 'identifier', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $user_dialog = new user_dialog();
     if (!empty($identifier)) {
-        $user = new user(NULL);
-        if (FALSE === $user->guess_user_by_identifier($identifier)) {
-            return FALSE;
+        $user_base = new \PDR\Workforce\user_base();
+        $user = $user_base->guess_user_by_identifier($identifier);
+        if (FALSE !== $user and $user instanceof user) {
+            $session->write_lost_password_token_to_database($user, $token);
+            $session->send_mail_about_lost_password($user, $token);
         }
-        $session->write_lost_password_token_to_database($user->employee_id, $token);
-        $session->send_mail_about_lost_password($user->employee_id, $user->user_name, $user->email, $token);
+        unset($token);
+        $user_dialog->add_message(gettext("If the user exists, an email has been sent."), E_USER_NOTICE);
     }
 }
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
@@ -46,9 +49,6 @@ echo "<H1>" . $application_name . "</H1>\n";
     <input type="text" size="25" maxlength="250" name="identifier" placeholder="<?= gettext("identifier") ?>"><br>
     <input type="submit"><br>
     <?php
-    if (!empty($error_message)) {
-        build_error_message($error_message);
-    }
     $user_dialog = new user_dialog();
     echo $user_dialog->build_messages();
     ?>

@@ -43,7 +43,7 @@ public class RosterHoursPage {
     By selectMonthSelectBy = By.xpath("//select[@name='month_or_part']");
     //By selectMonthSelectBy = By.xpath("/html/body/form/select[@name=month_or_part]");
     By user_name_spanBy = By.id("MenuListItemApplicationUsername");
-    By selectEmployeeSelectBy = By.xpath("/html/body/form/select[@name='employee_id']");
+    By selectEmployeeSelectBy = By.xpath("/html/body/form/select[@name='employee_key']");
     By selectYearSelectBy = By.xpath("/html/body/form/select[@name='year']");
 
     public RosterHoursPage(WebDriver driver) {
@@ -147,12 +147,11 @@ public class RosterHoursPage {
         List<WebElement> listOfRowsElements = driver.findElements(listOfRowsBy);
         String dateString;
         WebElement rosterItemDateElement;
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd.MM.yyyy", Locale.GERMANY);
+        String targetDateCalendarString = targetLocalDate.format(dateTimeFormatter);
         for (WebElement rowElement : listOfRowsElements) {
             rosterItemDateElement = rowElement.findElement(rosterItemDateBy);
             dateString = rosterItemDateElement.getText();
-
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd.MM.yyyy", Locale.ENGLISH);
-            String targetDateCalendarString = targetLocalDate.format(dateTimeFormatter);
             if (!dateString.equals(targetDateCalendarString)) {
                 continue;
             }

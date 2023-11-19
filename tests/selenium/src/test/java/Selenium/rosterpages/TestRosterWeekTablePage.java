@@ -21,7 +21,7 @@ package Selenium.rosterpages;
 import Selenium.PropertyFile;
 import Selenium.Roster;
 import Selenium.RosterItem;
-import Selenium.ScreenShot;
+import Selenium.TestPage;
 import Selenium.signin.SignInPage;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -40,28 +40,16 @@ import org.testng.asserts.SoftAssert;
  *
  * @author Mandelkow
  */
-public class TestRosterWeekTablePage {
-
-    WebDriver driver;
-    SoftAssert softAssert = new SoftAssert();
+public class TestRosterWeekTablePage extends TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testDateNavigation() {
         try {
-            driver = Selenium.driver.Wrapper.getDriver();
-            PropertyFile propertyFile = new PropertyFile();
-            String urlPageTest = propertyFile.getUrlPageTest();
-            driver.get(urlPageTest);
-
             /**
              * Sign in:
              */
-            SignInPage signInPage = new SignInPage(driver);
-            String pdr_user_password = propertyFile.getPdrUserPassword();
-            String pdr_user_name = propertyFile.getPdrUserName();
-            signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+            super.signIn();
             RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
-            Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
             /**
              * Move to specific date and go foreward and backward from there:
              */
@@ -78,19 +66,11 @@ public class TestRosterWeekTablePage {
 
     @Test(enabled = true)/*passed*/
     public void testRosterDisplay() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-        PropertyFile propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
-        driver.get(urlPageTest);
         /**
          * Sign in:
          */
-        SignInPage signInPage = new SignInPage(driver);
-        String pdr_user_password = propertyFile.getPdrUserPassword();
-        String pdr_user_name = propertyFile.getPdrUserName();
-        signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+        super.signIn();
         RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
-        Assert.assertEquals(rosterWeekTablePage.getUserNameText(), pdr_user_name);
 
         Roster roster = new Roster();
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
@@ -100,9 +80,9 @@ public class TestRosterWeekTablePage {
                  * Move to specific date to get a specific roster:
                  */
                 rosterWeekTablePage.goToDate(rosterItemFromPrediction.getLocalDate());
-                RosterItem rosterItemReadOnPage = rosterWeekTablePage.getRosterItemByEmployeeId(
+                RosterItem rosterItemReadOnPage = rosterWeekTablePage.getRosterItemByEmployeeKey(
                         rosterItemFromPrediction.getLocalDate().getDayOfWeek(),
-                        rosterItemFromPrediction.getEmployeeId()
+                        rosterItemFromPrediction.getEmployeeKey()
                 );
 
                 softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(), rosterItemReadOnPage.getEmployeeName());
@@ -116,19 +96,4 @@ public class TestRosterWeekTablePage {
         }
 
     }
-
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
-    }
-
 }

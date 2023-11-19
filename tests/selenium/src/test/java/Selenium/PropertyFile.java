@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
 public class PropertyFile {
 
     private Properties properties;
-    private final String propertyFilePath = "./Configuration.properties";
+    private final String propertyFilePath = "Configuration.properties";
 
     public PropertyFile() {
         FileInputStream fileInputStream = null;
@@ -71,6 +72,30 @@ public class PropertyFile {
             return testPageUrl;
         }
         throw new RuntimeException("testPageUrl not specified in the Configuration.properties file.");
+    }
+
+    public String getRealTestPageUrl() {
+        String testPageUrl = properties.getProperty("testRealPageUrl");
+        if (null != testPageUrl) {
+            return testPageUrl;
+        }
+        throw new RuntimeException("testPageUrl not specified in the Configuration.properties file.");
+    }
+
+    public String getRealUsername() {
+        String testRealUsername = properties.getProperty("testRealUsername");
+        if (null != testRealUsername) {
+            return testRealUsername;
+        }
+        throw new RuntimeException("testRealUsername not specified in the Configuration.properties file.");
+    }
+
+    public String getRealPassword() {
+        String testRealPassword = properties.getProperty("testRealPassword");
+        if (null != testRealPassword) {
+            return testRealPassword;
+        }
+        throw new RuntimeException("testRealPassword not specified in the Configuration.properties file.");
     }
 
     private void setProperty(String propertyName, String propertyValue) {
@@ -175,14 +200,6 @@ public class PropertyFile {
             return property;
         }
         return getPdrUserName();
-    }
-
-    public String getAdministratorEmployeeId() {
-        String property = properties.getProperty("administratorEmployeeId");
-        if (null != property) {
-            return property;
-        }
-        return null;
     }
 
     public String getAdministratorEmail() {

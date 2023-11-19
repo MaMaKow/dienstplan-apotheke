@@ -61,20 +61,20 @@ class principle_roster extends roster {
             ));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                if (in_array(self::OPTION_CONTINUE_ON_ABSENCE, $Options) and isset($Absentees[$row->employee_id])) {
+                if (in_array(self::OPTION_CONTINUE_ON_ABSENCE, $Options) and isset($Absentees[$row->employee_key])) {
                     /*
                      * Absent employees will be excluded, if an actual roster is built.
                      */
                     continue 1;
                 }
-                if (isset($workforce->List_of_employees) AND false === array_search($row->employee_id, array_keys($workforce->List_of_employees))) {
+                if (isset($workforce->List_of_employees) AND false === array_search($row->employee_key, array_keys($workforce->List_of_employees))) {
                     /*
                      * Exclude non-existent employees from the principle roster:
                      */
                     continue 1;
                 }
                 try {
-                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_key, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
                 } catch (Exception $exception) {
                     error_log($exception->getTraceAsString());
                     throw new Exception('There was an error while reading the current principle roster from the database. Please see the error log file for details!');
@@ -90,7 +90,7 @@ class principle_roster extends roster {
         return $Roster;
     }
 
-    public static function read_current_principle_employee_roster_from_database(int $employee_id, DateTime $date_start_object, DateTime $date_end_object = NULL) {
+    public static function read_current_principle_employee_roster_from_database(int $employee_key, DateTime $date_start_object, DateTime $date_end_object = NULL) {
         if (NULL === $date_end_object) {
             $date_end_object = clone $date_start_object;
         }
@@ -104,19 +104,19 @@ class principle_roster extends roster {
             $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
             $sql_query = "SELECT * FROM `principle_roster` "
                     . " WHERE `weekday` = :weekday "
-                    . " AND `employee_id` = :employee_id "
+                    . " AND `employee_key` = :employee_key "
                     . " AND `alternating_week_id` = :alternating_week_id "
                     . " ORDER BY `duty_start` + `duty_end`, `duty_start`";
 
             $result = database_wrapper::instance()->run($sql_query, array(
                 'weekday' => $weekday,
-                'employee_id' => $employee_id,
+                'employee_key' => $employee_key,
                 'alternating_week_id' => $alternating_week_id,
             ));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
                 try {
-                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_id, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_key, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
                     $roster_row_iterator++;
                 } catch (Exception $exception) {
                     error_log($exception->getTraceAsString());
@@ -129,8 +129,8 @@ class principle_roster extends roster {
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
                 $workforce = new workforce($date_object->format('Y-m-d'));
-                if (isset($workforce->List_of_employees[$employee_id])) {
-                    $branch_id = $workforce->List_of_employees[$employee_id]->principle_branch_id;
+                if (isset($workforce->List_of_employees[$employee_key])) {
+                    $branch_id = $workforce->List_of_employees[$employee_key]->principle_branch_id;
                 } else {
                     /*
                      * In case, the employee does not exist on this day we fall back to using the first branch.
@@ -146,76 +146,13 @@ class principle_roster extends roster {
         return $Roster;
     }
 
-    /**
-     * This function determines the optimal lunch breaks.
-     *
-     * It considers the principle lunch breaks.
-     * @deprecated No longer used by internal code and not recommended.
-     * @return array $Roster
-     */
-    public static function determine_lunch_breaks($Roster) {
-        global $workforce;
-        $lunch_break_length_standard = 30 * 60;
-        foreach (array_keys($Roster) as $date_unix) {
-            if (empty($Roster[$date_unix])) {
-                return FALSE;
-            }
-            foreach ($Roster[$date_unix] as $roster_item_object) {
-                $break_start_taken_int[] = $roster_item_object->break_start_int;
-                $break_end_taken_int[] = $roster_item_object->break_end_int;
-            }
-            $lunch_break_start = roster_item::convert_time_to_seconds('11:30:00');
-            foreach ($Roster[$date_unix] as $roster_item_object) {
-                $employee_id = $roster_item_object->employee_id;
-                if (!empty($workforce->List_of_employees[$employee_id]->lunch_break_minutes) AND!($roster_item_object->break_start_int > 0) AND!($roster_item_object->break_end_int > 0)) {
-                    /**
-                     *  <p lang="de">Zunächst berechnen wir die Stunden,
-                     *  damit wir wissen, wer überhaupt eine Mittagspause bekommt.</p>
-                     */
-                    $duty_seconds_with_a_break = $roster_item_object->duty_end_int - $roster_item_object->duty_start_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes * 60;
-                    if ($duty_seconds_with_a_break >= 6 * 3600) {
-                        /**
-                         *  <p lang="de">Wer länger als 6 Stunden Arbeitszeit hat, bekommt eine Mittagspause.</p>
-                         */
-                        $lunch_break_end = $lunch_break_start + $workforce->List_of_employees[$employee_id]->lunch_break_minutes * 60;
-                        for ($number_of_trys = 0; $number_of_trys < 3; $number_of_trys++) {
-                            if (FALSE !== array_search($lunch_break_start, $break_start_taken_int) OR FALSE !== array_search($lunch_break_end, $break_end_taken_int)) {
-                                /* <p lang="de">Zu diesem Zeitpunkt startet schon jemand sein Mittag. Wir warten 30 Minuten (1800 Sekunden)</p> */
-                                $lunch_break_start += $lunch_break_length_standard;
-                                $lunch_break_end += $lunch_break_length_standard;
-                                continue;
-                            } else {
-                                break;
-                            }
-                        }
-                        $roster_item_object->break_start_int = $lunch_break_start;
-                        $roster_item_object->break_start_sql = roster_item::format_time_integer_to_string($lunch_break_start);
-                        $roster_item_object->break_end_int = $lunch_break_end;
-                        $roster_item_object->break_end_sql = roster_item::format_time_integer_to_string($lunch_break_end);
-                        /*
-                         * Preparartion for the next iteration:
-                         */
-                        $lunch_break_start = $lunch_break_end;
-                    }
-                } elseif (!empty($employee_id) AND!empty($roster_item_object->break_start_int) AND empty($roster_item_object->break_end_int)) {
-                    $roster_item_object->break_end_int = $roster_item_object->break_start_int + $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
-                    $roster_item_object->break_end_sql = roster_item::format_time_integer_to_string($roster_item_object->break_end_int);
-                } elseif (!empty($employee_id) AND empty($roster_item_object->break_start_int) AND!empty($roster_item_object->break_end_int)) {
-                    $roster_item_object->break_start_int = $roster_item_object->break_end_int - $workforce->List_of_employees[$employee_id]->lunch_break_minutes;
-                    $roster_item_object->break_start_sql = roster_item::format_time_integer_to_string($roster_item_object->break_start_int);
-                }
-            }
-        }
-        return NULL;
-    }
-
-    public static function get_working_hours_should(DateTime $date_object, int $employee_id) {
+    public static function get_working_hours_should(DateTime $date_object, int $employee_key) {
         $working_hours_should = NULL;
-        $sql_query = "SELECT SUM(`working_hours`) as `working_hours_should` FROM `principle_roster` WHERE `weekday` = :weekday AND `employee_id` = :employee_id AND `alternating_week_id` = :alternating_week_id";
+        $sql_query = "SELECT SUM(`working_hours`) as `working_hours_should` FROM `principle_roster` WHERE `weekday` = :weekday AND `employee_key` = :employee_key AND `alternating_week_id` = :alternating_week_id";
         $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
         $result = database_wrapper::instance()->run($sql_query, array(
             'weekday' => $date_object->format('w'),
-            'employee_id' => $employee_id,
+            'employee_key' => $employee_key,
             'alternating_week_id' => $alternating_week_id,
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -224,16 +161,16 @@ class principle_roster extends roster {
         return $working_hours_should;
     }
 
-    public static function get_working_week_days($employee_id) {
+    public static function get_working_week_days($employee_key) {
         /*
          * TODO: Die Funktion könnte in die employee Klasse übergeben werden, wenn diese einen Zugriff auf den Grundplan hätte.
          * Sie wäre dort vermutlich private und nicht static.
-         * Ein employee Objekt enthät bereits einen Grundplan. Allerdings ist die vorhandene Instanz nur für eine Alternierung vorhanden.
+         * Ein employee Objekt enthält bereits einen Grundplan. Allerdings ist die vorhandene Instanz nur für eine Alternierung vorhanden.
          * Sonderfall: Wenn jemand im Wechsel 2 und 3 Tage pro Woche arbeitet,
          *   so kann nur hier mit Zugriff auf den kompletten Grundplan und den kompletten Alternierungen auch der korrekte Wert von 2,5 gefunden werden.
          */
-        $sql_query = "SELECT COUNT(*) AS `working_week_days`, COUNT(DISTINCT `alternating_week_id`) AS `alternations` FROM (SELECT `alternating_week_id` FROM `principle_roster` WHERE `employee_id` = :employee_id GROUP BY `alternating_week_id`, `weekday`) AS q1;";
-        $result = database_wrapper::instance()->run($sql_query, array('employee_id' => $employee_id));
+        $sql_query = "SELECT COUNT(*) AS `working_week_days`, COUNT(DISTINCT `alternating_week_id`) AS `alternations` FROM (SELECT `alternating_week_id` FROM `principle_roster` WHERE `employee_key` = :employee_key GROUP BY `alternating_week_id`, `weekday`) AS q1;";
+        $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             if (0 != $row->alternations) {
                 return (float) $row->working_week_days / $row->alternations;
@@ -311,63 +248,6 @@ class principle_roster extends roster {
         return;
     }
 
-    public static function insert_changed_entries_into_database(array $Roster, array $Changed_roster_employee_id_list) {
-        foreach ($Roster as $date_unix => $Roster_day_array) {
-            if (!isset($Changed_roster_employee_id_list[$date_unix])) {
-                /**
-                 * There are no changes.
-                 */
-                continue;
-            }
-            /**
-             * There is some change on $date_unix
-             */
-            $date_object = new DateTime;
-            $date_object->setTimestamp($date_unix);
-            $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
-
-            foreach ($Roster_day_array as $roster_item) {
-                if (!in_array($roster_item->employee_id, $Changed_roster_employee_id_list[$date_unix])) {
-                    /**
-                     * <p lang=de>Dieser Mitarbeiter wurde nicht geändert.</p>
-                     */
-                    continue;
-                }
-                if (NULL === $roster_item->employee_id) {
-                    /**
-                     * <p lang=de>Dies ist der Pseudomitarbeiter.
-                     * Er wird nur aus optischen/technischen Gründen mitgeführt.
-                     * </p>
-                     */
-                    continue;
-                }
-                database_wrapper::instance()->beginTransaction();
-                /*
-                 * TODO: Do we also have to delete entries in some cases?
-                 */
-                $primary_key_of_existing_entry = self::find_existing_entry_in_db($roster_item, $alternating_week_id);
-                if (FALSE !== $primary_key_of_existing_entry) {
-                    /**
-                     * <p lang=de>Diesen Eintrag gibt es schon so ähnlich:</p>
-                     */
-                    $result_success = self::update_old_entry_into_db($roster_item, $alternating_week_id, $primary_key_of_existing_entry);
-                    if (FALSE === $result_success) {
-                        return FALSE;
-                    }
-                } else {
-                    /**
-                     * <p lang=de>Dieser Eintrag ist komplett neu:</p>
-                     */
-                    $result_success = self::insert_new_entry_into_db($roster_item, $alternating_week_id);
-                    if (FALSE === $result_success) {
-                        return FALSE;
-                    }
-                }
-                database_wrapper::instance()->commit();
-            }
-        }
-    }
-
     public static function insert_new_entries_into_database(array $Principle_roster_of_new_items) {
         foreach ($Principle_roster_of_new_items as $date_unix => $Principle_roster_day_array) {
             /**
@@ -378,7 +258,7 @@ class principle_roster extends roster {
             $alternating_week_id = alternating_week::get_alternating_week_for_date($date_object);
 
             foreach ($Principle_roster_day_array as $roster_item) {
-                if (NULL === $roster_item->employee_id) {
+                if (NULL === $roster_item->employee_key) {
                     /**
                      * <p lang=de>Dies ist der Pseudomitarbeiter.
                      * Er wird nur aus optischen/technischen Gründen mitgeführt.
@@ -413,7 +293,7 @@ class principle_roster extends roster {
                      */
                     continue;
                 }
-                if (NULL === $roster_item->employee_id) {
+                if (NULL === $roster_item->employee_key) {
                     /**
                      * <p lang=de>Dies ist der Pseudomitarbeiter.
                      * Er wird nur aus optischen/technischen Gründen mitgeführt.
@@ -474,13 +354,13 @@ class principle_roster extends roster {
     public static function find_existing_entry_in_db(roster_item $roster_item, int $alternating_week_id) {
         $sql_query = "SELECT * FROM `principle_roster` "
                 . " WHERE "
-                . " `employee_id` = :employee_id AND "
+                . " `employee_key` = :employee_key AND "
                 . " `branch_id` = :branch_id AND "
                 . " `alternating_week_id` = :alternating_week_id AND "
                 . " `weekday` = :weekday ";
 
         $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $roster_item->employee_id,
+            'employee_key' => $roster_item->employee_key,
             'branch_id' => $roster_item->branch_id,
             'alternating_week_id' => $alternating_week_id,
             'weekday' => date('w', $roster_item->date_unix),
@@ -494,7 +374,7 @@ class principle_roster extends roster {
 
     private static function insert_new_entry_into_db(roster_item $roster_item, int $alternating_week_id) {
         $sql_query = "INSERT INTO `principle_roster` "
-                . " SET `employee_id` = :employee_id, "
+                . " SET `employee_key` = :employee_key, "
                 . " `branch_id` = :branch_id, "
                 . " `weekday` = :weekday, "
                 . " `alternating_week_id` = :alternating_week_id, "
@@ -502,7 +382,7 @@ class principle_roster extends roster {
                 . " `comment` = :comment"
                 . ";";
         $result = database_wrapper::instance()->run($sql_query, array(
-            'employee_id' => $roster_item->employee_id,
+            'employee_key' => $roster_item->employee_key,
             'weekday' => date('w', $roster_item->date_unix),
             'alternating_week_id' => $alternating_week_id,
             'duty_start' => $roster_item->duty_start_sql,

@@ -18,16 +18,18 @@
  */
 package Selenium;
 
+import Selenium.signin.SignInPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeSuite;
+import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.asserts.SoftAssert;
-import Selenium.signin.SignInPage;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -36,12 +38,13 @@ import org.testng.annotations.Test;
  */
 public class TestPage {
 
-    WebDriver driver;
-    SoftAssert softAssert = new SoftAssert();
-    private PropertyFile propertyFile;
+    protected WebDriver driver;
+    protected SoftAssert softAssert = new SoftAssert();
+    protected PropertyFile propertyFile;
+    protected static Boolean someTestHasFailed = false;
 
     @Test
-    public void signIn() throws Exception {
+    public void signIn() {
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getUrlPageTest();
@@ -58,12 +61,6 @@ public class TestPage {
 
     }
 
-    /*
-    @BeforeMethod
-    public void setUp() {
-        Selenium.driver.Wrapper.createNewDriver();
-    }
-     */
     @BeforeSuite
     public void setUpSuite() {
         driver = Selenium.driver.Wrapper.getDriver();
@@ -76,14 +73,27 @@ public class TestPage {
         By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
+        driver.quit();
+    }
+
+    @BeforeMethod
+    public void setUpMethod() {
+        if (true == someTestHasFailed) {
+            throw new SkipException("Some Test has failed. Skipping all the other methods.");
+        }
     }
 
     @AfterMethod
     public void tearDown(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
+        if (testResult.getStatus() == ITestResult.SUCCESS) {
             driver.quit();
+        } else {
+            /**
+             * Mark this whole test suite as failed:
+             */
+            someTestHasFailed = true;
         }
     }
 

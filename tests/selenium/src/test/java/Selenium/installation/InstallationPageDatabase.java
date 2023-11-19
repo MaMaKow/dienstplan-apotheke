@@ -48,7 +48,7 @@ public class InstallationPageDatabase {
         }
     }
 
-    public void fillForm() {
+    public void fillForm() throws Exception {
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("database_host")));
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
