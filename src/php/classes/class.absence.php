@@ -88,7 +88,7 @@ class absence {
         gettext('changed_after_approval');
     }
 
-    public static function insert_absence(int $employee_id, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string|null $approval) {
+    public static function insert_absence(int $employee_key, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string|null $approval) {
         $sql_query = "INSERT INTO `absence` "
                 . "(employee_key, start, end, days, reason_id, comment, user, approval) "
                 . "VALUES (:employee_key, :start, :end, :days, :reason_id, :comment, :user, :approval)";
