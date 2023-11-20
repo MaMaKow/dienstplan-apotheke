@@ -235,6 +235,15 @@ class user_dialog_email {
             error_log($exception->getMessage());
             error_log($exception->getTraceAsString());
         }
+        if ($table_is_empty) {
+            /*
+             * TRUNCATE the table if it is empty.
+             * This will reset the AUTO_INCREMENT value of `notification_id`
+             */
+            $sql_query = "TRUNCATE TABLE `user_email_notification_cache`;";
+            database_wrapper::instance()->run($sql_query);
+            database_wrapper::instance()->commit();
+        }
     }
 
     private function send_email_about_changed_roster_to_employees($user_key, $message, $ics_file_string) {
