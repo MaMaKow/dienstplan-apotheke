@@ -153,18 +153,3 @@ function get_php_binary() {
         }
     }
 }
-
-/**
- *
- * @param string $date
- * @param string $format
- * @return bool true if the input is a date of the given format
- * @todo Move this function into a class that extends DateTime
- */
-function validate_date(string $date = null, string $format = 'Y-m-d') {
-    if (null === $date) {
-        return false;
-    }
-    $d = DateTime::createFromFormat($format, $date);
-    return $d && $d->format($format) == $date;
-}

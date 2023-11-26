@@ -94,14 +94,14 @@ abstract class user_input {
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
-                if (!validate_date($date_sql, 'Y-m-d')) {
+                if (!self::isValidDateInFormat($date_sql, 'Y-m-d')) {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
                 if ('' === $employee_key) {
                     $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
                     continue;
                 }
-                if (!validate_date($duty_start_sql, 'H:i')) {
+                if (!self::isValidDateInFormat($duty_start_sql, 'H:i')) {
                     /**
                      * <p lang=de>
                      * Bei der Übertragung von roster items können leere Items übertragen werden.
@@ -109,7 +109,7 @@ abstract class user_input {
                      * Daher wird diese Zeile in diesem Fall nicht erreicht.
                      * </p>
                      */
-                    if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
+                    if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                         /**
                          * <p lang=de>
                          * Sowohl Beginn als auch Ende wurden als leer übertragen. Dieses roster item wurde also gelöscht.
@@ -120,7 +120,7 @@ abstract class user_input {
                     }
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_key, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
@@ -167,7 +167,7 @@ abstract class user_input {
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
-                if (!validate_date($date_sql, 'Y-m-d')) {
+                if (!self::isValidDateInFormat($date_sql, 'Y-m-d')) {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
                 /*
@@ -177,7 +177,7 @@ abstract class user_input {
                   }
                  *
                  */
-                if (!validate_date($duty_start_sql, 'H:i')) {
+                if (!self::isValidDateInFormat($duty_start_sql, 'H:i')) {
                     /**
                      * <p lang=de>
                      * Bei der Woche gibt es immer auch Tage, an denen nicht gearbeitet wird.
@@ -203,7 +203,7 @@ abstract class user_input {
                      */
                     continue;
                 }
-                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
@@ -253,7 +253,7 @@ abstract class user_input {
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
-                if (!validate_date($date_sql, 'Y-m-d')) {
+                if (!self::isValidDateInFormat($date_sql, 'Y-m-d')) {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
                 if (NULL === $employee_key OR !is_numeric($employee_key)) {
@@ -263,7 +263,7 @@ abstract class user_input {
                      */
                     continue;
                 }
-                if (!validate_date($duty_start_sql, 'H:i')) {
+                if (!self::isValidDateInFormat($duty_start_sql, 'H:i')) {
                     /**
                      * <p lang=de>
                      * Einträge sind nur gültig, wenn sie einen Start und ein Ende haben.
@@ -271,7 +271,7 @@ abstract class user_input {
                      * oder es wurde ein neuer Eintrag nicht korrekt übergeben.
                      * </p>
                      */
-                    if (isset($Principle_roster_row_array['primary_key']) and !validate_date($duty_end_sql, 'H:i')) {
+                    if (isset($Principle_roster_row_array['primary_key']) and !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                         /**
                          * <p lang=de>
                          * Dienstzeit wurde gerade gelöscht.
@@ -290,7 +290,7 @@ abstract class user_input {
                      */
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR !validate_date($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
@@ -704,5 +704,20 @@ abstract class user_input {
             //$user_dialog_email = new user_dialog_email();
             //$user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_key_list, $Changed_roster_employee_key_list, $Deleted_roster_employee_key_list);
         }
+    }
+
+    /**
+     * Checks if the input string is a valid date in the given format.
+     *
+     * @param string $date
+     * @param string $format
+     * @return bool true if the input is a date of the given format
+     */
+    private function isValidDateInFormat(string $date = null, string $format = 'Y-m-d'): bool {
+        if (null === $date) {
+            return false;
+        }
+        $dateObject = DateTime::createFromFormat($format, $date);
+        return $dateObject && $dateObject->format($format) == $date;
     }
 }
