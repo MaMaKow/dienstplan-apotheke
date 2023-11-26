@@ -106,6 +106,12 @@ public class ConfigurationPage {
         return webElement.getAttribute("value");
     }
 
+    public String getErrorLogPath() {
+        By elementBy = By.xpath("/html/body/div[3]/form/div/fieldset[4]/input[@name='error_log']");
+        WebElement webElement = driver.findElement(elementBy);
+        return webElement.getAttribute("value");
+    }
+
     public Integer getErrorReporting() {
         Integer errorReportingValue = null;
         /**

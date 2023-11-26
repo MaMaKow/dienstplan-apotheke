@@ -47,7 +47,7 @@ public class TestUserManagementPage extends TestPage {
         Assert.assertEquals(userManagementPage.getUserName(), administratorUserName);
         Assert.assertEquals(userManagementPage.getUserEmail(), administratorEmail);
         Assert.assertEquals(userManagementPage.getEmployeeKey(), 1);
-        Assert.assertEquals(userManagementPage.getUserStatus(), "Active");
+        Assert.assertEquals(userManagementPage.getUserStatus(), "active");
 
         // You can also test privileges if needed.
         Map<String, Boolean> privileges = userManagementPage.getPrivileges();
@@ -68,7 +68,7 @@ public class TestUserManagementPage extends TestPage {
         // Go to the User Management page
         UserManagementPage userManagementPage = new UserManagementPage(driver);
         int oldEmployeeKey = userManagementPage.getEmployeeKey();
-        int newEmployeeKey = 2;
+        int newEmployeeKey = 3;
         userManagementPage.setEmployeeKey(newEmployeeKey);
         userManagementPage.submitForm();
         int newEmployeeKeyFound = userManagementPage.getEmployeeKey();

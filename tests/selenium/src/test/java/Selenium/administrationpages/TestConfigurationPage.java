@@ -80,6 +80,7 @@ public class TestConfigurationPage extends TestPage {
          * Error log verbosity:
          */
         Assert.assertEquals(configurationPage.getErrorReporting(), null);
+        Assert.assertTrue(configurationPage.getErrorLogPath().contains("error.log"));
         /**
          * Approval:
          */

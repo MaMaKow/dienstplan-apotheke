@@ -242,7 +242,9 @@ class user_dialog_email {
              */
             $sql_query = "TRUNCATE TABLE `user_email_notification_cache`;";
             database_wrapper::instance()->run($sql_query);
-            database_wrapper::instance()->commit();
+            if (database_wrapper::instance()->inTransaction()) {
+                database_wrapper::instance()->commit();
+            }
         }
     }
 

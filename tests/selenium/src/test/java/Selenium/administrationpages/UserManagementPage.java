@@ -91,7 +91,7 @@ public class UserManagementPage {
 
     public String getUserStatus() {
         Select statusSelect = getUserStatusSelect();
-        return statusSelect.getFirstSelectedOption().getText();
+        return statusSelect.getFirstSelectedOption().getAttribute("value");
     }
 
     public Map<String, Boolean> getPrivileges() {
@@ -115,7 +115,7 @@ public class UserManagementPage {
     // Method to change user status
     public void setUserStatus(String newStatus) {
         Select statusSelect = getUserStatusSelect();
-        statusSelect.selectByVisibleText(newStatus);
+        statusSelect.selectByValue(newStatus);
     }
 
     // Method to change privileges

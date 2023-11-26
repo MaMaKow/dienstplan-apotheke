@@ -17,15 +17,20 @@
  */
 require_once '../../../default.php';
 $configurationManager = new \PDR\Output\HTML\configurationManager();
+$configurationManager->checkErrorLogPath();
 
 /*
  * TODO: Handle all the configuration parameters
  */
 $session->exit_on_missing_privilege('administration');
-if (!empty($_POST)) {
+if (isset($_POST) && !empty($_POST)) {
     $config = \PDR\Output\HTML\configurationManager::handle_user_input($config);
+    // POST data has been submitted
+    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/configuration.php' . "?user_input=handled";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
-
+$configuration = new \PDR\Application\configuration();
 /*
  * Check the hide_disapproved value
  */
@@ -46,22 +51,22 @@ $error_warning_checked = "";
 $error_error_checked = "";
 $other_error = NULL;
 
-if (\PDR\Output\HTML\configurationManager::ERROR_ALL <= $config['error_reporting']) {
+if (\PDR\Output\HTML\configurationManager::ERROR_ALL <= $configuration->getErrorReporting()) {
     $error_all_checked = "checked";
-} elseif (\PDR\Output\HTML\configurationManager::ERROR_NOTICE <= $config['error_reporting']) {
+} elseif (\PDR\Output\HTML\configurationManager::ERROR_NOTICE <= $configuration->getErrorReporting()) {
     $error_notice_checked = "checked";
-} elseif (\PDR\Output\HTML\configurationManager::ERROR_WARNING <= $config['error_reporting']) {
+} elseif (\PDR\Output\HTML\configurationManager::ERROR_WARNING <= $configuration->getErrorReporting()) {
     $error_warning_checked = "checked";
-} elseif (\PDR\Output\HTML\configurationManager::ERROR_ERROR <= $config['error_reporting']) {
+} elseif (\PDR\Output\HTML\configurationManager::ERROR_ERROR <= $configuration->getErrorReporting()) {
     $error_error_checked = "checked";
 } else {
-    $other_error = \PDR\Output\HTML\configurationManager::friendly_error_type($config['error_reporting']);
+    $other_error = \PDR\Output\HTML\configurationManager::friendly_error_type($configuration->getErrorReporting());
 }
 $datalist_encodings = \PDR\Output\HTML\configurationManager::build_supported_encodings_datalist();
 $datalist_locales = \PDR\Output\HTML\configurationManager::build_supported_locales_datalist();
 $error_error = \PDR\Output\HTML\configurationManager::ERROR_ERROR;
 
-$email_method = $config['email_method'];
+$email_method = $configuration->getEmailMethod();
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -80,13 +85,13 @@ echo $user_dialog->build_messages();
                     <?= gettext('All the information about the duty rosters will be stored password protected in this database.') ?>
                 </p>
                 <label><?= gettext('Application name') ?></label>
-                <br><input type="text" name="application_name" value="<?php echo isset($config['application_name']) ? $config['application_name'] : '' ?>">
+                <br><input type="text" name="application_name" value="<?php echo $configuration->getApplicationName(); ?>">
                 <br>
                 <label><?= gettext('Database name') ?></label>
-                <br><input type="text" name="database_name" value="<?php echo isset($config['database_name']) ? $config['database_name'] : '' ?>">
+                <br><input type="text" name="database_name" value="<?php echo $configuration->getDatabaseName(); ?>">
                 <br>
                 <label><?= gettext('Database user') ?></label>
-                <br><input type="text" name="database_user" value="<?php echo isset($config['database_user']) ? $config['database_user'] : '' ?>">
+                <br><input type="text" name="database_user" value="<?php echo $configuration->getDatabaseUser(); ?>">
                 <br>
                 <label><?= gettext('Database user passphrase') ?></label>
                 <!-- Confuse the browser in order to stop it from auto-inserting the user password in the database password field-->
@@ -123,7 +128,7 @@ echo $user_dialog->build_messages();
                 </p>
                 <label><?= gettext('Email') ?>
                 </label>
-                <br><input type="email" name="contact_email" value="<?php echo isset($config['contact_email']) ? $config['contact_email'] : '' ?>">
+                <br><input type="email" name="contact_email" value="<?php echo $configuration->getContactEmail(); ?>">
             </fieldset>
             <fieldset>
                 <legend>
@@ -136,7 +141,7 @@ echo $user_dialog->build_messages();
                     foreach (\PDR\Output\HTML\configurationManager::$List_of_supported_languages as $language_code => $language_name) {
                         ?>
                         <option value=<?=
-                        $language_code === $config['language'] ? '"' . $language_code . '" selected' : '"' . $language_code . '"';
+                        $language_code === $configuration->getLanguage() ? '"' . $language_code . '" selected' : '"' . $language_code . '"';
                         ?>><?= $language_name ?></option>
                                 <?php
                             }
@@ -148,12 +153,12 @@ echo $user_dialog->build_messages();
                     <?= gettext('They depend on language and cultural conventions.') ?>
                 </p>
                 <label><?= gettext('Time locale') ?></label>
-                <br><input list="locales" name="LC_TIME" value="<?php echo isset($config['LC_TIME']) ? $config['LC_TIME'] : '' ?>" >
+                <br><input list="locales" name="LC_TIME" value="<?php echo $configuration->getLC_TIME(); ?>" >
                 <?= $datalist_locales; ?>
                 <br>
                 <label><?= gettext('Charset') ?>
                 </label>
-                <br><input list="encodings" name="mb_internal_encoding" value="<?php echo isset($config['mb_internal_encoding']) ? $config['mb_internal_encoding'] : '' ?>" >
+                <br><input list="encodings" name="mb_internal_encoding" value="<?php echo $configuration->getMb_internal_encoding(); ?>" >
                 <?php echo "$datalist_encodings"; ?>
             </fieldset>
             <!-- Debugging settings -->
@@ -179,10 +184,12 @@ echo $user_dialog->build_messages();
                 <?php
                 if (FALSE and !empty($other_error)) {
                     ?>
-                    <input type="radio" id="error_reporting_<?= $other_error ?>" name="error_reporting" value="<?= $config['error_reporting'] . '" checked'; ?>">
+                    <input type="radio" id="error_reporting_<?= $other_error ?>" name="error_reporting" value="<?= $configuration->getErrorReporting() . '" checked'; ?>">
                     <label for="error_reporting_<?= $other_error ?>"><?= $other_error . ' ' . gettext('(current value)') ?></label>
                 <?php }
                 ?>
+                <label><?= gettext('Error Log Path') ?></label>
+                <br><input type="text" name="error_log" value="<?php echo $configuration->getErrorLog(); ?>">
             </fieldset>
 
             <!-- Roster approval settings: -->
@@ -219,11 +226,11 @@ echo $user_dialog->build_messages();
                     <legend><?= gettext('SMTP settings') ?>
                     </legend>
                     <label for="email_smtp_host">Host</label><br>
-                    <input type="text" name="email_smtp_host" id="email_smtp_host" value="<?= $config['email_smtp_host'] ?>"><br>
+                    <input type="text" name="email_smtp_host" id="email_smtp_host" value="<?= $configuration->getEmailSmtpHost(); ?>"><br>
                     <label for="email_smtp_port">Port</label><br>
-                    <input type="text" name="email_smtp_port" id="email_smtp_port" value="<?= $config['email_smtp_port'] ?>"><br>
+                    <input type="text" name="email_smtp_port" id="email_smtp_port" value="<?= $configuration->getEmailSmtpPort(); ?>"><br>
                     <label for="email_smtp_username">User name</label><br>
-                    <input type="text" name="email_smtp_username" id="email_smtp_username" value="<?= $config['email_smtp_username'] ?>"><br>
+                    <input type="text" name="email_smtp_username" id="email_smtp_username" value="<?= $configuration->getEmailSmtpUsername(); ?>"><br>
                     <label for="email_smtp_password">Password</label><br>
                     <input type="password" name="email_smtp_password" id="email_smtp_password" value=""  autocomplete="new-password"><br>
                 </fieldset>

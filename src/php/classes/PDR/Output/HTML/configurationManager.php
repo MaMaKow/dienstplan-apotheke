@@ -149,6 +149,29 @@ class configurationManager {
         return $datalist_locales;
     }
 
+    public function checkErrorLogPath() {
+        $configuration = new \PDR\Application\configuration();
+        // Set the desired error log path
+        $desiredErrorLogPath = $configuration->getErrorLog();
+
+        // Set the current error log path obtained using ini_get
+        $currentErrorLogPath = ini_get('error_log');
+
+        // Normalize paths using realpath
+        $normalizedDesiredPath = realpath($desiredErrorLogPath);
+        $normalizedCurrentPath = realpath($currentErrorLogPath);
+
+        // Compare the normalized paths
+        if ($normalizedDesiredPath !== $normalizedCurrentPath) {
+            $message = "<p>CAVE: Log paths are changed internally:</p>";
+            $message .= "<p>Configured path: " . htmlentities($normalizedDesiredPath) . "</p>";
+            $message .= "<p>Actual path: " . htmlentities($normalizedCurrentPath) . "</p>";
+
+            $user_dialog = new \user_dialog();
+            $user_dialog->add_message($message, E_USER_WARNING, true);
+        }
+    }
+
     /**
      * <p>Takes the old $config, the user input and the default configuration,
      * writes it to the configuration file
@@ -160,7 +183,15 @@ class configurationManager {
     public static function handle_user_input($config) {
         $user_dialog = new \user_dialog();
         $configuration_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php';
-        /*
+        /**
+         * Copy old file
+         */
+        if (file_exists($configuration_file)) {
+            $path_info = pathinfo($configuration_file);
+            $backup_filename = $path_info['dirname'] . DIRECTORY_SEPARATOR . $path_info['filename'] . '_' . date(\DateTime::ATOM) . '.' . $path_info['extension'];
+            copy($configuration_file, $backup_filename);
+        }
+        /**
          * Read the POST values:
          */
         foreach (\PDR\Application\configuration::$List_of_configuration_parameters as $key => $default_value) {
@@ -194,11 +225,17 @@ class configurationManager {
                 $new_config[$key] = $default_value;
             }
         }
-        if (file_exists($configuration_file)) {
-            rename($configuration_file, $configuration_file . '_' . date(\DateTime::ATOM));
-        }
         $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($new_config, true) . ';');
+        if ($result === false) {
+            $user_dialog = new \user_dialog;
+            $user_dialog->add_message("Error while trying to write configuration file.", E_USER_ERROR);
+        }
         chmod($configuration_file, 0660);
+        /**
+         * The configuration file is cashed by PHP with OPcache.
+         * Therefore we have to deelete the cache to make php read the changes.
+         */
+        opcache_reset();
         return $new_config;
     }
 }
