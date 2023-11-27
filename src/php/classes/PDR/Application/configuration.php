@@ -20,19 +20,23 @@
 namespace PDR\Application;
 
 /**
- * Container class for the functions neseccary for configuration
+ * This PHP class, named `configuration`, serves as a container for managing configuration settings in an application.
+ * It encapsulates the logic for loading configuration parameters from an external file, provides getter methods
+ * for accessing specific configuration values, and includes default values for parameters that may not be set.
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @namespace PDR\Application
  */
 class configuration {
-    /*
-     * TODO: Documentation for the new array SMTP
-     * Configuration GUI for SMTP
-     */
 
     private static $loadedConfig; // This will store the loaded configuration
 
-    // Constructor to load the configuration
+    /**
+     * Constructor method to load the configuration.
+     * If the configuration has not been loaded yet, it includes the external configuration file,
+     * assigns the loaded configuration to the class property, and ensures subsequent calls to this constructor
+     * do not reload the configuration.
+     */
     public function __construct() {
         if (null == self::$loadedConfig) {
             // Load the configuration file
@@ -44,8 +48,13 @@ class configuration {
         }
     }
 
-    // Getter method for 'application_name'
-    public function getApplicationName() {
+    /**
+     * Retrieves the application name from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The application name.
+     */
+    public function getApplicationName(): string {
         if (isset(self::$loadedConfig['application_name'])) {
             return self::$loadedConfig['application_name'];
         } else {
@@ -53,7 +62,13 @@ class configuration {
         }
     }
 
-    public function getDatabaseManagementSystem() {
+    /**
+     * Retrieves the database management system from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The database management system.
+     */
+    public function getDatabaseManagementSystem(): string {
         if (isset(self::$loadedConfig['database_management_system'])) {
             return self::$loadedConfig['database_management_system'];
         } else {
@@ -61,7 +76,13 @@ class configuration {
         }
     }
 
-    public function getDatabaseHost() {
+    /**
+     * Retrieves the database host from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The database host.
+     */
+    public function getDatabaseHost(): string {
         if (isset(self::$loadedConfig['database_host'])) {
             return self::$loadedConfig['database_host'];
         } else {
@@ -69,7 +90,13 @@ class configuration {
         }
     }
 
-    public function getDatabaseName() {
+    /**
+     * Retrieves the database name from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The database name.
+     */
+    public function getDatabaseName(): string {
         if (isset(self::$loadedConfig['database_name'])) {
             return self::$loadedConfig['database_name'];
         } else {
@@ -77,15 +104,27 @@ class configuration {
         }
     }
 
-    public function getDatabasePort() {
+    /**
+     * Retrieves the database port from the loaded configuration.
+     * If not set, falls back to the default integer value.
+     *
+     * @return int The database port.
+     */
+    public function getDatabasePort(): int {
         if (isset(self::$loadedConfig['database_port'])) {
-            return self::$loadedConfig['database_port'];
+            return (int) self::$loadedConfig['database_port'];
         } else {
-            return self::$List_of_configuration_parameters['database_port'];
+            return (int) self::$List_of_configuration_parameters['database_port'];
         }
     }
 
-    public function getDatabaseUser() {
+    /**
+     * Retrieves the database user from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The database user.
+     */
+    public function getDatabaseUser(): string {
         if (isset(self::$loadedConfig['database_user'])) {
             return self::$loadedConfig['database_user'];
         } else {
@@ -93,7 +132,13 @@ class configuration {
         }
     }
 
-    public function getDatabasePassword() {
+    /**
+     * Retrieves the database password from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The database password.
+     */
+    public function getDatabasePassword(): string {
         if (isset(self::$loadedConfig['database_password'])) {
             return self::$loadedConfig['database_password'];
         } else {
@@ -101,7 +146,13 @@ class configuration {
         }
     }
 
-    public function getSessionSecret() {
+    /**
+     * Retrieves the session secret from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The session secret.
+     */
+    public function getSessionSecret(): string {
         if (isset(self::$loadedConfig['session_secret'])) {
             return self::$loadedConfig['session_secret'];
         } else {
@@ -109,23 +160,41 @@ class configuration {
         }
     }
 
-    public function getErrorReporting() {
+    /**
+     * Retrieves the error reporting level from the loaded configuration.
+     * If not set, falls back to the default integer value.
+     *
+     * @return int The error reporting level.
+     */
+    public function getErrorReporting(): int {
         if (isset(self::$loadedConfig['error_reporting'])) {
-            return self::$loadedConfig['error_reporting'];
+            return (int) self::$loadedConfig['error_reporting'];
         } else {
-            return self::$List_of_configuration_parameters['error_reporting'];
+            return (int) self::$List_of_configuration_parameters['error_reporting'];
         }
     }
 
-    public function getDisplayErrors() {
+    /**
+     * Retrieves the display errors setting from the loaded configuration.
+     * If not set, falls back to the default boolean value.
+     *
+     * @return bool The display errors setting.
+     */
+    public function getDisplayErrors(): bool {
         if (isset(self::$loadedConfig['display_errors'])) {
-            return self::$loadedConfig['display_errors'];
+            return (bool) self::$loadedConfig['display_errors'];
         } else {
-            return self::$List_of_configuration_parameters['display_errors'];
+            return (bool) self::$List_of_configuration_parameters['display_errors'];
         }
     }
 
-    public function getLogErrors() {
+    /**
+     * Retrieves the log errors setting from the loaded configuration.
+     * If not set, falls back to the default boolean value.
+     *
+     * @return bool The log errors setting.
+     */
+    public function getLogErrors(): bool {
         if (isset(self::$loadedConfig['log_errors'])) {
             return self::$loadedConfig['log_errors'];
         } else {
@@ -133,7 +202,13 @@ class configuration {
         }
     }
 
-    public function getErrorLog() {
+    /**
+     * Retrieves the error log file path from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The error log file path.
+     */
+    public function getErrorLog(): string {
         if (isset(self::$loadedConfig['error_log'])) {
             return self::$loadedConfig['error_log'];
         } else {
@@ -141,7 +216,13 @@ class configuration {
         }
     }
 
-    public function getLC_TIME() {
+    /**
+     * Retrieves the LC_TIME setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The LC_TIME setting.
+     */
+    public function getLC_TIME(): string {
         if (isset(self::$loadedConfig['LC_TIME'])) {
             return self::$loadedConfig['LC_TIME'];
         } else {
@@ -149,7 +230,13 @@ class configuration {
         }
     }
 
-    public function getTimezone() {
+    /**
+     * Retrieves the timezone setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The timezone setting.
+     */
+    public function getTimezone(): string {
         if (isset(self::$loadedConfig['timezone'])) {
             return self::$loadedConfig['timezone'];
         } else {
@@ -157,7 +244,13 @@ class configuration {
         }
     }
 
-    public function getLanguage() {
+    /**
+     * Retrieves the language setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The language setting.
+     */
+    public function getLanguage(): string {
         if (isset(self::$loadedConfig['language'])) {
             return self::$loadedConfig['language'];
         } else {
@@ -165,7 +258,13 @@ class configuration {
         }
     }
 
-    public function getMb_internal_encoding() {
+    /**
+     * Retrieves the mb_internal_encoding setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The mb_internal_encoding setting.
+     */
+    public function getMb_internal_encoding(): string {
         if (isset(self::$loadedConfig['mb_internal_encoding'])) {
             return self::$loadedConfig['mb_internal_encoding'];
         } else {
@@ -173,7 +272,13 @@ class configuration {
         }
     }
 
-    public function getContactEmail() {
+    /**
+     * Retrieves the contact email setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The contact email setting.
+     */
+    public function getContactEmail(): string {
         if (isset(self::$loadedConfig['contact_email'])) {
             return self::$loadedConfig['contact_email'];
         } else {
@@ -181,7 +286,13 @@ class configuration {
         }
     }
 
-    public function getHideDisapproved() {
+    /**
+     * Retrieves the hide_disapproved setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return bool The hide_disapproved setting.
+     */
+    public function getHideDisapproved(): bool {
         if (isset(self::$loadedConfig['hide_disapproved'])) {
             return self::$loadedConfig['hide_disapproved'];
         } else {
@@ -189,7 +300,13 @@ class configuration {
         }
     }
 
-    public function getEmailMethod() {
+    /**
+     * Retrieves the email method setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The email method setting.
+     */
+    public function getEmailMethod(): string {
         if (isset(self::$loadedConfig['email_method'])) {
             return self::$loadedConfig['email_method'];
         } else {
@@ -197,7 +314,14 @@ class configuration {
         }
     }
 
-    public function getEmailSmtpHost() {
+    /**
+     * Retrieves the SMTP host for email from the loaded configuration.
+     * This value is only relevant, if the email method is SMTP.
+     * If not set, falls back to the default value.
+     *
+     * @return string|null The SMTP host for email.
+     */
+    public function getEmailSmtpHost(): string|null {
         if (isset(self::$loadedConfig['email_smtp_host'])) {
             return self::$loadedConfig['email_smtp_host'];
         } else {
@@ -205,7 +329,14 @@ class configuration {
         }
     }
 
-    public function getEmailSmtpPort() {
+    /**
+     * Retrieves the SMTP port for email from the loaded configuration.
+     * This value is only relevant, if the email method is SMTP.
+     * If not set, falls back to the default value.
+     *
+     * @return int|null The SMTP port for email.
+     */
+    public function getEmailSmtpPort(): int|null {
         if (isset(self::$loadedConfig['email_smtp_port'])) {
             return self::$loadedConfig['email_smtp_port'];
         } else {
@@ -213,7 +344,14 @@ class configuration {
         }
     }
 
-    public function getEmailSmtpUsername() {
+    /**
+     * Retrieves the SMTP username for email from the loaded configuration.
+     * This value is only relevant if the email method is SMTP.
+     * If not set, falls back to the default value.
+     *
+     * @return string|null The SMTP username for email.
+     */
+    public function getEmailSmtpUsername(): string|null {
         if (isset(self::$loadedConfig['email_smtp_username'])) {
             return self::$loadedConfig['email_smtp_username'];
         } else {
@@ -221,7 +359,14 @@ class configuration {
         }
     }
 
-    public function getEmailSmtpPassword() {
+    /**
+     * Retrieves the SMTP password for email from the loaded configuration.
+     * This value is only relevant if the email method is SMTP.
+     * If not set, falls back to the default value.
+     *
+     * @return string|null The SMTP password for email.
+     */
+    public function getEmailSmtpPassword(): string|null {
         if (isset(self::$loadedConfig['email_smtp_password'])) {
             return self::$loadedConfig['email_smtp_password'];
         } else {
@@ -230,7 +375,12 @@ class configuration {
     }
 
     /**
-     * @var array $List_of_configuration_parameters <p>The array contains all available configuration paramaters and their default values.</p>
+     * @var array $List_of_configuration_parameters <p>
+     * The array contains all available configuration parameters and their default values.
+     * These default values serve as a reference for configuration and can be overridden
+     * by specific configurations loaded during runtime. This array serves as a centralized
+     * point for managing default configuration values.
+     * </p>
      */
     public static $List_of_configuration_parameters = array(
         'application_name' => 'PDR',

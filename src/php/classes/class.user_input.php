@@ -713,7 +713,7 @@ abstract class user_input {
      * @param string $format
      * @return bool true if the input is a date of the given format
      */
-    private function isValidDateInFormat(string $date = null, string $format = 'Y-m-d'): bool {
+    private static function isValidDateInFormat(string $date = null, string $format = 'Y-m-d'): bool {
         if (null === $date) {
             return false;
         }
