@@ -346,11 +346,11 @@ class workforce {
         $compounding = false;
         $goods_receipt = false;
         $networkOfBranchOffices = new PDR\Pharmacy\NetworkOfBranchOffices();
-        $branch = $networkOfBranchOffices->get_main_branch_id();
+        $branch_id = $networkOfBranchOffices->get_main_branch_id();
         $start_of_employment = null;
         $end_of_employment = null;
         $holidays = 28;
-        $employee = new employee($private_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $compounding, $goods_receipt, $branch, $start_of_employment, $end_of_employment, $holidays);
+        $employee = new employee($private_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $compounding, $goods_receipt, $branch_id, $start_of_employment, $end_of_employment, $holidays);
         return $employee;
     }
 }

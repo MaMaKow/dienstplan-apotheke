@@ -221,7 +221,7 @@ abstract class human_resource_management {
             if ($checked_branch_id == $branch_id) {
                 $text .= " checked=checked";
             }
-            $text .= ">&nbsp;<span>$branch_object->name</span></label><br>\n";
+            $text .= ">&nbsp;<span>" . $branch_object->getName() . "</span></label><br>\n";
         }
         $text .= "</fieldset>\n";
 

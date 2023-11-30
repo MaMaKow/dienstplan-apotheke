@@ -228,9 +228,9 @@ abstract class build_html_roster_views {
         $branch_select .= ">\n";
         foreach ($List_of_branch_objects as $branch_id => $branch_object) {
             if ($branch_id != $current_branch_id) {
-                $branch_select .= "<option value=" . $branch_id . ">" . $branch_object->name . "</option>\n";
+                $branch_select .= "<option value=" . $branch_id . ">" . $branch_object->getName() . "</option>\n";
             } else {
-                $branch_select .= "<option value=" . $branch_id . " selected>" . $branch_object->name . "</option>\n";
+                $branch_select .= "<option value=" . $branch_id . " selected>" . $branch_object->getName() . "</option>\n";
             }
         }
         $branch_select .= "</select>\n";
@@ -318,8 +318,8 @@ abstract class build_html_roster_views {
             }
             $table_html .= "<tr class='branch_roster_title_tr'><th colspan=";
             $table_html .= htmlentities($number_of_days) . ">";
-            $table_html .= $List_of_branch_objects[$branch_id]->short_name;
-            $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->short_name . "</th></tr>";
+            $table_html .= $List_of_branch_objects[$branch_id]->getShortName();
+            $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->getShortName() . "</th></tr>";
             $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id, $Options);
         }
         return $table_html;
@@ -367,7 +367,7 @@ abstract class build_html_roster_views {
                     }
                     $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
                     $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-                    $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+                    $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->getName();
                 }
             }
             $head_table_html .= "</td>\n";
@@ -549,7 +549,7 @@ abstract class build_html_roster_views {
                 }
                 $zeile .= "<br>";
                 $zeile .= "<span class='branch_name' data-branch_id='" . $roster_item->branch_id . "'>";
-                $zeile .= htmlentities($List_of_branch_objects[$roster_item->branch_id]->short_name);
+                $zeile .= htmlentities($List_of_branch_objects[$roster_item->branch_id]->getShortName());
                 $zeile .= "</span>";
                 $table_html .= $zeile;
                 $table_html .= "</td>\n";

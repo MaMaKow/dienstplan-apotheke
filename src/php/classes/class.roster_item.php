@@ -290,7 +290,7 @@ class roster_item implements \JsonSerializable {
         $message .= gettext('You work at the following times:') . PHP_EOL;
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-        $message .= $List_of_branch_objects[$this->branch_id]->name . PHP_EOL;
+        $message .= $List_of_branch_objects[$this->branch_id]->getName() . PHP_EOL;
         $message .= gettext('Start and end of duty');
         $message .= ":";
         $message .= PHP_EOL;

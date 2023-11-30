@@ -292,10 +292,10 @@ abstract class build_html_navigation_elements {
          */
         $text .= "<select id=branch_form_select class='large' name=mandant onchange=this.form.submit()>\n";
         foreach ($List_of_branch_objects as $branch_object) {
-            if ($branch_object->branch_id != $current_branch_id) {
-                $text .= "<option value=" . $branch_object->branch_id . ">" . $branch_object->name . "</option>\n";
+            if ($branch_object->getBranchId() != $current_branch_id) {
+                $text .= "<option value=" . $branch_object->getBranchId() . ">" . $branch_object->getName() . "</option>\n";
             } else {
-                $text .= "<option selected value=" . $branch_object->branch_id . ">" . $branch_object->name . "</option>\n";
+                $text .= "<option selected value=" . $branch_object->getBranchId() . ">" . $branch_object->getName() . "</option>\n";
             }
         }
         $text .= "</select>\n"
@@ -402,5 +402,4 @@ abstract class build_html_navigation_elements {
         $text .= "</div>\n";
         return $text;
     }
-
 }

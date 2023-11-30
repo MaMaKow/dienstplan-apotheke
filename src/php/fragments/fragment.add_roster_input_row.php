@@ -21,9 +21,8 @@ $Roster = array();
 $day_iterator = user_input::get_variable_from_any_input('day_iterator', FILTER_SANITIZE_NUMBER_INT);
 $roster_row_iterator = user_input::get_variable_from_any_input('roster_row_iterator', FILTER_SANITIZE_NUMBER_INT);
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
-$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $maximum_number_of_rows = user_input::get_variable_from_any_input('maximum_number_of_rows', FILTER_SANITIZE_NUMBER_INT);
-$branch_id = user_input::get_variable_from_any_input('branch_id', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+$branch_id = user_input::get_variable_from_any_input('branch_id', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 
 $html_string = build_html_roster_views::build_roster_input_row($Roster, $day_iterator, $roster_row_iterator, $maximum_number_of_rows, $branch_id, array('add_select_employee'));
 echo $html_string;

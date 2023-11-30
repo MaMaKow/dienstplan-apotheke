@@ -24,7 +24,7 @@ require '../../../default.php';
 
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-$branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+$branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 create_cookie("mandant", $branch_id, 30);
 
 $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y-m-d'));
@@ -177,9 +177,9 @@ $html_text .= gettext("calendar week")
 $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
 if (isset($having_emergency_service['branch_id'])) {
     if (isset($workforce->List_of_employees[$having_emergency_service['employee_key']])) {
-        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $workforce->List_of_employees[$having_emergency_service['employee_key']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $workforce->List_of_employees[$having_emergency_service['employee_key']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->getName();
     } else {
-        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->name;
+        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->getName();
     }
 }
 $html_text .= "</td>\n";

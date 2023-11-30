@@ -61,39 +61,72 @@ class Branch {
          * In case, the object is constructed with the branch_id NULL, we build an empty branch.
          * This is used in branch-management.php to create a new branch.
          */
-        $this->branch_id = "";
+        $this->branch_id = null;
         $this->name = gettext("create new branch");
-        $this->short_name = "";
-        $this->address = "";
-        $this->manager = "";
+        $this->short_name = null;
+        $this->address = null;
+        $this->manager = null;
         $this->Opening_times = array();
-        $this->PEP = "";
+        $this->PEP = null;
+        $this->Opening_times = array(
+            1 => array('day_opening_start' => "", 'day_opening_end' => ""),
+            2 => array('day_opening_start' => "", 'day_opening_end' => ""),
+            3 => array('day_opening_start' => "", 'day_opening_end' => ""),
+            4 => array('day_opening_start' => "", 'day_opening_end' => ""),
+            5 => array('day_opening_start' => "", 'day_opening_end' => ""),
+            6 => array('day_opening_start' => "", 'day_opening_end' => ""),
+            7 => array('day_opening_start' => "", 'day_opening_end' => ""),
+        );
     }
 
-    /**
-     * @param string $variable_name
-     * @return misc Value of the variable.
-     * @todo Get rid of this! Make one function for each variable.
-     */
-    public function __get($variable_name) {
-        return $this->$variable_name;
+    public function __get($name) {
+        error_log("Trying to access $name in branch object.");
+        throw new \Exception("Thou shall not access the variables directly. Use the getter methods!");
+    }
+
+    public function getBranchId(): int|null {
+        return $this->branch_id;
+    }
+
+    public function getName(): string|null {
+        return $this->name;
+    }
+
+    public function getShortName(): string|null {
+        return $this->short_name;
+    }
+
+    public function getAddress(): string|null {
+        return $this->address;
+    }
+
+    public function getManager(): string|null {
+        return $this->manager;
+    }
+
+    public function getOpeningTimes(): array|null {
+        return $this->Opening_times;
+    }
+
+    public function getPEP(): string|null {
+        return $this->PEP;
     }
 
     /**
      * read the branch data from the database
      * @return array An array ob objects of the class branch
      */
-    private function read_branch_data_from_database($branch_id) {
+    private function read_branch_data_from_database(int $branch_id) {
 
         $sql_query = 'SELECT * FROM `branch` WHERE `branch_id` = :branch_id;';
         $result = \database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
-            $this->branch_id = $row->branch_id;
+            $this->branch_id = (int) $row->branch_id;
             $this->name = $row->name;
             $this->short_name = $row->short_name;
             $this->address = $row->address;
             $this->manager = $row->manager;
-            $this->PEP = $row->PEP;
+            $this->PEP = (int) $row->PEP;
             $this->read_opening_times_from_database();
             if ("" === $this->short_name) {
                 $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';

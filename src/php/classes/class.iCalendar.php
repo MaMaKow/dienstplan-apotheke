@@ -96,11 +96,9 @@ class iCalendar {
                 $eventobj = new ZCiCalNode("VEVENT", $icalobj->curnode);
                 $date_unix = $roster_object->date_unix;
                 $branch_id = $roster_object->branch_id;
-                $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
-                $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-                $branch_name = $List_of_branch_objects[$branch_id]->name;
-                $branch_address = $List_of_branch_objects[$branch_id]->address;
-                $branch_manager = $List_of_branch_objects[$branch_id]->manager;
+                $branch_name = $List_of_branch_objects[$branch_id]->getName();
+                $branch_address = $List_of_branch_objects[$branch_id]->getAddress();
+                $branch_manager = $List_of_branch_objects[$branch_id]->getManager();
                 /**
                  * add title:
                  */
@@ -142,7 +140,7 @@ class iCalendar {
         $branch_id = $roster_object->branch_id;
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-        $branch_name = $List_of_branch_objects[$branch_id]->name;
+        $branch_name = $List_of_branch_objects[$branch_id]->getName();
 
         $configuration = new \PDR\Application\configuration();
         $locale = $configuration->getLanguage(); // e.g. de-DE

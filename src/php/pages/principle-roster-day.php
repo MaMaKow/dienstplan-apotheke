@@ -20,7 +20,7 @@
 require '../../../default.php';
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-$branch_id = (int) user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
+$branch_id = (int) user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 $weekday = (int) user_input::get_variable_from_any_input('weekday', FILTER_SANITIZE_NUMBER_INT, 1);
 $alternating_week_id = (int) user_input::get_variable_from_any_input('alternating_week_id', FILTER_SANITIZE_NUMBER_INT, alternating_week::get_min_alternating_week_id());
 

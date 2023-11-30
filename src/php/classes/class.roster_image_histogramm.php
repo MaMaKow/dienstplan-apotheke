@@ -151,7 +151,6 @@ abstract class roster_image_histogramm {
         $max_height = max($max_work_load, $max_workforce);
         $height_factor = ($canvas_height - ($outer_margin_y * 2)) / $max_height;
 
-
         $canvas_text = "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height' >\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
         $canvas_text .= "<script>\n";
         $canvas_text .= "var c = document.getElementById('canvas_histogram');\n";
@@ -185,7 +184,7 @@ abstract class roster_image_histogramm {
 
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-        $branch_pep_id = $List_of_branch_objects[$branch_id]->PEP;
+        $branch_pep_id = $List_of_branch_objects[$branch_id]->getPEP();
         if (empty($branch_pep_id)) {
             return FALSE;
         }
@@ -208,6 +207,11 @@ abstract class roster_image_histogramm {
         return $Expectation;
     }
 
+    /**
+     * @todo use css instead!
+     * @param type $hexstring
+     * @return type
+     */
     private static function hex2rgb($hexstring) {
         $hex = str_replace("#", "", $hexstring);
 
@@ -224,5 +228,4 @@ abstract class roster_image_histogramm {
         return implode(",", $rgb); // returns the rgb values separated by commas
         //return $rgb; // returns an array with the rgb values
     }
-
 }

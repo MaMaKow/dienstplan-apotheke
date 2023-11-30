@@ -70,7 +70,7 @@ class EmergencyService {
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
         if (is_integer($this->branch_id) and isset($List_of_branch_objects[$this->branch_id])) {
-            $branch_name_short = $List_of_branch_objects[$this->branch_id]->short_name;
+            $branch_name_short = $List_of_branch_objects[$this->branch_id]->getShortName();
             return $branch_name_short;
         }
         return '???';
@@ -88,5 +88,4 @@ class EmergencyService {
         }
         return false;
     }
-
 }
