@@ -112,10 +112,10 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Bearbeitung abbrechen'>\n"
             . "</button>\n"
             . "<button type=button id=edit_$row->start class='button_small edit_button no_print' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
-            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/pencil-pictogram.svg' alt='Diese Zeile bearbeiten'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_edit.svg' alt='Diese Zeile bearbeiten'>\n"
             . "</button>\n"
             . "<button type='submit' id='save_$row->start' class='button_small no_print' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
-            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' alt='Veränderungen dieser Zeile speichern'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' alt='Veränderungen dieser Zeile speichern'>\n"
             . "</button>\n"
             . "";
     $tablebody .= "</td>\n";

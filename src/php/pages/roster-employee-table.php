@@ -74,6 +74,7 @@ echo build_html_navigation_elements::build_select_employee($employee_key, $workf
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
 echo build_html_navigation_elements::build_button_link_download_ics_file($date_sql, $employee_key);
+echo build_html_navigation_elements::build_button_link_roster_employee_hours_page($employee_key);
 echo build_html_navigation_elements::build_input_date($date_sql);
 echo "<br>";
 

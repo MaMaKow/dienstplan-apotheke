@@ -36,6 +36,7 @@ class absence {
     const REASON_PARENTAL_LEAVE = 8;
 
     /**
+     * @deprecated since version 0.24.4
      * @todo Der Array kann perspektivisch auch ganz weg. Er wird nicht mehr relevant genutzt.
      * @var array $List_of_absence_reasons
      */

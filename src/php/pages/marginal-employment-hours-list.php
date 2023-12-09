@@ -177,10 +177,6 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 <FORM method='post' class='no_print'>
     <SELECT name='month_or_part' onchange='this.form.submit()'>
         <?php
-        /*
-         * TODO: Add more options:
-         * e.g. whole year, first/second/third/fourth quarter
-         */
         foreach ($Months as $month_number_option => $month_name) {
             echo "<option value='$month_number_option'";
             if ($month_number_option == $month_or_part) {
@@ -243,6 +239,8 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     </SELECT>
 </FORM>
 <H1>Stundenzettel</H1>
+
+<?php echo build_html_navigation_elements::build_button_link_roster_employee_table_page($employee_key); ?>
 <H2><?= $workforce->List_of_employees[$employee_key]->full_name ?></H2>
 <TABLE class="table_with_border" id="marginal_employment_hours_list_table">
     <THEAD>

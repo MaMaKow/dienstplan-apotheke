@@ -52,6 +52,7 @@ public class MenuFragment {
     public static final By MenuLinkToAbsenceEdit = By.id("MenuLinkToAbsenceEdit");
     public static final By MenuLinkToAbsenceRead = By.id("MenuLinkToAbsenceRead");
     public static final By MenuLinkToAbsenceMonth = By.id("MenuLinkToAbsenceMonth");
+    public static final By MenuLinkToAbsenceOverview = By.id("MenuLinkToAbsenceOverview");
     public static final By MenuLinkToAbsencYear = By.id("MenuLinkToAbsenceYear");
     public static final By MenuLinkToAttendanceList = By.id("MenuLinkToAttendanceList");
     public static final By MenuLinkToSaturdayList = By.id("MenuLinkToSaturdayList");
@@ -61,17 +62,17 @@ public class MenuFragment {
     public static final By MenuLinkToManageEmployee = By.id("MenuLinkToManageEmployee");
     public static final By MenuLinkToManageBranch = By.id("MenuLinkToManageBranch");
     public static final By MenuLinkToManageUser = By.id("MenuLinkToManageUser");
+    public static final By MenuLinkToConfiguration = By.id("MenuLinkToConfiguration");
     public static final By MenuLinkToManageAccount = By.id("MenuLinkToManageAccount");
     public static final By MenuLinkToApplicationAbout = By.id("MenuLinkToApplicationAbout");
-    public static final By MenuLinkToConfiguration = By.id("MenuLinkToConfiguration");
+    public static final By MenuLinkToApplicationManual = By.id("MenuLinkToApplicationManual");
     public static final By MenuLinkToLogout = By.id("MenuLinkToLogout");
 
     /**
      * By objects for the menu list items (=headings)
      */
-    public static final By MenuListItemWeek = By.id("MenuListItemWeek");
-    public static final By MenuListItemDay = By.id("MenuListItemDay");
-    public static final By MenuListItemEmployee = By.id("MenuListItemEmployee");
+    public static final By MenuListItemRoster = By.id("MenuListItemRoster");
+    public static final By MenuListItemPrincipleRoster = By.id("MenuListItemPrincipleRoster");
     public static final By MenuListItemOvertime = By.id("MenuListItemOvertime");
     public static final By MenuListItemAbsence = By.id("MenuListItemAbsence");
     public static final By MenuListItemAdministration = By.id("MenuListItemAdministration");
@@ -79,34 +80,56 @@ public class MenuFragment {
     public static Map<By, By> menuMap = new HashMap<By, By>();
 
     public static void navigateTo(WebDriver driver, By target) {
-
         WebDriverWait wait = new WebDriverWait(driver, 20);
-        menuMap.put(MenuLinkToRosterWeekTable, MenuListItemWeek);
-        menuMap.put(MenuLinkToRosterWeekImages, MenuListItemWeek);
-        menuMap.put(MenuLinkToRosterDayEdit, MenuListItemDay);
-        menuMap.put(MenuLinkToRosterDayRead, MenuListItemDay);
-        menuMap.put(MenuLinkToPrincipleRosterDay, MenuListItemDay);
-        menuMap.put(MenuLinkToRosterEmployee, MenuListItemEmployee);
-        menuMap.put(MenuLinkToPrincipleRosterEmployee, MenuListItemEmployee);
-        menuMap.put(MenuLinkToRosterHoursList, MenuListItemEmployee);
+        /**
+         * Scheduled Roster
+         */
+        menuMap.put(MenuLinkToRosterWeekTable, MenuListItemRoster);
+        menuMap.put(MenuLinkToRosterWeekImages, MenuListItemRoster);
+        menuMap.put(MenuLinkToRosterDayEdit, MenuListItemRoster);
+        menuMap.put(MenuLinkToRosterDayRead, MenuListItemRoster);
+        menuMap.put(MenuLinkToRosterEmployee, MenuListItemRoster);
+        menuMap.put(MenuLinkToRosterHoursList, MenuListItemRoster);
+        /**
+         * Overtime
+         */
         menuMap.put(MenuLinkToOvertimeEdit, MenuListItemOvertime);
         menuMap.put(MenuLinkToOvertimeRead, MenuListItemOvertime);
         menuMap.put(MenuLinkToOvertimeOverview, MenuListItemOvertime);
+        /**
+         * Absence
+         */
         menuMap.put(MenuLinkToAbsenceEdit, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsenceRead, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsenceMonth, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsencYear, MenuListItemAbsence);
+        menuMap.put(MenuLinkToAbsenceOverview, MenuListItemAbsence);
+        /**
+         * Principle Roster
+         */
+        menuMap.put(MenuLinkToPrincipleRosterEmployee, MenuListItemPrincipleRoster);
+        menuMap.put(MenuLinkToPrincipleRosterDay, MenuListItemPrincipleRoster);
+        /**
+         * Administration
+         */
         menuMap.put(MenuLinkToAttendanceList, MenuListItemAdministration);
         menuMap.put(MenuLinkToSaturdayList, MenuListItemAdministration);
         menuMap.put(MenuLinkToSaturdayRotationTeams, MenuListItemAdministration);
         menuMap.put(MenuLinkToEmergencyServiceList, MenuListItemAdministration);
+
         menuMap.put(MenuLinkToPharmacyUploadPep, MenuListItemAdministration);
+
         menuMap.put(MenuLinkToManageEmployee, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageBranch, MenuListItemAdministration);
-        menuMap.put(MenuLinkToConfiguration, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageUser, MenuListItemAdministration);
+
+        menuMap.put(MenuLinkToConfiguration, MenuListItemAdministration);
+        /**
+         * Application
+         */
         menuMap.put(MenuLinkToManageAccount, MenuListItemApplication);
         menuMap.put(MenuLinkToApplicationAbout, MenuListItemApplication);
+        menuMap.put(MenuLinkToApplicationManual, MenuListItemApplication);
         menuMap.put(MenuLinkToLogout, MenuListItemApplication);
 
         /**
@@ -149,14 +172,15 @@ public class MenuFragment {
         actions.moveToElement(menuListItem).perform();
         if (!linkElement.getAttribute("href").equals(driver.getCurrentUrl())) {
             linkElement.click();
-        } else {
-            /**
-             * Move the mouse back to the left top of the page:
-             *
-             * @CAVE: This might be not exactly (0, 0) because the location we
-             * move from is the center of the element.
-             */
-            actions.moveByOffset(-menuListItem.getLocation().getX(), -menuListItem.getLocation().getY()).perform();
         }
+        /**
+         * Move the mouse back to the left top of the page:
+         *
+         * @CAVE: This might be not exactly (0, 0) because the location we
+         * move from is the center of the element.
+         */
+        menuListItem = driver.findElement(menuListItemBy);
+        actions.moveToElement(menuListItem).perform();
+        actions.moveByOffset(-menuListItem.getLocation().getX(), 500).perform();
     }
 }

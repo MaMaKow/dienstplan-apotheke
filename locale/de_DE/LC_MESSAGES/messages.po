@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2023-10-29 19:58+0100\n"
-"PO-Revision-Date: 2023-10-29 19:59+0100\n"
+"POT-Creation-Date: 2023-12-06 07:31+0100\n"
+"PO-Revision-Date: 2023-12-06 07:34+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -67,8 +67,7 @@ msgstr "Die Passphrasen stimmen nicht überein."
 #: src/php/classes/class.build_html_roster_views.php:
 #: src/php/classes/class.overtime.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
-#: src/php/pages/menu-tiles.php:31 src/php/pages/menu.php:
-#: src/php/pages/saturday-rotation-teams.php:
+#: src/php/pages/menu-tiles.php:31 src/php/pages/saturday-rotation-teams.php:
 msgid "Employee"
 msgstr "Mitarbeiter"
 
@@ -144,7 +143,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:108 src/php/classes/class.absence.php:
+#: src/php/classes/class.absence.php:109 src/php/classes/class.absence.php:
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -226,6 +225,16 @@ msgstr "iCalendar Datei herunterladen"
 #: src/php/classes/class.build_html_navigation_elements.php:
 msgid "iCalendar File"
 msgstr "iCalendar Datei"
+
+#: src/php/classes/class.build_html_navigation_elements.php:
+#: src/php/classes/class.build_html_navigation_elements.php:
+msgid "Employee hours list"
+msgstr "Liste der Arbeitszeiten"
+
+#: src/php/classes/class.build_html_navigation_elements.php:
+#: src/php/classes/class.build_html_navigation_elements.php:
+msgid "Employee roster"
+msgstr "Mitarbeiter Dienstplan"
 
 #: src/php/classes/class.build_html_navigation_elements.php:
 #: src/php/classes/class.build_html_navigation_elements.php:
@@ -786,7 +795,7 @@ msgstr "diese Adresse"
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/classes/class.user.php:302 src/php/pages/user-page.php:
+#: src/php/classes/class.user.php:335 src/php/pages/user-page.php:
 msgid "The password was not correct."
 msgstr "Die Passphrase war nicht korrekt."
 
@@ -794,7 +803,7 @@ msgstr "Die Passphrase war nicht korrekt."
 msgid "The password is to short."
 msgstr "Die Passphrase ist zu kurz."
 
-#: src/php/classes/class.user.php:307 src/php/pages/user-page.php:
+#: src/php/classes/class.user.php:340 src/php/pages/user-page.php:
 msgid ""
 "A secure password should be at least 8 characters long and not listed in any "
 "dictionary."
@@ -946,7 +955,7 @@ msgstr ""
 msgid "Opening times"
 msgstr "Öffnungszeiten"
 
-#: src/php/pages/branch-management.php:
+#: src/php/pages/branch-management.php:187 src/php/pages/user-management.php:
 msgid "Identifier"
 msgstr "Bezeichner"
 
@@ -999,7 +1008,7 @@ msgstr "Filialleiter"
 msgid "Remove branch"
 msgstr "Mandant löschen"
 
-#: src/php/pages/configuration.php:72 src/php/pages/menu.php:
+#: src/php/pages/configuration.php:77 src/php/pages/menu.php:
 msgid "Configuration"
 msgstr "Konfiguration"
 
@@ -1031,7 +1040,7 @@ msgstr "Datenbank Benutzer*in"
 msgid "Database user passphrase"
 msgstr "Datenbank Benutzer Passphrase"
 
-#: src/php/pages/configuration.php:107 src/php/register.php:
+#: src/php/pages/configuration.php:112 src/php/register.php:
 msgid "Repeat passphrase"
 msgstr "Passphrase wiederholen"
 
@@ -1047,7 +1056,7 @@ msgstr ""
 "Lesende Benutzer werden eingeladen, Wünsche und Vorschläge an den Ersteller "
 "des Dienstplanes zu richten."
 
-#: src/php/pages/configuration.php:124 src/php/register.php:
+#: src/php/pages/configuration.php:129 src/php/register.php:
 msgid "Email"
 msgstr "Email"
 
@@ -1112,6 +1121,12 @@ msgstr "Alle Fehler"
 #: src/php/pages/configuration.php:
 msgid "(current value)"
 msgstr "(aktueller Wert)"
+
+#: src/php/pages/configuration.php:
+msgid "Error Log Path"
+msgstr ""
+"Dateipfad \n"
+"Fehlerprotokoll"
 
 #: src/php/pages/configuration.php:
 msgid ""
@@ -1349,8 +1364,16 @@ msgid "Absence"
 msgstr "Abwesenheit"
 
 #: src/php/pages/menu.php:
-msgid "Weekly view"
-msgstr "Wochenansicht"
+msgid "Roster"
+msgstr "Dienstplan"
+
+#: src/php/pages/menu.php:
+msgid "Daily input"
+msgstr "Tagesansicht Eingabe"
+
+#: src/php/pages/menu.php:
+msgid "Daily output"
+msgstr "Tagesansicht Ausgabe"
 
 #: src/php/pages/menu.php:
 msgid "Weekly table"
@@ -1361,30 +1384,10 @@ msgid "Weekly images"
 msgstr "Wochen-Bilder"
 
 #: src/php/pages/menu.php:
-msgid "Daily view"
-msgstr "Tagesansicht"
-
-#: src/php/pages/menu.php:
-msgid "Daily input"
-msgstr "Tagesansicht Eingabe"
-
-#: src/php/pages/menu.php:
-msgid "Daily output"
-msgstr "Tagesansicht Ausgabe"
-
-#: src/php/pages/menu.php:50 src/php/pages/principle-roster-day.php:
-msgid "Principle roster daily"
-msgstr "Grundplan Tagesansicht"
-
-#: src/php/pages/menu.php:
 msgid "Roster employee"
 msgstr "Mitarbeiteransicht"
 
-#: src/php/pages/menu.php:
-msgid "Principle roster employee"
-msgstr "Grundplan Mitarbeiter"
-
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:58 src/php/pages/menu.php:
 msgid "Roster hours list"
 msgstr "Liste der Arbeitszeiten"
 
@@ -1396,7 +1399,7 @@ msgstr "Überstunden Eingabe"
 msgid "Overtime output"
 msgstr "Überstunden Ausgabe"
 
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:78 src/php/pages/menu.php:
 msgid "Overtime overview"
 msgstr "Überstunden Übersicht"
 
@@ -1421,6 +1424,18 @@ msgid "Remaining Vacation Overview"
 msgstr "Resturlaub Übersicht"
 
 #: src/php/pages/menu.php:
+msgid "Principle Roster"
+msgstr "Grundplan"
+
+#: src/php/pages/menu.php:
+msgid "Principle roster employee"
+msgstr "Grundplan Mitarbeiter"
+
+#: src/php/pages/menu.php:127 src/php/pages/principle-roster-day.php:
+msgid "Principle roster daily"
+msgstr "Grundplan Tagesansicht"
+
+#: src/php/pages/menu.php:
 msgid "Administration"
 msgstr "Administration"
 
@@ -1428,37 +1443,42 @@ msgstr "Administration"
 msgid "Attendance list"
 msgstr "Anwesenheitsliste"
 
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:148 src/php/pages/menu.php:
 msgid "Saturday list"
 msgstr "Samstagsliste"
 
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:154 src/php/pages/menu.php:
 msgid "Saturday rotation teams"
 msgstr "Samstags Teams"
 
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:160 src/php/pages/menu.php:
 msgid "Emergency service list"
 msgstr "Notdienstliste"
 
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:168 src/php/pages/menu.php:
 msgid "Upload deployment planning"
 msgstr "PEP-Upload"
 
+#: src/php/pages/menu.php:176 src/php/pages/menu.php:
 #: src/php/pages/menu.php:
 msgid "Employee management"
 msgstr "Mitarbeiterverwaltung"
 
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:183 src/php/pages/menu.php:
 msgid "Branch management"
 msgstr "Mandantenverwaltung"
 
-#: src/php/pages/menu.php:
+#: src/php/pages/menu.php:189 src/php/pages/menu.php:
 msgid "User management"
 msgstr "Benutzer*innenverwaltung"
 
 #: src/php/pages/menu.php:
 msgid "Account page"
 msgstr "Benutzer*innenkonto"
+
+#: src/php/pages/menu.php:
+msgid "Manual"
+msgstr "Bedienungsanleitung"
 
 #: src/php/pages/menu.php:
 msgid "Logout"
@@ -1687,6 +1707,22 @@ msgstr "Sie wird im Hintergrund verarbeitet."
 msgid "Sorry, your file could not be opened."
 msgstr "Entschuldigung, Ihre Datei konnte nicht geöffnet werden.."
 
+#: src/php/pages/user-management.php:
+msgid "User Email"
+msgstr "Benutzer Email"
+
+#: src/php/pages/user-management.php:
+msgid "Employee Key"
+msgstr "Mitarbeiter Schlüssel"
+
+#: src/php/pages/user-management.php:
+msgid "User Status:"
+msgstr "Benutzer Status:"
+
+#: src/php/pages/user-management.php:124 src/php/pages/user-page.php:
+msgid "Privileges"
+msgstr "Privilegien"
+
 #: src/php/pages/user-page.php:
 msgid "The password was successfully changed."
 msgstr "Ihre Passphrase wurde erfolgreich geändert."
@@ -1724,10 +1760,6 @@ msgstr "Neue Passphrase"
 #: src/php/pages/user-page.php:
 msgid "Repeat new password"
 msgstr "Neue Passphrase wiederholen"
-
-#: src/php/pages/user-page.php:
-msgid "Privileges"
-msgstr "Privilegien"
 
 #: src/php/register.php:
 msgid "Please enter the correct calculation result!"
@@ -1803,6 +1835,12 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 #: tests/get-database-structure.php:
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
+
+#~ msgid "Weekly view"
+#~ msgstr "Wochenansicht"
+
+#~ msgid "Daily view"
+#~ msgstr "Tagesansicht"
 
 #~ msgid "Repeat password"
 #~ msgstr "Passwort wiederholen"

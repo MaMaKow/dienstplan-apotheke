@@ -122,7 +122,6 @@ class NetworkOfBranchOffices {
     /**
      * This function will guess, which branch is the main branch.
      * It will just use the one with the lowest branch_id.
-     * @todo Should we store the official main branch information in the database?
      *
      * @return int The banch id of the main branch.
      */
@@ -182,5 +181,4 @@ class NetworkOfBranchOffices {
         }
         die('<p><a href="' . $location . '">Please configure at least one branch first!</a></p>');
     }
-
 }

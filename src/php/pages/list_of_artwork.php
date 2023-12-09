@@ -23,102 +23,287 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     <?= gettext('This is a list of works of art that are part of pharmacy duty roster. It is listed for each work as far as is known title, author, source and license.'); ?>
     <ol>
         <li>
-            <img class="example_artwork" src="../../../img/md_ic_settings_24px.svg"><br>
+            <img class="example_artwork" src="../../../img/md_settings.svg"><br>
             <span class="cc-by_title">Settings</span>,
             <span class="cc-by_author">Material Design icons by Google</span>,
-            <span class="cc-by_source"><a href="https://github.com/google/material-design-icons/blob/master/action/svg/design/ic_settings_24px.svg">GitHub</a></span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
+            <img class="example_artwork" src="../../../img/md_edit.svg">
+            <img class="example_artwork" src="../../../img/md_edit.png"><br>
+            <span class="cc-by_title">Edit</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_account_tree.svg"><br>
+            <span class="cc-by_title">Account Tree</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_badge.svg"><br>
+            <span class="cc-by_title">Badge</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_checklist.svg"><br>
+            <span class="cc-by_title">Checklist</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_data_alert.svg"><br>
+            <span class="cc-by_title">Data Alert</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_emergency.svg"><br>
+            <span class="cc-by_title">Emergency</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_format_list_bulleted.svg"><br>
+            <span class="cc-by_title">Format List Bulleted</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_help_clinic.svg"><br>
+            <span class="cc-by_title">Help Clinic</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_lists.svg"><br>
+            <span class="cc-by_title">Lists</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_local_pharmacy.svg"><br>
+            <span class="cc-by_title">Local Pharmacy</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_patient_list.svg"><br>
+            <span class="cc-by_title">Patient List</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_sick.svg"><br>
+            <span class="cc-by_title">Sick</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_upload_file.svg"><br>
+            <span class="cc-by_title">Upload File</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_work_alert.svg"><br>
+            <span class="cc-by_title">Work Alert</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_work_history.svg"><br>
+            <span class="cc-by_title">Work History</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_manage_accounts.svg">
+            <span class="cc-by_title">Manage Accounts</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_face-24px.svg">
+            <span class="cc-by_title">Face</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_face_3.svg">
+            <span class="cc-by_title">Face3</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_directions_run-24px.svg"><br>
+            <span class="cc-by_title">Directions Run</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_view_week.svg"><br>
+            <span class="cc-by_title">View Week</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_save.svg">
+            <img class="example_artwork" src="../../../img/md_save.png"><br>
+            <span class="cc-by_title">Save</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_person.svg">
             <img class="example_artwork" src="../../../img/md_person-24px.svg"><br>
             <span class="cc-by_title">Person</span>,
             <span class="cc-by_author">Material Design icons by Google</span>,
-            <span class="cc-by_source"><a href="https://www.google.com/design/icons/">material icons library</a></span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/md_card_travel-24px.svg"><br>
-            <span class="cc-by_title">card travel</span>,
+            <img class="example_artwork" src="../../../img/md_description.svg"><br>
+            <span class="cc-by_title">Description</span>,
             <span class="cc-by_author">Material Design icons by Google</span>,
-            <span class="cc-by_source"><a href="https://www.google.com/design/icons/">material icons library</a></span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_logout.svg"><br>
+            <span class="cc-by_title">Logout</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_event_repeat.svg"><br>
+            <span class="cc-by_title">Event Repeat</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_quick_reference.svg"><br>
+            <span class="cc-by_title">Quick Reference</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_card_travel-24px.svg">
+            <img class="example_artwork" src="../../../img/md_card_travel-24px.png"><br>
+            <span class="cc-by_title">Card Travel</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_add.svg">
+            <span class="cc-by_title">Add</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_attach_file.svg">
+            <span class="cc-by_title">Attach File</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
             <img class="example_artwork" src="../../../img/md_thumb_up-24px.svg"><br>
             <span class="cc-by_title">thumb up</span>,
             <span class="cc-by_author">Material Design icons by Google</span>,
-            <span class="cc-by_source"><a href="https://www.google.com/design/icons/">material icons library</a></span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
             <img class="example_artwork" src="../../../img/md_thumb_down-24px.svg"><br>
             <span class="cc-by_title">thumb down</span>,
             <span class="cc-by_author">Material Design icons by Google</span>,
-            <span class="cc-by_source"><a href="https://www.google.com/design/icons/">material icons library</a></span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/md_today-24px.svg"><br>
+            <img class="example_artwork" src="../../../img/md_delete_forever.svg">
+            <img class="example_artwork" src="../../../img/md_delete_forever.png"><br>
+            <span class="cc-by_title">Delete Forever</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
+            <img class="example_artwork" src="../../../img/md_today-24px.svg">
+            <img class="example_artwork" src="../../../img/md_today-24px.png"><br>
             <span class="cc-by_title">today</span>,
             <span class="cc-by_author">Material Design icons by Google</span>,
-            <span class="cc-by_source"><a href="https://www.google.com/design/icons/">material icons library</a></span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
             <img class="example_artwork" src="../../../img/md_date_range-24px.svg"><br>
             <span class="cc-by_title">date range</span>,
             <span class="cc-by_author">Material Design icons by Google</span>,
-            <span class="cc-by_source"><a href="https://www.google.com/design/icons/">material icons library</a></span>,
+            <span class="cc-by_source"><a href="https://fonts.google.com/icons">material icons library</a></span>,
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/employee_2.svg"><br>
+            <img class="example_artwork" src="../../../img/employee_2.svg">
+            <img class="example_artwork" src="../../../img/employee_2.png"><br>
             <span class="cc-by_title">Unternehmen Arzt Apotheker</span>,
             <span class="cc-by_author"><a href="https://pixabay.com/de/users/martex-2358270/">martex</a></span>,
             <span class="cc-by_source"><a href="https://pixabay.com/de/vectors/unternehmen-arzt-apotheker-person-1316931/">Pixabay</a></span>,
             <span class="cc-by_license"><a href="https://pixabay.com/de/service/license/">Pixabay License</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/information.svg"><br>
+            <img class="example_artwork" src="../../../img/information.svg">
+            <img class="example_artwork" src="../../../img/information.png"><br>
             <span class="cc-by_title" property="dct:title">Information Info Symbol Kreis</span>,
             <span class="cc-by_author"><a href="https://pixabay.com/de/users/Clker-Free-Vector-Images-3736">Clker-Free-Vector-Images</a></span>,
             <span class="cc-by_source"><a href="https://pixabay.com/de/vectors/informationen-info-symbol-kreis-41225/">Pixabay</a></span>,
             <span class="cc-by_license"><a href="https://pixabay.com/de/service/license/">Pixabay License</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/user_1.svg"><br>
+            <img class="example_artwork" src="../../../img/user_1.svg">
+            <img class="example_artwork" src="../../../img/user_1.png"><br>
             <span class="cc-by_title">Benutzer Person Menschen Profil</span>,
             <span class="cc-by_author"><a href="https://pixabay.com/de/users/tuktukdesign-3181967/">TukTukDesign</a></span>,
             <span class="cc-by_source"><a href="https://pixabay.com/de/vectors/benutzer-person-menschen-profil-1633248/">Pixabay</a></span>,
             <span class="cc-by_license"><a href="https://pixabay.com/de/service/license/">Pixabay License</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/watch_overtime.svg"><br>
+            <img class="example_artwork" src="../../../img/watch_overtime.svg">
+            <img class="example_artwork" src="../../../img/watch_overtime.png"><br>
             <span class="cc-by_title">Uhr Icon Handgelenk isoliert Uhren</span>,
             <span class="cc-by_author"><a href="https://pixabay.com/de/users/tuktukdesign-3181967/">TukTukDesign</a></span>,
             <span class="cc-by_source"><a href="https://pixabay.com/de/vectors/uhr-icon-handgelenk-isoliert-uhren-1633262/">Pixabay</a></span>,
             <span class="cc-by_license"><a href="https://pixabay.com/de/service/license/">Pixabay License</a></span>
-        </li>
-        <li>
-            <img class="example_artwork" src="../../../img/save.png"><br>
-            <span class="cc-by_title">Save</span>,
-            <span class="cc-by_author"><a href="https://www.flaticon.com/authors/smashicons">Smashicons</a></span>,
-            <span class="cc-by_source"><a href="https://www.flaticon.com/free-icon/save_149654">Flaticon</a></span>,
-            <span class="cc-by_license"><a href="https://file000.flaticon.com/downloads/license/license.pdf">Flaticon Basic License</a></span>
-        </li>
-        <li>
-            <img class="example_artwork" src="../../../img/pencil-pictogram.svg"><br>
-            <span class="cc-by_title">Lapis-icon</span>,
-            <span class="cc-by_author"><a href="https://commons.wikimedia.org/wiki/User:Vikiano">Vikiano</a></span>,
-            <span class="cc-by_source"><a href="https://commons.wikimedia.org/wiki/File:Lapis-icon.png">Wikimedia</a></span>,
-            <span class="cc-by_license"><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC-BY-SA</a></span>
-        </li>
-        <li>
-            <img class="example_artwork" src="../../../img/add.svg"><br>
-            <span class="cc-by_title" property="dct:title">Add</span>,
-            <span class="cc-by_author"><a rel="dct:publisher" href="https://github.com/MaMaKow/dienstplan-apotheke"><span property="dct:title">Martin Mandelkow</span></a></span>,
-            <span class="cc-by_source"><a href="https://github.com/MaMaKow/dienstplan-apotheke/blob/master/img/add.svg">Dienstplan Apotheke</a></span>,
-            <span class="cc-by_license"><a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a></span>
         </li>
         <li>
             <img class="example_artwork" src="../../../img/backward.png"><br>
@@ -142,13 +327,6 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
             <span class="cc-by_license"><a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/delete.svg"><br>
-            <span class="cc-by_title" property="dct:title">Delete</span>,
-            <span class="cc-by_author"><a rel="dct:publisher" href="https://github.com/MaMaKow/dienstplan-apotheke"><span property="dct:title">Martin Mandelkow</span></a></span>,
-            <span class="cc-by_source"><a href="https://github.com/MaMaKow/dienstplan-apotheke/blob/master/img/delete.svg">Dienstplan Apotheke</a></span>,
-            <span class="cc-by_license"><a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a></span>
-        </li>
-        <li>
             <img class="example_artwork" src="../../../img/download.png"><br>
             <span class="cc-by_title" property="dct:title">Download</span>,
             <span class="cc-by_author"><a rel="dct:publisher" href="https://github.com/MaMaKow/dienstplan-apotheke"><span property="dct:title">Martin Mandelkow</span></a></span>,
@@ -156,14 +334,16 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
             <span class="cc-by_license"><a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/edit-icon.svg"><br>
+            <img class="example_artwork" src="../../../img/edit-icon.svg">
+            <img class="example_artwork" src="../../../img/edit-icon.png"><br>
             <span class="cc-by_title" property="dct:title">Edit</span>,
             <span class="cc-by_author"><a rel="dct:publisher" href="https://github.com/MaMaKow/dienstplan-apotheke"><span property="dct:title">Martin Mandelkow</span></a></span>,
             <span class="cc-by_source"><a href="https://github.com/MaMaKow/dienstplan-apotheke/blob/master/img/edit-icon.svg">Dienstplan Apotheke</a></span>,
             <span class="cc-by_license"><a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a></span>
         </li>
         <li>
-            <img class="example_artwork" src="../../../img/history.svg"><br>
+            <img class="example_artwork" src="../../../img/history.svg">
+            <img class="example_artwork" src="../../../img/history.png"><br>
             <span class="cc-by_title" property="dct:title">History</span>,
             <span class="cc-by_author"><a rel="dct:publisher" href="https://github.com/MaMaKow/dienstplan-apotheke"><span property="dct:title">Martin Mandelkow</span></a></span>,
             <span class="cc-by_source"><a href="https://github.com/MaMaKow/dienstplan-apotheke/blob/master/img/history.svg">Dienstplan Apotheke</a></span>,

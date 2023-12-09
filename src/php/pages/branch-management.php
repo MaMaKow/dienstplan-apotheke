@@ -226,12 +226,12 @@ function build_branch_input_opening_times($branch_object) {
 
     <div id="form_buttons_container">
         <button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no_print">
-            <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/save.png">
+            <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_save.svg">
             <p> <?= gettext("Save") ?>  </p>
         </button>
         <?php if (null !== $current_branch_id) { ?>
             <button type='submit' name="remove_branch" form='branch_management_form' id="branch_form_button_remove" class="form_button no_print" onclick='return confirmDelete()'>
-                <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/delete.svg">
+                <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_delete_forever.svg">
                 <p> <?= gettext("Remove branch") ?>  </p>
             </button>
         <?php } ?>

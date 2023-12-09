@@ -22,16 +22,16 @@ import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import Selenium.driver.Wrapper;
-import biweekly.util.com.google.ical.values.DateValue;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -50,6 +50,8 @@ public class RosterWeekTablePage {
     private final By buttonWeekBackwardBy = By.id("button_week_backward");
     private final By buttonWeekForwardBy = By.id("button_week_forward");
     private final By branchFormSelectBy = By.id("branch_form_select");
+
+    private int recursionCounter = 0;
 
     //private final By dutyRosterTableBy = By.id("duty_roster_table");
     public RosterWeekTablePage(WebDriver driver) {
@@ -79,17 +81,41 @@ public class RosterWeekTablePage {
     }
 
     public RosterWeekTablePage goToDate(String date) {
+
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
-        Wrapper.fillDateInput(dateChooserInput, date);
         By dateChooserSubmitBy = By.xpath("//*[@name=\"tagesAuswahl\"]");
         WebElement dateChooserSubmit = driver.findElement(dateChooserSubmitBy);
-        dateChooserSubmit.click();
+        try {
+            Wrapper.fillDateInput(dateChooserInput, date);
+            dateChooserSubmit.click();
+        } catch (ElementClickInterceptedException e) {
+            // Maybe the mouse is on the menu, obsuring the element.
+            // Handle the exception by moving the mouse away from the menu
+
+            // Use Actions class to move to the element and then away from it
+            handleElementClickIntercepted(dateChooserSubmit);
+
+            // Retry the click on your problematic element
+            if (recursionCounter < 3) {
+                recursionCounter++;
+                return goToDate(date);
+            }
+        }
+
         return new RosterWeekTablePage(driver);
+    }
+
+    private void handleElementClickIntercepted(WebElement element) {
+        // Use Actions class to move to the element and then away from it
+        Actions actions = new Actions(driver);
+        actions.moveToElement(element).perform();
+        actions.moveByOffset(0, 200).perform();  // Move away, adjust the offset as needed
     }
 
     public RosterWeekTablePage goToDate(LocalDate localDate) {
         String dateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
-        return goToDate(dateString);
+        RosterWeekTablePage rosterWeekTablePage = goToDate(dateString);
+        return rosterWeekTablePage;
     }
 
     public String getDate() {

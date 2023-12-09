@@ -93,6 +93,7 @@ git add "./src/php/database_version_hash.php"
 po_file="./locale/de_DE/LC_MESSAGES/messages.po"
 # Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
 sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
+sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*/\1/' "$po_file"
 echo "In Kommentaren wurden Zeilenangaben aus der $po_file-Datei entfernt."
 git add "$po_file"
 

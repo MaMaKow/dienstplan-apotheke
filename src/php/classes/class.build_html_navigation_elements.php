@@ -150,6 +150,30 @@ abstract class build_html_navigation_elements {
         return $button_html;
     }
 
+    public static function build_button_link_roster_employee_hours_page(int $employee_key) {
+        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/marginal-employment-hours-list.php' method='get' id='roster_employee_hours_page_form'>"
+                . "<input type='hidden' name='employee_key' value='$employee_key' form='roster_employee_hours_page_form'>"
+                . " <button type='submit' class='btn-primary no_print' "
+                . " title='" . gettext("Employee hours list") . "'>"
+                . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_lists.svg' style='width:32px' alt='Employee hours list'>"
+                . " <br>"
+                . gettext("Employee hours list")
+                . " </button></form>\n";
+        return $button_html;
+    }
+
+    public static function build_button_link_roster_employee_table_page(int $employee_key) {
+        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php' method='get' id='roster_employee_table_form'>"
+                . "<input type='hidden' name='employee_key' value='$employee_key' form='roster_employee_table_form'>"
+                . " <button type='submit' class='btn-primary no_print' "
+                . " title='" . gettext("Employee roster") . "'>"
+                . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_lists.svg' style='width:32px' alt='Employee hours list'>"
+                . " <br>"
+                . gettext("Employee roster")
+                . " </button></form>\n";
+        return $button_html;
+    }
+
     public static function build_button_submit($form_id) {
         global $session;
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
@@ -158,7 +182,7 @@ abstract class build_html_navigation_elements {
         $submit_button = "
         <button type='submit' id='submit_button' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id'>
                 <i class='icon-white'>
-                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' class='button-image' alt='" . gettext("Save") . "' >
+                <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' class='button-image' alt='" . gettext("Save") . "' >
                 </i>
                 <br>
                 " . gettext("Save") . "
@@ -339,7 +363,7 @@ abstract class build_html_navigation_elements {
             <input type='hidden' form='principle_roster_delete' name='principle_roster_delete' value=$alternating_week_id>
 		<button type='submit' class='btn-primary no_print'>
 			<i>
-				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.svg' class='button-image' alt='" . gettext("Delete") . "'>
+				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' class='button-image' alt='" . gettext("Delete") . "'>
 			</i>
 			<br>
 			" . gettext("Delete") . "

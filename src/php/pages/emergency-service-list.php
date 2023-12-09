@@ -158,7 +158,7 @@ $user_dialog->build_messages();
                  */
                 echo "<td>\n";
                 echo "<button type='submit' id='save_$key' class='button_small no_print' onClick='enableLeavingPage();' title='" . gettext("Save changes to this line") . "' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
-                . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/save.png' alt='" . gettext("Save changes to this line") . "'>\n"
+                . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' alt='" . gettext("Save changes to this line") . "'>\n"
                 . "</button>\n";
                 echo "<button type='submit' id='delete_$key' class='button_small no_print' onClick='enableLeavingPage(); return confirmDelete();' title='" . gettext("Remove this line") . "' name='command' value='delete' style='border-radius: 32px; background-color: transparent;'>\n"
                 . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='" . gettext("Remove this line") . "'>\n"
