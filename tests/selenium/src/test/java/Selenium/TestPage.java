@@ -81,9 +81,9 @@ public class TestPage {
         // Print the name of the class and the currently executing test method to the log file
         String className = this.getClass().getSimpleName();
         String methodName = result.getMethod().getMethodName();
-        System.out.println(System.lineSeparator() + "Class: " + className + ", Method: " + methodName);
+        System.err.println(System.lineSeparator() + "Class: " + className + ", Method: " + methodName);
         if (true == someTestHasFailed) {
-            System.out.println("Method will be skipped.");
+            System.err.println("Method will be skipped.");
             throw new SkipException("Some Test has failed. Skipping all the other methods.");
         }
     }

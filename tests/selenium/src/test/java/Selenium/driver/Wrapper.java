@@ -45,6 +45,7 @@ import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.Select;
 
 /**
  *
@@ -237,7 +238,7 @@ public class Wrapper {
     }
 
     public static void printBrowserConsole() {
-        System.out.println("printBrowserConsole():");
+        System.err.println("printBrowserConsole():");
         /**
          * Get log from console.log() inside the browser: Mentioning type of Log
          */
@@ -246,7 +247,7 @@ public class Wrapper {
         List<LogEntry> logs = logEntries.getAll();
         // Print one by one
         for (LogEntry entry : logs) {
-            System.out.println(entry);
+            System.err.println(entry);
         }
 
     }
@@ -289,4 +290,28 @@ public class Wrapper {
         }
         return by;
     }
+
+    /**
+     * Checks if a specific text is present among the options within a Select element.
+     *
+     * @param select The Select element to examine for the presence of the specified text.
+     * @param optionText The text to be checked for existence within the options of the Select element.
+     * @return true if the specified text is found among the options, false otherwise.
+     */
+    public static boolean isOptionTextPresent(Select select, String optionText) {
+        // Retrieve the list of options from the Select element
+        List<WebElement> options = select.getOptions();
+
+        // Iterate through the options to find a match with the specified text
+        for (WebElement option : options) {
+            // Check if the text of the current option matches the specified text
+            if (option.getText().equals(optionText)) {
+                // Return true if a match is found
+                return true;
+            }
+        }
+        // Return false if the specified text is not found among the options
+        return false;
+    }
+
 }

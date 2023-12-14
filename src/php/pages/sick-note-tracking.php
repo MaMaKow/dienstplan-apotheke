@@ -40,7 +40,7 @@ $endOfMonth = clone $startOfMonth;
 $endOfMonth->add(new DateInterval('P1M'));
 $endOfMonth->sub(new DateInterval('PT1S'));
 
-$absence_data_in_month = absence::get_all_absence_data_in_period($startOfMonth->format("Y-m-d"), $endOfMonth->format("Y-m-d"));
+$absenceCollectionMonth = absence::getAllAbsenceObjectsInPeriod($startOfMonth, $endOfMonth);
 $workforce = new workforce($startOfMonth->format("Y-m-d"), $endOfMonth->format("Y-m-d"));
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
@@ -61,8 +61,8 @@ echo form_element_builder::build_html_select_year($year);
         -->
     </TR>
     <?php
-    foreach ($absence_data_in_month as $absence_array) {
-        if (absence::REASON_SICKNESS != $absence_array['reason_id'] and absence::REASON_SICKNESS_OF_CHILD != $absence_array['reason_id']) {
+    foreach ($absenceCollectionMonth as $absenceObject) {
+        if (absence::REASON_SICKNESS !== $absenceObject->getReasonId() and absence::REASON_SICKNESS_OF_CHILD !== $absenceObject->getReasonId()) {
             /**
              * const REASON_SICKNESS = 3;
              * const REASON_SICKNESS_OF_CHILD = 4;
@@ -71,21 +71,19 @@ echo form_element_builder::build_html_select_year($year);
             continue;
         }
         $reason_sickness_of_child_checked = "";
-        if (absence::REASON_SICKNESS_OF_CHILD == $absence_array['reason_id']) {
+        if (absence::REASON_SICKNESS_OF_CHILD === $absenceObject->getReasonId()) {
             $reason_sickness_of_child_checked = "✘";
         }
         echo '<TR style="padding-bottom: 0">';
-        $employee_object = $workforce->get_employee_object($absence_array["employee_key"]);
-        $absence_start = new DateTime($absence_array["start"]);
-        $absence_end = new DateTime($absence_array["end"]);
+        $employee_object = $workforce->get_employee_object($absenceObject->getEmployeeKey());
         echo '<TD style="padding-bottom: 0">'
         . $employee_object->first_name . " " . $employee_object->last_name
         . "</TD>";
         echo '<TD style="padding-bottom: 0">'
-        . $absence_start->format("d.m.Y")
+        . $absenceObject->getStart->format("d.m.Y")
         . "</TD>";
         echo '<TD style="padding-bottom: 0">'
-        . $absence_end->format("d.m.Y")
+        . $absenceObject->getEnd->format("d.m.Y")
         . "</TD>";
         echo '<TD style="padding-bottom: 0">'//Krankschreibung?
         . '<div style="border: 1px solid #000; width: 1em; height: 1em; display: inline-block;"></div>'

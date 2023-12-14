@@ -22,6 +22,8 @@ import Selenium.Employee;
 import Selenium.TestPage;
 import Selenium.rosterpages.Workforce;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -43,7 +45,12 @@ public class TestWorkforceManagementPage extends TestPage {
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
         Employee employeeObjectShould = listOfEmployeesMap.get(7);
 
-        workforceManagementPage.selectEmployee(employeeObjectShould);
+        try {
+            workforceManagementPage.selectEmployee(employeeObjectShould);
+        } catch (Exception ex) {
+            Logger.getLogger(TestWorkforceManagementPage.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.fail();
+        }
 
         Employee employeeObject = workforceManagementPage.getEmployeeObject();
 
@@ -63,7 +70,6 @@ public class TestWorkforceManagementPage extends TestPage {
 
     @Test(enabled = true)/*new*/
     public void testCreateEmployee() {
-
         Workforce workforce = new Workforce();
         //workforce.writeToFile(listOfEmployees);
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();

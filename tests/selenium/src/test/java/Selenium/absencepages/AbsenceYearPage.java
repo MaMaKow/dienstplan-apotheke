@@ -83,11 +83,11 @@ public class AbsenceYearPage {
             String absenceDataJson = absenceSpan.getAttribute("data-absence_details");
             Object object = JSONValue.parse(absenceDataJson);
             JSONObject jsonObject = (JSONObject) object;
-            if (employeeKey != (int) jsonObject.get("employee_key")) {
+            if (employeeKey != (int) jsonObject.get("employeeKey")) {
                 continue;
             }
             String endDateString = (String) jsonObject.get("end");
-            int reasonId = (int) jsonObject.get("reason_id");
+            int reasonId = (int) jsonObject.get("reasonId");
             String comment = (String) jsonObject.get("comment");
             String duration = (String) jsonObject.get("days");
             String approvalString = (String) jsonObject.get("approval");
@@ -138,7 +138,7 @@ public class AbsenceYearPage {
             String absenceDataJson = absenceSpan.getAttribute("data-absence_details");
             Object object = JSONValue.parse(absenceDataJson);
             JSONObject jsonObject = (JSONObject) object;
-            if (employeeKeyOld != (int) jsonObject.get("employee_key")) {
+            if (employeeKeyOld != (int) jsonObject.get("employeeKey")) {
                 continue;
             }
             /**

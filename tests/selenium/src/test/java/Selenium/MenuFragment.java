@@ -144,7 +144,9 @@ public class MenuFragment {
                 linkElement = wait.until(ExpectedConditions.presenceOfElementLocated(target));
                 break;
             } catch (NoSuchElementException noSuchElementException) {
+                System.err.println("NoSuchElementException");
             } catch (Exception exception) {
+                System.err.println("Exception");
                 throw exception;
             }
         }

@@ -84,31 +84,31 @@ class Branch {
         throw new \Exception("Thou shall not access the variables directly. Use the getter methods!");
     }
 
-    public function getBranchId(): int|null {
+    public function getBranchId(): ?int {
         return $this->branch_id;
     }
 
-    public function getName(): string|null {
+    public function getName(): ?string {
         return $this->name;
     }
 
-    public function getShortName(): string|null {
+    public function getShortName(): ?string {
         return $this->short_name;
     }
 
-    public function getAddress(): string|null {
+    public function getAddress(): ?string {
         return $this->address;
     }
 
-    public function getManager(): string|null {
+    public function getManager(): ?string {
         return $this->manager;
     }
 
-    public function getOpeningTimes(): array|null {
+    public function getOpeningTimes(): ?array {
         return $this->Opening_times;
     }
 
-    public function getPEP(): string|null {
+    public function getPEP(): ?string {
         return $this->PEP;
     }
 

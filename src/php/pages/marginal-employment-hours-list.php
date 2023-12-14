@@ -123,7 +123,7 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
     $result = database_wrapper::instance()->run($sql_query, array(
         'employee_key' => $employee_key,
         'date' => $date_object->format('Y-m-d')));
-    $Absence = absence::get_absence_data_specific($date_object->format('Y-m-d'), $employee_key);
+    $absence = absence::getSpecificAbsenceObject($date_object, $employee_key);
 
     $table_body_html .= "<tr>";
     $dateString = $weekdayFormatter->format($date_object->getTimestamp());
@@ -148,7 +148,7 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
              * </p>
              */
             $overtime_hours = $row['hours'] - $principle_working_hours;
-            if (array() !== $Absence and !in_array($Absence['reason_id'], array(absence::REASON_TAKEN_OVERTIME))) {
+            if (null !== $absence and !in_array($absence->getReasonId(), array(absence::REASON_TAKEN_OVERTIME))) {
                 $overtime_hours += $principle_working_hours;
             }
 
@@ -161,8 +161,8 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
         }
         $table_body_html .= "</td>";
     }
-    if (array() !== $Absence) {
-        $table_body_html .= "<td colspan='3'>" . absence::get_reason_string_localized($Absence['reason_id']) . "</td>";
+    if (null !== $absence) {
+        $table_body_html .= "<td colspan='3'>" . absence::get_reason_string_localized($absence->getReasonId()) . "</td>";
     }
 
     $table_body_html .= "</tr>";

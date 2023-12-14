@@ -52,6 +52,11 @@ class workforce {
     private static $List_of_short_descriptors;
     private static $List_of_all_employees;
 
+    /**
+     * @todo Use \DateTime in the constructor.
+     * @param string $date_start_sql
+     * @param string $date_end_sql
+     */
     public function __construct(string $date_start_sql = NULL, string $date_end_sql = NULL) {
         $this->date_start_sql = $date_start_sql;
         $this->date_end_sql = $date_end_sql;
@@ -145,7 +150,7 @@ class workforce {
         }
     }
 
-    public function get_employee_object(int|null $employee_key) {
+    public function get_employee_object(?int $employee_key) {
         if (isset(self::$List_of_all_employees[$employee_key])) {
             if (self::$List_of_all_employees[$employee_key] instanceof employee) {
                 return self::$List_of_all_employees[$employee_key];

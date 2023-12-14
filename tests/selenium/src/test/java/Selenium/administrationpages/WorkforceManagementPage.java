@@ -23,6 +23,7 @@ import Selenium.MenuFragment;
 import Selenium.driver.Wrapper;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -59,10 +60,13 @@ public class WorkforceManagementPage {
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToManageEmployee);
     }
 
-    public WorkforceManagementPage selectEmployee(Employee employee) {
+    public WorkforceManagementPage selectEmployee(Employee employee) throws Exception {
         WebElement selectEmployeeElement = driver.findElement(selectEmployeeBy);
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
-        selectEmployeeSelect.selectByVisibleText(employee.getFirstName() + " " + employee.getLastName());
+        String optionText = employee.getFirstName() + " " + employee.getLastName();
+        if (!Wrapper.isOptionTextPresent(selectEmployeeSelect, optionText)) {
+            throw new Exception("Employee not found");
+        }
         return new WorkforceManagementPage(driver);
     }
 
@@ -166,12 +170,14 @@ public class WorkforceManagementPage {
     public WorkforceManagementPage createEmployee(Employee employeeObject) {
         try {
             selectEmployee(employeeObject);
+
             /**
              * If this employee exists, it will not be created again. Instead we
              * will adapt the values:
              */
             return setEmployeeData(employeeObject);
         } catch (Exception e) {
+            System.err.println("The employee does not exist yet. It will be created.");
             /**
              * The employee does not exist yet. It will be created.
              */
@@ -255,7 +261,8 @@ public class WorkforceManagementPage {
         By submitButtonBy = By.xpath("//*[@id=\"save_new\"]");
         WebElement submitButtonElement = driver.findElement(submitButtonBy);
         submitButtonElement.click();
-        return new WorkforceManagementPage(driver);
+        WorkforceManagementPage newWorkforceManagementPage = new WorkforceManagementPage(driver);
+        return newWorkforceManagementPage;
     }
 
     /**

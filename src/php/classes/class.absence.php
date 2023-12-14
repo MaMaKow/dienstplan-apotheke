@@ -89,7 +89,7 @@ class absence {
         gettext('changed_after_approval');
     }
 
-    public static function insert_absence(int $employee_key, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, string|null $approval) {
+    public static function insert_absence(int $employee_key, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, ?string $approval) {
         $sql_query = "INSERT INTO `absence` "
                 . "(employee_key, start, end, days, reason_id, comment, user, approval) "
                 . "VALUES (:employee_key, :start, :end, :days, :reason_id, :comment, :user, :approval)";
@@ -211,42 +211,57 @@ class absence {
         return $Absentees;
     }
 
-    public static function get_absence_data_specific(string $date_sql, int $employee_key) {
-        $Absence = array();
+    /**
+     * Retrieves a specific absence object based on the provided date and employee key.
+     *
+     * @param \DateTime $dateObject The date to check for absence.
+     * @param int $employeeKey The employee key for whom to retrieve absence information.
+     * @return \PDR\Roster\Absence|null An absence object if found, or null if no absence records are found.
+     */
+    public static function getSpecificAbsenceObject(\DateTime $dateObject, int $employeeKey): ?\PDR\Roster\Absence {
+        $absence = null;
+        $dateSqlString = $dateObject->format("Y-m-d");
         $query = "SELECT *
 		FROM `absence`
 		WHERE `start` <= :start AND `end` >= :end AND `employee_key` = :employee_key";
-        $result = database_wrapper::instance()->run($query, array('start' => $date_sql, 'end' => $date_sql, 'employee_key' => $employee_key));
+        $result = database_wrapper::instance()->run($query, array('start' => $dateSqlString, 'end' => $dateSqlString, 'employee_key' => $employeeKey));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Absence['employee_key'] = $row->employee_key;
-            $Absence['reason_id'] = $row->reason_id;
-            $Absence['comment'] = $row->comment;
-            $Absence['start'] = $row->start;
-            $Absence['end'] = $row->end;
-            $Absence['days'] = $row->days;
-            $Absence['approval'] = $row->approval;
+            $absence = new \PDR\Roster\Absence(
+                    (int) $row->employee_key,
+                    new DateTime($row->start),
+                    new DateTime($row->end),
+                    (int) $row->days,
+                    (int) $row->reason_id,
+                    (string) $row->comment,
+                    (string) $row->approval,
+                    (string) $row->user,
+                    new DateTime($row->timestamp)
+            );
         }
-        return $Absence;
+        return $absence;
     }
 
-    public static function get_all_absence_data_in_period($start_date_sql, $end_date_sql) {
-        $Absences = array();
-        $query = "SELECT *
-      FROM `absence`
-      WHERE `start` <= :end AND `end` >= :start ORDER BY `start`";
-        $result = database_wrapper::instance()->run($query, array('start' => $start_date_sql, 'end' => $end_date_sql));
-        $i = 0;
+    public static function getAllAbsenceObjectsInPeriod(\DateTime $startDateObject, \DateTime $endDateObject): \PDR\Roster\AbsenceCollection {
+        $startDateSqlString = $startDateObject->format("Y-m-d");
+        $endDateSqlString = $endDateObject->format("Y-m-d");
+        $absenceCollection = new \PDR\Roster\AbsenceCollection();
+        $query = "SELECT * FROM `absence` WHERE `start` <= :end AND `end` >= :start ORDER BY `start`";
+        $result = database_wrapper::instance()->run($query, array('start' => $startDateSqlString, 'end' => $endDateSqlString));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $Absences[$i]['employee_key'] = $row->employee_key;
-            $Absences[$i]['reason_id'] = $row->reason_id;
-            $Absences[$i]['comment'] = $row->comment;
-            $Absences[$i]['start'] = $row->start;
-            $Absences[$i]['end'] = $row->end;
-            $Absences[$i]['days'] = $row->days;
-            $Absences[$i]['approval'] = $row->approval;
-            $i++;
+            $absence = new \PDR\Roster\Absence(
+                    (int) $row->employee_key,
+                    new DateTime($row->start),
+                    new DateTime($row->end),
+                    (int) $row->days,
+                    (int) $row->reason_id,
+                    (string) $row->comment,
+                    (string) $row->approval,
+                    (string) $row->user,
+                    new DateTime($row->timestamp)
+            );
+            $absenceCollection->addAbsence($absence);
         }
-        return $Absences;
+        return $absenceCollection;
     }
 
     /**

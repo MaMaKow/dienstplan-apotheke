@@ -74,9 +74,10 @@ public class TestSaturdayListPage extends TestPage {
      */
     private int getNextTeamId(int currentTeamId) {
         // Check if the current team ID is below the maximum:
-        if (SaturdayRotationTeam.getSaturdayTeamsSize() >= currentTeamId) {
+        int nextTeamId = currentTeamId + 1;
+        if (nextTeamId < SaturdayRotationTeam.getSaturdayTeamsSize()) {
             // Return the next team ID
-            return ++currentTeamId;
+            return nextTeamId;
         }
         // If the current team ID is at the maximum possible value, wrap around to 0
         return 0;

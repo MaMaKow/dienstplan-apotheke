@@ -180,7 +180,7 @@ class collaborative_vacation {
         $current_month = $date_start_object->format("n");
         $current_year = $date_start_object->format("Y");
 
-        $Absences = absence::get_all_absence_data_in_period($date_start_object->format("Y-m-d"), $date_end_object->format("Y-m-d"));
+        $Absences = absence::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
 
         $year_container_html = "<div class=year_container>\n";
         $year_container_html .= \form_element_builder::build_html_select_year($current_year);
@@ -237,7 +237,7 @@ class collaborative_vacation {
 
         $current_week = $input_date_object->format('W');
         $current_month_name = $this->get_month_name($input_date_object);
-        $Absences = absence::get_all_absence_data_in_period($start_date_object->format("Y-m-d"), $end_date_object->format("Y-m-d"));
+        $absenceColletcion = absence::getAllAbsenceObjectsInPeriod($start_date_object, $end_date_object);
 
         $month_container_html = "";
         $month_container_html .= \form_element_builder::build_html_select_year($input_date_object->format('Y'));
@@ -254,7 +254,7 @@ class collaborative_vacation {
                 $week_container_html .= "<tr class=week_container>";
             }
 
-            $week_container_html .= $this->build_absence_month_paragraph($date_object, $input_date_object, $Absences);
+            $week_container_html .= $this->build_absence_month_paragraph($date_object, $input_date_object, $absenceColletcion);
         }
         $week_container_html .= "</tr></table></div>\n";
         $month_container_html .= $week_container_html;
@@ -262,19 +262,19 @@ class collaborative_vacation {
         return $month_container_html;
     }
 
-    private function build_absence_month_paragraph($date_object, $input_date_object, $Absences, $mode = 'month') {
+    private function build_absence_month_paragraph(\DateTime $date_object, \DateTime $input_date_object, \PDR\Roster\AbsenceCollection $absenceCollection, string $mode = 'month') {
         $is_holiday = \holidays::is_holiday($date_object->format('U'));
         $html_class_list = $this->get_classes_of_day_paragraph($date_object, $is_holiday, $input_date_object);
         $paragraph = "<p class='$html_class_list'";
         $paragraph .= $this->build_absence_month_paragraph_javascript();
         $paragraph .= $this->build_absence_month_get_paragraph_attributes($date_object);
         $paragraph .= ">";
-        $paragraph .= $this->build_absence_month_paragraph_content($date_object, $Absences, $is_holiday, $mode);
+        $paragraph .= $this->build_absence_month_paragraph_content($date_object, $absenceCollection, $is_holiday, $mode);
         $paragraph .= "</p>\n";
         return $paragraph;
     }
 
-    private function build_absence_month_paragraph_content($date_object, $Absences, $is_holiday, $mode = 'month') {
+    private function build_absence_month_paragraph_content($date_object, \PDR\Roster\AbsenceCollection $absenceCollection, $is_holiday, $mode = 'month') {
         switch ($mode) {
             case 'year':
                 $date_string = $date_object->format('d.m.');
@@ -289,7 +289,7 @@ class collaborative_vacation {
         }
 
         $paragraph_content = "<strong>" . $date_string . "</strong> ";
-        $paragraph_content .= $this->build_absence_year_absent_employees_containers($date_object, $Absences, $is_holiday, $mode);
+        $paragraph_content .= $this->build_absence_year_absent_employees_containers($date_object, $absenceCollection, $is_holiday, $mode);
         if ($is_holiday) {
             $paragraph_content .= "<span class='holiday'>" . $is_holiday . "</span>\n";
         }
@@ -345,57 +345,56 @@ class collaborative_vacation {
         return $paragraph_javascript;
     }
 
-    private function build_absence_year_absent_employees_containers($date_object, $Absences, $is_holiday, $mode = 'year') {
-        if ($date_object->format("N") >= 6) {
+    private function build_absence_year_absent_employees_containers(\DateTime $dateObject, \PDR\Roster\AbsenceCollection $absenceCollection, bool $isHoliday, string $mode = 'year'): string {
+        if ($dateObject->format("N") >= 6) {
             return "";
         }
-        if ($is_holiday) {
+        if ($isHoliday) {
             return "";
         }
-        $date_sql = $date_object->format("Y-m-d");
-        $absent_employees_containers = '';
-        foreach ($Absences as $Absence) {
-            if ($Absence['start'] > $date_sql) {
+        $absentEmployeesContainers = '';
+        foreach ($absenceCollection as $absence) {
+            if ($absence->getStart() > $dateObject) {
                 break;
             }
-            if ($Absence['end'] < $date_sql) {
+            if ($absence->getEnd() < $dateObject) {
                 continue;
             }
 
-            $employee_key = $Absence['employee_key'];
+            $employeeKey = $absence->getEmployeeKey();
 
-            $workforce = new workforce($date_object->format('Y-m-d'));
-            $employee_representation = $workforce->get_employee_short_descriptor($employee_key);
-            if ($workforce->employee_exists($employee_key)) {
-                $profession = $workforce->get_employee_profession($employee_key);
-                $employee_exists = ""; //blank means existing.
+            $workforce = new workforce($dateObject->format('Y-m-d'));
+            $employeeRepresentation = $workforce->get_employee_short_descriptor($employeeKey);
+            if ($workforce->employee_exists($employeeKey)) {
+                $profession = $workforce->get_employee_profession($employeeKey);
+                $employeeExists = ""; //blank means existing.
             } else {
                 $profession = "";
-                $employee_exists = "non_existing_employee";
+                $employeeExists = "non_existing_employee";
             }
 
-            $span_class = "absent_employee_container";
-            $span_class .= " " . $profession;
-            $span_class .= " " . $employee_exists;
-            $span_class .= " " . $Absence['approval'];
-            $span_class .= " " . $mode;
+            $spanClass = "absent_employee_container";
+            $spanClass .= " " . $profession;
+            $spanClass .= " " . $employeeExists;
+            $spanClass .= " " . $absence->getApproval();
+            $spanClass .= " " . $mode;
             if ('month' == $mode) {
                 /*
                  * In the year mode there is not enough space for the last names:
                  */
-                $employee_representation = mb_substr($workforce->get_employee_last_name($employee_key), 0, 16);
+                $employeeRepresentation = mb_substr($workforce->get_employee_last_name($employeeKey), 0, 16);
             }
 
-            $absent_employees_containers .= "<span "
-                    . " class='" . $span_class . "' "
+            $absentEmployeesContainers .= "<span "
+                    . " class='" . $spanClass . "' "
                     . " onclick='insert_form_div(\"edit\")' "
-                    . " title='" . $this->build_absence_year_absent_employees_containers_title_text($workforce, $Absence) . "' "
-                    . " data-absence_details='" . json_encode($Absence, JSON_UNESCAPED_UNICODE) . "' "
+                    . " title='" . $this->build_absence_year_absent_employees_containers_title_text($workforce, $absence) . "' "
+                    . " data-absence_details='" . json_encode($absence, JSON_UNESCAPED_UNICODE) . "' "
                     . ">";
-            $absent_employees_containers .= $employee_representation;
-            $absent_employees_containers .= "</span> \n";
+            $absentEmployeesContainers .= $employeeRepresentation;
+            $absentEmployeesContainers .= "</span> \n";
         }
-        return $absent_employees_containers;
+        return $absentEmployeesContainers;
     }
 
     /**
@@ -405,7 +404,7 @@ class collaborative_vacation {
      * @return string
      * @todo Perhaps build a real absence object from a real absence class.
      */
-    private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence) {
+    private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence): string {
         $absence_title_text = $workforce->get_employee_last_name($Absence['employee_key']) . "\n";
         $absence_title_text .= absence::get_reason_string_localized($Absence['reason_id']) . "\n";
         $absence_title_text .= $Absence['comment'] . "\n";

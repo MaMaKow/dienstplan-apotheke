@@ -30,6 +30,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 /**
  * <p lang=de>
@@ -68,6 +69,15 @@ public class SaturdayListPage {
         WebElement selectYearSelectElement = driver.findElement(selectYearSelectBy);
         Select selectYearSelect = new Select(selectYearSelectElement);
         selectYearSelect.selectByVisibleText(String.valueOf(year));
+        /**
+         * <p lang=de>Jetzt könnte die Seite neu geladen werden.
+         * Dann sollten die bisherigen Elemente stale werden.
+         * Allerdings nur, wenn year sich von dem vorherigen unterscheidet.
+         * </p>
+         * WebDriverWait wait = new WebDriverWait(driver, 20);
+         * wait.until(ExpectedConditions.stalenessOf(selectYearSelectElement));
+         */
+        Assert.assertEquals(getYear(), year);
     }
 
     public int getYear() {

@@ -18,7 +18,6 @@
 require_once "../../../default.php";
 $workforce = new workforce();
 
-
 if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     /*
      * An existing entry will be edited:
@@ -26,16 +25,18 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $absence_details_json_unsafe = filter_input(INPUT_GET, 'absence_details_json', FILTER_UNSAFE_RAW);
     $Absence_details_unsafe = json_decode($absence_details_json_unsafe, TRUE);
     $filters = array(
-        'employee_key' => FILTER_SANITIZE_NUMBER_INT,
-        'reason_id' => FILTER_SANITIZE_NUMBER_INT,
+        'employeeKey' => FILTER_SANITIZE_NUMBER_INT,
+        'reasonId' => FILTER_SANITIZE_NUMBER_INT,
         'comment' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         'start' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         'end' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
         'approval' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
     );
     $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
+    unset($Absence_details_unsafe);
+    unset($absence_details_json_unsafe);
     $Absence_details['mode'] = "edit";
-    $employee_key = $Absence_details['employee_key'];
+    $employee_key = $Absence_details['employeeKey'];
 } elseif (filter_has_var(INPUT_GET, 'highlight_details_json')) {
     /*
      * A new entry will be created:
@@ -50,8 +51,8 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
     $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-    $Absence_details['employee_key'] = $employee_key;
-    $Absence_details['reason_id'] = absence::REASON_VACATION;
+    $Absence_details['employeeKey'] = $employee_key;
+    $Absence_details['reasonId'] = absence::REASON_VACATION;
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
     $Absence_details['comment'] = '';
@@ -107,7 +108,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
 -->
 <p><?= gettext("Start") ?><br><input type="date" id="input_box_form_start_date" name="start_date" value="<?= $Absence_details['start'] ?>"></p>
 <p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>"></p>
-<p><?= gettext("Reason") ?><br><?= absence::build_reason_input_select($Absence_details['reason_id'], 'absence_reason_input_select', 'input_box_form') ?></p>
+<p><?= gettext("Reason") ?><br><?= absence::build_reason_input_select($Absence_details['reasonId'], 'absence_reason_input_select', 'input_box_form') ?></p>
 <p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $Absence_details['comment'] ?>"></p>
 <?php
 if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {
@@ -141,7 +142,7 @@ if (
     </p>
 <?php } ?>
 
-<input type="hidden" id="employee_key_old" name="employee_key_old" value="<?= $Absence_details['employee_key'] ?>">
+<input type="hidden" id="employee_key_old" name="employee_key_old" value="<?= $Absence_details['employeeKey'] ?>">
 <input type="hidden" id="input_box_form_start_date_old" name="start_date_old" value="<?= $Absence_details['start'] ?>">
 </form>
 <a title="<?= gettext("Close"); ?>" href="#" onclick="remove_form_div()">

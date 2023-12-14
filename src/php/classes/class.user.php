@@ -42,7 +42,7 @@ class user {
      */
     public $employee_key;
 
-    public function get_employee_key(): int|null {
+    public function get_employee_key(): ?int {
         /**
          * @todo handle the case of empty ids!
          */

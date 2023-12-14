@@ -28,15 +28,15 @@
     </test>
     <test name="Application Pages">
         <classes>
+            <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
-            <class name="Selenium.administrationpages.TestUploadPepPage" />
             <!--
             -->
             <class name="Selenium.administrationpages.TestSaturdayRotationTeamsPage" />
             <class name="Selenium.administrationpages.TestSaturdayListPage" />
             <class name="Selenium.administrationpages.TestUserManagementPage" />
-            <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestConfigurationPage" />
+            <class name="Selenium.administrationpages.TestUploadPepPage" />
             <!--
             -->
         </classes>

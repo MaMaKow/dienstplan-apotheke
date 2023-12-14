@@ -321,7 +321,7 @@ class configuration {
      *
      * @return string|null The SMTP host for email.
      */
-    public function getEmailSmtpHost(): string|null {
+    public function getEmailSmtpHost(): ?string {
         if (isset(self::$loadedConfig['email_smtp_host'])) {
             return self::$loadedConfig['email_smtp_host'];
         } else {
@@ -336,7 +336,7 @@ class configuration {
      *
      * @return int|null The SMTP port for email.
      */
-    public function getEmailSmtpPort(): int|null {
+    public function getEmailSmtpPort(): ?int {
         if (isset(self::$loadedConfig['email_smtp_port'])) {
             return self::$loadedConfig['email_smtp_port'];
         } else {
@@ -351,7 +351,7 @@ class configuration {
      *
      * @return string|null The SMTP username for email.
      */
-    public function getEmailSmtpUsername(): string|null {
+    public function getEmailSmtpUsername(): ?string {
         if (isset(self::$loadedConfig['email_smtp_username'])) {
             return self::$loadedConfig['email_smtp_username'];
         } else {
@@ -366,7 +366,7 @@ class configuration {
      *
      * @return string|null The SMTP password for email.
      */
-    public function getEmailSmtpPassword(): string|null {
+    public function getEmailSmtpPassword(): ?string {
         if (isset(self::$loadedConfig['email_smtp_password'])) {
             return self::$loadedConfig['email_smtp_password'];
         } else {

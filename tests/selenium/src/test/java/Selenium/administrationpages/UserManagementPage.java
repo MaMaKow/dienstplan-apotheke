@@ -95,7 +95,6 @@ public class UserManagementPage {
     }
 
     public Map<String, Boolean> getPrivileges() {
-        System.out.println("start getPrivileges()");
         Map<String, Boolean> privileges = new HashMap<>();
         List<WebElement> privilegeElements = driver.findElements(By.xpath("//form[@id='user_management']/fieldset[@id='privilege_group']/input[@type='checkbox']"));
         for (WebElement privilegeElement : privilegeElements) {

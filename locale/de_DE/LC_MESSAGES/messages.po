@@ -20,7 +20,7 @@ msgstr ""
 msgid "Working on input file."
 msgstr "Die Datei wird verarbeitet."
 
-#: src/js/javascript.js:118 src/php/classes/class.absence.php:
+#: src/js/javascript.js: src/php/classes/class.absence.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
@@ -28,7 +28,7 @@ msgstr "Die Datei wird verarbeitet."
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/js/javascript.js:119 src/php/classes/class.absence.php:
+#: src/js/javascript.js: src/php/classes/class.absence.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
@@ -51,7 +51,7 @@ msgstr "Das End-Datum liegt vor dem Start-Datum."
 msgid "Warning! Caps lock is ON."
 msgstr "Achtung! Großschreibung ist aktiviert."
 
-#: src/js/overtime.js:80 src/php/classes/class.overtime.php:
+#: src/js/overtime.js: src/php/classes/class.overtime.php:
 msgid "The input date lies before the last existent date."
 msgstr "Das Datum des Eintrages liegt vor dem letzten vorhandenen Datum."
 
@@ -67,7 +67,7 @@ msgstr "Die Passphrasen stimmen nicht überein."
 #: src/php/classes/class.build_html_roster_views.php:
 #: src/php/classes/class.overtime.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
-#: src/php/pages/menu-tiles.php:31 src/php/pages/saturday-rotation-teams.php:
+#: src/php/pages/menu-tiles.php: src/php/pages/saturday-rotation-teams.php:
 msgid "Employee"
 msgstr "Mitarbeiter"
 
@@ -143,7 +143,7 @@ msgstr "abgelehnt"
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php:109 src/php/classes/class.absence.php:
+#: src/php/classes/class.absence.php: src/php/classes/class.absence.php:
 msgid ""
 "There is already an entry on this date. The data was therefore not inserted "
 "in the database."
@@ -238,7 +238,7 @@ msgstr "Mitarbeiter Dienstplan"
 
 #: src/php/classes/class.build_html_navigation_elements.php:
 #: src/php/classes/class.build_html_navigation_elements.php:
-#: src/php/pages/absence-edit.php:162 src/php/pages/branch-management.php:
+#: src/php/pages/absence-edit.php: src/php/pages/branch-management.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
 msgid "Save"
 msgstr "Speichern"
@@ -313,7 +313,7 @@ msgid "calendar week"
 msgstr "Kalenderwoche"
 
 #: src/php/classes/class.build_html_roster_views.php:
-#: src/php/pages/roster-day-edit.php:180 src/php/pages/roster-day-edit.php:
+#: src/php/pages/roster-day-edit.php: src/php/pages/roster-day-edit.php:
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
@@ -354,7 +354,7 @@ msgstr "Bitte beachten Sie das Fehlerprotokoll für weitere Details!"
 #: src/php/classes/class.collaborative_vacation.php:
 #: src/php/classes/class.collaborative_vacation.php:
 #: src/php/classes/class.collaborative_vacation.php:
-#: src/php/pages/attendance-list.php:79 src/php/pages/attendance-list.php:
+#: src/php/pages/attendance-list.php: src/php/pages/attendance-list.php:
 #: src/php/pages/emergency-service-list.php:
 msgid "emergency service"
 msgstr "Notdienst"
@@ -627,14 +627,14 @@ msgstr "An diesem Datum existiert bereits ein Eintrag."
 msgid "The data was therefore not inserted in the database."
 msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
 
-#: src/php/classes/class.overtime.php:190 src/php/pages/overtime-read.php:
+#: src/php/classes/class.overtime.php: src/php/pages/overtime-read.php:
 msgid "Balance"
 msgstr "Saldo"
 
 #: src/php/classes/class.overtime.php:
 #: src/php/classes/class.roster_item.php:
 #: src/php/pages/emergency-service-list.php:
-#: src/php/pages/overtime-read.php:50 src/php/pages/saturday-list.php:
+#: src/php/pages/overtime-read.php: src/php/pages/saturday-list.php:
 msgid "Date"
 msgstr "Datum"
 
@@ -779,7 +779,7 @@ msgstr ""
 "\n"
 "um eine neue Passphrase zu setzen für"
 
-#: src/php/classes/class.sessions.php:278 src/php/register_approve.php:
+#: src/php/classes/class.sessions.php: src/php/register_approve.php:
 msgid "user name"
 msgstr "Benutzer*in"
 
@@ -795,7 +795,7 @@ msgstr "diese Adresse"
 msgid "Your token is valid for 24 hours."
 msgstr "Ihr Token ist 24 Stunden lang gültig."
 
-#: src/php/classes/class.user.php:335 src/php/pages/user-page.php:
+#: src/php/classes/class.user.php: src/php/pages/user-page.php:
 msgid "The password was not correct."
 msgstr "Die Passphrase war nicht korrekt."
 
@@ -803,7 +803,7 @@ msgstr "Die Passphrase war nicht korrekt."
 msgid "The password is to short."
 msgstr "Die Passphrase ist zu kurz."
 
-#: src/php/classes/class.user.php:340 src/php/pages/user-page.php:
+#: src/php/classes/class.user.php: src/php/pages/user-page.php:
 msgid ""
 "A secure password should be at least 8 characters long and not listed in any "
 "dictionary."
@@ -888,11 +888,11 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Forgot password?"
 msgstr "Passphrase vergessen?"
 
-#: src/php/pages/about.php:23 src/php/pages/menu.php:
+#: src/php/pages/about.php: src/php/pages/menu.php:
 msgid "About"
 msgstr "Über"
 
-#: src/php/pages/about.php:24 src/php/pages/about.php:
+#: src/php/pages/about.php: src/php/pages/about.php:
 msgid "Pharmacy Duty Roster"
 msgstr "Dienstplan Apotheke"
 
@@ -918,23 +918,23 @@ msgstr "Es wurden bereits %1$s Resturlaubstage im Jahr %2$s beantragt."
 msgid "There are still %1$s vacation days available."
 msgstr "Es stehen noch %1$s Urlaubstage zur Verfügung."
 
-#: src/php/pages/absence-edit.php:144 src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
 msgid "Start"
 msgstr "Beginn"
 
-#: src/php/pages/absence-edit.php:144 src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
 msgid "End"
 msgstr "Ende"
 
-#: src/php/pages/absence-edit.php:144 src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
 #: src/php/pages/overtime-read.php:
 msgid "Reason"
 msgstr "Grund"
 
-#: src/php/pages/absence-edit.php:144 src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
 msgid "Days"
 msgstr "Tage"
 
@@ -955,7 +955,7 @@ msgstr ""
 msgid "Opening times"
 msgstr "Öffnungszeiten"
 
-#: src/php/pages/branch-management.php:187 src/php/pages/user-management.php:
+#: src/php/pages/branch-management.php: src/php/pages/user-management.php:
 msgid "Identifier"
 msgstr "Bezeichner"
 
@@ -1008,7 +1008,7 @@ msgstr "Filialleiter"
 msgid "Remove branch"
 msgstr "Mandant löschen"
 
-#: src/php/pages/configuration.php:77 src/php/pages/menu.php:
+#: src/php/pages/configuration.php: src/php/pages/menu.php:
 msgid "Configuration"
 msgstr "Konfiguration"
 
@@ -1040,7 +1040,7 @@ msgstr "Datenbank Benutzer*in"
 msgid "Database user passphrase"
 msgstr "Datenbank Benutzer Passphrase"
 
-#: src/php/pages/configuration.php:112 src/php/register.php:
+#: src/php/pages/configuration.php: src/php/register.php:
 msgid "Repeat passphrase"
 msgstr "Passphrase wiederholen"
 
@@ -1056,7 +1056,7 @@ msgstr ""
 "Lesende Benutzer werden eingeladen, Wünsche und Vorschläge an den Ersteller "
 "des Dienstplanes zu richten."
 
-#: src/php/pages/configuration.php:129 src/php/register.php:
+#: src/php/pages/configuration.php: src/php/register.php:
 msgid "Email"
 msgstr "Email"
 
@@ -1355,11 +1355,11 @@ msgstr "Woche"
 msgid "Day"
 msgstr "Tag"
 
-#: src/php/pages/menu-tiles.php:33 src/php/pages/menu.php:
+#: src/php/pages/menu-tiles.php: src/php/pages/menu.php:
 msgid "Overtime"
 msgstr "Überstunden"
 
-#: src/php/pages/menu-tiles.php:36 src/php/pages/menu.php:
+#: src/php/pages/menu-tiles.php: src/php/pages/menu.php:
 msgid "Absence"
 msgstr "Abwesenheit"
 
@@ -1387,7 +1387,7 @@ msgstr "Wochen-Bilder"
 msgid "Roster employee"
 msgstr "Mitarbeiteransicht"
 
-#: src/php/pages/menu.php:58 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Roster hours list"
 msgstr "Liste der Arbeitszeiten"
 
@@ -1399,7 +1399,7 @@ msgstr "Überstunden Eingabe"
 msgid "Overtime output"
 msgstr "Überstunden Ausgabe"
 
-#: src/php/pages/menu.php:78 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Overtime overview"
 msgstr "Überstunden Übersicht"
 
@@ -1431,7 +1431,7 @@ msgstr "Grundplan"
 msgid "Principle roster employee"
 msgstr "Grundplan Mitarbeiter"
 
-#: src/php/pages/menu.php:127 src/php/pages/principle-roster-day.php:
+#: src/php/pages/menu.php: src/php/pages/principle-roster-day.php:
 msgid "Principle roster daily"
 msgstr "Grundplan Tagesansicht"
 
@@ -1443,32 +1443,32 @@ msgstr "Administration"
 msgid "Attendance list"
 msgstr "Anwesenheitsliste"
 
-#: src/php/pages/menu.php:148 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Saturday list"
 msgstr "Samstagsliste"
 
-#: src/php/pages/menu.php:154 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Saturday rotation teams"
 msgstr "Samstags Teams"
 
-#: src/php/pages/menu.php:160 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Emergency service list"
 msgstr "Notdienstliste"
 
-#: src/php/pages/menu.php:168 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Upload deployment planning"
 msgstr "PEP-Upload"
 
-#: src/php/pages/menu.php:176 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 #: src/php/pages/menu.php:
 msgid "Employee management"
 msgstr "Mitarbeiterverwaltung"
 
-#: src/php/pages/menu.php:183 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Branch management"
 msgstr "Mandantenverwaltung"
 
-#: src/php/pages/menu.php:189 src/php/pages/menu.php:
+#: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "User management"
 msgstr "Benutzer*innenverwaltung"
 
@@ -1518,11 +1518,11 @@ msgstr ""
 "Sie können hier Ihre Passphrase ändern. Bitte geben Sie unten Ihre neue "
 "Passphrase zwei mal ein."
 
-#: src/php/pages/reset_lost_password.php:82 src/php/register.php:
+#: src/php/pages/reset_lost_password.php: src/php/register.php:
 msgid "Please enter a password!"
 msgstr "Bitte geben Sie eine Passphrase ein!"
 
-#: src/php/pages/reset_lost_password.php:86 src/php/pages/user-page.php:
+#: src/php/pages/reset_lost_password.php: src/php/pages/user-page.php:
 #: src/php/register.php:
 msgid "The passwords must match!"
 msgstr "Die Passphrasen müssen übereinstimmen!"
@@ -1544,11 +1544,11 @@ msgstr "Beim Speichern der Daten trat ein Fehler auf."
 msgid "The input token is missing."
 msgstr "Es wurde kein Token übergeben."
 
-#: src/php/pages/roster-day-edit.php:79 src/php/pages/roster-day-edit.php:
+#: src/php/pages/roster-day-edit.php: src/php/pages/roster-day-edit.php:
 msgid "There is no roster in the database."
 msgstr "In der Datenbank befindet sich kein Dienstplan."
 
-#: src/php/pages/roster-day-edit.php:79 src/php/pages/roster-day-edit.php:
+#: src/php/pages/roster-day-edit.php: src/php/pages/roster-day-edit.php:
 msgid "This is a proposal."
 msgstr "Dies ist ein Vorschlag."
 
@@ -1719,7 +1719,7 @@ msgstr "Mitarbeiter Schlüssel"
 msgid "User Status:"
 msgstr "Benutzer Status:"
 
-#: src/php/pages/user-management.php:124 src/php/pages/user-page.php:
+#: src/php/pages/user-management.php: src/php/pages/user-page.php:
 msgid "Privileges"
 msgstr "Privilegien"
 
