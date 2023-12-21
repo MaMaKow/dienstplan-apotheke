@@ -124,7 +124,7 @@ class collaborative_vacation {
          * Delete old entries:
          */
         if (NULL !== $employee_key_old) {
-            absence::delete_absence($employee_key_old, $start_date_old_string);
+            PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employee_key_old, $start_date_old_string);
         }
 
         /*
@@ -134,7 +134,7 @@ class collaborative_vacation {
             $workforce = new \workforce();
             $employee_object = $workforce->get_employee_object($employee_key);
             $days = \absence::calculate_employee_absence_days(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
-            absence::insert_absence($employee_key, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval);
+            PDR\Database\AbsenceDatabaseHandler::insertAbsence($employee_key, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval, $_SESSION['user_object']->user_name);
         }
         database_wrapper::instance()->commit();
     }

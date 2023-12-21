@@ -31,3 +31,8 @@ div#task_rotation_select_div {
 div.image_group_container {
     float: right;
 }
+
+div.user_dialog_container > div.warning > span > button > img{
+    height: 2em;
+    vertical-align: middle;
+}

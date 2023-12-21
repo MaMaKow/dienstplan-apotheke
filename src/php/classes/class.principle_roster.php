@@ -35,18 +35,18 @@ class principle_roster extends roster {
 
     public $alternating_week_id;
 
-    public static function read_current_principle_roster_from_database(int $branch_id, DateTime $date_start_object, DateTime $date_end_object = NULL, array $Options = array()) {
-        if (NULL === $date_end_object) {
-            $date_end_object = $date_start_object;
+    public static function read_current_principle_roster_from_database(int $branch_id, DateTime $dateStartObject, ?DateTime $dateEndObject = NULL, array $Options = array()): array {
+        if (NULL === $dateEndObject) {
+            $dateEndObject = $dateStartObject;
         }
-        $workforce = new workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
-        if (array() !== $Options and!is_array($Options)) {
+        $workforce = new workforce($dateStartObject->format('Y-m-d'), $dateEndObject->format('Y-m-d'));
+        if (array() !== $Options and !is_array($Options)) {
             $Options = (array) $Options;
         }
         $Roster = array();
-        for ($date_object = clone $date_start_object; $date_object <= $date_end_object; $date_object->add(new DateInterval('P1D'))) {
-            $date_sql = $date_object->format('Y-m-d');
-            $Absentees = absence::read_absentees_from_database($date_sql);
+        for ($date_object = clone $dateStartObject; $date_object <= $dateEndObject; $date_object->add(new DateInterval('P1D'))) {
+            $dateSql = $date_object->format('Y-m-d');
+            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($dateSql);
             $weekday = $date_object->format('N');
             $sql_query = "SELECT * FROM `principle_roster` "
                     . " WHERE `weekday` = :weekday "
@@ -61,7 +61,7 @@ class principle_roster extends roster {
             ));
             $roster_row_iterator = 0;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                if (in_array(self::OPTION_CONTINUE_ON_ABSENCE, $Options) and isset($Absentees[$row->employee_key])) {
+                if (in_array(self::OPTION_CONTINUE_ON_ABSENCE, $Options) and $absenceCollection->containsEmployeeKey($row->employee_key)) {
                     /*
                      * Absent employees will be excluded, if an actual roster is built.
                      */
@@ -74,7 +74,7 @@ class principle_roster extends roster {
                     continue 1;
                 }
                 try {
-                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $date_sql, (int) $row->employee_key, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
+                    $Roster[$date_object->format('U')][$roster_row_iterator] = new \principle_roster_item((int) $row->primary_key, $dateSql, (int) $row->employee_key, $row->branch_id, $row->duty_start, $row->duty_end, $row->break_start, $row->break_end, $row->comment);
                 } catch (Exception $exception) {
                     error_log($exception->getTraceAsString());
                     throw new Exception('There was an error while reading the current principle roster from the database. Please see the error log file for details!');
@@ -396,5 +396,4 @@ class principle_roster extends roster {
 
         return '00000' === $result->errorCode();
     }
-
 }

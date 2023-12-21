@@ -33,6 +33,21 @@ $date_unix = strtotime($date_sql);
 $date_object = new DateTime($date_sql);
 $workforce = new workforce($date_sql);
 $user_dialog = new user_dialog();
+/**
+ * @todo POST/REDIRECT/GET
+ */
+// Read the POST data
+if (filter_has_var(INPUT_POST, "rosterActionCommand")) {
+    $rosterActionCommand = filter_input(INPUT_POST, "rosterActionCommand", FILTER_SANITIZE_SPECIAL_CHARS);
+    if ("insertMissingEmployee" === $rosterActionCommand) {
+        // Extract values from the POST data
+        $principleRosterObjectJson = filter_input(INPUT_POST, "principleRosterObject", FILTER_UNSAFE_RAW);
+
+        $rosterActionHandler = new \PDR\Input\RosterActionHandler;
+        $rosterActionHandler->processRosterActionInsertMissingEmployee($session, $principleRosterObjectJson);
+    }
+}
+
 
 /*
  * User input:
@@ -57,7 +72,14 @@ if (count($Roster) > 0 && $session->user_has_privilege('approve_roster')) {
         roster_approval::set_roster_approval($branch_id, $Roster, 'approved');
     }
 }
-$Absentees = absence::read_absentees_from_database($date_sql);
+if (isset($_POST) && !empty($_POST)) {
+    // POST data has been submitted
+    $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/roster-day-edit.php' . "?datum=$date_sql";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
+}
+
+$absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
 $holiday = holidays::is_holiday($date_unix);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
@@ -102,12 +124,12 @@ if ("7" !== date('N', $date_unix) and !holidays::is_holiday($date_unix)) {
     $examine_roster->check_for_sufficient_employee_count();
     $examine_roster->check_for_sufficient_goods_receipt_count();
     $examine_roster->check_for_sufficient_qualified_pharmacist_count();
-    examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $Absentees, $date_unix);
+    examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $absenceCollection, $date_unix);
 }
 /*
  * examine_attendance::check_for_attendant_absentees() should be done regardless of weekday and holiday:
  */
-examine_attendance::check_for_attendant_absentees($Roster, $Absentees);
+examine_attendance::check_for_attendant_absentees($Roster, $absenceCollection);
 
 if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
     $message = gettext('Beware the emergency service!');
@@ -213,7 +235,7 @@ $html_text .= "<tr><td></td></tr>\n";
 /*
  * Make a list of absent people:
  */
-$html_text .= build_html_roster_views::build_absentees_row($Absentees);
+$html_text .= build_html_roster_views::build_absentees_row($absenceCollection);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 

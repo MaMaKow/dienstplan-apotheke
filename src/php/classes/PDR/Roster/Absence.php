@@ -165,7 +165,7 @@ class Absence implements \JsonSerializable {
      *
      * @return mixed
      */
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return [
             'employeeKey' => $this->employeeKey,
             'start' => $this->start->format('Y-m-d H:i:s'),

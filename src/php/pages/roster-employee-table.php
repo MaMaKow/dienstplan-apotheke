@@ -90,13 +90,13 @@ $table_foot_html = "<tfoot>"
  */
 foreach (array_keys($Roster) as $date_unix) {
     $date_sql = date('Y-m-d', $date_unix);
-    $Absentees = absence::read_absentees_from_database($date_sql);
+    $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
 
     /*
      * Now we build a row of absent employees in the foot of the table.
      */
-    if (isset($Absentees)) {
-        $table_foot_html .= build_html_roster_views::build_absentees_column($Absentees);
+    if (!$absenceCollection->isEmpty()) {
+        $table_foot_html .= build_html_roster_views::build_absentees_column($absenceCollection);
     } else {
         $table_foot_html .= "</td><td>";
     }

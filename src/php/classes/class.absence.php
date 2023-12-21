@@ -36,11 +36,9 @@ class absence {
     const REASON_PARENTAL_LEAVE = 8;
 
     /**
-     * @deprecated since version 0.24.4
-     * @todo Der Array kann perspektivisch auch ganz weg. Er wird nicht mehr relevant genutzt.
      * @var array $List_of_absence_reasons
      */
-    private static $List_of_absence_reasons = array(
+    public static $List_of_absence_reasons = array(
         self::REASON_VACATION,
         self::REASON_REMAINING_VACATION,
         self::REASON_SICKNESS,
@@ -75,141 +73,6 @@ class absence {
         'disapproved',
         'changed_after_approval',
     );
-
-    /**
-     * poEdit and gettext are not willing to include words, that are not in the source files.
-     * Therefore we randomly include some words here, which are necessary.
-     * @todo Is there a better way? Work with constants and integer numbers?
-     */
-    private function gettext_fake() {
-        return TRUE;
-        gettext('approved');
-        gettext('not_yet_approved');
-        gettext('disapproved');
-        gettext('changed_after_approval');
-    }
-
-    public static function insert_absence(int $employee_key, string $date_start_string, string $date_end_string, int $days, int $reason_id, string $comment, ?string $approval) {
-        $sql_query = "INSERT INTO `absence` "
-                . "(employee_key, start, end, days, reason_id, comment, user, approval) "
-                . "VALUES (:employee_key, :start, :end, :days, :reason_id, :comment, :user, :approval)";
-        try {
-            database_wrapper::instance()->run($sql_query, array(
-                'employee_key' => $employee_key,
-                'start' => $date_start_string,
-                'end' => $date_end_string,
-                'days' => $days,
-                'reason_id' => $reason_id,
-                'comment' => $comment,
-                'user' => $_SESSION['user_object']->user_name,
-                'approval' => (!is_null($approval)) ? $approval : "not_yet_approved"
-            ));
-        } catch (Exception $exception) {
-            if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
-                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
-                $user_dialog = new user_dialog();
-                $user_dialog->add_message($message, E_USER_ERROR);
-            } elseif ('23000' == $exception->getCode() and 1062 === $exception->errorInfo[1]) {
-                $user_dialog = new user_dialog();
-                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
-                $user_dialog->add_message($message, E_USER_ERROR);
-                $message = gettext("The transaction was rolled back.");
-                $user_dialog->add_message($message, E_USER_NOTICE);
-            } else {
-                print_debug_variable($exception);
-                $message = gettext('There was an error while querying the database.')
-                        . " " . gettext('Please see the error log for more details!');
-                die("<p>$message</p>");
-            }
-        }
-    }
-
-    public static function delete_absence($employee_key, $start_date_sql) {
-        $query = "DELETE FROM absence WHERE `employee_key` = :employee_key AND `start` = :start";
-        $result = \database_wrapper::instance()->run($query, array('employee_key' => $employee_key, 'start' => $start_date_sql));
-        return $result;
-    }
-
-    /**
-     * Build a select element for easy input of absence entries.
-     *
-     * The list contains reasons of absence (like [de_DE] "Urlaub" or "Krankheit").
-     * The values are stored in the database in a SET column accepting only predefined english terms.
-     * Those terms can also be found in absence::$List_of_absence_reasons.
-     *
-     * @return string $html_text HTML datalist element.
-     */
-    public static function build_reason_input_select(int $reason_specified, string $html_id = NULL, string $html_form = NULL) {
-        $html_text = "<select id='$html_id' form='$html_form' class='absence_reason_input_select' name='reason_id'>\n";
-        foreach (self::$List_of_absence_reasons as $reason_id) {
-            if ($reason_id === $reason_specified) {
-                $html_text .= "<option value='$reason_id' selected>" . self::get_reason_string_localized($reason_id) . "</option>\n";
-            } else {
-                $html_text .= "<option value='$reason_id'>" . self::get_reason_string_localized($reason_id) . "</option>\n";
-            }
-        }
-        $html_text .= "</select>\n";
-        return $html_text;
-    }
-
-    /**
-     *
-     * @param type $approval_specified
-     * @param type $html_id
-     * @param type $html_form
-     * @return string
-     * @todo Move this into a builder class?
-     */
-    public static function build_approval_input_select($approval_specified, $html_id = NULL, $html_form = NULL) {
-        $html_text = "<select id='$html_id' form='$html_form' class='absence_approval_input_select' name='approval'>\n";
-        foreach (absence::$List_of_approval_states as $approval) {
-            if ($approval == $approval_specified) {
-                $html_text .= "<option value='$approval' selected>" . localization::gettext($approval) . "</option>\n";
-            } else {
-                $html_text .= "<option value='$approval'>" . localization::gettext($approval) . "</option>\n";
-            }
-        }
-        $html_text .= "</select>\n";
-        return $html_text;
-    }
-
-    /**
-     *
-     * @param string $date_sql
-     * @return array $Absentees[$employee_key] = $reason_id;
-     * @throws Exception
-     * @throws UnexpectedValueException
-     * @todo: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_key] equals/contains/holds a reason_id for the absence.
-     */
-    public static function read_absentees_from_database(string $date_sql) {
-
-        $Absentees = array();
-        if (is_numeric($date_sql) && (int) $date_sql == $date_sql) {
-            throw new Exception("\$date_sql has to be a string! $date_sql given.");
-        }
-        /**
-         * We define a list of still existing coworkers.
-         *  There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
-         */
-        $workforce = new workforce($date_sql);
-        if (!isset($workforce)) {
-            throw new UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
-        }
-        $sql_query = "SELECT * FROM `absence` "
-                . "WHERE `start` <= :start "
-                . "AND `end` >= :end ;"; //Employees, whose absence has started but not ended yet.
-        $result = database_wrapper::instance()->run($sql_query, array('start' => $date_sql, 'end' => $date_sql));
-        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            if (!in_array($row->employee_key, array_keys($workforce->List_of_employees))) {
-                /**
-                 * Es werden nur Mitarbeiter ausgegeben, die auch noch arbeiten. Abwesenheiten von gekündigten Mitarbeiern werden ignoriert.
-                 */
-                continue;
-            }
-            $Absentees[$row->employee_key] = $row->reason_id;
-        }
-        return $Absentees;
-    }
 
     /**
      * Retrieves a specific absence object based on the provided date and employee key.
@@ -334,8 +197,8 @@ class absence {
         if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
             database_wrapper::instance()->beginTransaction();
             $start_date_old_sql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            self::delete_absence($employee_key, $start_date_old_sql);
-            self::insert_absence($employee_key, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
+            PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employee_key, $start_date_old_sql);
+            PDR\Database\AbsenceDatabaseHandler::insertAbsence($employee_key, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval, $_SESSION['user_object']->user_name);
 
             if (!database_wrapper::instance()->inTransaction()) {
                 return false;
@@ -343,7 +206,7 @@ class absence {
             database_wrapper::instance()->commit();
             return true;
         }
-        self::insert_absence($employee_key, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval);
+        PDR\Database\AbsenceDatabaseHandler::insertAbsence($employee_key, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'), $days, $reason_id, $comment, $approval, $_SESSION['user_object']->user_name);
         return true;
     }
 
@@ -363,7 +226,7 @@ class absence {
     private static function delete_absence_data() {
         $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
         $start_date_sql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        return self::delete_absence($employee_key, $start_date_sql);
+        return PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employee_key, $start_date_sql);
     }
 
     public static function calculate_employee_absence_days(DateTime $date_start_object, DateTime $date_end_object, employee $employee_object) {

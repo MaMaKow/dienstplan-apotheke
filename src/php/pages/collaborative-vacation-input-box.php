@@ -108,7 +108,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
 -->
 <p><?= gettext("Start") ?><br><input type="date" id="input_box_form_start_date" name="start_date" value="<?= $Absence_details['start'] ?>"></p>
 <p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>"></p>
-<p><?= gettext("Reason") ?><br><?= absence::build_reason_input_select($Absence_details['reasonId'], 'absence_reason_input_select', 'input_box_form') ?></p>
+<p><?= gettext("Reason") ?><br><?= PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect($Absence_details['reasonId'], 'absence_reason_input_select', 'input_box_form') ?></p>
 <p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $Absence_details['comment'] ?>"></p>
 <?php
 if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {

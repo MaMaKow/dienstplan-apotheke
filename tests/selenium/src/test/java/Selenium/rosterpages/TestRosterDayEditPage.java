@@ -18,7 +18,6 @@
  */
 package Selenium.rosterpages;
 
-import Selenium.Employee;
 import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
@@ -32,8 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
@@ -41,6 +38,7 @@ import static org.testng.Assert.assertEquals;
 /**
  *
  * @author Mandelkow
+ * @todo add test for rosterActionCommand insertMissingEmployee
  */
 public class TestRosterDayEditPage extends TestPage {
 

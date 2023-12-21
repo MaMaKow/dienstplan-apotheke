@@ -114,11 +114,11 @@ $table_foot_html = "<tfoot>"
 //Wir werfen einen Blick in den Urlaubsplan und schauen, ob alle da sind.
 foreach (array_keys($Roster) as $date_unix) {
     $date_sql = date('Y-m-d', $date_unix);
-    $Abwesende = absence::read_absentees_from_database($date_sql);
+    $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
 
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
-    if (!empty($Abwesende)) {
-        $table_foot_html .= build_html_roster_views::build_absentees_column($Abwesende);
+    if (!$absenceCollection->isEmpty()) {
+        $table_foot_html .= build_html_roster_views::build_absentees_column($absenceCollection);
     } else {
         $table_foot_html .= "<td><!-- Nobody is absent --></td>";
     }

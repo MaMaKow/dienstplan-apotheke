@@ -57,7 +57,7 @@ class user_dialog {
         $html_messages = "<div class='user_dialog_container'>\n";
         foreach (self::$Messages as $message_array) {
             $html_messages .= "<div class=" . htmlentities($message_array['type']) . ">\n";
-            $html_messages .= "<p>" . $message_array['text'] . "</p>\n";
+            $html_messages .= "<span>" . $message_array['text'] . "</span>\n";
             $html_messages .= "</div>\n";
         }
         $html_messages .= "</div>\n";
@@ -200,5 +200,4 @@ class user_dialog {
         $header .= "Content-type: text/plain; charset=UTF-8;\r\n";
         return $header;
     }
-
 }

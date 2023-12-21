@@ -16,20 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
+$year = \user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
 
-$dateStartObject = new DateTime("$year-01-01");
-$dateEndObject = new DateTime("$year-12-31");
-$workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
+$dateStartObject = new \DateTime("$year-01-01");
+$dateEndObject = new \DateTime("$year-12-31");
+$workforce = new \workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 create_cookie('year', $year, 1);
 create_cookie('employee_key', $employee_key, 30);
 if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ABSENCE)) {
-    absence::handle_user_input();
+    \absence::handle_user_input();
 }
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted
-    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/absence-edit.php' . "?year=$year&employee_key=$employee_key";
+    $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/absence-edit.php' . "?year=$year&employee_key=$employee_key";
     header('Location:' . $location);
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
@@ -55,11 +55,11 @@ $remaining_holidays_div .= "</div>";
  */
 
 $sql_query = 'SELECT * FROM `absence` WHERE `employee_key` = :employee_key and (Year(`start`) = :year or Year(`end`) =:year2) ORDER BY `start` DESC';
-$result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'year' => $year, 'year2' => $year));
+$result = \database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'year' => $year, 'year2' => $year));
 $tablebody = '';
-while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    /*
-     * Todo: Wenn jemand kündigt, so können Abwesenheiten bleiben, die nachh der Kündigung liegen.
+while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
+    /**
+     * @Todo: Wenn jemand kündigt, so können Abwesenheiten bleiben, die nachh der Kündigung liegen.
      *   In dem Fall könnte man eine Warnung über user_dialog senden.
      */
     $html_form_id = "change_absence_entry_" . $row->start;
@@ -86,7 +86,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
      */
     $tablebody .= "<td><div id='reason_out_$row->start' data-reason_id='$row->reason_id'>" . absence::get_reason_string_localized($row->reason_id) . "</div>";
     $html_id = "reason_in_$row->start";
-    $tablebody .= absence::build_reason_input_select($row->reason_id, $html_id, $html_form_id);
+    $tablebody .= PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect($row->reason_id, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
     /*
      * comment
@@ -101,15 +101,15 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<td>$row->days</td>\n";
     $tablebody .= "<td><span id=absence_out_$row->start data-absence_approval=$row->approval>" . localization::gettext($row->approval) . "</span>";
     $html_id = "absence_in_$row->start";
-    $tablebody .= absence::build_approval_input_select($row->approval, $html_id, $html_form_id);
+    $tablebody .= PDR\Output\HTML\AbsenceHtmlBuilder::buildApprovalInputSelect($row->approval, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
     $tablebody .= "<td style='font-size: 1em; height: 1em'>\n"
             . "<input hidden name='employee_key' value='$employee_key' form='$html_form_id'>\n"
             . "<button type=submit id=delete_$row->start class='button_small delete_button no_print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
-            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Diese Zeile löschen'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' alt='Diese Zeile löschen'>\n"
             . "</button>\n"
             . "<button type=button id=cancel_$row->start class='button_small no_print' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$row->start\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
-            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/delete.png' alt='Bearbeitung abbrechen'>\n"
+            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' alt='Bearbeitung abbrechen'>\n"
             . "</button>\n"
             . "<button type=button id=edit_$row->start class='button_small edit_button no_print' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_edit.svg' alt='Diese Zeile bearbeiten'>\n"
@@ -154,10 +154,10 @@ echo "</td>\n";
 echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
 echo "</td>\n";
-echo "<td>" . absence::build_reason_input_select(absence::REASON_VACATION, 'new_absence_reason_id_select', 'new_absence_entry') . "</td>\n";
+echo "<td>" . PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect(absence::REASON_VACATION, 'new_absence_reason_id_select', 'new_absence_entry') . "</td>\n";
 echo "<td><input type='text' id='new_absence_input_comment' name='comment' form='new_absence_entry'></td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
-echo "<td>" . absence::build_approval_input_select('not_yet_approved', 'new_absence_approval_select', 'new_absence_entry') . "</td>\n";
+echo "<td>" . PDR\Output\HTML\AbsenceHtmlBuilder::buildApprovalInputSelect('not_yet_approved', 'new_absence_approval_select', 'new_absence_entry') . "</td>\n";
 echo "<td>\n";
 echo "<button type=submit id=save_new class=no_print name=command value='insert_new' form='new_absence_entry'>" . gettext('Save') . "</button>";
 echo "</td>\n";

@@ -92,13 +92,13 @@ abstract class user_input {
                 $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
                 $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
                 if (!is_numeric($branch_id)) {
-                    throw new Exception('$branch_id must be an integer!');
+                    throw new \Exception('$branch_id must be an integer!');
                 }
                 if (!self::isValidDateInFormat($date_sql, 'Y-m-d')) {
-                    throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
+                    throw new \Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
                 if ('' === $employee_key) {
-                    $Roster[$date_unix][$roster_row_iterator] = new roster_item_empty($date_sql, $branch_id);
+                    $Roster[$date_unix][$roster_row_iterator] = new \roster_item_empty($date_sql, $branch_id);
                     continue;
                 }
                 if (!self::isValidDateInFormat($duty_start_sql, 'H:i')) {

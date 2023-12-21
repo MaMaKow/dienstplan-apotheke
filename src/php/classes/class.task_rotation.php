@@ -73,8 +73,9 @@ abstract class task_rotation {
          */
         $rotation_employee_key = self::read_task_employee_from_database($task, $date_sql, $branch_id);
         if (NULL !== $rotation_employee_key) {
-            $Abwesende = absence::read_absentees_from_database($date_sql);
-            if (FALSE === array_search($rotation_employee_key, array_keys($Abwesende))) {
+            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($dateSql);
+
+            if (FALSE === $absenceCollection->containsEmployeeKey($rotation_employee_key)) {
                 return $rotation_employee_key;
             }
             /*
@@ -172,8 +173,8 @@ abstract class task_rotation {
             /*
              * Remove absent employees for this day from the list of current available rotation employees:
              */
-            $Abwesende = absence::read_absentees_from_database($temp_date_object->format('Y-m-d'));
-            $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, array_keys($Abwesende));
+            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($temp_date_object->format('Y-m-d'));
+            $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, $absenceCollection->getListOfEmployeeKeys());
             if (array() === $List_of_current_compounding_rotation_employees) {
                 /*
                  * There is nobody here today to do the task.

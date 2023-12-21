@@ -85,7 +85,6 @@ foreach ($Roster as $Roster_day_array) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
-
 echo "<div id=main-area>\n";
 
 echo $user_dialog->build_messages();
@@ -106,9 +105,9 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     echo "<tr><td></td></tr>\n";
     echo build_html_roster_views::build_roster_readonly_branch_table_rows($Branch_roster, $branch_id, $date_sql, $date_sql, array('space_constraints' => 'wide'));
     echo "<tr><td></td></tr>\n";
-    $Abwesende = absence::read_absentees_from_database($date_sql);
-    if (isset($Abwesende)) {
-        echo build_html_roster_views::build_absentees_row($Abwesende);
+    $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
+    if (!$absenceCollection->isEmpty()) {
+        echo build_html_roster_views::build_absentees_row($absenceCollection);
     }
 }
 echo "</table>\n";

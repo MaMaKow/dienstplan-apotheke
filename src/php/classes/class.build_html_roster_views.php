@@ -22,21 +22,22 @@ abstract class build_html_roster_views {
     const OPTION_SHOW_EMERGENCY_SERVICE_NAME = 'show_emergency_service_name';
     const OPTION_SHOW_CALENDAR_WEEK = 'show_calendar_week';
     const DAYS_IN_A_WEEK = 7;
+    const NUMBER_OF_BUSINESS_DAYS = 5;
     const INPUT_ELEMENTS_IN_ROSTER_FORM = 7;
 
     /**
      * Build one table row for a daily view
      *
-     * @param $Absentees array expects an array of absent employees in the format array((int)employee_key => (int)id_of_reason_for_absence)
+     * @param $absenceCollection array expects an array of absent employees in the format array((int)employee_key => (int)id_of_reason_for_absence)
      *
      * @return string HTML table row
      */
-    public static function build_absentees_row($Absentees) {
-        if (NULL === $Absentees) {
+    public static function build_absentees_row(PDR\Roster\AbsenceCollection $absenceCollection): ?string {
+        if (NULL === $absenceCollection) {
             return FALSE;
         }
         $text = "<tr>";
-        $text .= build_html_roster_views::build_absentees_column($Absentees);
+        $text .= build_html_roster_views::build_absentees_column($absenceCollection);
         $text .= "</tr>\n";
         return $text;
     }
@@ -45,15 +46,16 @@ abstract class build_html_roster_views {
      * Build one table column for a weekly view
      *
      * used by: src/php/pages/roster-week-table.php
-     * @param $Absentees array expects an array of absent employees in the format array((int)employee_key => (int)id_of_reason_for_absence)
+     * @param $absenceCollection array expects an array of absent employees in the format array((int)employee_key => (int)id_of_reason_for_absence)
      *
      * @return string HTML table column
+     * @todo Use dependency injection and provide $workforce as a parameter to the method.
      */
-    public static function build_absentees_column($Absentees) {
+    public static function build_absentees_column(PDR\Roster\AbsenceCollection $absenceCollection): string {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
-        foreach ($Absentees as $employee_key => $reason_id) {
-            $text .= $workforce->List_of_employees[$employee_key]->last_name . " (" . absence::get_reason_string_localized($reason_id) . ")<br>";
+        foreach ($absenceCollection as $absence) {
+            $text .= $workforce->List_of_employees[$absence->getEmployeKey()]->last_name . " (" . absence::get_reason_string_localized($absence->getReasonId()) . ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -613,57 +615,63 @@ abstract class build_html_roster_views {
             $date_sql = date('Y-m-d', $date_unix);
             $date_object = new DateTime;
             $date_object->setTimestamp($date_unix);
-            $Absentees = absence::read_absentees_from_database($date_sql);
-            $Working_hours_day_should += self::calculate_working_hours_day_employee_should($date_object, $employee_object, $Absentees);
+            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
+            $Working_hours_day_should += self::calculateWorkingHoursDayEmployeeShould($date_object, $employee_object, $absenceCollection);
         }
         return $Working_hours_day_should;
     }
 
-    private static function calculate_working_hours_day_employee_should(DateTime $date_object, employee $employee_object, array $Absentees) {
-        if (array_key_exists($employee_object->get_employee_key(), $Absentees)) {
+    /**
+     * Calculate the expected working hours for an employee on a given date.
+     *
+     * @param DateTime $dateObject - The date for which to calculate working hours.
+     * @param employee $employeeObject - The employee for whom to calculate working hours.
+     * @param PDR\Roster\AbsenceCollection $absenceCollection - Collection of absences for the employee.
+     * @return float - The calculated working hours for the employee on the specified date.
+     * @todo <p lang=de>Die Berechnung muss komplett umgestellt werden.
+     *  Statt die Sollstunden herunterzurechnen, müssen die Iststunden hoch gerechnet werden.</p>
+     */
+    private static function calculateWorkingHoursDayEmployeeShould(DateTime $dateObject, employee $employeeObject, PDR\Roster\AbsenceCollection $absenceCollection): float {
+        if ($absenceCollection->containsEmployeeKey($employeeObject->get_employee_key())) {
             /**
-             * <p lang=de>
-             * Wer Abwesend ist muss nicht arbeiten.
-             * Ausnahme: Wer Überstunden abbaut REASON_TAKEN_OVERTIME, dem werden Sollstunden angerechnet.
-             * </p>
+             * Those who are absent do not have to work.
+             * Exception: Those who reduce overtime REASON_TAKEN_OVERTIME are credited with target hours.
              */
             /**
              * @var $List_of_non_respected_absence_reason_ids
              * @see absence::$List_of_absence_reasons for a full list of absence reason ids (paid and unpaid)
              */
-            $List_of_non_respected_absence_reason_ids = array(absence::REASON_TAKEN_OVERTIME);
+            $ListOfNonRespectedAbsenceReasonIds = array(absence::REASON_TAKEN_OVERTIME);
 
-            if (!in_array($Absentees[$employee_object->get_employee_key()], $List_of_non_respected_absence_reason_ids)) {
+            if (!in_array(
+                            $absenceCollection->getAbsenceByEmployeeKey($employeeObject->get_employee_key())->getReasonId(),
+                            $ListOfNonRespectedAbsenceReasonIds)) {
                 return 0;
             }
         }
-        if (FALSE !== holidays::is_holiday($date_object)) {
-            /**
-             * <p lang=de>
-             * Es ist ein Feiertag. Es muss nicht gearbeitet werden.
-             * </p>
-             */
+        /**
+         *  Check if it's a holiday; no work is required on holidays.
+         */
+        if (FALSE !== holidays::is_holiday($dateObject)) {
             return 0;
         }
-        if (roster::is_empty_roster_day_array($employee_object->get_principle_roster_on_date($date_object)) and !empty($employee_object->working_week_days)) {
-            /**
-             * <p lang=de>
-             * Wir müssen hier noch einen Spezialfall beachten!
-             * Es gibt Leute, die an nur zwei Tagen Di/Do arbeiten.
-             * TODO: Was ist hier, wenn der Feiertag auf einen Freitag fällt?
-             * Ist es gerecht, dass solche Mitarbeiter hier speziell behandelt werden? Was sagt das Gesetz?
-             * </p>
-             */
+        /**
+         *  Check for a special case where the employee works only on specific days (e.g., Tue/Thu).
+         *  TODO: Consider handling scenarios when a holiday falls on a Friday.
+         *  Is it fair to treat such employees differently?
+         */
+        if (roster::is_empty_roster_day_array($employeeObject->get_principle_roster_on_date($dateObject))
+                and !empty($employeeObject->working_week_days)) {
             return 0;
         }
-        if (empty($employee_object->working_week_days)) {
+        if (empty($employeeObject->working_week_days)) {
             /*
              * In case we do not know the exact working_week_days we guess is must be 5.
              * This happens, if there are no days in the principle roster for this employee.
              */
-            return $employee_object->working_week_hours / 5;
+            return $employeeObject->working_week_hours / self::NUMBER_OF_BUSINESS_DAYS;
         }
-        return $employee_object->working_week_hours / $employee_object->working_week_days;
+        return $employeeObject->working_week_hours / $employeeObject->working_week_days;
     }
 
     public static function calculate_working_week_hours_should(array $Roster, workforce $workforce) {

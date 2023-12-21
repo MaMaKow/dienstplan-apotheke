@@ -25,12 +25,14 @@ $month_number = (int) user_input::get_variable_from_any_input('month_number', FI
 create_cookie("month_number", $month_number, 1);
 $year = (int) user_input::get_variable_from_any_input('year', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y'));
 create_cookie("year", $year, 1);
-$start_date_unix = mktime(0, 0, 0, $month_number, 1, $year);
-$date_unix = $start_date_unix;
-$date_sql = date('Y-m-d', $date_unix);
-
-//The employee list needs a $date_unix, because nobody is working with us forever.
-$workforce = new workforce($date_sql);
+// Create a DateTime object for the start date
+$dateStartObject = new DateTime();
+$dateStartObject->setDate($year, $month_number, 1);
+$dateStartObject->setTime(0, 0, 0);
+$dateEndObject = clone $dateStartObject;
+$dateEndObject->setDate($year, $month_number, $dateStartObject->format("t"));
+//The employee list needs a date, because nobody is working with us forever.
+$workforce = new workforce($dateStartObject->format('Y-m-d'));
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -42,39 +44,33 @@ echo form_element_builder::build_html_select_year($year);
         <TD>Anwesenheit</TD>
         <?php
         foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
-            echo '<TD style="padding-bottom: 0">' . mb_substr($employee_object->last_name, 0, 4) . "<br>" . $workforce->get_employee_short_descriptor($employee_key) . "</TD>";
+            echo '<TD style="padding-bottom: 0" title="' . $employee_object->first_name . " " . $employee_object->last_name . '">' . mb_substr($employee_object->last_name, 0, 4) . "<br>" . $workforce->get_employee_short_descriptor($employee_key) . "</TD>";
         }
         ?>
     </TR>
     <?php
-    /*
-     * TODO: Use date object
-     * TODO: Absentees should/could be an object. It is poorly documented, that $Absentees[$employee_key] equals/contains/holds a reason_id for the absence.
-     */
     $configuration = new \PDR\Application\configuration();
     $locale = $configuration->getLanguage();
     $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
-
-    for ($date_unix = $start_date_unix; $date_unix < strtotime('+ 1 month', $start_date_unix); $date_unix = $date_unix + PDR_ONE_DAY_IN_SECONDS) {
-        $date_sql = date("Y-m-d", $date_unix);
-        if (date('N', $date_unix) >= 6) {
+    for ($currentDate = clone $dateStartObject; $currentDate <= $dateEndObject; $currentDate->modify('+1 day')) {
+        $date_sql = $currentDate->format('Y-m-d');
+        if ($currentDate->format('N') >= 6) {
             $dateFormatter->setPattern('EEE dd.MM.');
-            $dateString = $dateFormatter->format($date_unix);
+            $dateString = $dateFormatter->format($currentDate);
             echo '<TR class=wochenende><TD style="padding-bottom: 0">' . $dateString . '</TD>';
             foreach (array_keys($workforce->List_of_employees) as $employee_key) {
                 echo '<TD></TD>';
             }
         } else {
-            $Absentees = absence::read_absentees_from_database($date_sql);
+            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
             $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
             $dateFormatter->setPattern('EEE dd.MM.YYYY');
-            $dateString = $dateFormatter->format($date_unix);
+            $dateString = $dateFormatter->format($currentDate);
             echo '<TR><TD style="padding-bottom: 0">' . $dateString . '</TD>';
-            //TODO: The following part is not localized. It will not wrk in any other language:
             foreach (array_keys($workforce->List_of_employees) as $employee_key) {
-                if (isset($Absentees[$employee_key])) {
-                    $reason_short_string = mb_substr(absence::get_reason_string_localized($Absentees[$employee_key]), 0, 4);
-                    echo "<TD style='padding-bottom: 0' title='" . absence::get_reason_string_localized($Absentees[$employee_key]) . "'>" . $reason_short_string . "</TD>";
+                if ($absenceCollection->containsEmployeeKey($employee_key)) {
+                    $reason_short_string = mb_substr(absence::get_reason_string_localized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()), 0, 4);
+                    echo "<TD style='padding-bottom: 0' title='" . absence::get_reason_string_localized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()) . "'>" . $reason_short_string . "</TD>";
                 } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_key'] == $employee_key) {
                     $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . gettext("emergency service") . "'>" . $reason_short_string . "</TD>";
