@@ -22,7 +22,9 @@
 namespace PDR\Roster;
 
 /**
- * Class absence
+ * Class Absence
+ * Represents an absence entry with details such as employee key, start and end dates, reason, comment, approval status, etc.
+ *
  * @package PDR\Roster
  * @author Mandelkow
  */
@@ -74,6 +76,19 @@ class Absence implements \JsonSerializable {
      */
     private $timeStamp;
 
+    /**
+     * Constructor for creating an Absence object.
+     *
+     * @param int $employeeKey
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @param int $days
+     * @param int $reasonId
+     * @param string|null $comment
+     * @param string $approval
+     * @param string $userName
+     * @param \DateTime $timeStamp
+     */
     public function __construct(
             int $employeeKey,
             \DateTime $start,

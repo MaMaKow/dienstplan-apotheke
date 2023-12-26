@@ -40,7 +40,7 @@ class AbsenceCollection implements \IteratorAggregate {
 
     // Implement the IteratorAggregate interface
     public function getIterator(): \ArrayIterator {
-        return new ArrayIterator($this->absences);
+        return new \ArrayIterator($this->absences);
     }
 
     /**

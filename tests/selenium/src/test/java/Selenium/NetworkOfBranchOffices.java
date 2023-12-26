@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 public class NetworkOfBranchOffices {
 
-    Map<Integer, Branch> listOfBranches;
+    private Map<Integer, Branch> listOfBranches;
 
     public NetworkOfBranchOffices() {
         listOfBranches = readFromFile();
@@ -50,8 +50,11 @@ public class NetworkOfBranchOffices {
         return listOfBranches;
     }
 
-    public Branch getBranchById(int brachId) {
-        return listOfBranches.get(brachId);
+    public Branch getBranchById(int branchId) {
+        if (0 == branchId && !listOfBranches.containsKey(0)) {
+            return getEmptyBranch();
+        }
+        return listOfBranches.get(branchId);
     }
 
     public Branch getBranchByName(String name) {
@@ -65,6 +68,10 @@ public class NetworkOfBranchOffices {
                 return branchObject;
             }
         }
+        if (name.equals("") && !listOfBranches.containsKey(0)) {
+            return getEmptyBranch();
+        }
+
         return branchObject;
     }
 
@@ -130,7 +137,10 @@ public class NetworkOfBranchOffices {
                 Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
     }
 
+    private Branch getEmptyBranch() {
+        Branch emptyBranch = new Branch(0, 0, "", "", "", "", null);
+        return emptyBranch;
+    }
 }

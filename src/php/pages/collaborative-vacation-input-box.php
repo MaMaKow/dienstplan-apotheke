@@ -52,7 +52,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
     $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
     $Absence_details['employeeKey'] = $employee_key;
-    $Absence_details['reasonId'] = absence::REASON_VACATION;
+    $Absence_details['reasonId'] = \PDR\Utility\AbsenceUtility::REASON_VACATION;
     $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
     $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
     $Absence_details['comment'] = '';
@@ -115,7 +115,7 @@ if ($session->user_has_privilege('create_absence') and "edit" === $Absence_detai
     echo "<p>" . gettext("Approval") . "<br>";
     echo "<select id='input_box_form_approval' name='approval'>";
 
-    foreach (absence::$List_of_approval_states as $approval_state) {
+    foreach (\PDR\Utility\AbsenceUtility::$ListOfApprovalStates as $approval_state) {
         //TODO: Remove all occurences of "disapprove" and change them to "deny".
         if ($approval_state == $Absence_details['approval']) {
             echo "<option value='$approval_state' selected>" . localization::gettext($approval_state) . "</option>\n";

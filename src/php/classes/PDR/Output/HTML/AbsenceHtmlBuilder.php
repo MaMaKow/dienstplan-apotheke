@@ -22,8 +22,13 @@
 namespace PDR\Output\HTML;
 
 /**
- * Description of AbsenceHtmlBuilder
+ * AbsenceHtmlBuilder class provides utility methods for generating HTML elements related to absences.
  *
+ * This class includes methods to generate HTML code for selection menus used in the user interface
+ * for approving absences and selecting reasons for absence entries. The generated HTML is designed
+ * to be easily integrated into HTML forms for managing absence-related data.
+ *
+ * @package PDR\Output\HTML
  * @author Mandelkow
  */
 class AbsenceHtmlBuilder {
@@ -40,7 +45,7 @@ class AbsenceHtmlBuilder {
         $htmlText = "<select id='$htmlId' form='$htmlForm' class='absence_approval_input_select' name='approval'>\n";
 
         // Iterate through the list of approval states
-        foreach (\absence::$List_of_approval_states as $approval) {
+        foreach (\PDR\Utility\AbsenceUtility::$ListOfApprovalStates as $approval) {
             if ($approval == $approvalSpecified) {
                 // Mark the selected status
                 $htmlText .= "<option value='$approval' selected>" . \localization::gettext($approval) . "</option>\n";
@@ -67,11 +72,11 @@ class AbsenceHtmlBuilder {
      */
     public static function buildReasonInputSelect(int $reasonSpecified, string $htmlId = NULL, string $htmlForm = NULL): string {
         $htmlText = "<select id='$htmlId' form='$htmlForm' class='absence_reason_input_select' name='reason_id'>\n";
-        foreach (\absence::$List_of_absence_reasons as $reasonId) {
+        foreach (\PDR\Utility\AbsenceUtility::$ListOfAbsenceReasons as $reasonId) {
             if ($reasonId === $reasonSpecified) {
-                $htmlText .= "<option value='$reasonId' selected>" . htmlspecialchars(\absence::get_reason_string_localized($reasonId)) . "</option>\n";
+                $htmlText .= "<option value='$reasonId' selected>" . htmlspecialchars(\PDR\Utility\AbsenceUtility::getReasonStringLocalized($reasonId)) . "</option>\n";
             } else {
-                $htmlText .= "<option value='$reasonId'>" . htmlspecialchars(\absence::get_reason_string_localized($reasonId)) . "</option>\n";
+                $htmlText .= "<option value='$reasonId'>" . htmlspecialchars(\PDR\Utility\AbsenceUtility::getReasonStringLocalized($reasonId)) . "</option>\n";
             }
         }
         $htmlText .= "</select>\n";

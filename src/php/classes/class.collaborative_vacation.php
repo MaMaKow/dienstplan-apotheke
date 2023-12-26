@@ -133,7 +133,7 @@ class collaborative_vacation {
         if ("save" === $command) {
             $workforce = new \workforce();
             $employee_object = $workforce->get_employee_object($employee_key);
-            $days = \absence::calculate_employee_absence_days(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
+            $days = \PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
             PDR\Database\AbsenceDatabaseHandler::insertAbsence($employee_key, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval, $_SESSION['user_object']->user_name);
         }
         database_wrapper::instance()->commit();
@@ -155,7 +155,7 @@ class collaborative_vacation {
         $approval = filter_input(INPUT_POST, 'approve_absence', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $employee_key_old = filter_input(INPUT_POST, 'employee_key_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        absence::set_approval($approval, $employee_key_old, $start_date_old_string);
+        PDR\Database\AbsenceDatabaseHandler::setApproval($approval, $employee_key_old, $start_date_old_string);
     }
 
     /**
@@ -180,7 +180,7 @@ class collaborative_vacation {
         $current_month = $date_start_object->format("n");
         $current_year = $date_start_object->format("Y");
 
-        $Absences = absence::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
+        $Absences = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
 
         $year_container_html = "<div class=year_container>\n";
         $year_container_html .= \form_element_builder::build_html_select_year($current_year);
@@ -237,7 +237,7 @@ class collaborative_vacation {
 
         $current_week = $input_date_object->format('W');
         $current_month_name = $this->get_month_name($input_date_object);
-        $absenceColletcion = absence::getAllAbsenceObjectsInPeriod($start_date_object, $end_date_object);
+        $absenceColletcion = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($start_date_object, $end_date_object);
 
         $month_container_html = "";
         $month_container_html .= \form_element_builder::build_html_select_year($input_date_object->format('Y'));
@@ -406,7 +406,7 @@ class collaborative_vacation {
      */
     private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence): string {
         $absence_title_text = $workforce->get_employee_last_name($Absence['employee_key']) . "\n";
-        $absence_title_text .= absence::get_reason_string_localized($Absence['reason_id']) . "\n";
+        $absence_title_text .= \PDR\Utility\AbsenceUtility::getReasonStringLocalized($Absence['reason_id']) . "\n";
         $absence_title_text .= $Absence['comment'] . "\n";
         $dateObjectAbenceStart = new DateTime($Absence['start']);
         $dateObjectAbenceEnd = new DateTime($Absence['end']);

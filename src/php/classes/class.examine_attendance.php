@@ -47,7 +47,7 @@ abstract class examine_attendance {
             foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
                 $message = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'),
                         $workforce->List_of_employees[$arbeitender_abwesender]->last_name,
-                        absence::get_reason_string_localized($absenceCollection->getAbsenceByEmployeeKey($arbeitender_abwesender)->getReasonId()
+                        \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($arbeitender_abwesender)->getReasonId()
                 ));
                 $user_dialog->add_message($message);
                 /**

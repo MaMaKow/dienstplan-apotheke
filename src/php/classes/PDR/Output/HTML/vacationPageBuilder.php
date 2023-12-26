@@ -71,9 +71,9 @@ class vacationPageBuilder {
         $table_rows = "<tbody>";
 
         foreach (array_keys($workforce->List_of_employees) as $employee_key) {
-            $number_of_holidays_due = \absence::get_number_of_holidays_due($employee_key, $workforce, $year);
+            $number_of_holidays_due = \PDR\Utility\AbsenceUtility::getNumberOfHolidaysDue($employee_key, $workforce, $year);
             $number_of_holidays_principle = $workforce->List_of_employees[$employee_key]->holidays;
-            $number_of_holidays_taken = \absence::get_number_of_holidays_taken($employee_key, $year);
+            $number_of_holidays_taken = \PDR\Database\AbsenceDatabaseHandler::getNumberOfHolidaysTaken($employee_key, $year);
             $number_of_remaining_holidays = $number_of_holidays_due - $number_of_holidays_taken;
 
             $table_rows .= "<tr>";

@@ -69,8 +69,8 @@ echo form_element_builder::build_html_select_year($year);
             echo '<TR><TD style="padding-bottom: 0">' . $dateString . '</TD>';
             foreach (array_keys($workforce->List_of_employees) as $employee_key) {
                 if ($absenceCollection->containsEmployeeKey($employee_key)) {
-                    $reason_short_string = mb_substr(absence::get_reason_string_localized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()), 0, 4);
-                    echo "<TD style='padding-bottom: 0' title='" . absence::get_reason_string_localized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()) . "'>" . $reason_short_string . "</TD>";
+                    $reason_short_string = mb_substr(\PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()), 0, 4);
+                    echo "<TD style='padding-bottom: 0' title='" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()) . "'>" . $reason_short_string . "</TD>";
                 } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_key'] == $employee_key) {
                     $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . gettext("emergency service") . "'>" . $reason_short_string . "</TD>";

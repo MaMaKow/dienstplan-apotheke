@@ -109,7 +109,7 @@ for ($i = 1; $i <= 12; $i++) {
     $date = mktime(0, 0, 0, $i, 1);
     $Months[$i] = $monthFormatter->format($date);
 }
-$Years = absence::get_rostering_years();
+$Years = \PDR\Utility\AbsenceUtility::getRosteringYears();
 $table_body_html = "<tbody>";
 $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
 $weekdayFormatter->setPattern('EEE dd.MM.yyyy'); // 'EEEE' represents the full weekday name
@@ -123,7 +123,7 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
     $result = database_wrapper::instance()->run($sql_query, array(
         'employee_key' => $employee_key,
         'date' => $date_object->format('Y-m-d')));
-    $absence = absence::getSpecificAbsenceObject($date_object, $employee_key);
+    $absence = PDR\Database\AbsenceDatabaseHandler::getSpecificAbsenceObject($date_object, $employee_key);
 
     $table_body_html .= "<tr>";
     $dateString = $weekdayFormatter->format($date_object->getTimestamp());
@@ -148,7 +148,7 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
              * </p>
              */
             $overtime_hours = $row['hours'] - $principle_working_hours;
-            if (null !== $absence and !in_array($absence->getReasonId(), array(absence::REASON_TAKEN_OVERTIME))) {
+            if (null !== $absence and !in_array($absence->getReasonId(), array(\PDR\Utility\AbsenceUtility::REASON_TAKEN_OVERTIME))) {
                 $overtime_hours += $principle_working_hours;
             }
 
@@ -162,7 +162,7 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
         $table_body_html .= "</td>";
     }
     if (null !== $absence) {
-        $table_body_html .= "<td colspan='3'>" . absence::get_reason_string_localized($absence->getReasonId()) . "</td>";
+        $table_body_html .= "<td colspan='3'>" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId()) . "</td>";
     }
 
     $table_body_html .= "</tr>";

@@ -90,7 +90,7 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
             $suffix = '</span>';
             if ($absenceCollection->containsEmployeeKey($employeeKey)) {
                 $prefix = '<span class="absent">';
-                $suffix = "&nbsp;(" . absence::get_reason_string_localized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . ')</span>';
+                $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . ')</span>';
             }
 
             $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->List_of_employees[$employeeKey]->last_name . $suffix;
@@ -110,7 +110,7 @@ function getRosteredEmployeesNames(array $Roster, workforce $workforce, PDR\Rost
                 $suffix = '</span>';
                 if ($absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
                     $prefix = '<span class="absent">';
-                    $suffix = "&nbsp;(" . absence::get_reason_string_localized($absenceCollection->getAbsenceByEmployeeKey($rosterItem->employee_key)->getReasonId()) . ')</span>';
+                    $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($rosterItem->employee_key)->getReasonId()) . ')</span>';
                 }
                 $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->List_of_employees[$rosterItem->employee_key]->last_name . $suffix;
             }

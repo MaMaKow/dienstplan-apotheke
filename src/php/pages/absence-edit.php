@@ -25,7 +25,7 @@ $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_S
 create_cookie('year', $year, 1);
 create_cookie('employee_key', $employee_key, 30);
 if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ABSENCE)) {
-    \absence::handle_user_input();
+    \PDR\Utility\AbsenceUtility::handleUserInput();
 }
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted
@@ -36,10 +36,10 @@ if (isset($_POST) && !empty($_POST)) {
 /*
  * TODO: Find overlapping absences.
  */
-$number_of_holidays_due = absence::get_number_of_holidays_due($employee_key, $workforce, $year);
+$number_of_holidays_due = \PDR\Utility\AbsenceUtility::getNumberOfHolidaysDue($employee_key, $workforce, $year);
 $number_of_holidays_principle = $workforce->List_of_employees[$employee_key]->holidays;
-$number_of_holidays_taken = absence::get_number_of_holidays_taken($employee_key, $year);
-$number_of_remaining_holidays_submitted = absence::get_number_of_remaining_holidays_submitted($employee_key, $year);
+$number_of_holidays_taken = PDR\Database\AbsenceDatabaseHandler::getNumberOfHolidaysTaken($employee_key, $year);
+$number_of_remaining_holidays_submitted = PDR\Database\AbsenceDatabaseHandler::getNumberOfRemainingHolidaysSubmitted($employee_key, $year);
 $number_of_remaining_holidays_left = $number_of_holidays_due - ($number_of_holidays_taken + $number_of_remaining_holidays_submitted);
 
 $remaining_holidays_div = "<div class='remaining_holidays'>";
@@ -84,7 +84,7 @@ while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
     /*
      * reason
      */
-    $tablebody .= "<td><div id='reason_out_$row->start' data-reason_id='$row->reason_id'>" . absence::get_reason_string_localized($row->reason_id) . "</div>";
+    $tablebody .= "<td><div id='reason_out_$row->start' data-reason_id='$row->reason_id'>" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($row->reason_id) . "</div>";
     $html_id = "reason_in_$row->start";
     $tablebody .= PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect($row->reason_id, $html_id, $html_form_id);
     $tablebody .= "</td>\n";
@@ -154,7 +154,7 @@ echo "</td>\n";
 echo "<td>\n";
 echo "<input type=date class=datepicker onchange=updateTage() onblur=checkUpdateTage() id=ende name=ende value=" . date("Y-m-d") . " form='new_absence_entry'>";
 echo "</td>\n";
-echo "<td>" . PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect(absence::REASON_VACATION, 'new_absence_reason_id_select', 'new_absence_entry') . "</td>\n";
+echo "<td>" . PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect(\PDR\Utility\AbsenceUtility::REASON_VACATION, 'new_absence_reason_id_select', 'new_absence_entry') . "</td>\n";
 echo "<td><input type='text' id='new_absence_input_comment' name='comment' form='new_absence_entry'></td>\n";
 echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
 echo "<td>" . PDR\Output\HTML\AbsenceHtmlBuilder::buildApprovalInputSelect('not_yet_approved', 'new_absence_approval_select', 'new_absence_entry') . "</td>\n";

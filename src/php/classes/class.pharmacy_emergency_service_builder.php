@@ -37,13 +37,13 @@ class pharmacy_emergency_service_builder {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $table_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$employee_key_selected]->last_name) or!isset($employee_key_selected)) {
+        if (isset($workforce->List_of_employees[$employee_key_selected]->last_name) or !isset($employee_key_selected)) {
             foreach ($workforce->List_of_qualified_pharmacist_employees as $employee_key) {
                 $employee_object = $workforce->List_of_employees[$employee_key];
                 if ($employee_key_selected == $employee_key and NULL !== $employee_key_selected) {
-                    $table_employee_select .= "<option value=$employee_key selected>" . $employee_key . " " . $employee_object->last_name . "</option>";
+                    $table_employee_select .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
                 } else {
-                    $table_employee_select .= "<option value=$employee_key>" . $employee_key . " " . $employee_object->last_name . "</option>\n";
+                    $table_employee_select .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>\n";
                 }
             }
         } else {
@@ -56,5 +56,4 @@ class pharmacy_emergency_service_builder {
         $table_employee_select .= "";
         return $table_employee_select;
     }
-
 }

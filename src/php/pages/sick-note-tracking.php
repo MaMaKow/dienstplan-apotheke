@@ -40,7 +40,7 @@ $endOfMonth = clone $startOfMonth;
 $endOfMonth->add(new DateInterval('P1M'));
 $endOfMonth->sub(new DateInterval('PT1S'));
 
-$absenceCollectionMonth = absence::getAllAbsenceObjectsInPeriod($startOfMonth, $endOfMonth);
+$absenceCollectionMonth = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($startOfMonth, $endOfMonth);
 $workforce = new workforce($startOfMonth->format("Y-m-d"), $endOfMonth->format("Y-m-d"));
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
@@ -62,7 +62,7 @@ echo form_element_builder::build_html_select_year($year);
     </TR>
     <?php
     foreach ($absenceCollectionMonth as $absenceObject) {
-        if (absence::REASON_SICKNESS !== $absenceObject->getReasonId() and absence::REASON_SICKNESS_OF_CHILD !== $absenceObject->getReasonId()) {
+        if (\PDR\Utility\AbsenceUtility::REASON_SICKNESS !== $absenceObject->getReasonId() and \PDR\Utility\AbsenceUtility::REASON_SICKNESS_OF_CHILD !== $absenceObject->getReasonId()) {
             /**
              * const REASON_SICKNESS = 3;
              * const REASON_SICKNESS_OF_CHILD = 4;
@@ -71,7 +71,7 @@ echo form_element_builder::build_html_select_year($year);
             continue;
         }
         $reason_sickness_of_child_checked = "";
-        if (absence::REASON_SICKNESS_OF_CHILD === $absenceObject->getReasonId()) {
+        if (\PDR\Utility\AbsenceUtility::REASON_SICKNESS_OF_CHILD === $absenceObject->getReasonId()) {
             $reason_sickness_of_child_checked = "✘";
         }
         echo '<TR style="padding-bottom: 0">';

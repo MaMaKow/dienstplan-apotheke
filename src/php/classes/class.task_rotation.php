@@ -73,7 +73,7 @@ abstract class task_rotation {
          */
         $rotation_employee_key = self::read_task_employee_from_database($task, $date_sql, $branch_id);
         if (NULL !== $rotation_employee_key) {
-            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($dateSql);
+            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
 
             if (FALSE === $absenceCollection->containsEmployeeKey($rotation_employee_key)) {
                 return $rotation_employee_key;

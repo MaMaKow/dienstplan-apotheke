@@ -57,7 +57,7 @@ EOT;
      */
     public static function build_html_select_year(int $current_year) {
 
-        $Years = absence::get_rostering_years();
+        $Years = \PDR\Utility\AbsenceUtility::getRosteringYears();
         $html_select_year = "";
         $html_select_year .= "<form id='select_year' class='inline_form' method=post>";
         $html_select_year .= "<select name=year class='large' onchange=this.form.submit()>";
@@ -94,5 +94,4 @@ EOT;
         $html_select_month .= "</form>";
         return $html_select_month;
     }
-
 }

@@ -55,7 +55,7 @@ abstract class build_html_roster_views {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($absenceCollection as $absence) {
-            $text .= $workforce->List_of_employees[$absence->getEmployeKey()]->last_name . " (" . absence::get_reason_string_localized($absence->getReasonId()) . ")<br>";
+            $text .= $workforce->List_of_employees[$absence->getEmployeKey()]->last_name . " (" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId()) . ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -641,7 +641,7 @@ abstract class build_html_roster_views {
              * @var $List_of_non_respected_absence_reason_ids
              * @see absence::$List_of_absence_reasons for a full list of absence reason ids (paid and unpaid)
              */
-            $ListOfNonRespectedAbsenceReasonIds = array(absence::REASON_TAKEN_OVERTIME);
+            $ListOfNonRespectedAbsenceReasonIds = array(\PDR\Utility\AbsenceUtility::REASON_TAKEN_OVERTIME);
 
             if (!in_array(
                             $absenceCollection->getAbsenceByEmployeeKey($employeeObject->get_employee_key())->getReasonId(),

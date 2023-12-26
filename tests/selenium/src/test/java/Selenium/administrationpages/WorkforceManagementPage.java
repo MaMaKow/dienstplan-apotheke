@@ -67,6 +67,7 @@ public class WorkforceManagementPage {
         if (!Wrapper.isOptionTextPresent(selectEmployeeSelect, optionText)) {
             throw new Exception("Employee not found");
         }
+        selectEmployeeSelect.selectByVisibleText(optionText);
         return new WorkforceManagementPage(driver);
     }
 
@@ -177,7 +178,6 @@ public class WorkforceManagementPage {
              */
             return setEmployeeData(employeeObject);
         } catch (Exception e) {
-            System.err.println("The employee does not exist yet. It will be created.");
             /**
              * The employee does not exist yet. It will be created.
              */
