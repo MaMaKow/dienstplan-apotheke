@@ -74,8 +74,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     $cssFiles[] = 'printOrientationPortrait.css';
                     break;
                 case 'collaborative-vacation-month.php':
-                    $cssFiles[] = 'collaborative-vacation.css';
-                    break;
                 case 'collaborative-vacation-year.php':
                     $cssFiles[] = 'collaborative-vacation.css';
                     break;
@@ -83,6 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     $cssFiles[] = 'principle-roster-employee.css';
                     break;
                 case 'roster-day-edit.php':
+                case 'principle-roster-day.php':
                     $cssFiles[] = 'roster-day-edit.css';
                     $cssFiles[] = 'printOrientationPortrait.css';
                     break;

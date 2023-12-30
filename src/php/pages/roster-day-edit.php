@@ -45,6 +45,12 @@ if (filter_has_var(INPUT_POST, "rosterActionCommand")) {
 
         $rosterActionHandler = new \PDR\Input\RosterActionHandler;
         $rosterActionHandler->processRosterActionInsertMissingEmployee($session, $principleRosterObjectJson);
+    } elseif ("removeAbsentEmployee" === $rosterActionCommand) {
+        // Extract values from the POST data
+        $rosterItemObjectJson = filter_input(INPUT_POST, "rosterItemObject", FILTER_UNSAFE_RAW);
+
+        $rosterActionHandler = new \PDR\Input\RosterActionHandler;
+        $rosterActionHandler->processRosterActionRemoveAbsentEmployee($session, $rosterItemObjectJson);
     }
 }
 
@@ -124,12 +130,12 @@ if ("7" !== date('N', $date_unix) and !holidays::is_holiday($date_unix)) {
     $examine_roster->check_for_sufficient_employee_count();
     $examine_roster->check_for_sufficient_goods_receipt_count();
     $examine_roster->check_for_sufficient_qualified_pharmacist_count();
-    examine_attendance::check_for_absent_employees($Roster, $Principle_roster, $absenceCollection, $date_unix);
+    examine_attendance::checkForAbsentEmployees($Roster, $Principle_roster, $absenceCollection, $date_unix);
 }
 /*
  * examine_attendance::check_for_attendant_absentees() should be done regardless of weekday and holiday:
  */
-examine_attendance::check_for_attendant_absentees($Roster, $absenceCollection);
+examine_attendance::checkForAttendantAbsentees($Roster, $absenceCollection, $workforce);
 
 if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
     $message = gettext('Beware the emergency service!');
@@ -174,7 +180,7 @@ $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
 $html_text .= "<td>";
 $html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
-$html_text .= "<input type=hidden name=mandant value=" . htmlentities($branch_id) . ">";
+$html_text .= "<input type=hidden name=mandant value=" . htmlspecialchars($branch_id) . ">";
 $html_text .= $date_object->format("d.m.");
 /*
  * Weekday:

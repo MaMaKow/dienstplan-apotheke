@@ -92,7 +92,7 @@ class test_htaccess {
                 return FALSE;
             }
             foreach ($Response as $key => $response_http) {
-                $error_message .= $key . ": " . htmlentities($response_http) . "<br>\n";
+                $error_message .= $key . ": " . htmlspecialchars($response_http) . "<br>\n";
             }
             $user_dialog->add_message($error_message, E_USER_WARNING, TRUE);
             return FALSE;

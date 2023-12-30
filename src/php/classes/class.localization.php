@@ -56,49 +56,49 @@ abstract class localization {
             $locale = preg_replace('~([a-z]{2,3})-([A-Z]{2,3})~', '\1_\2', $locale);
         }
         if (FALSE === putenv("LANGUAGE=$locale")) {
-            print_debug_variable('putenv failed');
+            error_log('putenv failed');
         }
         if (FALSE === putenv("LANG=$locale")) {
-            print_debug_variable('putenv failed');
+            error_log('putenv failed');
         }
 
 //setlocale(LC_ALL, $locale);
         if (defined('LANGUAGE')) {
             if (FALSE === setlocale(LANGUAGE, $locale, $locale . ".UTF-8")) {
-                print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+                error_log('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
             }
         }
         if (defined('LC_CTYPE')) {
             if (FALSE === setlocale(LC_CTYPE, $locale, $locale . ".UTF-8")) {
-                print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+                error_log('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
             }
         }
         if (defined('LC_COLLATE')) {
             if (FALSE === setlocale(LC_COLLATE, $locale, $locale . ".UTF-8")) {
-                print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+                error_log('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
             }
         }
         if (defined('LANG')) {
             if (FALSE === setlocale(LANG, $locale, $locale . ".UTF-8")) {
-                print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+                error_log('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
             }
         }
         if (defined('LC_MESSAGES')) {
             if (FALSE === setlocale(LC_MESSAGES, $locale, $locale . ".UTF-8")) {
-                print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+                error_log('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
             }
         }
         if (FALSE === setlocale(LC_COLLATE, $locale, $locale . ".UTF-8")) {
-            print_debug_variable('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
+            error_log('setlocale failed: locale function is not available on this platform, or the given local (' . $locale . ') does not exist in this environment');
         }
         if (FALSE === bindtextdomain("messages", PDR_FILE_SYSTEM_APPLICATION_PATH . "locale")) {
-            print_debug_variable('bindtextdomain failed: maybe the file does not exist');
+            error_log('bindtextdomain failed: maybe the file does not exist');
         }
         if (FALSE === textdomain("messages")) {
-            print_debug_variable('textdomain failed');
+            error_log('textdomain failed');
         }
         if (FALSE === bind_textdomain_codeset("messages", 'UTF-8')) {
-            print_debug_variable('bind_textdomain_codeset failed');
+            error_log('bind_textdomain_codeset failed');
         }
     }
 
@@ -132,5 +132,4 @@ abstract class localization {
         );
         return $Month_names;
     }
-
 }

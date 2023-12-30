@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2023-12-06 07:31+0100\n"
-"PO-Revision-Date: 2023-12-06 07:34+0100\n"
+"POT-Creation-Date: 2023-12-30 23:32+0100\n"
+"PO-Revision-Date: 2023-12-30 23:33+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.1\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: pdr_gettext\n"
@@ -20,7 +20,8 @@ msgstr ""
 msgid "Working on input file."
 msgstr "Die Datei wird verarbeitet."
 
-#: src/js/javascript.js: src/php/classes/class.absence.php:
+#: src/js/javascript.js:
+#: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
@@ -28,7 +29,8 @@ msgstr "Die Datei wird verarbeitet."
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
-#: src/js/javascript.js: src/php/classes/class.absence.php:
+#: src/js/javascript.js:
+#: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
@@ -58,6 +60,19 @@ msgstr "Das Datum des Eintrages liegt vor dem letzten vorhandenen Datum."
 #: src/js/overtime.js:
 msgid "Are you sure, that the data is correct?"
 msgstr "Sind Sie sicher, dass die Daten korrekt sind?"
+
+#: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
+#: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
+msgid ""
+"There is already an entry on this date. The data was therefore not inserted "
+"in the database."
+msgstr ""
+"An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
+"in die Datenbank eingefügt."
+
+#: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
+msgid "The transaction was rolled back."
+msgstr "Die Transaktion wurde zurückgesetzt."
 
 #: src/php/classes/PDR/Output/HTML/configurationManager.php:
 msgid "The passwords do not match."
@@ -95,75 +110,63 @@ msgstr ""
 "Ein Kurzname für die Filiale sollte  <a href=\"%1$s\">konfiguriert werden.</"
 "a>"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "vacation"
 msgstr "Urlaub"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "remaining vacation"
 msgstr "Resturlaub"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "sickness"
 msgstr "Krankheit"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "sickness of child"
 msgstr "Krankheit des Kindes"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "taken overtime"
 msgstr "Überstunden genommen"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "paid leave of absence"
 msgstr "bezahlte Freistellung"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "maternity leave"
 msgstr "Mutterschutz"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "parental leave"
 msgstr "Elternzeit"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "approved"
 msgstr "genehmigt"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "not_yet_approved"
 msgstr "noch nicht genehmigt"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "disapproved"
 msgstr "abgelehnt"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "changed_after_approval"
 msgstr "nach Genehmigung verändert"
 
-#: src/php/classes/class.absence.php: src/php/classes/class.absence.php:
-msgid ""
-"There is already an entry on this date. The data was therefore not inserted "
-"in the database."
-msgstr ""
-"An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht "
-"in die Datenbank eingefügt."
-
-#: src/php/classes/class.absence.php:
-msgid "The transaction was rolled back."
-msgstr "Die Transaktion wurde zurückgesetzt."
-
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "is a holiday"
 msgstr "ist ein Feiertag"
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 msgid "and will not be counted."
 msgstr "und wird nicht berechnet."
 
-#: src/php/classes/class.absence.php:
+#: src/php/classes/PDR/Utility/AbsenceUtility.php:
 #, php-format
 msgid "%1$s is not a working day for %2$s and will not be counted."
 msgstr "%1$s ist kein Arbeitstag für %2$s und wird nicht gezählt."
@@ -389,8 +392,16 @@ msgid "%1$s is absent (%2$s) and should not be in the roster."
 msgstr "%1$s ist abwesend (%2$s) und sollte nicht im Dienstplan stehen."
 
 #: src/php/classes/class.examine_attendance.php:
+msgid "Remove"
+msgstr "Entfernen"
+
+#: src/php/classes/class.examine_attendance.php:
 msgid "The following employees are not scheduled:"
 msgstr "Es sind folgende Mitarbeiter nicht eingesetzt:"
+
+#: src/php/classes/class.examine_attendance.php:
+msgid "Insert"
+msgstr "Einfügen"
 
 #: src/php/classes/class.examine_roster.php:
 #, php-format

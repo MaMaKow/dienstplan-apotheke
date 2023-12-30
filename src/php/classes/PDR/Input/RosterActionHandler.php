@@ -64,11 +64,27 @@ class RosterActionHandler {
     /**
      *
      * @param \Sessions $session
-     * @param string $principleRosterObjectJson
+     * @param string $rosterItemJson
      * @return bool
      * @todo implement processRosterActionRemoveAbsentEmployee
      */
-    public function processRosterActionRemoveAbsentEmployee(\Sessions $session, string $principleRosterObjectJson): bool {
-        throw new Exception("Not yet implemented.");
+    public function processRosterActionRemoveAbsentEmployee(\Sessions $session, string $rosterItemJson): bool {
+        if (!$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER)) {
+            return false;
+        }
+        // Decode the JSON string into an associative array
+        $rosterItemArray = json_decode($rosterItemJson, true);
+        $rosterItem = new \roster_item(
+                $rosterItemArray['date_sql'],
+                $rosterItemArray['employee_key'],
+                $rosterItemArray['branch_id'],
+                $rosterItemArray['duty_start_sql'],
+                $rosterItemArray['duty_end_sql'],
+                $rosterItemArray['break_start_sql'],
+                $rosterItemArray['break_end_sql'],
+                $rosterItemArray['comment']
+        );
+        \user_input::removeRosterItemFromDatabase($rosterItem);
+        return true;
     }
 }

@@ -327,6 +327,23 @@ abstract class user_input {
         }
     }
 
+    /**
+     * Removes a roster item from the database based on the specified criteria.
+     *
+     * This function performs a DELETE operation on the 'Dienstplan' table,
+     * removing the entry for a specific employee on a given date and branch.
+     *
+     * @param roster_item $rosterItem The roster item to be removed from the database.
+     */
+    public static function removeRosterItemFromDatabase(roster_item $rosterItem): void {
+        $sqlQuery = "DELETE FROM `Dienstplan`"
+                . " WHERE `Datum` = :date"
+                . " AND `employee_key` = :employee_key"
+                . " AND `Mandant` = :branch_id";
+        $statement = database_wrapper::instance()->prepare($sqlQuery);
+        $statement->execute(array('employee_key' => $rosterItem->employee_key, 'date' => $rosterItem->date_sql, 'branch_id' => $rosterItem->branch_id));
+    }
+
     private static function insert_changed_roster_into_database($Roster, $Changed_roster_employee_key_list) {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (!isset($Changed_roster_employee_key_list[$date_unix])) {

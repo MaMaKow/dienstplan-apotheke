@@ -56,7 +56,7 @@ class user_dialog {
     public function build_messages() {
         $html_messages = "<div class='user_dialog_container'>\n";
         foreach (self::$Messages as $message_array) {
-            $html_messages .= "<div class=" . htmlentities($message_array['type']) . ">\n";
+            $html_messages .= "<div class=" . htmlspecialchars($message_array['type']) . ">\n";
             $html_messages .= "<span>" . $message_array['text'] . "</span>\n";
             $html_messages .= "</div>\n";
         }
@@ -78,7 +78,7 @@ class user_dialog {
         }
         $text_messages = "# Messages" . PHP_EOL;
         foreach (self::$Messages as $message_array) {
-            $text_messages .= "## " . htmlentities($message_array['type']) . PHP_EOL;
+            $text_messages .= "## " . htmlspecialchars($message_array['type']) . PHP_EOL;
             $text_messages .= "- " . $message_array['text'] . PHP_EOL;
             $text_messages .= PHP_EOL;
         }
@@ -94,7 +94,7 @@ class user_dialog {
      * 512 = E_USER_WARNING
      * 1024 = E_USER_NOTICE
      * </p>
-     * @param bool $allow_formatted_input If set to TRUE, the $text is not parsed by htmlentities($text), which allows it to contain HTML text formatting.
+     * @param bool $allow_formatted_input If set to TRUE, the $text is not parsed by htmlspecialchars($text), which allows it to contain HTML text formatting.
      */
     public function add_message(string $text, int $type = E_USER_ERROR, bool $allow_formatted_input = FALSE) {
         switch ($type) {
@@ -115,7 +115,7 @@ class user_dialog {
             self::$Messages[] = array('text' => $text, 'type' => $type_string);
             return TRUE;
         }
-        self::$Messages[] = array('text' => htmlentities($text), 'type' => $type_string);
+        self::$Messages[] = array('text' => htmlspecialchars($text), 'type' => $type_string);
         return TRUE;
     }
 

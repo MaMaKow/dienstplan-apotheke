@@ -55,7 +55,11 @@ abstract class build_html_roster_views {
         global $workforce;
         $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($absenceCollection as $absence) {
-            $text .= $workforce->List_of_employees[$absence->getEmployeKey()]->last_name . " (" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId()) . ")<br>";
+
+            $text .= $workforce->List_of_employees[$absence->getEmployeeKey()]->last_name;
+            $text .= " (";
+            $text .= \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId());
+            $text .= ")<br>";
         }
         $text .= "</td>\n";
         return $text;
@@ -319,7 +323,7 @@ abstract class build_html_roster_views {
                 continue;
             }
             $table_html .= "<tr class='branch_roster_title_tr'><th colspan=";
-            $table_html .= htmlentities($number_of_days) . ">";
+            $table_html .= htmlspecialchars($number_of_days) . ">";
             $table_html .= $List_of_branch_objects[$branch_id]->getShortName();
             $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->getShortName() . "</th></tr>";
             $table_html .= build_html_roster_views::build_roster_readonly_table($Branch_roster[$other_branch_id], $other_branch_id, $Options);
@@ -416,11 +420,11 @@ abstract class build_html_roster_views {
                 $zeile = "";
 
                 $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
-                        . "datum=" . htmlentities($roster_item->date_sql)
-                        . "&employee_key=" . htmlentities($roster_item->employee_key)
-                        . "' data-employee_key='" . htmlentities($roster_item->employee_key)
-                        . "' data-branch_id='" . htmlentities($roster_item->branch_id)
-                        . "' data-date_sql='" . htmlentities($roster_item->date_sql)
+                        . "datum=" . htmlspecialchars($roster_item->date_sql)
+                        . "&employee_key=" . htmlspecialchars($roster_item->employee_key)
+                        . "' data-employee_key='" . htmlspecialchars($roster_item->employee_key)
+                        . "' data-branch_id='" . htmlspecialchars($roster_item->branch_id)
+                        . "' data-date_sql='" . htmlspecialchars($roster_item->date_sql)
                         . "'>";
                 if (isset($workforce->List_of_employees[$roster_item->employee_key]->last_name)) {
                     $zeile .= $workforce->List_of_employees[$roster_item->employee_key]->last_name;
@@ -428,7 +432,7 @@ abstract class build_html_roster_views {
                     $zeile .= gettext("Unknown employee") . ":" . $roster_item->employee_key;
                 }
                 $zeile .= "</a></b> / <span class='roster_working_hours'>";
-                $zeile .= htmlentities($roster_item->working_hours);
+                $zeile .= htmlspecialchars($roster_item->working_hours);
                 $zeile .= "&nbsp;h</span><!-- roster_working_hours --></span><!-- employee_and_hours --> ";
                 if (isset($Options['space_constraints']) and 'narrow' === $Options['space_constraints']) {
                     $zeile .= " <br> ";
@@ -461,9 +465,9 @@ abstract class build_html_roster_views {
                 if ($roster_item->break_start_int > 0) {
                     $zeile .= "<span class='break_time'>";
                     $zeile .= " " . gettext("break") . ": ";
-                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_start_sql) . "</span>";
+                    $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_start_sql) . "</span>";
                     $zeile .= " - ";
-                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_end_sql) . "</span>";
+                    $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_end_sql) . "</span>";
                     $zeile .= "</span><!-- class='break_time' -->";
                 }
                 $table_html .= $zeile;
@@ -478,9 +482,9 @@ abstract class build_html_roster_views {
 
     private static function build_roster_readonly_table_add_time($roster_item, $parameter) {
         if (self::equals_principle_roster($roster_item, $parameter)) {
-            $html = "<span class='time'>" . htmlentities($roster_item->$parameter) . "</span>";
+            $html = "<span class='time'>" . htmlspecialchars($roster_item->$parameter) . "</span>";
         } else {
-            $html = "<span class='time'><strong>" . htmlentities($roster_item->$parameter) . "</strong></span>";
+            $html = "<span class='time'><strong>" . htmlspecialchars($roster_item->$parameter) . "</strong></span>";
         }
         return $html;
     }
@@ -529,7 +533,7 @@ abstract class build_html_roster_views {
                 $zeile .= " - ";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_end_sql');
                 $zeile .= " / <span class='roster_working_hours'>";
-                $zeile .= htmlentities($roster_item->working_hours);
+                $zeile .= htmlspecialchars($roster_item->working_hours);
                 $zeile .= "&nbsp;h</span><!-- roster_working_hours -->";
 
                 if (!empty($roster_item->comment)) {
@@ -544,14 +548,14 @@ abstract class build_html_roster_views {
                 if ($roster_item->break_start_int > 0) {
                     $zeile .= "<span class='break_time'>";
                     $zeile .= " " . gettext("break") . ": ";
-                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_start_sql) . "</span>";
+                    $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_start_sql) . "</span>";
                     $zeile .= " - ";
-                    $zeile .= "<span class='time'>" . htmlentities($roster_item->break_end_sql) . "</span>";
+                    $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_end_sql) . "</span>";
                     $zeile .= "</span><!-- class='break_time' -->";
                 }
                 $zeile .= "<br>";
                 $zeile .= "<span class='branch_name' data-branch_id='" . $roster_item->branch_id . "'>";
-                $zeile .= htmlentities($List_of_branch_objects[$roster_item->branch_id]->getShortName());
+                $zeile .= htmlspecialchars($List_of_branch_objects[$roster_item->branch_id]->getShortName());
                 $zeile .= "</span>";
                 $table_html .= $zeile;
                 $table_html .= "</td>\n";

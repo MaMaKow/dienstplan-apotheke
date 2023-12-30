@@ -57,17 +57,17 @@ if (isset($_SESSION["Config"]["database_name"])) {
         </select>
     </p><p>
         <LABEL for="database_host">Database server hostname:</LABEL><br>
-        <input type="text" id="database_host" name="database_host" value="<?= htmlentities($database_host) ?>" />
+        <input type="text" id="database_host" name="database_host" value="<?= htmlspecialchars($database_host) ?>" />
         <BR>
     </p><p>
 
         <LABEL for="database_port">Database server port:</LABEL><br>
-        <input type="text" id="database_port" name="database_port" value="<?= htmlentities($database_port) ?>" /><!--standard value 3306-->
+        <input type="text" id="database_port" name="database_port" value="<?= htmlspecialchars($database_port) ?>" /><!--standard value 3306-->
         <br><span class="hint">Leave this blank unless you know the server operates on a non-standard port.<span>
             </p><p>
 
             <LABEL for="database_user">Database username:</LABEL><br>
-            <input type="text" id="database_user" name="database_user" value="<?= htmlentities($database_user) ?>" />
+            <input type="text" id="database_user" name="database_user" value="<?= htmlspecialchars($database_user) ?>" />
         </p><p>
 
             <LABEL for="database_password">Database password:</LABEL><br>
@@ -75,7 +75,7 @@ if (isset($_SESSION["Config"]["database_name"])) {
         </p><p>
 
             <LABEL for="database_name">Database name:</LABEL><br>
-            <input type="text" id="database_name" name="database_name" value="<?= htmlentities($database_name) ?>" />
+            <input type="text" id="database_name" name="database_name" value="<?= htmlspecialchars($database_name) ?>" />
         </p><p>
             <?php
             echo $install->build_error_message_div();

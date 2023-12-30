@@ -62,7 +62,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=main-area>\n";
 $dateString = $date_start_object->format('W');
-echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlentities(date('Y-m-d', $date_unix)) . "'> "
+echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlspecialchars(date('Y-m-d', $date_unix)) . "'> "
  . gettext("calendar week") . '&nbsp;'
  . $dateString
  . '&nbsp;' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))

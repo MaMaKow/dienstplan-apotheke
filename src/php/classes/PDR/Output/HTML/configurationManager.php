@@ -143,7 +143,7 @@ class configurationManager {
              * This might be paranoid. But I count this as user input.
              */
             $installed_locale_clean = filter_var($installed_locale, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $datalist_locales .= "<option value='" . htmlentities($installed_locale_clean, ENT_QUOTES) . "'>\n";
+            $datalist_locales .= "<option value='" . htmlspecialchars($installed_locale_clean, ENT_QUOTES) . "'>\n";
         }
         $datalist_locales .= "</datalist>\n";
         return $datalist_locales;
@@ -164,8 +164,8 @@ class configurationManager {
         // Compare the normalized paths
         if ($normalizedDesiredPath !== $normalizedCurrentPath) {
             $message = "<p>CAVE: Log paths are changed internally:</p>";
-            $message .= "<p>Configured path: " . htmlentities($normalizedDesiredPath) . "</p>";
-            $message .= "<p>Actual path: " . htmlentities($normalizedCurrentPath) . "</p>";
+            $message .= "<p>Configured path: " . htmlspecialchars($normalizedDesiredPath) . "</p>";
+            $message .= "<p>Actual path: " . htmlspecialchars($normalizedCurrentPath) . "</p>";
 
             $user_dialog = new \user_dialog();
             $user_dialog->add_message($message, E_USER_WARNING, true);

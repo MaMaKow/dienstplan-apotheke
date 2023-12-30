@@ -31,7 +31,10 @@ foreach ($Javascript_files as $javascript_file) {
     }
     fclose($fh);
 }
-$Localization_folders = glob(PDR_FILE_SYSTEM_APPLICATION_PATH . 'locale/*');
+/**
+ * @todo test this new glob
+ */
+$Localization_folders = glob(PDR_FILE_SYSTEM_APPLICATION_PATH . 'locale/[a-z][a-z]_[A-Z][A-Z]', GLOB_ONLYDIR);
 foreach ($Localization_folders as $localization_folder) {
     $localization = basename($localization_folder);
     localization::initialize_gettext($localization);

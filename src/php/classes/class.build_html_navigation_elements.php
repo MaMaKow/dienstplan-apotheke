@@ -34,7 +34,7 @@ abstract class build_html_navigation_elements {
             $referrer = '?';
             foreach ($Name_value_array as $name => $value) {
                 if (in_array($name, self::$List_of_allowed_input_names)) {
-                    $referrer .= $name . '=' . htmlentities($value) . '&';
+                    $referrer .= $name . '=' . htmlspecialchars($value) . '&';
                 }
             }
             return rtrim($referrer, '&');

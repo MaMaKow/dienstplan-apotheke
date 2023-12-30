@@ -24,36 +24,36 @@
  */
 abstract class examine_attendance {
 
-    public static function check_for_attendant_absentees(array $Roster, PDR\Roster\AbsenceCollection $absenceCollection) {
-        $user_dialog = new user_dialog();
+    public static function checkForAttendantAbsentees(array $Roster, PDR\Roster\AbsenceCollection $absenceCollection, workforce $workforce) {
+        $userDialog = new user_dialog();
         if (array() === $Roster) {
             return FALSE;
         }
-        global $workforce;
-        $Roster_workers = array();
-        foreach ($Roster as $Roster_day) {
-            foreach ($Roster_day as $roster_object) {
-                $Roster_workers[] = $roster_object->employee_key;
-            }
-        }
-        foreach ($absenceCollection->getListOfEmployeeKeys() as $abwesender) {
-            foreach ($Roster_workers as $anwesender) {
-                if ($abwesender == $anwesender and NULL !== $anwesender) {
-                    $Arbeitende_abwesende[] = $anwesender;
+
+        foreach ($Roster as $RosterDay) {
+            foreach ($RosterDay as $rosterItem) {
+                if (NULL !== $rosterItem->employee_key and $absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
+                    $scheduledEmployeeWithAbsenceKey = $rosterItem->employee_key;
+                    $messageUnsafe = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'),
+                            $workforce->List_of_employees[$scheduledEmployeeWithAbsenceKey]->first_name . " " . $workforce->List_of_employees[$scheduledEmployeeWithAbsenceKey]->last_name,
+                            \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($scheduledEmployeeWithAbsenceKey)->getReasonId()
+                    ));
+                    $messageSafe = htmlspecialchars($messageUnsafe);
+                    /**
+                     * @todo Add a function to build the button. Make it viable for the insert and the remove button.
+                     */
+                    $messageSafe .= "&nbsp"
+                            . "<form method=POST id='removeAbsentEmployeeForm'>"
+                            . "<button type='submit' value='removeAbsentEmployee' class='button_small no_print'>"
+                            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' title='" . gettext("Remove") . "'>"
+                            . "</button>"
+                            . "<input type='hidden' name='rosterActionCommand' value='removeAbsentEmployee'>"
+                            . "<input type='hidden' name='rosterItemObject' value='" . json_encode($rosterItem) . "' >"
+                            . "</form>"
+                    ;
+
+                    $userDialog->add_message($messageSafe, E_USER_ERROR, TRUE);
                 }
-            }
-        }
-        if (isset($Arbeitende_abwesende)) {
-            foreach ($Arbeitende_abwesende as $arbeitender_abwesender) {
-                $message = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'),
-                        $workforce->List_of_employees[$arbeitender_abwesender]->last_name,
-                        \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($arbeitender_abwesender)->getReasonId()
-                ));
-                $user_dialog->add_message($message);
-                /**
-                 * TODO: Add a button to directly remove the employee from the roster!
-                 *   That button shoud have a symbol and a descriptive caption.
-                 */
             }
         }
     }
@@ -61,62 +61,60 @@ abstract class examine_attendance {
     /**
      * Check if any employee is not in the roster although there is no known absence:
      * @param array $Roster Roster array of scheduled roster_items
-     * @param array $Principle_roster Roster array of normal/principle roster_items
+     * @param array $PrincipleRoster Roster array of normal/principle roster_items
      * @param array $absenceCollection Array of absent employees and the reason of absence
-     * @param integer $date_unix Unix timestamp of the current day.
+     * @param integer $dateUnix Unix timestamp of the current day.
      * @return void <p>This function does not return anything.
      *  It uses user_dialog->add_message with it's results.</p>
      */
-    public static function check_for_absent_employees(array $Roster, array $Principle_roster, PDR\Roster\AbsenceCollection $absenceCollection, int $date_unix) {
-        $date_object = new DateTime();
-        $date_object->setTimestamp($date_unix);
-        $user_dialog = new user_dialog();
-        $Roster_workers = self::get_roster_workers($Roster);
-        $Principle_roster_workers = self::get_roster_workers($Principle_roster);
-        $workforce = new workforce($date_object->format('Y-m-d'));
+    public static function checkForAbsentEmployees(array $Roster, array $PrincipleRoster, PDR\Roster\AbsenceCollection $absenceCollection, int $dateUnix) {
+        $dateObject = new DateTime();
+        $dateObject->setTimestamp($dateUnix);
+        $userDialog = new user_dialog();
+        $RosterWorkers = self::get_roster_workers($Roster);
+        $PrincipleRosterWorkers = self::get_roster_workers($PrincipleRoster);
+        $workforce = new workforce($dateObject->format('Y-m-d'));
 
-        $Mitarbeiter_differenz = array_diff($Principle_roster_workers, $Roster_workers);
-        self::trimAbsentEmployees($Mitarbeiter_differenz, $absenceCollection);
+        $EmployeeDifference = array_diff($PrincipleRosterWorkers, $RosterWorkers);
+        self::trimAbsentEmployees($EmployeeDifference, $absenceCollection);
         /*
          * Stop processing if nobody is left
          */
-        if (empty($Mitarbeiter_differenz)) {
+        if (empty($EmployeeDifference)) {
             return NULL;
         }
         /*
          * Check if that worker is scheduled in any of the other branches:
          */
-        self::trim_rescheduled_employees($Mitarbeiter_differenz, $date_object);
+        self::trim_rescheduled_employees($EmployeeDifference, $dateObject);
         /*
          * Stop processing if nobody is left
          */
-        if (empty($Mitarbeiter_differenz)) {
+        if (empty($EmployeeDifference)) {
             return NULL;
         }
 
         $message = gettext('The following employees are not scheduled:');
-        $user_dialog->add_message($message, E_USER_WARNING);
-        foreach ($Mitarbeiter_differenz as $arbeiter) {
-            foreach ($Principle_roster[$date_unix] as $principle_roster_object) {
+        $userDialog->add_message($message, E_USER_WARNING);
+        foreach ($EmployeeDifference as $arbeiter) {
+            foreach ($PrincipleRoster[$dateUnix] as $principle_roster_object) {
                 if ($arbeiter == $principle_roster_object->employee_key) {
                     //TODO: Set a link to add the employee via JavaScript?
                     $duty_start = $principle_roster_object->duty_start_sql;
                     $duty_end = $principle_roster_object->duty_end_sql;
-                    $message_unsafe = $workforce->List_of_employees[$arbeiter]->last_name;
+                    $message_unsafe = $workforce->List_of_employees[$arbeiter]->first_name . " " . $workforce->List_of_employees[$arbeiter]->last_name;
                     $message_unsafe .= " ($duty_start - $duty_end)";
-                    $message_safe = htmlentities($message_unsafe);
+                    $message_safe = htmlspecialchars($message_unsafe);
                     $message_safe .= "&nbsp"
-                            . "<button type='submit' value='insertMissingEmployee'  form='insertMissingEmployeeForm'>"
-                            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/copy.svg'>"
-                            . "<span class='hint' >"
-                            . "&nbsp" . gettext("Insert")
-                            . "</span>"
+                            . "<form method=POST id='insertMissingEmployeeForm'>"
+                            . "<button type='submit' value='insertMissingEmployee' class='button_small  no_print'>"
+                            . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/copy.svg' title='" . gettext("Insert") . "'>"
                             . "</button>"
-                            . "<input type='hidden' name='rosterActionCommand' value='insertMissingEmployee' form='insertMissingEmployeeForm'>"
-                            . "<input type='hidden' name='principleRosterObject' value='" . json_encode($principle_roster_object) . "' form='insertMissingEmployeeForm'>"
-                            . "<form method=POST id='insertMissingEmployeeForm'></form>"
+                            . "<input type='hidden' name='rosterActionCommand' value='insertMissingEmployee'>"
+                            . "<input type='hidden' name='principleRosterObject' value='" . json_encode($principle_roster_object) . "'>"
+                            . "</form>"
                     ;
-                    $user_dialog->add_message($message_safe, E_USER_WARNING, true);
+                    $userDialog->add_message($message_safe, E_USER_WARNING, true);
                     break;
                 }
             }

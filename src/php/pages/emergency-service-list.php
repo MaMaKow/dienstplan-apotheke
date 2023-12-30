@@ -130,6 +130,9 @@ $user_dialog->build_messages();
                 $holiday_string .= "<br>" . $is_holiday;
                 $holiday_class .= " holiday ";
             }
+            /**
+             * @todo auto commit the form
+             */
             echo "\n<tr data-iterator=$key><form method='post'>";
             if ($session->user_has_privilege('create_roster')) {
                 /**

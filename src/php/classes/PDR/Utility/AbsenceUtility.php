@@ -90,6 +90,13 @@ class AbsenceUtility {
         'changed_after_approval',
     );
 
+    private function gettext_fake() {
+        gettext('approved');
+        gettext('not_yet_approved');
+        gettext('disapproved');
+        gettext('changed_after_approval');
+    }
+
     /**
      * Handle user input for creating, editing, or deleting absence entries.
      *
@@ -142,7 +149,7 @@ class AbsenceUtility {
         }
 
         // Throw an exception for unknown commands.
-        throw new \Exception("Unknown command " . htmlentities($command) . " in handleUserInput()");
+        throw new \Exception("Unknown command " . htmlspecialchars($command) . " in handleUserInput()");
     }
 
     /**

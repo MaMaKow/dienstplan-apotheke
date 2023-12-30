@@ -180,7 +180,7 @@ class collaborative_vacation {
         $current_month = $date_start_object->format("n");
         $current_year = $date_start_object->format("Y");
 
-        $Absences = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
+        $absences = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
 
         $year_container_html = "<div class=year_container>\n";
         $year_container_html .= \form_element_builder::build_html_select_year($current_year);
@@ -201,7 +201,7 @@ class collaborative_vacation {
                 $month_container_html .= "<div class='month_container'>";
                 $month_container_html .= $this->get_month_name($date_object) . "<br>\n";
             }
-            $month_container_html .= $this->build_absence_month_paragraph($date_object, $date_object, $Absences, 'year');
+            $month_container_html .= $this->build_absence_month_paragraph($date_object, $date_object, $absences, 'year');
         }
         $month_container_html .= "</div>\n";
         $month_container_html .= "</div><!-- class='year_quarter_container'-->\n";
@@ -400,23 +400,23 @@ class collaborative_vacation {
     /**
      *
      * @param workforce $workforce
-     * @param array $Absence
+     * @param array $absence
      * @return string
      * @todo Perhaps build a real absence object from a real absence class.
      */
-    private function build_absence_year_absent_employees_containers_title_text(workforce $workforce, $Absence): string {
-        $absence_title_text = $workforce->get_employee_last_name($Absence['employee_key']) . "\n";
-        $absence_title_text .= \PDR\Utility\AbsenceUtility::getReasonStringLocalized($Absence['reason_id']) . "\n";
-        $absence_title_text .= $Absence['comment'] . "\n";
-        $dateObjectAbenceStart = new DateTime($Absence['start']);
-        $dateObjectAbenceEnd = new DateTime($Absence['end']);
+    private function build_absence_year_absent_employees_containers_title_text(\workforce $workforce, \PDR\Roster\Absence $absence): string {
+        $absence_title_text = $workforce->get_employee_last_name($absence->getEmployeeKey()) . "\n";
+        $absence_title_text .= \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId()) . "\n";
+        $absence_title_text .= $absence->getComment() . "\n";
+        $dateObjectAbenceStart = $absence->getStart();
+        $dateObjectAbenceEnd = $absence->getEnd();
         $dateStringAbenceStart = $dateObjectAbenceStart->format('d.m.Y'); // Format for time (hours, minutes, seconds)
         $dateStringAbenceEnd = $dateObjectAbenceEnd->format('d.m.Y'); // Format for time (hours, minutes, seconds)
 
         $absence_title_text .= gettext('from') . ' ' . $dateStringAbenceStart . "\n";
         $absence_title_text .= gettext('to') . ' ' . $dateStringAbenceEnd . "\n";
-        $absence_title_text .= sprintf(gettext('%1$s days taken'), $Absence['days']) . "\n";
-        $absence_title_text .= localization::gettext($Absence['approval']) . "";
+        $absence_title_text .= sprintf(gettext('%1$s days taken'), $absence->getDays()) . "\n";
+        $absence_title_text .= localization::gettext($absence->getApproval()) . "";
         return $absence_title_text;
     }
 

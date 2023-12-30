@@ -102,9 +102,13 @@ if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]
 then
     clear
     git commit --gpg-sign
+    echo "Debug: featureBranch = $featureBranch"
     if [ "false" == $featureBranch ]
     then
+        echo "Debug: Tagging commit with version $new_version"
         git tag "$new_version"
+    else
+        echo "Debug: No tagging on branch $current_branch"
     fi
     git show -1
     git status
@@ -113,5 +117,6 @@ then
     then
 	git push origin
 	git push origin --tags
+
     fi
 fi

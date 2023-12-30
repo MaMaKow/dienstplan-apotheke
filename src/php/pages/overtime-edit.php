@@ -45,18 +45,18 @@ $i = 1;
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>\n";
     $tablebody .= "<td>\n";
-    $tablebody .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id=delete_" . htmlentities($row->Datum) . ">\n";
-    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no_print type=submit name=loeschen[" . htmlentities($employee_key) . "][" . htmlentities($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
+    $tablebody .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id=delete_" . htmlspecialchars($row->Datum) . ">\n";
+    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no_print type=submit name=loeschen[" . htmlspecialchars($employee_key) . "][" . htmlspecialchars($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
     $tablebody .= "</form>\n";
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
-    $tablebody .= htmlentities($row->Stunden);
+    $tablebody .= htmlspecialchars($row->Stunden);
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
-    $tablebody .= htmlentities($row->Saldo);
+    $tablebody .= htmlspecialchars($row->Saldo);
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
-    $tablebody .= htmlentities($row->Grund);
+    $tablebody .= htmlspecialchars($row->Grund);
     $tablebody .= "\n</td>\n";
     $tablebody .= "\n</tr>\n";
     $i++;
@@ -108,7 +108,7 @@ echo "<td>\n";
 echo "<input type=text onchange=update_overtime_balance() id=stunden name=stunden form=insert_new_overtime>\n";
 echo "</td>\n";
 echo "<td>\n";
-echo "<p><span id=balance_new>" . htmlentities($balance) . " </span><span id='balance_old' data-balance='" . htmlentities($balance) . "'>&nbsp;</span></p>\n";
+echo "<p><span id=balance_new>" . htmlspecialchars($balance) . " </span><span id='balance_old' data-balance='" . htmlspecialchars($balance) . "'>&nbsp;</span></p>\n";
 echo "</td>\n";
 echo "<td>\n";
 echo "<input type=text id=grund name=grund form=insert_new_overtime>\n";
@@ -121,7 +121,7 @@ echo "$tablebody";
 echo "</table>\n";
 echo "</div>\n";
 echo "<form accept-charset='utf-8' method=POST id=insert_new_overtime onsubmit='return overtime_input_validation();'>\n"
- . "<input hidden name=employee_key value=" . htmlentities($employee_key) . " form=insert_new_overtime>\n"
+ . "<input hidden name=employee_key value=" . htmlspecialchars($employee_key) . " form=insert_new_overtime>\n"
  . "<input hidden id='user_sequence_warning' name=user_has_been_warned_about_date_sequence value='0' form=insert_new_overtime>\n"
  . "<input hidden id='date_of_last_entry' name='date_of_last_entry' value='$date_old' form=insert_new_overtime>\n"
  . "</form>\n";
