@@ -20,8 +20,11 @@ package Selenium.administrationpages;
 
 import Selenium.Employee;
 import Selenium.MenuFragment;
+import Selenium.NetworkOfBranchOffices;
 import Selenium.driver.Wrapper;
+import Selenium.RealData.RealWorkforce;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.openqa.selenium.By;
@@ -82,6 +85,33 @@ public class WorkforceManagementPage {
          */
     }
 
+    public RealWorkforce getAllEmployeesRealWorkforce() {
+        RealWorkforce realWorkforce = new RealWorkforce();
+        WebElement selectEmployeeElement = driver.findElement(selectEmployeeBy);
+        Select selectEmployeeSelect = new Select(selectEmployeeElement);
+        List<WebElement> selectEmployeeOptions = selectEmployeeSelect.getOptions();
+
+        List<String> optionValueStrings = new ArrayList<>();
+
+        // Collect option values without interacting with the WebElement
+        for (WebElement option : selectEmployeeOptions) {
+            String optionValueString = option.getAttribute("value");
+            optionValueStrings.add(optionValueString);
+        }
+
+        for (String optionValueStringRead : optionValueStrings) {
+            if (optionValueStringRead.equals("")) {
+                // This is the option to create a new employee.
+                continue;
+            }
+            selectEmployee(optionValueStringRead);
+            Employee employee = getEmployeeObject();
+            realWorkforce.addEmployee(employee);
+        }
+
+        return realWorkforce;
+    }
+
     public WorkforceManagementPage setEmployeeData(Employee employeeObject) {
         /**
          * last name:
@@ -119,7 +149,8 @@ public class WorkforceManagementPage {
         /**
          * main branch:
          */
-        By employeeBranchBy = By.xpath("//*[@id=\"human_resource_management\"]/fieldset[4]/label/span[contains(text(), '" + employeeObject.getBranchString() + "')]");
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        By employeeBranchBy = By.xpath("//*[@id=\"human_resource_management\"]/fieldset[4]/label/span[contains(text(), '" + employeeObject.getBranchString(networkOfBranchOffices) + "')]");
         WebElement employeeBranchElement = driver.findElement(employeeBranchBy);
         employeeBranchElement.click();
 
@@ -254,7 +285,8 @@ public class WorkforceManagementPage {
         /**
          * return map:
          */
-        return new Employee(employeeData);
+        Employee employee = new Employee(employeeData);
+        return employee;
     }
 
     public WorkforceManagementPage submitForm() {

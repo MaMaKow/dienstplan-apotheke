@@ -17,18 +17,24 @@
  */
 require '../../../default.php';
 
-$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
-$List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-$branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
-$date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
-$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y', strtotime($date_sql)));
-create_cookie('mandant', $branch_id, 30);
-create_cookie('datum', $date_sql, 0.5);
+$networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$ListOfBranchObjects = $networkOfBranchOffices->get_list_of_branch_objects();
+$branchId = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $networkOfBranchOffices->get_main_branch_id());
+$dateSql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y', strtotime($dateSql)));
+create_cookie('mandant', $branchId, 30);
+create_cookie('datum', $dateSql, 0.5);
 create_cookie('year', $year, 0.5);
-$workforce = new workforce();
+$workforce = new workforce($year . "-01-01", $year . "-12-31");
 
-$Emergency_services = array();
-$Emergency_services['Datum'] = array();
+/**
+ * @todo Create class \Database\EmergencyServiceDatabaseHandler and move the sql calls from here to there.
+ */
+/**
+ * @todo Use a real object istead of an array:
+ */
+$EmergencyServices = array();
+$EmergencyServices['Datum'] = array();
 handle_user_input();
 
 /** public static */
@@ -38,60 +44,68 @@ function handle_user_input() {
         return FALSE;
     }
     $command = user_input::get_variable_from_any_input('command', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $date_new = user_input::get_variable_from_any_input('emergency_service_date', FILTER_SANITIZE_NUMBER_INT);
-    $date_old = user_input::get_variable_from_any_input('emergency_service_date_old', FILTER_SANITIZE_NUMBER_INT);
-    $branch_id = user_input::get_variable_from_any_input('emergency_service_branch', FILTER_SANITIZE_NUMBER_INT);
-    $employee_key = user_input::get_variable_from_any_input('emergency_service_employee', FILTER_SANITIZE_NUMBER_INT);
-    if ("" === $date_new) {
+    $dateNew = user_input::get_variable_from_any_input('emergency_service_date', FILTER_SANITIZE_NUMBER_INT);
+    $dateOld = user_input::get_variable_from_any_input('emergency_service_date_old', FILTER_SANITIZE_NUMBER_INT);
+    $branchId = user_input::get_variable_from_any_input('emergency_service_branch', FILTER_SANITIZE_NUMBER_INT);
+    $employeeKey = user_input::get_variable_from_any_input('emergency_service_employee', FILTER_SANITIZE_NUMBER_INT);
+    if ("" === $dateNew) {
         return FALSE;
     }
-    if ("" === $branch_id) {
+    if ("" === $branchId) {
         return FALSE;
     }
-    if ("" === $employee_key and "" === $date_old) {
+    if ("" === $employeeKey and "" === $dateOld) {
         /**
          * <p lang=de>Neuen Eintrag anlegen</p>
          */
-        $sql_query = "INSERT INTO Notdienst (`Datum`, `Mandant`) VALUES(:date_new, :branch_id)";
+        $sqlQueryInsert = "INSERT INTO Notdienst (`Datum`, `Mandant`) VALUES(:date_new, :branch_id)";
         try {
-            database_wrapper::instance()->run($sql_query, array(
-                'branch_id' => $branch_id,
-                'date_new' => $date_new,
+            database_wrapper::instance()->run($sqlQueryInsert, array(
+                'branch_id' => $branchId,
+                'date_new' => $dateNew,
             ));
         } catch (Exception $exception) {
             error_log($exception->getTraceAsString());
-            $user_dialog = new user_dialog();
-            $user_dialog->add_message($exception->getMessage(), E_USER_ERROR);
+            $userDialog = new user_dialog();
+            $userDialog->add_message($exception->getMessage(), E_USER_ERROR);
         }
     } else if ("replace" === $command) {
         /**
          * <p lang=de>Vorhandenen Eintrag ändern</p>
          */
-        $sql_query = "UPDATE Notdienst SET `employee_key` = :employee_key, `Datum` = :date_new WHERE `Datum` = :date_old AND Mandant = :branch_id";
-        database_wrapper::instance()->run($sql_query, array(
-            'employee_key' => user_input::convert_post_empty_to_php_null($employee_key),
-            'branch_id' => $branch_id,
-            'date_new' => $date_new,
-            'date_old' => $date_old,
+        $sqlQueryUpdate = "UPDATE Notdienst SET `employee_key` = :employee_key, `Datum` = :date_new WHERE `Datum` = :date_old AND Mandant = :branch_id";
+        database_wrapper::instance()->run($sqlQueryUpdate, array(
+            'employee_key' => user_input::convert_post_empty_to_php_null($employeeKey),
+            'branch_id' => $branchId,
+            'date_new' => $dateNew,
+            'date_old' => $dateOld,
         ));
     } else if ("delete" === $command) {
         /**
          * <p lang=de>Vorhandenen Eintrag löschen</p>
          */
-        $sql_query = "DELETE FROM Notdienst WHERE `Datum` = :date_old AND Mandant = :branch_id";
-        database_wrapper::instance()->run($sql_query, array(
-            'branch_id' => $branch_id,
-            'date_old' => $date_old,
+        $sqlQueryDelete = "DELETE FROM Notdienst WHERE `Datum` = :date_old AND Mandant = :branch_id";
+        database_wrapper::instance()->run($sqlQueryDelete, array(
+            'branch_id' => $branchId,
+            'date_old' => $dateOld,
         ));
     }
 }
 
-$sql_query = "SELECT * FROM Notdienst WHERE YEAR(Datum) = :year AND Mandant = :branch_id";
-$result = database_wrapper::instance()->run($sql_query, array('year' => $year, 'branch_id' => $branch_id));
+if (isset($_POST) && !empty($_POST)) {
+    // POST data has been submitted
+    $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/emergency-service-list.php' . "?year=$year&branch_id=$branchId";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
+}
+
+
+$sqlQuerySelect = "SELECT * FROM Notdienst WHERE YEAR(Datum) = :year AND Mandant = :branch_id";
+$result = database_wrapper::instance()->run($sqlQuerySelect, array('year' => $year, 'branch_id' => $branchId));
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-    $Emergency_services['employee_key'][] = $row->employee_key;
-    $Emergency_services['Datum'][] = $row->Datum;
-    $Emergency_services['Mandant'][] = $row->Mandant;
+    $EmergencyServices['employee_key'][] = $row->employee_key;
+    $EmergencyServices['Datum'][] = $row->Datum;
+    $EmergencyServices['Mandant'][] = $row->Mandant;
 }
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -99,47 +113,47 @@ echo "<div id=main_area_centered>";
 echo "<H1 class='left_float_pool size_medium'>";
 echo "<span class='large'>" . gettext('emergency service') . "</span>";
 
-echo build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
+echo build_html_navigation_elements::build_select_branch($branchId, $ListOfBranchObjects, $dateSql);
 echo form_element_builder::build_html_select_year($year);
 echo "</H1>";
-$user_dialog = new user_dialog();
-$user_dialog->build_messages();
+$userDialog = new user_dialog();
+$userDialog->build_messages();
 ?>
 <table id="emergency_service_table" class="table_with_border">
     <tr><th><?= gettext('Date') ?></th><th><?= gettext('Weekday') ?></th><th><?= gettext('Name') ?></th><th class='replacement_td'><?= gettext('Replacement') ?></th></tr>
     <?php
-    if (isset($Emergency_services)) {
-        foreach ($Emergency_services['Datum'] as $key => $date_sql) {
-            $date_unix = strtotime($date_sql);
-            $dateObject = new DateTime($date_sql);
-            $is_holiday = holidays::is_holiday($date_unix);
-            $holiday_string = "";
-            $holiday_class = "";
-            $weekday = date('w', $date_unix);
+    if (isset($EmergencyServices)) {
+        foreach ($EmergencyServices['Datum'] as $emergencyServiceIndex => $dateSql) {
+            $dateUnix = strtotime($dateSql);
+            $dateObject = new DateTime($dateSql);
+            $isHoliday = holidays::is_holiday($dateUnix);
+            $holidayString = "";
+            $holidayHtmlClass = "";
+            $weekday = date('w', $dateUnix);
             switch ($weekday) {
                 case 6:
-                    $holiday_class .= " saturday ";
+                    $holidayHtmlClass .= " saturday ";
                     break;
                 case 0:
-                    $holiday_class .= " sunday ";
+                    $holidayHtmlClass .= " sunday ";
                     break;
                 default:
                     break;
             }
-            if (FALSE !== $is_holiday) {
-                $holiday_string .= "<br>" . $is_holiday;
-                $holiday_class .= " holiday ";
+            if (FALSE !== $isHoliday) {
+                $holidayString .= "<br>" . $isHoliday;
+                $holidayHtmlClass .= " holiday ";
             }
             /**
              * @todo auto commit the form
              */
-            echo "\n<tr data-iterator=$key><form method='post'>";
+            echo "\n<tr data-iterator=$emergencyServiceIndex><form method='post'>";
             if ($session->user_has_privilege('create_roster')) {
                 /**
                  * Date:
                  */
                 echo "\n<td>\n"
-                . "<input type='date' name='emergency_service_date' value='$date_sql' min='$year-01-01' max='$year-12-31' onChange='unhideButtonOnChange(this)'>"
+                . "<input type='date' name='emergency_service_date' value='$dateSql' min='$year-01-01' max='$year-12-31' onChange='unhideButtonOnChange(this)'>"
                 . "</td>\n";
                 /**
                  * Weekday:
@@ -148,22 +162,22 @@ $user_dialog->build_messages();
                 $locale = $configuration->getLanguage();
                 $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
                 $dateFormatter->setPattern('EEE');
-                $dateString = $dateFormatter->format($date_unix);
-                echo "\n<td class='$holiday_class'>" . $dateString . "&nbsp;" . $holiday_string . "</td>";
+                $dateString = $dateFormatter->format($dateUnix);
+                echo "\n<td class='$holidayHtmlClass'>" . $dateString . "&nbsp;" . $holidayString . "</td>";
                 /**
                  * Employee:
                  */
                 echo "<td>\n";
-                echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($Emergency_services['employee_key'][$key], $branch_id, $date_sql);
+                echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($EmergencyServices['employee_key'][$emergencyServiceIndex], $branchId, $dateSql, $emergencyServiceIndex);
                 echo "</td>\n";
                 /**
                  * Buttons:
                  */
                 echo "<td>\n";
-                echo "<button type='submit' id='save_$key' class='button_small no_print' onClick='enableLeavingPage();' title='" . gettext("Save changes to this line") . "' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+                echo "<button type='submit' id='save_$emergencyServiceIndex' class='button_small no_print' onClick='enableLeavingPage();' title='" . gettext("Save changes to this line") . "' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
                 . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' alt='" . gettext("Save changes to this line") . "'>\n"
                 . "</button>\n";
-                echo "<button type='submit' id='delete_$key' class='button_small no_print' onClick='enableLeavingPage(); return confirmDelete();' title='" . gettext("Remove this line") . "' name='command' value='delete' style='border-radius: 32px; background-color: transparent;'>\n"
+                echo "<button type='submit' id='delete_$emergencyServiceIndex' class='button_small no_print' onClick='enableLeavingPage(); return confirmDelete();' title='" . gettext("Remove this line") . "' name='command' value='delete' style='border-radius: 32px; background-color: transparent;'>\n"
                 . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' alt='" . gettext("Remove this line") . "'>\n"
                 . "</button>\n";
                 echo "</td>\n";
@@ -171,7 +185,7 @@ $user_dialog->build_messages();
                 $dateString = $dateObject->format("d.m.Y");
                 echo "\n<td>" . $dateString . "</td>\n";
                 echo "<td>\n";
-                echo (isset($workforce->List_of_employees[$Emergency_services['employee_key'][$key]])) ? $workforce->List_of_employees[$Emergency_services['employee_key'][$key]]->last_name : "?";
+                echo (isset($workforce->List_of_employees[$EmergencyServices['employee_key'][$emergencyServiceIndex]])) ? $workforce->List_of_employees[$EmergencyServices['employee_key'][$emergencyServiceIndex]]->last_name : "?";
                 echo "</td>\n";
             }
             echo "<td class='replacement_td'></td>\n</form>\n</tr>\n";
@@ -184,7 +198,7 @@ $user_dialog->build_messages();
         echo "\n<tr class='no_print'><form method='post'>";
         echo "\n<td><input type='date' id='add_new_line_date' name='emergency_service_date' value='' min='$year-01-01' max='$year-12-31'></td>";
         echo "\n<td><input type='submit' id='add_new_line_submit' value='" . gettext("Add line") . "'></td>";
-        echo "\n<td><input type='hidden' name=emergency_service_branch value='$branch_id'></td>";
+        echo "\n<td><input type='hidden' name=emergency_service_branch value='$branchId'></td>";
         echo "\n</form></tr>";
     }
     ?>

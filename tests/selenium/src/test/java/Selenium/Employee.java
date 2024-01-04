@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.RealData.RealNetworkOfBranchOffices;
 import Selenium.driver.Wrapper;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -62,17 +63,16 @@ import java.util.HashMap;
  */
 public class Employee {
 
-    private int employeeKey;
-    private String employeeLastName;
-    private String employeeFirstName;
-    private String employeeProfession;
-    private float employeeWorkingHours;
-    private int employeeLunchBreakMinutes;
-    private int employeeHolidays;
-    private String employeeBranchString;
+    private final int employeeKey;
+    private final String employeeLastName;
+    private final String employeeFirstName;
+    private final String employeeProfession;
+    private final float employeeWorkingHours;
+    private final int employeeLunchBreakMinutes;
+    private final int employeeHolidays;
     private int employeeBranchId;
-    private boolean employeeAbilitiesGoodsReceipt;
-    private boolean employeeAbilitiesCompounding;
+    private final boolean employeeAbilitiesGoodsReceipt;
+    private final boolean employeeAbilitiesCompounding;
     private LocalDate employeeStartOfEmployment;
     private LocalDate employeeEndOfEmployment;
 
@@ -83,22 +83,21 @@ public class Employee {
             String employeeWorkingHours,
             String employeeLunchBreakMinutes,
             String employeeHolidays,
-            String employeeBranch,
+            String employeeBranchName,
             String employeeAbilitiesGoodsReceipt,
             String employeeAbilitiesCompounding,
             String employeeStartOfEmployment,
             String employeeEndOfEmployment
     ) {
-        this.employeeKey = Integer.valueOf(employeeKey);
+        this.employeeKey = Integer.parseInt(employeeKey);
         this.employeeLastName = employeeLastName;
         this.employeeFirstName = employeeFirstName;
         this.employeeProfession = employeeProfession;
-        this.employeeWorkingHours = Float.valueOf(employeeWorkingHours);
-        this.employeeLunchBreakMinutes = Integer.valueOf(employeeLunchBreakMinutes);
-        this.employeeHolidays = Integer.valueOf(employeeHolidays);
+        this.employeeWorkingHours = Float.parseFloat(employeeWorkingHours);
+        this.employeeLunchBreakMinutes = Integer.parseInt(employeeLunchBreakMinutes);
+        this.employeeHolidays = Integer.parseInt(employeeHolidays);
         NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
-        Branch branch = networkOfBranchOffices.getBranchByName(employeeBranch);
-        this.employeeBranchString = branch.getBranchName();
+        Branch branch = networkOfBranchOffices.getBranchByName(employeeBranchName);
         this.employeeBranchId = branch.getBranchId();
         this.employeeAbilitiesGoodsReceipt = Boolean.parseBoolean(employeeAbilitiesGoodsReceipt);
         this.employeeAbilitiesCompounding = Boolean.parseBoolean(employeeAbilitiesCompounding);
@@ -139,8 +138,14 @@ public class Employee {
         return employeeLunchBreakMinutes;
     }
 
-    public String getBranchString() {
-        return employeeBranchString;
+    public String getBranchString(NetworkOfBranchOffices networkOfBranchOffices) {
+        String branchName = networkOfBranchOffices.getBranchById(employeeBranchId).getBranchName();
+        return branchName;
+    }
+
+    public String getRealBranchString(RealNetworkOfBranchOffices realNetworkOfBranchOffices) {
+        String branchName = realNetworkOfBranchOffices.getRealBranchById(employeeBranchId).getBranchName();
+        return branchName;
     }
 
     public int getBranchId() {
@@ -164,20 +169,17 @@ public class Employee {
     }
 
     public Employee(HashMap<String, String> employeeHashMap) {
-        this.employeeKey = Integer.valueOf(employeeHashMap.get("employeeKey"));
+        this.employeeKey = Integer.parseInt(employeeHashMap.get("employeeKey"));
         this.employeeLastName = employeeHashMap.get("employeeLastName");
         this.employeeFirstName = employeeHashMap.get("employeeFirstName");
         this.employeeProfession = employeeHashMap.get("employeeProfession");
-        this.employeeWorkingHours = Float.valueOf(employeeHashMap.get("employeeWorkingHours"));
-        this.employeeLunchBreakMinutes = Integer.valueOf(employeeHashMap.get("employeeLunchBreakMinutes"));
-        this.employeeHolidays = Integer.valueOf(employeeHashMap.get("employeeHolidays"));
+        this.employeeWorkingHours = Float.parseFloat(employeeHashMap.get("employeeWorkingHours"));
+        this.employeeLunchBreakMinutes = Integer.parseInt(employeeHashMap.get("employeeLunchBreakMinutes"));
+        this.employeeHolidays = Integer.parseInt(employeeHashMap.get("employeeHolidays"));
 
-        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
         if (employeeHashMap.containsKey("employeeBranchId")) {
             String employeeBranchIdString = employeeHashMap.get("employeeBranchId");
-            int branchId = Integer.valueOf(employeeBranchIdString);
-            Branch branch = networkOfBranchOffices.getBranchById(branchId);
-            this.employeeBranchString = branch.getBranchName();
+            this.employeeBranchId = Integer.parseInt(employeeBranchIdString);
         }
 
         this.employeeAbilitiesGoodsReceipt = Boolean.parseBoolean(employeeHashMap.get("employeeAbilitiesGoodsReceipt"));

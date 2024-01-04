@@ -112,21 +112,35 @@ public class EmergencyServiceListPage {
     public Integer getEmployeeKeyOnDate(LocalDate localDate) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         if (null == emergencyRowElement) {
+            //There is no such element at all
             return null;
         }
         WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeKeyBy);
         Select employeeKeySelect = new Select(employeeKeyWebElement);
         WebElement selectedOption = employeeKeySelect.getFirstSelectedOption();
-        return Integer.valueOf(selectedOption.getAttribute("value"));
+        String selectedOptionText = selectedOption.getAttribute("value");
+        if (selectedOptionText.equals("")) {
+            //There is such a date. But there is no employee selected.
+            return null;
+        }
+        int selectedOptionInt = Integer.parseInt(selectedOptionText);
+        return selectedOptionInt;
+    }
+
+    public boolean rowExistsOnDate(LocalDate localDate) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
+        if (null == emergencyRowElement) {
+            //There is no such element at all
+            return false;
+        }
+        return true;
     }
 
     public EmergencyServiceListPage setEmployeeKeyOnDate(LocalDate localDate, int employeeKey) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeKeyBy);
-        WebElement submitButtonElement = emergencyRowElement.findElement(By.xpath(".//td/button[contains(@id, \"save_\")]"));
         Select employeeKeySelect = new Select(employeeKeyWebElement);
         employeeKeySelect.selectByValue(String.valueOf(employeeKey));
-        submitButtonElement.click();
         return new EmergencyServiceListPage(driver);
     }
 

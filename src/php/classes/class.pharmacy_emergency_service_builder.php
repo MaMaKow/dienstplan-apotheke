@@ -24,7 +24,7 @@
  */
 class pharmacy_emergency_service_builder {
 
-    public static function build_emergency_service_table_employee_select($employee_key_selected, $branch_id, $date_sql) {
+    public static function build_emergency_service_table_employee_select($employee_key_selected, $branch_id, $date_sql, $emergencyServiceIndex) {
         global $workforce;
         if (NULL === $workforce) {
             $workforce = new workforce();
@@ -32,8 +32,10 @@ class pharmacy_emergency_service_builder {
         $table_employee_select = "";
         $table_employee_select .= "<input type='hidden' name=emergency_service_branch value='$branch_id'>";
         $table_employee_select .= "<input type='hidden' name=emergency_service_date_old value='$date_sql'>";
-        $table_employee_select .= "<select name=emergency_service_employee onChange='unhideButtonOnChange(this)'>";
-        /*
+        $table_employee_select .= "<input type='hidden' name='command' id='command_$emergencyServiceIndex' value=''>";
+        $table_employee_select .= "<select name='emergency_service_employee' onChange='updateCommandAndSubmit(this, $emergencyServiceIndex)'>";
+
+        /**
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $table_employee_select .= "<option value=''>&nbsp;</option>";

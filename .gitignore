@@ -90,3 +90,4 @@ tests/selenium/.project
 tests/selenium/.classpath
 tests/selenium/test-output/
 .project
+/scripts/mockup-database.sh

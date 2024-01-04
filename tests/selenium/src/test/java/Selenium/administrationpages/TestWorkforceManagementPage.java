@@ -19,7 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.Employee;
-import Selenium.TestPage;
+import Selenium.NetworkOfBranchOffices;
 import Selenium.rosterpages.Workforce;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,7 +31,7 @@ import org.testng.Assert;
  *
  * @author Mandelkow
  */
-public class TestWorkforceManagementPage extends TestPage {
+public class TestWorkforceManagementPage extends Selenium.TestPage {
 
     @Test(enabled = true, dependsOnMethods = {"testCreateEmployee"})/*new*/
     public void testReadEmployee() {
@@ -61,7 +61,9 @@ public class TestWorkforceManagementPage extends TestPage {
         Assert.assertEquals(employeeObject.getWorkingHours(), employeeObjectShould.getWorkingHours());
         Assert.assertEquals(employeeObject.getLunchBreakMinutes(), employeeObjectShould.getLunchBreakMinutes());
         Assert.assertEquals(employeeObject.getHolidays(), employeeObjectShould.getHolidays());
-        Assert.assertEquals(employeeObject.getBranchString(), employeeObjectShould.getBranchString());
+
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        Assert.assertEquals(employeeObject.getBranchString(networkOfBranchOffices), employeeObjectShould.getBranchString(networkOfBranchOffices));
         Assert.assertEquals(employeeObject.getAbilitiesGoodsReceipt(), employeeObjectShould.getAbilitiesGoodsReceipt());
         Assert.assertEquals(employeeObject.getAbilitiesCompounding(), employeeObjectShould.getAbilitiesCompounding());
         Assert.assertEquals(employeeObject.getStartOfEmployment(), employeeObjectShould.getStartOfEmployment());

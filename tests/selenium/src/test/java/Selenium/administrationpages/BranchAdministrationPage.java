@@ -19,6 +19,8 @@
 package Selenium.administrationpages;
 
 import Selenium.Branch;
+import Selenium.RealData.RealNetworkOfBranchOffices;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +31,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-/**
+/*
+ * BranchAdministrationPage class handles the interaction with the web page
+ * for administering branches in the Dienstplan Apotheke application.
+ * It provides methods for creating new branches, removing existing branches,
+ * and retrieving the real data for network of branch offices.
  *
  * @author Mandelkow
  */
@@ -67,7 +73,12 @@ public class BranchAdministrationPage {
     }
 
     /**
-     * Form elements for the opening times:
+     * Retrieves the opening time input elements from the web page.
+     * The method locates the table containing opening time inputs and extracts
+     * the time input elements for each day.
+     *
+     * @return A HashMap with row indices as keys and arrays of time input elements
+     * (from and to) as values.
      */
     private HashMap getOpeningTimeElements() {
         HashMap<Integer, WebElement[]> openingTimeElements;
@@ -89,6 +100,14 @@ public class BranchAdministrationPage {
         return openingTimeElements;
     }
 
+    /**
+     * Creates a new branch on the web page using the details provided in the
+     * Branch object. This method serves as a convenient wrapper to create a
+     * new branch by extracting information from an existing Branch object.
+     *
+     * @param branch The Branch object containing details for the new branch.
+     * @return A new instance of BranchAdministrationPage after the form submission.
+     */
     public BranchAdministrationPage createNewBranch(Branch branch) {
         int branchId = branch.getBranchId();
         int branchPepId = branch.getBranchPepId();
@@ -101,19 +120,18 @@ public class BranchAdministrationPage {
     }
 
     /**
-     * <p lang=de>
-     * TODO: Bitte hier noch parametriesieren! Die Funktion muss auch mit
-     * Parametern von außen funktionieren.
-     * </p>
+     * Creates a new branch on the web page with the provided branch details.
+     * The method selects the option to create a new branch, fills the form with
+     * the given parameters, including opening times, and submits the form.
      *
-     * @param branchId
-     * @param branchPepId
-     * @param branchName
-     * @param branchShortName
-     * @param branchAddress
-     * @param branchManager
-     * @param openingTimesMap
-     * @return new page after reload
+     * @param branchId The unique identifier for the new branch.
+     * @param branchPepId The PEP (PersonalEinsatzPlanung) identifier for the new branch.
+     * @param branchName The name of the new branch.
+     * @param branchShortName The short name or abbreviation for the new branch.
+     * @param branchAddress The address of the new branch.
+     * @param branchManager The manager's name for the new branch.
+     * @param openingTimesMap A HashMap containing the opening times for each day.
+     * @return A new instance of BranchAdministrationPage after the form submission.
      */
     private BranchAdministrationPage createNewBranch(int branchId,
             int branchPepId,
@@ -152,15 +170,6 @@ public class BranchAdministrationPage {
         formElementBranchAddress.sendKeys(branchAddress);
         formElementBranchManager.clear();
         formElementBranchManager.sendKeys(branchManager);
-        /**
-         * String[] openingTimesMonday = openingTimesMap.get(0); String
-         * openingTimesFrom = openingTimesMonday[0]; String openingTimesTo =
-         * openingTimesMonday[1];
-         * formElementOpeningTimesMondayFrom.sendKeys(openingTimesFrom);
-         * formElementOpeningTimesMondayTo.sendKeys(openingTimesTo);
-         * formElementOpeningTimesSundayFrom.sendKeys("08:00");
-         * formElementOpeningTimesSundayTo.sendKeys("16:00");
-         */
 
         int openingTimesMapSize = openingTimesMap.size();
         for (int row = 1; row <= openingTimesMapSize; row++) {
@@ -189,12 +198,18 @@ public class BranchAdministrationPage {
     }
 
     /**
-     * TODO: This function is not part of any test yet. Please write a full test
-     * for the
+     * Removes a branch from the web page with the specified branch identifier.
+     * The method selects the branch to remove, submits the removal action, and
+     * effectively deletes the branch from the application.
      *
-     * @param branchId
+     * @TODO: This method is currently not covered by any test. It is recommended
+     * to write a comprehensive test suite to ensure the correct functionality
+     * of the branch removal process.
+     *
+     * @param branchId The unique identifier of the branch to be removed.
+     *
      */
-    void removeBranch(int branchId) {
+    public void removeBranch(int branchId) {
         /**
          * Select the to remove branch:
          */
@@ -206,5 +221,82 @@ public class BranchAdministrationPage {
         WebElement formElementRemoveBranch;
         formElementRemoveBranch = driver.findElement(formElementRemoveBranchBy);
         formElementRemoveBranch.click();
+    }
+
+    /**
+     * Retrieves the real network of branch offices from the web page.
+     * The method iterates through the available branch options, gathers
+     * information about each branch, including opening times, and constructs
+     * a RealNetworkOfBranchOffices object containing the collected data.
+     *
+     * Note: This method assumes the existence of branches on the page.
+     *
+     * @return A RealNetworkOfBranchOffices object representing the network
+     * of branches with detailed information.
+     */
+    public RealNetworkOfBranchOffices getRealNetworkOfBranchOffices() {
+        /**
+         * Select the new branch:
+         */
+        RealNetworkOfBranchOffices realNetworkOfBranchOffices = new RealNetworkOfBranchOffices();
+        Select branchFormSelect = new Select(driver.findElement(formElementBranchSelectBy));
+        List<WebElement> selectBranchOptions = branchFormSelect.getOptions();
+        List<String> optionValueStrings = new ArrayList<>();
+
+        for (WebElement option : selectBranchOptions) {
+            String optionValueString = option.getAttribute("value");
+            optionValueStrings.add(optionValueString);
+        }
+
+        for (String optionValueStringRead : optionValueStrings) {
+            //Move to branch
+            if (optionValueStringRead.equals("")) {
+                // This is the option to create a new branch.
+                continue;
+            }
+            branchFormSelect = new Select(driver.findElement(formElementBranchSelectBy));
+            branchFormSelect.selectByValue(optionValueStringRead); // At this point the page is reloaded. Every old WebElement becomes stale.
+
+            /**
+             * Form elements:
+             */
+            WebElement formElementBranchId = driver.findElement(formElementBranchIdBy);
+            WebElement formElementBranchPepId = driver.findElement(formElementBranchPepIdBy);
+            WebElement formElementBranchName = driver.findElement(formElementBranchNameBy);
+            WebElement formElementBranchShortName = driver.findElement(formElementBranchShortNameBy);
+            WebElement formElementBranchAddress = driver.findElement(formElementBranchAddressBy);
+            WebElement formElementBranchManager = driver.findElement(formElementBranchManagerBy);
+            /**
+             * Fill the form:
+             */
+            int branchId = Integer.parseInt(formElementBranchId.getAttribute("value"));
+            int branchPepId = Integer.parseInt(formElementBranchPepId.getAttribute("value"));
+            String branchName = formElementBranchName.getAttribute("value");
+            String branchShortName = formElementBranchShortName.getAttribute("value");
+            String branchAddress = formElementBranchAddress.getAttribute("value");
+            String branchManager = formElementBranchManager.getAttribute("value");
+            HashMap<Integer, WebElement[]> openingTimeElements = getOpeningTimeElements();
+            HashMap<Integer, String[]> openingTimes = new HashMap<>();
+
+            int openingTimesMapSize = openingTimeElements.size();
+            for (int row = 1; row <= openingTimesMapSize; row++) {
+                /**
+                 * Get the time input elements:
+                 */
+                WebElement[] timeElementsFromTo = openingTimeElements.get(row - 1);
+                WebElement timeElementFrom = timeElementsFromTo[0];
+                WebElement timeElementTo = timeElementsFromTo[1];
+                /**
+                 * Fill them with time data:
+                 */
+                String[] openingTimesDay = new String[2];
+                openingTimesDay[0] = timeElementFrom.getAttribute("value");
+                openingTimesDay[1] = timeElementTo.getAttribute("value");
+                openingTimes.put(row, openingTimesDay);
+            }
+            Branch branch = new Branch(branchId, branchPepId, branchName, branchShortName, branchAddress, branchManager, openingTimes);
+            realNetworkOfBranchOffices.add(branch);
+        }
+        return realNetworkOfBranchOffices;
     }
 }

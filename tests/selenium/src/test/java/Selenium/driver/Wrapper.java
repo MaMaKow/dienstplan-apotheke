@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -58,9 +59,13 @@ public class Wrapper {
     public static final DateTimeFormatter DATE_TIME_FORMATTER_YEAR_MONTH_DAY = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY);
 
     public Wrapper() {
-        //driver = createLocalChromeWebDriver();
+        LocalDateTime timerStart = LocalDateTime.now();
+        // driver = createLocalChromeWebDriver();
         driver = createRemoteWebDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        LocalDateTime timerEnd = LocalDateTime.now();
+        long timeToCreate = java.time.Duration.between(timerStart, timerEnd).toMillis();
+        System.out.println("Time to create WebDriver: " + timeToCreate + " milliseconds");
     }
 
     public static WebDriver getDriver() {
@@ -76,27 +81,8 @@ public class Wrapper {
     }
 
     private WebDriver createRemoteWebDriver() {
-        //DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-/*
-        FirefoxProfile profile = new FirefoxProfile();
-
-        // Set the download directory preference
-        profile.setPreference("browser.download.dir", "/home/seluser/Downloads");
-        profile.setPreference("browser.download.folderList", 2); // 2: Use specified directory
-
-        // Set other download-related preferences if needed
-        profile.setPreference("browser.download.manager.showWhenStarting", false);
-        profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf"); // Example MIME type
-
-// Create FirefoxOptions and pass the profile
-        FirefoxOptions options = new FirefoxOptions();
-        options.setProfile(profile);
-         */
-        //ChromeOptions options = new ChromeOptions();
         FirefoxOptions options = new FirefoxOptions();
         try {
-            //driver = new RemoteWebDriver(new URL("https://martin-mandelkow.de:4444/wd/hub"), capabilities);
-            //driver = new RemoteWebDriver(new URL("http://lcalhost:4444/wd/hub"), options);
             driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
         } catch (MalformedURLException ex) {
             Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);

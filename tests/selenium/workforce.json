@@ -8,7 +8,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": false,
         "employeeStartOfEmployment": {
@@ -31,7 +31,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": false,
         "employeeStartOfEmployment": {
@@ -49,7 +49,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": false,
         "employeeStartOfEmployment": {
@@ -67,7 +67,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": true,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -85,7 +85,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Filiale in der Nebenstraße",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": false,
         "employeeStartOfEmployment": {
@@ -103,7 +103,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -121,7 +121,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -139,7 +139,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 2,
         "employeeAbilitiesGoodsReceipt": true,
         "employeeAbilitiesCompounding": false,
         "employeeStartOfEmployment": {
@@ -157,7 +157,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 2,
         "employeeAbilitiesGoodsReceipt": true,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -175,7 +175,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": true,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -193,7 +193,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Filiale in der Nebenstraße",
-        "employeeBranchId": 0,
+        "employeeBranchId": 2,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -211,7 +211,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Filiale in der Nebenstraße",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -229,7 +229,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Filiale in der Nebenstraße",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": false,
         "employeeAbilitiesCompounding": true,
         "employeeStartOfEmployment": {
@@ -247,7 +247,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": true,
         "employeeAbilitiesCompounding": false,
         "employeeStartOfEmployment": {
@@ -265,7 +265,7 @@
         "employeeLunchBreakMinutes": 30,
         "employeeHolidays": 28,
         "employeeBranchString": "Hauptapotheke am großen Platz",
-        "employeeBranchId": 0,
+        "employeeBranchId": 1,
         "employeeAbilitiesGoodsReceipt": true,
         "employeeAbilitiesCompounding": false,
         "employeeStartOfEmployment": {

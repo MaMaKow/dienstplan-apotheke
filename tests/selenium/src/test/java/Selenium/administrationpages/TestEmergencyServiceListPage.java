@@ -18,11 +18,10 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.TestPage;
+import Selenium.RealData.RealWorkforce;
 import Selenium.rosterpages.Workforce;
 import java.time.LocalDate;
 import java.time.Month;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -30,9 +29,9 @@ import org.testng.Assert;
  *
  * @author Mandelkow
  */
-public class TestEmergencyServiceListPage extends TestPage {
+public class TestEmergencyServiceListPage extends Selenium.TestPage {
 
-    @Test(enabled = true)/*new*/
+    @Test(groups = "emptyInstance")
     public void testEmergencyService() {
         /**
          * Sign in:
@@ -44,6 +43,8 @@ public class TestEmergencyServiceListPage extends TestPage {
         EmergencyServiceListPage emergencyServiceListPage = new EmergencyServiceListPage(driver);
         emergencyServiceListPage.selectYear("2021");
         emergencyServiceListPage.selectBranch(2);
+        Assert.assertEquals(emergencyServiceListPage.getYear(), 2021);
+        Assert.assertEquals(emergencyServiceListPage.getBranchId(), 2);
         emergencyServiceListPage.selectYear("2019");
         emergencyServiceListPage.selectBranch(1);
         Assert.assertEquals(emergencyServiceListPage.getYear(), 2019);
@@ -76,6 +77,58 @@ public class TestEmergencyServiceListPage extends TestPage {
          * <p lang=de>Zeilen wieder entfernen</p>
          */
         emergencyServiceListPage = emergencyServiceListPage.doNotRemoveLineByDate(localDate);
+        Assert.assertNotNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
+        emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(localDate);
+        Assert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
+    }
+
+    @Test(groups = "realWorldInstance")
+    public void testRealEmergencyServiceList() {
+        super.realSignIn();
+
+        int branchId = 1;
+        Integer employeeKeyInsert = 55;
+        Integer employeeKeyChange = 7;
+        LocalDate localDate = LocalDate.of(2020, Month.DECEMBER, 25);
+
+        /**
+         * Get Workforce data:
+         */
+        WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
+        RealWorkforce realWorkforce = workforceManagementPage.getAllEmployeesRealWorkforce();
+
+        EmergencyServiceListPage emergencyServiceListPage = new EmergencyServiceListPage(driver);
+        emergencyServiceListPage.selectYear(String.valueOf(localDate.getYear()));
+        emergencyServiceListPage.selectBranch(branchId);
+        Assert.assertEquals(emergencyServiceListPage.getYear(), 2020);
+        Assert.assertEquals(emergencyServiceListPage.getBranchId(), branchId);
+        /**
+         * <p lang=de>Nur Apotheker (und PI) können allein im Notdienst
+         * eingesetzt werden.</p>
+         */
+        Assert.assertEquals("Apotheker", realWorkforce.getEmployeeByRealKey(employeeKeyInsert).getProfession());
+        Assert.assertEquals("Apotheker", realWorkforce.getEmployeeByRealKey(employeeKeyChange).getProfession());
+        /**
+         * <p lang=de>Daten einfügen:</p>
+         */
+        Assert.assertFalse(emergencyServiceListPage.rowExistsOnDate(localDate));
+        emergencyServiceListPage = emergencyServiceListPage.addLineForDate(localDate);
+        Assert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyInsert);
+        /**
+         * <p lang=de>Daten abfragen:</p>
+         */
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyInsert);
+        /**
+         * <p lang=de>Daten ändern :</p>
+         */
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyChange);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyChange);
+        /**
+         * <p lang=de>Zeilen wieder entfernen</p>
+         */
+        emergencyServiceListPage = emergencyServiceListPage.doNotRemoveLineByDate(localDate);
+        Assert.assertTrue(emergencyServiceListPage.rowExistsOnDate(localDate));
         Assert.assertNotNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
         emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(localDate);
         Assert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));

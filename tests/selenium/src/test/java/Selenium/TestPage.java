@@ -25,10 +25,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
 import org.testng.Assert;
+import org.testng.ITestContext;
 import org.testng.SkipException;
 import org.testng.asserts.SoftAssert;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -61,13 +63,33 @@ public class TestPage {
 
     }
 
-    @BeforeSuite
-    public void setUpSuite() {
+    public void realSignIn() {
         driver = Selenium.driver.Wrapper.getDriver();
+        propertyFile = new PropertyFile();
+        String urlPageTest = propertyFile.getRealTestPageUrl();
+        driver.get(urlPageTest);
+
+        /**
+         * Sign in:
+         */
+        SignInPage signInPage = new SignInPage(driver);
+        String real_user_password = propertyFile.getRealPassword();
+        String real_user_name = propertyFile.getRealUsername();
+        HomePage homePage = signInPage.loginValidUser(real_user_name, real_user_password);
+        Assert.assertEquals(homePage.getUserNameText(), real_user_name);
+
+    }
+
+    @BeforeSuite
+    public void setUpSuite(ITestContext context) {
+        driver = Selenium.driver.Wrapper.getDriver();
+        propertyFile = new PropertyFile();
+        if (isRealWorldTest(context)) {
+            return;
+        }
         /**
          * Refresh the page contents from the nextcloud data:
          */
-        propertyFile = new PropertyFile();
         String testPageFolderPath = propertyFile.getUrlInstallTest();
         driver.get(testPageFolderPath + "selenium-refresh.php");
         By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
@@ -93,13 +115,27 @@ public class TestPage {
         driver = Selenium.driver.Wrapper.getDriver();
         new ScreenShot(testResult);
         if (testResult.getStatus() == ITestResult.SUCCESS) {
-            driver.quit();
+            //driver.quit();
         } else {
             /**
              * Mark this whole test suite as failed:
              */
             someTestHasFailed = true;
         }
+    }
+
+    @AfterSuite
+    public void tearDownSuite() {
+        if (!someTestHasFailed) {
+            driver.quit();
+        }
+    }
+
+    private boolean isRealWorldTest(ITestContext context) {
+        // Check if the suite name contains "testng_realworld.xml"
+        System.out.println("context.getSuite().getName()");
+        System.out.println(context.getSuite().getName());
+        return context.getSuite().getName().contains("testng_realworld.xml");
     }
 
 }

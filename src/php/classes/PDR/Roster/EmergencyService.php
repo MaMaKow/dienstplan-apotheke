@@ -30,6 +30,16 @@
 
 namespace PDR\Roster;
 
+/**
+ * @todo <p lang=en>
+ * The primary key must be changed.
+ * It is possible that a pharmacy with several branches also has emergency service on the same day with several branches.
+  ALTER TABLE `emergency service` DROP PRIMARY KEY, ADD `primary_key` INT UNSIGNED NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`primary_key`);
+  RENAME TABLE `Apotheke_testing`.`Notdienst` TO `Apotheke_testing`.`emergency_services`;
+
+ * One could take the opportunity to rename the table to emergency_services.
+ * </p>
+ */
 class EmergencyService {
 
     private $date_object;
