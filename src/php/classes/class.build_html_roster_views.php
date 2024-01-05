@@ -575,7 +575,7 @@ abstract class build_html_roster_views {
         $week_hours_table_html .= "<th>" . gettext('Deviation') . "</th>";
         $week_hours_table_html .= "</tr>";
         foreach ($Working_week_hours_have as $employee_key => $working_hours_have) {
-            if (isset($Options['employee_key']) and $employee_key !== $Options['employee_key']) {
+            if (isset($Options['employee_key']) and (int) $employee_key !== (int) $Options['employee_key']) {
                 continue; /* Only the specified employees are shown. */
             }
             $week_hours_table_html .= "<tr>";
