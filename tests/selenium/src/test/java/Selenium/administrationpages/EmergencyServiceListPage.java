@@ -105,7 +105,7 @@ public class EmergencyServiceListPage {
                 return emergencyRowElement;
             }
         }
-        System.err.println("Wir haben nichts gefunden: return null;");
+        //Wir haben nichts gefunden: return null
         return null;
     }
 

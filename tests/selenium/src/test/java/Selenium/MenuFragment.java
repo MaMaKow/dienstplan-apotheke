@@ -166,7 +166,7 @@ public class MenuFragment {
         /**
          * @todo: Can we remove one of th following wait lines?
          */
-        wait.until(ExpectedConditions.elementToBeClickable(menuListItemBy));
+        //wait.until(ExpectedConditions.elementToBeClickable(menuListItemBy));
         wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
 
         WebElement menuListItem = driver.findElement(menuListItemBy);

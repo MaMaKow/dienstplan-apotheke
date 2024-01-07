@@ -152,7 +152,7 @@ public class TestRosterHoursPage extends TestPage {
         Assert.assertEquals(currentAbsence.getEndDateString(), "01.07.2020");
 
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
-        rosterHoursPage.selectEmployee(workforce.getEmployeeNameById(employeeKey));
+        rosterHoursPage.selectEmployee(workforce.getEmployeeLastNameByKey(employeeKey));
         rosterHoursPage.selectMonth("Juli");
         rosterHoursPage.selectYear("2020");
 

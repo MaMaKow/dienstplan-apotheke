@@ -135,22 +135,20 @@ span.absent_employee_container.Apotheker{
     background-color: rgba(115,172,34, 0.9);
 }
 span.absent_employee_container.Apotheker.not_yet_approved{
-    background-color: red;
-    background-image: linear-gradient(to bottom right, rgba(115,172,34, 0.9) 50%, red);
+    background-image: linear-gradient(to bottom, rgba(115,172,34, 0.9) 0%, rgba(115,172,34, 0.9) 75%, red 75%, red 100%);
 }
 span.absent_employee_container.PI{
     background-color: rgba(115,172,34, 0.9);
 }
 span.absent_employee_container.PI.not_yet_approved{
-    background-color: red;
-    background-image: linear-gradient(to bottom right, rgba(115,172,34, 0.9) 50%, red);
+    background-image: linear-gradient(to bottom, rgba(115,172,34, 0.9) 0%, rgba(115,172,34, 0.9) 75%, red 75%, red 100%);
 }
 span.absent_employee_container.PTA{
     background-color: rgba(189, 230, 130, 0.9);
 }
 span.absent_employee_container.PTA.not_yet_approved{
-    background-color: red;
-    background-image: linear-gradient(to bottom right, rgba(189, 230, 130, 0.9) 50%, red);
+    background-image: linear-gradient(to bottom, rgba(189, 230, 130, 0.9) 0%, rgba(189, 230, 130, 0.9) 75%, red 75%, red 100%);
+
 }
 span.absent_employee_container.PKA{
     background-color: rgba(180, 180, 180, 0.9);
@@ -159,8 +157,7 @@ span.absent_employee_container.non_existing_employee{
     text-decoration: line-through;
 }
 span.absent_employee_container.not_yet_approved{
-    background-color: red;
-    background-image: linear-gradient(to bottom right, rgba(180, 180, 180, 0.9) 50%, red);
+    background-image: linear-gradient(to bottom, rgba(180, 180, 180, 0.9) 0%, rgba(180, 180, 180, 0.9) 75%, red 75%, red 100%);
 }
 span.absent_employee_container.disapproved{
     background-color: red;

@@ -52,7 +52,7 @@ public class Workforce {
         return listOfEmployees.get(employeeKey);
     }
 
-    public String getEmployeeNameById(int employeeKey) {
+    public String getEmployeeLastNameByKey(int employeeKey) {
         return listOfEmployees.get(employeeKey).getLastName();
     }
 

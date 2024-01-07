@@ -21,7 +21,6 @@ package Selenium;
 import Selenium.rosterpages.Workforce;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.HashMap;
 
 /**
  *
@@ -29,37 +28,32 @@ import java.util.HashMap;
  */
 public class PrincipleRosterItem {
 
-    private final Employee employeeObject;
+    private final int employeeKey;
     private final DayOfWeek weekday;
     private final LocalTime dutyStart;
     private final LocalTime dutyEnd;
     private final LocalTime breakStart;
     private final LocalTime breakEnd;
-    private final Branch branchObject;
+    private final int branchId;
     private final String comment;
 
     public PrincipleRosterItem(int employeeKey, DayOfWeek weekday, LocalTime dutyStart, LocalTime dutyEnd, LocalTime breakStart, LocalTime breakEnd, String comment, Integer branchId) {
-        Workforce workforce = new Workforce();
-        HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
-        Employee employee = listOfEmployees.get(employeeKey);
-        this.employeeObject = employee;
+        this.employeeKey = employeeKey;
         this.weekday = weekday;
         this.dutyStart = dutyStart;
         this.dutyEnd = dutyEnd;
         this.breakStart = breakStart;
         this.breakEnd = breakEnd;
         this.comment = comment;
-
-        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
-        this.branchObject = networkOfBranchOffices.getBranchById(branchId);
+        this.branchId = branchId;
     }
 
-    public String getEmployeeName() {
-        return this.employeeObject.getLastName();
+    public String getEmployeeLastName(Workforce workforce) {
+        return workforce.getEmployeeLastNameByKey(employeeKey);
     }
 
     public int getEmployeeKey() {
-        return this.employeeObject.getEmployeeKey();
+        return this.employeeKey;
     }
 
     public DayOfWeek getWeekday() {
@@ -83,7 +77,7 @@ public class PrincipleRosterItem {
     }
 
     public int getBranchId() {
-        return this.branchObject.getBranchId();
+        return this.branchId;
     }
 
     public String getComment() {

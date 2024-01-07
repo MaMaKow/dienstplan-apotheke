@@ -18,9 +18,21 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LocalTimeDeserializer;
+import Selenium.Utilities.LocalTimeSerializer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -35,24 +47,45 @@ public class PrincipleRoster {
     public PrincipleRoster(int branchId, int alternationId) {
         this.alternationId = alternationId;
         this.branchId = branchId;
-        setPrincipleRoster();
+        principleRoster = (HashMap<DayOfWeek, PrincipleRosterDay>) readPrincipleRosterFromFile();
+        //writePrincipleRostertoJson();
     }
 
-    private void setPrincipleRoster() {
-        /**
-         * @TODO: Create a real pinciple roster:
-         */
-        principleRoster = new HashMap<>();
-        PrincipleRosterDay principleMonday = new PrincipleRosterDay();
-        PrincipleRosterItem principleRosterItem0 = new PrincipleRosterItem(3, DayOfWeek.MONDAY, LocalTime.of(8, 00), LocalTime.of(16, 30), LocalTime.of(11, 30), LocalTime.of(12, 0), null, 1);
-        PrincipleRosterItem principleRosterItem1 = new PrincipleRosterItem(4, DayOfWeek.MONDAY, LocalTime.of(8, 00), LocalTime.of(17, 00), LocalTime.of(12, 0), LocalTime.of(12, 30), null, 1);
-        PrincipleRosterItem principleRosterItem2 = new PrincipleRosterItem(5, DayOfWeek.MONDAY, LocalTime.of(9, 00), LocalTime.of(18, 00), LocalTime.of(12, 30), LocalTime.of(13, 0), null, 1);
-        PrincipleRosterItem principleRosterItem3 = new PrincipleRosterItem(6, DayOfWeek.MONDAY, LocalTime.of(9, 30), LocalTime.of(18, 00), LocalTime.of(13, 0), LocalTime.of(13, 30), null, 1);
-        principleMonday.put(principleRosterItem0);
-        principleMonday.put(principleRosterItem1);
-        principleMonday.put(principleRosterItem2);
-        principleMonday.put(principleRosterItem3);
-        principleRoster.put(DayOfWeek.MONDAY, principleMonday);
+    private void writePrincipleRostertoJson() {
+        try {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
+                    .setPrettyPrinting()
+                    .create();
+            String principleRosterJson = gson.toJson(principleRoster);
+
+            Files.write(Paths.get("principleRoster.json"), principleRosterJson.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private Map<DayOfWeek, PrincipleRosterDay> readPrincipleRosterFromFile() {
+        try {
+            // Read the JSON content from the file
+            String jsonContent = new String(Files.readAllBytes(Paths.get("principleRoster.json")), StandardCharsets.UTF_8);
+
+            // Use Gson to deserialize the JSON content into a Map<DayOfWeek, PrincipleRosterDay>
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
+                    .setPrettyPrinting()
+                    .create();
+            TypeToken<HashMap<DayOfWeek, PrincipleRosterDay>> token = new TypeToken<HashMap<DayOfWeek, PrincipleRosterDay>>() {
+            };
+            return gson.fromJson(jsonContent, token.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<DayOfWeek> getAllWeekdays() {
+        return new ArrayList<>(principleRoster.keySet());
     }
 
     public PrincipleRosterItem getPrincipleRosterItem(DayOfWeek dayOfWeek, int rowNumber) {

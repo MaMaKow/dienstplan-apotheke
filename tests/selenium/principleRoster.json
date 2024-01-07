@@ -1,0 +1,337 @@
+{
+    "MONDAY": {
+        "listOfPrincipleRosterItems": {
+            "0": {
+                "employeeKey": 3,
+                "weekday": "MONDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "1": {
+                "employeeKey": 4,
+                "weekday": "MONDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "17:00",
+                "breakStart": "12:00",
+                "breakEnd": "12:30",
+                "branchId": 1
+            },
+            "2": {
+                "employeeKey": 5,
+                "weekday": "MONDAY",
+                "dutyStart": "09:00",
+                "dutyEnd": "18:00",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "3": {
+                "employeeKey": 6,
+                "weekday": "MONDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "18:00",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            },
+            "4": {
+                "employeeKey": 9,
+                "weekday": "MONDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "5": {
+                "employeeKey": 7,
+                "weekday": "MONDAY",
+                "dutyStart": "08:30",
+                "dutyEnd": "17:30",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "6": {
+                "employeeKey": 8,
+                "weekday": "MONDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "17:30",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            }
+        }
+    },
+    "TUESDAY": {
+        "listOfPrincipleRosterItems": {
+            "0": {
+                "employeeKey": 3,
+                "weekday": "TUESDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "1": {
+                "employeeKey": 4,
+                "weekday": "TUESDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "17:00",
+                "breakStart": "12:00",
+                "breakEnd": "12:30",
+                "branchId": 1
+            },
+            "2": {
+                "employeeKey": 5,
+                "weekday": "TUESDAY",
+                "dutyStart": "09:00",
+                "dutyEnd": "18:00",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "3": {
+                "employeeKey": 6,
+                "weekday": "TUESDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "18:00",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            },
+            "4": {
+                "employeeKey": 9,
+                "weekday": "TUESDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "5": {
+                "employeeKey": 7,
+                "weekday": "TUESDAY",
+                "dutyStart": "08:30",
+                "dutyEnd": "17:30",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "6": {
+                "employeeKey": 8,
+                "weekday": "TUESDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "17:30",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            }
+        }
+    },
+    "WEDNESDAY": {
+        "listOfPrincipleRosterItems": {
+            "0": {
+                "employeeKey": 3,
+                "weekday": "WEDNESDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "1": {
+                "employeeKey": 4,
+                "weekday": "WEDNESDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "17:00",
+                "breakStart": "12:00",
+                "breakEnd": "12:30",
+                "branchId": 1
+            },
+            "2": {
+                "employeeKey": 5,
+                "weekday": "WEDNESDAY",
+                "dutyStart": "09:00",
+                "dutyEnd": "18:00",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "3": {
+                "employeeKey": 6,
+                "weekday": "WEDNESDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "18:00",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            },
+            "4": {
+                "employeeKey": 9,
+                "weekday": "WEDNESDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "5": {
+                "employeeKey": 7,
+                "weekday": "WEDNESDAY",
+                "dutyStart": "08:30",
+                "dutyEnd": "17:30",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "6": {
+                "employeeKey": 8,
+                "weekday": "WEDNESDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "17:30",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            }
+        }
+    },
+    "THURSDAY": {
+        "listOfPrincipleRosterItems": {
+            "0": {
+                "employeeKey": 3,
+                "weekday": "THURSDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "1": {
+                "employeeKey": 4,
+                "weekday": "THURSDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "17:00",
+                "breakStart": "12:00",
+                "breakEnd": "12:30",
+                "branchId": 1
+            },
+            "2": {
+                "employeeKey": 5,
+                "weekday": "THURSDAY",
+                "dutyStart": "09:00",
+                "dutyEnd": "18:00",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "3": {
+                "employeeKey": 6,
+                "weekday": "THURSDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "18:00",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            },
+            "4": {
+                "employeeKey": 9,
+                "weekday": "THURSDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "5": {
+                "employeeKey": 7,
+                "weekday": "THURSDAY",
+                "dutyStart": "08:30",
+                "dutyEnd": "17:30",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "6": {
+                "employeeKey": 8,
+                "weekday": "THURSDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "17:30",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            }
+        }
+    },
+    "FRIDAY": {
+        "listOfPrincipleRosterItems": {
+            "0": {
+                "employeeKey": 3,
+                "weekday": "FRIDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "1": {
+                "employeeKey": 4,
+                "weekday": "FRIDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "17:00",
+                "breakStart": "12:00",
+                "breakEnd": "12:30",
+                "branchId": 1
+            },
+            "2": {
+                "employeeKey": 5,
+                "weekday": "FRIDAY",
+                "dutyStart": "09:00",
+                "dutyEnd": "18:00",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "3": {
+                "employeeKey": 6,
+                "weekday": "FRIDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "18:00",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            },
+            "4": {
+                "employeeKey": 9,
+                "weekday": "FRIDAY",
+                "dutyStart": "08:00",
+                "dutyEnd": "16:30",
+                "breakStart": "11:30",
+                "breakEnd": "12:00",
+                "branchId": 1
+            },
+            "5": {
+                "employeeKey": 7,
+                "weekday": "FRIDAY",
+                "dutyStart": "08:30",
+                "dutyEnd": "17:30",
+                "breakStart": "12:30",
+                "breakEnd": "13:00",
+                "branchId": 1
+            },
+            "6": {
+                "employeeKey": 8,
+                "weekday": "FRIDAY",
+                "dutyStart": "09:30",
+                "dutyEnd": "17:30",
+                "breakStart": "13:00",
+                "breakEnd": "13:30",
+                "branchId": 1
+            }
+        }
+    }
+}

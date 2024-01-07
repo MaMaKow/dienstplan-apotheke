@@ -17,9 +17,9 @@
 package Selenium.principlerosterpages;
 
 import Selenium.PrincipleRoster;
-import Selenium.TestPage;
 import Selenium.PrincipleRosterDay;
 import Selenium.PrincipleRosterItem;
+import Selenium.rosterpages.Workforce;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -32,9 +32,9 @@ import org.testng.annotations.Test;
  *
  * @author Martin Mandelkow <netbeans@martin-mandelkow.de>
  */
-public class TestDayPage extends TestPage {
+public class TestDayPage extends Selenium.TestPage {
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*passed*/
+    @Test(dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})
     public void testDateNavigation() throws Exception {
         /**
          * Sign in:
@@ -57,7 +57,7 @@ public class TestDayPage extends TestPage {
         Assert.assertEquals(1, dayPage.getBranchId());
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*passed*/
+    @Test(dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})
     public void testRosterDisplay() throws Exception {
         /**
          * Sign in:
@@ -75,12 +75,17 @@ public class TestDayPage extends TestPage {
         PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
         PrincipleRosterDay principleRosterMonday = principleRoster.getPrincipleRosterDay(dayOfWeek);
         PrincipleRosterItem principleRosterItem = principleRosterMonday.getPrincipleRosterItemByEmployeeKey(employeeKey);
+        /**
+         * @todo Read workforce and networkOfBranchOffices only once per suite.
+         * Inject it to the tests.
+         */
+        Workforce workforce = new Workforce();
 
         dayPage.goToBranch(branchId);
         dayPage.goToAlternation(alternationId);
         dayPage.goToWeekday(dayOfWeek);
         PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeKey(employeeKey);
-        softAssert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+        softAssert.assertEquals(rosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
         softAssert.assertEquals(rosterItemRead.getBranchId(), principleRosterItem.getBranchId());
         softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
         softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
@@ -159,19 +164,19 @@ public class TestDayPage extends TestPage {
         dayPage.copyAlternation();
     }
 
-    @Test(enabled = true)/*new*/
+    @Test()
     public void testRosterCreate() throws Exception {
         /**
          * Sign in:
          */
         super.signIn();
         DayPage dayPage = new DayPage(driver);
+        Workforce workforce = new Workforce();
 
         /**
          * Move to specific branch:
          */
         int branchId = 1;
-        DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
         dayPage.goToBranch(branchId);
         /**
          * alternationId MUST be 0! There is no other alternation yet. Therefore
@@ -179,23 +184,27 @@ public class TestDayPage extends TestPage {
          *
          */
         int alternationId = 0;
-        dayPage.goToAlternation(0);
-        dayPage.goToWeekday(dayOfWeek);
-        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
-        PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
+        dayPage.goToAlternation(alternationId);
 
-        dayPage.addRosterRow();
-        for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
-            dayPage.createNewRosterItem(principleRosterItem);
-        }
-        for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
-            PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeKey(principleRosterItem.getEmployeeKey());
-            softAssert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
-            softAssert.assertEquals(principleRosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
-            softAssert.assertEquals(principleRosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
-            softAssert.assertEquals(principleRosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
-            softAssert.assertEquals(principleRosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
-            softAssert.assertAll();
+        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        // Iterate through all weekdays
+        for (DayOfWeek dayOfWeek : principleRoster.getAllWeekdays()) {
+            PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
+
+            dayPage.goToWeekday(dayOfWeek);
+            dayPage.addRosterRow();
+            for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
+                dayPage.createNewRosterItem(principleRosterItem);
+            }
+            for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
+                PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeKey(principleRosterItem.getEmployeeKey());
+                softAssert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
+                softAssert.assertEquals(principleRosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
+                softAssert.assertEquals(principleRosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
+                softAssert.assertEquals(principleRosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
+                softAssert.assertEquals(principleRosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
+                softAssert.assertAll();
+            }
         }
     }
 
@@ -206,6 +215,7 @@ public class TestDayPage extends TestPage {
          */
         super.signIn();
         DayPage dayPage = new DayPage(driver);
+        Workforce workforce = new Workforce();
 
         /**
          * Move to specific month:
@@ -231,7 +241,7 @@ public class TestDayPage extends TestPage {
         dayPage.rosterFormSubmit();
         PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeKey(employeeKey);
         softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
-        softAssert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+        softAssert.assertEquals(rosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
         softAssert.assertAll();
     }
 
@@ -242,6 +252,7 @@ public class TestDayPage extends TestPage {
          */
         super.signIn();
         DayPage dayPage = new DayPage(driver);
+        Workforce workforce = new Workforce();
 
         /**
          * Move to specific month:
@@ -269,7 +280,7 @@ public class TestDayPage extends TestPage {
              * Those changes are reverted afterwards. The Assertions work on the
              * firstly changed values.</p>
              */
-            softAssert.assertEquals(rosterItemRead.getEmployeeName(), principleRosterItem.getEmployeeName());
+            softAssert.assertEquals(rosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
             softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart().plusMinutes(dutyOffset));
             softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd().plusMinutes(dutyOffset));
             softAssert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItem.getBreakStart().plusMinutes(breakOffset));

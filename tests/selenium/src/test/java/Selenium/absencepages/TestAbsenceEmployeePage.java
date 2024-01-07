@@ -19,7 +19,6 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
-import Selenium.TestPage;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
@@ -27,9 +26,9 @@ import org.testng.annotations.Test;
  *
  * @author Mandelkow
  */
-public class TestAbsenceEmployeePage extends TestPage {
+public class TestAbsenceEmployeePage extends Selenium.TestPage {
 
-    @Test(enabled = true)/*passed*/
+    @Test()
     public void testCreateAbsence() {
         /**
          * Sign in:
