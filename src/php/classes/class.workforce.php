@@ -159,7 +159,7 @@ class workforce {
         throw new Exception('This employee does not exist!');
     }
 
-    public function employee_exists(?int $employee_key) {
+    public function employee_exists(?int $employee_key): bool {
         if (isset($this->List_of_employees[$employee_key]) and $this->List_of_employees[$employee_key] instanceof employee) {
             return TRUE;
         }

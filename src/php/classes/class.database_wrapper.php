@@ -97,9 +97,9 @@ class database_wrapper {
      *  Get the database name
      *  @return string database_name
      */
-    public static function get_database_name() {
+    public static function get_database_name(): string {
         if (self::$instance === null) {
-            return FALSE;
+            self::$instance = new self;
         }
         $sql_query = "SELECT DATABASE() as `database_name` FROM DUAL;"; //On all databases except Oracle FROM DUAL can be omitted.
         $result = self::$instance->run($sql_query);
@@ -135,7 +135,7 @@ class database_wrapper {
             $statement->execute($arguments);
             return $statement;
         } catch (Exception $exception) {
-            return $this->handle_exceptions($exception, $sql_query, $arguments);
+            return $this->handle_exceptions($exception);
         }
     }
 
@@ -153,31 +153,6 @@ class database_wrapper {
     }
 
     /**
-     * Fill the newly created database table with values from an old table.
-     *
-     * In specific cases database tables might have been simply be renamed and/or their column names changed.
-     * In those cases this function can make those changes.
-     *
-     * @before create_table_from_template
-     * @param string $table_name
-     */
-    protected static function create_table_insert_from_old_table($table_name): void {
-        switch ($table_name) {
-            case 'opening_times':
-                /*
-                 * renamed table after commit 3b03e70f991208313eed872bfda3da273bd2c7ec
-                 */
-                $sql_query = "INSERT INTO opening_times (weekday, start, end, branch_id) "
-                        . "SELECT Wochentag, Beginn, Ende, Mandant FROM Öffnungszeiten";
-                self::instance()->run($sql_query);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    /**
      * Check if a table exists in the current database.
      *
      * @link https://stackoverflow.com/a/14355475/2323627 source
@@ -186,7 +161,7 @@ class database_wrapper {
      * @param string $table Table to search for.
      * @return bool TRUE if table exists, FALSE if no table found.
      */
-    public static function database_table_exists($table_name): bool {
+    public static function database_table_exists(String $table_name): bool {
         /*
          *  Try a select statement against the table.
          *  Run it in try/catch in case PDO is in ERRMODE_EXCEPTION.
@@ -294,7 +269,7 @@ class database_wrapper {
      * @param type $arguments for the case of a repetition
      * @throws Exception If the error could not be resolved an exception is thrown or rethrown.
      */
-    protected function handle_exceptions($exception, $sql_query, $arguments) {
+    protected function handle_exceptions(Exception $exception): void {
         print_debug_variable($exception);
         if (TRUE === $this->pdo->inTransaction()) {
             $this->pdo->rollBack();
@@ -304,62 +279,6 @@ class database_wrapper {
             $user_dialog = new user_dialog();
             $user_dialog->add_message($message, E_USER_ERROR);
             throw $exception;
-        } elseif ('42S22' == $exception->getCode() and 1054 === $exception->errorInfo[1]) {
-            /*
-             * Unknown column ... in field list
-             * The database table does not match the expected layout.
-             * We try to update the database.
-             * CAVE: This will not be called on querys, which are inside a transaction.
-             * Eigentlich könnte man versuchen, jetzt die Datenbank per update zu korrigieren.
-             * Aber das funktioniert leider nicht vernünftig. Es führt dazu, dass Fehler genau bei update_database() wieder hierher zurück führen.
-             */
-            //if (3 <= self::$unknown_column_iterator++) {
-            $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!')
-                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
-            die("<p>$message</p>");
-            //}
-            /*
-              new update_database();
-              $statement = $this->pdo->prepare($sql_query);
-              $statement->execute($arguments);
-              return $statement;
-             */
-        } elseif ('42S02' == $exception->getCode() and 1146 === $exception->errorInfo[1]) {
-            /*
-             * Base table or view not found: 1146 Table doesn't exist
-             * We try to create the table from the template.
-             * Some refactored tables will be populated from their old versions.
-             * CAVE: This will not be called on querys, which are inside a transaction.
-             */
-            $message = $exception->getMessage();
-            foreach (glob(PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/sql/*.sql') as $filename_with_extension_and_path) {
-                $filename_with_extension = basename($filename_with_extension_and_path);
-                $table_name = substr($filename_with_extension, 0, strlen($filename_with_extension) - 4);
-                if (FALSE !== strpos($message, ".$table_name'")) { //the dot (.) and the single quotation mark (') are part of the string: 'database_name.table_name'
-                    self::create_table_from_template($filename_with_extension_and_path);
-                    self::create_table_insert_from_old_table($table_name);
-                    try {
-                        unset($exception);
-                        if (self::database_table_exists($table_name)) {
-                            /*
-                             * If we had success with creating the table,
-                             * retry the query to the database with the newly created table:
-                             */
-                            $statement = $this->pdo->prepare($sql_query);
-                            $statement->execute($arguments);
-                            return $statement;
-                        }
-                    } catch (Exception $exception) {
-                        /*
-                         * This catch is superfluous.
-                         * But we might want to add another layer of complication here sometime :-)
-                         */
-                        throw $exception;
-                    }
-                    break;
-                }
-            }
         } elseif ('23000' == $exception->getCode() and 1062 === $exception->errorInfo[1]) {
             /*
              * 23000 = Integrity constraint violation
@@ -379,7 +298,7 @@ class database_wrapper {
         }
     }
 
-    public static function null_from_post_to_mysql($value) {
+    public static function null_from_post_to_mysql($value): ?String {
         if ('' === $value) {
             return NULL;
         } else {

@@ -30,7 +30,7 @@ create_cookie("mandant", $branch_id, 30);
 $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y-m-d'));
 create_cookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
-$date_object = new DateTime($date_sql);
+$dateObject = new DateTime($date_sql);
 $workforce = new workforce($date_sql);
 $user_dialog = new user_dialog();
 /**
@@ -95,7 +95,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($branch_id, $other_branch_id, $date_sql);
 }
 
-$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $date_object, clone $date_object, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
+$Principle_roster = principle_roster::read_current_principle_roster_from_database($branch_id, clone $dateObject, clone $dateObject, array(principle_roster::OPTION_CONTINUE_ON_ABSENCE));
 /*
  * In case there is no roster scheduled yet, create a suggestion:
  */
@@ -107,10 +107,10 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
         $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
         $user_dialog->add_message($message);
         $Roster = $Principle_roster;
-    } elseif (6 == $date_object->format("N")) {
+    } elseif (6 == $dateObject->format("N")) {
         try {
             $saturday_rotation = new saturday_rotation($branch_id);
-            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($date_object);
+            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($dateObject);
             $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
             if (!roster::is_empty($Roster)) {
                 $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
@@ -137,7 +137,7 @@ if ("7" !== date('N', $date_unix) and !holidays::is_holiday($date_unix)) {
  */
 examine_attendance::checkForAttendantAbsentees($Roster, $absenceCollection, $workforce);
 
-if (FALSE !== pharmacy_emergency_service::having_emergency_service($date_sql)) {
+if (TRUE === PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDay($dateObject)) {
     $message = gettext('Beware the emergency service!');
     $user_dialog->add_message($message, E_USER_WARNING);
 }
@@ -151,8 +151,8 @@ $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
 $html_text .= "<div id=main-area>\n";
 $html_text .= "<div id=navigation_elements>";
-$html_text .= build_html_navigation_elements::build_button_day_backward(clone $date_object);
-$html_text .= build_html_navigation_elements::build_button_day_forward(clone $date_object);
+$html_text .= build_html_navigation_elements::build_button_day_backward(clone $dateObject);
+$html_text .= build_html_navigation_elements::build_button_day_forward(clone $dateObject);
 if ($session->user_has_privilege('create_roster')) {
     $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
 }
@@ -181,7 +181,7 @@ $html_text .= "<tr>\n";
 $html_text .= "<td>";
 $html_text .= "<input type=hidden name=datum value=" . $date_sql . ">";
 $html_text .= "<input type=hidden name=mandant value=" . htmlspecialchars($branch_id) . ">";
-$html_text .= $date_object->format("d.m.");
+$html_text .= $dateObject->format("d.m.");
 /*
  * Weekday:
  */
@@ -196,19 +196,18 @@ if (FALSE !== $holiday) {
     $html_text .= " " . $holiday . " ";
 }
 $html_text .= "<br>";
-$dateString = $date_object->format('W');
+$dateString = $dateObject->format('W');
 $html_text .= gettext("calendar week")
         . '&nbsp;'
         . $dateString
         . '&nbsp;'
-        . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_object));
-$having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
-if (isset($having_emergency_service['branch_id'])) {
-    if (isset($workforce->List_of_employees[$having_emergency_service['employee_key']])) {
-        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $workforce->List_of_employees[$having_emergency_service['employee_key']]->last_name . " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->getName();
-    } else {
-        $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>??? / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->getName();
-    }
+        . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($dateObject));
+if (TRUE === PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDay($dateObject)) {
+    $emergencyService = PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDate($dateObject);
+    $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $emergencyService->getEmployeeLastName() . " / " . $emergencyService->getBranchNameShort();
+} elseif (TRUE === PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDawn($dateObject)) {
+    $emergencyService = PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDawn($dateObject);
+    $html_text .= "<br>" . gettext("emergency service dawn") . "<br>" . $emergencyService->getEmployeeLastName() . " / " . $emergencyService->getBranchNameShort();
 }
 $html_text .= "</td>\n";
 $html_text .= "</tr>\n";

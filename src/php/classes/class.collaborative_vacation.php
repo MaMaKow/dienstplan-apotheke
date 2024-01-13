@@ -293,41 +293,41 @@ class collaborative_vacation {
         if ($is_holiday) {
             $paragraph_content .= "<span class='holiday'>" . $is_holiday . "</span>\n";
         }
-        $paragraph_content .= $this->build_absence_month_paragraph_add_emergency_service($date_object, $mode);
+        $paragraph_content .= $this->buildAbsenceMonthParagraphAddEmergencyService($date_object, $mode);
 
         return $paragraph_content;
     }
 
-    private function build_absence_month_paragraph_add_emergency_service($date_object, $mode) {
-        if (!\PDR\Roster\EmergencyService::is_our_service_day($date_object)) {
+    private function buildAbsenceMonthParagraphAddEmergencyService(\DateTime $dateObject, string $mode): string {
+        if (FALSE === \PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDay($dateObject)) {
             return "";
         }
-        $emergency_service = new \PDR\Roster\EmergencyService($date_object);
-        $emergency_service_content = "";
+        $emergencyService = new \PDR\Database\EmergencyServiceDatabaseHandler($dateObject);
+        $emergencyServiceContent = "";
         if ('month' === $mode) {
-            $emergency_service_content .= "<span class='emergency_service'>"
+            $emergencyServiceContent .= "<span class='emergency_service'>"
                     . gettext("emergency service")
                     . ": "
-                    . $emergency_service->get_branch_name_short()
+                    . $emergencyService->getBranchNameShort()
                     . ", "
-                    . $emergency_service->get_employee_short_descriptor()
+                    . $emergencyService->getEmployeeShortDescriptor()
                     . "</span>\n";
         } else {
             $title = gettext("emergency service")
                     . ": ";
-            $title .= $emergency_service->get_branch_name_short()
+            $title .= $emergencyService->getBranchNameShort()
                     . ", ";
-            $title .= $emergency_service->get_employee_name();
-            $emergency_service_content .= "<span class='emergency_service' title='$title'>"
+            $title .= $emergencyService->getEmployeeLastName();
+            $emergencyServiceContent .= "<span class='emergency_service' title='$title'>"
                     . mb_substr(gettext('emergency service'), 0, 2)
                     . "<sub>"
-                    . $emergency_service->get_employee_short_descriptor()
+                    . $emergencyService->getEmployeeShortDescriptor()
                     . "&rarr;"
-                    . $emergency_service->get_branch_id()
+                    . $emergencyService->getBranchId()
                     . "</sub>"
                     . "</span>";
         }
-        return $emergency_service_content;
+        return $emergencyServiceContent;
     }
 
     private function build_absence_month_get_paragraph_attributes(\DateTime $date_object) {

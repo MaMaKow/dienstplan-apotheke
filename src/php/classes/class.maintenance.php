@@ -33,6 +33,7 @@ class maintenance {
 
     /**
      * @var int <p>unix time stamp of the last execution time of the maintenance functions</p>
+     * @todo Use DateTime object instead
      */
     private $last_execution = 0;
 
@@ -74,7 +75,7 @@ class maintenance {
             $this->cleanup_database_table_task_rotation();
             $this->cleanup_database_table_overtime();
             $this->cleanup_database_table_absence();
-            $this->cleanup_database_table_emergency_service();
+            $this->cleanupDatabaseTableEmergencyService();
             $this->cleanup_database_table_approval();
             $this->cleanup_database_table_principle_roster();
             $this->cleanup_database_table_principle_roster_archive();
@@ -141,8 +142,8 @@ class maintenance {
      *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
      *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
      */
-    private function cleanup_database_table_emergency_service() {
-        $sql_query = "DELETE FROM `Notdienst` WHERE YEAR(`Datum`) < YEAR(now()-interval 48 month)";
+    private function cleanupDatabaseTableEmergencyService() {
+        $sql_query = "DELETE FROM `emergency_services` WHERE YEAR(`date`) < YEAR(now()-interval 48 month)";
         database_wrapper::instance()->run($sql_query);
     }
 

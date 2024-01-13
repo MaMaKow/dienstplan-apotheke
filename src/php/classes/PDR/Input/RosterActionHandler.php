@@ -66,7 +66,6 @@ class RosterActionHandler {
      * @param \Sessions $session
      * @param string $rosterItemJson
      * @return bool
-     * @todo implement processRosterActionRemoveAbsentEmployee
      */
     public function processRosterActionRemoveAbsentEmployee(\Sessions $session, string $rosterItemJson): bool {
         if (!$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER)) {

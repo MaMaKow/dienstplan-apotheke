@@ -344,3 +344,6 @@ Hochformat für den Druck
 In overtime-edit.php die Möglichkeit einbauen, einzelne Überstunden zu ändern.
 
 Write/Update tests for user-management.php
+
+get rid of: "global $config;", use "$configuration = new \PDR\Application\configuration();" instead
+

@@ -43,8 +43,8 @@ echo form_element_builder::build_html_select_year($year);
     <TR>
         <TD>Anwesenheit</TD>
         <?php
-        foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
-            echo '<TD style="padding-bottom: 0" title="' . $employee_object->first_name . " " . $employee_object->last_name . '">' . mb_substr($employee_object->last_name, 0, 4) . "<br>" . $workforce->get_employee_short_descriptor($employee_key) . "</TD>";
+        foreach ($workforce->List_of_employees as $employeeKey => $employee_object) {
+            echo '<TD style="padding-bottom: 0" title="' . $employee_object->first_name . " " . $employee_object->last_name . '">' . mb_substr($employee_object->last_name, 0, 4) . "<br>" . $workforce->get_employee_short_descriptor($employeeKey) . "</TD>";
         }
         ?>
     </TR>
@@ -58,22 +58,24 @@ echo form_element_builder::build_html_select_year($year);
             $dateFormatter->setPattern('EEE dd.MM.');
             $dateString = $dateFormatter->format($currentDate);
             echo '<TR class=wochenende><TD style="padding-bottom: 0">' . $dateString . '</TD>';
-            foreach (array_keys($workforce->List_of_employees) as $employee_key) {
+            foreach (array_keys($workforce->List_of_employees) as $employeeKey) {
                 echo '<TD></TD>';
             }
         } else {
             $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
-            $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
             $dateFormatter->setPattern('EEE dd.MM.YYYY');
             $dateString = $dateFormatter->format($currentDate);
             echo '<TR><TD style="padding-bottom: 0">' . $dateString . '</TD>';
-            foreach (array_keys($workforce->List_of_employees) as $employee_key) {
-                if ($absenceCollection->containsEmployeeKey($employee_key)) {
-                    $reason_short_string = mb_substr(\PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()), 0, 4);
-                    echo "<TD style='padding-bottom: 0' title='" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employee_key)->getReasonId()) . "'>" . $reason_short_string . "</TD>";
-                } elseif (FALSE !== $having_emergency_service and $having_emergency_service['employee_key'] == $employee_key) {
-                    $reason_short_string = mb_substr(gettext("emergency service"), 0, 4);
-                    echo "<TD style='padding-bottom: 0' title='" . gettext("emergency service") . "'>" . $reason_short_string . "</TD>";
+            foreach (array_keys($workforce->List_of_employees) as $employeeKey) {
+                if ($absenceCollection->containsEmployeeKey($employeeKey)) {
+                    $reasonShortString = mb_substr(\PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()), 0, 4);
+                    echo "<TD style='padding-bottom: 0' title='" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . "'>" . $reasonShortString . "</TD>";
+                } elseif (TRUE === PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDay($currentDate)) {
+                    $emergencyService = PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDate($currentDate);
+                    if ($emergencyService->getEmployeeKey() == $employeeKey) {
+                        $reasonShortString = mb_substr(gettext("emergency service"), 0, 4);
+                        echo "<TD style='padding-bottom: 0' title='" . gettext("emergency service") . "'>" . $reasonShortString . "</TD>";
+                    }
                 } else {
                     echo '<TD></TD>';
                 }

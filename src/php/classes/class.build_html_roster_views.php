@@ -361,19 +361,12 @@ abstract class build_html_roster_views {
                 $head_table_html .= "<br><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . $date_sql . "'>" . gettext("calendar week") . $weekNumber . "</a>\n";
             }
 
-            $having_emergency_service = pharmacy_emergency_service::having_emergency_service($date_sql);
-            if (FALSE !== $having_emergency_service) {
+            if (TRUE === PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDay($dateObject)) {
+                $emergencyService = PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDate($dateObject);
                 $head_table_html .= "<br><em>" . gettext("EMERGENCY SERVICE") . "</em><br>";
                 if (in_array(self::OPTION_SHOW_EMERGENCY_SERVICE_NAME, $Options)) {
-                    $workforce = new workforce($date_sql);
-                    if (isset($workforce->List_of_employees[$having_emergency_service['employee_key']])) {
-                        $head_table_html .= $workforce->List_of_employees[$having_emergency_service['employee_key']]->last_name;
-                    } else {
-                        $head_table_html .= "???";
-                    }
-                    $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
-                    $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-                    $head_table_html .= " / " . $List_of_branch_objects[$having_emergency_service['branch_id']]->getName();
+                    $head_table_html .= $emergencyService->getEmployeeLastName();
+                    $head_table_html .= " / " . $emergencyService->getBranchNameShort();
                 }
             }
             $head_table_html .= "</td>\n";
