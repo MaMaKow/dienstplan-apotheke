@@ -30,6 +30,13 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
             <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
         </li>
         <li>
+            <img class="example_artwork" src="../../../img/md_cut.png"><br>
+            <span class="cc-by_title">Cut</span>,
+            <span class="cc-by_author">Material Design icons by Google</span>,
+            <span class="cc-by_source"><a href=" https://fonts.google.com/icons">material icons library</a></span>,
+            <span class="cc-by_license"><a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache license version 2.0</a></span>
+        </li>
+        <li>
             <img class="example_artwork" src="../../../img/md_edit.svg">
             <img class="example_artwork" src="../../../img/md_edit.png"><br>
             <span class="cc-by_title">Edit</span>,

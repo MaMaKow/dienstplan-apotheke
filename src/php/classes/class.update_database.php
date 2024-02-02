@@ -734,7 +734,6 @@ class update_database {
 
     private function refactorEmergencyService(): void {
         if (database_wrapper::database_table_exists("emergency_services")) {
-            error_log("HERE1");
             return;
         }
         $alterQuery = "ALTER TABLE `Notdienst` DROP PRIMARY KEY, ADD `primary_key` INT UNSIGNED NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`primary_key`);";
@@ -758,8 +757,17 @@ class update_database {
             return;
         }
         if (true === database_wrapper::instance()->inTransaction()) {
-            database_wrapper::instance()->run("SELECT HERE7");
             database_wrapper::instance()->commit();
         }
+    }
+
+    /**
+     * @todo Implement this Constraint in the installation data.
+     * @todo Refactor the absence table to use a primary_key (update the case of overlap, where the start date matches)
+     * @return void
+     */
+    private function refactorAbsence(): void {
+        "ALTER TABLE `absence` ADD CONSTRAINT `start_before_end` CHECK (`start` < `end`);";
+        "ALTER TABLE `absence` MODIFY COLUMN `approval` ENUM('approved','not_yet_approved','disapproved','changed_after_approval') NOT NULL DEFAULT 'not_yet_approved';";
     }
 }

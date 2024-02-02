@@ -176,6 +176,14 @@ class Absence implements \JsonSerializable {
     }
 
     /**
+     * Get the timestamp of the creation of the dataset
+     * @return DateTime
+     */
+    public function getTimeStamp(): \DateTime {
+        return $this->timeStamp;
+    }
+
+    /**
      * Specify data which should be serialized to JSON.
      *
      * @return mixed

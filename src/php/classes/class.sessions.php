@@ -88,8 +88,9 @@ class sessions {
             $_SESSION['number_of_times_redirected'] = 0;
         }
 
-        /*
+        /**
          * Interpret $_SERVER values:
+         * @todo: use request uri for rdirect only after login.
          */
         $request_uri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
         $http_host = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);

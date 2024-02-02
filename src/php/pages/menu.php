@@ -91,9 +91,6 @@
                         <?= gettext("Absence input") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_edit.svg class="inline-image" alt="edit-icon" title="Edit">
                     </a>
-                    <a id="MenuLinkToAbsenceRead" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-read.php title="Urlaub, Krankheit, Abwesenheit">
-                        <?= gettext("Absence output") ?>
-                    </a>
                     <a id="MenuLinkToAbsenceYear" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/collaborative-vacation-year.php title="Urlaub, Krankheit, Abwesenheit">
                         <?= gettext("Absence annual plan") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_edit.svg class="inline-image" alt="edit-icon" title="Edit">
@@ -106,6 +103,10 @@
                     <a id="MenuLinkToAbsenceOverview" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/remaining-vacation-overview.php title="Remaining Vacation Overview">
                         <?= gettext("Remaining Vacation Overview") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg class="inline-image" alt="overview-icon" title="Remaining Vacation Overview">
+                    </a>
+                    <a id="MenuLinkToSickNoteNtracking" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/sick-note-tracking.php title="Remaining Vacation Overview">
+                        <?= gettext("Sick note tracking") ?>
+                        <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_sick.svg class="inline-image" alt="sick-icon" title="Sick note tracking">
                     </a>
                 </li>
             </ul>

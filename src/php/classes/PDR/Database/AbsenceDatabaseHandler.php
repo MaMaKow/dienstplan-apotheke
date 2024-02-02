@@ -57,7 +57,7 @@ class AbsenceDatabaseHandler {
                 'user' => $userName,
                 'approval' => (!is_null($approval)) ? $approval : "not_yet_approved"
             ));
-        } catch (\PDOException $exception) {
+        } catch (\Exception $exception) { //function handle_exceptions(Exception $exception) may throw any kind of Exception at us.
             if (\database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
                 $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
                 $userDialog = new \user_dialog();
@@ -296,5 +296,35 @@ class AbsenceDatabaseHandler {
         $numberOfHolidaysTaken = (int) $result->fetch(\PDO::FETCH_COLUMN);
 
         return $numberOfHolidaysTaken;
+    }
+
+    public static function findOverlappingAbsences(int $employeeKey, string $startDate, string $endDate): \PDR\Roster\AbsenceCollection {
+        $absenceCollection = new \PDR\Roster\AbsenceCollection();
+        $selectQery = "SELECT employee_key, start, end, days, reason_id, comment, approval, user, timestamp "
+                . "FROM absence "
+                . "WHERE "
+                . "    start <= :end AND end >= :start "
+                . "    AND start <> :start2 "
+                . "    AND employee_key = :employee_key "
+                . "ORDER BY `start` DESC ";
+        $result = \database_wrapper::instance()->run($selectQery, array(
+            "employee_key" => $employeeKey,
+            "start" => $startDate,
+            "start2" => $startDate,
+            "end" => $endDate,
+        ));
+        while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
+            $start = new \DateTime($row->start);
+            $end = new \DateTime($row->end);
+            $days = $row->days;
+            $reasonId = $row->reason_id;
+            $comment = $row->comment;
+            $approval = $row->approval;
+            $userName = $row->user;
+            $timeStamp = new \DateTime($row->timestamp);
+            $absence = new \PDR\Roster\Absence($employeeKey, $start, $end, $days, $reasonId, $comment, $approval, $userName, $timeStamp);
+            $absenceCollection->addAbsence($absence);
+        }
+        return $absenceCollection;
     }
 }

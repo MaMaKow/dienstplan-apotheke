@@ -80,10 +80,10 @@ echo form_element_builder::build_html_select_year($year);
         . $employee_object->first_name . " " . $employee_object->last_name
         . "</TD>";
         echo '<TD style="padding-bottom: 0">'
-        . $absenceObject->getStart->format("d.m.Y")
+        . $absenceObject->getStart()->format("d.m.Y")
         . "</TD>";
         echo '<TD style="padding-bottom: 0">'
-        . $absenceObject->getEnd->format("d.m.Y")
+        . $absenceObject->getEnd()->format("d.m.Y")
         . "</TD>";
         echo '<TD style="padding-bottom: 0">'//Krankschreibung?
         . '<div style="border: 1px solid #000; width: 1em; height: 1em; display: inline-block;"></div>'

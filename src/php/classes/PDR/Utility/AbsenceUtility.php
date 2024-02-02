@@ -125,6 +125,40 @@ class AbsenceUtility {
             $startDateSql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             return \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
         }
+        // Handling different commands.
+        if ('cutOverlap' === $command) {
+            // Cut an existing absence entry from its overlap.
+            $newAbsenceWithoutOverapJson = filter_input(INPUT_POST, 'newAbsenceWithoutOverap', FILTER_UNSAFE_RAW);
+            $employeeKey = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
+            $startDateSql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            if ("" == $newAbsenceWithoutOverapJson) {
+                return \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
+            }
+            $newAbsenceWithoutOverapObject = json_decode($newAbsenceWithoutOverapJson, FALSE, 2, JSON_THROW_ON_ERROR);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return FALSE;
+            }
+            if (!in_array($newAbsenceWithoutOverapObject->approval, \PDR\Utility\AbsenceUtility::$ListOfApprovalStates)) {
+                throw new Exception('Ileagal approval state');
+            }
+
+            \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
+            /**
+             * @todo use the current user name:
+             */
+            $currentUserName = $_SESSION['user_object']->get_user_name();
+            \PDR\Database\AbsenceDatabaseHandler::insertAbsence(
+                    $newAbsenceWithoutOverapObject->employeeKey,
+                    $newAbsenceWithoutOverapObject->start,
+                    $newAbsenceWithoutOverapObject->end,
+                    $newAbsenceWithoutOverapObject->days,
+                    $newAbsenceWithoutOverapObject->reasonId,
+                    $newAbsenceWithoutOverapObject->comment,
+                    $newAbsenceWithoutOverapObject->approval,
+                    $currentUserName,
+            );
+            return TRUE;
+        }
 
         // Create new entries or edit existing ones.
         if ('insert_new' === $command || 'replace' === $command) {

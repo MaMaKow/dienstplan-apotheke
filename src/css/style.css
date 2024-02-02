@@ -53,6 +53,9 @@ tfoot {
 table.table_with_border td {
     border: solid 1px #000000;
 }
+table.table_with_underline_rows tr  {
+    border-bottom: 0.5px solid black;
+}
 
 td {
     white-space: nowrap;

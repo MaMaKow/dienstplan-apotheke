@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2023-12-30 23:32+0100\n"
-"PO-Revision-Date: 2023-12-30 23:33+0100\n"
+"POT-Creation-Date: 2024-01-25 21:25+0100\n"
+"PO-Revision-Date: 2024-01-25 21:56+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -24,14 +24,12 @@ msgstr "Die Datei wird verarbeitet."
 #: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
-#: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.overtime.php:
 msgid "There was an error while querying the database."
 msgstr "Bei der Kommunikation mit der Datenbank trat ein Fehler auf."
 
 #: src/js/javascript.js:
 #: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
-#: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
@@ -74,6 +72,14 @@ msgstr ""
 msgid "The transaction was rolled back."
 msgstr "Die Transaktion wurde zurückgesetzt."
 
+#: src/php/classes/PDR/Output/HTML/AbsenceHtmlBuilder.php:
+msgid "collides with"
+msgstr "kollidiert mit"
+
+#: src/php/classes/PDR/Output/HTML/AbsenceHtmlBuilder.php:
+msgid "cut the above entry"
+msgstr "den obigen Eintrag kürzen"
+
 #: src/php/classes/PDR/Output/HTML/configurationManager.php:
 msgid "The passwords do not match."
 msgstr "Die Passphrasen stimmen nicht überein."
@@ -84,7 +90,7 @@ msgstr "Die Passphrasen stimmen nicht überein."
 #: src/php/pages/collaborative-vacation-input-box.php:
 #: src/php/pages/menu-tiles.php: src/php/pages/saturday-rotation-teams.php:
 msgid "Employee"
-msgstr "Mitarbeiter"
+msgstr "Mitarbeitende"
 
 #: src/php/classes/PDR/Output/HTML/vacationPageBuilder.php:
 msgid "Vacation Entitlement"
@@ -237,7 +243,7 @@ msgstr "Liste der Arbeitszeiten"
 #: src/php/classes/class.build_html_navigation_elements.php:
 #: src/php/classes/class.build_html_navigation_elements.php:
 msgid "Employee roster"
-msgstr "Mitarbeiter Dienstplan"
+msgstr "Mitarbeitenden Dienstplan"
 
 #: src/php/classes/class.build_html_navigation_elements.php:
 #: src/php/classes/class.build_html_navigation_elements.php:
@@ -316,7 +322,7 @@ msgid "calendar week"
 msgstr "Kalenderwoche"
 
 #: src/php/classes/class.build_html_roster_views.php:
-#: src/php/pages/roster-day-edit.php: src/php/pages/roster-day-edit.php:
+#: src/php/pages/roster-day-edit.php:
 msgid "EMERGENCY SERVICE"
 msgstr "NOTDIENST"
 
@@ -381,7 +387,6 @@ msgstr "Bei der Verbindung zur Datenbank trat ein Fehler auf."
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
 #: src/php/classes/class.database_wrapper.php:
-#: src/php/classes/class.database_wrapper.php:
 #, php-format
 msgid "The error log resides in: %1$s"
 msgstr "Das Fehlerprotokoll befindet sich in: %1$s"
@@ -409,13 +414,13 @@ msgid ""
 "Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s "
 "(%7$s)"
 msgstr ""
-"Konflikt bei Mitarbeiter %1$s <br>%2$s bis %3$s (%4$s) <br>mit <br>%5$s bis "
-"%6$s (%7$s)"
+"Konflikt bei Mitarbeitender %1$s <br>%2$s bis %3$s (%4$s) <br>mit <br>%5$s "
+"bis %6$s (%7$s)"
 
 #: src/php/classes/class.examine_roster.php:
 #, php-format
 msgid "At %1$s there are less than %2$s employees present."
-msgstr "Um %1$s Uhr sind weniger als %2$s Mitarbeiter anwesend."
+msgstr "Um %1$s Uhr sind weniger als %2$s Mitarbeitende anwesend."
 
 #: src/php/classes/class.examine_roster.php:
 #, php-format
@@ -425,7 +430,7 @@ msgstr "Um %1$s Uhr ist niemand für den Wareneingang anwesend."
 #: src/php/classes/class.examine_roster.php:
 #, php-format
 msgid "At %1$s there is no authorized person present."
-msgstr "Um %1$s Uhr ist kein Approbierter anwesend."
+msgstr "Um %1$s Uhr ist keine approbierte Person anwesend."
 
 #: src/php/classes/class.have_i_been_pwned.php:
 #, php-format
@@ -457,7 +462,7 @@ msgstr "Kein"
 
 #: src/php/classes/class.iCalendar.php:
 msgid "Calendar file for employee"
-msgstr "Kalenderdatei für Mitarbeiter"
+msgstr "Kalenderdatei für Mitarbeitende"
 
 #: src/php/classes/class.iCalendar.php:
 msgid "contains the roster for"
@@ -499,7 +504,7 @@ msgstr "Die Passphrasen sind nicht identisch."
 
 #: src/php/classes/class.install.php:
 msgid "Error while trying to create employee."
-msgstr "Fehler beim Erstellen des Mitarbeiters."
+msgstr "Fehler beim Erstellen der Mitarbeitenden."
 
 #: src/php/classes/class.install.php:
 msgid "Error while trying to create administrative user."
@@ -507,7 +512,7 @@ msgstr "Fehler beim Erstellen des administrativen Benutzers."
 
 #: src/php/classes/class.install.php:
 msgid "Administrative user already exists."
-msgstr "Der administrative Benutzer existiert bereits."
+msgstr "Der administrative Benutzende existiert bereits."
 
 #: src/php/classes/class.install.php:
 msgid "Error while trying to create administrative user privileges."
@@ -725,7 +730,7 @@ msgstr "Team entfernen"
 
 #: src/php/classes/class.saturday_rotation.php:
 msgid "Add another employee"
-msgstr "Mitarbeiter hinzufügen"
+msgstr "Mitarbeitende hinzufügen"
 
 #: src/php/classes/class.sessions.php:
 msgid "administration"
@@ -733,7 +738,7 @@ msgstr "Administration"
 
 #: src/php/classes/class.sessions.php:
 msgid "create employee"
-msgstr "Mitarbeiter anlegen"
+msgstr "Mitarbeitende anlegen"
 
 #: src/php/classes/class.sessions.php:
 msgid "create roster"
@@ -893,7 +898,7 @@ msgstr "Einen Programmfehler melden"
 
 #: src/php/login.php:
 msgid "Create new user account"
-msgstr "Neuen Benutzer anlegen"
+msgstr "Neuen Benutzenden anlegen"
 
 #: src/php/login.php:
 msgid "Forgot password?"
@@ -911,8 +916,7 @@ msgstr "Dienstplan Apotheke"
 #, php-format
 msgid ""
 "The employee is entitled to %2$s of %3$s vacation days in the year %1$s."
-msgstr ""
-"Dem/Der Mitarbeiter*in stehen %2$s von %3$s Urlaubstagen im Jahr %1$s zu."
+msgstr "Dem Mitarbeitenden stehen %2$s von %3$s Urlaubstagen im Jahr %1$s zu."
 
 #: src/php/pages/absence-edit.php:
 #, php-format
@@ -985,7 +989,7 @@ msgid ""
 msgstr ""
 "Awinta Smart und Awinta One haben eine Option zum Exportieren von PEP-Daten. "
 "Wenn Sie solche PEP-Daten hochgeladen haben, geben Sie hier Ihre PEP-ID für "
-"diese Filiale ein."
+"diese Filiale ein. Bei ADG verwenden Sie Ihre IK Nummer."
 
 #: src/php/pages/branch-management.php:
 msgid "Master data"
@@ -1013,7 +1017,7 @@ msgstr "Adresse"
 
 #: src/php/pages/branch-management.php:
 msgid "Branch manager"
-msgstr "Filialleiter"
+msgstr "Filialleiterin"
 
 #: src/php/pages/branch-management.php:
 msgid "Remove branch"
@@ -1473,7 +1477,7 @@ msgstr "PEP-Upload"
 #: src/php/pages/menu.php: src/php/pages/menu.php:
 #: src/php/pages/menu.php:
 msgid "Employee management"
-msgstr "Mitarbeiterverwaltung"
+msgstr "Personalverwaltung"
 
 #: src/php/pages/menu.php: src/php/pages/menu.php:
 msgid "Branch management"
@@ -1485,7 +1489,7 @@ msgstr "Benutzer*innenverwaltung"
 
 #: src/php/pages/menu.php:
 msgid "Account page"
-msgstr "Benutzer*innenkonto"
+msgstr "Benutzerinnenkonto"
 
 #: src/php/pages/menu.php:
 msgid "Manual"
@@ -1566,6 +1570,10 @@ msgstr "Dies ist ein Vorschlag."
 #: src/php/pages/roster-day-edit.php:
 msgid "Beware the emergency service!"
 msgstr "An den Notdienst denken!"
+
+#: src/php/pages/roster-day-edit.php:
+msgid "emergency service dawn"
+msgstr "Notdienst Morgen"
 
 #: src/php/pages/roster-day-read.php:
 msgid "The roster has not been approved by the administration."
@@ -1724,7 +1732,7 @@ msgstr "Benutzer Email"
 
 #: src/php/pages/user-management.php:
 msgid "Employee Key"
-msgstr "Mitarbeiter Schlüssel"
+msgstr "Mitarbeitende Schlüssel"
 
 #: src/php/pages/user-management.php:
 msgid "User Status:"
@@ -1821,7 +1829,7 @@ msgstr ""
 
 #: src/php/register_approve.php:
 msgid "employee key"
-msgstr "Mitarbeiter Schlüssel"
+msgstr "Mitarbeitende Schlüssel"
 
 #: src/php/register_approve.php:
 msgid "email"

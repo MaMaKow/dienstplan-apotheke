@@ -330,8 +330,8 @@ class workforce {
                 return $employee_key;
             }
         }
-        if (!empty($this->List_of_employees and min($workforce->List_of_employees) instanceof employee)) {
-            $employee = min($workforce->List_of_employees);
+        if (!empty($this->List_of_employees and min($this->List_of_employees) instanceof employee)) {
+            $employee = min($this->List_of_employees);
             $employee_key = $employee->get_employee_key();
             return $employee_key;
         }

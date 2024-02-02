@@ -19,6 +19,7 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
@@ -97,5 +98,56 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", employeeKey);
         assertEquals(currentAbsence, null);
+    }
+
+    @Test
+    public void testOverlapDetectionAndCut() {
+        /**
+         * Sign in:
+         */
+        super.signIn();
+        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
+        /**
+         * Create a new absence:
+         */
+        int employeeKey = 7;
+        int year = 2020;
+        absenceEmployeePage = absenceEmployeePage.goToYear(year);
+        absenceEmployeePage = absenceEmployeePage.goToEmployee(employeeKey);
+        assertEquals(absenceEmployeePage.getYear(), year);
+        assertEquals(absenceEmployeePage.getEmployeeKey(), employeeKey);
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.08.2020", "07.08.2020", Absence.REASON_VACATION, "main absence", "not_yet_approved");
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.08.2020", Absence.REASON_PARENTAL_LEAVE, "overlap at end", "not_yet_approved");
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence("05.08.2020", "31.12.2020", Absence.REASON_MATERNITY_LEAVE, "overlap at start", "not_yet_approved");
+        /**
+         * Check this overlap detection:
+         */
+        Assert.assertTrue(absenceEmployeePage.absenceHasAnOverlap("01.01.2020", employeeKey));
+        Assert.assertTrue(absenceEmployeePage.absenceHasAnOverlap("01.08.2020", employeeKey));
+        Assert.assertTrue(absenceEmployeePage.absenceHasAnOverlap("05.08.2020", employeeKey));
+        /**
+         * Check this overlap cut:
+         */
+        absenceEmployeePage = absenceEmployeePage.cutOverlapOnAbsence("01.01.2020", employeeKey);
+        absenceEmployeePage = absenceEmployeePage.cutOverlapOnAbsence("05.08.2020", employeeKey);
+        Absence currentAbsence;
+        // main absence has not been cut:
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.08.2020", employeeKey);
+        assertEquals(currentAbsence.getStartDateString(), "01.08.2020");
+        assertEquals(currentAbsence.getEndDateString(), "07.08.2020");
+        // absence has been cut at start:
+        currentAbsence = absenceEmployeePage.getExistingAbsence("08.08.2020", employeeKey);
+        assertEquals(currentAbsence.getStartDateString(), "08.08.2020");
+        assertEquals(currentAbsence.getEndDateString(), "31.12.2020");
+        // absence has been cut at end:
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", employeeKey);
+        assertEquals(currentAbsence.getStartDateString(), "01.01.2020");
+        assertEquals(currentAbsence.getEndDateString(), "31.07.2020");
+        /**
+         * Remove the absence:
+         */
+        absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
+        absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.08.2020");
+        absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("08.08.2020");
     }
 }

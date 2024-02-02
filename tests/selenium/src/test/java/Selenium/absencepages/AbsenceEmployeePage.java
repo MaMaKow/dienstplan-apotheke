@@ -371,6 +371,45 @@ public class AbsenceEmployeePage {
         Assert.assertEquals(this.getYear(), year);
 
         // Iterate through absence rows to find the one with the matching start date
+        WebElement absenceRowElement = getExistingAbsenceRowElement(startDate, employeeKey);
+        if (null == absenceRowElement) {
+            return null;
+        }
+        WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
+        String startDateString = startDateElement.getText();
+
+        // Retrieve information about the matching absence
+        WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/div"));
+        String endDateString = endDateElement.getText();
+        WebElement reasonElement = absenceRowElement.findElement(By.xpath(".//td[3]/div"));
+        //String reasonString = reasonElement.getText();
+        int reasonId = Integer.parseInt(reasonElement.getAttribute("data-reason_id"));
+        WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/div"));
+        String commentString = commentElement.getText();
+        WebElement durationElement = absenceRowElement.findElement(By.xpath(".//td[5]"));
+        String durationString = durationElement.getText();
+        WebElement approvalElement = absenceRowElement.findElement(By.xpath(".//td[6]/span"));
+        String approvalString = approvalElement.getAttribute("data-absence_approval");
+        //String approvalStringLocalized = approvalElement.getText();
+
+        // Create and return an Absence object representing the retrieved absence record
+        Absence absence = new Absence(employeeKey, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
+        return absence;
+
+    }
+
+    private WebElement getExistingAbsenceRowElement(String startDate, int employeeKey) {
+        // Navigate to the employee and year related to the absence
+        this.goToEmployee(employeeKey);
+        LocalDate startDateLocalDate = LocalDate.parse(startDate, Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        int year = startDateLocalDate.getYear();
+        this.goToYear(year);
+
+        // Ensure that the selected employee and year match the provided values
+        Assert.assertEquals(this.getEmployeeKey(), employeeKey);
+        Assert.assertEquals(this.getYear(), year);
+
+        // Iterate through absence rows to find the one with the matching start date
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
             WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
             String startDateString = startDateElement.getText();
@@ -381,22 +420,7 @@ public class AbsenceEmployeePage {
             }
 
             // Retrieve information about the matching absence
-            WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/div"));
-            String endDateString = endDateElement.getText();
-            WebElement reasonElement = absenceRowElement.findElement(By.xpath(".//td[3]/div"));
-            //String reasonString = reasonElement.getText();
-            int reasonId = Integer.parseInt(reasonElement.getAttribute("data-reason_id"));
-            WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/div"));
-            String commentString = commentElement.getText();
-            WebElement durationElement = absenceRowElement.findElement(By.xpath(".//td[5]"));
-            String durationString = durationElement.getText();
-            WebElement approvalElement = absenceRowElement.findElement(By.xpath(".//td[6]/span"));
-            String approvalString = approvalElement.getAttribute("data-absence_approval");
-            //String approvalStringLocalized = approvalElement.getText();
-
-            // Create and return an Absence object representing the retrieved absence record
-            Absence absence = new Absence(employeeKey, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
-            return absence;
+            return absenceRowElement;
         }
         // Return null if no matching absence was found
         return null;
@@ -448,4 +472,24 @@ public class AbsenceEmployeePage {
 
     }
 
+    public boolean absenceHasAnOverlap(String startDate, int employeeKey) {
+        WebElement absenceRowElement = getExistingAbsenceRowElement(startDate, employeeKey);
+        By overlapInfoBy = By.xpath(".//p[@class=\'absenceCollisionParagraph\']");
+        WebElement overlapInfoElement = absenceRowElement.findElement(overlapInfoBy);
+        if (null == overlapInfoElement) {
+            return false;
+        }
+        return true;
+    }
+
+    public AbsenceEmployeePage cutOverlapOnAbsence(String startDate, int employeeKey) {
+        WebElement absenceRowElement = getExistingAbsenceRowElement(startDate, employeeKey);
+        By overlapCutButtonBy = By.xpath(".//button[contains(@class, 'overlapCutButton')]");
+        WebElement overlapCutButtonElement = absenceRowElement.findElement(overlapCutButtonBy);
+        overlapCutButtonElement.click();
+
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.stalenessOf(overlapCutButtonElement));
+        return new AbsenceEmployeePage();
+    }
 }
