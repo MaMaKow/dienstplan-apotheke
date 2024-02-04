@@ -76,6 +76,8 @@ public class TestRosterHoursPage extends TestPage {
          * Test if the correct roster information is displayed:
          */
         Roster roster = new Roster();
+        Workforce workforce = new Workforce();
+
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         Optional<HashMap> firstRosterDayOptional = listOfRosterDays.values().stream().findFirst();
         if (firstRosterDayOptional.isEmpty()) {
@@ -107,7 +109,7 @@ public class TestRosterHoursPage extends TestPage {
              */
             rosterHoursPage.selectMonth(rosterLocalDate.format(DateTimeFormatter.ofPattern("MMMM", Locale.GERMANY)));
             rosterHoursPage.selectYear(rosterLocalDate.format(DateTimeFormatter.ofPattern("yyyy", Locale.GERMANY)));
-            rosterHoursPage.selectEmployee(rosterItem.getEmployeeName());
+            rosterHoursPage.selectEmployee(rosterItem.getEmployeeName(workforce));
             RosterItem foundRosterItem = rosterHoursPage.getRosterOnDate(rosterLocalDate);
             /**
              * Test if the values match:

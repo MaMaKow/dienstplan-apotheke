@@ -82,11 +82,7 @@ public class RosterItem {
         this.branchId = branchId;
     }
 
-    public String getEmployeeName() {
-        /**
-         * @todo Use dependency injection and get workforce as a parameter.
-         */
-        Workforce workforce = new Workforce();
+    public String getEmployeeName(Workforce workforce) {
         Employee employeeObject = workforce.getEmployeeByKey(employeeKey);
         return employeeObject.getLastName();
     }

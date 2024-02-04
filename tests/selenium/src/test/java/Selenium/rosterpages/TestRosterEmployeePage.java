@@ -90,6 +90,7 @@ public class TestRosterEmployeePage extends TestPage {
          * employee pages:
          */
         Roster roster = new Roster();
+        Workforce workforce = new Workforce();
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (HashMap<Integer, RosterItem> listOfRosterItems : listOfRosterDays.values()) {
             for (RosterItem rosterItemFromPrediction : listOfRosterItems.values()) {
@@ -105,7 +106,7 @@ public class TestRosterEmployeePage extends TestPage {
                         rosterItemFromPrediction.getLocalDate().getDayOfWeek()
                 );
 
-                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(), rosterItemReadOnPage.getEmployeeName());
+                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(workforce), rosterItemReadOnPage.getEmployeeName(workforce));
                 softAssert.assertEquals(rosterItemFromPrediction.getLocalDate(), rosterItemReadOnPage.getLocalDate());
                 softAssert.assertEquals(rosterItemFromPrediction.getDutyStart(), rosterItemReadOnPage.getDutyStart());
                 softAssert.assertEquals(rosterItemFromPrediction.getDutyEnd(), rosterItemReadOnPage.getDutyEnd());

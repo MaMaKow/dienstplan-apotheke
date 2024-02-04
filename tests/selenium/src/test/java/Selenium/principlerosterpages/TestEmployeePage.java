@@ -20,6 +20,7 @@ import Selenium.PrincipleRoster;
 import Selenium.PrincipleRosterDay;
 import Selenium.RosterItem;
 import Selenium.TestPage;
+import Selenium.rosterpages.Workforce;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -95,6 +96,7 @@ public class TestEmployeePage extends TestPage {
          * Move to specific employee:
          */
         int employeeKey = 3;
+        Workforce workforce = new Workforce();
         int branchId = 1;
         employeePage.selectEmployee(employeeKey);
         Assert.assertEquals(employeeKey, employeePage.getEmployeeKey());
@@ -118,7 +120,7 @@ public class TestEmployeePage extends TestPage {
         employeePage.setRosterItem(1, 1, 1, rosterItemNew);
         rosterItemChanged = employeePage.getRosterItem(1, 1, 1);
 
-        softAssert.assertEquals(rosterItemChanged.getEmployeeName(), rosterItemNew.getEmployeeName());
+        softAssert.assertEquals(rosterItemChanged.getEmployeeName(workforce), rosterItemNew.getEmployeeName(workforce));
         softAssert.assertEquals(rosterItemChanged.getDutyStart(), rosterItemNew.getDutyStart());
         softAssert.assertEquals(rosterItemChanged.getDutyEnd(), rosterItemNew.getDutyEnd());
         softAssert.assertEquals(rosterItemChanged.getBreakStart(), rosterItemNew.getBreakStart());
