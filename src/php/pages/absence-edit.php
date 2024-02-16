@@ -24,12 +24,15 @@ $workforce = new \workforce($dateStartObject->format("Y-m-d"), $dateEndObject->f
 $employee_key = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 create_cookie('year', $year, 1);
 create_cookie('employee_key', $employee_key, 30);
+$userDialog = new \user_dialog();
+$userDialog->readMessagesFromSession();
 
 if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_ABSENCE)) {
     \PDR\Utility\AbsenceUtility::handleUserInput();
 }
 if (isset($_POST) && !empty($_POST)) {
-    // POST data has been submitted
+    // POST data has been submitted, Post/Redirect/Get
+    $userDialog->storeMessagesInSession();
     $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/absence-edit.php' . "?year=$year&employee_key=$employee_key";
     header('Location:' . $location);
     die("<p>Redirect to: <a href=$location>$location</a></p>");

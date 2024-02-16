@@ -19,8 +19,10 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import java.util.List;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 /**
@@ -46,6 +48,17 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         assertEquals(absenceEmployeePage.getYear(), year);
         assertEquals(absenceEmployeePage.getEmployeeKey(), employeeKey);
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", Absence.REASON_VACATION, "Foo comment", "not_yet_approved"); // 1 = Urlaub
+        // There should be no error.
+        assertTrue(absenceEmployeePage.getUserDialogErrors().isEmpty());
+        // Insert the same absence again:
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", Absence.REASON_VACATION, "Foo comment", "not_yet_approved"); // 1 = Urlaub
+        // Now there should be an error:
+        List<String> userDialogErrors = absenceEmployeePage.getUserDialogErrors();
+        // Ensure there's at least one error message
+        assertTrue(!userDialogErrors.isEmpty());
+        assertEquals(userDialogErrors.get(0), "An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht in die Datenbank eingefügt.");
+
+        // Insert another absence:
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.01.2020", Absence.REASON_VACATION, "Neujahr", "not_yet_approved"); //gesetzlicher Feiertag
         /**
          * Check this absence:

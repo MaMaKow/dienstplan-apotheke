@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.driver.Wrapper;
 import java.util.HashMap;
 import java.util.Map;
 import org.openqa.selenium.By;
@@ -50,7 +51,6 @@ public class MenuFragment {
     public static final By MenuLinkToOvertimeRead = By.id("MenuLinkToOvertimeRead");
     public static final By MenuLinkToOvertimeOverview = By.id("MenuLinkToOvertimeOverview");
     public static final By MenuLinkToAbsenceEdit = By.id("MenuLinkToAbsenceEdit");
-    public static final By MenuLinkToAbsenceRead = By.id("MenuLinkToAbsenceRead");
     public static final By MenuLinkToAbsenceMonth = By.id("MenuLinkToAbsenceMonth");
     public static final By MenuLinkToAbsenceOverview = By.id("MenuLinkToAbsenceOverview");
     public static final By MenuLinkToAbsencYear = By.id("MenuLinkToAbsenceYear");
@@ -100,7 +100,6 @@ public class MenuFragment {
          * Absence
          */
         menuMap.put(MenuLinkToAbsenceEdit, MenuListItemAbsence);
-        menuMap.put(MenuLinkToAbsenceRead, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsenceMonth, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsencYear, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsenceOverview, MenuListItemAbsence);
@@ -168,7 +167,10 @@ public class MenuFragment {
         WebElement menuListItem = driver.findElement(menuListItemBy);
         wait.until(ExpectedConditions.presenceOfElementLocated(target));
         actions.moveToElement(menuListItem).perform();
-        if (!linkElement.getAttribute("href").equals(driver.getCurrentUrl())) {
+        if (!driver.getCurrentUrl().contains(linkElement.getAttribute("href"))) {
+            /**
+             * Do not move if the page is already the correct page.
+             */
             linkElement.click();
         }
         /**

@@ -39,8 +39,9 @@ class user_dialog {
      *      ),
      *  );
      *      </p>
+     * @todo I made this variable private. Test the behaviour!
      */
-    public static $Messages = array();
+    private static $Messages = array();
 
     public function __construct() {
 
@@ -62,6 +63,19 @@ class user_dialog {
         }
         $html_messages .= "</div>\n";
         return $html_messages;
+    }
+
+    public function storeMessagesInSession() {
+        if (array() !== self::$Messages) {
+            $_SESSION['userDialogMessages'] = self::$Messages;
+        }
+    }
+
+    public function readMessagesFromSession() {
+        if (!empty($_SESSION['userDialogMessages'])) {
+            self::$Messages = $_SESSION['userDialogMessages'];
+            unset($_SESSION['userDialogMessages']);
+        }
     }
 
     /**

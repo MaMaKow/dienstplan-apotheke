@@ -216,7 +216,7 @@ public class TestRosterDayEditPage extends TestPage {
             /**
              * Everything is fine. We expected not to find anything.
              */
-            System.err.println(exception.getLocalizedMessage());
+            //System.err.println(exception.getLocalizedMessage());
         }
         /**
          * Add the item back in again:
@@ -256,7 +256,7 @@ public class TestRosterDayEditPage extends TestPage {
             /**
              * Everything is fine. We expected not to find anything.
              */
-            System.err.println(exception.getLocalizedMessage());
+            //System.err.println(exception.getLocalizedMessage());
         }
         /**
          * Add the item back in again:

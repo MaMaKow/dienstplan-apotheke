@@ -151,6 +151,11 @@ public class RosterDayEditPage {
         //return branchId;
     }
 
+    /**
+     * @todo This method is called seven times from different other functions. Maybe call this once and inject the result into those methods.
+     * @param employeeKey
+     * @return
+     */
     private WebElement findRosterTableRowByEmployee(Integer employeeKey) {
         /**
          * Wir brauchen zwei By Variablen. CSS kann tatsächlich gerade markierte

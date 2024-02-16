@@ -22,6 +22,7 @@ import Selenium.Absence;
 import Selenium.MenuFragment;
 import Selenium.driver.Wrapper;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,8 +134,47 @@ public class AbsenceEmployeePage {
          * TODO: Wir können auch die Fehleroptionen noch mit testen.
          * </p>
          */
-        By userDialogErrorParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'error')]/p/");
-        By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'notification')]/p/");
+    }
+
+    /**
+     * Retrieves notification messages displayed in the user dialog container.
+     *
+     * This method searches for notification message elements within the user dialog container.
+     * It then extracts the text content of each notification
+     * message element and returns a list of strings containing the notification messages.
+     *
+     * @return A list of strings representing the notification messages displayed in the user dialog container.
+     * If no notification messages are found, an empty list is returned.
+     */
+    public List<String> getUserDialogNotifications() {
+        List<String> userDialogNotificationStrings = new ArrayList<>();
+        By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'notification')]/span");
+        List<WebElement> listOfNotificationParagraphs = driver.findElements(userDialogNotificationParagraphBy);
+        for (WebElement paragraphElement : listOfNotificationParagraphs) {
+            userDialogNotificationStrings.add(paragraphElement.getText());
+        }
+        return userDialogNotificationStrings;
+    }
+
+    /**
+     * Retrieves error messages displayed in the user dialog container.
+     *
+     * This method searches for error message elements within the user dialog container.
+     * It then extracts the text content of each error message element and returns
+     * a list of strings containing the error messages.
+     *
+     * @return A list of strings representing the error messages displayed in the user dialog container.
+     * If no error messages are found, an empty list is returned.
+     *
+     */
+    public List<String> getUserDialogErrors() {
+        List<String> userDialogErrorStrings = new ArrayList<>();
+        By userDialogErrorParagraphBy = By.xpath("/html/body/div[@id='main-area']/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'error')]/span");
+        List<WebElement> listOfErrorParagraphs = driver.findElements(userDialogErrorParagraphBy);
+        for (WebElement paragraphElement : listOfErrorParagraphs) {
+            userDialogErrorStrings.add(paragraphElement.getText());
+        }
+        return userDialogErrorStrings;
     }
 
     /**
@@ -398,6 +438,17 @@ public class AbsenceEmployeePage {
 
     }
 
+    /**
+     * Retrieves the WebElement representing an existing absence row based on the start date and employee key.
+     *
+     * This method navigates to the employee and year related to the absence, validates the selected employee
+     * and year, and iterates through absence rows to find the one with the matching start date.
+     *
+     * @param startDate The start date of the absence in the format "dd.MM.yyyy".
+     * @param employeeKey The unique key identifying the employee.
+     * @return The WebElement representing the absence row with the matching start date and employee key,
+     * or null if no matching absence row was found.
+     */
     private WebElement getExistingAbsenceRowElement(String startDate, int employeeKey) {
         // Navigate to the employee and year related to the absence
         this.goToEmployee(employeeKey);
@@ -472,6 +523,18 @@ public class AbsenceEmployeePage {
 
     }
 
+    /**
+     * Checks if an absence identified by its start date and employee key has an overlap with other absences.
+     *
+     * This method retrieves the WebElement representing the existing absence row based on the start date
+     * and employee key. It then looks for an overlap information element within the absence row.
+     *
+     * @param startDate The start date of the absence in the format "dd.MM.yyyy".
+     * @param employeeKey The unique key identifying the employee.
+     * @return true if an overlap information element is found within the absence row, indicating an overlap;
+     * false otherwise.
+     *
+     */
     public boolean absenceHasAnOverlap(String startDate, int employeeKey) {
         WebElement absenceRowElement = getExistingAbsenceRowElement(startDate, employeeKey);
         By overlapInfoBy = By.xpath(".//p[@class=\'absenceCollisionParagraph\']");
@@ -482,6 +545,18 @@ public class AbsenceEmployeePage {
         return true;
     }
 
+    /**
+     * Cuts the overlap on an absence identified by its start date and employee key.
+     *
+     * This method retrieves the WebElement representing the existing absence row based on the start date
+     * and employee key. It then locates and clicks the "cut overlap" button within the absence row.
+     * Upon clicking the button, it waits for the button to become stale, indicating that the overlap has been cut.
+     *
+     * @param startDate The start date of the absence in the format "dd.MM.yyyy".
+     * @param employeeKey The unique key identifying the employee.
+     * @return An instance of the AbsenceEmployeePage representing the page after cutting the overlap.
+     *
+     */
     public AbsenceEmployeePage cutOverlapOnAbsence(String startDate, int employeeKey) {
         WebElement absenceRowElement = getExistingAbsenceRowElement(startDate, employeeKey);
         By overlapCutButtonBy = By.xpath(".//button[contains(@class, 'overlapCutButton')]");

@@ -300,4 +300,20 @@ public class Wrapper {
         return false;
     }
 
+    public static void ringTheBell() {
+        // Using Unicode escape sequence for the bell character
+        String bell = "\u0007";
+        // Printing the bell sound
+        System.out.println(bell + "Bell sound!");
+    }
+
+    public static void printStackTrace() {
+        // Get the stack trace
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+        // Print the stack trace elements
+        for (StackTraceElement element : stackTrace) {
+            System.out.println(element);
+        }
+    }
 }

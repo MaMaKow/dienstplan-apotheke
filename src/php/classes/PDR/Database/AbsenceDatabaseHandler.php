@@ -59,8 +59,8 @@ class AbsenceDatabaseHandler {
             ));
         } catch (\Exception $exception) { //function handle_exceptions(Exception $exception) may throw any kind of Exception at us.
             if (\database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
-                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
                 $userDialog = new \user_dialog();
+                $message = gettext("There is already an entry on this date. The data was therefore not inserted in the database.");
                 $userDialog->add_message($message, \E_USER_ERROR);
             } elseif ('23000' == $exception->getCode() and 1062 === $exception->errorInfo[1]) {
                 $userDialog = new \user_dialog();
