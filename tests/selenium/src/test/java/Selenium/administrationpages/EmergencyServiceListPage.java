@@ -18,11 +18,9 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.driver.Wrapper;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -46,7 +44,7 @@ public class EmergencyServiceListPage {
     //By selectYearSelectBy = By.xpath("/html/body/form/select[@name='year']");
     By emergencyRowListBy = By.xpath("//*[@id=\"emergency_service_table\"]/tbody/tr");
     //By emergencyRowListBy = By.xpath("/html/body/table/tbody/tr");
-    By emergencyRowEmployeeKeyBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
+    By emergencyRowEmployeeSelectBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
 
     public EmergencyServiceListPage(WebDriver driver) {
         this.driver = driver;
@@ -75,7 +73,7 @@ public class EmergencyServiceListPage {
         WebElement selectYearSelectElement = driver.findElement(selectYearSelectBy);
         Select selectYearSelect = new Select(selectYearSelectElement);
         String selectedYearString = selectYearSelect.getFirstSelectedOption().getAttribute("value");
-        return Integer.valueOf(selectedYearString);
+        return Integer.parseInt(selectedYearString);
     }
 
     public void selectBranch(int branchId) {
@@ -115,7 +113,7 @@ public class EmergencyServiceListPage {
             //There is no such element at all
             return null;
         }
-        WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeKeyBy);
+        WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeSelectBy);
         Select employeeKeySelect = new Select(employeeKeyWebElement);
         WebElement selectedOption = employeeKeySelect.getFirstSelectedOption();
         String selectedOptionText = selectedOption.getAttribute("value");
@@ -127,6 +125,23 @@ public class EmergencyServiceListPage {
         return selectedOptionInt;
     }
 
+    public String getEmployeeFullNameOnDate(LocalDate localDate) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
+        if (null == emergencyRowElement) {
+            //There is no such element at all
+            return null;
+        }
+        WebElement employeeSelectWebElement = emergencyRowElement.findElement(emergencyRowEmployeeSelectBy);
+        Select employeeSelect = new Select(employeeSelectWebElement);
+        WebElement selectedOption = employeeSelect.getFirstSelectedOption();
+        String selectedOptionText = selectedOption.getText();
+        if (selectedOptionText.equals("")) {
+            //There is such a date. But there is no employee selected.
+            return null;
+        }
+        return selectedOptionText;
+    }
+
     public boolean rowExistsOnDate(LocalDate localDate) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
         if (null == emergencyRowElement) {
@@ -136,9 +151,17 @@ public class EmergencyServiceListPage {
         return true;
     }
 
+    public EmergencyServiceListPage setEmployeeNameOnDate(LocalDate localDate, String employeeFullName) {
+        WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
+        WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeSelectBy);
+        Select employeeKeySelect = new Select(employeeKeyWebElement);
+        employeeKeySelect.selectByVisibleText(employeeFullName);
+        return new EmergencyServiceListPage(driver);
+    }
+
     public EmergencyServiceListPage setEmployeeKeyOnDate(LocalDate localDate, int employeeKey) {
         WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
-        WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeKeyBy);
+        WebElement employeeKeyWebElement = emergencyRowElement.findElement(emergencyRowEmployeeSelectBy);
         Select employeeKeySelect = new Select(employeeKeyWebElement);
         employeeKeySelect.selectByValue(String.valueOf(employeeKey));
         return new EmergencyServiceListPage(driver);

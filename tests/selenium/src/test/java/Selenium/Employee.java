@@ -122,6 +122,10 @@ public class Employee {
         return employeeFirstName;
     }
 
+    public String getFullName() {
+        return employeeFirstName + " " + employeeLastName;
+    }
+
     public String getProfession() {
         return employeeProfession;
     }

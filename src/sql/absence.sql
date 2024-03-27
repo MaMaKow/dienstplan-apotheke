@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `absence` (
   `end` date NOT NULL,
   `days` int(11) NOT NULL,
   `comment` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `approval` set('approved','not_yet_approved','disapproved','changed_after_approval') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'not_yet_approved',
+  `approval` enum('approved','not_yet_approved','disapproved','changed_after_approval') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'not_yet_approved',
   `user` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`employee_key`,`start`),

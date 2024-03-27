@@ -104,7 +104,7 @@
                         <?= gettext("Remaining Vacation Overview") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg class="inline-image" alt="overview-icon" title="Remaining Vacation Overview">
                     </a>
-                    <a id="MenuLinkToSickNoteNtracking" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/sick-note-tracking.php title="Remaining Vacation Overview">
+                    <a id="MenuLinkToSickNoteTracking" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/sick-note-tracking.php title="Remaining Vacation Overview">
                         <?= gettext("Sick note tracking") ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_sick.svg class="inline-image" alt="sick-icon" title="Sick note tracking">
                     </a>

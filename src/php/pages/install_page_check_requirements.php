@@ -22,21 +22,23 @@ if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FIL
      */
     header("Location: install_page_database.php");
 }
-require_once "../classes/class.install.php";
-$install = new install;
 require_once 'install_head.php';
-$webserver_supports_https = $install->webserver_supports_https();
-$database_driver_is_installed = $install->database_driver_is_installed();
-$pdr_directories_are_writable = $install->pdr_directories_are_writable();
-$pdr_secret_directories_are_not_visible = $install->pdr_secret_directories_are_not_visible();
-$php_extension_requirements_are_fulfilled = $install->php_extension_requirements_are_fulfilled();
-$php_version_requirement_is_fulfilled = $install->php_version_requirement_is_fulfilled();
+require_once '../classes/PDR/Application/Installation/InstallUtility.php';
+$installUtility = new \PDR\Application\Installation\InstallUtility();
+$installConfiguration = new \PDR\Application\Installation\InstallConfiguration();
+$systemRequirementsValidator = new \PDR\Application\Installation\SystemRequirementsValidator($installUtility, $installConfiguration);
+$webserver_supports_https = $systemRequirementsValidator->webserverSupportsHttps($installConfiguration->getPdrFileSystemApplicationPath());
+$databaseDriverIsInstalled = $systemRequirementsValidator->databaseDriverIsInstalled();
+$pdrDirectoriesAreWritable = $systemRequirementsValidator->pdrDirectoriesAreWritable();
+$pdrSecretDirectoriesAreNotVisible = $systemRequirementsValidator->pdrSecretDirectoriesAreNotVisible();
+$phpExtensionRequirementsAreFulfilled = $systemRequirementsValidator->phpExtensionRequirementsAreFulfilled();
+$phpVersionRequirementIsFulfilled = $systemRequirementsValidator->phpVersionRequirementIsFulfilled();
 
-$all_requirements_are_satisfied = $database_driver_is_installed and
-        $pdr_directories_are_writable and
-        $pdr_secret_directories_are_not_visible and
-        $php_extension_requirements_are_fulfilled and
-        $php_version_requirement_is_fulfilled;
+$allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
+        $pdrDirectoriesAreWritable &&
+        $pdrSecretDirectoriesAreNotVisible &&
+        $phpExtensionRequirementsAreFulfilled &&
+        $phpVersionRequirementIsFulfilled;
 ?>
 <p>This page is meant to check if:</p>
 <ul>
@@ -49,7 +51,7 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
-            echo $install->build_error_message_div();
+            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -58,11 +60,11 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
         /*
          * Check if there is any supported database driver available:
          */
-        if ($database_driver_is_installed) {
+        if ($databaseDriverIsInstalled) {
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
-            echo $install->build_error_message_div();
+            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -71,11 +73,11 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
         /*
          * Check if the PHP version is new enough to support the required features:
          */
-        if ($php_extension_requirements_are_fulfilled) {
+        if ($phpExtensionRequirementsAreFulfilled) {
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
-            echo $install->build_error_message_div();
+            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -84,11 +86,11 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
         /*
          * Check if the PHP version is new enough to support the required features:
          */
-        if ($php_version_requirement_is_fulfilled) {
+        if ($phpVersionRequirementIsFulfilled) {
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
-            echo $install->build_error_message_div();
+            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -97,11 +99,11 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
         /*
          * Check if there is write access to all write-necessary directories:
          */
-        if ($pdr_directories_are_writable) {
+        if ($pdrDirectoriesAreWritable) {
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
-            echo $install->build_error_message_div();
+            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -110,7 +112,7 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
         /*
          * Check if there is a 403 forbidden error when trying to access hidden folders:
          */
-        if ($pdr_secret_directories_are_not_visible) {
+        if ($pdrSecretDirectoriesAreNotVisible) {
             echo "<em class='install_info_postive'>passed</em>";
         } else {
             echo "<em class='install_info_negative'>failed</em>";
@@ -123,13 +125,13 @@ $all_requirements_are_satisfied = $database_driver_is_installed and
    AllowOverride Limit Options
 &lt;/Directory&gt;</pre>
 ";
-            echo $install->build_error_message_div();
+            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
 </ul>
 <?php
-if ($all_requirements_are_satisfied) {
+if (true === $allRequirementsAreSatisfied) {
     ?>
     <form action="install_page_check_requirements.php" method="post">
         <input type="submit" id="InstallPageCheckRequirementsFormButton" name="InstallPageCheckRequirementsFormButton" value="<?= gettext("Next") ?>">

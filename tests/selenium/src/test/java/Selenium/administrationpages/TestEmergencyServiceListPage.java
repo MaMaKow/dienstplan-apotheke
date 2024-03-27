@@ -52,27 +52,27 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
         /**
          * <p lang=de>Daten einfügen:</p>
          */
-        Integer employeeKeyInsert = 4;
-        Integer employeeKeyChange = 6;
+        String employeeNameInsert = "Anabell Neuhaus";
+        String employeeNameChange = "Albert Baumann";
         Workforce workforce = new Workforce();
         /**
          * <p lang=de>Nur Apotheker (und PI) können allein im Notdienst
          * eingesetzt werden.</p>
          */
-        Assert.assertEquals("Apotheker", workforce.getEmployeeByKey(employeeKeyInsert).getProfession());
-        Assert.assertEquals("Apotheker", workforce.getEmployeeByKey(employeeKeyChange).getProfession());
+        Assert.assertEquals("Apotheker", workforce.getEmployeeByFullName(employeeNameInsert).getProfession());
+        Assert.assertEquals("Apotheker", workforce.getEmployeeByFullName(employeeNameChange).getProfession());
         LocalDate localDate = LocalDate.of(2019, Month.AUGUST, 8);
         emergencyServiceListPage = emergencyServiceListPage.addLineForDate(localDate);
-        emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyInsert);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeNameOnDate(localDate, employeeNameInsert);
         /**
          * <p lang=de>Daten abfragen:</p>
          */
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyInsert);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeFullNameOnDate(localDate), employeeNameInsert);
         /**
          * <p lang=de>Daten ändern :</p>
          */
-        emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyChange);
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyChange);
+        emergencyServiceListPage = emergencyServiceListPage.setEmployeeNameOnDate(localDate, employeeNameChange);
+        Assert.assertEquals(emergencyServiceListPage.getEmployeeFullNameOnDate(localDate), employeeNameChange);
         /**
          * <p lang=de>Zeilen wieder entfernen</p>
          */

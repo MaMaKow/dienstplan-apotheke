@@ -35,7 +35,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import java.util.Map;
 import org.testng.ITestResult;
+import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 /**
  *
@@ -87,7 +89,6 @@ public class TestInstallation {
         InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
         installationPageAdministrator.fillForm();
         installationPageAdministrator.moveFromAdminPage();
-
         /**
          * <p lang=de>
          * Die Anwendung ist installiert. Jetzt ist es Zeit, sie zu
@@ -115,6 +116,15 @@ public class TestInstallation {
             branchAdministrationPageForLambda.createNewBranch(branchObject);
         });
 
+    }
+
+    @BeforeMethod
+    public void setUpMethod(ITestResult result) {
+        // Print the name of the class and the currently executing test method to the log file
+        String packageName = this.getClass().getPackageName();
+        String className = this.getClass().getSimpleName();
+        String methodName = result.getMethod().getMethodName();
+        System.err.println("Package: " + packageName + ", Class: " + className + ", Method: " + methodName);
     }
 
     @AfterMethod

@@ -66,7 +66,7 @@ public class WorkforceManagementPage {
     public WorkforceManagementPage selectEmployee(Employee employee) throws Exception {
         WebElement selectEmployeeElement = driver.findElement(selectEmployeeBy);
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
-        String optionText = employee.getFirstName() + " " + employee.getLastName();
+        String optionText = employee.getFullName();
         if (!Wrapper.isOptionTextPresent(selectEmployeeSelect, optionText)) {
             throw new Exception("Employee not found");
         }

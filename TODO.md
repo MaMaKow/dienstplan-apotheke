@@ -347,3 +347,23 @@ Write/Update tests for user-management.php
 
 get rid of: "global $config;", use "$configuration = new \PDR\Application\configuration();" instead
 
+#### Build a docker image for the dienstplan-apotheke PHP application.
+This docker image could be used for testing.
+It should exist in different versions of PHP.
+These versions should include PHP 5.6 only to see, if the installation fails gracefully.
+5.6, 7.0, 7.4, 8.0
+current stable and current beta
+https://docs.docker.com/language/php/containerize/
+
+#### Menü Eintrag für Listen getrennt von Administration
+### Überstunden
+#### Überstunden eintragen aus der Wochenansicht Mitarbeiter
+Wochenstunden > Ist, Soll, Diff > <button>Eintragen</button>
+#### Überstunden Eingabe:
+beim allerersten Eintrag meckert das Programm.
+#### Überstundenberechnung für Weihnachten korrekt durchrechnen
+und Silvester
+#### Fehler auffangen beim Versenden von leeren Werten
+./src/php/pages/overtime-edit.php
+#### Sonntagsarbeit
+PTA erhalten an Sonntagen 85% Zuschlag auf ihre Stunden

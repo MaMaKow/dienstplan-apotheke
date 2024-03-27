@@ -17,19 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class test_htaccess {
+namespace PDR\Application\Installation;
+
+/**
+ * @todo Check if user_dialog actually works during installation.
+ */
+class TestHtaccess {
 
     /**
-     *
-     * @var bool $all_folders_are_secure is TRUE if all the hidden folders respond with 403.
+     * @var array $listOfInsecureFolders list of all the folders not responding with 403.
      */
-    public $all_folders_are_secure;
+    public $listOfInsecureFolders;
 
     /**
-     *
      * @var array A list of folders containing sensitive information
      */
-    private $List_of_forbidden_folders = array(
+    private $ListOfForbiddenFolders = array(
         "tmp",
         "config",
         "upload",
@@ -40,7 +43,7 @@ class test_htaccess {
      * Public execution function for secret_folder_is_secure
      */
     function __construct() {
-        $this->all_folders_are_secure = $this->test_folders($this->List_of_forbidden_folders);
+        $this->listOfInsecureFolders = $this->tryInsecureFolders($this->ListOfForbiddenFolders);
     }
 
     /**
@@ -49,16 +52,18 @@ class test_htaccess {
      * @param string $folder the name and position of the folder to call.
      * @return bool TRUE for blocked folders, FALSE for visible folders.
      */
-    private function secret_folder_is_secure($folder) { //There MUST NOT be a type hint here! Type hints only worked for objects prior to PHP7.
-        $user_dialog = new user_dialog();
+    private function secretFolderIsSecure($folder) { //There MUST NOT be a type hint here! Type hints only worked for objects prior to PHP7.
+        $installUtility = new \PDR\Application\Installation\InstallUtility();
+        $pdrServerApplicationPath = $installUtility->getPdrServerApplicationPath();
+        $user_dialog = new \user_dialog();
         $hostname = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
 
-        $input_server_https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $inputServerHttps = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $protocol = 'http';
-        if (!empty($input_server_https) and $input_server_https === "on") {
+        if (!empty($inputServerHttps) and $inputServerHttps === "on") {
             $protocol = 'https';
         }
-        $url = $protocol . "://" . $hostname . PDR_HTTP_SERVER_APPLICATION_PATH . $folder . '/';
+        $url = $protocol . "://" . $hostname . $pdrServerApplicationPath . $folder . '/';
         /**
          * This is just a simple test.
          * We do not need https here.
@@ -71,27 +76,27 @@ class test_htaccess {
                 'allow_self_signed' => true,
             ],
         ]);
-        $Response = get_headers($url, 0, $context);
-        $response = $Response[0];
-        $response_code = substr($response, strpos($response, " "), (strrpos($response, " ") - strpos($response, " ")));
-        if (200 == $response_code) {
+        $responseArray = get_headers($url, 0, $context);
+        $response = $responseArray[0];
+        $responseCode = substr($response, strpos($response, " "), (strrpos($response, " ") - strpos($response, " ")));
+        if (200 == $responseCode) {
             $error_message = "Warning! The directory <a href='$url'>$url</a> seems to be world visible. Please make sure that the directory is not accessible by the public!";
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
             return FALSE;
-        } elseif (403 == $response_code) {
+        } elseif (403 == $responseCode) {
             //$user_dialog->add_message("$folder is secure.", E_USER_NOTICE);
             return TRUE;
-        } elseif (404 == $response_code) {
+        } elseif (404 == $responseCode) {
             $user_dialog->add_message("The directory $folder is missing.", E_USER_WARNING);
             error_log("The directory $folder is missing.");
             return TRUE;
         } else {
             $error_message = "Error! The result could not be interpreted for the directory $url. Please make sure that the directory is not accessible by the public!<br>The server returned: '$response'. <br>";
-            if (!is_array($Response)) {
+            if (!is_array($responseArray)) {
                 $user_dialog->add_message($error_message, E_USER_WARNING, TRUE);
                 return FALSE;
             }
-            foreach ($Response as $key => $response_http) {
+            foreach ($responseArray as $key => $response_http) {
                 $error_message .= $key . ": " . htmlspecialchars($response_http) . "<br>\n";
             }
             $user_dialog->add_message($error_message, E_USER_WARNING, TRUE);
@@ -99,17 +104,25 @@ class test_htaccess {
         }
     }
 
-    private function test_folders(array $Folders) {
-        $user_dialog = new user_dialog();
-        $all_folders_are_secure = TRUE;
-        foreach ($Folders as $folder) {
-            $secure = $this->secret_folder_is_secure($folder);
-            if (TRUE !== $secure) {
-                $user_dialog->add_message("$folder is not secure.", E_USER_ERROR);
-                $all_folders_are_secure = FALSE;
-            }
-        }
-        return $all_folders_are_secure;
+    public function getInsecureFoldersList() {//There MUST NOT be a type hint here! We need maximum compatibility during installation.
+        return $this->listOfInsecureFolders;
     }
 
+    public function allFoldersAreSecure() {//There MUST NOT be a type hint here! We need maximum compatibility during installation.
+        if (array() === $this->listOfInsecureFolders) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+    private function tryInsecureFolders(array $Folders) {//There MUST NOT be a type hint here! We need maximum compatibility during installation.
+        $listOfInsecureFolders = array();
+        foreach ($Folders as $folder) {
+            $secure = $this->secretFolderIsSecure($folder);
+            if (TRUE !== $secure) {
+                $listOfInsecureFolders[] = $folder;
+            }
+        }
+        return $listOfInsecureFolders;
+    }
 }

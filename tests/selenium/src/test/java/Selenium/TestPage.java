@@ -100,15 +100,14 @@ public class TestPage {
 
     @BeforeMethod
     public void setUpMethod(ITestResult result) {
+        if (true == someTestHasFailed) {
+            throw new SkipException("Some Test has failed. Skipping all the other methods.");
+        }
         // Print the name of the class and the currently executing test method to the log file
         String packageName = this.getClass().getPackageName();
         String className = this.getClass().getSimpleName();
         String methodName = result.getMethod().getMethodName();
         System.err.println("Package: " + packageName + ", Class: " + className + ", Method: " + methodName);
-        if (true == someTestHasFailed) {
-            System.err.println("Method will be skipped.");
-            throw new SkipException("Some Test has failed. Skipping all the other methods.");
-        }
     }
 
     @AfterMethod
@@ -134,8 +133,7 @@ public class TestPage {
 
     private boolean isRealWorldTest(ITestContext context) {
         // Check if the suite name contains "testng_realworld.xml"
-        System.out.println("context.getSuite().getName()");
-        System.out.println(context.getSuite().getName());
+        System.out.println("Suite: " + context.getSuite().getName());
         return context.getSuite().getName().contains("testng_realworld.xml");
     }
 

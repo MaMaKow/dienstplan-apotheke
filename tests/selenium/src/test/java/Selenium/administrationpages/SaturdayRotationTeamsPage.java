@@ -18,7 +18,9 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.Employee;
 import Selenium.MenuFragment;
+import Selenium.rosterpages.Workforce;
 import java.util.List;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -134,7 +136,7 @@ public class SaturdayRotationTeamsPage {
         return listOfTeams.get(teamId);
     }
 
-    public void addEmployeeToTeam(int teamId, int employeeKey) {
+    public void addEmployeeToTeam(int teamId, Employee employee) {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         WebElement teamRowElement = getTeamRowById(teamId);
         /**
@@ -156,7 +158,7 @@ public class SaturdayRotationTeamsPage {
         By teamEmployeeSelectLastBy = By.xpath(".//td[3]/form/span[(last()-1)]/select");
         WebElement teamEmployeeSelectLastElement = teamRowElement.findElement(teamEmployeeSelectLastBy);
         Select teamEmployeeSelectLastSelect = new Select(teamEmployeeSelectLastElement);
-        teamEmployeeSelectLastSelect.selectByValue(String.valueOf(employeeKey));
+        teamEmployeeSelectLastSelect.selectByVisibleText(employee.getFullName());
 
         /**
          * The page will reload. When the page has reloaded, there will be new
@@ -169,6 +171,9 @@ public class SaturdayRotationTeamsPage {
             }
         };
         wait.until(pageLoad);
+        teamRowElement = getTeamRowById(teamId);
+        teamEmployeeSelectLastElement = teamRowElement.findElement(teamEmployeeSelectLastBy);
+        teamEmployeeSelectLastSelect = new Select(teamEmployeeSelectLastElement);
     }
 
     public int addTeam(SaturdayRotationTeam saturdayRotationTeam) {
@@ -190,8 +195,8 @@ public class SaturdayRotationTeamsPage {
          * denn der Rest des Programmes hat eine Referenz zu diesem Objekt.</p>
          */
         saturdayRotationTeam.setTeamId(newTeamId);
-        saturdayRotationTeam.getListOfTeamMembers().forEach(employeeKey -> {
-            addEmployeeToTeam(newTeamId, employeeKey);
+        saturdayRotationTeam.getListOfTeamEmployees().forEach(employee -> {
+            addEmployeeToTeam(newTeamId, employee);
         });
         this.readListOfTeams();
         return newTeamId;

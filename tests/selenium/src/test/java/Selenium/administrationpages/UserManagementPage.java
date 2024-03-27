@@ -72,9 +72,13 @@ public class UserManagementPage {
         return emailElement.getAttribute("value");
     }
 
-    public int getEmployeeKey() {
+    public Integer getEmployeeKey() {
         Select employeeKeySelect = getEmployeeKeySelect();
-        return Integer.parseInt(employeeKeySelect.getFirstSelectedOption().getAttribute("value"));
+        String employeeKeyFoundString = employeeKeySelect.getFirstSelectedOption().getAttribute("value");
+        if (employeeKeyFoundString.equals("")) {
+            return null;
+        }
+        return Integer.parseInt(employeeKeyFoundString);
     }
 
     private Select getEmployeeKeySelect() {
@@ -106,9 +110,14 @@ public class UserManagementPage {
     }
 
     // Method to set the employee key
-    public void setEmployeeKey(int newEmployeeKey) {
+    public void setEmployeeKey(Integer newEmployeeKey) {
         Select employeeKeySelect = getEmployeeKeySelect();
+        if (null == newEmployeeKey) {
+            employeeKeySelect.selectByValue("");
+            return;
+        }
         employeeKeySelect.selectByValue(String.valueOf(newEmployeeKey));
+        return;
     }
 
     // Method to change user status

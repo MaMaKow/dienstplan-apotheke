@@ -238,10 +238,6 @@ class database_wrapper {
     public static function database_table_constraint_exists($table_name, $constraint_name): bool {
         $table_constraints = self::find_table_constraints($table_name);
         foreach ($table_constraints as $table_constraint_object) {
-            /**
-             * $message = "Found constraint: " . $table_constraint_object->CONSTRAINT_NAME;
-             * error_log($message);
-             */
             if ($constraint_name == $table_constraint_object->CONSTRAINT_NAME) {
                 return true;
             }

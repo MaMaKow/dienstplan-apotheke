@@ -52,16 +52,12 @@ public class InstallationPageAdministrator {
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
 
         WebElement administratorUserNameFormElement = driver.findElement(By.name("user_name"));
-        WebElement administratorLastNameFormElement = driver.findElement(By.name("last_name"));
-        WebElement administratorFirstNameFormElement = driver.findElement(By.name("first_name"));
         WebElement administratorEmailFormElement = driver.findElement(By.name("email"));
         WebElement administratorPasswordFormElement = driver.findElement(By.name("password"));
         WebElement administratorPassword2FormElement = driver.findElement(By.name("password2"));
 
         PropertyFile propertyFile = new PropertyFile();
         String administratorUserName = propertyFile.getAdministratorUserName();
-        String administratorLastName = propertyFile.getAdministratorLastName();
-        String administratorFirstName = propertyFile.getAdministratorFirstName();
         String administratorEmail = propertyFile.getAdministratorEmail();
         String administratorPassword = propertyFile.getAdministratorPassword();
 
@@ -70,10 +66,6 @@ public class InstallationPageAdministrator {
         //Wrapper.CustomSendKeysIE(administratorUserNameFormElement, administratorUserName);
         Selenium.driver.Wrapper.CustomSendKeysIE(administratorUserNameFormElement, administratorUserName);
 
-        administratorLastNameFormElement.clear();
-        administratorLastNameFormElement.sendKeys(administratorLastName);
-        administratorFirstNameFormElement.clear();
-        administratorFirstNameFormElement.sendKeys(administratorFirstName);
         administratorEmailFormElement.clear();
         administratorEmailFormElement.sendKeys(administratorEmail);
         administratorPasswordFormElement.clear();

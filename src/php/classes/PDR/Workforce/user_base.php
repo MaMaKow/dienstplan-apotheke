@@ -70,11 +70,10 @@ class user_base {
         return $this->user_list[$primary_key];
     }
 
-    public function create_new_user(int $employee_key = null, string $user_name, string $password_hash, string $email, string $status) {
+    public function create_new_user(string $user_name, string $password_hash, string $email, string $status) {
         $user = new \user(null);
-        $new_user = $user->create_new($employee_key, $user_name, $password_hash, $email, $status);
+        $new_user = $user->create_new(null, $user_name, $password_hash, $email, $status);
         $this->read_user_list_from_database();
         return $new_user;
     }
-
 }

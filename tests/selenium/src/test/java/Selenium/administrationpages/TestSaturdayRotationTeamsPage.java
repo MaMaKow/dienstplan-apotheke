@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.testng.annotations.Test;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 /**
  *
@@ -54,6 +55,7 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
         /**
          * Sign in:
          */
+        SoftAssert softAssert = new SoftAssert();
         super.signIn();
         SaturdayRotationTeamsPage saturdayRotationTeamsPage = new SaturdayRotationTeamsPage(driver);
         /**
@@ -65,7 +67,6 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
         HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = SaturdayRotationTeam.getSaturdayTeams();
         for (Map.Entry<Integer, SaturdayRotationTeam> saturdayTeamEntry : saturdayTeamList.entrySet()) {
             SaturdayRotationTeam saturdayRotationTeamShould = saturdayTeamEntry.getValue();
-
             /**
              * <p lang=de>CAVE: saturdayTeamList hat einen Index. Der ist nicht
              * zwingend auch die finale teamId. Wir haben keinen Einfluss
@@ -76,9 +77,9 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
              */
             saturdayRotationTeamsPage.addTeam(saturdayRotationTeamShould);
             SaturdayRotationTeam saturdayRotationTeamFound = saturdayRotationTeamsPage.getTeamById(saturdayRotationTeamShould.getTeamId());
-            Assert.assertEquals(saturdayRotationTeamFound.getListOfTeamMembers(), saturdayRotationTeamShould.getListOfTeamMembers());
+            softAssert.assertTrue(saturdayRotationTeamFound.equalsTeam(saturdayRotationTeamShould), "Teams saturdayRotationTeamFound and saturdayRotationTeamShould differ.");
         }
-
+        softAssert.assertAll();
     }
 
 }

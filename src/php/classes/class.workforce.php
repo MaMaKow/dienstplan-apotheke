@@ -127,6 +127,7 @@ class workforce {
     }
 
     private function get_list_of_all_employees() {
+        $List_of_all_employees = array();
         $sql_query = 'SELECT * FROM `employees` ORDER BY `last_name`, `first_name` ASC;';
         $result = database_wrapper::instance()->run($sql_query);
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {

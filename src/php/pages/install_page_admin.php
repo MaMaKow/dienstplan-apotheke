@@ -15,28 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once "../classes/class.install.php";
-$install = new install;
+require_once '../classes/PDR/Application/Installation/InstallUtility.php';
+$installUtility = new \PDR\Application\Installation\InstallUtility();
+$administrationInputHandler = new \PDR\Application\Installation\AdministrationInputHandler();
 if (filter_has_var(INPUT_POST, "user_name")) {
-    $install->handle_user_input_administration();
+    $administrationInputHandler->handleUserInputAdministration();
 }
-require_once 'install_head.php'
+require_once 'install_head.php';
 ?>
 <h1>Administrator configuration</h1>
 
 <form accept-charset='utf-8' method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <p>User name:<br>
-        <input type="text" name="user_name" placeholder="Administrator username" required value="<?= (!empty($_SESSION["Config"]["user_name"])) ? $_SESSION["Config"]["user_name"] : "" ?>" />
-    </p>
-    <p>Last name:<br>
-        <input type="text" name="last_name" placeholder="Last name" required value="<?= (!empty($_SESSION["Config"]["user_name"])) ? $_SESSION["Config"]["last_name"] : "" ?>" />
-    </p>
-    <p>First name:<br>
-        <input type="text" name="first_name" placeholder="First name" required value="<?= (!empty($_SESSION["Config"]["first_name"])) ? $_SESSION["Config"]["first_name"] : "" ?>" />
+        <input type="text" name="user_name" placeholder="Administrator username" required value="<?= (!empty($_SESSION['configuration']["user_name"])) ? $_SESSION['configuration']["user_name"] : "" ?>" />
     </p>
     <p>
         Contact email address:<br>
-        <input type="email" name="email" placeholder="Contact email address:" required value="<?= (!empty($_SESSION["Config"]["email"])) ? $_SESSION["Config"]["email"] : "" ?>" />
+        <input type="email" name="email" placeholder="Contact email address:" required value="<?= (!empty($_SESSION['configuration']["email"])) ? $_SESSION['configuration']["email"] : "" ?>" />
     </p>
     <p>
         Administrator password:<br>
@@ -55,7 +50,7 @@ require_once 'install_head.php'
     <input type="submit" id="InstallPageAdministratorFormButton"/>
 </form>
 <?php
-echo $install->build_error_message_div();
+echo $installUtility->buildErrorMessageDiv();
 ?>
 </body>
 </html>

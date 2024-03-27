@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2024-01-25 21:25+0100\n"
-"PO-Revision-Date: 2024-01-25 21:56+0100\n"
+"POT-Creation-Date: 2024-02-27 21:39+0100\n"
+"PO-Revision-Date: 2024-02-27 21:43+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -58,6 +58,54 @@ msgstr "Das Datum des Eintrages liegt vor dem letzten vorhandenen Datum."
 #: src/js/overtime.js:
 msgid "Are you sure, that the data is correct?"
 msgstr "Sind Sie sicher, dass die Daten korrekt sind?"
+
+#: src/php/classes/PDR/Application/Installation/AdministrationInputHandler.php:
+msgid "The passwords aren't the same."
+msgstr "Die Passphrasen sind nicht identisch."
+
+#: src/php/classes/PDR/Application/Installation/AdministrationInputHandler.php:
+msgid "Error while trying to create administrative user."
+msgstr "Fehler beim Erstellen des administrativen Benutzers."
+
+#: src/php/classes/PDR/Application/Installation/AdministrationInputHandler.php:
+msgid "Administrative user already exists."
+msgstr "Der administrative Benutzende existiert bereits."
+
+#: src/php/classes/PDR/Application/Installation/AdministrationInputHandler.php:
+msgid "Error while trying to create administrative user privileges."
+msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
+
+#: src/php/classes/PDR/Application/Installation/DatabaseInputHandler.php:
+msgid "Error while trying to create the database."
+msgstr "Fehler beim Erstellen der Datenbank."
+
+#: src/php/classes/PDR/Application/Installation/DatabaseInputHandler.php:
+msgid "Error while trying to create the database tables."
+msgstr "Fehler beim Erstellen der Datenbank-Tabellen."
+
+#: src/php/classes/PDR/Application/Installation/DatabaseInputHandler.php:
+msgid "Error while trying to fill the database tables."
+msgstr "Fehler beim Befüllen der Datenbank-Tabellen."
+
+#: src/php/classes/PDR/Application/Installation/InstallConfiguration.php:
+msgid "Error while writing the configuration to the filesystem."
+msgstr "Fehler beim Schreiben der Konfigurationsdatei."
+
+# Listing elements one two AND three
+#: src/php/classes/PDR/Application/Installation/InstallUtility.php:
+msgid "and"
+msgstr "und"
+
+#: src/php/classes/PDR/Application/Installation/SystemRequirementsValidator.php:
+#, php-format
+msgid "The directory %1$s is not writable."
+msgid_plural "The directories %1$s are not writable."
+msgstr[0] "Das Verzeichnis %1$s ist nicht beschreibbar."
+msgstr[1] "Die Verzeichnisse %1$s sind nicht beschreibbar."
+
+#: src/php/classes/PDR/Application/Installation/SystemRequirementsValidator.php:
+msgid "Make sure that the directories are writable by pdr!"
+msgstr "Stellen Sie sicher, dass die Verzeichnisse durch pdr schreibbar sind!"
 
 #: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
 #: src/php/classes/PDR/Database/AbsenceDatabaseHandler.php:
@@ -498,58 +546,6 @@ msgstr "Die Pause endet jetzt."
 msgid "There already is a configuration file."
 msgstr "Es existiert bereits eine Konfigurationsdatei."
 
-#: src/php/classes/class.install.php:
-msgid "The passwords aren't the same."
-msgstr "Die Passphrasen sind nicht identisch."
-
-#: src/php/classes/class.install.php:
-msgid "Error while trying to create employee."
-msgstr "Fehler beim Erstellen der Mitarbeitenden."
-
-#: src/php/classes/class.install.php:
-msgid "Error while trying to create administrative user."
-msgstr "Fehler beim Erstellen des administrativen Benutzers."
-
-#: src/php/classes/class.install.php:
-msgid "Administrative user already exists."
-msgstr "Der administrative Benutzende existiert bereits."
-
-#: src/php/classes/class.install.php:
-msgid "Error while trying to create administrative user privileges."
-msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
-
-#: src/php/classes/class.install.php:
-#, php-format
-msgid "The directory %1$s is not writable."
-msgid_plural "The directories %1$s are not writable."
-msgstr[0] "Das Verzeichnis %1$s ist nicht beschreibbar."
-msgstr[1] "Die Verzeichnisse %1$s sind nicht beschreibbar."
-
-#: src/php/classes/class.install.php:
-msgid "Make sure that the directories are writable by pdr!"
-msgstr "Stellen Sie sicher, dass die Verzeichnisse durch pdr schreibbar sind!"
-
-#: src/php/classes/class.install.php:
-msgid "Error while trying to create the database."
-msgstr "Fehler beim Erstellen der Datenbank."
-
-#: src/php/classes/class.install.php:
-msgid "Error while trying to create the database tables."
-msgstr "Fehler beim Erstellen der Datenbank-Tabellen."
-
-#: src/php/classes/class.install.php:
-msgid "Error while trying to fill the database tables."
-msgstr "Fehler beim Befüllen der Datenbank-Tabellen."
-
-#: src/php/classes/class.install.php:
-msgid "Error while writing the configuration to the filesystem."
-msgstr "Fehler beim Schreiben der Konfigurationsdatei."
-
-# Listing elements one two AND three
-#: src/php/classes/class.install.php:
-msgid "and"
-msgstr "und"
-
 #: src/php/classes/class.localization.php:
 msgid "Monday"
 msgstr "Montag"
@@ -933,23 +929,23 @@ msgstr "Es wurden bereits %1$s Resturlaubstage im Jahr %2$s beantragt."
 msgid "There are still %1$s vacation days available."
 msgstr "Es stehen noch %1$s Urlaubstage zur Verfügung."
 
-#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
 msgid "Start"
 msgstr "Beginn"
 
-#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
 msgid "End"
 msgstr "Ende"
 
-#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php:
 #: src/php/pages/collaborative-vacation-input-box.php:
 #: src/php/pages/overtime-read.php:
 msgid "Reason"
 msgstr "Grund"
 
-#: src/php/pages/absence-edit.php: src/php/pages/absence-read.php:
+#: src/php/pages/absence-edit.php:
 msgid "Days"
 msgstr "Tage"
 
@@ -1307,7 +1303,6 @@ msgstr "Bitte wählen Sie eine Passphrase mit mindestens 8 Zeichen."
 
 #: src/php/pages/install_page_check_requirements.php:
 #: src/php/pages/install_page_intro.php:
-#: src/php/pages/install_page_welcome.php:
 msgid "Next"
 msgstr "Weiter"
 
@@ -1423,10 +1418,6 @@ msgid "Absence input"
 msgstr "Abwesenheit Eingabe"
 
 #: src/php/pages/menu.php:
-msgid "Absence output"
-msgstr "Abwesenheit Ausgabe"
-
-#: src/php/pages/menu.php:
 msgid "Absence annual plan"
 msgstr "Abwesenheit Jahresplan"
 
@@ -1437,6 +1428,10 @@ msgstr "Abwesenheit Monatsplan"
 #: src/php/pages/menu.php:
 msgid "Remaining Vacation Overview"
 msgstr "Resturlaub Übersicht"
+
+#: src/php/pages/menu.php:
+msgid "Sick note tracking"
+msgstr "Krankmeldungen Übersicht"
 
 #: src/php/pages/menu.php:
 msgid "Principle Roster"
@@ -1854,6 +1849,12 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 #: tests/get-database-structure.php:
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
+
+#~ msgid "Error while trying to create employee."
+#~ msgstr "Fehler beim Erstellen der Mitarbeitenden."
+
+#~ msgid "Absence output"
+#~ msgstr "Abwesenheit Ausgabe"
 
 #~ msgid "Weekly view"
 #~ msgstr "Wochenansicht"

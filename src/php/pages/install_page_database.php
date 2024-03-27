@@ -15,34 +15,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once "../classes/class.install.php";
-$install = new install;
+require_once '../classes/PDR/Application/Installation/InstallUtility.php';
+$installUtility = new \PDR\Application\Installation\InstallUtility();
 if (filter_has_var(INPUT_POST, "database_user")) {
-    if (FALSE === $install->handle_user_input_database()) {
-        $install->Error_message[] = gettext("There was an error while trying to create the database.");
-        $install->Error_message[] = gettext("Please see the error log for details!");
+    $databaseInputHandler = new \PDR\Application\Installation\DatabaseInputHandler();
+    if (FALSE === $databaseInputHandler->handleUserInputDatabase()) {
+        $installUtility->addErrorMessage(gettext("There was an error while trying to create the database."));
+        $installUtility->addErrorMessage(gettext("Please see the error log for details!"));
     }
 }
 require_once 'install_head.php';
-$install->build_error_message_div();
+$installUtility->buildErrorMessageDiv();
 
-if (isset($_SESSION["Config"]["database_host"])) {
-    $database_host = $_SESSION["Config"]["database_host"];
+if (isset($_SESSION['configuration']["database_host"])) {
+    $database_host = $_SESSION['configuration']["database_host"];
 } else {
     $database_host = "localhost";
 }
-if (isset($_SESSION["Config"]["database_port"])) {
-    $database_port = $_SESSION["Config"]["database_port"];
+if (isset($_SESSION['configuration']["database_port"])) {
+    $database_port = $_SESSION['configuration']["database_port"];
 } else {
     $database_port = "";
 }
-if (isset($_SESSION["Config"]["database_user"])) {
-    $database_user = $_SESSION["Config"]["database_user"];
+if (isset($_SESSION['configuration']["database_user"])) {
+    $database_user = $_SESSION['configuration']["database_user"];
 } else {
     $database_user = "";
 }
-if (isset($_SESSION["Config"]["database_name"])) {
-    $database_name = $_SESSION["Config"]["database_name"];
+if (isset($_SESSION['configuration']["database_name"])) {
+    $database_name = $_SESSION['configuration']["database_name"];
 } else {
     $database_name = "";
 }
@@ -78,7 +79,7 @@ if (isset($_SESSION["Config"]["database_name"])) {
             <input type="text" id="database_name" name="database_name" value="<?= htmlspecialchars($database_name) ?>" />
         </p><p>
             <?php
-            echo $install->build_error_message_div();
+            $installUtility->buildErrorMessageDiv();
             ?>
         </p><p>
             <input type="submit" id="InstallPageDatabaseFormButton" />

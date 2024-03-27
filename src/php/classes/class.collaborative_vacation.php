@@ -302,7 +302,7 @@ class collaborative_vacation {
         if (FALSE === \PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDay($dateObject)) {
             return "";
         }
-        $emergencyService = new \PDR\Database\EmergencyServiceDatabaseHandler($dateObject);
+        $emergencyService = \PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDate($dateObject);
         $emergencyServiceContent = "";
         if ('month' === $mode) {
             $emergencyServiceContent .= "<span class='emergency_service'>"

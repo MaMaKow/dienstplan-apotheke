@@ -18,6 +18,8 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.Employee;
+import Selenium.rosterpages.Workforce;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -28,18 +30,30 @@ import java.util.HashSet;
 public class SaturdayRotationTeam {
 
     private Integer teamId;
-    private final HashSet<Integer> listOfTeamMemerIds;
+    private final HashSet<Integer> listOfTeamMemberIds;
+    private final HashSet<Employee> listOfTeamMemberEmployees;
 
-    public SaturdayRotationTeam(Integer teamIdInput, HashSet<Integer> listOfTeamMemerIdsInput) {
+    public SaturdayRotationTeam(Integer teamIdInput, HashSet<Integer> listOfTeamMemberIdsInput) {
         teamId = teamIdInput;
-        listOfTeamMemerIds = listOfTeamMemerIdsInput;
+        Workforce workforce = new Workforce();
+        listOfTeamMemberIds = listOfTeamMemberIdsInput;
+        listOfTeamMemberEmployees = new HashSet<>();
+        for (int TeamMemberId : listOfTeamMemberIdsInput) {
+            Employee employee = workforce.getEmployeeByKey(TeamMemberId);
+            listOfTeamMemberEmployees.add(employee);
+        }
+
     }
 
-    public SaturdayRotationTeam(Integer teamIdInput, int[] arrayOfTeamMemerIdsInput) {
+    public SaturdayRotationTeam(Integer teamIdInput, Employee[] arrayOfTeamMemberEmployeesInput) {
+        Workforce workforce = new Workforce();
         teamId = teamIdInput;
-        listOfTeamMemerIds = new HashSet<>();
-        for (int teamMemerId : arrayOfTeamMemerIdsInput) {
-            listOfTeamMemerIds.add(teamMemerId);
+        listOfTeamMemberIds = new HashSet<>();
+        listOfTeamMemberEmployees = new HashSet<>();
+        for (Employee employee : arrayOfTeamMemberEmployeesInput) {
+            int TeamMemberId = employee.getEmployeeKey();
+            listOfTeamMemberIds.add(TeamMemberId);
+            listOfTeamMemberEmployees.add(employee);
         }
     }
 
@@ -51,17 +65,48 @@ public class SaturdayRotationTeam {
         teamId = newTeamId;
     }
 
-    public HashSet<Integer> getListOfTeamMembers() {
-        return listOfTeamMemerIds;
+    public HashSet<Integer> getListOfTeamMemberIds() {
+        return listOfTeamMemberIds;
+    }
+
+    public HashSet<Employee> getListOfTeamEmployees() {
+        return listOfTeamMemberEmployees;
+    }
+
+    public boolean containsEmployee(Employee searchedEmployee) {
+        for (Employee storedEmployee : listOfTeamMemberEmployees) {
+            if (searchedEmployee.getFullName().equals(storedEmployee.getFullName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean equalsTeam(SaturdayRotationTeam secondSaturdayRotationTeam) {
+        if (secondSaturdayRotationTeam.getListOfTeamEmployees().size() != listOfTeamMemberEmployees.size()) {
+            return false;
+        }
+        for (Employee employee : listOfTeamMemberEmployees) {
+            if (!secondSaturdayRotationTeam.containsEmployee(employee)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static HashMap<Integer, SaturdayRotationTeam> getSaturdayTeams() {
+        Workforce workforce = new Workforce();
         HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = new HashMap<>();
-        SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null, new int[]{5, 12});
-        SaturdayRotationTeam saturdayRotationTeam1 = new SaturdayRotationTeam(null, new int[]{3, 15});
-        SaturdayRotationTeam saturdayRotationTeam2 = new SaturdayRotationTeam(null, new int[]{7, 14});
-        SaturdayRotationTeam saturdayRotationTeam3 = new SaturdayRotationTeam(null, new int[]{4, 8});
-        SaturdayRotationTeam saturdayRotationTeam4 = new SaturdayRotationTeam(null, new int[]{16, 9});
+        SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null,
+                new Employee[]{workforce.getEmployeeByFullName("Elisabeth Lehmann"), workforce.getEmployeeByFullName("Emma Grimm")});
+        SaturdayRotationTeam saturdayRotationTeam1 = new SaturdayRotationTeam(null,
+                new Employee[]{workforce.getEmployeeByFullName("Alexandra Probst"), workforce.getEmployeeByFullName("Jule Dambach")});
+        SaturdayRotationTeam saturdayRotationTeam2 = new SaturdayRotationTeam(null,
+                new Employee[]{workforce.getEmployeeByFullName("Albert Kremer"), workforce.getEmployeeByFullName("Lea Dietrich")});
+        SaturdayRotationTeam saturdayRotationTeam3 = new SaturdayRotationTeam(null,
+                new Employee[]{workforce.getEmployeeByFullName("Anabell Neuhaus"), workforce.getEmployeeByFullName("Albert Krüger")});
+        SaturdayRotationTeam saturdayRotationTeam4 = new SaturdayRotationTeam(null,
+                new Employee[]{workforce.getEmployeeByFullName("Hannah Eckert"), workforce.getEmployeeByFullName("Albert Jansen")});
         saturdayTeamList.put(0, saturdayRotationTeam0);
         saturdayTeamList.put(1, saturdayRotationTeam1);
         saturdayTeamList.put(2, saturdayRotationTeam2);

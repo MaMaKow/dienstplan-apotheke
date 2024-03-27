@@ -54,13 +54,18 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
 
         Employee employeeObject = workforceManagementPage.getEmployeeObject();
 
-        Assert.assertEquals(employeeObject.getEmployeeKey(), employeeObjectShould.getEmployeeKey());
         Assert.assertEquals(employeeObject.getLastName(), employeeObjectShould.getLastName());
         Assert.assertEquals(employeeObject.getFirstName(), employeeObjectShould.getFirstName());
         Assert.assertEquals(employeeObject.getProfession(), employeeObjectShould.getProfession());
         Assert.assertEquals(employeeObject.getWorkingHours(), employeeObjectShould.getWorkingHours());
         Assert.assertEquals(employeeObject.getLunchBreakMinutes(), employeeObjectShould.getLunchBreakMinutes());
         Assert.assertEquals(employeeObject.getHolidays(), employeeObjectShould.getHolidays());
+        /**
+         * @todo <p lang=de>Ich möchte versuchen, ohne den EmployeeKee zu arbeiten.
+         * Statt dessen können wir sicherlich den vollen Namen verwenden.
+         * </p>
+         */
+        //Assert.assertEquals(employeeObject.getEmployeeKey(), employeeObjectShould.getEmployeeKey());
 
         NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
         Assert.assertEquals(employeeObject.getBranchString(networkOfBranchOffices), employeeObjectShould.getBranchString(networkOfBranchOffices));

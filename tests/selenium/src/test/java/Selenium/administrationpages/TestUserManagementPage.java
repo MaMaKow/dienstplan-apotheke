@@ -34,7 +34,7 @@ public class TestUserManagementPage extends TestPage {
         // Go to the User Management page
         UserManagementPage userManagementPage = new UserManagementPage(driver);
 
-        // Choose a user by key (replace 123 with the actual user key you want to test)
+        // Choose a user by key
         int userKey = 1;
         userManagementPage.goToUser(userKey);
 
@@ -46,7 +46,7 @@ public class TestUserManagementPage extends TestPage {
         Assert.assertEquals(userManagementPage.getUserKey(), userKey);
         Assert.assertEquals(userManagementPage.getUserName(), administratorUserName);
         Assert.assertEquals(userManagementPage.getUserEmail(), administratorEmail);
-        Assert.assertEquals(userManagementPage.getEmployeeKey(), 1);
+        Assert.assertEquals(userManagementPage.getEmployeeKey(), null);
         Assert.assertEquals(userManagementPage.getUserStatus(), "active");
 
         // You can also test privileges if needed.
@@ -67,7 +67,7 @@ public class TestUserManagementPage extends TestPage {
 
         // Go to the User Management page
         UserManagementPage userManagementPage = new UserManagementPage(driver);
-        int oldEmployeeKey = userManagementPage.getEmployeeKey();
+        Integer oldEmployeeKey = userManagementPage.getEmployeeKey();
         int newEmployeeKey = 3;
         userManagementPage.setEmployeeKey(newEmployeeKey);
         userManagementPage.submitForm();

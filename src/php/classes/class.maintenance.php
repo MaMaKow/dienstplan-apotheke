@@ -83,7 +83,7 @@ class maintenance {
             $this->cleanup_database_table_roster();
             $this->cleanup_database_table_users_lost_password_token();
             $this->cleanup_database_table_user_email_notification_cache();
-            $this->cleanup_database_table_users();
+            $this->cleanupDatabaseTableUsers();
             $this->cleanup_database_table_employees();
             /*
              * __destruct():
@@ -170,11 +170,20 @@ class maintenance {
         database_wrapper::instance()->run($sql_query);
     }
 
-    private function cleanup_database_table_users() {
-        $sql_query = "DELETE users FROM users LEFT JOIN employees
+    private function cleanupDatabaseTableUsers() {
+        $sqlQueryGetUsers = "SELECT `users`.`primary_key` as `user_key` FROM users LEFT JOIN employees
             ON users.employee_key = employees.primary_key
             WHERE employees.end_of_employment < NOW() - INTERVAL 1 month;";
-        database_wrapper::instance()->run($sql_query);
+        $result = database_wrapper::instance()->run($sqlQueryGetUsers);
+        while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+            $userKey = $row->user_key;
+            // Revoke privileges from user:
+            $sqlQueryUsersPrivileges = "DELETE users_privileges FROM users_privileges WHERE user_key = :user_key;";
+            database_wrapper::instance()->run($sqlQueryUsersPrivileges, array('user_key' => $userKey));
+            // Delete the user:
+            $sqlQueryUsers = "DELETE users FROM users WHERE primary_key = :user_key;";
+            database_wrapper::instance()->run($sqlQueryUsers, array('user_key' => $userKey));
+        }
     }
 
     private function cleanup_database_table_saturday_rotation_teams() {

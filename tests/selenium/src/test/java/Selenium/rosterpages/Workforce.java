@@ -52,6 +52,16 @@ public class Workforce {
         return listOfEmployees.get(employeeKey);
     }
 
+    public Employee getEmployeeByFullName(String employeeFullName) {
+        for (Employee employee : listOfEmployees.values()) {
+            String employeeFullNameCurrent = employee.getFirstName() + " " + employee.getLastName();
+            if (employeeFullName.equals(employeeFullNameCurrent)) {
+                return employee;
+            }
+        }
+        return null;
+    }
+
     public String getEmployeeLastNameByKey(int employeeKey) {
         return listOfEmployees.get(employeeKey).getLastName();
     }

@@ -1,33 +1,60 @@
-<h1>Welcome to Installation</h1>
+<!DOCTYPE html>
+<?php
+$language_ISO_639_1 = getLanguage();
 
-<p>With this option, it is possible to install PDR onto your server.</p>
+function getLanguage() {// Do not use :string return type declarations here to support PHP below 7.4.0 until this point!
+    $language_ISO_639 = filter_input(INPUT_GET, "language", FILTER_SANITIZE_SPECIAL_CHARS);
+    if ("en" === $language_ISO_639 or "eng" === $language_ISO_639) {
+        $language_ISO_639_1 = "en";
+    } elseif ("de" === $language_ISO_639 or "deu" === $language_ISO_639 or "ger" === $language_ISO_639) {
+        $language_ISO_639_1 = "de";
+    } else {
+        $language_ISO_639_1 = "en";
+    }
+    return $language_ISO_639_1;
+}
 
-<p>In order to proceed, you will need your database settings. If you do not know your database settings, please contact your host and ask for them. You will not be able to continue without them. You need:
-<ul>
-    <li>The Database Type - the database you will be using.</li>
-    <li>The Database server hostname or DSN - the address of the database server.</li>
-    <li>The Database server port - the port of the database server (most of the time this is not needed).</li>
-    <li>The Database name - the name of the database on the server.</li>
-    <li>The Database username and Database password - the login data to access the database.</li>
+/**
+ * @todo Respect the language choice of the user!
+ */
+?>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PDR Installation Wizard</title>
+    </head>
+    <body>
+        <h1>Welcome to the PDR Installation Wizard</h1>
 
-</ul>
+        <h2>Database Settings</h2>
+        <p>In order to proceed with the installation, you will need the following database settings:</p>
+        <ul>
+            <li>Database Type: [e.g., MySQL, MariaDB]</li>
+            <li>Database Server Hostname or DSN: [e.g., localhost]</li>
+            <li>Database Server Port: [e.g. 3306]</li>
+            <li>Database Name: [e.g., pdr_database]</li>
+            <li>Database Username: [e.g., pdr_user]</li>
+            <li>Database Passphrase: [your secure passphrase]</li>
+        </ul>
 
-<p>PDR currently only supports the following database system:
-<ul>
-    <li>MySQL 3.23 or above (MySQLi supported)</li>
-</ul>
+        <p>Please ensure you have this information ready before proceeding.</p>
 
-</p>
-<p>
-    After you enter your root or administrator login for your database, the installer creates a special database user with privileges limited to the pdr database.
-    Then pdr needs only the special pdr database user, and drops the root database login.
-    This user is named pdr and then given a random password.
-    The pdr database user and password are written into config.php
-    <br>
-    If the database does not exist yet, the installer tries to create it.
-    If the pdr user can not be created, then the installer will fallback to using the given administrator user and password.
-    This user might have more than the necessary privileges.
-</p>
-<form action="install_page_check_requirements.php" method="post">
-    <input type="submit" id="InstallPageWelcomeFormButton" value="<?= gettext("Next") ?>">
-</form>
+        <h2>Supported Database Systems</h2>
+        <p>PDR currently supports the following database systems:</p>
+        <ul>
+            <li>MySQL / MariaDB 5.1 or above</li>
+        </ul>
+
+        <h2>Database User Creation</h2>
+        <p>During installation, a special database user prefixed with 'pdr' will be created with limited privileges specifically for PDR.
+            If the database does not exist, the installer will attempt to create it.</p>
+        <p>This ensures secure access to the database while minimizing potential risks.</p>
+        <p> If the pdr user can not be created, then the installer will fallback to using the given administrator user and password.
+            This user might have more than the necessary privileges.</p>
+
+        <form action="install_page_check_requirements.php" method="post">
+            <input type="submit" id="InstallPageWelcomeFormButton" value="Next">
+        </form>
+    </body>
+</html>

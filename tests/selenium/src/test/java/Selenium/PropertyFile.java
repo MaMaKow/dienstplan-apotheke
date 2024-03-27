@@ -186,22 +186,6 @@ public class PropertyFile {
         return getPdrUserName();
     }
 
-    public String getAdministratorLastName() {
-        String property = properties.getProperty("administratorLastName");
-        if (null != property) {
-            return property;
-        }
-        return getPdrUserName();
-    }
-
-    public String getAdministratorFirstName() {
-        String property = properties.getProperty("administratorFirstName");
-        if (null != property) {
-            return property;
-        }
-        return getPdrUserName();
-    }
-
     public String getAdministratorEmail() {
         String property = properties.getProperty("administratorEmail");
         if (null != property) {

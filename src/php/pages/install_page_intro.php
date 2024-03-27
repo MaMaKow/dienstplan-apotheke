@@ -1,35 +1,34 @@
-<?php
-/*
- * Copyright (C) 2017 Mandelkow
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-?>
-<h1>Introduction</h1>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Introduction to PDR</title>
+    </head>
+    <body>
+        <h1>Introduction</h1>
 
-<h2>Welcome to PDR!</h2>
+        <h2>Welcome to PDR!</h2>
 
-<p>Pharmacy Duty Roster (PDR) is a web application that allows to operate a duty roster for pharmacies.
-    PDR started in 2015 as an alternative to a really simple excel sheet without formulas.
-    PDR aims to be user-friendly but at the same time cover all necessary features.
-    PDR continuously strives to improve. It is open to your requests and wishes.
-    I hope it will fulfill your expectations.</p>
+        <p>Pharmacy Duty Roster (PDR) is a web application designed to streamline and manage duty schedules for pharmacies effectively. It provides an alternative to traditional methods like excel sheets, offering user-friendly features while covering all necessary aspects of duty roster management.</p>
 
-<p>
-    These installation pages will guide you through installing PDR. For more information, I encourage you to read the installation guide.
-</p>
+        <p>PDR, initiated in 2015, aims to continuously improve based on user feedback. Your requests and wishes are valued contributions to its development, and it strives to meet your expectations.</p>
 
-<form action="install_page_welcome.php" method="post">
-    <input type="submit" id="InstallPageIntroFormButton" value="<?= gettext("Next") ?>">
-</form>
+        <p>These installation pages will guide you through the installation process of PDR. For more detailed instructions, please refer to the installation guide.</p>
+
+        <p>Please make sure to have at least PHP version 8.0 installed.</p>
+
+        <!-- Language Selection Option -->
+        <p>Select your preferred language:</p>
+        <form action="language_selection.php" method="post">
+            <select name="language">
+                <option value="english">English</option>
+                <option value="german">German</option>
+            </select>
+        </form>
+
+        <form action="install_page_welcome.php" method="get">
+            <input type="submit" id="InstallPageIntroFormButton" value="<?= gettext("Next") ?>">
+        </form>
+    </body>
+</html>
