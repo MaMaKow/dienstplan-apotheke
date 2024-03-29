@@ -19,15 +19,13 @@
         <p>Please make sure to have at least PHP version 8.0 installed.</p>
 
         <!-- Language Selection Option -->
-        <p>Select your preferred language:</p>
-        <form action="language_selection.php" method="post">
-            <select name="language">
-                <option value="english">English</option>
-                <option value="german">German</option>
-            </select>
-        </form>
-
         <form action="install_page_welcome.php" method="get">
+            <p>Select your preferred language:</p>
+            <select name="language">
+                <option value="en-GB">English</option>
+                <option value="de-DE">German</option>
+            </select>
+
             <input type="submit" id="InstallPageIntroFormButton" value="<?= gettext("Next") ?>">
         </form>
     </body>

@@ -16,15 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'install_head.php';
+require_once '../classes/PDR/Application/Installation/InstallUtility.php';
+require_once '../classes/class.localization.php';
+require_once '../classes/PDR/Utility/GeneralUtility.php';
+$installUtility = new \PDR\Application\Installation\InstallUtility();
+$languageInput = filter_input(INPUT_GET, "language", FILTER_SANITIZE_SPECIAL_CHARS);
+$languageBCP47 = localization::getLanguage($languageInput);
+localization::initialize_gettext($languageBCP47);
 if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
     /*
      * https://de.wikipedia.org/wiki/Post/Redirect/Get
      */
-    header("Location: install_page_database.php");
+    header("Location: install_page_database.php?language=" . $languageBCP47);
 }
-require_once 'install_head.php';
-require_once '../classes/PDR/Application/Installation/InstallUtility.php';
-$installUtility = new \PDR\Application\Installation\InstallUtility();
+
 $installConfiguration = new \PDR\Application\Installation\InstallConfiguration();
 $systemRequirementsValidator = new \PDR\Application\Installation\SystemRequirementsValidator($installUtility, $installConfiguration);
 $webserver_supports_https = $systemRequirementsValidator->webserverSupportsHttps($installConfiguration->getPdrFileSystemApplicationPath());
@@ -40,91 +46,94 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
         $phpExtensionRequirementsAreFulfilled &&
         $phpVersionRequirementIsFulfilled;
 ?>
-<p>This page is meant to check if:</p>
+<p><?= gettext("This page is meant to check if:") ?></p>
 <ul>
-    <li> the webserver supports HTTPS
+    <li> <?= gettext("the webserver supports HTTPS") ?>
         <?php
         /*
          * Check if we are running on https:
          */
         if ($webserver_supports_https) {
-            echo "<em class='install_info_postive'>passed</em>";
+            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class='install_info_negative'>failed</em>";
+            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
-    <li> PHP supports connections to a supported database
+    <li> <?= gettext("PHP supports connections to a supported database") ?>
         <?php
         /*
          * Check if there is any supported database driver available:
          */
         if ($databaseDriverIsInstalled) {
-            echo "<em class='install_info_postive'>passed</em>";
+            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class='install_info_negative'>failed</em>";
+            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
-    <li> required PHP extensions are loaded
+    <li> <?= gettext("required PHP extensions are loaded") ?>
         <?php
         /*
          * Check if the PHP version is new enough to support the required features:
          */
         if ($phpExtensionRequirementsAreFulfilled) {
-            echo "<em class='install_info_postive'>passed</em>";
+            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class='install_info_negative'>failed</em>";
+            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
-    <li> required PHP version is running
+    <li> <?= gettext("required PHP version is running") ?>
         <?php
         /*
          * Check if the PHP version is new enough to support the required features:
          */
         if ($phpVersionRequirementIsFulfilled) {
-            echo "<em class='install_info_postive'>passed</em>";
+            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class='install_info_negative'>failed</em>";
+            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
-    <li> directories (i.e. upload) are writable by the program
+    <li> <?= gettext("directories (e.g. upload) are writable by the program") ?>
         <?php
         /*
          * Check if there is write access to all write-necessary directories:
          */
         if ($pdrDirectoriesAreWritable) {
-            echo "<em class='install_info_postive'>passed</em>";
+            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class='install_info_negative'>failed</em>";
+            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
-    <li> secret directories (i.e. config) are not visible on the web
+    <li> <?= gettext("secret directories (e.g. config) are not visible on the web") ?>
         <?php
         /*
          * Check if there is a 403 forbidden error when trying to access hidden folders:
          */
         if ($pdrSecretDirectoriesAreNotVisible) {
-            echo "<em class='install_info_postive'>passed</em>";
+            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class='install_info_negative'>failed</em>";
+            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
             /**
              * @TODO 1. Test if this is an apache server!
              * @TODO 2. gettext()
              */
             echo "\n<br>You may want to add the following lines to the bottom of the apache configuration file:";
-            echo "<pre>&lt;Directory " . PDR_FILE_SYSTEM_APPLICATION_PATH . "&gt;
-   AllowOverride Limit Options
-&lt;/Directory&gt;</pre>
-";
+            echo "<pre>&lt;
+    Directory " . PDR_FILE_SYSTEM_APPLICATION_PATH . " & gt;
+    AllowOverride Limit Options
+    &lt;
+    /Directory&gt;
+    </pre>
+    ";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
@@ -133,7 +142,7 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
 <?php
 if (true === $allRequirementsAreSatisfied) {
     ?>
-    <form action="install_page_check_requirements.php" method="post">
+    <form action="install_page_check_requirements.php?language=<?= $languageBCP47 ?>" method="post">
         <input type="submit" id="InstallPageCheckRequirementsFormButton" name="InstallPageCheckRequirementsFormButton" value="<?= gettext("Next") ?>">
     </form>
 <?php } else { ?>

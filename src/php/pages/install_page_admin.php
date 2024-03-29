@@ -16,25 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once '../classes/PDR/Application/Installation/InstallUtility.php';
+require_once '../classes/class.localization.php';
+require_once '../classes/PDR/Utility/GeneralUtility.php';
 $installUtility = new \PDR\Application\Installation\InstallUtility();
+$languageInput = filter_input(INPUT_GET, "language", FILTER_SANITIZE_SPECIAL_CHARS);
+$languageBCP47 = localization::getLanguage($languageInput);
+localization::initialize_gettext($languageBCP47);
 $administrationInputHandler = new \PDR\Application\Installation\AdministrationInputHandler();
 if (filter_has_var(INPUT_POST, "user_name")) {
     $administrationInputHandler->handleUserInputAdministration();
 }
 require_once 'install_head.php';
 ?>
-<h1>Administrator configuration</h1>
+<h1><?= gettext("Administrator configuration") ?></h1>
 
 <form accept-charset='utf-8' method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <p>User name:<br>
+    <p><?= gettext("User name") ?>:<br>
         <input type="text" name="user_name" placeholder="Administrator username" required value="<?= (!empty($_SESSION['configuration']["user_name"])) ? $_SESSION['configuration']["user_name"] : "" ?>" />
     </p>
     <p>
-        Contact email address:<br>
+        <?= gettext("Contact email address") ?>:<br>
         <input type="email" name="email" placeholder="Contact email address:" required value="<?= (!empty($_SESSION['configuration']["email"])) ? $_SESSION['configuration']["email"] : "" ?>" />
     </p>
     <p>
-        Administrator password:<br>
+        <?= gettext("Administrator passphrase") ?>:<br>
         <input type="password" name="password" minlength="8" placeholder="Administrator password:" required />
         <br>
         <?php
@@ -43,7 +48,7 @@ require_once 'install_head.php';
         <?= gettext("Please enter a password with a minimum length of 8 characters.") ?>
     </p>
     <p>
-        Confirm administrator password:<br>
+        <?= gettext("Confirm administrator passphrase") ?>:<br>
         <input type="password" name="password2" minlength="8" placeholder="Confirm administrator password:" required />
     </p>
 

@@ -122,7 +122,9 @@ function print_debug_variable($variable) {
 /**
  * Test if PHP is running on a Windows machine.
  *
+ * @todo Move all the functions here to GeneralUtility class!
  * @return boolean True if Operating system is Windows.
+ * @deprecated since version 0.27.1
  */
 function running_on_windows() {
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {

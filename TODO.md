@@ -367,3 +367,7 @@ und Silvester
 ./src/php/pages/overtime-edit.php
 #### Sonntagsarbeit
 PTA erhalten an Sonntagen 85% Zuschlag auf ihre Stunden
+#### Feiertage
+https://www.pharmazeutische-zeitung.de/wie-werden-feiertage-richtig-abgerechnet-146396/
+... dass für Feiertage die Zeit gutgeschrieben werden muss, die man ansonsten normalerweise gearbeitet hätte (§ 2 Entgeltfortzahlungsgesetz). ...
+

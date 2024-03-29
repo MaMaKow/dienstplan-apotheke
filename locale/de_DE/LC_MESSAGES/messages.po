@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2024-02-27 21:39+0100\n"
-"PO-Revision-Date: 2024-02-27 21:43+0100\n"
+"POT-Creation-Date: 2024-03-29 10:26+0100\n"
+"PO-Revision-Date: 2024-03-29 10:41+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -71,10 +71,6 @@ msgstr "Fehler beim Erstellen des administrativen Benutzers."
 msgid "Administrative user already exists."
 msgstr "Der administrative Benutzende existiert bereits."
 
-#: src/php/classes/PDR/Application/Installation/AdministrationInputHandler.php:
-msgid "Error while trying to create administrative user privileges."
-msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
-
 #: src/php/classes/PDR/Application/Installation/DatabaseInputHandler.php:
 msgid "Error while trying to create the database."
 msgstr "Fehler beim Erstellen der Datenbank."
@@ -90,6 +86,10 @@ msgstr "Fehler beim Befüllen der Datenbank-Tabellen."
 #: src/php/classes/PDR/Application/Installation/InstallConfiguration.php:
 msgid "Error while writing the configuration to the filesystem."
 msgstr "Fehler beim Schreiben der Konfigurationsdatei."
+
+#: src/php/classes/PDR/Application/Installation/InstallDatabase.php:
+msgid "Error while trying to create administrative user privileges."
+msgstr "Fehler beim Erstellen der Privilegien des administrativen Benutzers."
 
 # Listing elements one two AND three
 #: src/php/classes/PDR/Application/Installation/InstallUtility.php:
@@ -541,10 +541,6 @@ msgstr "Es ist Zeit für eine Pause."
 #: src/php/classes/class.iCalendar.php:
 msgid "The Lunch break ends now."
 msgstr "Die Pause endet jetzt."
-
-#: src/php/classes/class.install.php:
-msgid "There already is a configuration file."
-msgstr "Es existiert bereits eine Konfigurationsdatei."
 
 #: src/php/classes/class.localization.php:
 msgid "Monday"
@@ -1040,6 +1036,7 @@ msgid "Application name"
 msgstr "Programm-Name"
 
 #: src/php/pages/configuration.php:
+#: src/php/pages/install_page_database.php:
 msgid "Database name"
 msgstr "Datenbank Name"
 
@@ -1298,8 +1295,74 @@ msgid "Register"
 msgstr "Registrieren"
 
 #: src/php/pages/install_page_admin.php:
+msgid "Administrator configuration"
+msgstr "Administrierenden Konfiguration"
+
+#: src/php/pages/install_page_admin.php: src/php/register.php:
+msgid "User name"
+msgstr "Benutzername"
+
+#: src/php/pages/install_page_admin.php:
+msgid "Contact email address"
+msgstr "E-Mail-Adresse der Kontaktperson"
+
+#: src/php/pages/install_page_admin.php:
+msgid "Administrator password"
+msgstr "Administration Passphrase"
+
+#: src/php/pages/install_page_admin.php:
 msgid "Please enter a password with a minimum length of 8 characters."
 msgstr "Bitte wählen Sie eine Passphrase mit mindestens 8 Zeichen."
+
+#: src/php/pages/install_page_admin.php:
+msgid "Confirm administrator password"
+msgstr "Admin Passphrase bestätigen"
+
+#: src/php/pages/install_page_check_requirements.php:
+msgid "This page is meant to check if:"
+msgstr "Diese Seite dient der Überprüfung, ob:"
+
+#: src/php/pages/install_page_check_requirements.php:
+msgid "the webserver supports HTTPS"
+msgstr "der Webserver unterstützt HTTPS"
+
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+msgid "passed"
+msgstr "bestanden"
+
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+#: src/php/pages/install_page_check_requirements.php:
+msgid "failed"
+msgstr "fehlgeschlagen"
+
+#: src/php/pages/install_page_check_requirements.php:
+msgid "PHP supports connections to a supported database"
+msgstr "PHP unterstützt Verbindungen zu einer unterstützten Datenbank"
+
+#: src/php/pages/install_page_check_requirements.php:
+msgid "required PHP extensions are loaded"
+msgstr "erforderliche PHP-Erweiterungen sind geladen"
+
+#: src/php/pages/install_page_check_requirements.php:
+msgid "required PHP version is running"
+msgstr "erforderliche PHP-Version läuft"
+
+#: src/php/pages/install_page_check_requirements.php:
+msgid "directories (e.g. upload) are writable by the program"
+msgstr "Verzeichnisse (z.B. upload) sind für das Programm beschreibbar"
+
+#: src/php/pages/install_page_check_requirements.php:
+msgid "secret directories (e.g. config) are not visible on the web"
+msgstr "geheime Verzeichnisse (z. B. config) sind im Web nicht sichtbar"
 
 #: src/php/pages/install_page_check_requirements.php:
 #: src/php/pages/install_page_intro.php:
@@ -1313,6 +1376,123 @@ msgstr "Wiederholen"
 #: src/php/pages/install_page_database.php:
 msgid "There was an error while trying to create the database."
 msgstr "Bei der Erstellung der Datenbank trat ein Fehler auf."
+
+#: src/php/pages/install_page_database.php:
+msgid "Database configuration"
+msgstr "Datenbank Konfiguration"
+
+#: src/php/pages/install_page_database.php:
+msgid "Database type (DBMS)"
+msgstr "Datenbanktyp (DBMS)"
+
+#: src/php/pages/install_page_database.php:
+msgid "Database server hostname"
+msgstr "Datenbankserver Hostname"
+
+#: src/php/pages/install_page_database.php:
+msgid "Database server port"
+msgstr "Datenbankserver Port"
+
+#: src/php/pages/install_page_database.php:
+msgid "Database username"
+msgstr "Datenbank Anmeldename"
+
+#: src/php/pages/install_page_database.php:
+msgid "Database passphrase"
+msgstr "Datenbank Passphrase"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Welcome to the PDR Installation Wizard"
+msgstr "Willkommen beim PDR-Installationsassistenten"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database Settings"
+msgstr "Datenbank Einstellungen"
+
+#: src/php/pages/install_page_welcome.php:
+msgid ""
+"In order to proceed with the installation, you will need the following "
+"database settings:"
+msgstr ""
+"Um mit der Installation fortfahren zu können, benötigen Sie die folgenden "
+"Datenbankeinstellungen:"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database Type: [e.g., MySQL, MariaDB]"
+msgstr "Datenbank-Typ: [MySQL]"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database Server Hostname or DSN: [e.g., localhost]"
+msgstr "Datenbankserver Hostname oder DSN: [z.B. localhost]"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database Server Port: [e.g. 3306]"
+msgstr "Datenbankserver Port: [z.B. 3306]"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database Name: [e.g., pdr_database]"
+msgstr "Name der Datenbank: [z.B. Dienstplan]"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database Username: [e.g., pdr_user]"
+msgstr "Datenbank Anmeldename: [z.B. dienstplan_user]"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database Passphrase: [your secure passphrase]"
+msgstr "Datenbank-Passphrase: [Ihre sichere Passphrase]"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Please ensure you have this information ready before proceeding."
+msgstr ""
+"Bitte stellen Sie sicher, dass Sie diese Informationen bereithalten, bevor "
+"Sie fortfahren."
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Supported Database Systems"
+msgstr "Unterstützte Datenbanksysteme"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "PDR currently supports the following database systems:"
+msgstr "PDR unterstützt derzeit die folgenden Datenbanksysteme:"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "MySQL / MariaDB 5.1 or above"
+msgstr "MySQL / MariaDB 5.1 oder höher"
+
+#: src/php/pages/install_page_welcome.php:
+msgid "Database User Creation"
+msgstr "Erstellung von Datenbankanmeldenamen"
+
+#: src/php/pages/install_page_welcome.php:
+msgid ""
+"During installation, a special database user prefixed with 'pdr' will be "
+"created with limited privileges specifically for PDR.\n"
+"            If the database does not exist, the installer will attempt to "
+"create it."
+msgstr ""
+"Während der Installation wird ein spezieller Datenbankbenutzer mit dem "
+"Präfix \"pdr\" mit eingeschränkten Rechten speziell für PDR erstellt.\n"
+"            Wenn die Datenbank nicht existiert, versucht das "
+"Installationsprogramm, sie zu erstellen."
+
+#: src/php/pages/install_page_welcome.php:
+msgid ""
+"This ensures secure access to the database while minimizing potential risks."
+msgstr ""
+"Dies gewährleistet einen sicheren Zugriff auf die Datenbank und minimiert "
+"gleichzeitig mögliche Risiken."
+
+#: src/php/pages/install_page_welcome.php:
+msgid ""
+"If the pdr user can not be created, then the installer will fallback to "
+"using the given administrator user and password.\n"
+"            This user might have more than the necessary privileges."
+msgstr ""
+"Wenn der pdr-Anmeldename nicht erstellt werden kann, greift das "
+"Installationsprogramm auf den angegebenen Administrator-Anmeldenamen und das "
+"Passwort zurück.\n"
+"            Dieser Benutzer hat möglicherweise mehr als die erforderlichen "
+"Rechte."
 
 #: src/php/pages/list_of_artwork.php:
 msgid ""
@@ -1798,10 +1978,6 @@ msgid "Unfortunately, an error occurred while saving."
 msgstr "Beim Abspeichern ist leider ein Fehler aufgetreten."
 
 #: src/php/register.php:
-msgid "User name"
-msgstr "Benutzername"
-
-#: src/php/register.php:
 msgid "Passphrase"
 msgstr "Passphrase"
 
@@ -1849,6 +2025,17 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 #: tests/get-database-structure.php:
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
+
+#~ msgid "Database password"
+#~ msgstr "Datenbank Passphrase"
+
+#, fuzzy
+#~| msgid "Database name"
+#~ msgid "Database name:"
+#~ msgstr "Datenbank Name"
+
+#~ msgid "There already is a configuration file."
+#~ msgstr "Es existiert bereits eine Konfigurationsdatei."
 
 #~ msgid "Error while trying to create employee."
 #~ msgstr "Fehler beim Erstellen der Mitarbeitenden."

@@ -16,7 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once '../classes/PDR/Application/Installation/InstallUtility.php';
+require_once '../classes/class.localization.php';
+require_once '../classes/PDR/Utility/GeneralUtility.php';
 $installUtility = new \PDR\Application\Installation\InstallUtility();
+$languageInput = filter_input(INPUT_GET, "language", FILTER_SANITIZE_SPECIAL_CHARS);
+$languageBCP47 = localization::getLanguage($languageInput);
+localization::initialize_gettext($languageBCP47);
 if (filter_has_var(INPUT_POST, "database_user")) {
     $databaseInputHandler = new \PDR\Application\Installation\DatabaseInputHandler();
     if (FALSE === $databaseInputHandler->handleUserInputDatabase()) {
@@ -48,34 +53,34 @@ if (isset($_SESSION['configuration']["database_name"])) {
     $database_name = "";
 }
 ?>
-<H1>Database configuration</H1>
+<H1><?= gettext("Database configuration") ?></H1>
 
 <form accept-charset='utf-8' method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
     <p>
-        <LABEL for="database_management_system">Database type (DBMS):</LABEL><br>
+        <LABEL for="database_management_system"><?= gettext("Database type (DBMS)") ?>:</LABEL><br>
         <select name="database_management_system" id="database_management_system">
             <option value="mysql">MySQL</option>
         </select>
     </p><p>
-        <LABEL for="database_host">Database server hostname:</LABEL><br>
+        <LABEL for="database_host"><?= gettext("Database server hostname") ?>:</LABEL><br>
         <input type="text" id="database_host" name="database_host" value="<?= htmlspecialchars($database_host) ?>" />
         <BR>
     </p><p>
 
-        <LABEL for="database_port">Database server port:</LABEL><br>
+        <LABEL for="database_port"><?= gettext("Database server port") ?>:</LABEL><br>
         <input type="text" id="database_port" name="database_port" value="<?= htmlspecialchars($database_port) ?>" /><!--standard value 3306-->
         <br><span class="hint">Leave this blank unless you know the server operates on a non-standard port.<span>
             </p><p>
 
-            <LABEL for="database_user">Database username:</LABEL><br>
+            <LABEL for="database_user"><?= gettext("Database username") ?>:</LABEL><br>
             <input type="text" id="database_user" name="database_user" value="<?= htmlspecialchars($database_user) ?>" />
         </p><p>
 
-            <LABEL for="database_password">Database password:</LABEL><br>
+            <LABEL for="database_password"><?= gettext("Database passphrase") ?>:</LABEL><br>
             <input type="password" id="database_password" name="database_password" value="" />
         </p><p>
 
-            <LABEL for="database_name">Database name:</LABEL><br>
+            <LABEL for="database_name"><?= gettext("Database name") ?>:</LABEL><br>
             <input type="text" id="database_name" name="database_name" value="<?= htmlspecialchars($database_name) ?>" />
         </p><p>
             <?php

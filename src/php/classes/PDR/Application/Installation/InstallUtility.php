@@ -36,7 +36,9 @@ class InstallUtility {
         $this->pdrFileSystemApplicationPath = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__)))))) . "/";
         $folderTreeDepthInChars = \strlen(\substr(\getcwd(), \strlen(__DIR__)));
         $this->pdrServerApplicationPath = \dirname(\dirname(\dirname(\substr(\dirname($_SERVER["SCRIPT_NAME"]), 0, \strlen(\dirname($_SERVER["SCRIPT_NAME"])) - $folderTreeDepthInChars)))) . "/";
-
+        if (!defined('PDR_FILE_SYSTEM_APPLICATION_PATH')) {
+            define('PDR_FILE_SYSTEM_APPLICATION_PATH', $this->pdrFileSystemApplicationPath);
+        }
         /**
          * Define an autoloader:
          */

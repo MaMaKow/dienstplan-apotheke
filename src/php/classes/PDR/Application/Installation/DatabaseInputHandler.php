@@ -91,8 +91,10 @@ class DatabaseInputHandler {
             /*
              * Success, we move to the next page.
              */
-            header("Location: install_page_admin.php");
-            die("<a href='install_page_admin.php'>Please move on to administrative user configuration!</a>");
+            $languageInput = filter_input(INPUT_GET, "language", FILTER_SANITIZE_SPECIAL_CHARS);
+            $languageBCP47 = \localization::getLanguage($languageInput);
+            header("Location: install_page_admin.php?language=" . $languageBCP47);
+            die("<a href='install_page_admin.php?language=" . $languageBCP47 . "'>Please move on to administrative user configuration!</a>");
         } else {
             return FALSE;
         }

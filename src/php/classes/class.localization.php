@@ -46,7 +46,7 @@ abstract class localization {
      *  public static
      */
     public static function initialize_gettext($locale) {
-        if (running_on_windows()) {
+        if (\PDR\Utility\GeneralUtility::runningOnWindows()) {
             /*
              * Windows accepts the locale string as en-GB while linux accepts en_GB.
              * These lines replace the underscore _ by the dash - and vice versa.
@@ -131,5 +131,24 @@ abstract class localization {
             12 => gettext('December'),
         );
         return $Month_names;
+    }
+
+    public static function getLanguage($languageInput) {// Do not use :string return type declarations here to support PHP below 7.4.0 until this point!
+        switch ($languageInput) {
+            case "en-GB":
+            case "en_GB":
+            case "eng":
+            case "en":
+                return "en-GB";
+
+            case "de-DE":
+            case "de_DE":
+            case "ger":
+            case "deu":
+            case "de":
+                return "de-DE";
+            default:
+                return "en-GB";
+        }
     }
 }
