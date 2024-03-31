@@ -204,7 +204,7 @@ class user {
         return $this->privileges;
     }
 
-    public function has_privilege(String $privilege) {
+    public function has_privilege(string $privilege) {
         if (empty($this->privileges)) {
             $this->read_privileges_from_database();
         }

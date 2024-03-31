@@ -24,7 +24,7 @@ $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 $mandant = $branch_id;
-create_cookie('mandant', $branch_id, 30);
+\PDR\Utility\GeneralUtility::createCookie('mandant', $branch_id, 30);
 
 $overlay_message_html = "";
 
@@ -33,7 +33,7 @@ $date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
 $date_unix = strtotime($date_sql);
 $date_sql_start = $date_sql;
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
-create_cookie('datum', $date_sql, 0.5);
+\PDR\Utility\GeneralUtility::createCookie('datum', $date_sql, 0.5);
 $date_unix_start = $date_unix;
 $date_start_object = new DateTime();
 $date_start_object->setTimestamp($date_unix_start);

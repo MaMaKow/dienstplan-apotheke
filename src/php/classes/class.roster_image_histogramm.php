@@ -31,6 +31,7 @@ abstract class roster_image_histogramm {
 
         $canvas_text .= "ctx.moveTo($x_start, $y_start);\n";
         foreach ($Expectation as $time => $packages) {
+            $x_pos = (\PDR\DateTime\DateTimeUtility::timeFromTextToFloat($time) - $start_time) + $outer_margin_x / $width_factor;
             $x_pos = (time_from_text_to_int($time) - $start_time) + $outer_margin_x / $width_factor;
             $y_pos = ($packages * -1) - ($outer_margin_y / $height_factor);
             $canvas_text .= "ctx.lineTo($x_pos, $y_pos);\n";

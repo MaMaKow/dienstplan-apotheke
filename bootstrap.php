@@ -102,11 +102,6 @@ ini_set('error_log', $config['error_log']); //Which file should errors be logged
 error_reporting($config['error_reporting']); //Which errors should be reported?
 
 /*
- * We want some functions to be accessible in all scripts.
- */
-require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "funktionen.php";
-
-/*
  * Setup the presentation of time values:
   //setlocale(LC_ALL, 'de_DE'); // Leider versteht die Datenbank dann nicht mehr, was die Kommata sollen.
  */

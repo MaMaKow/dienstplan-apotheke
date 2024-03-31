@@ -21,7 +21,7 @@ $user_dialog = new user_dialog();
 
 $user_key = user_input::get_variable_from_any_input('user_key', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->get_primary_key());
 $user = new user($user_key);
-create_cookie('user_key', $user_key, 30);
+\PDR\Utility\GeneralUtility::createCookie('user_key', $user_key, 30);
 
 function insert_user_data_into_database(user &$user) {
     global $session;

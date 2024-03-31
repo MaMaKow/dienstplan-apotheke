@@ -23,9 +23,9 @@ $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_I
 $dateStartObject = new DateTime("$year-01-01");
 $dateEndObject = new DateTime("$year-12-31");
 $workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
-create_cookie('year', $year, 1);
+\PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-create_cookie('employee_key', $employee_key, 1);
+\PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
 
 overtime::handle_user_input($session, $employee_key);
 if (isset($_POST) && !empty($_POST)) {

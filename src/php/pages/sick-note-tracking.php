@@ -22,9 +22,9 @@
 
 require '../../../default.php';
 $month_number = (int) user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_NUMBER_INT, date('n'));
-create_cookie("month_number", $month_number, 1);
+\PDR\Utility\GeneralUtility::createCookie("month_number", $month_number, 1);
 $year = (int) user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
-create_cookie("year", $year, 1);
+\PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted
     $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/sick-note-tracking.php' . "?year=$year&month_number=$month_number";

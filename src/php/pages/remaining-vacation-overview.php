@@ -19,7 +19,7 @@
 
 require_once '../../../default.php';
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
-create_cookie('year', $year, 1);
+\PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted; PRG
     $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/remaining-vacation-overview.php' . "?year=$year";

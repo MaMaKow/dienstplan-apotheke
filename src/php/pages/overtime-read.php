@@ -18,7 +18,7 @@
 require '../../../default.php';
 $workforce = new workforce();
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-create_cookie('employee_key', $employee_key, 1);
+\PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
 $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` DESC";
 $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));
 $tablebody = "<tbody>\n";

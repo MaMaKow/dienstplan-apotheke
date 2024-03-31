@@ -60,7 +60,7 @@ function write_new_table_data() {
             $table_structure_create_with_increment = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
             $table_structure_create = preg_replace('/AUTO_INCREMENT=[0-9]*/', '', $table_structure_create_with_increment);
             $GLOBALS['text_to_be_hashed'] .= $table_structure_create;
-            if (TRUE === running_on_windows()) {
+            if (TRUE === \PDR\Utility\GeneralUtility::runningOnWindows()) {
                 $file_name = iconv("UTF-8", "ISO-8859-1", $table_name); //This is necessary for Microsoft Windows to recognise special chars.
             } else {
                 //$file_name = iconv("ISO-8859-15", "UTF-8", $table_name);

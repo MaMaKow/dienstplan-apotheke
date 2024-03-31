@@ -20,13 +20,13 @@
 require '../../../default.php';
 
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y'));
-create_cookie("year", $year, 1);
+\PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 $date_object_start = new DateTime("first sat of jan $year");
 $date_object_end = new DateTime("last sat of dec $year");
 
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
-create_cookie("mandant", $branch_id, 30);
+\PDR\Utility\GeneralUtility::createCookie("mandant", $branch_id, 30);
 
 $user_dialog = new user_dialog();
 

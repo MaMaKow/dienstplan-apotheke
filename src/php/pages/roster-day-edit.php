@@ -25,10 +25,10 @@ require '../../../default.php';
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
-create_cookie("mandant", $branch_id, 30);
+\PDR\Utility\GeneralUtility::createCookie("mandant", $branch_id, 30);
 
 $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y-m-d'));
-create_cookie("datum", $date_sql, 0.5);
+\PDR\Utility\GeneralUtility::createCookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 $dateObject = new DateTime($date_sql);
 $workforce = new workforce($date_sql);

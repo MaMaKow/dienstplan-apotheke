@@ -23,7 +23,7 @@ require_once '../../../default.php';
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
-create_cookie('mandant', $branch_id, 30);
+\PDR\Utility\GeneralUtility::createCookie('mandant', $branch_id, 30);
 /*
  * @var $number_of_days int Number of days to show.
  * This page will show the roster of one single day.
@@ -34,7 +34,7 @@ $user_dialog = new user_dialog();
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_unix = strtotime($date_sql);
 $date_object = new DateTime($date_sql);
-create_cookie("datum", $date_sql, 0.5);
+\PDR\Utility\GeneralUtility::createCookie("datum", $date_sql, 0.5);
 
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);
 

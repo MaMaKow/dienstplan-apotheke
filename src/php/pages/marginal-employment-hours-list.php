@@ -37,8 +37,8 @@ const PDR_YEAR_FULL = 1212;
 
 $month_or_part = user_input::get_variable_from_any_input('month_or_part', FILTER_SANITIZE_NUMBER_INT, date('n'));
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
-create_cookie('month_or_part', $month_or_part, 1);
-create_cookie('year', $year, 1);
+\PDR\Utility\GeneralUtility::createCookie('month_or_part', $month_or_part, 1);
+\PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
 if ($month_or_part <= 12) {
     $date_start_object = new DateTime($year . '-' . $month_or_part . '-' . 1);
     $date_end_object = clone $date_start_object;
@@ -88,7 +88,7 @@ if ($month_or_part <= 12) {
 
 $workforce = new workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-create_cookie('employee_key', $employee_key, 1);
+\PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
 if (!$workforce->employee_exists($employee_key)) {
     $employee_key = $workforce->get_default_employee_key();
 }

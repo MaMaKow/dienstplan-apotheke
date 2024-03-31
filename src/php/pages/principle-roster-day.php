@@ -32,12 +32,12 @@ $date_object = $alternating_week->get_monday_date_for_alternating_week(new DateT
 if ($weekday > 1) {
     $date_object->add(new DateInterval('P' . ($weekday - 1) . 'D'));
 }
-create_cookie('mandant', $branch_id, 30);
+\PDR\Utility\GeneralUtility::createCookie('mandant', $branch_id, 30);
 /*
  * weekday
  */
-create_cookie('alternating_week_id', $alternating_week_id, 1);
-create_cookie('weekday', $weekday, 1);
+\PDR\Utility\GeneralUtility::createCookie('alternating_week_id', $alternating_week_id, 1);
+\PDR\Utility\GeneralUtility::createCookie('weekday', $weekday, 1);
 $workforce = new workforce($date_object->format('Y-m-d'));
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 

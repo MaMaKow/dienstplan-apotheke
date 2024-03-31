@@ -39,4 +39,67 @@ abstract class GeneralUtility {
         }
         return false;
     }
+
+    /**
+     * Logs a variable along with its name and context to the error log.
+     *
+     * @param mixed $variable The variable to log.
+     */
+    public static function printDebugVariable($variable) {
+        /*
+         * Enhanced with https://stackoverflow.com/a/19788805/2323627
+         */
+        $line = 0;
+        $name = '';
+        $argument_list = func_get_args();
+        /**
+         * Retrieve caller information.
+         */
+        $backtrace = debug_backtrace()[0];
+        /*
+         * Open the source file returned by debug_backtrace and find the line which called this function:
+         */
+        $fh = fopen($backtrace['file'], 'r');
+        while (++$line <= $backtrace['line']) {
+            $code = fgets($fh);
+        }
+        fclose($fh);
+        /*
+         * In the found line of source code, grep for the argument (= variable name):
+         */
+        preg_match('/' . __FUNCTION__ . '\s*\((.*)\)\s*;/u', $code, $name);
+        $variable_name = trim($name[1]);
+        /*
+         * Write a structured output to the standard error log:
+         */
+        error_log('in file: ' . $backtrace['file'] . "\n on line: " . $backtrace['line'] . "\n variable: " . $variable_name . "\n value:\n " . var_export($argument_list, TRUE));
+    }
+
+    /**
+     * @param string $cookie_name Name of the cookie.
+     * @param mixed $cookie_value Value to be stored inside the cookie.
+     * @param int $days The number of days until expiration.
+     * @return null
+     */
+    public static function createCookie(string $cookie_name, $cookie_value, float $days = 7) {
+        if (isset($cookie_name) AND isset($cookie_value)) {
+            $minutes = round($days * 24 * 60);
+            $Expire_obj = (new \DateTime())->add(new \DateInterval('PT' . $minutes . 'M'));
+            //function setcookie(string $name, string $value = "", int $expires = 0, string $path = "", string $domain = "", bool $secure = FALSE, bool $httponly = FALSE): bool {}
+            $name = $cookie_name;
+            $value = $cookie_value;
+            $expires = $Expire_obj->getTimestamp();
+            $path = PDR_HTTP_SERVER_APPLICATION_PATH;
+            $domain = "." . PDR_HTTP_SERVER_DOMAIN; //The dot is necessary for all domains, which are no subdomains, at least for some browsers.
+            $arr_cookie_options = array(
+                'expires' => $expires,
+                'path' => $path,
+                'domain' => $domain, // leading dot for compatibility or use subdomain
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => "Strict", // None || Lax  || Strict
+            );
+            setcookie($name, $value, $arr_cookie_options);
+        }
+    }
 }

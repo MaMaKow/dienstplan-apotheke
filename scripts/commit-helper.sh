@@ -22,6 +22,14 @@ echo "major: $current_version_major";
 echo "minor: $current_version_minor";
 echo "patch: $current_version_patch";
 
+# Pfad zur messages.po-Datei
+po_file="./locale/de_DE/LC_MESSAGES/messages.po"
+# Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
+sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
+sed -i 's/\(#:[[:space:]]*[^0-9]*:\)[0-9]*/\1/' "$po_file"
+echo "In Kommentaren wurden Zeilenangaben aus der $po_file-Datei entfernt."
+git add "$po_file"
+
 # echo "Writting current state of the database structure into the src/sql/ folder";
 # php "tests\get-database-structure.php";
 
@@ -89,13 +97,6 @@ echo "Created a new database version hash:"
 cat ./src/php/database_version_hash.php
 git add "./src/php/database_version_hash.php"
 
-# Pfad zur messages.po-Datei
-po_file="./locale/de_DE/LC_MESSAGES/messages.po"
-# Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
-sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
-sed -i 's/\(#:[[:space:]]*[^0-9]*:\)[0-9]*/\1/' "$po_file"
-echo "In Kommentaren wurden Zeilenangaben aus der $po_file-Datei entfernt."
-git add "$po_file"
 
 read -p "Ready to CREATE commit message, COMMIT and sign the changes? [y/n] " -N 1 decision_commit;
 if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]

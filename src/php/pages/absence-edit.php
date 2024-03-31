@@ -22,8 +22,9 @@ $dateStartObject = new \DateTime("$year-01-01");
 $dateEndObject = new \DateTime("$year-12-31");
 $workforce = new \workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
 $employee_key = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-create_cookie('year', $year, 1);
-create_cookie('employee_key', $employee_key, 30);
+\PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
+\PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
+\PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 30);
 $userDialog = new \user_dialog();
 $userDialog->readMessagesFromSession();
 

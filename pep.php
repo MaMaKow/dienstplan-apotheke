@@ -42,9 +42,14 @@ function read_file_write_db($filename) {
     while (($line = fgets($handle)) !== false) {
         $hash = hash('sha256', $line); //The hash is stored binary in the database.
         $line_string = str_replace(array("\r\n", "\n", "\r"), '', $line); //remove CR LF from the
+        /**
+         * This explode should work for both, ADG and awinta.
+         * But sales_value contains a dot for ADG and a comma for awinta.
+         * Anyway, we do not care about this value.
+         */
         list($date, $time, $sales_value, $sales_count, $foo, $branch) = explode(';', $line_string);
         unset($sales_value, $foo);
-        if (!is_valid_date($date) OR ! is_valid_date($time) OR ! is_numeric($sales_count) OR ! is_numeric($branch)) {
+        if (!is_valid_date($date) OR !is_valid_date($time) OR !is_numeric($sales_count) OR !is_numeric($branch)) {
             continue;
         }
         $sql_date = date('Y-m-d', strtotime($date));

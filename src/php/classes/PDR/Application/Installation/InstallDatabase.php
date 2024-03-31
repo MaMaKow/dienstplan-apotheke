@@ -238,7 +238,7 @@ class InstallDatabase {
                 error_log(print_r($statement->errorInfo(), TRUE));
                 error_log("Error while creating the database tables. Not all tables could be created.");
                 error_log("Failed statements:");
-                print_debug_variable($listOfFailedStatements);
+                \PDR\Utility\GeneralUtility::printDebugVariable($listOfFailedStatements);
                 //TODO: Report also to the administrator on the screen.
                 break;
             }

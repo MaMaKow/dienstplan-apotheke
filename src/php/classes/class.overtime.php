@@ -72,7 +72,7 @@ class overtime {
                 $user_dialog->add_message(gettext('There is already an entry on this date.'), E_USER_ERROR);
                 $user_dialog->add_message(gettext('The data was therefore not inserted in the database.'), E_USER_WARNING);
             } else {
-                print_debug_variable($exception);
+                \PDR\Utility\GeneralUtility::printDebugVariable($exception);
                 $message = gettext('There was an error while querying the database.')
                         . " " . gettext('Please see the error log for more details!');
                 die("<p>$message</p>");

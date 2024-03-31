@@ -26,14 +26,14 @@ $date_start_object = new DateTime($date_sql);
 $date_end_object = clone $date_start_object;
 $date_end_object->add(new DateInterval('P6D'));
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
-create_cookie('datum', $date_sql, 1);
+\PDR\Utility\GeneralUtility::createCookie('datum', $date_sql, 1);
 $workforce = new workforce($date_sql_start, $date_sql_end);
 
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 if (!$workforce->employee_exists($employee_key)) {
     $_SESSION['user_object']->employee_key;
 }
-create_cookie('employee_key', $employee_key, 1);
+\PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
 /*
  * Get a list of employees:
  */

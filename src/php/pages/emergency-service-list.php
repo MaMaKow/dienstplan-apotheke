@@ -22,9 +22,9 @@ $ListOfBranchObjects = $networkOfBranchOffices->get_list_of_branch_objects();
 $branchId = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $networkOfBranchOffices->get_main_branch_id());
 $dateSql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y', strtotime($dateSql)));
-create_cookie('mandant', $branchId, 30);
-create_cookie('datum', $dateSql, 0.5);
-create_cookie('year', $year, 0.5);
+\PDR\Utility\GeneralUtility::createCookie('mandant', $branchId, 30);
+\PDR\Utility\GeneralUtility::createCookie('datum', $dateSql, 0.5);
+\PDR\Utility\GeneralUtility::createCookie('year', $year, 0.5);
 $workforce = new workforce($year . "-01-01", $year . "-12-31");
 
 \PDR\Input\EmergencyServiceInputHandler::handleUserInput($session);

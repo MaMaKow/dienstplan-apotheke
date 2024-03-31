@@ -281,7 +281,7 @@ class user_dialog_email {
             switch ($config['email_method']) {
                 case 'smtp':
                     if (!isset($config['email_smtp_host'], $config['email_smtp_port'], $config['email_smtp_username'], $config['email_smtp_password'])) {
-                        print_debug_variable('Error while sending mail: SMTP not correctly configured');
+                        \PDR\Utility\GeneralUtility::printDebugVariable('Error while sending mail: SMTP not correctly configured');
                         return FALSE;
                     }
                     $mail->isSMTP();
@@ -327,7 +327,7 @@ class user_dialog_email {
             $mail_success = $mail->send();
             return $mail_success;
         } catch (Exception $exception) {
-            print_debug_variable('Email Message could not be sent. Mailer Error: ', $mail->ErrorInfo, $exception);
+            \PDR\Utility\GeneralUtility::printDebugVariable('Email Message could not be sent. Mailer Error: ', $mail->ErrorInfo, $exception);
             $user_dialog = new user_dialog;
             $user_dialog->add_message(gettext('Error while trying to send email.') . ' ' . gettext('Please see the error log for details!'));
             return FALSE;

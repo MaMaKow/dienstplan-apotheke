@@ -23,14 +23,14 @@ $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 $mandant = $branch_id;
-create_cookie('mandant', $mandant, 30);
+\PDR\Utility\GeneralUtility::createCookie('mandant', $mandant, 30);
 
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
 $dateStartObject = new DateTime($date_sql);
 $dateEndObject = (clone $dateStartObject)->add(new DateInterval('P' . ($tage - 1) . 'D'));
 $date_unix_start = strtotime($date_sql);
-create_cookie("datum", $date_sql, 0.5);
+\PDR\Utility\GeneralUtility::createCookie("datum", $date_sql, 0.5);
 $date_unix_end = $date_unix_start + ($tage - 1) * PDR_ONE_DAY_IN_SECONDS;
 
 $workforce = new workforce();

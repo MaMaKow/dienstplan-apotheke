@@ -68,13 +68,13 @@ class database_wrapper {
         try {
             $this->pdo = new \PDO($dsn, $this->database_user_name, $this->database_password, $options);
         } catch (PDOException $exception) {
-            print_debug_variable($exception);
+            \PDR\Utility\GeneralUtility::printDebugVariable($exception);
             $message = gettext('There was an error while connecting to the database.')
                     . " " . gettext('Please see the error log for more details!')
                     . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         } catch (Exception $exception) {
-            print_debug_variable($exception);
+            \PDR\Utility\GeneralUtility::printDebugVariable($exception);
             $message = gettext('There was an error while connecting to the database.')
                     . " " . gettext('Please see the error log for more details!')
                     . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
@@ -129,7 +129,7 @@ class database_wrapper {
             $statement = $this->pdo->prepare($sql_query);
             /*
               if (false !== strpos($sql_query, "DELETE FROM `saturday_rotation_teams`")) {
-              print_debug_variable($sql_query, $arguments);
+              \PDR\Utility\GeneralUtility::printDebugVariable($sql_query, $arguments);
               }
              */
             $statement->execute($arguments);
@@ -266,7 +266,7 @@ class database_wrapper {
      * @throws Exception If the error could not be resolved an exception is thrown or rethrown.
      */
     protected function handle_exceptions(Exception $exception): void {
-        print_debug_variable($exception);
+        \PDR\Utility\GeneralUtility::printDebugVariable($exception);
         if (TRUE === $this->pdo->inTransaction()) {
             $this->pdo->rollBack();
             $message = gettext('There was an error while querying the database.')
@@ -285,7 +285,7 @@ class database_wrapper {
             /*
              * Every exception is logged.
              * If that ever changes, then here is the last chance to do so for anything that we did not think of.
-             * print_debug_variable($exception);
+             * \PDR\Utility\GeneralUtility::printDebugVariable($exception);
              */
             $message = gettext('There was an error while querying the database.')
                     . " " . gettext('Please see the error log for more details!')
@@ -294,7 +294,7 @@ class database_wrapper {
         }
     }
 
-    public static function null_from_post_to_mysql($value): ?String {
+    public static function null_from_post_to_mysql($value): ?string {
         if ('' === $value) {
             return NULL;
         } else {

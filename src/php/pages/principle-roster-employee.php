@@ -19,7 +19,7 @@ require '../../../default.php';
 
 $workforce = new workforce();
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-create_cookie('employee_key', $employee_key, 30);
+\PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 30);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
     if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {

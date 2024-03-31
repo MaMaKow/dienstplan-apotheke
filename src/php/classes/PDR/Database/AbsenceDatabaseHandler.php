@@ -69,7 +69,7 @@ class AbsenceDatabaseHandler {
                 $message = gettext("The transaction was rolled back.");
                 $userDialog->add_message($message, \E_USER_NOTICE);
             } else {
-                print_debug_variable($exception);
+                \PDR\Utility\GeneralUtility::printDebugVariable($exception);
                 $message = gettext('There was an error while querying the database.')
                         . " " . gettext('Please see the error log for more details!');
                 die("<p>$message</p>");
