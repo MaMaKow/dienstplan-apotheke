@@ -35,7 +35,7 @@ abstract class DateTimeUtility {
      * @return float time in hours
      */
     public static function timeFromTextToFloat(string $timeString) {
-        $time = DateTime::createFromFormat('H:i:s', $timeString);
+        $time = \DateTime::createFromFormat('H:i:s', $timeString);
         $hour = (float) $time->format('H');
         $minute = (float) $time->format('i');
         $second = (float) $time->format('s');

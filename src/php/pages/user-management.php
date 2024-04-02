@@ -20,6 +20,9 @@ require '../../../default.php';
 $user_dialog = new user_dialog();
 
 $user_key = user_input::get_variable_from_any_input('user_key', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->get_primary_key());
+if ('' === $user_key){
+    $user_key = $_SESSION['user_object']->get_primary_key();
+}
 $user = new user($user_key);
 \PDR\Utility\GeneralUtility::createCookie('user_key', $user_key, 30);
 
@@ -124,7 +127,7 @@ function build_checkbox_permission($privilege, $checked) {
         <legend><?= gettext("Privileges"); ?>:</legend>
         <?php
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
-            echo build_checkbox_permission($privilege, array_key_exists($privilege, $user->privileges));
+            echo build_checkbox_permission($privilege, array_key_exists($privilege, $user->get_privileges()));
             echo "<br>";
         }
         ?>
