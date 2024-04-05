@@ -75,7 +75,7 @@ class examine_roster {
 
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-            $message = sprintf(gettext('Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s (%7$s)'), $workforce->List_of_employees[$row->employee_key]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->short_name, $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->short_name
+            $message = sprintf(gettext('Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s (%7$s)'), $workforce->List_of_employees[$row->employee_key]->last_name, $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->getShortName(), $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->getShortName()
             );
             $user_dialog->add_message($message, E_USER_ERROR, TRUE);
         }
