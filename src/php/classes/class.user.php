@@ -33,7 +33,10 @@ class user {
      */
     private $primary_key;
 
-    public function get_primary_key(): int {
+    /**
+     * @todo: Something seems to be wrong with empty user keys?
+     */
+    public function get_primary_key(): ?int {
         return $this->primary_key;
     }
 
@@ -67,7 +70,7 @@ class user {
      */
     public $email;
 
-    public function get_email(): string {
+    public function get_email(): ?string {
         return $this->email;
     }
 
@@ -87,7 +90,7 @@ class user {
      */
     public $status;
 
-    public function get_status(): string {
+    public function get_status(): ?string {
         return $this->status;
     }
 
