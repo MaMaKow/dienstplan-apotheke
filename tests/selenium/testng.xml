@@ -44,6 +44,7 @@
     <test name="Absence Pages" >
         <classes>
             <class name="Selenium.absencepages.TestAbsenceEmployeePage" />
+            <class name="Selenium.absencepages.TestAbsenceYearPage" />
             <!--
             -->
         </classes>

@@ -18,8 +18,15 @@
  */
 package Selenium;
 
+import Selenium.Utilities.Holidays;
 import com.google.common.collect.ImmutableMap;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -27,12 +34,11 @@ import java.util.Map;
  */
 public class Absence {
 
-    private final String startDateString;
-    private final String endDateString;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private final int reasonId;
-    private final String reasonString;
     private final String commentString;
-    private final String durationString;
+    private int durationDays;
     private final String approvalString;
     private final int employeeKey;
 
@@ -56,31 +62,48 @@ public class Absence {
     public static final int REASON_MATERNITY_LEAVE = 7;
     public static final int REASON_PARENTAL_LEAVE = 8;
 
-    public Absence(int employeeKey, String startDateString, String endDateString, int reasonId, String commentString, String durationString, String approvalString) {
+    public Absence(int employeeKey, LocalDate startDate, LocalDate endDate, int reasonId, String commentString, String approvalString) {
         this.employeeKey = employeeKey;
-        this.startDateString = startDateString;
-        this.endDateString = endDateString;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.commentString = commentString;
-        this.durationString = durationString;
+        try {
+            this.durationDays = calculateWorkingDays(startDate, endDate);
+        } catch (Exception ex) {
+            this.durationDays = 0;
+            Logger.getLogger(Absence.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.approvalString = approvalString;
         this.reasonId = reasonId;
-        this.reasonString = absenceReasonsMap.get(this.reasonId);
+    }
+
+    private int calculateWorkingDays(LocalDate startDate, LocalDate endDate) throws Exception {
+        int workingDays = 0;
+        LocalDate date = startDate;
+        Holidays holidays = new Holidays(startDate.getYear());
+        while (!date.isAfter(endDate)) {
+            if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY && !holidays.isHoliday(date)) {
+                workingDays++;
+            }
+            date = date.plusDays(1);
+        }
+        return workingDays;
     }
 
     public int getEmployeeKey() {
         return employeeKey;
     }
 
-    public String getStartDateString() {
-        return startDateString;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public String getEndDateString() {
-        return endDateString;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
     public String getReasonString() {
-        return reasonString;
+        return absenceReasonsMap.get(this.reasonId);
     }
 
     public int getReasonId() {
@@ -91,11 +114,36 @@ public class Absence {
         return commentString;
     }
 
-    public String getDurationString() {
-        return durationString;
+    public int getDurationDays() {
+        return durationDays;
     }
 
-    public String getapprovalStringString() {
+    public String getapprovalString() {
         return approvalString;
+    }
+
+    public boolean equals(Absence otherAbsence) {
+        if (otherAbsence.getEmployeeKey() != this.employeeKey) {
+            return false;
+        }
+        if (!otherAbsence.getStartDate().equals(this.startDate)) {
+            return false;
+        }
+        if (!otherAbsence.getEndDate().equals(this.endDate)) {
+            return false;
+        }
+        if (otherAbsence.getDurationDays() != this.durationDays) {
+            return false;
+        }
+        if (!otherAbsence.getCommentString().equals(this.commentString)) {
+            return false;
+        }
+        if (!otherAbsence.getReasonString().equals(this.getReasonString())) {
+            return false;
+        }
+        if (!otherAbsence.getapprovalString().equals(this.approvalString)) {
+            return false;
+        }
+        return true;
     }
 }

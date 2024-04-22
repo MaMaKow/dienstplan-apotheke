@@ -148,10 +148,10 @@ public class TestRosterHoursPage extends TestPage {
         Absence currentAbsence;
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
         Assert.assertEquals(currentAbsence.getCommentString(), "Foo comment");
-        Assert.assertEquals(currentAbsence.getDurationString(), "1");
+        Assert.assertEquals(currentAbsence.getDurationDays(), 1);
         Assert.assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
-        Assert.assertEquals(currentAbsence.getStartDateString(), "01.07.2020");
-        Assert.assertEquals(currentAbsence.getEndDateString(), "01.07.2020");
+        Assert.assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.JULY, 1));
+        Assert.assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.JULY, 1));
 
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
         rosterHoursPage.selectEmployee(workforce.getEmployeeLastNameByKey(employeeKey));

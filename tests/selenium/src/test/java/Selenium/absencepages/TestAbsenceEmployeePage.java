@@ -19,6 +19,8 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
@@ -59,45 +61,57 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         assertEquals(userDialogErrors.get(0), "An diesem Datum existiert bereits ein Eintrag. Die Daten wurden daher nicht in die Datenbank eingefügt.");
 
         // Insert another absence:
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.01.2020", Absence.REASON_VACATION, "Neujahr", "not_yet_approved"); //gesetzlicher Feiertag
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "31.12.2020", Absence.REASON_VACATION, "ganzes Jahr", "not_yet_approved"); //gesetzliche Feiertage
         /**
          * Check this absence:
          */
         Absence currentAbsence;
+        currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", employeeKey);
+        softAssert.assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
+        softAssert.assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.JANUARY, 1));
+        softAssert.assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.DECEMBER, 31));
+        softAssert.assertEquals(currentAbsence.getCommentString(), "ganzes Jahr");
+        softAssert.assertEquals(currentAbsence.getDurationDays(), 255);
+        softAssert.assertEquals(currentAbsence.getReasonString(), "Urlaub");
+        softAssert.assertEquals(currentAbsence.getapprovalString(), "not_yet_approved");
+        softAssert.assertAll();
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
-        assertEquals(currentAbsence.getCommentString(), "Foo comment");
-        assertEquals(currentAbsence.getDurationString(), "1");
-        assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
-        assertEquals(currentAbsence.getStartDateString(), "01.07.2020");
-        assertEquals(currentAbsence.getEndDateString(), "01.07.2020");
-        assertEquals(currentAbsence.getReasonString(), "Urlaub");
-        assertEquals(currentAbsence.getapprovalStringString(), "not_yet_approved");
+        softAssert.assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
+        softAssert.assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.JULY, 1));
+        softAssert.assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.JULY, 1));
+        softAssert.assertEquals(currentAbsence.getCommentString(), "Foo comment");
+        softAssert.assertEquals(currentAbsence.getDurationDays(), 1);
+        softAssert.assertEquals(currentAbsence.getReasonString(), "Urlaub");
+        softAssert.assertEquals(currentAbsence.getapprovalString(), "not_yet_approved");
+        softAssert.assertAll();
         /**
          * Manipulate this absence: 1. No manipulation:
          */
         absenceEmployeePage = absenceEmployeePage.editExistingAbsenceNot("01.07.2020", "02.07.2020", "03.07.2020", Absence.REASON_TAKEN_OVERTIME, "Changed Foo comment", "approved");
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
-        assertEquals(currentAbsence.getCommentString(), "Foo comment");
-        assertEquals(currentAbsence.getDurationString(), "1");
-        assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
-        assertEquals(currentAbsence.getStartDateString(), "01.07.2020");
-        assertEquals(currentAbsence.getEndDateString(), "01.07.2020");
-        assertEquals(currentAbsence.getReasonString(), "Urlaub");
-        assertEquals(currentAbsence.getReasonString(), Absence.absenceReasonsMap.get(Absence.REASON_VACATION)); //This is the same as the line above, but using the Absence class for help with the string.
-        assertEquals(currentAbsence.getapprovalStringString(), "not_yet_approved");
+        softAssert.assertEquals(currentAbsence.getCommentString(), "Foo comment");
+        softAssert.assertEquals(currentAbsence.getDurationDays(), 1);
+        softAssert.assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
+        softAssert.assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.JULY, 1));
+        softAssert.assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.JULY, 1));
+        softAssert.assertEquals(currentAbsence.getReasonString(), "Urlaub");
+        softAssert.assertEquals(currentAbsence.getReasonString(), Absence.absenceReasonsMap.get(Absence.REASON_VACATION)); //This is the same as the line above, but using the Absence class for help with the string.
+        softAssert.assertEquals(currentAbsence.getapprovalString(), "not_yet_approved");
+        softAssert.assertAll();
         /**
          * 2. Edit
          */
         absenceEmployeePage = absenceEmployeePage.editExistingAbsence("01.07.2020", "02.07.2020", "03.07.2020", Absence.REASON_TAKEN_OVERTIME, "Changed Foo comment", "approved");
         currentAbsence = absenceEmployeePage.getExistingAbsence("02.07.2020", employeeKey);
-        assertEquals(currentAbsence.getCommentString(), "Changed Foo comment");
-        assertEquals(currentAbsence.getDurationString(), "2");
-        assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
-        assertEquals(currentAbsence.getStartDateString(), "02.07.2020");
-        assertEquals(currentAbsence.getEndDateString(), "03.07.2020");
-        assertEquals(currentAbsence.getReasonString(), "Überstunden genommen");
-        assertEquals(currentAbsence.getReasonString(), Absence.absenceReasonsMap.get(Absence.REASON_TAKEN_OVERTIME)); //This is the same as the line above, but using the Absence class for help with the string.
-        assertEquals(currentAbsence.getapprovalStringString(), "approved");
+        softAssert.assertEquals(currentAbsence.getCommentString(), "Changed Foo comment");
+        softAssert.assertEquals(currentAbsence.getDurationDays(), 2);
+        softAssert.assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
+        softAssert.assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.JULY, 2));
+        softAssert.assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.JULY, 3));
+        softAssert.assertEquals(currentAbsence.getReasonString(), "Überstunden genommen");
+        softAssert.assertEquals(currentAbsence.getReasonString(), Absence.absenceReasonsMap.get(Absence.REASON_TAKEN_OVERTIME)); //This is the same as the line above, but using the Absence class for help with the string.
+        softAssert.assertEquals(currentAbsence.getapprovalString(), "approved");
+        softAssert.assertAll();
         /**
          * Remove the absence:
          */
@@ -146,16 +160,16 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         Absence currentAbsence;
         // main absence has not been cut:
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.08.2020", employeeKey);
-        assertEquals(currentAbsence.getStartDateString(), "01.08.2020");
-        assertEquals(currentAbsence.getEndDateString(), "07.08.2020");
+        assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.AUGUST, 01));
+        assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.AUGUST, 7));
         // absence has been cut at start:
         currentAbsence = absenceEmployeePage.getExistingAbsence("08.08.2020", employeeKey);
-        assertEquals(currentAbsence.getStartDateString(), "08.08.2020");
-        assertEquals(currentAbsence.getEndDateString(), "31.12.2020");
+        assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.AUGUST, 8));
+        assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.DECEMBER, 31));
         // absence has been cut at end:
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", employeeKey);
-        assertEquals(currentAbsence.getStartDateString(), "01.01.2020");
-        assertEquals(currentAbsence.getEndDateString(), "31.07.2020");
+        assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.JANUARY, 1));
+        assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.JULY, 31));
         /**
          * Remove the absence:
          */

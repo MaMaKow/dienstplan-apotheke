@@ -92,11 +92,10 @@ public class AbsenceMonthPage {
             }
             String endDateString = (String) jsonObject.get("end");
             int reasonId = (int) jsonObject.get("reasonId");
-            //String reasonString = Absence.absenceReasonsMap.get(reasonId);
             String comment = (String) jsonObject.get("comment");
             String duration = (String) jsonObject.get("days");
             String approvalString = (String) jsonObject.get("approval");
-            return new Absence(employeeKey, startDateString, endDateString, reasonId, comment, duration, approvalString);
+            //return new Absence(employeeKey, startDateString, endDateString, reasonId, comment, duration, approvalString);
         }
         return null;
     }

@@ -136,7 +136,10 @@ class collaborative_vacation {
             $days = \PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
             PDR\Database\AbsenceDatabaseHandler::insertAbsence($employee_key, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval, $_SESSION['user_object']->user_name);
         }
-        database_wrapper::instance()->commit();
+
+        if (database_wrapper::instance()->inTransaction()) {
+            database_wrapper::instance()->commit();
+        }
     }
 
     /**
@@ -175,8 +178,10 @@ class collaborative_vacation {
     public function build_absence_year($year, $workforce) {
         $date_start_object = new \DateTime();
         $date_start_object->setDate($year, 1, 1);
+        $date_start_object->setTime(0, 0, 0, 0);
         $date_end_object = new \DateTime();
         $date_end_object->setDate($year, 12, 31);
+        $date_end_object->setTime(0, 0, 0, 0);
         $current_month = $date_start_object->format("n");
         $current_year = $date_start_object->format("Y");
 
@@ -231,9 +236,11 @@ class collaborative_vacation {
         $input_date_object->setDate($year, $month_number, 1);
         $start_date_object = clone $input_date_object;
         $start_date_object->modify('last Monday');
+        $start_date_object->setTime(0, 0, 0, 0);
         //$start_date_object->setISODate($input_date_object->format('Y'), $input_date_object->format('W'), 1);
         $end_date_object = new \DateTime();
         $end_date_object->setDate($year, $month_number, $input_date_object->format('t'))->modify('this Sunday');
+        $end_date_object->setTime(0, 0, 0, 0);
 
         $current_week = $input_date_object->format('W');
         $current_month_name = $this->get_month_name($input_date_object);
@@ -263,6 +270,10 @@ class collaborative_vacation {
     }
 
     private function build_absence_month_paragraph(\DateTime $date_object, \DateTime $input_date_object, \PDR\Roster\AbsenceCollection $absenceCollection, string $mode = 'month') {
+        // Assert that $date_object has no time (time is set to 0:00:00)
+        if ($date_object->format('H:i:s') !== '00:00:00') {
+            throw new \InvalidArgumentException('$date_object MUST have a time of 00:00:00.');
+        }
         $is_holiday = \holidays::is_holiday($date_object->format('U'));
         $html_class_list = $this->get_classes_of_day_paragraph($date_object, $is_holiday, $input_date_object);
         $paragraph = "<p class='$html_class_list'";

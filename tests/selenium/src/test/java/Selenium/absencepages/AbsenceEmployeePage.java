@@ -395,15 +395,15 @@ public class AbsenceEmployeePage {
     /**
      * Retrieves an existing absence record based on the start date and employee key on the Absence Employee Page.
      *
-     * @param startDate The start date of the absence to retrieve.
+     * @param startDateString The start date of the absence to retrieve.
      * @param employeeKey The key or identifier of the employee associated with the absence.
      * @return An Absence object representing the retrieved absence record, or null if no matching absence was found.
      */
-    public Absence getExistingAbsence(String startDate, int employeeKey) {
+    public Absence getExistingAbsence(String startDateString, int employeeKey) {
         // Navigate to the employee and year related to the absence
         this.goToEmployee(employeeKey);
-        LocalDate startDateLocalDate = LocalDate.parse(startDate, Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
-        int year = startDateLocalDate.getYear();
+        LocalDate startDate = LocalDate.parse(startDateString, Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        int year = startDate.getYear();
         this.goToYear(year);
 
         // Ensure that the selected employee and year match the provided values
@@ -411,16 +411,17 @@ public class AbsenceEmployeePage {
         Assert.assertEquals(this.getYear(), year);
 
         // Iterate through absence rows to find the one with the matching start date
-        WebElement absenceRowElement = getExistingAbsenceRowElement(startDate, employeeKey);
+        WebElement absenceRowElement = getExistingAbsenceRowElement(startDateString, employeeKey);
         if (null == absenceRowElement) {
             return null;
         }
         WebElement startDateElement = absenceRowElement.findElement(By.xpath(".//td[1]/div"));
-        String startDateString = startDateElement.getText();
+        String startDateStringFound = startDateElement.getText();
 
         // Retrieve information about the matching absence
         WebElement endDateElement = absenceRowElement.findElement(By.xpath(".//td[2]/div"));
         String endDateString = endDateElement.getText();
+        LocalDate endDate = LocalDate.parse(endDateString, Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         WebElement reasonElement = absenceRowElement.findElement(By.xpath(".//td[3]/div"));
         //String reasonString = reasonElement.getText();
         int reasonId = Integer.parseInt(reasonElement.getAttribute("data-reason_id"));
@@ -433,7 +434,7 @@ public class AbsenceEmployeePage {
         //String approvalStringLocalized = approvalElement.getText();
 
         // Create and return an Absence object representing the retrieved absence record
-        Absence absence = new Absence(employeeKey, startDateString, endDateString, reasonId, commentString, durationString, approvalString);
+        Absence absence = new Absence(employeeKey, startDate, endDate, reasonId, commentString, approvalString);
         return absence;
 
     }
