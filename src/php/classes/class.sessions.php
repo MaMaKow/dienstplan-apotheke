@@ -112,7 +112,7 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        $List_of_pages_accessible_without_login = array('login.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
+        $List_of_pages_accessible_without_login = array('login.php', 'POST-authenticate.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
         if (
                 false === $this->user_is_logged_in()
                 and !in_array(basename($script_name), $List_of_pages_accessible_without_login)
@@ -352,5 +352,78 @@ class sessions {
             return true;
         }
         return false;
+    }
+
+    public function getUserObject() {
+        return $_SESSION['user_object'];
+    }
+
+    public function generateAccessToken(user $user) {
+        $payload = [
+            'user_id' => $user->get_primary_key(),
+            'username' => $user->get_user_name(),
+            'exp' => time() + 3600, // Token expiration time (e.g., 1 hour)
+        ];
+
+        // Use a library or method to encode the payload and sign it with a secret key
+        $token = $this->jwtEncode($payload);
+
+        return $token;
+    }
+
+    public function verifyAccessToken() {
+        $token = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+
+        try {
+            // Use a library or method to decode and verify the token with the secret key
+            $decodedToken = $this->jwtDecode($token);
+
+            // Check token expiration
+            if ($decodedToken['exp'] < time()) {
+                echo json_encode(['error' => 'Token expired']);
+                exit;
+            }
+        } catch (Exception $exception) {
+            echo json_encode(['error' => 'Invalid token']);
+            exit;
+        }
+    }
+
+    private function jwtEncode(array $payload): string {
+        $alg = 'HS256';
+        $header = ['alg' => $alg, 'typ' => 'JWT'];
+        $jsonHeader = json_encode($header);
+        $jsonPayload = json_encode($payload);
+
+        // Signature
+        $configuration = new PDR\Application\configuration();
+        $signature = hash_hmac($alg, $jsonHeader . '.' . $jsonPayload, $configuration->getSecretKey());
+
+        // Token creation
+        $token = base64_encode($jsonHeader) . '.' . base64_encode($jsonPayload) . '.' . base64_encode($signature);
+        return $token;
+    }
+
+    private function jwtDecode(string $token): array {
+        list($header, $payload, $signature) = explode('.', $token);
+
+        // Decode the JSON-encoded header and payload
+        $decodedHeader = json_decode(base64_decode($header), true);
+        $decodedPayload = json_decode(base64_decode($payload), true);
+
+        // Verify the signature using the secret key and the algorithm specified in the header
+        $configuration = new PDR\Application\configuration();
+        $secretKey = $configuration->getSecretKey();
+        $algorithm = isset($decodedHeader['alg']) ? $decodedHeader['alg'] : 'HS256'; // Default to HS256 if alg is not specified
+        // Re-create the signature to compare with the one in the token
+        $expectedSignature = hash_hmac($algorithm, "$header.$payload", $secretKey, true);
+
+        // Compare the expected signature with the one in the token
+        if (!hash_equals(base64_decode($signature), $expectedSignature)) {
+            throw new Exception('Invalid signature');
+        }
+
+        // TODO: Return or use the decoded payload as needed
+        return $decodedPayload;
     }
 }
