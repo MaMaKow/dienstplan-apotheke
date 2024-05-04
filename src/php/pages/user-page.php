@@ -41,27 +41,27 @@ function build_permission_list($user) {
 
 /**
  *
- * Attempt to change the user password.
+ * Attempt to change the user passphrase.
  *
- * @return boolean success of the password change operation
+ * @return boolean success of the passphrase change operation
  */
 function change_password_on_input() {
     $user = $_SESSION['user_object'];
     $user_dialog = new \user_dialog();
     $user_password_old = filter_input(INPUT_POST, 'user_password_old', FILTER_UNSAFE_RAW);
     if (!$user->password_verify($user_password_old)) {
-        $user_dialog->add_message(gettext('The password was not correct.'));
+        $user_dialog->add_message(gettext('The passphrase was not correct.'));
         return FALSE;
     }
-    $user_password_new = filter_input(INPUT_POST, 'user_password_new', FILTER_UNSAFE_RAW);
-    $user_password_repetition = filter_input(INPUT_POST, 'user_password_repetition', FILTER_UNSAFE_RAW);
-    if ($user_password_new !== $user_password_repetition) {
-        $user_dialog->add_message(gettext('The passwords must match!'));
+    $user_passphrase_new = filter_input(INPUT_POST, 'user_password_new', FILTER_UNSAFE_RAW);
+    $user_passphrase_repetition = filter_input(INPUT_POST, 'user_password_repetition', FILTER_UNSAFE_RAW);
+    if ($user_passphrase_new !== $user_passphrase_repetition) {
+        $user_dialog->add_message(gettext('The passphrases must match!'));
         return FALSE;
     }
-    $success = $user->change_password($user_password_old, $user_password_new);
+    $success = $user->change_passphrase($user_passphrase_old, $user_passphrase_new);
     if (TRUE === $success) {
-        $user_dialog->add_message(gettext('The password was successfully changed.'), E_USER_NOTICE);
+        $user_dialog->add_message(gettext('The passphrase was successfully changed.'), E_USER_NOTICE);
     }
     return $success;
 }
@@ -86,17 +86,17 @@ echo $user_dialog->build_messages();
              >
     </fieldset>
     <fieldset id='change_password'>
-        <legend><?= gettext('Change password'); ?></legend>
-        <label><?= gettext('Old password'); ?><br>
+        <legend><?= gettext('Change passhrase'); ?></legend>
+        <label><?= gettext('Old passphrase'); ?><br>
             <input type="password" name="user_password_old" form="user_page_password_form"/>
         </label><br>
-        <label><?= gettext('New password'); ?><br>
+        <label><?= gettext('New passphrase'); ?><br>
             <input type="password" minlength="8" name="user_password_new" form="user_page_password_form"/>
             <img width="16px" height="16px" src="../../../img/information.svg"
-                 title="<?= gettext('A secure password should be at least 8 characters long and not listed in any dictionary.') ?>"
+                 title="<?= gettext('A secure passphrase should be at least 8 characters long and not listed in any dictionary.') ?>"
                  >
         </label><br>
-        <label><?= gettext('Repeat new password'); ?><br>
+        <label><?= gettext('Repeat new passphrase'); ?><br>
             <input type="password" minlength="8" name="user_password_repetition" form="user_page_password_form"/>
         </label><br>
         <input type="password" name="user_id" value="" hidden/>

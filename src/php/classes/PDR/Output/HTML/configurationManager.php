@@ -225,7 +225,7 @@ class configurationManager {
                 $new_config[$key] = $default_value;
             }
         }
-        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($new_config, true) . ';');
+        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($new_config, true) . ';' . PHP_EOL);
         if ($result === false) {
             $user_dialog = new \user_dialog;
             $user_dialog->add_message("Error while trying to write configuration file.", E_USER_ERROR);

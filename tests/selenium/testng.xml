@@ -28,6 +28,7 @@
     </test>
     <test name="Application Pages">
         <classes>
+            <class name="Selenium.rest_api.TestPOST_authenticate" />
             <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
             <!--

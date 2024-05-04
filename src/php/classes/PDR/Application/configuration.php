@@ -423,7 +423,7 @@ class configuration {
         if (file_exists($configuration_file)) {
             rename($configuration_file, $configuration_file . '_' . date(\DateTime::ATOM));
         }
-        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($this->loadedConfig, true) . ';');
+        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export(self::$loadedConfig, true) . ';' . PHP_EOL);
         chmod($configuration_file, 0660);
     }
 }

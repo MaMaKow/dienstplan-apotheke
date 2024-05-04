@@ -360,9 +360,9 @@ class sessions {
 
     public function generateAccessToken(user $user) {
         $payload = [
-            'user_id' => $user->get_primary_key(),
-            'username' => $user->get_user_name(),
-            'exp' => time() + 3600, // Token expiration time (e.g., 1 hour)
+            'userPrimaryKey' => $user->get_primary_key(),
+            'userName' => $user->get_user_name(),
+            'expires' => time() + 3600, // Token expiration time (e.g., 1 hour)
         ];
 
         // Use a library or method to encode the payload and sign it with a secret key
@@ -379,7 +379,7 @@ class sessions {
             $decodedToken = $this->jwtDecode($token);
 
             // Check token expiration
-            if ($decodedToken['exp'] < time()) {
+            if ($decodedToken['expires'] < time()) {
                 echo json_encode(['error' => 'Token expired']);
                 exit;
             }
@@ -390,14 +390,14 @@ class sessions {
     }
 
     private function jwtEncode(array $payload): string {
-        $alg = 'HS256';
-        $header = ['alg' => $alg, 'typ' => 'JWT'];
+        $algorithm = 'sha512';
+        $header = ['algorithm' => $algorithm, 'type' => 'JWT'];
         $jsonHeader = json_encode($header);
         $jsonPayload = json_encode($payload);
 
         // Signature
         $configuration = new PDR\Application\configuration();
-        $signature = hash_hmac($alg, $jsonHeader . '.' . $jsonPayload, $configuration->getSecretKey());
+        $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $configuration->getSecretKey());
 
         // Token creation
         $token = base64_encode($jsonHeader) . '.' . base64_encode($jsonPayload) . '.' . base64_encode($signature);
@@ -414,7 +414,7 @@ class sessions {
         // Verify the signature using the secret key and the algorithm specified in the header
         $configuration = new PDR\Application\configuration();
         $secretKey = $configuration->getSecretKey();
-        $algorithm = isset($decodedHeader['alg']) ? $decodedHeader['alg'] : 'HS256'; // Default to HS256 if alg is not specified
+        $algorithm = isset($decodedHeader['algorithm']) ? $decodedHeader['algorithm'] : 'sha512'; // Default to sha512 if algorithm is not specified
         // Re-create the signature to compare with the one in the token
         $expectedSignature = hash_hmac($algorithm, "$header.$payload", $secretKey, true);
 
@@ -423,7 +423,7 @@ class sessions {
             throw new Exception('Invalid signature');
         }
 
-        // TODO: Return or use the decoded payload as needed
+        // Return the decoded payload
         return $decodedPayload;
     }
 }

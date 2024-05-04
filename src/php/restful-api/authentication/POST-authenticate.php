@@ -39,17 +39,17 @@ if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
 }
 
 // Validate and sanitize user_name and user_password
-$user_name = filter_var($data['user_name'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$user_password = filter_var($data['user_password'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$userName = filter_var($data['userName'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$userPassphrase = filter_var($data['userPassphrase'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
 // Assuming you have a class/method for user authentication
 $session = new sessions();
-$session->login($user_name, $user_password, FALSE);
+$session->login($userName, $userPassphrase, FALSE);
 
 if ($session->user_is_logged_in()) {
     // Generate and return an access token
     $accessToken = $session->generateAccessToken($session->getUserObject());
-    echo json_encode(['access_token' => $accessToken]);
+    echo json_encode(['accessToken' => $accessToken]);
 } else {
     // Handle authentication failure
     echo json_encode(['error' => 'Authentication failed']);

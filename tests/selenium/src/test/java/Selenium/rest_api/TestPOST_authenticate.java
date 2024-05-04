@@ -40,29 +40,28 @@ public class TestPOST_authenticate {
     private PropertyFile propertyFile;
 
     @Test(enabled = true)
-    public void testDateNavigation() {
+    public void testLogin() {
         propertyFile = new PropertyFile();
         try {
-            // Replace with your authentication endpoint
-            String authenticationEndpoint = propertyFile.getRealTestPageUrl() + "src/php/restful-api/authentication/POST-authenticate.php";
+            // Authentication endpoint on real page:
+            String realTestPageUrl = propertyFile.getRealTestPageUrl();
 
-            // Define authentication payload
-            String user_name = propertyFile.getRealUsername();
-            String user_password = propertyFile.getRealPassword();
+            // Define authentication payload:
+            String userName = propertyFile.getRealUsername();
+            String userPassphrase = propertyFile.getRealPassword();
 
-            String payload = "{\"user_name\":\"" + user_name + "\",\"user_password\":\"" + user_password + "\"}";
+            // Try authentication with wrong credentials:
+            POST_authenticate authenticatePage = new POST_authenticate(userName, userPassphrase + "foo", realTestPageUrl);
+            Assert.assertFalse(authenticatePage.isAuthenticated());
+            // Try authentication with empty credentials:
+            authenticatePage = new POST_authenticate(userName, "", realTestPageUrl);
+            Assert.assertFalse(authenticatePage.isAuthenticated());
+            authenticatePage = new POST_authenticate("", "", realTestPageUrl);
+            Assert.assertFalse(authenticatePage.isAuthenticated());
 
-            // Send the POST request
-            HttpResponse<String> response = sendPostRequest(authenticationEndpoint, payload);
-            String responseBody = response.body();
-
-            // Check if authentication was successful
-            if (responseBody.contains("access_token")) {
-                System.out.println("Authentication successful!");
-            } else {
-                System.out.println("Authentication failed!");
-            }
-            Assert.assertTrue(responseBody.contains("access_token"));
+            // Try authentication with correct credentials:
+            authenticatePage = new POST_authenticate(userName, userPassphrase, realTestPageUrl);
+            Assert.assertTrue(authenticatePage.isAuthenticated());
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -70,17 +69,4 @@ public class TestPOST_authenticate {
 
     }
 
-    private static HttpResponse<String> sendPostRequest(String url, String payload) throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(payload))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // Handle the response
-        return response;
-    }
 }
