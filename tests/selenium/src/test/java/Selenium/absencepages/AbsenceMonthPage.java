@@ -20,6 +20,8 @@ package Selenium.absencepages;
 
 import Selenium.Absence;
 import Selenium.driver.Wrapper;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -80,7 +82,8 @@ public class AbsenceMonthPage {
         return null;
     }
 
-    public Absence getAbsence(String startDateString, int employeeKey) {
+    public Absence getAbsence(LocalDate startDate, int employeeKey) {
+        String startDateString = startDate.format(DateTimeFormatter.ofPattern("dd.MM."));
         WebElement dayParagraphElement = getDayParagraphElement(startDateString);
         List<WebElement> listOfAbsenceSpans = dayParagraphElement.findElements(By.xpath("span"));
         for (WebElement absenceSpan : listOfAbsenceSpans) {
@@ -91,11 +94,13 @@ public class AbsenceMonthPage {
                 continue;
             }
             String endDateString = (String) jsonObject.get("end");
+            LocalDate endDate = LocalDate.parse(endDateString, DateTimeFormatter.ofPattern("dd.MM."));
             int reasonId = (int) jsonObject.get("reasonId");
             String comment = (String) jsonObject.get("comment");
             String duration = (String) jsonObject.get("days");
             String approvalString = (String) jsonObject.get("approval");
-            //return new Absence(employeeKey, startDateString, endDateString, reasonId, comment, duration, approvalString);
+
+            return new Absence(employeeKey, startDate, endDate, reasonId, comment, approvalString);
         }
         return null;
     }

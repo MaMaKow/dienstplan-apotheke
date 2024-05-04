@@ -149,6 +149,10 @@ class sessions {
         return ($_SESSION['user_object']->has_privilege($privilege));
     }
 
+    public function getUserName(): string {
+        return $_SESSION['user_object']->get_user_name();
+    }
+
     public function exit_on_missing_privilege($privilege) {
         if (!$this->user_has_privilege($privilege)) {
             $user_dialog = new user_dialog();

@@ -36,21 +36,21 @@ function keyboard_navigation_main(evt) {
 
     }
 
-    if (evt.ctrlKey && evt.keyCode == 37) {
+    if (evt.ctrlKey && evt.keyCode == 37 && !evt.shiftKey) {
         /*
          * The control key and the left arrow key are pressed.
          */
         keyboard_navigation_move_backward();
         return false;
     }
-    if (evt.ctrlKey && evt.keyCode == 39) {
+    if (evt.ctrlKey && evt.keyCode == 39 && !evt.shiftKey) {
         /*
          * The control key and the right arrow key are pressed.
          */
         keyboard_navigation_move_forward();
         return false;
     }
-    if (evt.ctrlKey && evt.keyCode == 83) {
+    if (evt.ctrlKey && evt.keyCode == 83 && !evt.shiftKey) {
         /*
          * The control key and the s key are pressed.
          */

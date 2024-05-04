@@ -30,8 +30,8 @@ function remove_form_div() {
     var existing_div = document.getElementById('input_box_div');
     if (existing_div) {
         //Reset the global variables:
-        delete input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix;
-        delete input_box_data_div.dataset.highlight_absence_create_from_date_unix;
+        delete input_box_data_div.dataset.highlight_absence_create_intermediate_date_string;
+        delete input_box_data_div.dataset.highlight_absence_create_from_date_string;
         //Remove the formatting from the last selection:
         draw_style_highlight_absence_create();
         //Finally remove the div:
@@ -61,15 +61,16 @@ function highlight_absence_create_start(evt) {
         return false;
     }
     var date_sql_from = element_mouse_is_over.dataset.date_sql || element_mouse_is_over.parentNode.dataset.date_sql;
-    input_box_data_div.dataset.highlight_absence_create_from_date_unix = date_unix_from;
-    input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix = date_unix_from;
+    // Parse date strings into Date objects
+    var date_object_from = new Date(date_sql_from);
+    input_box_data_div.dataset.highlight_absence_create_from_date_string = date_object_from.toISOString();
+    input_box_data_div.dataset.highlight_absence_create_intermediate_date_string = date_object_from.toISOString();
     /*
-     * We start with input_box_data_div.dataset.date_range_min/max = date_unix_from;
+     * We start with input_box_data_div.dataset.date_range_min/max = date_object_from.toISOString();
      * These values will be adapted if additional days are selected.
      */
-    input_box_data_div.dataset.date_range_min = date_unix_from;
-    input_box_data_div.dataset.date_range_max = date_unix_from;
-
+    input_box_data_div.dataset.date_range_min = date_object_from.toISOString();
+    input_box_data_div.dataset.date_range_max = date_object_from.toISOString();
     input_box_data_div.dataset.highlight_absence_create_from_date_sql = date_sql_from;
     element_mouse_is_over.classList.add("highlight");
     delete input_box_data_div.dataset.highlight_absence_create_to_date_unix;
@@ -78,7 +79,6 @@ function highlight_absence_create_start(evt) {
 
 function highlight_absence_create_intermediate(evt) {
     var input_box_data_div = document.getElementById('input_box_data_div');
-
     evt = evt || window.event;
     input_box_data_div.highlight_event = evt;
     if (detect_left_button_press(evt)) { //Only if the left mouse button is pressed down
@@ -86,9 +86,9 @@ function highlight_absence_create_intermediate(evt) {
         var y = evt.clientY;
         var element_mouse_is_over = document.elementFromPoint(x, y);
         if (element_mouse_is_over.dataset.date_unix) {
-            input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix = element_mouse_is_over.dataset.date_unix;
+            input_box_data_div.dataset.highlight_absence_create_intermediate_date_string = element_mouse_is_over.dataset.date_sql;
         } else if (element_mouse_is_over.parentNode.dataset.date_unix) {
-            input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix = element_mouse_is_over.parentNode.dataset.date_unix;
+            input_box_data_div.dataset.highlight_absence_create_intermediate_date_string = element_mouse_is_over.parentNode.dataset.date_sql;
         }
         draw_style_highlight_absence_create();
     }
@@ -97,10 +97,18 @@ function draw_style_highlight_absence_create() {
     var input_box_data_div = document.getElementById('input_box_data_div');
     var list_of_day_paragraphs = document.getElementsByClassName("day_paragraph");
     for (var i = 0; i < list_of_day_paragraphs.length; i++) {
-        var date_unix_current = list_of_day_paragraphs[i].dataset.date_unix;
-        input_box_data_div.dataset.date_range_min = Math.min(input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix, input_box_data_div.dataset.highlight_absence_create_from_date_unix);
-        input_box_data_div.dataset.date_range_max = Math.max(input_box_data_div.dataset.highlight_absence_create_intermediate_date_unix, input_box_data_div.dataset.highlight_absence_create_from_date_unix);
-        if (date_unix_current <= input_box_data_div.dataset.date_range_max && date_unix_current >= input_box_data_div.dataset.date_range_min) {
+        var date_object_current = new Date(list_of_day_paragraphs[i].dataset.date_sql);
+        if (new Date(input_box_data_div.dataset.highlight_absence_create_intermediate_date_string) < new Date(input_box_data_div.dataset.highlight_absence_create_from_date_string)) {
+            input_box_data_div.dataset.date_range_min = input_box_data_div.dataset.highlight_absence_create_intermediate_date_string;
+        } else {
+            input_box_data_div.dataset.date_range_min = input_box_data_div.dataset.highlight_absence_create_from_date_string;
+        }
+        if (new Date(input_box_data_div.dataset.highlight_absence_create_intermediate_date_string) > new Date(input_box_data_div.dataset.highlight_absence_create_from_date_string)) {
+            input_box_data_div.dataset.date_range_max = input_box_data_div.dataset.highlight_absence_create_intermediate_date_string;
+        } else {
+            input_box_data_div.dataset.date_range_max = input_box_data_div.dataset.highlight_absence_create_from_date_string;
+        }
+        if (date_object_current <= new Date(input_box_data_div.dataset.date_range_max) && date_object_current >= new Date(input_box_data_div.dataset.date_range_min)) {
             list_of_day_paragraphs[i].classList.add("highlight");
         } else {
             list_of_day_paragraphs[i].classList.remove("highlight");
@@ -140,7 +148,9 @@ function insert_form_div(edit_create) {
     var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
     if ("create" === edit_create && "SPAN" === element_mouse_is_over.tagName) {
-        //Create mode firing together with edit mode -> abort!
+        /**
+         * Create mode firing together with edit mode -> abort!
+         */
         return false;
     }
     var existing_div = document.getElementById('input_box_div');
@@ -152,7 +162,6 @@ function insert_form_div(edit_create) {
     div.id = 'input_box_div';
     div.className = 'input_box_div';
     fill_input_box_from_prototype(element_mouse_is_over);
-
     /*
      //Add a handler to BODY to catch [Esc] for closing the div.
      if (document.body.addEventListener) { // For all major browsers, except IE 8 and earlier
@@ -191,10 +200,14 @@ function fill_input_box_from_prototype(element_mouse_is_over) {
     var input_box_div = document.getElementById('input_box_div');
     var absence_details_json = element_mouse_is_over.dataset.absence_details;
     if (absence_details_json) {
-        //edit mode:
+        /**
+         * edit mode:
+         */
         var filename = http_server_application_path + 'src/php/pages/collaborative-vacation-input-box.php?absence_details_json=' + absence_details_json;
     } else {
-        //create mode:
+        /*
+         * create mode:
+         */
         var highlight_details_json = JSON.stringify(input_box_data_div.dataset);
         var filename = http_server_application_path + 'src/php/pages/collaborative-vacation-input-box.php?highlight_details_json=' + highlight_details_json;
     }

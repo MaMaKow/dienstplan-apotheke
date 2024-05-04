@@ -122,7 +122,15 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         currentAbsence = absenceEmployeePage.getExistingAbsence("02.07.2020", employeeKey);
         assertEquals(currentAbsence, null);
 
-        absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
+        try {
+            absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
+        } catch (Exception exception) {
+            System.out.println("Exception occurred in deleteExistingAbsence() method:");
+            System.out.println("Exception Message: " + exception.getMessage());
+            System.out.println("Stack Trace:");
+            exception.printStackTrace();
+            throw exception;
+        }
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.01.2020", employeeKey);
         assertEquals(currentAbsence, null);
     }
@@ -143,9 +151,18 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         absenceEmployeePage = absenceEmployeePage.goToEmployee(employeeKey);
         assertEquals(absenceEmployeePage.getYear(), year);
         assertEquals(absenceEmployeePage.getEmployeeKey(), employeeKey);
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.08.2020", "07.08.2020", Absence.REASON_VACATION, "main absence", "not_yet_approved");
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.08.2020", Absence.REASON_PARENTAL_LEAVE, "overlap at end", "not_yet_approved");
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("05.08.2020", "31.12.2020", Absence.REASON_MATERNITY_LEAVE, "overlap at start", "not_yet_approved");
+        try {
+            absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.08.2020", "07.08.2020", Absence.REASON_VACATION, "main absence", "not_yet_approved");
+            absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.08.2020", Absence.REASON_PARENTAL_LEAVE, "overlap at end", "not_yet_approved");
+            absenceEmployeePage = absenceEmployeePage.createNewAbsence("05.08.2020", "31.12.2020", Absence.REASON_MATERNITY_LEAVE, "overlap at start", "not_yet_approved");
+        } catch (Exception exception) {
+            System.out.println("Exception occurred in deleteExistingAbsence() method:");
+            System.out.println("Exception Message: " + exception.getMessage());
+            System.out.println("Stack Trace:");
+            exception.printStackTrace();
+            throw exception;
+        }
+
         /**
          * Check this overlap detection:
          */
@@ -173,8 +190,17 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         /**
          * Remove the absence:
          */
-        absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
-        absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.08.2020");
-        absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("08.08.2020");
+        try {
+            absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
+            absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.08.2020");
+            absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("08.08.2020");
+        } catch (Exception exception) {
+            System.out.println("Exception occurred in deleteExistingAbsence() method:");
+            System.out.println("Exception Message: " + exception.getMessage());
+            System.out.println("Stack Trace:");
+            exception.printStackTrace();
+            throw exception;
+        }
+
     }
 }

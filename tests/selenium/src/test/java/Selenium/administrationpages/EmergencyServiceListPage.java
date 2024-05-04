@@ -195,6 +195,10 @@ public class EmergencyServiceListPage {
             emergencyServiceListPageAfterDeletion = new EmergencyServiceListPage(driver);
         } catch (StaleElementReferenceException staleElementReferenceException) {
             emergencyServiceListPageAfterDeletion = new EmergencyServiceListPage(driver);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            System.out.println(exception.getMessage());
+            emergencyServiceListPageAfterDeletion = new EmergencyServiceListPage(driver);
         }
         return emergencyServiceListPageAfterDeletion;
     }

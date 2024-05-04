@@ -33,10 +33,26 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'approval' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
     );
     $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
+    $dateStartObject = new DateTime($Absence_details['start']);
+    $dateEndObject = new DateTime($Absence_details['end']);
+    $employeeKey = $Absence_details['employeeKey'];
+    $employeeObject = $workforce->get_employee_object($employeeKey);
+    $days = PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays($dateStartObject, $dateEndObject, $employeeObject);
+
+    $absence = new PDR\Roster\Absence(
+            $employeeKey,
+            $dateStartObject,
+            $dateEndObject,
+            $days,
+            $Absence_details['reasonId'],
+            $Absence_details['comment'],
+            $Absence_details['approval'],
+            $session->getUserName(),
+            new DateTime()
+    );
     unset($Absence_details_unsafe);
     unset($absence_details_json_unsafe);
     $Absence_details['mode'] = "edit";
-    $employee_key = $Absence_details['employeeKey'];
 } elseif (filter_has_var(INPUT_GET, 'highlight_details_json')) {
     /*
      * A new entry will be created:
@@ -50,15 +66,22 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'date_range_max' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
-    $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-    $Absence_details['employeeKey'] = $employee_key;
-    $Absence_details['reasonId'] = \PDR\Utility\AbsenceUtility::REASON_VACATION;
-    $Absence_details['start'] = date('Y-m-d', $Highlight_details['date_range_min']);
-    $Absence_details['end'] = date('Y-m-d', $Highlight_details['date_range_max']);
-    $Absence_details['comment'] = '';
+    $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+    $dateStartObject = new DateTime($Highlight_details['date_range_min']);
+    $dateEndObject = new DateTime($Highlight_details['date_range_max']);
+    $employeeObject = $workforce->get_employee_object($employeeKey);
+    $days = PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays(clone $dateStartObject, clone $dateEndObject, $employeeObject);
+    $absence = new PDR\Roster\Absence($employeeKey,
+            $dateStartObject, $dateEndObject, $days,
+            \PDR\Utility\AbsenceUtility::REASON_VACATION,
+            '',
+            "not_yet_approved",
+            $session->getUserName(),
+            new DateTime()
+    );
     $Absence_details['mode'] = "create";
 } else {
-    $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+    $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 }
 ?>
 <form accept-charset='utf-8' id="input_box_form" method="POST">
@@ -68,17 +91,18 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         /*
          * The user is allowed to create an absence for anyone:
          */
-        foreach ($workforce->List_of_employees as $employee_key_option => $employee_object) {
-            if ($employee_key_option == $employee_key) {
+        $workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
+        foreach ($workforce->List_of_employees as $employeeKeyOption => $employee_object) {
+            if ($employeeKeyOption == $employeeKey) {
                 $option_selected = "selected";
             } else {
                 $option_selected = "";
             }
-            echo "<option id='employee_key_option_$employee_key_option' value='$employee_key_option' $option_selected>";
-            echo "$employee_key_option $employee_object->last_name";
+            echo "<option id='employee_key_option_$employeeKeyOption' value='$employeeKeyOption' $option_selected>";
+            echo "$employeeKeyOption $employee_object->last_name";
             echo "</option>\n";
         }
-    } elseif ($session->user_has_privilege('request_own_absence') and "" === $employee_key) {
+    } elseif ($session->user_has_privilege('request_own_absence') and "" === $employeeKey) {
         /**
          * The user is allowed to create an absence for himself and
          * This absence is new.
@@ -94,8 +118,8 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
          * The user is NOT allowed to create any absence
          * or this is an existing absence.
          */
-        echo "<option id='employee_key_option_" . $employee_key . "' value=" . $employee_key . ">";
-        echo $employee_key . " " . $workforce->List_of_employees[$employee_key]->last_name;
+        echo "<option id='employee_key_option_" . $employeeKey . "' value=" . $employeeKey . ">";
+        echo $employeeKey . " " . $workforce->List_of_employees[$employeeKey]->last_name;
         echo "</option>\n";
     }
     ?>
@@ -106,10 +130,10 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
      data-comment="This element is necessary to allow interaction of javascript with this element. After the execution, it is removed."
      />
 -->
-<p><?= gettext("Start") ?><br><input type="date" id="input_box_form_start_date" name="start_date" value="<?= $Absence_details['start'] ?>"></p>
-<p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $Absence_details['end'] ?>"></p>
-<p><?= gettext("Reason") ?><br><?= PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect($Absence_details['reasonId'], 'absence_reason_input_select', 'input_box_form', $session) ?></p>
-<p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $Absence_details['comment'] ?>"></p>
+<p><?= gettext("Start") ?><br><input type="date" id="input_box_form_start_date" name="start_date" value="<?= $absence->getStart()->format("Y-m-d") ?>"></p>
+<p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $absence->getEnd()->format("Y-m-d") ?>"></p>
+<p><?= gettext("Reason") ?><br><?= PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect($absence->getReasonId(), 'absence_reason_input_select', 'input_box_form', $session) ?></p>
+<p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $absence->getComment() ?>"></p>
 <?php
 if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {
     echo "<p>" . gettext("Approval") . "<br>";
@@ -117,7 +141,7 @@ if ($session->user_has_privilege('create_absence') and "edit" === $Absence_detai
 
     foreach (\PDR\Utility\AbsenceUtility::$ListOfApprovalStates as $approval_state) {
         //TODO: Remove all occurences of "disapprove" and change them to "deny".
-        if ($approval_state == $Absence_details['approval']) {
+        if ($approval_state == $absence->getApproval()) {
             echo "<option value='$approval_state' selected>" . localization::gettext($approval_state) . "</option>\n";
         } else {
             echo "<option value='$approval_state'>" . localization::gettext($approval_state) . "</option>\n";
@@ -129,8 +153,8 @@ if ($session->user_has_privilege('create_absence') and "edit" === $Absence_detai
 if (
         $session->user_has_privilege('create_absence')
         or ( $session->user_has_privilege('request_own_absence')
-        and ( $_SESSION['user_object']->get_employee_key() === $employee_key
-        or "" === $employee_key)
+        and ( $_SESSION['user_object']->get_employee_key() === $employeeKey
+        or "" === $employeeKey)
         )
 ) {
     ?>
@@ -142,8 +166,8 @@ if (
     </p>
 <?php } ?>
 
-<input type="hidden" id="employee_key_old" name="employee_key_old" value="<?= $Absence_details['employeeKey'] ?>">
-<input type="hidden" id="input_box_form_start_date_old" name="start_date_old" value="<?= $Absence_details['start'] ?>">
+<input type="hidden" id="employee_key_old" name="employee_key_old" value="<?= $absence->getEmployeeKey() ?>">
+<input type="hidden" id="input_box_form_start_date_old" name="start_date_old" value="<?= $absence->getStart()->format("Y-m-d") ?>">
 </form>
 <a title="<?= gettext("Close"); ?>" href="#" onclick="remove_form_div()">
     <span id="remove_form_div_span">
