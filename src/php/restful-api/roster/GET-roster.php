@@ -18,7 +18,14 @@
  */
 
 require_once '../../../../bootstrap.php';
-$session = new sessions();
+/**
+ * We create a session object.
+ * Normally this is only possible in a logged in state or on the login page.
+ * But in this case we will authorize via access token.
+ * Therefore we create the session object and $allowUnauthorized.
+ */
+$allowUnauthorized = true;
+$session = new sessions($allowUnauthorized);
 $session->verifyAccessToken();
 
 // Fetch the roster data from the database or any other source

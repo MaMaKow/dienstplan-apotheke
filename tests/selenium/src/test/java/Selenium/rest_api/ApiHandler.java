@@ -23,6 +23,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,6 +38,29 @@ public class ApiHandler {
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(payload))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Handle the response
+        return response;
+    }
+
+    public static HttpResponse<String> sendAuthorizedGetRequest(String url) throws IOException, InterruptedException, Exception {
+        String accessToken = null;
+        try {
+            accessToken = POST_authenticateEndpoint.getAccessToken();
+        } catch (Exception exception) {
+            Logger.getLogger(ApiHandler.class.getName()).log(Level.SEVERE, null, exception);
+            exception.printStackTrace();
+            System.out.println(exception.getMessage());
+            throw exception;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .header("Authorization", accessToken)
+                .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

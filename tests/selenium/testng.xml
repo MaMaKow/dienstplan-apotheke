@@ -26,9 +26,14 @@
             <class name="Selenium.principlerosterpages.TestDayPage" />
         </classes>
     </test>
+    <test name="API Endpoints">
+        <classes>
+            <class name="Selenium.rest_api.TestPOST_authenticateEndpoint" />
+            <class name="Selenium.rest_api.TestGET_rosterEndpoint" />
+        </classes>
+    </test>
     <test name="Application Pages">
         <classes>
-            <class name="Selenium.rest_api.TestPOST_authenticate" />
             <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
             <!--

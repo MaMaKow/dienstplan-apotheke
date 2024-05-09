@@ -35,7 +35,7 @@ import org.testng.annotations.Test;
  * </p>
  * @author Mandelkow
  */
-public class TestPOST_authenticate {
+public class TestPOST_authenticateEndpoint {
 
     private PropertyFile propertyFile;
 
@@ -51,20 +51,21 @@ public class TestPOST_authenticate {
             String userPassphrase = propertyFile.getRealPassword();
 
             // Try authentication with wrong credentials:
-            POST_authenticate authenticatePage = new POST_authenticate(userName, userPassphrase + "foo", realTestPageUrl);
-            Assert.assertFalse(authenticatePage.isAuthenticated());
+            POST_authenticateEndpoint authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase + "foo", realTestPageUrl);
+            Assert.assertFalse(authenticateEndpoint.isAuthenticated());
             // Try authentication with empty credentials:
-            authenticatePage = new POST_authenticate(userName, "", realTestPageUrl);
-            Assert.assertFalse(authenticatePage.isAuthenticated());
-            authenticatePage = new POST_authenticate("", "", realTestPageUrl);
-            Assert.assertFalse(authenticatePage.isAuthenticated());
+            authenticateEndpoint = new POST_authenticateEndpoint(userName, "", realTestPageUrl);
+            Assert.assertFalse(authenticateEndpoint.isAuthenticated());
+            authenticateEndpoint = new POST_authenticateEndpoint("", "", realTestPageUrl);
+            Assert.assertFalse(authenticateEndpoint.isAuthenticated());
 
             // Try authentication with correct credentials:
-            authenticatePage = new POST_authenticate(userName, userPassphrase, realTestPageUrl);
-            Assert.assertTrue(authenticatePage.isAuthenticated());
+            authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase, realTestPageUrl);
+            Assert.assertTrue(authenticateEndpoint.isAuthenticated());
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            Assert.fail();
         }
 
     }

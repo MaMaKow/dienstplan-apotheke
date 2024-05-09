@@ -60,7 +60,7 @@ class sessions {
         gettext('request own absence');
     }
 
-    public function __construct() {
+    public function __construct(bool $allowUnauthorized = false) {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
         global $config;
         /**
@@ -112,10 +112,19 @@ class sessions {
          * Force a new visitor to identify as a user (=login):
          * The redirect obviously is not necessary on the login-page and on the register-page.
          */
-        $List_of_pages_accessible_without_login = array('login.php', 'POST-authenticate.php', 'register.php', 'webdav.php', 'lost_password.php', 'reset_lost_password.php', 'background_maintenance.php');
+        $List_of_pages_accessible_without_login = array(
+            'login.php',
+            'POST-authenticate.php',
+            'register.php',
+            'webdav.php',
+            'lost_password.php',
+            'reset_lost_password.php',
+            'background_maintenance.php'
+        );
         if (
                 false === $this->user_is_logged_in()
                 and !in_array(basename($script_name), $List_of_pages_accessible_without_login)
+                and $allowUnauthorized !== true // allow creation of a session for API pages.
         ) {
             $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
             header("Location:" . $location);
@@ -365,20 +374,29 @@ class sessions {
             'expires' => time() + 3600, // Token expiration time (e.g., 1 hour)
         ];
 
-        // Use a library or method to encode the payload and sign it with a secret key
+        /**
+         *  Encode the payload and sign it with a secret key
+         */
         $token = $this->jwtEncode($payload);
 
         return $token;
     }
 
     public function verifyAccessToken() {
-        $token = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-
+        /**
+         * @todo Will this apache_request_headers() work with nginx? Probably not.
+         */
+        $headers = apache_request_headers();
+        $token = $headers["Authorization"];
         try {
-            // Use a library or method to decode and verify the token with the secret key
+            /**
+             *  Use a library or method to decode and verify the token with the secret key
+             */
             $decodedToken = $this->jwtDecode($token);
 
-            // Check token expiration
+            /**
+             *  Check token expiration
+             */
             if ($decodedToken['expires'] < time()) {
                 echo json_encode(['error' => 'Token expired']);
                 exit;
@@ -395,11 +413,16 @@ class sessions {
         $jsonHeader = json_encode($header);
         $jsonPayload = json_encode($payload);
 
-        // Signature
+        /**
+         *  Signature
+         */
         $configuration = new PDR\Application\configuration();
-        $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $configuration->getSecretKey());
+        $secretKey = $configuration->getSecretKey();
+        $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey);
 
-        // Token creation
+        /**
+         *  Token creation
+         */
         $token = base64_encode($jsonHeader) . '.' . base64_encode($jsonPayload) . '.' . base64_encode($signature);
         return $token;
     }
@@ -407,23 +430,37 @@ class sessions {
     private function jwtDecode(string $token): array {
         list($header, $payload, $signature) = explode('.', $token);
 
-        // Decode the JSON-encoded header and payload
-        $decodedHeader = json_decode(base64_decode($header), true);
-        $decodedPayload = json_decode(base64_decode($payload), true);
+        /**
+         *  Decode the JSON-encoded header and payload
+         */
+        $jsonHeader = base64_decode($header);
+        $decodedHeader = json_decode($jsonHeader, true);
+        $jsonPayload = base64_decode($payload);
+        $decodedPayload = json_decode($jsonPayload, true);
+        $decodedSignature = base64_decode($signature); //Is this the missing step?
 
-        // Verify the signature using the secret key and the algorithm specified in the header
+        /**
+         * Verify the signature using the secret key and the algorithm specified in the header
+         */
         $configuration = new PDR\Application\configuration();
         $secretKey = $configuration->getSecretKey();
-        $algorithm = isset($decodedHeader['algorithm']) ? $decodedHeader['algorithm'] : 'sha512'; // Default to sha512 if algorithm is not specified
-        // Re-create the signature to compare with the one in the token
-        $expectedSignature = hash_hmac($algorithm, "$header.$payload", $secretKey, true);
+        $algorithm = $decodedHeader['algorithm'];
 
-        // Compare the expected signature with the one in the token
-        if (!hash_equals(base64_decode($signature), $expectedSignature)) {
+        /**
+         *  Re-create the signature to compare with the one in the token
+         */
+        $expectedSignature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey, false);
+
+        /**
+         *  Compare the expected signature with the one in the token
+         */
+        if (!hash_equals($decodedSignature, $expectedSignature)) {
             throw new Exception('Invalid signature');
         }
 
-        // Return the decoded payload
+        /**
+         *  Return the decoded payload
+         */
         return $decodedPayload;
     }
 }

@@ -335,22 +335,22 @@ class roster {
                     continue;
                 }
                 $jsonDayArray[] = array(
-                    'date' => $rosterItem->date_object,
+                    'date' => $rosterItem->date_object->format('Y-m-d'),
                     'employee_key' => $rosterItem->employee_key,
                     'branch_id' => $rosterItem->branch_id,
-                    'duty_start' => $rosterItem->dutyStartDateTime,
-                    'duty_end' => $rosterItem->dutyEndDateTime,
-                    'break_start' => $rosterItem->break_start_sql,
-                    'break_end' => $rosterItem->break_end_sql,
+                    'duty_start' => $rosterItem->get_dutyStartDateTime()->format('c'),
+                    'duty_end' => $rosterItem->get_dutyEndDateTime()->format('c'),
+                    'break_start' => $rosterItem->getBreakStartDateTime()->format('c'),
+                    'break_end' => $rosterItem->getBreakStartDateTime()->format('c'),
                     'comment' => $rosterItem->comment,
                     'working_hours' => $rosterItem->working_hours,
                 );
             }
-
-            $jsonArray[] = array(
-                'date_unix' => $dateUnix,
-                'roster' => $jsonDayArray,
-            );
+            if (isset($jsonDayArray[0]) and isset($jsonDayArray[0]['date']))
+                $jsonArray[] = array(
+                    'date' => $jsonDayArray[0]['date'],
+                    'roster' => $jsonDayArray,
+                );
         }
 
         return json_encode($jsonArray);

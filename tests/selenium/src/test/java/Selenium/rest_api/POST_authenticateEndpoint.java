@@ -29,12 +29,12 @@ import java.util.logging.Logger;
  *
  * @author Mandelkow
  */
-public class POST_authenticate {
+public class POST_authenticateEndpoint {
 
-    private boolean isAuthenticated = false;
-    private String accessToken = null;
+    private static boolean isAuthenticated = false;
+    private static String accessToken = null;
 
-    public POST_authenticate(String userName, String userPassphrase, String testPageUrl) throws InterruptedException, IOException {
+    public POST_authenticateEndpoint(String userName, String userPassphrase, String testPageUrl) throws InterruptedException, IOException {
         String authenticationEndpoint = testPageUrl + "src/php/restful-api/authentication/POST-authenticate.php";
         String payload = "{\"userName\":\"" + userName + "\",\"userPassphrase\":\"" + userPassphrase + "\"}";
 
@@ -43,27 +43,24 @@ public class POST_authenticate {
         try {
             response = ApiHandler.sendPostRequest(authenticationEndpoint, payload);
         } catch (IOException exception) {
-            Logger.getLogger(POST_authenticate.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         } catch (InterruptedException exception) {
-            Logger.getLogger(POST_authenticate.class.getName()).log(Level.SEVERE, null, exception);
+            Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         }
         String responseBody = response.body();
-        System.out.println("responseBody");
-        System.out.println(responseBody);
 
         // Check if authentication was successful
         isAuthenticated = responseBody.contains("accessToken");
         if (isAuthenticated) {
             accessToken = getTokenFromJsonResponse(responseBody);
-            System.out.println("Authentication successful!");
         } else {
-            System.out.println("Authentication failed!");
+            System.err.println("Authentication failed!");
         }
     }
 
@@ -79,7 +76,14 @@ public class POST_authenticate {
         return accessToken;
     }
 
-    public boolean isAuthenticated() {
+    public static boolean isAuthenticated() {
         return isAuthenticated;
+    }
+
+    public static String getAccessToken() throws Exception {
+        if (null == accessToken) {
+            throw new Exception("The access token is null!");
+        }
+        return accessToken;
     }
 }

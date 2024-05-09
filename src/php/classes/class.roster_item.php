@@ -35,6 +35,8 @@ class roster_item implements \JsonSerializable {
     protected $duty_start_sql;
     protected $dutyStartDateTime;
     protected $dutyEndDateTime;
+    protected $breakStartDateTime;
+    protected $breakEndDateTime;
     protected $duty_end_int;
     protected $duty_end_sql;
     protected $break_start_int;
@@ -109,6 +111,14 @@ class roster_item implements \JsonSerializable {
         return $this->dutyEndDateTime;
     }
 
+    public function getBreakStartDateTime() {
+        return $this->breakStartDateTime;
+    }
+
+    public function getBreakEndDateTime() {
+        return $this->breakEndDateTime;
+    }
+
     public function get_duty_end_sql() {
         return $this->duty_end_sql;
     }
@@ -157,6 +167,20 @@ class roster_item implements \JsonSerializable {
         return $this->weekday;
     }
 
+    /**
+     * @todo: <p>Use only DateTime objects internally!
+     *   Get rid of other time representations.
+     *   We can still convert time to other representations in the getter methods.
+     * </p>
+     * @param string $date_sql
+     * @param int $employee_key
+     * @param int $branch_id
+     * @param string $duty_start
+     * @param string $duty_end
+     * @param string $break_start
+     * @param string $break_end
+     * @param string $comment
+     */
     public function __construct(string $date_sql, int $employee_key = NULL, int $branch_id, string $duty_start, string $duty_end, string $break_start = NULL, string $break_end = NULL, string $comment = NULL) {
         $this->date_sql = $this->format_time_string_correct($date_sql, 'Y-m-d');
         $this->date_object = new DateTime($date_sql);
@@ -178,6 +202,8 @@ class roster_item implements \JsonSerializable {
          */
         $this->dutyStartDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $duty_start, new DateTimeZone('Europe/Berlin'));
         $this->dutyEndDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $duty_end, new DateTimeZone('Europe/Berlin'));
+        $this->breakStartDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $break_start, new DateTimeZone('Europe/Berlin'));
+        $this->breakEndDateTime = DateTime::createFromFormat("Y-m-d H:i:s", $date_sql . " " . $break_end, new DateTimeZone('Europe/Berlin'));
         /*
          * TODO: This might be a good place to issue an error, if the break times are not within the working times.
          * Is it possible to define a roster_logic_exception and throw it here to be catched by the page-rendering-script?
