@@ -59,8 +59,6 @@ public class POST_authenticateEndpoint {
         isAuthenticated = responseBody.contains("accessToken");
         if (isAuthenticated) {
             accessToken = getTokenFromJsonResponse(responseBody);
-        } else {
-            System.err.println("Authentication failed!");
         }
     }
 

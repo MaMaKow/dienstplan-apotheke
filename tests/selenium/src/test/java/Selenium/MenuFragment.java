@@ -162,7 +162,7 @@ public class MenuFragment {
          */
         By menuListItemBy = menuMap.get(target);
         wait.until(ExpectedConditions.presenceOfElementLocated(menuListItemBy));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
+        //wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
 
         WebElement menuListItem = driver.findElement(menuListItemBy);
         wait.until(ExpectedConditions.presenceOfElementLocated(target));

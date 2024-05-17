@@ -129,11 +129,6 @@ public class AbsenceEmployeePage {
          */
         absenceRowsBy = By.xpath("/html/body/div[2]/table/tbody/tr");
         listOfAbsenceRowElements = driver.findElements(absenceRowsBy);
-        /*
-         * <p lang=de>
-         * TODO: Wir können auch die Fehleroptionen noch mit testen.
-         * </p>
-         */
     }
 
     /**

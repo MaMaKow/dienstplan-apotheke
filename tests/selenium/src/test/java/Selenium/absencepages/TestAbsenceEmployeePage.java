@@ -62,6 +62,11 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
 
         // Insert another absence:
         absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "31.12.2020", Absence.REASON_VACATION, "ganzes Jahr", "not_yet_approved"); //gesetzliche Feiertage
+        List<String> userDialogNotifications = absenceEmployeePage.getUserDialogNotifications();
+        assertTrue(!userDialogNotifications.isEmpty());
+        assertEquals(userDialogNotifications.get(0), "01.01.2020 ist ein Feiertag (Neujahr) und wird nicht berechnet.");
+        assertTrue(userDialogNotifications.get(1).contains("ist kein Arbeitstag für"));
+        assertTrue(userDialogNotifications.get(1).contains("und wird nicht gezählt."));
         /**
          * Check this absence:
          */
@@ -117,10 +122,10 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
          */
         absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.07.2020");
         currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
-        assertEquals(currentAbsence, null);
+        Assert.assertNull(currentAbsence);
         absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("02.07.2020");
         currentAbsence = absenceEmployeePage.getExistingAbsence("02.07.2020", employeeKey);
-        assertEquals(currentAbsence, null);
+        Assert.assertNull(currentAbsence);
 
         try {
             absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
