@@ -56,7 +56,13 @@ public class TestSaturdayListPage extends TestPage {
         int firstFoundTeamId = saturdayListPage.getTeamIdOnDate(saturdayDate);
         //Assert that the found team number is in the expected range:
         Assert.assertTrue(firstFoundTeamId < SaturdayRotationTeam.getSaturdayTeamsSize());
-
+        /**
+         * <p lang=de>
+         * Es muss auf Feiertage geachtet werden. Am Sa 03.10.2026 ist Tag der Deutschen Einheit.
+         * Es wird danach am 10.10.2026 das Team eingesetzt, das sonst am 03.10.2026 Dienst gehabt hätte.
+         * </p>
+         *
+         */
         saturdayDate = LocalDate.of(2026, 10, 3);
         Assert.assertEquals(saturdayListPage.teamIdOnDateIsMissing(saturdayDate), true);
 

@@ -202,10 +202,6 @@ public class BranchAdministrationPage {
      * The method selects the branch to remove, submits the removal action, and
      * effectively deletes the branch from the application.
      *
-     * @TODO: This method is currently not covered by any test. It is recommended
-     * to write a comprehensive test suite to ensure the correct functionality
-     * of the branch removal process.
-     *
      * @param branchId The unique identifier of the branch to be removed.
      *
      */

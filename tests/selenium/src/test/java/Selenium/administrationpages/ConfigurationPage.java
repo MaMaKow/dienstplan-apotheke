@@ -94,6 +94,13 @@ public class ConfigurationPage {
         webElement.sendKeys(localeString);
     }
 
+    public void setApplicationName(String applicationName) {
+        By elementBy = By.xpath("/html/body/div[3]/form/div/fieldset[3]/input[@name='application_name']");
+        WebElement webElement = driver.findElement(elementBy);
+        webElement.clear();
+        webElement.sendKeys(applicationName);
+    }
+
     public String getLocales() {
         By elementBy = By.xpath("/html/body/div[3]/form/div/fieldset[3]/input[@name='LC_TIME']");
         WebElement webElement = driver.findElement(elementBy);

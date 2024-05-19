@@ -33,12 +33,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 /**
- * <p lang=de>
- * TODO: Es muss auf Feiertage geachtet werden. Am Sa 01.05.2021 war Tag der
- * Arbeit. Das hat den Samstagsplaner damals durcheinander gebracht. Das sollte
- * nun gefixt sein.
- * </p>
- *
  *
  * @author Mandelkow
  */

@@ -44,6 +44,13 @@ public class TestConfigurationPage extends TestPage {
         configurationPage.setLocales("de_DE.utf8");
         configurationPage.submitForm();
         Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        /**
+         * Set Name for Page
+         */
+        String applicationName = "Selenium Test Plan";
+        configurationPage.setApplicationName(applicationName);
+        configurationPage.submitForm();
+        Assert.assertEquals(configurationPage.getApplicationName(), applicationName);
 
     }
 
@@ -89,10 +96,6 @@ public class TestConfigurationPage extends TestPage {
          * Sending emails:
          */
         Assert.assertEquals(configurationPage.getEmailMethod(), "mail");
-        /**
-         * @todo: <p lang=de>Es fehen noch die Methoden zum Ändern der
-         * Konfiguration.</p>
-         */
     }
 
 }
