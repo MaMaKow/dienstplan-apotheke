@@ -3,12 +3,12 @@
  *
  * Dienstplan Apotheke
  *
- * This program is free software: you can redistribute iterator and/or modify
- * iterator under the terms of the GNU Affero General Public License as published by
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that iterator will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
@@ -221,6 +221,19 @@ public class BranchAdministrationPage {
         WebElement formElementRemoveBranch;
         formElementRemoveBranch = driver.findElement(formElementRemoveBranchBy);
         formElementRemoveBranch.click();
+    }
+
+    public boolean exists(int branchId) {
+        /**
+         * Select to find branch:
+         */
+        Select branchFormSelect = new Select(driver.findElement(formElementBranchSelectBy));
+        try {
+            branchFormSelect.selectByValue(String.valueOf(branchId));
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     /**
