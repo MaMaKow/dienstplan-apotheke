@@ -28,7 +28,7 @@ $session = new sessions;
  * This is used in the head.php
  */
 $navigator_language = "de-DE"; //default language
-if (filter_has_var(INPUT_SERVER, HTTP_ACCEPT_LANGUAGE)) {
+if (filter_has_var(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE')) {
     $navigator_languages = preg_split('/[,;]/', filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_SPECIAL_CHARS));
     $navigator_language = $navigator_languages[0]; //ignore the other options
 }
