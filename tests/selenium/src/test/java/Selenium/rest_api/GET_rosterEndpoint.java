@@ -86,13 +86,13 @@ public class GET_rosterEndpoint {
      * @return roster data
      */
     private HashMap<LocalDate, HashMap> getRosterDataFromJsonResponse(String response) {
-        //HashMap<Integer, RosterItem> listOfRosterItems = new HashMap<>(); //Diese sind die Items in einem Tag.
-        HashMap<LocalDate, HashMap> listOfRosterDays = new HashMap<>();
-
         /**
-         * Create a Gson object
+         * Diese sind die Items in einem Tag.
          */
-        Gson gson = new Gson();
+        HashMap<LocalDate, HashMap> listOfRosterDays = new HashMap<>();
+        /**
+         * Create a Json object
+         */
         JsonElement jsonElement = JsonParser.parseString(response);
 
         /**

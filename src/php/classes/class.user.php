@@ -54,7 +54,7 @@ class user {
 
     /**
      *
-     * @var string <p>The user_name can be freely chosen by the employee (FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_STRIP_LOW).
+     * @var string <p>The user_name can be freely chosen by the employee (FILTER_SANITIZE_SPECIAL_CHARS, FILTER_FLAG_STRIP_LOW).
      * It is a UNIQUE KEY in the `users` table.</p>
      */
     public $user_name;

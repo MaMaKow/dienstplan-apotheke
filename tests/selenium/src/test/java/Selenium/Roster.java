@@ -149,7 +149,7 @@ public class Roster {
                     String dutyEnd = entryValue.getAsJsonObject().get("dutyEnd").getAsString();
                     String breakStart = entryValue.getAsJsonObject().get("breakStart").getAsString();
                     String breakEnd = entryValue.getAsJsonObject().get("breakEnd").getAsString();
-                    int employeeKey = entryValue.getAsJsonObject().get("employeeKey").getAsInt();
+                    String employeeFullName = entryValue.getAsJsonObject().get("employeeFullName").getAsString();
                     int branchId = entryValue.getAsJsonObject().get("branchId").getAsInt();
                     String comment = null;
                     try {
@@ -159,7 +159,7 @@ public class Roster {
                          * comment was not set. Nothing to do here.
                          */
                     }
-                    rosterItem = new RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+                    rosterItem = new RosterItem(employeeFullName, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
                     listOfRosterItems.put(rowNumber, rosterItem);
                 }
                 listOfRosterDays.put(localDate, listOfRosterItems);
@@ -184,50 +184,50 @@ public class Roster {
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2020, Month.JULY, 1);
-        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(4, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1));
-        listOfRosterItems.put(3, new RosterItem(5, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem("Elisabeth Lehmann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1));
+        listOfRosterItems.put(3, new RosterItem("Albert Baumann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2020, Month.JULY, 2);
-        listOfRosterItems.put(0, new RosterItem(7, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(6, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem("Albert Krüger", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem("Albert Kremer", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2020, Month.JULY, 3);
-        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day in 2021:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2021, Month.JANUARY, 4);
-        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
          * Add another day in 2019:
          */
         listOfRosterItems.clear();
         localDate = LocalDate.of(2019, Month.DECEMBER, 30);
-        listOfRosterItems.put(0, new RosterItem(6, localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem(5, localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem(7, localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem(4, localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
 
         /**

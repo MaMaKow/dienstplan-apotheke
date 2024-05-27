@@ -180,13 +180,13 @@ public class RosterWeekTablePage {
 
     /**
      * @param dayOfWeek Monday is 1 Sunday is 7
-     * @param employeeKey id of the employee
-     * @return RosterItem the first roster item, that is found for this employee
-     * id. CAVE: There could be more items for the same employee!
+     * @param employeeFullName full name of the employee
+     * @return RosterItem the first roster item, that is found for this employee.
+     * CAVE: There could be more items for the same employee!
      */
-    public RosterItem getRosterItemByEmployeeKey(DayOfWeek dayOfWeek, int employeeKey) {
+    public RosterItem getRosterItemByEmployeeKey(DayOfWeek dayOfWeek, String employeeFullName) {
 
-        WebElement rosterTableDataElement = getRosterTableDataElementByEmployeeKey(dayOfWeek, employeeKey);
+        WebElement rosterTableDataElement = getRosterTableDataElementByEmployeeName(dayOfWeek, employeeFullName);
 
         Select branchFormSelect = new Select(driver.findElement(branchFormSelectBy));
         int branchId = Integer.parseInt(branchFormSelect.getFirstSelectedOption().getAttribute("value"));
@@ -199,7 +199,7 @@ public class RosterWeekTablePage {
 
         LocalDate localDateParsed = LocalDate.parse(dateSql, DateTimeFormatter.ISO_LOCAL_DATE);
         Workforce workforce = new Workforce();
-        Employee employeeShould = workforce.getEmployeeByKey(employeeKey);
+        Employee employeeShould = workforce.getEmployeeByFullName(employeeFullName);
         String employeeNameStringFound = rosterTableDataElement.findElement(rosterItemEmployeeXpathBy).getText();
         /**
          * Make sure, that we found the right TD TableData:
@@ -213,22 +213,22 @@ public class RosterWeekTablePage {
         String breakStart = rosterTableDataElement.findElement(rosterItemBreakStartXpathBy).getText();
         String breakEnd = rosterTableDataElement.findElement(rosterItemBreakEndXpathBy).getText();
         String comment = null;//TODO; add comment
-        RosterItem rosterItem = new RosterItem(employeeKey, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new RosterItem(employeeFullName, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
 
     }
 
-    private WebElement getRosterTableDataElementByEmployeeKey(DayOfWeek dayOfWeek, int employeeKey) {
+    private WebElement getRosterTableDataElementByEmployeeName(DayOfWeek dayOfWeek, String employeeFullName) {
         int indexOfDay = dayOfWeek.getValue();
-        By rowXpathBy = By.xpath("//table[@id=\"duty_roster_table\"]/tbody/tr/td[" + indexOfDay + "]/span[1]/span[1]/b/a[@data-employee_key=\"" + employeeKey + "\"]/parent::b/parent::span/parent::span/parent::td");
+        By rowXpathBy = By.xpath("//table[@id=\"duty_roster_table\"]/tbody/tr/td[" + indexOfDay + "]/span[1]/span[1]/b/a[@data-employeeFullName=\"" + employeeFullName + "\"]/parent::b/parent::span/parent::span/parent::td");
         WebElement rosterTableDataElement = driver.findElement(rowXpathBy);
         return rosterTableDataElement;
     }
 
     public RosterItem getRosterItem(int column, int row) throws ParseException {
 
-        int employeeKey = Integer.valueOf(driver.findElement(getRosterItemEmployeeKeyXpathBy(column, row)).getAttribute("data-employee_key"));
-        int branchId = Integer.valueOf(driver.findElement(getRosterItemEmployeeKeyXpathBy(column, row)).getAttribute("data-branch_id"));
+        int employeeKey = Integer.parseInt(driver.findElement(getRosterItemEmployeeKeyXpathBy(column, row)).getAttribute("data-employee_key"));
+        int branchId = Integer.parseInt(driver.findElement(getRosterItemEmployeeKeyXpathBy(column, row)).getAttribute("data-branch_id"));
         String dateString = driver.findElement(getRosterItemDateXpathBy(column)).getText();
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(column, row)).getText();
         String dutyEnd = driver.findElement(getRosterItemDutyEndXpathBy(column, row)).getText();

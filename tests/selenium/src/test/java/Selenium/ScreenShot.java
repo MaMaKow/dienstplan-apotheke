@@ -37,21 +37,20 @@ public class ScreenShot {
 
     WebDriver driver;
 
-    public ScreenShot(ITestResult testResult) {
-        takeScreenShot(testResult);
+    public ScreenShot() {
     }
 
-    private void takeScreenShot(ITestResult testResult) {
+    public void takeScreenShot(String packageName, String className, String methodName) {
         driver = Selenium.driver.Wrapper.getDriver();
         File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         try {
             FileUtils.copyFile(scrFile, new File(
                     "errorScreenshots" + File.separator
-                    + testResult.getTestClass().getName()
+                    + packageName
                     + "-"
-                    + testResult.getMethod().getMethodName()
-                    //+ "-"
-                    //+ Arrays.toString(testResult.getParameters())
+                    + className
+                    + "-"
+                    + methodName
                     + ".jpg"), true, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             Logger.getLogger(ScreenShot.class.getName()).log(Level.SEVERE, null, ex);

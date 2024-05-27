@@ -200,6 +200,8 @@ div.overlay:hover
     z-index: -10;
 }
 div.user_dialog_container {
+    max-height: 30vh; /* 30% of the viewport height */
+    overflow-y: auto; /* Add a vertical scrollbar when content exceeds the max-height */
     position: relative;
     float: right;
     top:0;

@@ -16,6 +16,7 @@
  */
 package Selenium.principlerosterpages;
 
+import Selenium.Employee;
 import Selenium.PrincipleRoster;
 import Selenium.PrincipleRosterDay;
 import Selenium.RosterItem;
@@ -95,18 +96,15 @@ public class TestEmployeePage extends TestPage {
         /**
          * Move to specific employee:
          */
-        int employeeKey = 3;
-        Workforce workforce = new Workforce();
+        String employeeFullName = "Anabell Neuhaus";
         int branchId = 1;
-        employeePage.selectEmployee(employeeKey);
-        Assert.assertEquals(employeeKey, employeePage.getEmployeeKey());
+        employeePage.selectEmployeeByFullName(employeeFullName);
+        Assert.assertEquals(employeeFullName, employeePage.getEmployeeFullName());
         /**
          * Set a new roster item:
          */
-
         LocalDate localDate = LocalDate.of(2021, Month.SEPTEMBER, 21);
-        RosterItem rosterItemNew = new RosterItem(employeeKey, localDate, "10:30", "19:00", "12:30", "13:30", null, branchId);
-        //RosterItem rosterItemOld = employeePage.getRosterItem(1, 1, 1);
+        RosterItem rosterItemNew = new RosterItem(employeeFullName, localDate, "10:30", "19:00", "12:30", "13:30", null, branchId);
         HashSet<RosterItem> rosterItemsOldSet = employeePage.getSetOfRosterItems(0, DayOfWeek.MONDAY);
         Optional<RosterItem> rosterItemOldOptional = rosterItemsOldSet.stream().findFirst();
         if (rosterItemOldOptional.isEmpty()) {
@@ -120,7 +118,7 @@ public class TestEmployeePage extends TestPage {
         employeePage.setRosterItem(1, 1, 1, rosterItemNew);
         rosterItemChanged = employeePage.getRosterItem(1, 1, 1);
 
-        softAssert.assertEquals(rosterItemChanged.getEmployeeName(workforce), rosterItemNew.getEmployeeName(workforce));
+        softAssert.assertEquals(rosterItemChanged.getEmployeeLastName(), rosterItemNew.getEmployeeLastName());
         softAssert.assertEquals(rosterItemChanged.getDutyStart(), rosterItemNew.getDutyStart());
         softAssert.assertEquals(rosterItemChanged.getDutyEnd(), rosterItemNew.getDutyEnd());
         softAssert.assertEquals(rosterItemChanged.getBreakStart(), rosterItemNew.getBreakStart());

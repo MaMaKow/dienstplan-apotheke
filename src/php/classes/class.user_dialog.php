@@ -192,7 +192,7 @@ class user_dialog {
         $paragraph_separator = "\n\n\n\n";
         $message = "";
         $message .= "________ " . gettext('Message') . " ________\n";
-        $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $message .= filter_input(INPUT_POST, 'message', FILTER_SANITIZE_SPECIAL_CHARS);
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('Sender') . " ________\n";
@@ -200,7 +200,7 @@ class user_dialog {
         $message .= $paragraph_separator;
 
         $message .= "________ " . gettext('File') . " ________\n";
-        $message .= filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $message .= filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_SPECIAL_CHARS);
         $message .= $paragraph_separator;
 
         return $message;

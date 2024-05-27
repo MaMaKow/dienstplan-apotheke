@@ -67,7 +67,7 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Check the expected values:
          */
-        Assert.assertEquals(configurationPage.getApplicationName(), "PDR");
+        Assert.assertEquals(configurationPage.getApplicationName(), "Selenium Test Plan");
         Assert.assertEquals(configurationPage.getDatabaseName(), "pdrTest");
         /**
          * The password MUST NOT be visible!

@@ -47,7 +47,7 @@ public class ConfigurationPage {
     }
 
     public String getApplicationName() {
-        By applicationNameBy = By.xpath("/html/body/div[3]/form/div/fieldset[1]/input[@name='application_name']");
+        By applicationNameBy = By.xpath("/html/body/div[3]/form/div/fieldset[1]/input[@name=\"application_name\"]");
         WebElement applicationNameElement = driver.findElement(applicationNameBy);
         return applicationNameElement.getAttribute("value");
     }
@@ -95,14 +95,14 @@ public class ConfigurationPage {
     }
 
     public void setApplicationName(String applicationName) {
-        By elementBy = By.xpath("/html/body/div[3]/form/div/fieldset[3]/input[@name='application_name']");
+        By elementBy = By.xpath("/html/body/div/form/div/fieldset/input[@name=\"application_name\"]");
         WebElement webElement = driver.findElement(elementBy);
         webElement.clear();
         webElement.sendKeys(applicationName);
     }
 
     public String getLocales() {
-        By elementBy = By.xpath("/html/body/div[3]/form/div/fieldset[3]/input[@name='LC_TIME']");
+        By elementBy = By.xpath("/html/body/div/form/div/fieldset/input[@name='LC_TIME']");
         WebElement webElement = driver.findElement(elementBy);
         return webElement.getAttribute("value");
     }

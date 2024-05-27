@@ -411,11 +411,11 @@ abstract class build_html_roster_views {
                 }
                 $table_html .= "<td>";
                 $zeile = "";
-
                 $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlspecialchars($roster_item->date_sql)
                         . "&employee_key=" . htmlspecialchars($roster_item->employee_key)
                         . "' data-employee_key='" . htmlspecialchars($roster_item->employee_key)
+                        . "' data-employeeFullName='" . htmlspecialchars($workforce->getEmployeeFullName($roster_item->employee_key))
                         . "' data-branch_id='" . htmlspecialchars($roster_item->branch_id)
                         . "' data-date_sql='" . htmlspecialchars($roster_item->date_sql)
                         . "'>";

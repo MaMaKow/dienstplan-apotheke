@@ -23,10 +23,10 @@ $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects
 $current_branch_id = user_input::convert_post_empty_to_php_null(user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id()));
 if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('administration')) {
     $new_branch_id = filter_input(INPUT_POST, "branch_id", FILTER_SANITIZE_NUMBER_INT);
-    $new_branch_name = filter_input(INPUT_POST, "branch_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $new_branch_short_name = filter_input(INPUT_POST, "branch_short_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $new_branch_address = filter_input(INPUT_POST, "branch_address", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $new_branch_manager = filter_input(INPUT_POST, "branch_manager", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $new_branch_name = filter_input(INPUT_POST, "branch_name", FILTER_SANITIZE_SPECIAL_CHARS);
+    $new_branch_short_name = filter_input(INPUT_POST, "branch_short_name", FILTER_SANITIZE_SPECIAL_CHARS);
+    $new_branch_address = filter_input(INPUT_POST, "branch_address", FILTER_SANITIZE_SPECIAL_CHARS);
+    $new_branch_manager = filter_input(INPUT_POST, "branch_manager", FILTER_SANITIZE_SPECIAL_CHARS);
     $new_branch_pep_id = user_input::convert_post_empty_to_php_null(filter_input(INPUT_POST, "branch_pep_id", FILTER_SANITIZE_NUMBER_INT));
 
     if (filter_has_var(INPUT_POST, 'remove_branch')) {
@@ -83,8 +83,8 @@ if (filter_has_var(INPUT_POST, 'branch_id') and $session->user_has_privilege('ad
         $current_branch_id = $new_branch_id;
     }
 
-    $Opening_times_from = filter_input(INPUT_POST, 'opening_times_from', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
-    $Opening_times_to = filter_input(INPUT_POST, 'opening_times_to', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+    $Opening_times_from = filter_input(INPUT_POST, 'opening_times_from', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+    $Opening_times_to = filter_input(INPUT_POST, 'opening_times_to', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
     /*
      * TODO: Move this into the branch class.
      */

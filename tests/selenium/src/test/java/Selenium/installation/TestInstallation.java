@@ -45,8 +45,8 @@ import org.testng.annotations.BeforeMethod;
  */
 public class TestInstallation {
 
-    WebDriver driver;
-    PropertyFile propertyFile;
+    private WebDriver driver;
+    private PropertyFile propertyFile;
     /**
      * <p lang=de>
      * Diese URL wird aus der apache Seite für Ordner ohne index.html
@@ -54,7 +54,10 @@ public class TestInstallation {
      * https://your-host.com/development/testing/dienstplan-test-0_14_0_899_gba26b727b1e29aede593fa5066b003982bc19c16/
      * </p>
      */
-    String testPageUrl;
+    private String testPageUrl;
+    public String packageName;
+    public String className;
+    public String methodName;
 
     @Test(enabled = true)/*passed*/
     public void testInstallation() throws Exception {
@@ -121,16 +124,17 @@ public class TestInstallation {
     @BeforeMethod
     public void setUpMethod(ITestResult result) {
         // Print the name of the class and the currently executing test method to the log file
-        String packageName = this.getClass().getPackageName();
-        String className = this.getClass().getSimpleName();
-        String methodName = result.getMethod().getMethodName();
+        packageName = this.getClass().getPackageName();
+        className = this.getClass().getSimpleName();
+        methodName = result.getMethod().getMethodName();
         System.err.println("Package: " + packageName + ", Class: " + className + ", Method: " + methodName);
     }
 
     @AfterMethod
     public void tearDown(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
+        ScreenShot screenshot = new ScreenShot();
+        screenshot.takeScreenShot(packageName, className, methodName);
         if (testResult.getStatus() != ITestResult.FAILURE) {
             driver.quit();
         }

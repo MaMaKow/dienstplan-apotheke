@@ -31,14 +31,14 @@ class DatabaseInputHandler {
     public function handleUserInputDatabase() {
         $configuration = new \PDR\Application\Installation\InstallConfiguration();
         $installUtility = new \PDR\Application\Installation\InstallUtility();
-        $config["database_management_system"] = filter_input(INPUT_POST, "database_management_system", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-        $config["database_host"] = filter_input(INPUT_POST, "database_host", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-        $config["database_name"] = filter_input(INPUT_POST, "database_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $config["database_management_system"] = filter_input(INPUT_POST, "database_management_system", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $config["database_host"] = filter_input(INPUT_POST, "database_host", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $config["database_name"] = filter_input(INPUT_POST, "database_name", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
         $config["database_port"] = filter_input(INPUT_POST, "database_port", FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE);
         // Ensure port an integer or null
         $config["database_port"] = is_numeric($config["database_port"]) ? (int) $config["database_port"] : 3306;
-        $config["database_user"] = filter_input(INPUT_POST, "database_user", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-        $config["database_password"] = filter_input(INPUT_POST, "database_password", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $config["database_user"] = filter_input(INPUT_POST, "database_user", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $config["database_password"] = filter_input(INPUT_POST, "database_password", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
         $configuration->setConfiguration($config);
         if (!in_array($config["database_management_system"], \PDO::getAvailableDrivers())) {
             $installUtility->addErrorMessage(htmlspecialchars($this->Config["database_management_system"]) . "is not available on this server. Please check the configuration!");

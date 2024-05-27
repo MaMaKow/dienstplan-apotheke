@@ -57,7 +57,7 @@ class SystemRequirementsValidator {
     public function webserverSupportsHttps(string $pdrFileSystemApplicationPath): bool {
         require_once $pdrFileSystemApplicationPath . 'src/php/classes/class.sessions.php';
         $this->tryHttps();
-        $https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $https = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_SPECIAL_CHARS);
 
         if (!empty($https) and $https === "on") {
             return TRUE;

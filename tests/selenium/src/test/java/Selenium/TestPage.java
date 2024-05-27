@@ -19,6 +19,9 @@
 package Selenium;
 
 import Selenium.signin.SignInPage;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -44,6 +47,9 @@ public class TestPage {
     protected SoftAssert softAssert = new SoftAssert();
     protected PropertyFile propertyFile;
     protected static Boolean someTestHasFailed = false;
+    public String packageName;
+    public String className;
+    public String methodName;
 
     @Test
     public void signIn() {
@@ -104,16 +110,17 @@ public class TestPage {
             throw new SkipException("Some Test has failed. Skipping all the other methods.");
         }
         // Print the name of the class and the currently executing test method to the log file
-        String packageName = this.getClass().getPackageName();
-        String className = this.getClass().getSimpleName();
-        String methodName = result.getMethod().getMethodName();
+        packageName = this.getClass().getPackageName();
+        className = this.getClass().getSimpleName();
+        methodName = result.getMethod().getMethodName();
         System.err.println("Package: " + packageName + ", Class: " + className + ", Method: " + methodName);
     }
 
     @AfterMethod
     public void tearDown(ITestResult testResult) {
         driver = Selenium.driver.Wrapper.getDriver();
-        new ScreenShot(testResult);
+        ScreenShot screenshot = new ScreenShot();
+        screenshot.takeScreenShot(packageName, className, methodName);
         if (testResult.getStatus() == ITestResult.SUCCESS) {
             //driver.quit();
         } else {
@@ -128,6 +135,24 @@ public class TestPage {
     public void tearDownSuite() {
         if (!someTestHasFailed) {
             driver.quit();
+        } else {
+            try {
+                // Capture the page source
+                String pageSource = driver.getPageSource();
+
+                // Specify the file where the page source will be written
+                File pageSourceFile = new File("failed_test_page.html");
+
+                // Write the page source to the file
+                try (FileWriter writer = new FileWriter(pageSourceFile)) {
+                    writer.write(pageSource);
+                }
+
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+            ScreenShot screenShot = new ScreenShot();
+            screenShot.takeScreenShot(packageName, className, methodName);
         }
     }
 

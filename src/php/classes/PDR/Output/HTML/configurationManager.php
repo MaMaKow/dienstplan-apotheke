@@ -29,28 +29,28 @@ namespace PDR\Output\HTML;
 class configurationManager {
 
     private static $List_of_configuration_parameter_types = array(
-        'application_name' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'database_management_system' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'database_host' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'database_name' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        'application_name' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'database_management_system' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'database_host' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'database_name' => FILTER_SANITIZE_SPECIAL_CHARS,
         'database_port' => FILTER_SANITIZE_NUMBER_INT,
-        'database_user' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        'database_user' => FILTER_SANITIZE_SPECIAL_CHARS,
         'database_password' => FILTER_UNSAFE_RAW,
         'session_secret' => FILTER_UNSAFE_RAW,
         'error_reporting' => FILTER_SANITIZE_NUMBER_INT,
         'display_errors' => FILTER_SANITIZE_NUMBER_INT,
         'log_errors' => FILTER_SANITIZE_NUMBER_INT,
-        'error_log' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'LC_TIME' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'timezone' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'language' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'mb_internal_encoding' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        'error_log' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'LC_TIME' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'timezone' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'language' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'mb_internal_encoding' => FILTER_SANITIZE_SPECIAL_CHARS,
         'contact_email' => FILTER_SANITIZE_EMAIL,
         'hide_disapproved' => FILTER_SANITIZE_NUMBER_INT,
-        'email_method' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        'email_method' => FILTER_SANITIZE_SPECIAL_CHARS,
         'email_smtp_host' => FILTER_SANITIZE_URL,
         'email_smtp_port' => FILTER_SANITIZE_NUMBER_INT,
-        'email_smtp_username' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        'email_smtp_username' => FILTER_SANITIZE_SPECIAL_CHARS,
         'email_smtp_password' => FILTER_UNSAFE_RAW,
     );
 
@@ -142,7 +142,7 @@ class configurationManager {
              * For security reasons we clean the result of the shell execution.
              * This might be paranoid. But I count this as user input.
              */
-            $installed_locale_clean = filter_var($installed_locale, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $installed_locale_clean = filter_var($installed_locale, FILTER_SANITIZE_SPECIAL_CHARS);
             $datalist_locales .= "<option value='" . htmlspecialchars($installed_locale_clean, ENT_QUOTES) . "'>\n";
         }
         $datalist_locales .= "</datalist>\n";

@@ -24,7 +24,7 @@ $installUtility = new \PDR\Application\Installation\InstallUtility();
 $languageInput = filter_input(INPUT_GET, "language", FILTER_SANITIZE_SPECIAL_CHARS);
 $languageBCP47 = localization::getLanguage($languageInput);
 localization::initialize_gettext($languageBCP47);
-if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
+if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FILTER_SANITIZE_SPECIAL_CHARS)) {
     /*
      * https://de.wikipedia.org/wiki/Post/Redirect/Get
      */

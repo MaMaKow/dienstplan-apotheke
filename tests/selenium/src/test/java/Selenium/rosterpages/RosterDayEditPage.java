@@ -156,14 +156,15 @@ public class RosterDayEditPage {
      * @param employeeKey
      * @return
      */
-    private WebElement findRosterTableRowByEmployee(Integer employeeKey) {
+    private WebElement findRosterTableRowByEmployee(String employeeFullName) {
         /**
-         * Wir brauchen zwei By Variablen. CSS kann tatsächlich gerade markierte
-         * options finden. XPath kann parent elements finden.
+         * Wir nutzen zwei By Variablen. Erst die tatsächlich gerade markierte
+         * options finden. Dann parent elements finden.
          */
-        By rowCssBy = By.cssSelector("#roster_form > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
+        By rowXpathOptionBy = By.xpath("/html/body/div/form[@id=\"roster_form\"]/table/tbody/tr/td[@class=\"roster_input_row\"]/span/select/option[@selected and text()=\"" + employeeFullName + "\"]");
+
+        WebElement rosterTableRowOptionElement = driver.findElement(rowXpathOptionBy);
         By rowXpathBy = By.xpath("parent::select/parent::span/parent::td/parent::tr");
-        WebElement rosterTableRowOptionElement = driver.findElement(rowCssBy);
         WebElement rosterTableRowElement = rosterTableRowOptionElement.findElement(rowXpathBy);
         return rosterTableRowElement;
     }
@@ -184,8 +185,8 @@ public class RosterDayEditPage {
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputDutyStart(int employeeKey) {
-        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeKey);
+    private WebElement findRosterInputDutyStart(String employeeFullName) {
+        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeFullName);
         By inputBy = By.xpath(".//td/input[contains(@name, \"duty_start_sql\")]");
         WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
         return rosterInputElement;
@@ -197,8 +198,8 @@ public class RosterDayEditPage {
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputDutyEnd(int employeeKey) {
-        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeKey);
+    private WebElement findRosterInputDutyEnd(String employeeFullName) {
+        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeFullName);
         By inputBy = By.xpath(".//td/input[contains(@name, \"duty_end_sql\")]");
         WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
         return rosterInputElement;
@@ -210,8 +211,8 @@ public class RosterDayEditPage {
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputBreakStart(int employeeKey) {
-        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeKey);
+    private WebElement findRosterInputBreakStart(String employeeFullName) {
+        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeFullName);
         By inputBy = By.xpath(".//td/input[contains(@name, \"break_start_sql\")]");
         WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
         return rosterInputElement;
@@ -223,8 +224,8 @@ public class RosterDayEditPage {
         return rosterInputElement;
     }
 
-    private WebElement findRosterInputBreakEnd(int employeeKey) {
-        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeKey);
+    private WebElement findRosterInputBreakEnd(String employeeFullName) {
+        WebElement rosterTableRow = findRosterTableRowByEmployee(employeeFullName);
         By inputBy = By.xpath(".//td/input[contains(@name, \"break_end_sql\")]");
         WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
         return rosterInputElement;
@@ -345,7 +346,7 @@ public class RosterDayEditPage {
     }
 
     public void rosterInputEditRow(RosterItem rosterItemOld, RosterItem rosterItemNew) {
-        WebElement rosterTableRow = findRosterTableRowByEmployee(rosterItemOld.getEmployeeKey());
+        WebElement rosterTableRow = findRosterTableRowByEmployee(rosterItemOld.getEmployeeFullName());
         this.changeRosterInputEmployee(rosterTableRow, rosterItemNew.getEmployeeKey());
         this.changeRosterInputDutyStart(rosterTableRow, rosterItemNew.getDutyStart());
         this.changeRosterInputDutyEnd(rosterTableRow, rosterItemNew.getDutyEnd());
@@ -354,54 +355,54 @@ public class RosterDayEditPage {
         this.changeRosterInputComment(rosterTableRow, rosterItemNew.getComment());
     }
 
-    private Integer getRosterValueBranchId(int employeeKey) {
-        WebElement rosterTableRow = this.findRosterTableRowByEmployee(employeeKey);
+    private Integer getRosterValueBranchId(String employeeFullName) {
+        WebElement rosterTableRow = this.findRosterTableRowByEmployee(employeeFullName);
         int rosterValue = Integer.parseInt(rosterTableRow.getAttribute("data-branch_id"));
         return rosterValue;
     }
 
-    private String getRosterValueDateString(int employeeKey) {
-        WebElement rosterTableRow = this.findRosterTableRowByEmployee(employeeKey);
+    private String getRosterValueDateString(String employeeFullName) {
+        WebElement rosterTableRow = this.findRosterTableRowByEmployee(employeeFullName);
         String rosterValue = rosterTableRow.getAttribute("data-date_sql");
         return rosterValue;
     }
 
-    private String getRosterValueDutyStart(int employeeKey) {
-        WebElement rosterInputElement = findRosterInputDutyStart(employeeKey);
+    private String getRosterValueDutyStart(String employeeFullName) {
+        WebElement rosterInputElement = findRosterInputDutyStart(employeeFullName);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    private String getRosterValueDutyEnd(int employeeKey) {
-        WebElement rosterInputElement = findRosterInputDutyEnd(employeeKey);
+    private String getRosterValueDutyEnd(String employeeFullName) {
+        WebElement rosterInputElement = findRosterInputDutyEnd(employeeFullName);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    private String getRosterValueBreakStart(int employeeKey) {
-        WebElement rosterInputElement = findRosterInputBreakStart(employeeKey);
+    private String getRosterValueBreakStart(String employeeFullName) {
+        WebElement rosterInputElement = findRosterInputBreakStart(employeeFullName);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    private String getRosterValueBreakEnd(int employeeKey) {
-        WebElement rosterInputElement = findRosterInputBreakEnd(employeeKey);
+    private String getRosterValueBreakEnd(String employeeFullName) {
+        WebElement rosterInputElement = findRosterInputBreakEnd(employeeFullName);
         String rosterValue = rosterInputElement.getAttribute("value");
         return rosterValue;
     }
 
-    public RosterItem getRosterItem(int employeeKey) throws ParseException {
+    public RosterItem getRosterItem(String employeeFullName) throws ParseException {
         RosterItem rosterItem;
         DateTimeFormatter dateTimeFormatterSql = DateTimeFormatter.ISO_LOCAL_DATE;
-        String dateSql = this.getRosterValueDateString(employeeKey);
+        String dateSql = this.getRosterValueDateString(employeeFullName);
         LocalDate localDateParsed = LocalDate.parse(dateSql, dateTimeFormatterSql);
-        String dutyStart = getRosterValueDutyStart(employeeKey);
-        String dutyEnd = getRosterValueDutyEnd(employeeKey);
-        String breakStart = getRosterValueBreakStart(employeeKey);
-        String breakEnd = getRosterValueBreakEnd(employeeKey);
-        int branchId = getRosterValueBranchId(employeeKey);
+        String dutyStart = getRosterValueDutyStart(employeeFullName);
+        String dutyEnd = getRosterValueDutyEnd(employeeFullName);
+        String breakStart = getRosterValueBreakStart(employeeFullName);
+        String breakEnd = getRosterValueBreakEnd(employeeFullName);
+        int branchId = getRosterValueBranchId(employeeFullName);
         String comment = null;//TODO; add comment
-        rosterItem = new RosterItem(employeeKey, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        rosterItem = new RosterItem(employeeFullName, localDateParsed, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 

@@ -31,10 +31,10 @@ class AdministrationInputHandler {
     public function handleUserInputAdministration() {
         $installUtility = new \PDR\Application\Installation\InstallUtility();
         $installConfiguration = new InstallConfiguration();
-        $configInput["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $configInput["admin"]["user_name"] = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
         $configInput["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, FILTER_NULL_ON_FAILURE);
-        $configInput["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-        $configInput["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $configInput["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
+        $configInput["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
 
         if ($configInput["admin"]["password"] !== $configInput["admin"]["password2"]) {
             $installUtility->addErrorMessage(gettext("The passwords aren't the same."));

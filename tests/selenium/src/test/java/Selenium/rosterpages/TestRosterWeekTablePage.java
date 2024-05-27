@@ -75,10 +75,10 @@ public class TestRosterWeekTablePage extends TestPage {
                 rosterWeekTablePage.goToDate(rosterItemFromPrediction.getLocalDate());
                 RosterItem rosterItemReadOnPage = rosterWeekTablePage.getRosterItemByEmployeeKey(
                         rosterItemFromPrediction.getLocalDate().getDayOfWeek(),
-                        rosterItemFromPrediction.getEmployeeKey()
+                        rosterItemFromPrediction.getEmployeeFullName()
                 );
 
-                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(workforce), rosterItemReadOnPage.getEmployeeName(workforce));
+                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeFullName(), rosterItemReadOnPage.getEmployeeFullName());
                 softAssert.assertEquals(rosterItemFromPrediction.getLocalDate(), rosterItemReadOnPage.getLocalDate());
                 softAssert.assertEquals(rosterItemFromPrediction.getDutyStart(), rosterItemReadOnPage.getDutyStart());
                 softAssert.assertEquals(rosterItemFromPrediction.getDutyEnd(), rosterItemReadOnPage.getDutyEnd());

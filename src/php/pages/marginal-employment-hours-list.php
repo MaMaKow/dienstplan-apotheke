@@ -233,7 +233,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
             if ($employee_key_option == $employee_key) {
                 echo " SELECTED ";
             }
-            echo ">$employee_object->last_name</option>\n";
+            echo ">" . $employee_object->getFullName() . "</option>\n";
         }
         ?>
     </SELECT>

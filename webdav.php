@@ -28,8 +28,8 @@ if (!isset($_SESSION['user_object']) or null === $_SESSION['user_object']->get_p
 /*
  * @var $days_into_the_future int Number of days into the future. The roster for this number of consecutive days will be added to the iCalendar file.
  */
-$days_into_the_future = user_input::get_variable_from_any_input('days_into_the_future', FILTER_SANITIZE_FULL_SPECIAL_CHARS, 30);
-$date_string = user_input::get_variable_from_any_input('date_string', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y-m-d'));
+$days_into_the_future = user_input::get_variable_from_any_input('days_into_the_future', FILTER_SANITIZE_SPECIAL_CHARS, 30);
+$date_string = user_input::get_variable_from_any_input('date_string', FILTER_SANITIZE_SPECIAL_CHARS, date('Y-m-d'));
 $date_start_object = new \DateTime($date_string);
 $workforce = new workforce($date_string);
 $employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());

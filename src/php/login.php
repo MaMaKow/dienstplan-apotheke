@@ -21,8 +21,8 @@ require '../../default.php';
  */
 
 if (filter_has_var(INPUT_POST, 'login')) {
-    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_SPECIAL_CHARS);
+    $user_password = filter_input(INPUT_POST, 'user_password', FILTER_SANITIZE_SPECIAL_CHARS);
 
     $errorMessage = $session->login($user_name, $user_password, TRUE);
 }

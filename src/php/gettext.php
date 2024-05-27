@@ -23,6 +23,6 @@
 require_once '../../default.php';
 
 //TODO: support for ngettext might be added.
-$string_to_translate = filter_input(INPUT_GET, 'string_to_translate', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$string_to_translate = filter_input(INPUT_GET, 'string_to_translate', FILTER_SANITIZE_SPECIAL_CHARS);
 $translated_string = gettext($string_to_translate);
 echo $translated_string;

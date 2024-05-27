@@ -48,6 +48,11 @@ public class Workforce {
         return listOfEmployees;
     }
 
+    /**
+     * @param employeeKey
+     * @return
+     * @deprecated Do not use employeeKeys anymore!
+     */
     public Employee getEmployeeByKey(int employeeKey) {
         return listOfEmployees.get(employeeKey);
     }

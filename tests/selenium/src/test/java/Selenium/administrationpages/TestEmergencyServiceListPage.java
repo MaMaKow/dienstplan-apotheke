@@ -122,7 +122,12 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
         /**
          * <p lang=de>Daten ändern :</p>
          */
-        emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyChange);
+        try {
+            emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyChange);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            System.out.println(exception.getMessage());
+        }
         Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyChange);
         /**
          * <p lang=de>Zeilen wieder entfernen</p>

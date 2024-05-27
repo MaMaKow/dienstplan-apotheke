@@ -39,8 +39,8 @@ if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
 }
 
 // Validate and sanitize user_name and user_password
-$userName = filter_var($data['userName'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$userPassphrase = filter_var($data['userPassphrase'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$userName = filter_var($data['userName'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+$userPassphrase = filter_var($data['userPassphrase'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
 
 // Assuming you have a class/method for user authentication
 $session = new sessions();

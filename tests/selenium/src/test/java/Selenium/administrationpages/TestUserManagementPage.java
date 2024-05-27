@@ -91,7 +91,6 @@ public class TestUserManagementPage extends TestPage {
 
         Map<String, Boolean> oldPrivileges = userManagementPage.getPrivileges();
         Map<String, Boolean> newPrivileges = new HashMap<>();
-        //@TODO: Should we instead use a privieges object of some privileges class?
         newPrivileges.put("administration", true);
         newPrivileges.put("create_roster", true);
         newPrivileges.put("create_employee", false);

@@ -106,7 +106,7 @@ public class TestRosterEmployeePage extends TestPage {
                         rosterItemFromPrediction.getLocalDate().getDayOfWeek()
                 );
 
-                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeName(workforce), rosterItemReadOnPage.getEmployeeName(workforce));
+                softAssert.assertEquals(rosterItemFromPrediction.getEmployeeFullName(), rosterItemReadOnPage.getEmployeeFullName());
                 softAssert.assertEquals(rosterItemFromPrediction.getLocalDate(), rosterItemReadOnPage.getLocalDate());
                 softAssert.assertEquals(rosterItemFromPrediction.getDutyStart(), rosterItemReadOnPage.getDutyStart());
                 softAssert.assertEquals(rosterItemFromPrediction.getDutyEnd(), rosterItemReadOnPage.getDutyEnd());
@@ -203,8 +203,7 @@ public class TestRosterEmployeePage extends TestPage {
                  */
                 NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
                 String branchName = networkOfBranchOffices.getBranchById(rosterItem.getBranchId()).getBranchName();
-                String escapedBranchName = StringEscapeUtils.escapeHtml4(branchName);
-                Assert.assertTrue(summary.contains(escapedBranchName));
+                Assert.assertTrue(summary.contains(branchName));
             }
 
             /**

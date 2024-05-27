@@ -27,10 +27,10 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $filters = array(
         'employeeKey' => FILTER_SANITIZE_NUMBER_INT,
         'reasonId' => FILTER_SANITIZE_NUMBER_INT,
-        'comment' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'start' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'end' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'approval' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        'comment' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'start' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'end' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'approval' => FILTER_SANITIZE_SPECIAL_CHARS,
     );
     $Absence_details = filter_var_array($Absence_details_unsafe, $filters);
     $dateStartObject = new DateTime($Absence_details['start']);
@@ -60,10 +60,10 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $highlight_details_json_unsafe = filter_input(INPUT_GET, 'highlight_details_json', FILTER_UNSAFE_RAW);
     $Highlight_details_unsafe = json_decode($highlight_details_json_unsafe, TRUE);
     $filters = array(
-        //'highlight_absence_create_from_date_sql' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        //'highlight_absence_create_to_date_sql' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'date_range_min' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-        'date_range_max' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+        //'highlight_absence_create_from_date_sql' => FILTER_SANITIZE_SPECIAL_CHARS,
+        //'highlight_absence_create_to_date_sql' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'date_range_min' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'date_range_max' => FILTER_SANITIZE_SPECIAL_CHARS,
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
     $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());

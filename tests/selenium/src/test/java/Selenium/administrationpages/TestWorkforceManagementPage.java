@@ -87,7 +87,7 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
 
         /**
-         * TODO: CAVE! Old employees seem to be overwritten.
+         * CAVE! Old employees will be overwritten with new data.
          */
         listOfEmployeesMap.forEach((employeeKey, employee) -> {
             workforceManagementPage.createEmployee(employee);

@@ -126,6 +126,26 @@ class workforce {
         return $employee_key . '???';
     }
 
+    /**
+     * Retrieve the full name of an employee based on their employee key.
+     *
+     * This function attempts to retrieve the last name and first name of an employee
+     * using their unique employee key. If the last name is found, it constructs and
+     * returns the full name in the format "FirstName LastName". If the last name is
+     * not found, it returns the employee key concatenated with '???' as a string.
+     *
+     * @param int $employee_key The unique identifier for the employee.
+     * @return string The full name of the employee or the employee key followed by '???' if not found.
+     */
+    public function getEmployeeFullName(int $employee_key): string {
+        if (FALSE !== $this->get_employee_value($employee_key, 'last_name')) {
+            $lastName = $this->get_employee_value($employee_key, 'last_name');
+            $firstName = $this->get_employee_value($employee_key, 'first_name');
+            return $firstName . " " . $lastName;
+        }
+        return $employee_key . '???';
+    }
+
     private function get_list_of_all_employees() {
         $List_of_all_employees = array();
         $sql_query = 'SELECT * FROM `employees` ORDER BY `last_name`, `first_name` ASC;';
@@ -151,7 +171,7 @@ class workforce {
         }
     }
 
-    public function get_employee_object(?int $employee_key) {
+    public function get_employee_object(?int $employee_key): \employee {
         if (isset(self::$List_of_all_employees[$employee_key])) {
             if (self::$List_of_all_employees[$employee_key] instanceof employee) {
                 return self::$List_of_all_employees[$employee_key];

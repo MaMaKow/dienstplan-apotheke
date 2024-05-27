@@ -115,6 +115,10 @@ class employee {
         return $this->primary_key;
     }
 
+    public function getFullName() {
+        return $this->first_name . " " . $this->last_name;
+    }
+
     public function get_principle_branch_id() {
         return $this->principle_branch_id;
     }
@@ -126,5 +130,4 @@ class employee {
     public function can_do_compounding() {
         return $this->compounding;
     }
-
 }

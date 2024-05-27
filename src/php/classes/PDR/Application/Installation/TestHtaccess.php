@@ -58,7 +58,7 @@ class TestHtaccess {
         $user_dialog = new \user_dialog();
         $hostname = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
 
-        $inputServerHttps = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $inputServerHttps = filter_input(INPUT_SERVER, "HTTPS", FILTER_SANITIZE_SPECIAL_CHARS);
         $protocol = 'http';
         if (!empty($inputServerHttps) and $inputServerHttps === "on") {
             $protocol = 'https';

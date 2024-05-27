@@ -30,6 +30,7 @@ import java.time.LocalTime;
 public class RosterItem {
 
     private final Integer employeeKey;
+    private final Employee employeeObject;
     private final LocalDate localDate;
     private final String dutyStart;
     private final String dutyEnd;
@@ -42,8 +43,22 @@ public class RosterItem {
     private LocalDateTime breakStartLocalDateTime;
     private LocalDateTime breakEndLocalDateTime;
 
+    /**
+     *
+     * @param employeeKey
+     * @param localDate
+     * @param dutyStart
+     * @param dutyEnd
+     * @param breakStart
+     * @param breakEnd
+     * @param comment
+     * @param branchId
+     * @deprecated Do not use employeeKeys anymore!
+     */
     public RosterItem(Integer employeeKey, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
         this.employeeKey = employeeKey;
+        Workforce workforce = new Workforce();
+        this.employeeObject = workforce.getEmployeeByKey(employeeKey);
         this.localDate = LocalDate.from(localDate);
 
         this.dutyStart = dutyStart;
@@ -82,9 +97,58 @@ public class RosterItem {
         this.branchId = branchId;
     }
 
-    public String getEmployeeName(Workforce workforce) {
-        Employee employeeObject = workforce.getEmployeeByKey(employeeKey);
+    public RosterItem(String fullName, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
+        Workforce workforce = new Workforce();
+        this.employeeObject = workforce.getEmployeeByFullName(fullName);
+        if (null == employeeObject) {
+            this.employeeKey = null;
+        } else {
+            this.employeeKey = employeeObject.getEmployeeKey();
+        }
+        this.localDate = LocalDate.from(localDate);
+
+        this.dutyStart = dutyStart;
+        try {
+            LocalTime dutyStartLocalTime = LocalTime.parse(dutyStart);
+            dutyStartLocalDateTime = localDate.atTime(dutyStartLocalTime);
+        } catch (Exception e) {
+            dutyStartLocalDateTime = null;
+        }
+
+        this.dutyEnd = dutyEnd;
+        try {
+            LocalTime dutyEndLocalTime = LocalTime.parse(dutyEnd);
+            dutyEndLocalDateTime = localDate.atTime(dutyEndLocalTime);
+        } catch (Exception e) {
+            dutyEndLocalDateTime = null;
+        }
+
+        this.breakStart = breakStart;
+        try {
+            LocalTime breakStartLocalTime = LocalTime.parse(breakStart);
+            breakStartLocalDateTime = localDate.atTime(breakStartLocalTime);
+        } catch (Exception e) {
+            breakStartLocalDateTime = null;
+        }
+
+        this.breakEnd = breakEnd;
+        try {
+            LocalTime breakEndLocalTime = LocalTime.parse(breakEnd);
+            breakEndLocalDateTime = localDate.atTime(breakEndLocalTime);
+        } catch (Exception e) {
+            breakEndLocalDateTime = null;
+        }
+
+        this.comment = comment;
+        this.branchId = branchId;
+    }
+
+    public String getEmployeeLastName() {
         return employeeObject.getLastName();
+    }
+
+    public String getEmployeeFullName() {
+        return employeeObject.getFullName();
     }
 
     public Integer getEmployeeKey() {

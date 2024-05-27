@@ -55,13 +55,13 @@ public class TestRosterHoursPage extends TestPage {
         if (firstEmployeeOptional.isEmpty()) {
             throw new Exception("No employee was found in the workforce. There has to be at least one employee!");
         }
-        String firstEmployeeLastName = firstEmployeeOptional.get().getLastName();
+        String firstEmployeeFullName = firstEmployeeOptional.get().getFullName();
         rosterHoursPage.selectMonth("Juni");
         rosterHoursPage.selectYear("2020");
-        rosterHoursPage.selectEmployee(firstEmployeeLastName);
+        rosterHoursPage.selectEmployee(firstEmployeeFullName);
         Assert.assertEquals("Juni", rosterHoursPage.getMonth());
         Assert.assertEquals("2020", rosterHoursPage.getYear());
-        Assert.assertEquals(firstEmployeeLastName, rosterHoursPage.getEmployeeName());
+        Assert.assertEquals(firstEmployeeFullName, rosterHoursPage.getEmployeeName());
     }
 
     @Test(enabled = true)/*failed*/
@@ -109,7 +109,12 @@ public class TestRosterHoursPage extends TestPage {
              */
             rosterHoursPage.selectMonth(rosterLocalDate.format(DateTimeFormatter.ofPattern("MMMM", Locale.GERMANY)));
             rosterHoursPage.selectYear(rosterLocalDate.format(DateTimeFormatter.ofPattern("yyyy", Locale.GERMANY)));
-            rosterHoursPage.selectEmployee(rosterItem.getEmployeeName(workforce));
+            try {
+                rosterHoursPage.selectEmployee(rosterItem.getEmployeeFullName());
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                throw exception;
+            }
             RosterItem foundRosterItem = rosterHoursPage.getRosterOnDate(rosterLocalDate);
             /**
              * Test if the values match:

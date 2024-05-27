@@ -21,9 +21,9 @@
  */
 
 require '../../../default.php';
-$month_number = (int) user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('n'));
+$month_number = (int) user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_SPECIAL_CHARS, date('n'));
 \PDR\Utility\GeneralUtility::createCookie("month_number", $month_number, 1);
-$year = (int) user_input::get_variable_from_any_input('year', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y'));
+$year = (int) user_input::get_variable_from_any_input('year', FILTER_SANITIZE_SPECIAL_CHARS, date('Y'));
 \PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 // Create a DateTime object for the start date
 $dateStartObject = new DateTime();

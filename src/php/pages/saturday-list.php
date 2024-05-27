@@ -19,7 +19,7 @@
 
 require '../../../default.php';
 
-$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_FULL_SPECIAL_CHARS, date('Y'));
+$year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_SPECIAL_CHARS, date('Y'));
 \PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 $date_object_start = new DateTime("first sat of jan $year");
 $date_object_end = new DateTime("last sat of dec $year");

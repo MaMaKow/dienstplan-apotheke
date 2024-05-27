@@ -32,9 +32,9 @@ function insert_user_data_into_database(user &$user) {
         return FALSE;
     }
 
-    $privileges = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+    $privileges = filter_input(INPUT_POST, 'privilege', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
     $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
-    $status = filter_input(INPUT_POST, 'user_status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $status = filter_input(INPUT_POST, 'user_status', FILTER_SANITIZE_SPECIAL_CHARS);
     if ($_SESSION['user_object']->get_primary_key() == $user->get_primary_key() and $session->user_has_privilege('administration')) {
         /*
          * We want to avoid an administrator loosing the administration privilege by accident.

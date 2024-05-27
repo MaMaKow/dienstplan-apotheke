@@ -334,14 +334,22 @@ class roster {
                 if ($rosterItem instanceof roster_item_empty) {
                     continue;
                 }
+                $breakStart = "";
+                if (false !== $rosterItem->getBreakStartDateTime()) {
+                    $breakStart = $rosterItem->getBreakStartDateTime()->format('c');
+                }
+                $breakEnd = "";
+                if (false !== $rosterItem->getBreakStartDateTime()) {
+                    $breakEnd = $rosterItem->getBreakEndDateTime()->format('c');
+                }
                 $jsonDayArray[] = array(
                     'date' => $rosterItem->date_object->format('Y-m-d'),
                     'employee_key' => $rosterItem->employee_key,
                     'branch_id' => $rosterItem->branch_id,
                     'duty_start' => $rosterItem->get_dutyStartDateTime()->format('c'),
                     'duty_end' => $rosterItem->get_dutyEndDateTime()->format('c'),
-                    'break_start' => $rosterItem->getBreakStartDateTime()->format('c'),
-                    'break_end' => $rosterItem->getBreakStartDateTime()->format('c'),
+                    'break_start' => $breakStart,
+                    'break_end' => $breakEnd,
                     'comment' => $rosterItem->comment,
                     'working_hours' => $rosterItem->working_hours,
                 );

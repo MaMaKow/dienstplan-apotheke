@@ -52,19 +52,19 @@ class collaborative_vacation {
     private function write_user_input_to_database($session) {
 
         $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
-        $start_date_string = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $end_date_string = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $start_date_string = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_SPECIAL_CHARS);
+        $end_date_string = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_SPECIAL_CHARS);
         $reason_id = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_NUMBER_INT);
-        $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $employee_key_old = filter_input(INPUT_POST, 'employee_key_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
+        $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_SPECIAL_CHARS);
+        $employee_key_old = filter_input(INPUT_POST, 'employee_key_old', FILTER_SANITIZE_SPECIAL_CHARS);
+        $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_SPECIAL_CHARS);
 
         if ($session->user_has_privilege('create_absence')) {
             /*
              * User is allowed to write any input to the database.
              */
-            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_SPECIAL_CHARS);
         } elseif ($session->user_has_privilege('request_own_absence')) {
             /*
              * User is only allowed to ask for specific changes to the database.
@@ -155,9 +155,9 @@ class collaborative_vacation {
              */
             return FALSE;
         }
-        $approval = filter_input(INPUT_POST, 'approve_absence', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $employee_key_old = filter_input(INPUT_POST, 'employee_key_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $approval = filter_input(INPUT_POST, 'approve_absence', FILTER_SANITIZE_SPECIAL_CHARS);
+        $employee_key_old = filter_input(INPUT_POST, 'employee_key_old', FILTER_SANITIZE_SPECIAL_CHARS);
+        $start_date_old_string = filter_input(INPUT_POST, 'start_date_old', FILTER_SANITIZE_SPECIAL_CHARS);
         PDR\Database\AbsenceDatabaseHandler::setApproval($approval, $employee_key_old, $start_date_old_string);
     }
 

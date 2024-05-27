@@ -50,7 +50,7 @@ class EmergencyServiceInputHandler {
             return;
         }
 
-        $command = \user_input::get_variable_from_any_input('command', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $command = \user_input::get_variable_from_any_input('command', FILTER_SANITIZE_SPECIAL_CHARS);
         $dateNew = \user_input::get_variable_from_any_input('emergency_service_date', FILTER_SANITIZE_NUMBER_INT);
         $dateOld = \user_input::get_variable_from_any_input('emergency_service_date_old', FILTER_SANITIZE_NUMBER_INT);
         $branchId = \user_input::get_variable_from_any_input('emergency_service_branch', FILTER_SANITIZE_NUMBER_INT);

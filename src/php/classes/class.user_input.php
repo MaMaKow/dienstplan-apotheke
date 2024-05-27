@@ -21,6 +21,7 @@
  * Description of class
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
+ * @todo Create a specific roster input class. Leave generic user input here
  */
 abstract class user_input {
 
@@ -30,11 +31,11 @@ abstract class user_input {
     /**
      *
      * @param type $variable_name as given from POST/GET/COOKIE
-     * @param type $filter e.g. FILTER_SANITIZE_FULL_SPECIAL_CHARS
+     * @param type $filter e.g. FILTER_SANITIZE_SPECIAL_CHARS
      * @param type $default_value
      * @return type
      */
-    public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS, $default_value = null) {
+    public static function get_variable_from_any_input($variable_name, $filter = FILTER_SANITIZE_SPECIAL_CHARS, $default_value = null) {
         $List_of_input_sources = array(INPUT_POST, INPUT_GET, INPUT_COOKIE);
         foreach ($List_of_input_sources as $input_source) {
             if (filter_has_var($input_source, $variable_name)) {
@@ -70,7 +71,7 @@ abstract class user_input {
      * @throws Exception
      */
     public static function get_Roster_from_POST_secure() {
-        $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+        $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         $Roster = array();
         if (empty($Roster_from_post)) {
             return FALSE;
@@ -83,14 +84,14 @@ abstract class user_input {
                 if (!is_numeric($roster_row_iterator)) {
                     throw new Exception('$roster_row_iterator must be an integer!');
                 }
-                $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $date_sql = filter_var($Roster_row_array['date_sql'], FILTER_SANITIZE_SPECIAL_CHARS);
                 $employee_key = filter_var($Roster_row_array['employee_key'], FILTER_SANITIZE_NUMBER_INT);
                 $branch_id = filter_var($Roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
-                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['duty_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['break_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Roster_row_array['comment'], FILTER_SANITIZE_SPECIAL_CHARS));
                 if (!is_numeric($branch_id)) {
                     throw new \Exception('$branch_id must be an integer!');
                 }
@@ -140,7 +141,7 @@ abstract class user_input {
      * @throws Exception
      */
     public static function get_principle_employee_roster_from_POST_secure() {
-        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         $Principle_roster = array();
         if (empty($Principle_roster_from_post)) {
             return FALSE;
@@ -156,14 +157,14 @@ abstract class user_input {
                 if (!is_numeric($roster_row_iterator)) {
                     throw new Exception('$roster_row_iterator must be an integer!');
                 }
-                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_SPECIAL_CHARS);
                 $employee_key = filter_var($Principle_roster_row_array['employee_key'], FILTER_SANITIZE_NUMBER_INT);
                 $branch_id = filter_var($Principle_roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
-                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_SPECIAL_CHARS));
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }
@@ -226,7 +227,7 @@ abstract class user_input {
     }
 
     public static function get_principle_roster_day_from_POST_secure() {
-        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+        $Principle_roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         $Principle_roster = array();
         if (empty($Principle_roster_from_post)) {
             return FALSE;
@@ -242,14 +243,14 @@ abstract class user_input {
                 if (!is_numeric($roster_row_iterator)) {
                     throw new Exception('$roster_row_iterator must be an integer!');
                 }
-                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                $date_sql = filter_var($Principle_roster_row_array['date_sql'], FILTER_SANITIZE_SPECIAL_CHARS);
                 $employee_key = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['employee_key'], FILTER_SANITIZE_NUMBER_INT));
                 $branch_id = filter_var($Principle_roster_row_array['branch_id'], FILTER_SANITIZE_NUMBER_INT);
-                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+                $duty_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $duty_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['duty_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $break_start_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $break_end_sql = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['break_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($Principle_roster_row_array['comment'], FILTER_SANITIZE_SPECIAL_CHARS));
                 if (!is_numeric($branch_id)) {
                     throw new Exception('$branch_id must be an integer!');
                 }

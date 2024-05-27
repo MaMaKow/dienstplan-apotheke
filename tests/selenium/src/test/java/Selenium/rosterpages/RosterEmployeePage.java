@@ -142,11 +142,17 @@ public class RosterEmployeePage {
         return employeeKey;
     }
 
-    public String getEmployeeName() {
+    public String getEmployeeLastName() {
         Select employeeFormSelect = new Select(driver.findElement(employeeFormSelectBy));
         String[] employeeNameArray = employeeFormSelect.getFirstSelectedOption().getText().split("[0-9]*");
         String employeeName = employeeNameArray[1].trim();
         return employeeName;
+    }
+
+    public String getEmployeeFullName() {
+        Select employeeFormSelect = new Select(driver.findElement(employeeFormSelectBy));
+        String employeeFullName = employeeFormSelect.getFirstSelectedOption().getText();
+        return employeeFullName;
     }
 
     private By getRosterItemDateXpathBy(int column) {
@@ -184,7 +190,7 @@ public class RosterEmployeePage {
     }
 
     public RosterItem getRosterItem(int column, int row) throws ParseException {
-        int employeeKey = getEmployeeKey();
+        String employeeFullName = getEmployeeFullName();
         /**
          * We will need a year to correctly parse the date:
          */
@@ -200,20 +206,14 @@ public class RosterEmployeePage {
         String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();
         String breakEnd = driver.findElement(getRosterItemBreakEndXpathBy(column, row)).getText();
         String branchName = driver.findElement(getRosterItemBranchNameXpathBy(column, row)).getText();
-        //int branchId = Integer.valueOf(driver.findElement(getRosterItemBranchNameXpathBy(column, row)).getAttribute("data-branch_id"));
-        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
 
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
         int branchId = networkOfBranchOffices.getBranchByName(branchName).getBranchId();
-        String comment = null; //TODO: add comment
-        /**
-         * <p>
-         * TODO: Die Locale könnte auch eine Konfigurationsvariable sein.
-         * Locale.GERMANY <-> Locale.ENGLISH
-         * </p>
-         */
+        String comment = null;
+
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("eeee dd.MM.yyyy", Locale.GERMANY);
         LocalDate localDate = LocalDate.parse(dateString + currentYear, dateTimeFormatter);
-        RosterItem rosterItem = new RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
+        RosterItem rosterItem = new RosterItem(employeeFullName, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
 

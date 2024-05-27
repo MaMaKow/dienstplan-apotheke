@@ -113,7 +113,7 @@ class AbsenceUtility {
         }
 
         // Get the command from the POST data.
-        $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $command = filter_input(INPUT_POST, 'command', FILTER_SANITIZE_SPECIAL_CHARS);
         if (empty($command)) {
             return false;
         }
@@ -122,7 +122,7 @@ class AbsenceUtility {
         if ('delete' === $command) {
             // Delete an existing absence entry.
             $employeeKey = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
-            $startDateSql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $startDateSql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_SPECIAL_CHARS);
             return \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
         }
         // Handling different commands.
@@ -130,7 +130,7 @@ class AbsenceUtility {
             // Cut an existing absence entry from its overlap.
             $newAbsenceWithoutOverapJson = filter_input(INPUT_POST, 'newAbsenceWithoutOverap', FILTER_UNSAFE_RAW);
             $employeeKey = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
-            $startDateSql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $startDateSql = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_SPECIAL_CHARS);
             if ("" == $newAbsenceWithoutOverapJson) {
                 return \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
             }
@@ -163,11 +163,11 @@ class AbsenceUtility {
         // Create new entries or edit existing ones.
         if ('insert_new' === $command || 'replace' === $command) {
             $employeeKey = filter_input(INPUT_POST, 'employee_key', FILTER_VALIDATE_INT);
-            $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $reasonId = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $beginn = filter_input(INPUT_POST, 'beginn', FILTER_SANITIZE_SPECIAL_CHARS);
+            $ende = filter_input(INPUT_POST, 'ende', FILTER_SANITIZE_SPECIAL_CHARS);
+            $reasonId = filter_input(INPUT_POST, 'reason_id', FILTER_SANITIZE_SPECIAL_CHARS);
+            $approval = filter_input(INPUT_POST, 'approval', FILTER_SANITIZE_SPECIAL_CHARS);
+            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
 
             // Check for required values.
             if (null === $employeeKey || false === $employeeKey || empty($beginn) || empty($ende) || !in_array($reasonId, self::$ListOfAbsenceReasons) || !in_array($approval, self::$ListOfApprovalStates)) {
@@ -209,12 +209,12 @@ class AbsenceUtility {
         $days = self::calculateEmployeeAbsenceDays(clone $dateStartObject, clone $dateEndObject, $employeeObject);
 
         // Check if the operation is a replacement of an existing absence.
-        if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_FULL_SPECIAL_CHARS)) {
+        if ('replace' === filter_input(INPUT_POST, 'command', FILTER_SANITIZE_SPECIAL_CHARS)) {
             // Begin a database transaction.
             \database_wrapper::instance()->beginTransaction();
 
             // Get the old start date from the input parameters.
-            $startDateOldSql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $startDateOldSql = filter_input(INPUT_POST, 'start_old', FILTER_SANITIZE_SPECIAL_CHARS);
 
             // Delete the existing absence record.
             \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateOldSql);
