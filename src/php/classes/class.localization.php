@@ -133,6 +133,23 @@ abstract class localization {
         return $Month_names;
     }
 
+    /**
+     * Standardizes various language code inputs to their BCP47 language code equivalents.
+     *
+     * This function takes a language code input in various formats and standardizes it
+     * to the corresponding BCP47 language code. It supports multiple input formats such as
+     * ISO 639-1, ISO 639-2, and other common language code representations.
+     *
+     * Supported input formats include:
+     * - ISO 639-1 (e.g., "en", "de")
+     * - ISO 639-2 (e.g., "eng", "deu")
+     * - Other common formats (e.g., "en-GB", "de-DE", "en_GB", "de_DE")
+     *
+     * If the input does not match any known format, it defaults to "de-DE".
+     *
+     * @param string $languageInput The language code input to be standardized.
+     * @return string The standardized BCP47 language code.
+     */
     public static function standardizeLanguageCode($languageInput) {// Do not use :string return type declarations here to support PHP below 7.4.0 until this point!
         switch ($languageInput) {
             case "en-GB":
@@ -148,7 +165,7 @@ abstract class localization {
             case "de":
                 return "de-DE";
             default:
-                return "en-GB";
+                return "de-DE";
         }
     }
 }

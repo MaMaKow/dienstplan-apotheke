@@ -221,7 +221,6 @@
                 </li>
                 <li>
                     <a id="MenuLinkToApplicationManual" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>docs/documentation_de.pdf">
-                        <!-- @TODO: Localization, use language specific manuals if available. -->
                         <?= gettext('Manual'); ?>
                         <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_description.svg class="inline-image" alt="Documentation" title="Show documentation">
                     </a>

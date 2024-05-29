@@ -257,7 +257,7 @@ class configuration {
      * Retrieves the language setting from the loaded configuration.
      * If not set, falls back to the default value.
      *
-     * @return string The language setting.
+     * @return string The language setting (e.g. de-DE).
      */
     public function getLanguage(): string {
         if (isset(self::$loadedConfig['language'])) {
