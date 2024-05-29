@@ -89,5 +89,6 @@ tests/selenium/nb-configuration.xml
 tests/selenium/.project
 tests/selenium/.classpath
 tests/selenium/test-output/
+tests/selenium/failed_test_page.html
 .project
 /scripts/mockup-database.sh

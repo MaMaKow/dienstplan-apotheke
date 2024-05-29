@@ -133,7 +133,7 @@ abstract class localization {
         return $Month_names;
     }
 
-    public static function getLanguage($languageInput) {// Do not use :string return type declarations here to support PHP below 7.4.0 until this point!
+    public static function standardizeLanguageCode($languageInput) {// Do not use :string return type declarations here to support PHP below 7.4.0 until this point!
         switch ($languageInput) {
             case "en-GB":
             case "en_GB":

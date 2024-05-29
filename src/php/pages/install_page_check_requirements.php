@@ -22,7 +22,7 @@ require_once '../classes/class.localization.php';
 require_once '../classes/PDR/Utility/GeneralUtility.php';
 $installUtility = new \PDR\Application\Installation\InstallUtility();
 $languageInput = filter_input(INPUT_GET, "language", FILTER_SANITIZE_SPECIAL_CHARS);
-$languageBCP47 = localization::getLanguage($languageInput);
+$languageBCP47 = localization::standardizeLanguageCode($languageInput);
 localization::initialize_gettext($languageBCP47);
 if ("" != filter_input(INPUT_POST, "InstallPageCheckRequirementsFormButton", FILTER_SANITIZE_SPECIAL_CHARS)) {
     /*
