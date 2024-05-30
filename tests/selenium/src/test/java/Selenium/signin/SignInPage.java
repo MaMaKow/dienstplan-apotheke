@@ -35,7 +35,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class SignInPage {
 
     protected static WebDriver driver;
-    By user_name_spanBy = By.id("MenuListItemApplicationUsername");
+    private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
 
     // <input name="user_name" type="text" value="">
     private final By usernameBy = By.id("login_input_user_name");
@@ -107,9 +107,9 @@ public class SignInPage {
      */
     public String getUserNameText() {
         WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
+        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
-        return driver.findElement(user_name_spanBy).getText();
+        return driver.findElement(userNameSpanBy).getText();
     }
 
 }

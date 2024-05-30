@@ -53,10 +53,6 @@ public class DayPage {
     private final By addRosterRowButtonBy = By.xpath("//*[contains(@id, \'roster_input_row_add_row_target_\')]");
     private final By copyAltenationButton = By.xpath("//form[@id=\"principle_roster_copy_form\"]/button");
 
-    /**
-     * TODO: Change the PHP to make the button more specific via class or id.
-     *
-     */
     private final By buttonSubmitBy = By.id("submit_button");
 
     public DayPage(WebDriver driver) {
@@ -72,8 +68,7 @@ public class DayPage {
     /**
      * Get user_name (span tag)
      *
-     * We only need this in order to check, if we are logged in. TODO: Could
-     * this be a static method in the signInPage class?
+     * We only need this in order to check, if we are logged in.
      *
      * @return String user_name text
      */
@@ -208,6 +203,25 @@ public class DayPage {
         return rosterValue;
     }
 
+    private String getRosterValueComment(WebElement rosterTableRow) {
+        String rosterValue = "";
+        WebElement rosterInputElement = findRosterInputCommentInTableRow(rosterTableRow);
+        if (rosterInputElement.isDisplayed()) {
+            rosterValue = rosterInputElement.getAttribute("value");
+        } else {
+            /**
+             * <p lang=de>Wenn ein nicht leerer Kommentar gesetzt wurde,
+             * ist das Kommentarfeld ohnehin bereits angezeigt.
+             * Daher sparen wir uns an dieser Stelle die folgende Option
+             * um das Kommentarfeld sichtbar zu machen:</p>
+             * // WebElement showCommentLink = findRosterInputCommentShowLinkInTableRow(rosterTableRow);
+             * // showCommentLink.click();
+             * // rosterValue = rosterInputElement.getAttribute("value");
+             */
+        }
+        return rosterValue;
+    }
+
     public PrincipleRosterItem getRosterItemByEmployeeKey(int employeeKey) {
         DateTimeFormatter dateTimeFormatterSql = DateTimeFormatter.ISO_LOCAL_DATE;
         WebElement rosterTableRow = findRosterTableRowByEmloyeeKey(employeeKey);
@@ -219,7 +233,7 @@ public class DayPage {
         String breakStart = getRosterValueBreakStartInTableRow(rosterTableRow);
         String breakEnd = getRosterValueBreakEndByEmployeeKey(rosterTableRow);
         int branchId = getRosterValueBranchId();
-        String comment = null; //TODO; add comment
+        String comment = getRosterValueComment(rosterTableRow);
         PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(employeeKey, localDate.getDayOfWeek(),
                 LocalTime.parse(dutyStart, DateTimeFormatter.ISO_TIME),
                 LocalTime.parse(dutyEnd, DateTimeFormatter.ISO_TIME),
@@ -283,6 +297,18 @@ public class DayPage {
     private WebElement findRosterInputBreakEndInTableRow(WebElement rosterTableRow) {
         By inputBy = By.xpath(".//*[contains(@name, \"break_end_sql\")]");
         WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
+        return rosterInputElement;
+    }
+
+    private WebElement findRosterInputCommentInTableRow(WebElement rosterTableRow) {
+        By inputBy = By.xpath(".//input[contains(@name, \"comment\")]");
+        WebElement rosterInputElement = rosterTableRow.findElement(inputBy);
+        return rosterInputElement;
+    }
+
+    private WebElement findRosterInputCommentShowLinkInTableRow(WebElement rosterTableRow) {
+        By linkBy = By.xpath(".//div[contains(@id, \"link_div_show\")]/a");
+        WebElement rosterInputElement = rosterTableRow.findElement(linkBy);
         return rosterInputElement;
     }
 

@@ -59,8 +59,7 @@ public class EmployeePage {
     /**
      * Get user_name (span tag)
      *
-     * We only need this in order to check, if we are logged in. TODO: Could
-     * this be a static method in the signInPage class?
+     * We only need this in order to check, if we are logged in.
      *
      * @return String user_name text
      */
