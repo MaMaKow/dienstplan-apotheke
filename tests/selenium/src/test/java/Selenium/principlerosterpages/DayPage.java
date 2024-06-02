@@ -486,10 +486,9 @@ public class DayPage {
     public void changeRosterByDragAndDrop(int unixTime, int employeeKey, double offsetMinutes, String dutyOrBreak) throws Exception {
         PrincipleRosterItem rosterItemReadBefore = getRosterItemByEmployeeKey(employeeKey);
         /**
-         * @todo
          * <p lang=de>
-         * Ich bin nicht sicher, wie man am besten den Zusammenhang zwischen
-         * Pixel und Minuten regeln sollte.
+         * CAVE: Ich bin nicht sicher, wie man am besten den Zusammenhang zwischen
+         * Pixel und Minuten regeln sollte. Die hier gewählten Zahlen sind experimentell erschlossen.
          * </p>
          */
         WebElement rosterPlotElement;

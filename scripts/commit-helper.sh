@@ -4,11 +4,23 @@
 ## commiting new code.
 ################################################################################
 
+# Function to exit on error:
+error_exit(){
+    echo;
+    echo "$1";
+    exit 1;
+}
+check_staged_changes() {
+    if git diff --cached --exit-code > /dev/null;
+    then
+        error_exit "No changes added to the staging area. Exiting.";
+    fi;
+}
 # Get the current version number:
 current_version=`git describe --tags --long HEAD`;
-current_version_major=`echo $current_version | cut -d. -f1 -`;
-current_version_minor=`echo $current_version | cut -d. -f2 -`;
-current_version_patch=`echo $current_version | cut -d. -f3 - | cut -d- -f1 -`;
+current_version_major=`echo "$current_version" | cut -d. -f1 -`;
+current_version_minor=`echo "$current_version" | cut -d. -f2 -`;
+current_version_patch=`echo "$current_version" | cut -d. -f3 - | cut -d- -f1 -`;
 
 # Get the current branch name:
 current_branch=$(git symbolic-ref --short HEAD)
@@ -22,7 +34,8 @@ echo "major: $current_version_major";
 echo "minor: $current_version_minor";
 echo "patch: $current_version_patch";
 
-# Pfad zur messages.po-Datei
+# Zeilennummern aus po-Datei entfernen
+# Pfad zur messages.po-Datei:
 po_file="./locale/de_DE/LC_MESSAGES/messages.po"
 # Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
 sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
@@ -37,7 +50,13 @@ echo "";
 echo "Showing git status: ";
 git status;
 
-
+echo "Please review your changes above!";
+read -p "Ready to COMMIT? [y/n] " -N 1 decision_commit;
+if [ "y" != "$decision_commit" ] && [ "Y" != "$decision_commit" ]
+then
+    error_exit "You are not ready to commit yet.";
+fi
+clear
 
 # Check if the current branch is one of the allowed branches for tagging:
 if [ "$current_branch" != "development" ] && [ "$current_branch" != "testing" ] && [ "$current_branch" != "master" ]
@@ -98,26 +117,21 @@ cat ./src/php/database_version_hash.php
 git add "./src/php/database_version_hash.php"
 
 
-read -p "Ready to CREATE commit message, COMMIT and sign the changes? [y/n] " -N 1 decision_commit;
-if [ "y" == "$decision_commit" ] || [ "Y" == "$decision_commit" ]
-then
-    clear
-    git commit --gpg-sign
-    echo "Debug: featureBranch = $featureBranch"
-    if [ "false" == $featureBranch ]
-    then
-        echo "Debug: Tagging commit with version $new_version"
-        git tag "$new_version"
-    else
-        echo "Debug: No tagging on branch $current_branch"
-    fi
-    git show -1
-    git status
-    read -p "Ready to PUSH changes and tags to remote? [y/n] " -N 1 decision_push;
-    if [ "y" == "$decision_push" ] || [ "Y" == "$decision_push" ]
-    then
-	git push origin
-	git push origin --tags
+git commit --gpg-sign
 
-    fi
+if [ "false" == "$featureBranch" ]
+then
+    echo "Debug: Tagging commit with version $new_version"
+    git tag "$new_version"
+else
+    echo "Debug: No tagging on branch $current_branch"
 fi
+
+git show -1
+git status
+read -p "Ready to PUSH changes and tags to remote? [y/n] " -N 1 decision_push;
+if [ "y" != "$decision_push" ] && [ "Y" != "$decision_push" ]
+then
+    error_exit "You are not ready to push yet.";
+fi
+git push origin --tags

@@ -187,14 +187,6 @@ public class EmployeePage {
             String breakEnd = tableCellElement.findElement(By.xpath(".//input[contains(@name, 'break_end_sql')]")).getAttribute("value");
             Select branchNameSelect = new Select(tableCellElement.findElement(By.xpath(".//select[contains(@name, 'branch_id')]")));
             int branchId = Integer.parseInt(branchNameSelect.getFirstSelectedOption().getAttribute("value"));
-            /**
-             * <p>
-             * TODO: Die Locale könnte auch eine Konfigurationsvariable sein.
-             * Locale.GERMANY <-> Locale.ENGLISH
-             * </p>
-             */
-            //DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd", Locale.GERMANY);
-            //LocalDate localDate = LocalDate.parse(dateString, dateTimeFormatter);
             LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
             String comment = null; //TODO: add comment
             RosterItem rosterItem = new Selenium.RosterItem(employeeFullName, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
@@ -204,10 +196,6 @@ public class EmployeePage {
     }
 
     private List<WebElement> getTableCellElements(int alternationId, DayOfWeek dayOfWeek) {
-        /**
-         * @TODO: <p lang=de>Wir brauchen eine Liste der TabellenZellen, in
-         * denen die Informationen über den Grundplan stehen.</p>
-         */
         /**
          * <p lang=de>Erst einmal suchen wir die richtige Tabelle: Für jede
          * alernationId gibt es eine eigene.</p>
