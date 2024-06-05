@@ -148,6 +148,12 @@ public class EmployeePage {
         return rosterItemBreakEndXpathBy;
     }
 
+    private By getRosterItemCommentXpathBy(int alternationId, int column, int row) {
+        String alternationString = String.valueOf(alternationId + 1);
+        By rosterItemCommentXpathBy = By.xpath("//html/body/div[2]/div[" + alternationString + "]/form/table/tbody/tr[" + row + "]/td[" + column + "]/input[contains(@name, 'comment')]");
+        return rosterItemCommentXpathBy;
+    }
+
     private By getRosterItemBranchNameXpathBy(int alternationId, int column, int row) {
         String alternationString = String.valueOf(alternationId + 1);
         By rosterItemBreakEndXpathBy = By.xpath("//html/body/div[2]/div[" + alternationString + "]/form/table/tbody/tr[" + row + "]/td[" + column + "]/select[contains(@name, 'branch_id')]");
@@ -166,7 +172,14 @@ public class EmployeePage {
         Select branchNameSelect = new Select(driver.findElement(getRosterItemBranchNameXpathBy(alternationId, column, row)));
         //String branchName = branchNameSelect.getFirstSelectedOption().getText();
         int branchId = Integer.parseInt(branchNameSelect.getFirstSelectedOption().getAttribute("value"));
-        String comment = null; //TODO: add comment
+        String comment = null;
+        try {
+            comment = driver.findElement(getRosterItemCommentXpathBy(alternationId, column, row)).getAttribute("value");
+        } catch (Exception exception) {
+            /**
+             * If the comment is not found, that most probably means, that there is no non empty comment.
+             */
+        }
         LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
         RosterItem rosterItem = new Selenium.RosterItem(employeeFullName, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
@@ -188,7 +201,14 @@ public class EmployeePage {
             Select branchNameSelect = new Select(tableCellElement.findElement(By.xpath(".//select[contains(@name, 'branch_id')]")));
             int branchId = Integer.parseInt(branchNameSelect.getFirstSelectedOption().getAttribute("value"));
             LocalDate localDate = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
-            String comment = null; //TODO: add comment
+            String comment = null;
+            try {
+                comment = tableCellElement.findElement(By.xpath(".//input[contains(@name, 'comment')]")).getAttribute("value");
+            } catch (Exception exception) {
+                /**
+                 * If the comment is not found, that most probably means, that there is no non empty comment.
+                 */
+            }
             RosterItem rosterItem = new Selenium.RosterItem(employeeFullName, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
             setOfRosterItems.add(rosterItem);
         });

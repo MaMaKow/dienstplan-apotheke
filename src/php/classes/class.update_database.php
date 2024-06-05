@@ -709,21 +709,12 @@ class update_database {
         $Sql_query_array[] = "DROP TABLE IF EXISTS `Schulferien`;";
         $Sql_query_array[] = "DROP TABLE IF EXISTS `opening_times_special`;";
         $Sql_query_array[] = "DROP TABLE IF EXISTS `employees_backup`";
-        /**
-         * @todo <p lang=de>Was machen wir mit dem gleichen Mitarbeiter, der verschiedene Arbeitszeiten hinterlegt hat?
-         * Löschen wir diese Informationen zu working_hours?
-         * Können wir sie erhalten? Wollen wir sie erhalten?
-         * Werden die Daten in eine andere neue Tabelle hinein-normalisiert?
-         * Soll ein Mitarbeiter verschiedene Instanzen haben? Ich denke nicht. Das ist im UI nicht abbildbar.
-         * </p>
-         */
-//database_wrapper::instance()->beginTransaction();
+
         foreach ($Sql_query_array as $sql_query) {
             error_log($sql_query . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             $result = database_wrapper::instance()->run($sql_query);
             error_log("result->errorInfo(): " . implode(":", $result->errorInfo()) . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             if ('00000' !== $result->errorCode()) {
-//database_wrapper::instance()->rollBack();
                 return FALSE;
             }
         }
