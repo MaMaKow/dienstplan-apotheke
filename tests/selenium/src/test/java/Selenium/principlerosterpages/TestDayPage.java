@@ -23,6 +23,7 @@ import Selenium.rosterpages.Workforce;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.testng.Assert;
@@ -66,36 +67,45 @@ public class TestDayPage extends Selenium.TestPage {
         DayPage dayPage = new DayPage(driver);
 
         /**
-         * Move to specific principle roster:
+         * Test principle rosters with given alternationId and branchId:
          */
+        int employeeKey;
         int branchId = 1;
         int alternationId = 0;
-        DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-        int employeeKey = 4; //TODO: Hier könnte eine for-Schleife stehen. Die geht dann alle employees in principleRosterMonday durch.
-        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
-        PrincipleRosterDay principleRosterMonday = principleRoster.getPrincipleRosterDay(dayOfWeek);
-        PrincipleRosterItem principleRosterItem = principleRosterMonday.getPrincipleRosterItemByEmployeeKey(employeeKey);
-        /**
-         * @todo Read workforce and networkOfBranchOffices only once per suite.
-         * Inject it to the tests.
-         */
-        Workforce workforce = new Workforce();
+        // Initializing an array containing
+        // all the days of the Week
+        DayOfWeek week[] = DayOfWeek.values();
+        for (DayOfWeek dayOfWeek : week) {
+            PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+            PrincipleRosterDay principleRosterMonday = principleRoster.getPrincipleRosterDay(dayOfWeek);
+            Collection<PrincipleRosterItem> listOfPrincipleRosterItems = principleRosterMonday.getlistOfPrincipleRosterItems().values();
+            for (PrincipleRosterItem principleRosterItem : listOfPrincipleRosterItems) {
+                employeeKey = principleRosterItem.getEmployeeKey();
 
-        dayPage.goToBranch(branchId);
-        dayPage.goToAlternation(alternationId);
-        dayPage.goToWeekday(dayOfWeek);
-        PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeKey(employeeKey);
-        softAssert.assertEquals(rosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
-        softAssert.assertEquals(rosterItemRead.getBranchId(), principleRosterItem.getBranchId());
-        softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
-        softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
-        softAssert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
-        softAssert.assertEquals(rosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
-        //Assert.assertEquals("", rosterItem.getComment(),); //TODO: Kommentare
-        softAssert.assertAll();
+                /**
+                 * @todo Read workforce and networkOfBranchOffices only once per suite.
+                 * Inject it to the tests.
+                 * ... Selenium.TestPage now contains public static workforce.
+                 * It is read beforeSuite.
+                 */
+                //Workforce workforce = new Workforce();
+                dayPage.goToBranch(branchId);
+                dayPage.goToAlternation(alternationId);
+                dayPage.goToWeekday(dayOfWeek);
+                PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeKey(employeeKey);
+                softAssert.assertEquals(rosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
+                softAssert.assertEquals(rosterItemRead.getBranchId(), principleRosterItem.getBranchId());
+                softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
+                softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
+                softAssert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
+                softAssert.assertEquals(rosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
+                softAssert.assertEquals(rosterItemRead.getComment(), principleRosterItem.getComment());
+                softAssert.assertAll();
+            }
+        }
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})/*new*/
+    @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})
     public void testRosterChange() throws Exception {
         /**
          * Sign in:

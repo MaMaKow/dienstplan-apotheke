@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
 import java.io.File;
 import java.io.FileWriter;
@@ -50,6 +51,7 @@ public class TestPage {
     public String packageName;
     public String className;
     public String methodName;
+    public static Workforce workforce;
 
     @Test
     public void signIn() {
@@ -90,6 +92,7 @@ public class TestPage {
     public void setUpSuite(ITestContext context) {
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
+        workforce = new Workforce();
         if (isRealWorldTest(context)) {
             return;
         }
