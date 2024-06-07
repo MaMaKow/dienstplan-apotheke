@@ -256,6 +256,27 @@ class roster {
 
     /**
      * Calculation of the working hours of the employees:
+     * @todo <p lang=de>Die Berechnung entspricht nicht den aktuellen gesetzlichen Vorgaben.
+     * Momentan wird die Ist-Stundenzahl rein rechnerisch aus den gearbeiteten Stunden berechnet.
+     * Von den vertraglich vereinbarten Stunden im Arbeitsvertrag werden dann die Stunden anteilig 1/5 abgezogen.
+     * RICHTIG WÄRE ABER:
+     * Die Ist-Stunden werden berechnet aus den gearbeiteten Stunden plus den Stunden laut Grundplan.
+     * "§ 2 Entgeltzahlung an Feiertagen
+     *  Für Arbeitszeit, die infolge eines gesetzlichen Feiertages ausfällt,
+     *   hat der Arbeitgeber dem Arbeitnehmer das Arbeitsentgelt zu zahlen,
+     *   das er ohne den Arbeitsausfall erhalten hätte."
+     * Die Soll-Stunden bleiben unberührt gemäß Arbeitsvertrag.
+     *
+     * Das Selbe gilt im Falle von Krankheit.
+     * § 4 Entgeltfortzahlungsgesetz Höhe des fortzuzahlenden Arbeitsentgelts
+     * (1) Für den ... Zeitraum ist dem Arbeitnehmer ... regelmäßigen Arbeitszeit zustehende Arbeitsentgelt fortzuzahlen.
+     *
+     * Im Falle von URLAUB muss anders gerechnet werden.
+     * Vergleich: https://www.mep24software.de/blog/urlaubsberechnung-teil-2
+     * "§ 11 Bundesurlaubsgesetz Urlaubsentgelt
+     * (1) Das Urlaubsentgelt bemißt sich nach dem durchschnittlichen Arbeitsverdienst..."
+     * Entsprechend muss hier ein Fünftel oder ein Sechstel der Wochenarbeitszeit angesetzt werden.
+     * </p>
      */
     public static function calculate_working_weekly_hours_from_branch_roster($Branch_roster) {
         /*
