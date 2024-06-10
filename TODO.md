@@ -370,4 +370,25 @@ PTA erhalten an Sonntagen 85% Zuschlag auf ihre Stunden
 #### Feiertage
 https://www.pharmazeutische-zeitung.de/wie-werden-feiertage-richtig-abgerechnet-146396/
 ... dass für Feiertage die Zeit gutgeschrieben werden muss, die man ansonsten normalerweise gearbeitet hätte (§ 2 Entgeltfortzahlungsgesetz). ...
+#### class law_and_order {
 
+//This class should be used to check plans for adherence to legal requirements
+
+    public function check_maximum_working_hours($date_sql) {
+        /*
+         * Germany
+         * Arbeitszeitgesetz (ArbZG)
+         * § 3 Arbeitszeit der Arbeitnehmer
+         * Die werktägliche Arbeitszeit der Arbeitnehmer darf acht Stunden nicht überschreiten.
+         * Sie kann auf bis zu zehn Stunden nur verlängert werden,
+         *  wenn innerhalb von sechs Kalendermonaten oder innerhalb von 24 Wochen im Durchschnitt acht Stunden werktäglich nicht überschritten werden.
+         */
+  private function build_error_message_maximum_working_hours($average_working_hours, $employee_id) {
+        global $Mitarbeiter;
+        $error_message = $Mitarbeiter[$employee_id] . " arbeitet im Durchschnitt " . $average_working_hours 
+                . " das ist ein Verstoß gegen <a href='http://www.gesetze-im-internet.de/arbzg/__3.html'>§3 ArbZG</a>!";
+        if (!function_exists(build_warning_messages)) {
+            require_once 'src/php/build-warning-messages.php';
+        }
+        return build_warning_messages($error_message);
+    }	    }
