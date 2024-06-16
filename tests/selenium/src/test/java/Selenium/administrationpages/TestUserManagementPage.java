@@ -18,13 +18,12 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.TestPage;
 import java.util.HashMap;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class TestUserManagementPage extends TestPage {
+public class TestUserManagementPage extends Selenium.TestPage {
 
     @Test(enabled = true)
     public void testReadUserDetails() {
@@ -60,7 +59,7 @@ public class TestUserManagementPage extends TestPage {
         Assert.assertEquals(privileges.get("request_own_absence"), true);
     }
 
-    @Test(enabled = true, dependsOnMethods = {"testReadUserDetails"})
+    @Test(enabled = true, dependsOnMethods = {"testReadUserDetails"}, groups = {"userManagementPage"})
     public void testEditUserDetails() {
         // Sign in
         super.signIn();
@@ -73,10 +72,10 @@ public class TestUserManagementPage extends TestPage {
         userManagementPage.submitForm();
         int newEmployeeKeyFound = userManagementPage.getEmployeeKey();
         /**
-         * Change back to old value:
+         * Keep new value:
          */
-        userManagementPage.setEmployeeKey(oldEmployeeKey);
-        userManagementPage.submitForm();
+        //userManagementPage.setEmployeeKey(oldEmployeeKey);
+        //userManagementPage.submitForm();
         /**
          * Check if everything worked:
          */

@@ -20,7 +20,6 @@ package Selenium.rest_api;
 
 import Selenium.RosterItem;
 import Selenium.driver.Wrapper;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -28,7 +27,6 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,16 +37,18 @@ import java.util.logging.Logger;
  */
 public class GET_rosterEndpoint {
 
-    private HashMap<LocalDate, HashMap> foundRoster;
+    private HashMap<LocalDate, HashMap> foundRoster = new HashMap<>();
 
-    public GET_rosterEndpoint(String testPageUrl) throws InterruptedException, IOException, Exception {
+    public GET_rosterEndpoint(String testPageUrl, String dateStart, String dateEnd, String employeeFullName) throws InterruptedException, IOException, Exception {
         String rosterEndpoint = testPageUrl + "src/php/restful-api/roster/GET-roster.php";
-        String payload = "{}";
-
+        HashMap listOfParameters = new HashMap<String, String>();
+        listOfParameters.put("dateStart", dateStart);
+        listOfParameters.put("dateEnd", dateEnd);
+        listOfParameters.put("employeeFullName", employeeFullName);
         // Send the POST request
         HttpResponse<String> response = null;
         try {
-            response = ApiHandler.sendAuthorizedGetRequest(rosterEndpoint);
+            response = ApiHandler.sendAuthorizedGetRequest(rosterEndpoint, listOfParameters);
         } catch (IOException exception) {
             Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
             exception.printStackTrace();
@@ -73,6 +73,9 @@ public class GET_rosterEndpoint {
         boolean isRosterData = responseBody.contains("date") && responseBody.contains("roster");
         if (isRosterData) {
             foundRoster = getRosterDataFromJsonResponse(responseBody);
+        } else {
+            System.out.println("No roster data in response:");
+            System.out.println(responseBody);
         }
     }
 

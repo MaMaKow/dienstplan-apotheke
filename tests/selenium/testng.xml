@@ -21,15 +21,8 @@
             <class name="Selenium.administrationpages.TestWorkforceManagementPage" />
             <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
             <class name="Selenium.rosterpages.TestRosterDayEditPage" />
-            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne:
-            -->
+            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne: -->
             <class name="Selenium.principlerosterpages.TestDayPage" />
-        </classes>
-    </test>
-    <test name="API Endpoints">
-        <classes>
-            <class name="Selenium.rest_api.TestPOST_authenticateEndpoint" />
-            <class name="Selenium.rest_api.TestGET_rosterEndpoint" />
         </classes>
     </test>
     <test name="Application Pages">
@@ -77,6 +70,13 @@
             <class name="Selenium.rosterpages.TestRosterHoursPage" />
             <!--
             -->
+        </classes>
+    </test>
+    <test name="API Endpoints">
+        <classes>
+            <!-- Api tests MUST run after TestUserManagementPage! -->
+            <class name="Selenium.rest_api.TestPOST_authenticateEndpoint" />
+            <class name="Selenium.rest_api.TestGET_rosterEndpoint" />
         </classes>
     </test>
 </suite>

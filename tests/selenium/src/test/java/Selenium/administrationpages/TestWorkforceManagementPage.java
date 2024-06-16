@@ -41,7 +41,6 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
         super.signIn();
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
 
-        Workforce workforce = new Workforce();
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
         Employee employeeObjectShould = listOfEmployeesMap.get(7);
 
@@ -77,8 +76,6 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
 
     @Test(enabled = true)/*new*/
     public void testCreateEmployee() {
-        Workforce workforce = new Workforce();
-        //workforce.writeToFile(listOfEmployees);
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
         /**
          * Sign in:

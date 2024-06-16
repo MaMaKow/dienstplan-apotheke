@@ -81,6 +81,9 @@ public class PrincipleRosterItem {
     }
 
     public String getComment() {
+        if (null == this.comment || this.comment.isBlank()) {
+            return "";
+        }
         return this.comment;
     }
 

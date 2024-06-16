@@ -50,7 +50,6 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Move to specific month:
          */
-        Workforce workforce = new Workforce();
         Optional<Employee> firstEmployeeOptional = workforce.getListOfEmployees().values().stream().findFirst();
         if (firstEmployeeOptional.isEmpty()) {
             throw new Exception("No employee was found in the workforce. There has to be at least one employee!");
@@ -76,7 +75,6 @@ public class TestRosterHoursPage extends TestPage {
          * Test if the correct roster information is displayed:
          */
         Roster roster = new Roster();
-        Workforce workforce = new Workforce();
 
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         Optional<HashMap> firstRosterDayOptional = listOfRosterDays.values().stream().findFirst();
@@ -141,7 +139,6 @@ public class TestRosterHoursPage extends TestPage {
          * @todo If absences will ever be written to from a json data file, use
          * that instead of hardcoding the values here!
          */
-        Workforce workforce = new Workforce();
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         int employeeKey = 7;
         absenceEmployeePage = absenceEmployeePage.goToYear(2020);

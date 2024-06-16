@@ -27,18 +27,33 @@ require_once '../../../../bootstrap.php';
 $allowUnauthorized = true;
 $session = new sessions($allowUnauthorized);
 $session->verifyAccessToken();
+/**
+ * Get input data from GET:
+ */
+$dateStartString = \user_input::getVariableFromSpecificInput('dateStart', INPUT_GET, FILTER_SANITIZE_SPECIAL_CHARS, (new DateTime('now'))->format("Y-m-d"));
+$dateEndString = \user_input::getVariableFromSpecificInput('dateEnd', INPUT_GET, FILTER_SANITIZE_SPECIAL_CHARS, $dateStartString);
+$workforce = new \workforce($dateStartString, $dateEndString);
+$defaultEmployeeKey = $workforce->get_default_employee_key();
+$defaultEmployeeFullName = $workforce->getEmployeeFullName($defaultEmployeeKey);
+$employeeFullName = \user_input::getVariableFromSpecificInput('employeeFullName', INPUT_GET, FILTER_SANITIZE_SPECIAL_CHARS, $defaultEmployeeFullName);
+$employeeKey = $workforce->getKeyByFullName($employeeFullName);
 
-// Fetch the roster data from the database or any other source
-// You may need to adjust the parameters based on your implementation
-$startDate = new DateTime("monday this week");
-$endDate = new DateTime("sunday this week");
-$employeeKey = 55; // Replace with the actual employee key
+/**
+ * Fetch the roster data from the database or any other source
+ */
+$startDate = new DateTime($dateStartString);
+$endDate = new DateTime($dateEndString);
+//$branch_id = 1;
 
 try {
     $roster = new roster($startDate, $endDate, $employeeKey);
-    $rosterData = $roster->encodeToJson(); // Use the function you created to encode data to JSON
+    //$roster = roster::read_roster_from_database($branch_id, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+    $rosterData = $roster->encodeToJson();
     echo $rosterData;
 } catch (Exception $e) {
-// Handle exceptions, e.g., log the error or send an error response
+    /**
+     * Handle exceptions, e.g., log the error or send an error response
+     */
+    PDR\Utility\GeneralUtility::printDebugVariable($e->getMessage());
     echo json_encode(['error' => $e->getMessage()]);
 }

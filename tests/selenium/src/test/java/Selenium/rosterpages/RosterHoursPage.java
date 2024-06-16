@@ -18,12 +18,11 @@
  */
 package Selenium.rosterpages;
 
+import Selenium.TestPage;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import org.openqa.selenium.By;
@@ -121,7 +120,7 @@ public class RosterHoursPage {
 
     public RosterItem getRosterOnLocalDate(LocalDate targetLocalDate) {
         String employeeName = getEmployeeName();
-        Workforce workforce = new Workforce();
+        Workforce workforce = TestPage.workforce;
         workforce.getListOfEmployees();
         WebElement rowElement = getRowElement(targetLocalDate);
 

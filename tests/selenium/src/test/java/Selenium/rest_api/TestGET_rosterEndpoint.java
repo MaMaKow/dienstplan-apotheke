@@ -41,19 +41,25 @@ public class TestGET_rosterEndpoint {
     private PropertyFile propertyFile;
     private SoftAssert softAssert = new SoftAssert();
 
-    @Test(enabled = true)
-    public void testGetRoster() {
-        LocalDate today = LocalDate.now();
+    @Test()
+    public void testGetRoster() throws IOException, Exception {
         try {
             propertyFile = new PropertyFile();
-            String testPageUrl = propertyFile.getRealTestPageUrl();
+            String testPageUrl = propertyFile.getTestPageUrl();
             if (!POST_authenticateEndpoint.isAuthenticated()) {
-                String userName = propertyFile.getRealUsername();
-                String userPassphrase = propertyFile.getRealPassword();
+                String userName = propertyFile.getPdrUserName();
+                String userPassphrase = propertyFile.getPdrUserPassword();
                 new POST_authenticateEndpoint(userName, userPassphrase, testPageUrl);
             }
-            GET_rosterEndpoint rosterEndpoint = new GET_rosterEndpoint(testPageUrl);
+            String dateStart = "2020-07-01";
+            String dateEnd = "2020-07-03";
+            String employeeFullName = "Albert Kremer";
+
+            GET_rosterEndpoint rosterEndpoint = new GET_rosterEndpoint(testPageUrl, dateStart, dateEnd, employeeFullName);
             HashMap<LocalDate, HashMap> foundRoster = rosterEndpoint.getFoundRosterHashMap();
+            if (null == foundRoster) {
+                Assert.fail();
+            }
             softAssert.assertNotEquals(foundRoster.size(), 0);
             for (Map.Entry<LocalDate, HashMap> rosterDayEntry : foundRoster.entrySet()) {
                 LocalDate date = rosterDayEntry.getKey();
@@ -64,24 +70,25 @@ public class TestGET_rosterEndpoint {
                     /**
                      * Calculate the number of weeks between the two dates
                      */
-                    long weeksBetween = ChronoUnit.WEEKS.between(today, dateInItem);
+                    long weeksBetween = ChronoUnit.WEEKS.between(LocalDate.parse(dateStart), dateInItem);
 
                     /**
                      * Check if the dates are in the same week of the year
                      */
                     softAssert.assertEquals(weeksBetween, 0);
-                    softAssert.assertEquals(rosterItem.getBranchId(), 1);
-                    softAssert.assertEquals(rosterItem.getEmployeeKey(), (Integer) 55);
+                    softAssert.assertEquals(rosterItem.getEmployeeFullName(), employeeFullName);
 
                 }
             }
         } catch (IOException | InterruptedException exception) {
             exception.printStackTrace();
             Assert.fail();
+            throw exception;
         } catch (Exception exception) {
             Logger.getLogger(TestGET_rosterEndpoint.class.getName()).log(Level.SEVERE, null, exception);
             exception.printStackTrace();
             Assert.fail();
+            throw exception;
         }
         softAssert.assertAll();
     }

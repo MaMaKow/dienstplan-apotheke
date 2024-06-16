@@ -24,8 +24,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -409,6 +407,36 @@ public class DayPage {
         By breakStartInputBy = By.xpath(".//*[contains(@name, \"break_start_sql\")]");
         WebElement breakStartRosterInputElement = insertedRowElement.findElement(breakStartInputBy);
         breakStartRosterInputElement.sendKeys(rosterItem.getBreakStart().format(DateTimeFormatter.ofPattern("HH:mm")));
+        /**
+         * comment:
+         */
+        try {
+            if (null == rosterItem) {
+                System.out.println("rosterItem is null!");
+            } else {
+                if (null == rosterItem.getComment()) {
+                    System.out.println("rosterItem comment is null!");
+                }
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            System.out.println("NullPointerException caught: " + e.getMessage());
+        }
+
+        if (null != rosterItem.getComment() && !rosterItem.getComment().isEmpty()) {
+            /**
+             * First click link to show comment field:
+             */
+            WebElement showLinkElement = findRosterInputCommentShowLinkInTableRow(insertedRowElement);
+            showLinkElement.click();
+            /**
+             * Enter comment text:
+             */
+            By commentInputBy = By.xpath(".//div/input[contains(@name, \"comment\")]");
+            //wait.until(ExpectedConditions.visibilityOfElementLocated(commentInputBy));
+            WebElement commentRosterInputElement = insertedRowElement.findElement(commentInputBy);
+            commentRosterInputElement.sendKeys(rosterItem.getComment());
+        }
         /**
          * break end:
          */

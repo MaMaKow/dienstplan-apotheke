@@ -19,6 +19,7 @@
 package Selenium;
 
 import Selenium.rosterpages.Workforce;
+import Selenium.TestPage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -57,7 +58,7 @@ public class RosterItem {
      */
     public RosterItem(Integer employeeKey, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
         this.employeeKey = employeeKey;
-        Workforce workforce = new Workforce();
+        Workforce workforce = TestPage.workforce;
         this.employeeObject = workforce.getEmployeeByKey(employeeKey);
         this.localDate = LocalDate.from(localDate);
 
@@ -98,7 +99,7 @@ public class RosterItem {
     }
 
     public RosterItem(String fullName, LocalDate localDate, String dutyStart, String dutyEnd, String breakStart, String breakEnd, String comment, Integer branchId) {
-        Workforce workforce = new Workforce();
+        Workforce workforce = TestPage.workforce;
         this.employeeObject = workforce.getEmployeeByFullName(fullName);
         if (null == employeeObject) {
             this.employeeKey = null;

@@ -90,7 +90,6 @@ public class TestRosterEmployeePage extends TestPage {
          * employee pages:
          */
         Roster roster = new Roster();
-        Workforce workforce = new Workforce();
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (HashMap<Integer, RosterItem> listOfRosterItems : listOfRosterDays.values()) {
             for (RosterItem rosterItemFromPrediction : listOfRosterItems.values()) {

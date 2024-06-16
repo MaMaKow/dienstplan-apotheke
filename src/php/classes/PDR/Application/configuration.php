@@ -42,7 +42,6 @@ class configuration {
             // Load the configuration file
             $config = array();
             require PDR_FILE_SYSTEM_APPLICATION_PATH . "/config/config.php";
-
             // Assign the loaded configuration to the class property
             self::$loadedConfig = $config;
         }
@@ -166,6 +165,7 @@ class configuration {
         } else {
             $secretKey = bin2hex(random_bytes(64));
             $this->write_new_config_entry('secret_key', $secretKey);
+            return self::$loadedConfig['secret_key'];
         }
     }
 
@@ -399,7 +399,8 @@ class configuration {
         'database_port' => 3306,
         'database_user' => '',
         'database_password' => '',
-        'session_secret' => '',
+        'session_secret' => null,
+        'secret_key' => null,
         'error_reporting' => E_ALL,
         'display_errors' => 0,
         'log_errors' => 1,
@@ -421,7 +422,7 @@ class configuration {
         $configuration_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php';
         self::$loadedConfig[$key] = $value;
         if (file_exists($configuration_file)) {
-            rename($configuration_file, $configuration_file . '_' . date(\DateTime::ATOM));
+            rename($configuration_file, $configuration_file . '_' . date(\DateTime::ATOM) . '.php');
         }
         $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export(self::$loadedConfig, true) . ';' . PHP_EOL);
         chmod($configuration_file, 0660);

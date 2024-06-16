@@ -379,4 +379,12 @@ class workforce {
         $employee = new employee($private_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $compounding, $goods_receipt, $branch_id, $start_of_employment, $end_of_employment, $holidays);
         return $employee;
     }
+
+    public function getKeyByFullName(String $employeeFullName): int {
+        foreach (self::$List_of_all_employees as $employeeKey => $employee) {
+            if ($employee->getFullName() === $employeeFullName) {
+                return $employeeKey;
+            }
+        }
+    }
 }

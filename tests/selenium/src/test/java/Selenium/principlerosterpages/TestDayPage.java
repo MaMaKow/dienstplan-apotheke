@@ -19,11 +19,12 @@ package Selenium.principlerosterpages;
 import Selenium.PrincipleRoster;
 import Selenium.PrincipleRosterDay;
 import Selenium.PrincipleRosterItem;
-import Selenium.rosterpages.Workforce;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.format.TextStyle;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.testng.Assert;
@@ -76,19 +77,20 @@ public class TestDayPage extends Selenium.TestPage {
         // all the days of the Week
         DayOfWeek week[] = DayOfWeek.values();
         for (DayOfWeek dayOfWeek : week) {
+            System.out.print("dayOfWeek: ");
+            System.out.print(dayOfWeek.getValue());
             PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
-            PrincipleRosterDay principleRosterMonday = principleRoster.getPrincipleRosterDay(dayOfWeek);
-            Collection<PrincipleRosterItem> listOfPrincipleRosterItems = principleRosterMonday.getlistOfPrincipleRosterItems().values();
+            PrincipleRosterDay principleRosterWeekday = principleRoster.getPrincipleRosterDay(dayOfWeek);
+            if (null == principleRosterWeekday) {
+                continue;
+            }
+            if (0 == principleRosterWeekday.size()) {
+                continue;
+            }
+            Collection<PrincipleRosterItem> listOfPrincipleRosterItems = principleRosterWeekday.getlistOfPrincipleRosterItems().values();
             for (PrincipleRosterItem principleRosterItem : listOfPrincipleRosterItems) {
+                System.out.print(";");
                 employeeKey = principleRosterItem.getEmployeeKey();
-
-                /**
-                 * @todo Read workforce and networkOfBranchOffices only once per suite.
-                 * Inject it to the tests.
-                 * ... Selenium.TestPage now contains public static workforce.
-                 * It is read beforeSuite.
-                 */
-                //Workforce workforce = new Workforce();
                 dayPage.goToBranch(branchId);
                 dayPage.goToAlternation(alternationId);
                 dayPage.goToWeekday(dayOfWeek);
@@ -103,6 +105,7 @@ public class TestDayPage extends Selenium.TestPage {
                 softAssert.assertAll();
             }
         }
+        System.out.println();
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation"})
@@ -181,7 +184,6 @@ public class TestDayPage extends Selenium.TestPage {
          */
         super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Workforce workforce = new Workforce();
 
         /**
          * Move to specific branch:
@@ -199,23 +201,29 @@ public class TestDayPage extends Selenium.TestPage {
         PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
         // Iterate through all weekdays
         for (DayOfWeek dayOfWeek : principleRoster.getAllWeekdays()) {
+            System.out.print("d"); // This loop takes quite a while. Make it a bit verbose.
+            System.out.print(dayOfWeek.getValue()); // This loop takes quite a while. Make it a bit verbose.
             PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
 
             dayPage.goToWeekday(dayOfWeek);
             dayPage.addRosterRow();
             for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
+                System.out.print("."); // This loop takes quite a while. Make it a bit verbose.
                 dayPage.createNewRosterItem(principleRosterItem);
             }
             for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
+                System.out.print(":"); // This loop takes quite a while. Make it a bit verbose.
                 PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeKey(principleRosterItem.getEmployeeKey());
                 softAssert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
                 softAssert.assertEquals(principleRosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
                 softAssert.assertEquals(principleRosterItemRead.getDutyEnd(), principleRosterItem.getDutyEnd());
                 softAssert.assertEquals(principleRosterItemRead.getBreakStart(), principleRosterItem.getBreakStart());
                 softAssert.assertEquals(principleRosterItemRead.getBreakEnd(), principleRosterItem.getBreakEnd());
+                softAssert.assertEquals(principleRosterItemRead.getComment(), principleRosterItem.getComment());
                 softAssert.assertAll();
             }
         }
+        System.out.println(); // This loop takes quite a while. Make it a bit verbose.
     }
 
     @Test(enabled = true, dependsOnMethods = {"testRosterCreate", "testRosterCopyAlternation", "testRosterChangeDragAndDrop"})/*new*/
@@ -225,7 +233,6 @@ public class TestDayPage extends Selenium.TestPage {
          */
         super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Workforce workforce = new Workforce();
 
         /**
          * Move to specific month:
@@ -262,7 +269,6 @@ public class TestDayPage extends Selenium.TestPage {
          */
         super.signIn();
         DayPage dayPage = new DayPage(driver);
-        Workforce workforce = new Workforce();
 
         /**
          * Move to specific month:

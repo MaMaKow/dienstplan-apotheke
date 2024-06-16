@@ -54,7 +54,6 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
          */
         String employeeNameInsert = "Anabell Neuhaus";
         String employeeNameChange = "Albert Baumann";
-        Workforce workforce = new Workforce();
         /**
          * <p lang=de>Nur Apotheker (und PI) können allein im Notdienst
          * eingesetzt werden.</p>

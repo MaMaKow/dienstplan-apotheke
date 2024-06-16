@@ -45,6 +45,17 @@ abstract class user_input {
         return filter_var($default_value, $filter);
     }
 
+    public static function getVariableFromSpecificInput(string $variableName, int $inputSource, int $filter = FILTER_SANITIZE_SPECIAL_CHARS, $default_value = null) {
+        $List_of_input_sources = array(INPUT_POST, INPUT_GET, INPUT_COOKIE);
+        if (!in_array($inputSource, $List_of_input_sources)) {
+            throw new Exception('$inputSource must be one of INPUT_POST, INPUT_GET or INPUT_COOKIE');
+        }
+        if (filter_has_var($inputSource, $variableName)) {
+            return filter_input($inputSource, $variableName, $filter);
+        }
+        return filter_var($default_value, $filter);
+    }
+
     public static function convert_post_empty_to_php_null($value) {
         if ('' === $value) {
             return NULL;

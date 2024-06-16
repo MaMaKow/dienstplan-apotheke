@@ -73,7 +73,6 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Get roster items and compare to assertions:
          */
-        Workforce workforce = new Workforce();
         Roster roster = new Roster();
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (HashMap<Integer, RosterItem> listOfRosterItems : listOfRosterDays.values()) {

@@ -18,6 +18,7 @@
  */
 package Selenium.rosterpages;
 
+import Selenium.TestPage;
 import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
@@ -198,7 +199,7 @@ public class RosterWeekTablePage {
         String dateSql = rosterTableDataElement.findElement(rosterItemEmployeeXpathBy).getAttribute("data-date_sql");
 
         LocalDate localDateParsed = LocalDate.parse(dateSql, DateTimeFormatter.ISO_LOCAL_DATE);
-        Workforce workforce = new Workforce();
+        Workforce workforce = TestPage.workforce;
         Employee employeeShould = workforce.getEmployeeByFullName(employeeFullName);
         String employeeNameStringFound = rosterTableDataElement.findElement(rosterItemEmployeeXpathBy).getText();
         /**

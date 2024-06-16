@@ -55,7 +55,6 @@ public class TestOvertimeOverviewPage extends TestPage {
         /**
          * Find the overtime balance:
          */
-        Workforce workforce = new Workforce();
         Employee employee = workforce.getEmployeeByKey(employeeKey);
         Float balance = overtimeOverviewPage.getBalanceByEmployeeName(employee.getLastName());
 

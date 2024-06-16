@@ -19,10 +19,14 @@
 package Selenium.rest_api;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +49,7 @@ public class ApiHandler {
         return response;
     }
 
-    public static HttpResponse<String> sendAuthorizedGetRequest(String url) throws IOException, InterruptedException, Exception {
+    public static HttpResponse<String> sendAuthorizedGetRequest(String url, HashMap<String, String> listOfParameters) throws IOException, InterruptedException, Exception {
         String accessToken = null;
         try {
             accessToken = POST_authenticateEndpoint.getAccessToken();
@@ -55,6 +59,7 @@ public class ApiHandler {
             System.out.println(exception.getMessage());
             throw exception;
         }
+        url = buildGetRequestUrl(url, listOfParameters);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -68,4 +73,24 @@ public class ApiHandler {
         return response;
     }
 
+    /**
+     * Build the URL with parameters
+     */
+    private static String buildGetRequestUrl(String url, HashMap<String, String> parameters) throws UnsupportedEncodingException {
+        StringBuilder urlWithParams = new StringBuilder(url);
+        if (parameters != null && !parameters.isEmpty()) {
+            urlWithParams.append("?");
+            for (HashMap.Entry<String, String> entry : parameters.entrySet()) {
+                String encodedKey = URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8.toString());
+                String encodedValue = URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8.toString());
+                urlWithParams.append(encodedKey)
+                        .append("=")
+                        .append(encodedValue)
+                        .append("&");
+            }
+            // Remove the last "&"
+            urlWithParams.setLength(urlWithParams.length() - 1);
+        }
+        return urlWithParams.toString();
+    }
 }

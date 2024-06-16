@@ -44,23 +44,23 @@ public class TestPOST_authenticateEndpoint {
         propertyFile = new PropertyFile();
         try {
             // Authentication endpoint on real page:
-            String realTestPageUrl = propertyFile.getRealTestPageUrl();
+            String testPageUrl = propertyFile.getTestPageUrl();
 
             // Define authentication payload:
-            String userName = propertyFile.getRealUsername();
-            String userPassphrase = propertyFile.getRealPassword();
+            String userName = propertyFile.getPdrUserName();
+            String userPassphrase = propertyFile.getPdrUserPassword();
 
             // Try authentication with wrong credentials:
-            POST_authenticateEndpoint authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase + "foo", realTestPageUrl);
+            POST_authenticateEndpoint authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase + "foo", testPageUrl);
             Assert.assertFalse(authenticateEndpoint.isAuthenticated());
             // Try authentication with empty credentials:
-            authenticateEndpoint = new POST_authenticateEndpoint(userName, "", realTestPageUrl);
+            authenticateEndpoint = new POST_authenticateEndpoint(userName, "", testPageUrl);
             Assert.assertFalse(authenticateEndpoint.isAuthenticated());
-            authenticateEndpoint = new POST_authenticateEndpoint("", "", realTestPageUrl);
+            authenticateEndpoint = new POST_authenticateEndpoint("", "", testPageUrl);
             Assert.assertFalse(authenticateEndpoint.isAuthenticated());
 
             // Try authentication with correct credentials:
-            authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase, realTestPageUrl);
+            authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase, testPageUrl);
             Assert.assertTrue(authenticateEndpoint.isAuthenticated());
 
         } catch (IOException | InterruptedException e) {

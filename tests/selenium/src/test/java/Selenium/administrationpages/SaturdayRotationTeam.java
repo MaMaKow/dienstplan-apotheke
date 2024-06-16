@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.Employee;
+import Selenium.TestPage;
 import Selenium.rosterpages.Workforce;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public class SaturdayRotationTeam {
 
     public SaturdayRotationTeam(Integer teamIdInput, HashSet<Integer> listOfTeamMemberIdsInput) {
         teamId = teamIdInput;
-        Workforce workforce = new Workforce();
+        Workforce workforce = TestPage.workforce;
         listOfTeamMemberIds = listOfTeamMemberIdsInput;
         listOfTeamMemberEmployees = new HashSet<>();
         for (int TeamMemberId : listOfTeamMemberIdsInput) {
@@ -46,7 +47,7 @@ public class SaturdayRotationTeam {
     }
 
     public SaturdayRotationTeam(Integer teamIdInput, Employee[] arrayOfTeamMemberEmployeesInput) {
-        Workforce workforce = new Workforce();
+        Workforce workforce = TestPage.workforce;
         teamId = teamIdInput;
         listOfTeamMemberIds = new HashSet<>();
         listOfTeamMemberEmployees = new HashSet<>();
@@ -95,7 +96,7 @@ public class SaturdayRotationTeam {
     }
 
     public static HashMap<Integer, SaturdayRotationTeam> getSaturdayTeams() {
-        Workforce workforce = new Workforce();
+        Workforce workforce = TestPage.workforce;
         HashMap<Integer, SaturdayRotationTeam> saturdayTeamList = new HashMap<>();
         SaturdayRotationTeam saturdayRotationTeam0 = new SaturdayRotationTeam(null,
                 new Employee[]{workforce.getEmployeeByFullName("Elisabeth Lehmann"), workforce.getEmployeeByFullName("Emma Grimm")});
