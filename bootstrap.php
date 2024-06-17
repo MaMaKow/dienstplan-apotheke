@@ -116,14 +116,3 @@ date_default_timezone_set($config['timezone']);
  */
 mb_internal_encoding($config['mb_internal_encoding']);
 localization::initialize_gettext($config["language"]);
-
-/**
- * Hotfix!
- * @todo add this function into a utility class!
- */
-function time_from_text_to_int($time_string) {
-    list($hour, $minute, $second) = explode(":", $time_string);
-    $time_float = $hour + $minute / 60 + $second / 3600;
-    return $time_float;
-}
-
