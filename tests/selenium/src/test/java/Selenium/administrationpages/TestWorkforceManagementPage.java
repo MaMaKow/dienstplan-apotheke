@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.Employee;
+import Selenium.driver.Wrapper;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.rosterpages.Workforce;
 import java.util.Map;
@@ -77,6 +78,7 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
     @Test(enabled = true)/*new*/
     public void testCreateEmployee() {
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
         /**
          * Sign in:
          */
@@ -89,5 +91,34 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
         listOfEmployeesMap.forEach((employeeKey, employee) -> {
             workforceManagementPage.createEmployee(employee);
         });
+        Employee firstEmployee = getFirstEmployee(listOfEmployeesMap);
+        Employee changedEmployee = new Employee(String.valueOf(firstEmployee.getEmployeeKey()),
+                firstEmployee.getLastName(),
+                firstEmployee.getFirstName(),
+                firstEmployee.getProfession(),
+                String.valueOf(firstEmployee.getWorkingHours()),
+                String.valueOf(firstEmployee.getLunchBreakMinutes()),
+                String.valueOf(0), //no holidays
+                firstEmployee.getBranchString(networkOfBranchOffices),
+                String.valueOf(firstEmployee.getAbilitiesGoodsReceipt()),
+                String.valueOf(firstEmployee.getAbilitiesCompounding()),
+                firstEmployee.getStartOfEmployment().format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR),
+                firstEmployee.getEndOfEmployment().format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR)
+        );
+        workforceManagementPage.createEmployee(changedEmployee);
+        Employee readEmployeeChanged = workforceManagementPage.getEmployeeObject();
+        Assert.assertEquals(readEmployeeChanged.getHolidays(), changedEmployee.getHolidays());
+        Assert.assertEquals(readEmployeeChanged.getFullName(), changedEmployee.getFullName());
+        workforceManagementPage.createEmployee(firstEmployee);
+        Employee readEmployeeFirst = workforceManagementPage.getEmployeeObject();
+        Assert.assertEquals(readEmployeeFirst.getFullName(), firstEmployee.getFullName());
+        Assert.assertEquals(readEmployeeFirst.getHolidays(), firstEmployee.getHolidays());
+    }
+
+    public static Employee getFirstEmployee(Map<Integer, Employee> listOfEmployeesMap) {
+        if (listOfEmployeesMap.isEmpty()) {
+            return null;
+        }
+        return listOfEmployeesMap.entrySet().iterator().next().getValue();
     }
 }

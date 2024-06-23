@@ -69,15 +69,15 @@ $session->exit_on_missing_privilege('create_employee');
             <legend><?= gettext("Working hours") ?>:</legend>
             <p >
                 <label for="working_week_hours"><?= gettext("Working hours") ?>: </label>
-                <input type='number' min='0' step='any' name='working_week_hours' id="working_week_hours" value="<?= $employee->working_week_hours ?>">
+                <input type='number' required min='0' step='any' name='working_week_hours' id="working_week_hours" value="<?= $employee->working_week_hours ?>">
                 <span class="form_input_unit">h</span>
                 <br>
                 <label for="lunch_break_minutes"><?= gettext("Lunch break") ?>: </label>
-                <input type='number' min='0' step='any' name='lunch_break_minutes' id="lunch_break_minutes" value="<?= $employee->lunch_break_minutes ?>">
+                <input type='number' required min='0' step='any' name='lunch_break_minutes' id="lunch_break_minutes" value="<?= $employee->lunch_break_minutes ?>">
                 <span class="form_input_unit">min</span>
                 <br>
                 <label for="holidays"><?= gettext("Vacation days"); ?>: </label>
-                <input type='number' min='0' step='any' name='holidays' id="holidays" value="<?= $employee->holidays ?>">
+                <input type='number' required min='0' step='any' name='holidays' id="holidays" value="<?= $employee->holidays ?>">
                 <span class="form_input_unit">d</span>
             </p>
         </fieldset>

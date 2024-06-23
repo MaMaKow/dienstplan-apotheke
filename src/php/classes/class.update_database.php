@@ -60,6 +60,7 @@ class update_database {
         }
         $this->employee_refactor_primary_key();
         $this->refactorEmergencyService();
+        $this->refactorEmployeesArchive();
         /**
          * Write new pdr_database_version_hash into the database:
          */
@@ -749,6 +750,20 @@ class update_database {
         }
         if (true === database_wrapper::instance()->inTransaction()) {
             database_wrapper::instance()->commit();
+        }
+    }
+
+    /**
+     * Refactors the `employees_archive` table by adding a `row_id` column with auto-increment and primary key,
+     * and renaming the existing `primary_key` column to `employee_key`.
+     */
+    private function refactorEmployeesArchive() {
+        if (!database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'employees_archive', 'row_id')) {
+            $alterQueryId = "ALTER TABLE `employees_archive` "
+                    . " ADD `row_id` INT UNSIGNED NOT NULL AUTO_INCREMENT FIRST, "
+                    . " ADD PRIMARY KEY (`row_id`), "
+                    . " CHANGE `primary_key` `employee_key` INT(10) UNSIGNED NOT NULL;";
+            database_wrapper::instance()->run($alterQueryId);
         }
     }
 

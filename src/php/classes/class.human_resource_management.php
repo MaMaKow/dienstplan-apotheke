@@ -98,7 +98,7 @@ abstract class human_resource_management {
 
     private static function archiveExistingEmployee($Worker): PDOStatement {
         $sql_query_archive = "INSERT INTO `employees_archive` (
-                    `primary_key`,
+                    `employee_key`,
                     `first_name`, `last_name`, `profession`,
                     `working_week_hours`, `holidays`, `lunch_break_minutes`,
                     `goods_receipt`, `compounding`,
