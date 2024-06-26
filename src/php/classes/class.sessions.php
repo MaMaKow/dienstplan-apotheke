@@ -205,7 +205,7 @@ class sessions {
             /*
              * In case the given username just does not exist.
              */
-            $user_dialog->add_message("Dieser Nutzer existiert nicht.", E_USER_ERROR);
+            error_log("Dieser Nutzer existiert nicht oder ist nicht 'active':" . htmlentities($user_name));
             return FALSE;
         }
         /*
@@ -242,6 +242,9 @@ class sessions {
                 if (!empty($referrer)) {
                     if ($_SESSION['number_of_times_redirected'] < 3) {
                         $_SESSION['number_of_times_redirected']++;
+                        /**
+                         * @todo In case of logout memorize the last used page as referrer e.g. GET parameter.
+                         */
                         $referrer = 'pages/menu-tiles.php';
                         //die("Location:" . $referrer);
                         header("Location:" . $referrer);

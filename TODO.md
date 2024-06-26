@@ -4,11 +4,6 @@
 
 ### Failure of functions
 
-
-Mitarbeiter anlegen und speichern: Leere Werte für Urlaub ergeben einen Datenbankfehler. Bitte im Frontend vorher Werte >0 erzwingen
-
-Rezeptur scheint alte Mitarbeiter auch nach der Kündigung noch einzuteilen.
-
 #### Roster view
 
 Drag and drop is somehow defective. - newy inserted employees do not show up in the plot. - get rid of transform
