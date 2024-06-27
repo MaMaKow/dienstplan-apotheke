@@ -55,7 +55,7 @@ public class InstallationPageDatabase {
 
         //WebElement databaseManagementSystemFormElement = driver.findElement(By.id("database_management_system"));
         WebElement databaseHostFormElement = driver.findElement(By.id("database_host"));
-        //WebElement databasePortFormElement = driver.findElement(By.id("database_port"));
+        WebElement databasePortFormElement = driver.findElement(By.id("database_port"));
         WebElement databaseUserFormElement = driver.findElement(By.id("database_user"));
         WebElement databasePasswordFormElement = driver.findElement(By.id("database_password"));
         WebElement databaseNameFormElement = driver.findElement(By.id("database_name"));
@@ -63,13 +63,14 @@ public class InstallationPageDatabase {
         PropertyFile propertyFile = new PropertyFile();
         String databaseUserName = propertyFile.getDatabaseUserName();
         String databasePassword = propertyFile.getDatabasePassword();
+        String databasePort = propertyFile.getDatabasePort();
         String databaseName = propertyFile.getDatabaseName();
 
         databaseHostFormElement.clear();
         //databaseHostFormElement.sendKeys("localhost");
         Selenium.driver.Wrapper.CustomSendKeysIE(databaseHostFormElement, "localhost");
-        //databasePortFormElement.clear();
-        //databasePortFormElement.sendKeys("3306");
+        databasePortFormElement.clear();
+        databasePortFormElement.sendKeys(databasePort);
         databaseUserFormElement.clear();
         databaseUserFormElement.sendKeys(databaseUserName);
         databasePasswordFormElement.clear();

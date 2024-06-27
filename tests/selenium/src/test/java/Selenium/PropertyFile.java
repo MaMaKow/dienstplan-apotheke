@@ -166,6 +166,14 @@ public class PropertyFile {
         return null;
     }
 
+    public String getDatabasePort() {
+        String property = properties.getProperty("databasePort");
+        if (null != property) {
+            return property;
+        }
+        return "3306";
+    }
+
     public String getDatabasePassword() {
         String property = properties.getProperty("databasePassword");
         if (null != property) {

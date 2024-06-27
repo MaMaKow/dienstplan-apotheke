@@ -138,6 +138,8 @@ public class TestPage {
     public void tearDownSuite() {
         if (!someTestHasFailed) {
             driver.quit();
+            // Write "SUCCESS" to the test-result file
+            writeTestResult("SUCCESS");
         } else {
             try {
                 // Capture the page source
@@ -156,6 +158,8 @@ public class TestPage {
             }
             ScreenShot screenShot = new ScreenShot();
             screenShot.takeScreenShot(packageName, className, methodName);
+            // Write "FAILED" to the test-result file
+            writeTestResult("FAILED");
         }
     }
 
@@ -165,4 +169,12 @@ public class TestPage {
         return context.getSuite().getName().contains("testng_realworld.xml");
     }
 
+    private void writeTestResult(String result) {
+        File resultFile = new File("test-result");
+        try (FileWriter writer = new FileWriter(resultFile)) {
+            writer.write(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
