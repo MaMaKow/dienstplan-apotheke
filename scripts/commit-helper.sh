@@ -134,4 +134,5 @@ if [ "y" != "$decision_push" ] && [ "Y" != "$decision_push" ]
 then
     error_exit "You are not ready to push yet.";
 fi
+git push origin
 git push origin --tags
