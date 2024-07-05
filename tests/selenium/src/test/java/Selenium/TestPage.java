@@ -101,9 +101,17 @@ public class TestPage {
          */
         String testPageFolderPath = propertyFile.getUrlInstallTest();
         driver.get(testPageFolderPath + "selenium-refresh.php");
-        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
+        try {
+            By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
+        } catch (Exception exception) {
+            System.out.println("driver.getCurrentUrl()");
+            System.out.println(driver.getCurrentUrl());
+            System.out.println("driver.getPageSource()");
+            System.out.println(driver.getPageSource());
+            throw exception;
+        }
         driver.quit();
     }
 
