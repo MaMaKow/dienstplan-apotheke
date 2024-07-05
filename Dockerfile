@@ -9,6 +9,12 @@ WORKDIR /var/www/html
 # Copy the current directory contents into the container at /var/www/html
 COPY . /var/www/html/apotheke/dienstplan-test
 
+# There is another version of selenium-refresh.php, that fetches fresh data from the
+#   nextcloud to get the newest files under development.
+#   This file here is used in the testing stage within a docker container.
+#   The container is built with a fresh database on every startup.
+COPY ./tests/selenium-refresh-not.php /var/www/html/apotheke/selenium-refresh.php
+
 # Install any needed PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql
 
