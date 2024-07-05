@@ -232,4 +232,9 @@ class SystemRequirementsValidator {
             return TRUE;
         }
     }
+    private function fancy_implode($input_array, $delimiter = ", ") {
+        $last = array_pop($input_array);
+        return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
+    }
+
 }
