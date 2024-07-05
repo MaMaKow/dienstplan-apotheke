@@ -10,7 +10,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html/apotheke/dienstplan-test
 
 # Install any needed PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql gettext
 
 #RUN apt-get update && apt-get install -y \
 #    libicu-dev \
