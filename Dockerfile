@@ -4,15 +4,17 @@
 FROM php:8.0-apache
 
 # Set the working directory in the container
-WORKDIR /var/www/html
-
+#WORKDIR /var/www/html
+WORKDIR /var/www/html/apotheke/dienstplan-test
 # Copy the current directory contents into the container at /var/www/html
 COPY . /var/www/html/apotheke/dienstplan-test
-
+# remove container secrets
+RUN rm /var/www/html/apotheke/dienstplan-test/.env
 # There is another version of selenium-refresh.php, that fetches fresh data from the
 #   nextcloud to get the newest files under development.
 #   This file here is used in the testing stage within a docker container.
 #   The container is built with a fresh database on every startup.
+WORKDIR /var/www/html/apotheke
 COPY ./tests/selenium-refresh-not.php /var/www/html/apotheke/selenium-refresh.php
 
 # Install any needed PHP extensions
