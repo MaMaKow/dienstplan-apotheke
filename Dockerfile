@@ -9,7 +9,7 @@ WORKDIR /var/www/html/apotheke/dienstplan-test
 # Copy the current directory contents into the container at /var/www/html
 COPY . /var/www/html/apotheke/dienstplan-test
 # remove container secrets
-RUN rm /var/www/html/apotheke/dienstplan-test/.env
+RUN rm -f /var/www/html/apotheke/dienstplan-test/.env
 # There is another version of selenium-refresh.php, that fetches fresh data from the
 #   nextcloud to get the newest files under development.
 #   This file here is used in the testing stage within a docker container.
