@@ -2,10 +2,9 @@
 # It serves for development and testing purposes only.
 # Use the official PHP image with Apache
 FROM php:8.0-apache
-
 # Install dependencies for intl extension
 RUN apt-get update && apt-get install -y \
-    libicu-dev \
+    libicu-dev git\
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 # Clean up
@@ -18,6 +17,7 @@ WORKDIR /var/www/html/apotheke/dienstplan-test
 COPY . /var/www/html/apotheke/dienstplan-test
 # remove container secrets
 RUN rm -f /var/www/html/apotheke/dienstplan-test/.env
+RUN git pull origin testing
 # There is another version of selenium-refresh.php, that fetches fresh data from the
 #   nextcloud to get the newest files under development.
 #   This file here is used in the testing stage within a docker container.
