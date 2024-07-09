@@ -3,6 +3,14 @@
 # Use the official PHP image with Apache
 FROM php:8.0-apache
 
+# Install dependencies for intl extension
+RUN apt-get update && apt-get install -y \
+    libicu-dev \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl
+# Clean up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory in the container
 #WORKDIR /var/www/html
 WORKDIR /var/www/html/apotheke/dienstplan-test
@@ -20,29 +28,6 @@ COPY ./tests/selenium-refresh-not.php /var/www/html/apotheke/selenium-refresh.ph
 # Install any needed PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql gettext calendar intl imap
 
-#RUN apt-get update && apt-get install -y \
-#    libicu-dev \
-#    libcurl4-openssl-dev \
-#    libssl-dev \
-#    libpng-dev \
-#    libjpeg-dev \
-#    libfreetype6-dev \
-#    libbz2-dev \
-#    libxslt1-dev \
-#    libmcrypt-dev \
-#    libzip-dev \
-#    zlib1g-dev \
-#    && docker-php-ext-install \
-#    calendar \
-#    ctype \
-#    curl \
-#    gettext \
-#    imap \
-#    intl \
-#    mbstring \
-#    openssl \
-#    pdo \
-#    pdo_mysql
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
