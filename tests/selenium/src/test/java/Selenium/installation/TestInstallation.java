@@ -34,6 +34,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import java.util.Map;
+import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
@@ -75,23 +76,36 @@ public class TestInstallation {
         wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
 
         driver.get(testPageFolderPath);
-        String testPageUrlXPath = "/html/body/table/tbody/tr[5]/td[2]/a";
-        By testPageUrlBy = By.xpath(testPageUrlXPath);
-        WebElement testPageLink = driver.findElement(testPageUrlBy);
-        testPageUrl = testPageLink.getAttribute("href");
+        String testPageUrlPath = "dienstplan-test/";
+        testPageUrl = testPageFolderPath + testPageUrlPath;
         propertyFile.setTestPageUrl(testPageUrl);
-        testPageLink.click();
+        driver.get(testPageUrl);
         /**
          * Start the actual installation process:
          */
-        InstallationPageIntro installationPageIntro = new InstallationPageIntro();
-        InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
-        InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
-        InstallationPageDatabase installationPageDatabase = installationPageRequirements.moveToDatabasePage();
-        installationPageDatabase.fillForm();
-        InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
-        installationPageAdministrator.fillForm();
-        installationPageAdministrator.moveFromAdminPage();
+        try {		
+            System.out.println("InstallationPageIntro");
+            InstallationPageIntro installationPageIntro = new InstallationPageIntro();
+	    System.out.println("InstallationPageWelcome");
+            InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
+            System.out.println("InstallationPageRequirements");
+            InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
+	    System.out.println("InstallationPageDatabase");
+            InstallationPageDatabase installationPageDatabase = installationPageRequirements.moveToDatabasePage();
+            installationPageDatabase.fillForm();
+	    System.out.println("InstallationPageAdministrator");
+            InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
+            installationPageAdministrator.fillForm();
+            installationPageAdministrator.moveFromAdminPage();
+        } catch (Exception exception) {
+            System.out.println("driver.getCurrentUrl()");
+            System.out.println(driver.getCurrentUrl());
+            System.out.println("driver.getPageSource()");
+            System.out.println(driver.getPageSource());
+            Assert.fail();
+	    throw exception;
+        }
+
         /**
          * <p lang=de>
          * Die Anwendung ist installiert. Jetzt ist es Zeit, sie zu

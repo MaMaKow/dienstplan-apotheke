@@ -6,6 +6,10 @@ IMAGE_NAME="dienstplan_selenium"
 # Find the container ID based on the image name
 CONTAINER_ID=$(docker ps -q --filter "ancestor=$IMAGE_NAME")
 
+mkdir -p /tmp/selenium/shared_downloads
+chmod o+w /tmp/selenium/ -R
+chmod o+w /tmp/selenium/shared_downloads -R
+
 # Check if a container was found
 if [ -z "$CONTAINER_ID" ]; then
     echo "No container found for image: $IMAGE_NAME"

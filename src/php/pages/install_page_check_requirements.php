@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'install_head.php';
 require_once '../classes/PDR/Application/Installation/InstallUtility.php';
 require_once '../classes/class.localization.php';
 require_once '../classes/PDR/Utility/GeneralUtility.php';
@@ -45,6 +44,7 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
         $pdrSecretDirectoriesAreNotVisible &&
         $phpExtensionRequirementsAreFulfilled &&
         $phpVersionRequirementIsFulfilled;
+require_once 'install_head.php';
 ?>
 <p><?= gettext("This page is meant to check if:") ?></p>
 <ul>
