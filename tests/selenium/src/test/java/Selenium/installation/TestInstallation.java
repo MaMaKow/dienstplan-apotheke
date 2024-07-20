@@ -34,6 +34,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import java.util.Map;
+import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
@@ -43,7 +44,7 @@ import org.testng.annotations.BeforeMethod;
  *
  * @author Mandelkow
  */
-public class TestInstallation {
+public class TestInstallation extends Selenium.TestPage {
 
     private WebDriver driver;
     private PropertyFile propertyFile;
@@ -84,14 +85,23 @@ public class TestInstallation {
         /**
          * Start the actual installation process:
          */
-        InstallationPageIntro installationPageIntro = new InstallationPageIntro();
-        InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
-        InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
-        InstallationPageDatabase installationPageDatabase = installationPageRequirements.moveToDatabasePage();
-        installationPageDatabase.fillForm();
-        InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
-        installationPageAdministrator.fillForm();
-        installationPageAdministrator.moveFromAdminPage();
+
+        try {
+            InstallationPageIntro installationPageIntro = new InstallationPageIntro();
+            InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
+            InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
+            InstallationPageDatabase installationPageDatabase = installationPageRequirements.moveToDatabasePage();
+            installationPageDatabase.fillForm();
+            InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
+            installationPageAdministrator.fillForm();
+            installationPageAdministrator.moveFromAdminPage();
+        } catch (Exception exception) {
+            System.out.println("driver.getCurrentUrl()");
+            System.out.println(driver.getCurrentUrl());
+            System.out.println("driver.getPageSource()");
+            System.out.println(driver.getPageSource());
+            Assert.fail();
+        }
         /**
          * <p lang=de>
          * Die Anwendung ist installiert. Jetzt ist es Zeit, sie zu

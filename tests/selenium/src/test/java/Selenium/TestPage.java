@@ -57,7 +57,7 @@ public class TestPage {
     public void signIn() {
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
-        String urlPageTest = propertyFile.getUrlPageTest();
+        String urlPageTest = propertyFile.getTestPageUrl();
         driver.get(urlPageTest);
 
         /**
