@@ -63,12 +63,13 @@ public class InstallationPageDatabase {
         PropertyFile propertyFile = new PropertyFile();
         String databaseUserName = propertyFile.getDatabaseUserName();
         String databasePassword = propertyFile.getDatabasePassword();
+        String databaseHostname = propertyFile.getDatabaseHostname();
         String databasePort = propertyFile.getDatabasePort();
         String databaseName = propertyFile.getDatabaseName();
 
         databaseHostFormElement.clear();
         //databaseHostFormElement.sendKeys("localhost");
-        Selenium.driver.Wrapper.CustomSendKeysIE(databaseHostFormElement, "localhost");
+        Selenium.driver.Wrapper.CustomSendKeysIE(databaseHostFormElement, databaseHostname);
         databasePortFormElement.clear();
         databasePortFormElement.sendKeys(databasePort);
         databaseUserFormElement.clear();

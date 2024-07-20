@@ -28,7 +28,6 @@ import Selenium.driver.Wrapper;
 import Selenium.signin.SignInPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
@@ -36,7 +35,6 @@ import org.testng.annotations.Test;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.ITestResult;
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -76,16 +74,13 @@ public class TestInstallation extends Selenium.TestPage {
         wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
 
         driver.get(testPageFolderPath);
-        String testPageUrlXPath = "/html/body/table/tbody/tr[5]/td[2]/a";
-        By testPageUrlBy = By.xpath(testPageUrlXPath);
-        WebElement testPageLink = driver.findElement(testPageUrlBy);
-        testPageUrl = testPageLink.getAttribute("href");
+        String testPageUrlPath = "dienstplan-test/";
+        testPageUrl = testPageFolderPath + testPageUrlPath;
         propertyFile.setTestPageUrl(testPageUrl);
-        testPageLink.click();
+        driver.get(testPageUrl);
         /**
          * Start the actual installation process:
          */
-
         try {
             InstallationPageIntro installationPageIntro = new InstallationPageIntro();
             InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
@@ -101,7 +96,9 @@ public class TestInstallation extends Selenium.TestPage {
             System.out.println("driver.getPageSource()");
             System.out.println(driver.getPageSource());
             Assert.fail();
+            throw exception;
         }
+
         /**
          * <p lang=de>
          * Die Anwendung ist installiert. Jetzt ist es Zeit, sie zu

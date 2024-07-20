@@ -10,6 +10,6 @@ CREATE TABLE IF NOT EXISTS `principle_roster_archive` (
   `comment` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `working_hours` float DEFAULT NULL,
   `branch_id` tinyint(3) unsigned NOT NULL DEFAULT 1,
-  `was_valid_until` date DEFAULT current_timestamp(),
+  `was_valid_until` date DEFAULT (CURRENT_DATE),
   PRIMARY KEY (`primary_key`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
