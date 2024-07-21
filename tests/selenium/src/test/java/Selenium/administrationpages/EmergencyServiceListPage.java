@@ -28,6 +28,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -168,10 +169,12 @@ public class EmergencyServiceListPage {
     }
 
     public EmergencyServiceListPage addLineForDate(LocalDate localDate) {
+        Actions actions = new Actions(driver);
         WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
-        //dateInputElement.sendKeys(localDate.format(DateTimeFormatter.ofPattern("dd.MM")));
+        actions.moveToElement(dateInputElement).perform();
         Wrapper.fillDateInput(dateInputElement, localDate);
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
+        actions.moveToElement(submitButton).perform();
         submitButton.click();
         return new EmergencyServiceListPage(driver);
     }
