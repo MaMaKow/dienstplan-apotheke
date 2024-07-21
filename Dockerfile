@@ -38,11 +38,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     mariadb-client vim \
     && docker-php-ext-configure intl \
-    && docker-php-ext-install intl 
+    && docker-php-ext-install intl
 
 # Docker PHP extensions
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    docker-php-ext-install imap pdo pdo_mysql gettext calendar  
+    docker-php-ext-install imap pdo pdo_mysql gettext calendar
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -53,7 +53,7 @@ WORKDIR /var/www/html/apotheke/dienstplan-test
 COPY . /var/www/html/apotheke/dienstplan-test
 # remove container secrets
 RUN rm -f /var/www/html/apotheke/dienstplan-test/.env
-RUN git config pull.rebase false 
+RUN git config pull.rebase false
 RUN git pull origin testing
 # There is another version of selenium-refresh.php, that fetches fresh data from the
 #   nextcloud to get the newest files under development.
@@ -96,9 +96,8 @@ RUN a2ensite default-ssl
 # Set the correct permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Expose ports 80 and 443
+# Expose port 443
 EXPOSE 443
-#EXPOSE 80 443
 
 # Start Apache in the foreground
 CMD ["apache2-foreground"]
