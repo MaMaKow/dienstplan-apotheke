@@ -44,19 +44,13 @@ import org.testng.annotations.BeforeMethod;
  */
 public class TestInstallation extends Selenium.TestPage {
 
-    private WebDriver driver;
-    private PropertyFile propertyFile;
-    /**
-     * <p lang=de>
-     * Diese URL wird aus der apache Seite für Ordner ohne index.html
-     * ausgelesen. z.B.
-     * https://your-host.com/development/testing/dienstplan-test-0_14_0_899_gba26b727b1e29aede593fa5066b003982bc19c16/
-     * </p>
-     */
     private String testPageUrl;
-    public String packageName;
-    public String className;
-    public String methodName;
+
+    @Test(dependsOnMethods = {"testInstallation"})
+    @Override
+    public void signIn() {
+        super.signIn();
+    }
 
     @Test(enabled = true)/*passed*/
     public void testInstallation() throws Exception {
@@ -68,20 +62,19 @@ public class TestInstallation extends Selenium.TestPage {
          * fresh pdr instance into testPageFolderPath. The state will be exactly
          * like in the nextcloud.
          */
-        driver.get(testPageFolderPath + "selenium-copy.php");
-        By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
-
-        driver.get(testPageFolderPath);
-        String testPageUrlPath = "dienstplan-test/";
-        testPageUrl = testPageFolderPath + testPageUrlPath;
-        propertyFile.setTestPageUrl(testPageUrl);
-        driver.get(testPageUrl);
-        /**
-         * Start the actual installation process:
-         */
         try {
+            driver.get(testPageFolderPath + "selenium-copy.php");
+            By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
+
+            String testPageUrlPath = "dienstplan-test/";
+            testPageUrl = testPageFolderPath + testPageUrlPath;
+            propertyFile.setTestPageUrl(testPageUrl);
+            driver.get(testPageUrl);
+            /**
+             * Start the actual installation process:
+             */
             InstallationPageIntro installationPageIntro = new InstallationPageIntro();
             InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
             InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
@@ -126,24 +119,5 @@ public class TestInstallation extends Selenium.TestPage {
             branchAdministrationPageForLambda.createNewBranch(branchObject);
         });
 
-    }
-
-    @BeforeMethod
-    public void setUpMethod(ITestResult result) {
-        // Print the name of the class and the currently executing test method to the log file
-        packageName = this.getClass().getPackageName();
-        className = this.getClass().getSimpleName();
-        methodName = result.getMethod().getMethodName();
-        System.err.println("Package: " + packageName + ", Class: " + className + ", Method: " + methodName);
-    }
-
-    @AfterMethod
-    public void tearDown(ITestResult testResult) {
-        driver = Selenium.driver.Wrapper.getDriver();
-        ScreenShot screenshot = new ScreenShot();
-        screenshot.takeScreenShot(packageName, className, methodName);
-        if (testResult.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
-        }
     }
 }

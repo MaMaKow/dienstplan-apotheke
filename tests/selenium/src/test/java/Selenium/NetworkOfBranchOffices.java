@@ -82,8 +82,9 @@ public class NetworkOfBranchOffices {
             // create a reader
             reader = Files.newBufferedReader(Paths.get("networkOfBranchOffices.json"));
             // convert JSON string to Branch object
-            ArrayList<Branch> branches = new Gson().fromJson(reader, new TypeToken<ArrayList<Branch>>() {
-            }.getType());
+            ArrayList<Branch> branches = new Gson()
+                    .fromJson(reader, new TypeToken<ArrayList<Branch>>() {
+                    }.getType());
             branches.forEach(branch -> {
                 listOfBranches.put(branch.getBranchId(), branch);
             });
@@ -97,7 +98,6 @@ public class NetworkOfBranchOffices {
             }
         }
         return listOfBranches;
-
     }
 
     private static void writeToFile() {

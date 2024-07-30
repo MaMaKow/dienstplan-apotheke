@@ -37,6 +37,9 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     mariadb-client vim \
+    locales \
+    && echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 

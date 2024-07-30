@@ -105,7 +105,15 @@ public class TestRosterDayEditPage extends TestPage {
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (Map.Entry<LocalDate, HashMap> listOfRosterDaysEntrySet : listOfRosterDays.entrySet()) {
             LocalDate localDate = listOfRosterDaysEntrySet.getKey();
-            rosterDayEditPage.goToDate(localDate);
+            try {
+                rosterDayEditPage.goToDate(localDate);
+            } catch (Exception exception) {
+                System.out.println("driver.getCurrentUrl()");
+                System.out.println(driver.getCurrentUrl());
+                System.out.println("driver.getPageSource()");
+                System.out.println(driver.getPageSource());
+                throw exception;
+            }
             assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString());
             HashMap<Integer, RosterItem> listOfRosterItems = listOfRosterDaysEntrySet.getValue();
             listOfRosterItems.values().forEach(rosterItem -> {

@@ -68,7 +68,6 @@ public class TestPage {
         String pdr_user_name = propertyFile.getPdrUserName();
         HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
         Assert.assertEquals(homePage.getUserNameText(), pdr_user_name);
-
     }
 
     public void realSignIn() {
@@ -99,9 +98,9 @@ public class TestPage {
         /**
          * Refresh the page contents from the nextcloud data:
          */
-        String testPageFolderPath = propertyFile.getUrlInstallTest();
-        driver.get(testPageFolderPath + "selenium-refresh.php");
         try {
+            String testPageFolderPath = propertyFile.getUrlInstallTest();
+            driver.get(testPageFolderPath + "selenium-refresh.php");
             By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
             WebDriverWait wait = new WebDriverWait(driver, 20);
             wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));

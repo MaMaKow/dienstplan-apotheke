@@ -14,7 +14,8 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-
+  #This database does not need volumes. Data shall not be persisted.
+  #  Tests are carried out with fresh data on every run.
   db:
     image: mysql:8.4
     environment:
@@ -22,3 +23,4 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command: --general-log --general-log-file=/var/lib/mysql/general.log

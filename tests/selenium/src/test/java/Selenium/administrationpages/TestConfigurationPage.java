@@ -41,9 +41,19 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Set locales
          */
-        configurationPage.setLocales("de_DE.utf8");
-        configurationPage.submitForm();
-        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        try {
+            configurationPage.setLocales("de_DE.utf8");
+            configurationPage.submitForm();
+            Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+            System.out.println("driver.getCurrentUrl()");
+            System.out.println(driver.getCurrentUrl());
+            System.out.println("driver.getPageSource()");
+            System.out.println(driver.getPageSource());
+            Assert.fail();
+            throw exception;
+        }
         /**
          * Set Name for Page
          */
@@ -68,7 +78,7 @@ public class TestConfigurationPage extends TestPage {
          * Check the expected values:
          */
         Assert.assertEquals(configurationPage.getApplicationName(), "Selenium Test Plan");
-        Assert.assertEquals(configurationPage.getDatabaseName(), "pdrTest");
+        Assert.assertEquals(configurationPage.getDatabaseName(), propertyFile.getDatabaseName());
         /**
          * The password MUST NOT be visible!
          */
@@ -76,7 +86,7 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Contact email
          */
-        Assert.assertTrue(configurationPage.getContactEmail().contains("selenium@"));
+        Assert.assertEquals(configurationPage.getContactEmail(), propertyFile.getAdministratorEmail());
         /**
          * Language and encoding
          */
