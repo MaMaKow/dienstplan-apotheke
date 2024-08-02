@@ -137,7 +137,7 @@ fi
 git push origin
 git push origin --tags
 
-read -p "Is this branch ready for TESTING branch? [y/n] " -N 1 decision_testing;
+read -p "Is this branch ready for TESTING branch? [y/n] " -n 1 decision_testing;
 if [ "y" != "$decision_testing" ] && [ "Y" != "$decision_testing" ]
 then
     error_exit "Branch is not ready for testing yet.";
