@@ -102,7 +102,7 @@ $session->exit_on_missing_privilege('create_employee');
             </p>
         </fieldset>
 
-        <input type=submit id=save_new class='no_print' name=submitStunden value='<?= gettext("Register") ?>' form='human_resource_management'>
+        <input type=submit id=save_new class='no_print' name=save-employee value='<?= gettext("Save Employee") ?>' form='human_resource_management'>
 
     </form>
 </div>

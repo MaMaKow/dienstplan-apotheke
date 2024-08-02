@@ -37,11 +37,13 @@ echo "patch: $current_version_patch";
 # Zeilennummern aus po-Datei entfernen
 # Pfad zur messages.po-Datei:
 po_file="./locale/de_DE/LC_MESSAGES/messages.po"
+mo_file="./locale/de_DE/LC_MESSAGES/messages.mo"
 # Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
 sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
 sed -i 's/\(#:[[:space:]]*[^0-9]*:\)[0-9]*/\1/' "$po_file"
 echo "In Kommentaren wurden Zeilenangaben aus der $po_file-Datei entfernt."
 git add "$po_file"
+git add "$mo_file"
 
 # echo "Writting current state of the database structure into the src/sql/ folder";
 # php "tests\get-database-structure.php";

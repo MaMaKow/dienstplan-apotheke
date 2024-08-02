@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2024-07-31 16:36+0200\n"
-"PO-Revision-Date: 2024-07-31 16:36+0200\n"
+"POT-Creation-Date: 2024-08-03 00:30+0200\n"
+"PO-Revision-Date: 2024-08-03 00:34+0200\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -151,16 +151,12 @@ msgid "Sorry, your file does not have the correct format."
 msgstr "Entschuldigung, Ihre Datei hat nicht das korrekte Format."
 
 #: src/php/classes/PDR/Input/PepUploadHandler.php:
-#, fuzzy
-#| msgid "Sorry, only ASYS PEP files are allowed."
 msgid "Sorry, only awinta and ADG PEP files are allowed."
-msgstr "Leider sind nur ASYS PEP-Dateien erlaubt."
+msgstr "Leider sind nur ASYS und ADG PEP-Dateien erlaubt."
 
 #: src/php/classes/PDR/Input/PepUploadHandler.php:
-#, fuzzy
-#| msgid "Please upload a valid ASYS PEP file!"
 msgid "Please upload a valid PEP file!"
-msgstr "Bitte eine korrekt formatierte ASYS PEP Datei hochladen!"
+msgstr "Bitte eine korrekt formatierte PEP Datei hochladen!"
 
 #: src/php/classes/PDR/Input/PepUploadHandler.php:
 msgid "Sorry, your file could not be opened."
@@ -1403,8 +1399,8 @@ msgid "This is the last day the employee worked."
 msgstr "Dies ist der letzte Tag, an dem der Mitarbeiter gearbeitet hat."
 
 #: src/php/pages/human-resource-management.php:
-msgid "Register"
-msgstr "Registrieren"
+msgid "Save Employee"
+msgstr "Mitarbeitende speichern"
 
 #: src/php/pages/install_page_admin.php:
 msgid "Administrator configuration"
@@ -1419,8 +1415,6 @@ msgid "Contact email address"
 msgstr "E-Mail-Adresse der Kontaktperson"
 
 #: src/php/pages/install_page_admin.php:
-#, fuzzy
-#| msgid "Administrator password"
 msgid "Administrator passphrase"
 msgstr "Administration Passphrase"
 
@@ -1429,8 +1423,6 @@ msgid "Please enter a password with a minimum length of 8 characters."
 msgstr "Bitte wählen Sie eine Passphrase mit mindestens 8 Zeichen."
 
 #: src/php/pages/install_page_admin.php:
-#, fuzzy
-#| msgid "Confirm administrator password"
 msgid "Confirm administrator passphrase"
 msgstr "Admin Passphrase bestätigen"
 
@@ -1933,20 +1925,14 @@ msgid "Privileges"
 msgstr "Privilegien"
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid "The password was not correct."
 msgid "The passphrase was not correct."
 msgstr "Die Passphrase war nicht korrekt."
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid "The passwords must match!"
 msgid "The passphrases must match!"
 msgstr "Die Passphrasen müssen übereinstimmen!"
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid "The password was successfully changed."
 msgid "The passphrase was successfully changed."
 msgstr "Ihre Passphrase wurde erfolgreich geändert."
 
@@ -1969,28 +1955,18 @@ msgstr ""
 "Mail pro Tag gesendet."
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid "Change password"
 msgid "Change passhrase"
 msgstr "Passphrase ändern"
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid "Passphrase"
 msgid "Old passphrase"
-msgstr "Passphrase"
+msgstr "Alte Passphrase"
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid "Repeat passphrase"
 msgid "New passphrase"
-msgstr "Passphrase wiederholen"
+msgstr "Neue Passphrase"
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid ""
-#| "A secure password should be at least 8 characters long and not listed in "
-#| "any dictionary."
 msgid ""
 "A secure passphrase should be at least 8 characters long and not listed in "
 "any dictionary."
@@ -1999,8 +1975,6 @@ msgstr ""
 "Wörterbuch aufgeführt sein."
 
 #: src/php/pages/user-page.php:
-#, fuzzy
-#| msgid "Repeat passphrase"
 msgid "Repeat new passphrase"
 msgstr "Passphrase wiederholen"
 
@@ -2074,6 +2048,9 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 #: tests/get-database-structure.php:
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
+
+#~ msgid "Register"
+#~ msgstr "Registrieren"
 
 #~ msgid "Old password"
 #~ msgstr "Alte Passphrase"

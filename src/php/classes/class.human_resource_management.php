@@ -38,7 +38,7 @@ abstract class human_resource_management {
     }
 
     public static function write_employee_data_to_database() {
-        if (filter_input(INPUT_POST, "submitStunden", FILTER_SANITIZE_SPECIAL_CHARS)) {
+        if (filter_input(INPUT_POST, "save-employee", FILTER_SANITIZE_SPECIAL_CHARS)) {
             $Worker["employee_key"] = filter_input(INPUT_POST, "employee_key", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
             $Worker["first_name"] = filter_input(INPUT_POST, "first_name", FILTER_SANITIZE_SPECIAL_CHARS);
             $Worker["last_name"] = filter_input(INPUT_POST, "last_name", FILTER_SANITIZE_SPECIAL_CHARS);
