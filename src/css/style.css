@@ -7,6 +7,8 @@ Our main colors were picked by and from http://www.colorsontheweb.com/colorwizar
 #B4B4B4, ?,  grey
 #ECE7E8, small boxes, light grey
 #E6828B; alert, red
+The ids of elements SHOULD be written in #camelCase.
+The names of classes SHOULD be written in .kebab-case.
 */
 @media screen {
     div
@@ -50,10 +52,10 @@ tfoot {
     border-top-width: 1px;
 }
 
-table.table_with_border td {
+table.table-with-border td {
     border: solid 1px #000000;
 }
-table.table_with_underline_rows tr  {
+table.table-with-underline-rows tr  {
     border-bottom: 0.5px solid black;
 }
 
@@ -67,7 +69,7 @@ th {
     border-bottom: solid black;
 }
 
-td.absentees_column {
+td.absentees-column {
     white-space: normal;
     font-size: smaller;
 }
@@ -81,7 +83,7 @@ a:hover {
     text-decoration: underline;
 }
 
-.only_print {
+.only-print {
     display: none;
 }
 
@@ -94,20 +96,20 @@ div.foot {
 }
 
 @media screen and (min-width: 931px) {
-    div#main_area_centered {
+    div#mainAreaCentered {
         text-align: center;
         padding: 10px;
         border: 3px solid #73AC22;
         max-width: 50%;
         margin: auto;
     }
-    div#main_area_centered * {
+    div#mainAreaCentered * {
         margin: auto;
     }
 }
 
 @media screen and (max-width: 930px) {
-    div#main_area_centered {
+    div#mainAreaCentered {
         text-align: center;
         padding: 10px;
         border: 3px solid #73AC22;
@@ -121,7 +123,7 @@ main {
     padding: 1em;
 }
 
-div#main-area {
+div#mainArea {
     /*
     width: 95%;
     overflow: auto;
@@ -135,7 +137,7 @@ div#main-area {
     padding-top: 8px;
 }
 
-table#duty_roster_table {
+table#dutyRosterTable {
     /*
     width: 85%;
 
@@ -143,26 +145,18 @@ table#duty_roster_table {
     */
 }
 
-div#table_overlay_area {
+div#tableOverlayArea {
     /*
     width: 100%;
     */
     position: relative;
 }
 
-div.roster_plot_div {
-    position: relative;
-    float: left;
-    overflow:auto;
-    /*	width: 60%;*/
-    /*	max-height: 60%;*/
-}
-
 img.inline-image {
     height: 0.9em;
 }
 
-img.roster_input_row_add_row_image {
+img.roster-input-row-add-row-image {
     width: 2em;
 }
 
@@ -199,7 +193,7 @@ div.overlay:hover
     opacity: 0.2;
     z-index: -10;
 }
-div.user_dialog_container {
+div.user-dialog-container {
     max-height: 30vh; /* 30% of the viewport height */
     overflow-y: auto; /* Add a vertical scrollbar when content exceeds the max-height */
     position: relative;
@@ -208,7 +202,7 @@ div.user_dialog_container {
     max-width: 650px;
     margin: 1em;
 }
-div.user_dialog_container div {
+div.user-dialog-container div {
     /*
     padding-right: 2em;
     */
@@ -219,84 +213,55 @@ div.user_dialog_container div {
     margin-bottom: 0em;
     z-index: 10;
 }
-div.user_dialog_container div p{
+div.user-dialog-container div p{
     padding-top: 0.3em;
     padding-bottom: 0.3em ;
-    /*
-    */
 }
-div.user_dialog_container div.error {
+div.user-dialog-container div.error {
     background-color: #73AC22;
     font-size: xx-large;
     font-family: monospace;
 }
-div.user_dialog_container div.error a {
+div.user-dialog-container div.error a {
     color: #B4B4B4;
 }
-div.user_dialog_container div.warning {
+div.user-dialog-container div.warning {
     background-color: #BDE682;
     font-size: large;
     font-family: sans-serif;
 }
-div.user_dialog_container div.notification {
+div.user-dialog-container div.notification {
     background-color: #ECE7E8;
     font-size: medium;
     font-family: serif;
 }
-div.user_dialog_container div pre * {
+div.user-dialog-container div pre * {
     color: black;
 }
 
-div.error_container
-{
-    position: relative;
-    float: right;
-    top:0;
-    max-width: 650px;
-}
-
-div.errormsg
-{
-    background-color: #73AC22;
-    padding: 0px 15px 0px 15px;
-    margin: 0px 15px 1em 0px;
-    z-index: 10;
-}
-
-div.warningmsg
-{
-    position: relative;
-    top:0;
-    float: left;
-    background-color: #BDE682;
-    padding: 0px 15px 0px 15px;
-    margin: 0px 15px 1em 0px;
-    z-index: 10;
-}
-
-nav#nav {
+nav#mainNavigation {
     display: inline-block;
     width: 100%;
     background-color: #BDE682;
 }
 
-nav ul#navigation {
+nav ul#navigationList {
     list-style-type: none;
     display: block;
     margin: 0;
     padding: 0;
 }
 
-nav ul#navigation li {
-    height: 2em; /*is equal to {nav ul#navigation li a}[line-height]*/
+nav ul#navigationList li {
+    height: 2em; /*is equal to {nav ul#navigationList li a}[line-height]*/
     float: left;
 }
 
-nav ul#navigation li:last-child a {
+nav ul#navigationList li:last-child a {
     font-style: italic;
 }
 
-nav ul#navigation li p, nav ul#navigation li span, nav ul#navigation li a {
+nav ul#navigationList li p, nav ul#navigationList li span, nav ul#navigationList li a {
     vertical-align: central;
     border-left: 1px solid #73AC22;
     display: inline-block;
@@ -305,19 +270,19 @@ nav ul#navigation li p, nav ul#navigation li span, nav ul#navigation li a {
     color: #000000;
     padding-left: 0.5em;
     padding-right: 0.5em;
-    line-height: 2em; /*is equal to {nav ul#navigation li}[height]*/
+    line-height: 2em; /*is equal to {nav ul#navigationList li}[height]*/
 }
 
-ul#navigation li a:hover {
+ul#navigationList li a:hover {
     background-color: #73AC22;
     color: #FFFFFF;
 }
 
-nav ul#navigation li:hover > ul {
+nav ul#navigationList li:hover > ul {
     display: block;
 }
 
-ul#navigation ul, ul#navigation ul li ul{
+ul#navigationList ul, ul#navigationList ul li ul{
     display: none;
     position: absolute;
     list-style-type: none;
@@ -326,12 +291,12 @@ ul#navigation ul, ul#navigation ul li ul{
     z-index:  20;
 }
 
-ul#navigation ul li {
+ul#navigationList ul li {
     clear: both;
     width: 100%;
 }
 
-ul#navigation ul li a {
+ul#navigationList ul li a {
     font-style: inherit !important;
     display: inline-block;
     float: left;
@@ -362,7 +327,7 @@ img.worker-img:hover {
     margin-bottom: 1em;
 }
 
-.size_medium, .size_medium * {
+.size-medium, .size-medium * {
     font-size: medium;
 }
 
@@ -431,14 +396,14 @@ img.button-image
     max-width: 2em;
 }
 
-.button_small {
+.button-small {
     width: 2em;
     height: 2em;
     margin: 0px;
     padding: 0.15em;
 }
 
-.button_small > img {
+.button-small > img {
     height: 100%;
     vertical-align: top;
 }
@@ -497,7 +462,7 @@ button:disabled, .btn-secondary:disabled {
                           not supported by any browser */
 }
 
-div#weekly_rotation {
+div#weeklyRotation {
     font-family: monospace;
     font-size: smaller;
     /*
@@ -506,17 +471,17 @@ div#weekly_rotation {
     */
 }
 
-div#print_time_info {
+div#printTimeInfo {
     position:  absolute;
     bottom: 0em;
     right: 0em;
 }
 
-div#roster_week_image_div {
+div#rosterWeekImageDiv {
     page-break-inside: avoid;
 }
 
-div#week_hours_table_div {
+div#weekHoursTableDiv {
     font-family: monospace;
     font-size: smaller;
     /*
@@ -529,12 +494,12 @@ table.tight tr td {
     padding-bottom: 0em;
 }
 
-.left_float_pool * {
+.left-float-pool * {
     float: left;
     margin-right: 1em;
 }
 
-#branch_form {
+#branchForm {
     margin-right: 1em;
     float: left;
     /*
@@ -548,34 +513,30 @@ div#bottom
     bottom: 0;
 }
 
-#roster_form, #navigation_form, #principle_roster_form {
+#rosterForm, #principleRosterForm {
     float: left;
     clear: left;
 }
 
-#week_day_form{
+#weekdayForm{
     margin-right: 1em;
     float: left;
 }
 
-#navigation_form_div
+#navigationFormDiv
 {
     float: left;
     clear: left;
 }
-div#duty_roster_table_div
+div#dutyRosterTableDiv
 {
     float: left;
     clear: left;
 }
-div#duty_roster_table_div td {
+div#dutyRosterTableDiv td {
     white-space: normal;
 }
 
-div#duty_roster_table_div span.duty_roster_table_lunch_break_span {
-    white-space: nowrap;
-    font-size: smaller;
-}
 /*
  * tag-in.php
  * -->
@@ -587,10 +548,10 @@ div.image {
     margin-top: 1em;
     float: left;
 }
-div.image p{
+div.image p {
     margin-bottom: 0em;
 }
-div.image div.image_part {
+div.image div.image-part {
     /*
     border: black  dashed 2px;
     */
@@ -603,26 +564,26 @@ div.image div.image_part {
  */
 
 @media screen and (max-width: 628px) {
-    #duty_roster_table_div {
+    #dutyRosterTableDiv {
         width: 100%
     }
-    #roster_image_div{
+    #rosterImageDiv{
         width: 100%;
     }
-    #roster_image_div svg, #roster_image_div canvas{
+    #rosterImageDiv svg, #rosterImageDiv canvas{
         width: 100%;
         border: 0;
     }
 }
 @media screen and (min-width: 629px) {
-    #duty_roster_table_div {
+    #dutyRosterTableDiv {
         max-width: 45%;
     }
-    #roster_image_div{
+    #rosterImageDiv{
         float: right;
         width: 54%;
     }
-    #roster_image_div svg, #roster_image_div canvas{
+    #rosterImageDiv svg, #rosterImageDiv canvas{
         width: 99%;
         /*
         border: 1px solid #000000;
@@ -630,7 +591,7 @@ div.image div.image_part {
     }
 }
 
-nav#nav_tiles{
+nav#navigationTiles{
     background-color: #BDE682;
     /*
     width: 100%;
@@ -639,30 +600,30 @@ nav#nav_tiles{
     margin: auto;
     margin-top: 2em;
 }
-nav#nav_tiles ul#navigation_tiles {
+nav#navigationTiles ul#navigationListTiles {
     list-style-type: none;
     display: block;
     margin: 0;
     padding: 0;
 
 }
-nav ul#navigation_tiles li {
+nav ul#navigationListTiles li {
     float: left;
     border: 1px solid black;
     margin: 16px;
 }
-nav ul#navigation_tiles li:hover {
+nav ul#navigationListTiles li:hover {
     background-color: #73AC22;
     color: #FFFFFF;
 }
-nav ul#navigation_tiles li:hover a img.image_tiles{
+nav ul#navigationListTiles li:hover a img.image-tiles{
     -webkit-filter: brightness(0) invert(100%);
     -moz-filter: brightness(0) invert(100%);
     -ms-filter: brightness(0) invert(100%);
     -o-filter: brightness(0) invert(100%);
     filter: brightness(0) invert(100%);
 }
-nav ul li a img.image_tiles{
+nav ul li a img.image-tiles{
     height: 128px;
     width: 128px;
 }
@@ -683,63 +644,34 @@ table tr td input#stunden{
  * The following lines are added for src/php/pages/branch-management.php
  * -->
  */
-div#form_buttons_container{
+div#formButtonsContainer{
     overflow:  auto;
 }
-button.form_button{
+button.form-button{
     width: 10em;
     padding-left: 0em;
     padding-right: 0em;
     margin-bottom: 1em;
 }
-button.form_button img{
+button.form-button img{
     max-width: 2em;
     max-height: 2em;
     /*
     float:  right;
     */
 }
-button.form_button p{
+button.form-button p{
     font-size: larger;
 }
-div#branch_management_form_div{
+div#branchManagementFormDiv{
     clear:  both;
-    /*
-    float: left;
-    */
 }
-div.overlay_top
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    /*
-    left: 25%;
-    top:25%;
-    margin-top: 1.2em;
-    */
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /*
-    float: left;
-    clear: both;
-    */
-    background-color: #73AC22;
-    z-index: 99;
-}
-/*
- * <--
- * The above lines are added for src/php/pages/branch-management.php
- */
 
 /*
  * The following lines are added for absence-edit.php
  * -->
  */
-
-tr.absence_row[data-approval='approved'] {
+tr.absence-row[data-approval='approved'] {
     color: green;
 }
 /*
@@ -748,29 +680,10 @@ tr.absence_row[data-approval='approved'] {
  */
 
 /*
- * The below lines are added for image_histogram
- * -->
- */
-#canvas_histogram{
-    /*
-    background-color: blue;
-    border-style: solid;
-    border-width: 5px;
-    border-color: green;
-    float: left;
-    clear: both;
-    */
-}
-/*
- * <--
- * The above lines are added for image_histogram
- */
-
-/*
  * The below lines are added for human-resource-management
  * -->
  */
-.nowrap{
+.no-wrap{
     white-space: nowrap;
 }
 /*
@@ -781,18 +694,18 @@ tr.absence_row[data-approval='approved'] {
  * The below lines are added for all sites containing build_html_navigation_elements
  * -->
  */
-div#navigation_elements {
+div#navigationElements {
     width: 100%; /*make sure, that there is nothing right of the navigation bar*/
     float: left;
     clear: both;
 }
-.inline_form {
+.inline-form {
     display: inline;
 }
-.inline_element {
+.inline-element {
     display: inline;
 }
-.inline_block_element {
+.inline-block-element {
     display: inline-block;
 }
 /*
@@ -800,10 +713,10 @@ div#navigation_elements {
  * The above lines are added for all sites containing build_html_navigation_elements
  */
 
-svg.svg_img {
+svg.svg-img {
     cursor: default;
 }
-svg.svg_img foreignObject p {
+svg.svg-img foreignObject p {
     margin-top: 0px;
     box-shadow: inset 0 0 0 1000px #B4B4B4;
     /*
@@ -811,27 +724,27 @@ svg.svg_img foreignObject p {
      */
     cursor: move;
 }
-svg.svg_img g g rect.Apotheker, svg.svg_img g g rect.PI {
+svg.svg-img g g rect.Apotheker, svg.svg-img g g rect.PI {
     margin-top: 0px;
     fill: #73AC22;
 }
-svg.svg_img g g rect.PTA {
+svg.svg-img g g rect.PTA {
     margin-top: 0px;
     fill: #BDE682;
 }
-svg.svg_img g g rect  {
+svg.svg-img g g rect  {
     margin-top: 0px;
     fill: #B4B4B4;
 }
-svg.svg_img g g rect.selected {
+svg.svg-img g g rect.selected {
     color: white;
 }
 
-svg.svg_img g g text tspan {
+svg.svg-img g g text tspan {
     float: right;
 }
 
-svg.svg_img g.break_box rect {
+svg.svg-img g.break-box rect {
     fill: #FEFEFF;
     cursor: cell;
     stroke: black;
@@ -839,22 +752,22 @@ svg.svg_img g.break_box rect {
 
 }
 
-svg.svg_img line.grid_line {
+svg.svg-img line.grid-line {
     stroke-dasharray:1, 8;
     stroke:black;
     stroke-width:2;
 }
-svg.svg_img line.grid_line_secondary {
+svg.svg-img line.grid-line-secondary {
     stroke-dasharray:1, 16;
     stroke:black;
     stroke-width:2;
 }
 
-body table tbody tr.branch_roster_title_tr th{
+body table tbody tr.branch-roster-title-tr th{
     padding-top: 1em;
     font-size: x-large;
 }
-body div#week_hours_table_div p span {
+body div#weekHoursTableDiv p span {
     margin-right: 1em;
     white-space: nowrap;
 }
@@ -868,35 +781,28 @@ select[id^='reason_in_'], select[id^='absence_in_']{
 /*
  * build_html_roster_views::build_roster_readonly_table
  */
-span.vertical_spacer {
+span.horizontal-spacer {
     margin-left: 1em;
 }
 
-table#duty_roster_table tr td span.employee_and_hours {
+table#dutyRosterTable tr td span.employee-and-hours {
     display: inline-block;
     min-width: 8em;
 }
-table#duty_roster_table tr td span.break_time,
-table#duty_roster_table tr td span.duty_time,
-table#duty_roster_table tr td span.employee_and_hours {
+table#dutyRosterTable tr td span.break-time,
+table#dutyRosterTable tr td span.duty-time,
+table#dutyRosterTable tr td span.employee-and-hours {
     /*
      * display: inline-block; works like an optional white-space: nowrap;
      */
     display: inline-block;
 }
-div.remaining_holidays {
+div.remaining-holidays {
     clear: left;
 }
-div.remaining_holidays p span {
 
-}
-
-img.example_artwork {
+img.example-artwork {
     /*Relevant for list_of_artwork.php*/
     height: 32px;
     margin-top: 1em;
-}
-
-p#hidden_on_load {
-    display: none;
 }

@@ -108,22 +108,22 @@ $user_dialog = new user_dialog;
 echo $user_dialog->build_messages();
 //Hier beginnt die Normale Ausgabe.
 echo "<H1>" . gettext('Principle roster daily') . "</H1>\n";
-echo "<div id=main-area>\n";
+echo "<div id=mainArea>\n";
 echo build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_object->format('Y-m-d'));
 //Auswahl des Wochentages
 echo build_html_navigation_elements::build_select_weekday($weekday);
 echo build_html_navigation_elements::build_select_alternating_week($alternating_week_id, $weekday, clone $date_object);
 echo build_html_navigation_elements::build_button_principle_roster_copy($alternating_week_id);
 echo build_html_navigation_elements::build_button_principle_roster_delete($alternating_week_id);
-echo "<div id=navigation_elements>";
+echo "<div id=navigationElements>";
 /*
  * TODO: Make it work:
  */
 
-echo build_html_navigation_elements::build_button_submit('principle_roster_form');
+echo build_html_navigation_elements::build_button_submit('principleRosterForm');
 echo "</div>\n";
 $html_text = '';
-$html_text .= "<form accept-charset='utf-8' id=principle_roster_form method=post>\n";
+$html_text .= "<form accept-charset='utf-8' id=principleRosterForm method=post>\n";
 $html_text .= "<script> "
         . " var Roster_array = " . json_encode($Principle_roster, JSON_UNESCAPED_UNICODE) . ";\n"
         . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
@@ -145,7 +145,7 @@ $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 echo $html_text;
 if (!empty($Principle_roster)) {
-    echo "<div class=image_group_container>\n";
+    echo "<div class=image-group-container>\n";
     echo "<div class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);
     echo $roster_image_bar_plot->svg_string;

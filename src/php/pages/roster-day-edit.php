@@ -149,12 +149,12 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 $html_text = "";
-$html_text .= "<div id=main-area>\n";
-$html_text .= "<div id=navigation_elements>";
+$html_text .= "<div id=mainArea>\n";
+$html_text .= "<div id=navigationElements>";
 $html_text .= build_html_navigation_elements::build_button_day_backward(clone $dateObject);
 $html_text .= build_html_navigation_elements::build_button_day_forward(clone $dateObject);
 if ($session->user_has_privilege('create_roster')) {
-    $html_text .= build_html_navigation_elements::build_button_submit('roster_form');
+    $html_text .= build_html_navigation_elements::build_button_submit('rosterForm');
 }
 if ($session->user_has_privilege('approve_roster')) {
     $approval = roster_approval::get_approval($date_sql, $branch_id);
@@ -163,14 +163,14 @@ if ($session->user_has_privilege('approve_roster')) {
     $html_text .= build_html_navigation_elements::build_button_disapproval($approval);
 }
 $html_text .= build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/roster-day-read.php', array('datum' => $date_sql));
-$html_text .= "</div><!-- id=navigation_elements -->\n";
+$html_text .= "</div><!-- id=navigationElements -->\n";
 $html_text .= build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 /*
  * Here we put the output of errors and warnings.
  */
 $html_text .= $user_dialog->build_messages();
-$html_text .= "<form accept-charset='utf-8' id='roster_form' method=post>\n";
+$html_text .= "<form accept-charset='utf-8' id='rosterForm' method=post>\n";
 $html_text .= "<script> "
         . " var Roster_array = " . json_encode($Roster, JSON_UNESCAPED_UNICODE) . ";\n"
         . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
@@ -260,7 +260,7 @@ if (!empty($Roster)) {
     $html_text .= "</div><!-- class=image -->\n";
 }
 $html_text .= task_rotation::build_html_task_rotation_select('Rezeptur', $date_sql, $branch_id);
-$html_text .= "</div><!-- id=main-area -->";
+$html_text .= "</div><!-- id=mainArea -->";
 echo "$html_text";
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';

@@ -19,37 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
-form.change_principle_roster_employee_form {
+form.change-principle-roster-employee-form {
     border: 5px solid #BDE682;
     margin-bottom: 1em;
     padding: 1em 1em 1em 1em;
 }
-form.change_principle_roster_employee_form:last-child {
+form.change-principle-roster-employee-form:last-child {
     margin-bottom: 0em;
 }
-input.toggle_switch:not(:checked) ~ form.change_principle_roster_employee_form.hidden {
-    /*visibility: hidden;*/
-    margin: 0;
-    padding: 0;
-    border: none;
-    visibility: collapse;
-    height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: all 2s;
-}
-input.toggle_switch:checked ~ form.change_principle_roster_employee_form.hidden {
-    /*
-    height: auto;
-    overflow: auto;
-    */
-    visibility: visible;
-    opacity: 1;
-
-    transition: visibility 2s;
-    transition: opacity 2s;
-}
-div.principle_roster_alternation_container {
+div.principle-roster-alternation-container {
     border: 2px solid #73AC22;
     margin-bottom: 1em;
 

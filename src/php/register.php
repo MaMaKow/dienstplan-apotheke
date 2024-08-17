@@ -115,7 +115,7 @@ if ($show_form) {
     $_SESSION['math_problem_solution'] = $math_problem_solution;
 
 
-    echo "<div class=centered_form_div>";
+    echo "<div class=centered-form-div>";
     echo "<H1>" . $application_name . "</H1>\n";
     ?>
     <form accept-charset='utf-8' action="?register=1" method="post">
@@ -123,7 +123,7 @@ if ($show_form) {
         <input type="email" size="40" maxlength="250" name="email" required placeholder="<?= gettext("Email") ?>" value="<?= $email ?>"><br>
         <input type="password" size="40" maxlength="4096" name="password" required placeholder="<?= gettext("Passphrase") ?>"><br>
         <input type="password" size="40" maxlength="4096" name="password2" required placeholder="<?= gettext("Repeat passphrase") ?>" title="Passwort wiederholen"><br><br>
-        <label for="math_problem_solution"><?= sprintf(gettext('What does %1$s + %2$s equal?'), $summand1, $summand2) ?></label><br><input type="number" size="40" maxlength="250" name="math_problem_solution" id="math_problem_solution" required placeholder="<?= gettext("Solution") ?>"><br><br>
+        <label for="mathProblemSolution"><?= sprintf(gettext('What does %1$s + %2$s equal?'), $summand1, $summand2) ?></label><br><input type="number" size="40" maxlength="250" name="math_problem_solution" id="mathProblemSolution" required placeholder="<?= gettext("Solution") ?>"><br><br>
         <?php
         echo $user_dialog->build_messages();
         ?>

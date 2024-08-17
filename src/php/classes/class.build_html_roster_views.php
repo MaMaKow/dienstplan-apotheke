@@ -53,7 +53,7 @@ abstract class build_html_roster_views {
      */
     public static function build_absentees_column(PDR\Roster\AbsenceCollection $absenceCollection): string {
         global $workforce;
-        $text = "<td class='absentees_column'><b>" . gettext("Absentees") . "</b><br>";
+        $text = "<td class='absentees-column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($absenceCollection as $absence) {
 
             $text .= $workforce->List_of_employees[$absence->getEmployeeKey()]->last_name;
@@ -218,7 +218,7 @@ abstract class build_html_roster_views {
         $roster_input_row_add_row .= "<td data-date_unix=$day_iterator>";
 
         $roster_input_row_add_row .= "<button type='button' id='$id' data-id=$id data-day_iterator=$day_iterator data-roster_row_iterator=$roster_row_iterator data-maximum_number_of_rows=$maximum_number_of_rows data-branch_id=$branch_id onclick='roster_input_row_add($id);'>";
-        $roster_input_row_add_row .= "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_add.svg' class='roster_input_row_add_row_image' alt='Add one row'>";
+        $roster_input_row_add_row .= "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_add.svg' class='roster-input-row-add-row-image' alt='Add one row'>";
         $roster_input_row_add_row .= "</button>\n";
         $roster_input_row_add_row .= "</td>\n";
         $roster_input_row_add_row .= "</tr>\n";
@@ -293,10 +293,10 @@ abstract class build_html_roster_views {
             $roster_comment_visibility_style_display = "none";
             $roster_uncomment_visibility_style_display = "inline";
         }
-        $roster_input_row_comment_html .= "<div class='no_print' style=display:$roster_comment_visibility_style_display id='$roster_input_row_comment_input_link_div_show_id'>"
+        $roster_input_row_comment_html .= "<div class='no-print' style=display:$roster_comment_visibility_style_display id='$roster_input_row_comment_input_link_div_show_id'>"
                 . "<a onclick='roster_input_row_comment_show($roster_input_row_comment_input_id, $roster_input_row_comment_input_link_div_show_id, $roster_input_row_comment_input_link_div_hide_id)' title='Kommentar anzeigen'>"
                 . "K+</a></div>\n";
-        $roster_input_row_comment_html .= "<div class='no_print' style=display:$roster_uncomment_visibility_style_display id=$roster_input_row_comment_input_link_div_hide_id>"
+        $roster_input_row_comment_html .= "<div class='no-print' style=display:$roster_uncomment_visibility_style_display id=$roster_input_row_comment_input_link_div_hide_id>"
                 . "<a onclick='roster_input_row_comment_hide($roster_input_row_comment_input_id, $roster_input_row_comment_input_link_div_show_id, $roster_input_row_comment_input_link_div_hide_id)' title='Kommentar ausblenden'>"
                 . "K-</a></div>\n";
         $roster_input_row_comment_html .= "<br>"
@@ -322,7 +322,7 @@ abstract class build_html_roster_views {
             if (array() === $Branch_roster[$other_branch_id]) {
                 continue;
             }
-            $table_html .= "<tr class='branch_roster_title_tr'><th colspan=";
+            $table_html .= "<tr class='branch-roster-title-tr'><th colspan=";
             $table_html .= htmlspecialchars($number_of_days) . ">";
             $table_html .= $List_of_branch_objects[$branch_id]->getShortName();
             $table_html .= " in " . $List_of_branch_objects[$other_branch_id]->getShortName() . "</th></tr>";
@@ -411,7 +411,7 @@ abstract class build_html_roster_views {
                 }
                 $table_html .= "<td>";
                 $zeile = "";
-                $zeile .= "<span class='employee_and_hours_and_duty_time'><span class='employee_and_hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
+                $zeile .= "<span class='employee-and-hours-and-duty-time'><span class='employee-and-hours'><b><a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php?"
                         . "datum=" . htmlspecialchars($roster_item->date_sql)
                         . "&employee_key=" . htmlspecialchars($roster_item->employee_key)
                         . "' data-employee_key='" . htmlspecialchars($roster_item->employee_key)
@@ -426,16 +426,16 @@ abstract class build_html_roster_views {
                 }
                 $zeile .= "</a></b> / <span class='roster_working_hours'>";
                 $zeile .= htmlspecialchars($roster_item->working_hours);
-                $zeile .= "&nbsp;h</span><!-- roster_working_hours --></span><!-- employee_and_hours --> ";
+                $zeile .= "&nbsp;h</span><!-- roster_working_hours --></span><!-- employee-and-hours --> ";
                 if (isset($Options['space_constraints']) and 'narrow' === $Options['space_constraints']) {
                     $zeile .= " <br> ";
                 } else {
-                    $zeile .= "<span class='vertical_spacer'></span>";
+                    $zeile .= "<span class='horizontal-spacer'></span>";
                 }
                 /*
                  * start and end of duty
                  */
-                $zeile .= "<span class='duty_time'>";
+                $zeile .= "<span class='duty-time'>";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_start_sql');
                 $zeile .= " - ";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_end_sql');
@@ -446,22 +446,22 @@ abstract class build_html_roster_views {
                      */
                     $zeile .= '&nbsp;' . '<sup>' . mb_substr(gettext('Comment'), 0, 1) . '</sup>';
                 }
-                $zeile .= "</span><!-- class='duty_time'--></span><!-- employee_and_hours_and_duty_time -->";
+                $zeile .= "</span><!-- class='duty-time'--></span><!-- employee-and-hours-and-duty-time -->";
                 /*
                  * start and end of break
                  */
                 if (isset($Options['space_constraints']) and 'narrow' === $Options['space_constraints']) {
                     $zeile .= "<br>\n";
                 } else {
-                    $zeile .= "<span class='vertical_spacer'></span>";
+                    $zeile .= "<span class='horizontal-spacer'></span>";
                 }
                 if ($roster_item->break_start_int > 0) {
-                    $zeile .= "<span class='break_time'>";
+                    $zeile .= "<span class='break-time'>";
                     $zeile .= " " . gettext("break") . ": ";
                     $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_start_sql) . "</span>";
                     $zeile .= " - ";
                     $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_end_sql) . "</span>";
-                    $zeile .= "</span><!-- class='break_time' -->";
+                    $zeile .= "</span><!-- class='break-time' -->";
                 }
                 $table_html .= $zeile;
                 $table_html .= "</td>\n";
@@ -521,7 +521,7 @@ abstract class build_html_roster_views {
                 $table_html .= "<td class=roster_employee_table_cell>";
                 $zeile = "";
 
-                $zeile .= "<span class='duty_time'>";
+                $zeile .= "<span class='duty-time'>";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_start_sql');
                 $zeile .= " - ";
                 $zeile .= self::build_roster_readonly_table_add_time($roster_item, 'duty_end_sql');
@@ -536,15 +536,15 @@ abstract class build_html_roster_views {
                      */
                     $zeile .= '&nbsp;' . '<sup>' . mb_substr(gettext('Comment'), 0, 1) . '</sup>';
                 }
-                $zeile .= "</span><!-- class='duty_time'--></span><!-- employee_and_hours_and_duty_time -->";
+                $zeile .= "</span><!-- class='duty-time'--></span><!-- employee-and-hours-and-duty-time -->";
                 $zeile .= "<br>\n";
                 if ($roster_item->break_start_int > 0) {
-                    $zeile .= "<span class='break_time'>";
+                    $zeile .= "<span class='break-time'>";
                     $zeile .= " " . gettext("break") . ": ";
                     $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_start_sql) . "</span>";
                     $zeile .= " - ";
                     $zeile .= "<span class='time'>" . htmlspecialchars($roster_item->break_end_sql) . "</span>";
-                    $zeile .= "</span><!-- class='break_time' -->";
+                    $zeile .= "</span><!-- class='break-time' -->";
                 }
                 $zeile .= "<br>";
                 $zeile .= "<span class='branch_name' data-branch_id='" . $roster_item->branch_id . "'>";
@@ -564,7 +564,7 @@ abstract class build_html_roster_views {
         if (array() === $Working_week_hours_have) {
             return FALSE;
         }
-        $week_hours_table_html = "<div id=week_hours_table_div>\n";
+        $week_hours_table_html = "<div id=weekHoursTableDiv>\n";
         $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
         $week_hours_table_html .= "<table class='tight'>";
         $week_hours_table_html .= "<tr>";
@@ -602,7 +602,7 @@ abstract class build_html_roster_views {
         }
         $week_hours_table_html .= "</table>";
 
-        $week_hours_table_html .= "</div>"; // id=week_hours_table_div
+        $week_hours_table_html .= "</div>"; // id=weekHoursTableDiv
         return $week_hours_table_html;
     }
 

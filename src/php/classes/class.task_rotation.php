@@ -36,7 +36,7 @@ abstract class task_rotation {
     public static function task_rotation_main($Dates_unix, $task, $branch_id) {
         global $workforce;
         $number_of_filled_days = 0;
-        $weekly_rotation_div_html = "<div id='weekly_rotation'>\n";
+        $weekly_rotation_div_html = "<div id='weeklyRotation'>\n";
         $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
         $configuration = new \PDR\Application\configuration();
         $locale = $configuration->getLanguage();
@@ -233,7 +233,7 @@ abstract class task_rotation {
             $workforce = new workforce($date_sql);
         }
         $task_rotation_select_html = "";
-        $task_rotation_select_html .= "<div id='task_rotation_select_div'>";
+        $task_rotation_select_html .= "<div id='taskRotationSelectDiv'>";
         $task_rotation_select_html .= "<p>" . localization::gettext($task) . "</p>";
         $task_rotation_select_html .= "<form>";
         $task_rotation_select_html .= "<input  name='task_rotation_task' type='hidden' value='$task'>";
@@ -262,7 +262,7 @@ abstract class task_rotation {
 
         $task_rotation_select_html .= "</select>\n";
         $task_rotation_select_html .= "</form>";
-        $task_rotation_select_html .= "</div><!-- id='task_rotation_select_div'-->";
+        $task_rotation_select_html .= "</div><!-- id='taskRotationSelectDiv'-->";
         return $task_rotation_select_html;
     }
 

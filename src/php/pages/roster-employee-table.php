@@ -60,7 +60,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 //Produce the output:
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-echo "<div id=main-area>\n";
+echo "<div id=mainArea>\n";
 $dateString = $date_start_object->format('W');
 echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlspecialchars(date('Y-m-d', $date_unix)) . "'> "
  . gettext("calendar week") . '&nbsp;'

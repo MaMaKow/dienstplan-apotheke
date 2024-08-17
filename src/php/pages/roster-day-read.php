@@ -85,19 +85,19 @@ foreach ($Roster as $Roster_day_array) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
-echo "<div id=main-area>\n";
+echo "<div id=mainArea>\n";
 
 echo $user_dialog->build_messages();
 echo build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
-echo "<div id=navigation_form_div class=no_print>\n";
+echo "<div id=navigationFormDiv class=no-print>\n";
 echo build_html_navigation_elements::build_button_day_backward(clone $date_object);
 echo build_html_navigation_elements::build_button_day_forward(clone $date_object);
 echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/roster-day-edit.php', array('datum' => $date_sql));
 echo "<br><br>\n";
 echo build_html_navigation_elements::build_input_date($date_sql);
 echo "</div>\n";
-echo "<div id=duty_roster_table_div>\n";
-echo "<table id=duty_roster_table>\n";
+echo "<div id=dutyRosterTableDiv>\n";
+echo "<table id=dutyRosterTable>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME, build_html_roster_views::OPTION_SHOW_CALENDAR_WEEK));
 if ($approval == "approved" OR $config['hide_disapproved'] == false) {
 
@@ -114,7 +114,7 @@ echo "</table>\n";
 echo "</div>\n";
 
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE)) {
-    echo "<div id=roster_image_div class=image>\n";
+    echo "<div id=rosterImageDiv class=image>\n";
     $roster_image_bar_plot = new roster_image_bar_plot($Roster);
     echo $roster_image_bar_plot->svg_string;
     echo "<br>\n";

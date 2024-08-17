@@ -43,7 +43,7 @@ public class EmergencyServiceListPage {
     By branchFormSelectBy = By.xpath("//*[@id=\"branch_form_select\"]");
     By selectYearSelectBy = By.xpath("//*[@id=\"select_year\"]/select");
     //By selectYearSelectBy = By.xpath("/html/body/form/select[@name='year']");
-    By emergencyRowListBy = By.xpath("//*[@id=\"emergency_service_table\"]/tbody/tr");
+    By emergencyRowListBy = By.xpath("//*[@id=\"emergencyServiceTable\"]/tbody/tr");
     //By emergencyRowListBy = By.xpath("/html/body/table/tbody/tr");
     By emergencyRowEmployeeSelectBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
 

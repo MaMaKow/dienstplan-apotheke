@@ -19,31 +19,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
-table#overtime_overview_table tr.negative {
+table#overtimeOverviewTable tr.negative {
     color: #E6828B;
     font-style: normal;
     font-weight: normal;
 }
-table#overtime_overview_table tr.positive {
+table#overtimeOverviewTable tr.positive {
     color: #73AC22;
     font-style: italic;
     font-weight: normal;
 }
-table#overtime_overview_table tr.positive_high {
+table#overtimeOverviewTable tr.positive-high {
     color: #73AC22;
     font-style: normal;
     font-weight: bold;
 }
-table#overtime_overview_table tr.not_updated {
+table#overtimeOverviewTable tr.not-updated {
     background-color: #ECE7E8;
+    text-decoration: underline;
 }
-table#overtime_overview_table tr.positive_very_high {
+table#overtimeOverviewTable tr.positive-very-high {
     color: #73AC22;
     font-style: oblique;
     font-weight: bold;
     font-size: larger;
 }
-table#overtime_overview_table tr.zero {
+table#overtimeOverviewTable tr.zero {
     color: #000000;
     font-style: normal;
     font-weight: normal;

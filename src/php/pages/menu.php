@@ -10,8 +10,8 @@
  * </p>
  */
 ?>
-<nav id="nav" class="no_print">
-    <ul id="navigation">
+<nav id="mainNavigation" class="no-print">
+    <ul id="navigationList">
         <li id="MenuListItemRoster">
             <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-read.php>
                 <?= gettext("Roster") ?>

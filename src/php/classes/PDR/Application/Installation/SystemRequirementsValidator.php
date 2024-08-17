@@ -118,7 +118,7 @@ class SystemRequirementsValidator {
                 $currentWwwUser = getenv('USERNAME');
             }
             $this->installUtility->addErrorMessage(
-                    "<pre class='install_cli'>"
+                    "<pre class='install-cli'>"
                     . "sudo chown -R " . $currentWwwUser . ":" . $currentWwwUser . " " . $this->configuration->getPdrFileSystemApplicationPath()
                     . "</pre>\n");
             return FALSE;

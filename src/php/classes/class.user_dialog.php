@@ -55,7 +55,7 @@ class user_dialog {
      * @return string HTML code with error containers.
      */
     public function build_messages() {
-        $html_messages = "<div class='user_dialog_container'>\n";
+        $html_messages = "<div class='user-dialog-container'>\n";
         foreach (self::$Messages as $message_array) {
             $html_messages .= "<div class=" . htmlspecialchars($message_array['type']) . ">\n";
             $html_messages .= "<span>" . $message_array['text'] . "</span>\n";
@@ -135,9 +135,9 @@ class user_dialog {
 
     public function build_contact_form() {
         $form_html = "
-        <div id='user_dialog_contact_form_div'>
+        <div id='userDialogContactFormDiv'>
             <a title='" . gettext("Close") . "' href='#' onclick='hide_contact_form()'>
-            <span id='remove_form_div_span'>
+            <span id='removeFormDivSpan'>
                 x
             </span>
             </a>

@@ -46,7 +46,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_roster');
 $html_text = '';
-$html_text .= "<div id=main-area>\n";
+$html_text .= "<div id=mainArea>\n";
 //TODO: find out how to respect the lunch breaks!
 $html_text .= build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
 
@@ -72,13 +72,13 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     $form_id = 'change_principle_roster_employee_form_' . $alternating_week_id . '_' . $pseudo_date_start_object->format('Y-m-d');
     $html_text = '';
 
-    $html_text .= "<form method='POST' id='$form_id' class='change_principle_roster_employee_form'>";
+    $html_text .= "<form method='POST' id='$form_id' class='change-principle-roster-employee-form'>";
     $html_text .= build_html_navigation_elements::build_button_submit($form_id);
     if (alternating_week::alternations_exist()) {
         $monday_date = clone $alternating_week->get_monday_date_for_alternating_week(new DateTime('Monday this week'));
         $sunday_date = clone $monday_date;
         $sunday_date->add(new DateInterval('P6D'));
-        $alternating_week_id_string = '<div class="inline_block_element"><p>'
+        $alternating_week_id_string = '<div class="inline-block-element"><p>'
                 . alternating_week::get_human_readable_string($alternating_week_id)
                 . '<br> '
                 . gettext('e.g.') . ' '
@@ -165,7 +165,7 @@ function calculate_list_of_working_week_hours($Roster_array) {
 }
 
 foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
-    $html_text .= "<div class=principle_roster_alternation_container>";
+    $html_text .= "<div class=principle-roster-alternation-container>";
     $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $employee_key);
     $html_text .= "</div>";
 }
@@ -177,7 +177,7 @@ foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
   //$roster_image_bar_plot = new roster_image_bar_plot($Principle_employee_roster);
   //$html_text .= $roster_image_bar_plot->svg_string;
  */
-$html_text .= "</div><!-- id=main-area -->\n";
+$html_text .= "</div><!-- id=mainArea -->\n";
 echo $html_text;
 
 

@@ -44,8 +44,8 @@ $listOfEmergencyServicesInYear = PDR\Database\EmergencyServiceDatabaseHandler::g
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-echo "<div id=main_area_centered>";
-echo "<H1 class='left_float_pool size_medium'>";
+echo "<div id=mainAreaCentered>";
+echo "<H1 class='left-float-pool size-medium'>";
 echo "<span class='large'>" . gettext('emergency service') . "</span>";
 
 echo build_html_navigation_elements::build_select_branch($branchId, $ListOfBranchObjects, $dateSql);
@@ -54,8 +54,8 @@ echo "</H1>";
 $userDialog = new user_dialog();
 $userDialog->build_messages();
 ?>
-<table id="emergency_service_table" class="table_with_border">
-    <tr><th><?= gettext('Date') ?></th><th><?= gettext('Weekday') ?></th><th><?= gettext('Name') ?></th><th class='replacement_td'><?= gettext('Replacement') ?></th></tr>
+<table id="emergencyServiceTable" class="table-with-border">
+    <tr><th><?= gettext('Date') ?></th><th><?= gettext('Weekday') ?></th><th><?= gettext('Name') ?></th><th class='replacement-td'><?= gettext('Replacement') ?></th></tr>
     <?php
     if (array() !== $listOfEmergencyServicesInYear) {
         foreach ($listOfEmergencyServicesInYear as $emergencyServiceIndex => $emergencyService) {
@@ -106,10 +106,10 @@ $userDialog->build_messages();
                  * Buttons:
                  */
                 echo "<td>\n";
-                echo "<button type='submit' id='save_$emergencyServiceIndex' class='button_small no_print' onClick='enableLeavingPage();' title='" . gettext("Save changes to this line") . "' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+                echo "<button type='submit' id='save_$emergencyServiceIndex' class='button-small no-print' onClick='enableLeavingPage();' title='" . gettext("Save changes to this line") . "' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
                 . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' alt='" . gettext("Save changes to this line") . "'>\n"
                 . "</button>\n";
-                echo "<button type='submit' id='delete_$emergencyServiceIndex' class='button_small no_print' onClick='enableLeavingPage(); return confirmDelete();' title='" . gettext("Remove this line") . "' name='command' value='delete' style='border-radius: 32px; background-color: transparent;'>\n"
+                echo "<button type='submit' id='delete_$emergencyServiceIndex' class='button-small no-print' onClick='enableLeavingPage(); return confirmDelete();' title='" . gettext("Remove this line") . "' name='command' value='delete' style='border-radius: 32px; background-color: transparent;'>\n"
                 . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' alt='" . gettext("Remove this line") . "'>\n"
                 . "</button>\n";
                 echo "</td>\n";
@@ -120,14 +120,14 @@ $userDialog->build_messages();
                 echo (isset($workforce->List_of_employees[$emergencyService->getEmployee_key()])) ? $workforce->List_of_employees[$emergencyService->getEmployee_key()]->last_name : "?";
                 echo "</td>\n";
             }
-            echo "<td class='replacement_td'></td>\n</form>\n</tr>\n";
+            echo "<td class='replacement-td'></td>\n</form>\n</tr>\n";
         }
     }
     if ($session->user_has_privilege('create_roster')) {
-        echo "\n<tr class='no_print'>";
+        echo "\n<tr class='no-print'>";
         echo "\n<td>" . gettext("Add line") . "</td><td colspan=2></td>";
         echo "\n</tr>";
-        echo "\n<tr class='no_print'><form method='post'>";
+        echo "\n<tr class='no-print'><form method='post'>";
         echo "\n<td><input type='date' id='add_new_line_date' name='emergency_service_date' value='' min='$year-01-01' max='$year-12-31'></td>";
         echo "\n<td><input type='submit' id='add_new_line_submit' value='" . gettext("Add line") . "'></td>";
         echo "\n<td><input type='hidden' name=emergency_service_branch value='$branchId'></td>";
@@ -136,7 +136,7 @@ $userDialog->build_messages();
     ?>
 
 </table>
-</div><!-- id=main_area_centered-->
+</div><!-- id=mainAreaCentered-->
 <?php
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>

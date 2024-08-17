@@ -84,8 +84,8 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 }
 ?>
-<form accept-charset='utf-8' id="input_box_form" method="POST">
-    <p><?= gettext("Employee") ?><br><select name="employee_key" id="employee_key_select"></p>
+<form accept-charset='utf-8' id="inputBoxForm" method="POST">
+    <p><?= gettext("Employee") ?><br><select name="employee_key" id="employeeKeySelect"></p>
     <?php
     if ($session->user_has_privilege('create_absence')) {
         /*
@@ -130,10 +130,10 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
      data-comment="This element is necessary to allow interaction of javascript with this element. After the execution, it is removed."
      />
 -->
-<p><?= gettext("Start") ?><br><input type="date" id="input_box_form_start_date" name="start_date" value="<?= $absence->getStart()->format("Y-m-d") ?>"></p>
-<p><?= gettext("End") ?><br><input type="date" id="input_box_form_end_date" name="end_date" value="<?= $absence->getEnd()->format("Y-m-d") ?>"></p>
-<p><?= gettext("Reason") ?><br><?= PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect($absence->getReasonId(), 'absence_reason_input_select', 'input_box_form', $session) ?></p>
-<p><?= gettext("Comment") ?><br><input type="text" id="input_box_form_comment" name="comment" value="<?= $absence->getComment() ?>"></p>
+<p><?= gettext("Start") ?><br><input type="date" id="inputBoxFormStartDate" name="start_date" value="<?= $absence->getStart()->format("Y-m-d") ?>"></p>
+<p><?= gettext("End") ?><br><input type="date" id="inputBoxFormEndDate" name="end_date" value="<?= $absence->getEnd()->format("Y-m-d") ?>"></p>
+<p><?= gettext("Reason") ?><br><?= PDR\Output\HTML\AbsenceHtmlBuilder::buildReasonInputSelect($absence->getReasonId(), 'absenceReasonInputSelect', 'inputBoxForm', $session) ?></p>
+<p><?= gettext("Comment") ?><br><input type="text" id="inputBoxFormComment" name="comment" value="<?= $absence->getComment() ?>"></p>
 <?php
 if ($session->user_has_privilege('create_absence') and "edit" === $Absence_details['mode']) {
     echo "<p>" . gettext("Approval") . "<br>";
@@ -159,18 +159,18 @@ if (
 ) {
     ?>
     <p>
-        <button type="submit" value="save" name="command" class="button_tight"><?= gettext("Save") ?></button>
+        <button type="submit" value="save" name="command" class="button-tight"><?= gettext("Save") ?></button>
         <?php if ("edit" === $Absence_details['mode']) { ?>
-            <button type="submit" value="delete" name="command" id="input_box_form_button_delete" class="button_tight"><?= gettext("Delete") ?></button>
+            <button type="submit" value="delete" name="command" id="inputBoxFormButtonDelete" class="button-tight"><?= gettext("Delete") ?></button>
         <?php } ?>
     </p>
 <?php } ?>
 
 <input type="hidden" id="employee_key_old" name="employee_key_old" value="<?= $absence->getEmployeeKey() ?>">
-<input type="hidden" id="input_box_form_start_date_old" name="start_date_old" value="<?= $absence->getStart()->format("Y-m-d") ?>">
+<input type="hidden" id="inputBoxFormStartDateOld" name="start_date_old" value="<?= $absence->getStart()->format("Y-m-d") ?>">
 </form>
 <a title="<?= gettext("Close"); ?>" href="#" onclick="remove_form_div()">
-    <span id="remove_form_div_span">
+    <span id="removeFormDivSpan">
         x
     </span>
 </a>

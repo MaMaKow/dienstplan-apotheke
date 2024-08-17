@@ -161,22 +161,22 @@ public class RosterEmployeePage {
     }
 
     private By getRosterItemDutyStartXpathBy(int column, int row) {
-        By rosterItemDutyStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'duty_time\']/span[1]");
+        By rosterItemDutyStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'duty-time\']/span[1]");
         return rosterItemDutyStartXpathBy;
     }
 
     private By getRosterItemDutyEndXpathBy(int column, int row) {
-        By rosterItemDutyEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'duty_time\')]/span[2]");
+        By rosterItemDutyEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'duty-time\')]/span[2]");
         return rosterItemDutyEndXpathBy;
     }
 
     private By getRosterItemBreakStartXpathBy(int column, int row) {
-        By rosterItemBreakStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break_time\')]/span[1]");
+        By rosterItemBreakStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break-time\')]/span[1]");
         return rosterItemBreakStartXpathBy;
     }
 
     private By getRosterItemBreakEndXpathBy(int column, int row) {
-        By rosterItemBreakEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break_time\')]/span[2]");
+        By rosterItemBreakEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break-time\')]/span[2]");
         return rosterItemBreakEndXpathBy;
     }
 

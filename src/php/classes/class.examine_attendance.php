@@ -44,7 +44,7 @@ abstract class examine_attendance {
                      */
                     $messageSafe .= "&nbsp"
                             . "<form method=POST id='removeAbsentEmployeeForm'>"
-                            . "<button type='submit' value='removeAbsentEmployee' class='button_small no_print'>"
+                            . "<button type='submit' value='removeAbsentEmployee' class='button-small no-print'>"
                             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' title='" . gettext("Remove") . "'>"
                             . "</button>"
                             . "<input type='hidden' name='rosterActionCommand' value='removeAbsentEmployee'>"
@@ -107,7 +107,7 @@ abstract class examine_attendance {
                     $message_safe = htmlspecialchars($message_unsafe);
                     $message_safe .= "&nbsp"
                             . "<form method=POST id='insertMissingEmployeeForm'>"
-                            . "<button type='submit' value='insertMissingEmployee' class='button_small  no_print'>"
+                            . "<button type='submit' value='insertMissingEmployee' class='button-small  no-print'>"
                             . "<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/copy.svg' title='" . gettext("Insert") . "'>"
                             . "</button>"
                             . "<input type='hidden' name='rosterActionCommand' value='insertMissingEmployee'>"

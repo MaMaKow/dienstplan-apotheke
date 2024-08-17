@@ -20,7 +20,7 @@ require '../../../default.php';
 $user_dialog = new user_dialog();
 
 $user_key = user_input::get_variable_from_any_input('user_key', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->get_primary_key());
-if ('' === $user_key){
+if ('' === $user_key) {
     $user_key = $_SESSION['user_object']->get_primary_key();
 }
 $user = new user($user_key);
@@ -87,12 +87,12 @@ function build_checkbox_permission($privilege, $checked) {
 }
 ?>
 <form method='POST' id='user_management' onchange="enableUnsavedChangesPrompt(this); changesMadeInForm = true;">
-    <fieldset id="identifier_group" class="privilege-group">
+    <fieldset id="identifierGroup">
         <legend><?= gettext("Identifier"); ?></legend>
-        <input type='text' name='user_key' id="user_key_hidden_input" value="<?= $user->get_primary_key(); ?>" hidden='true'>
+        <input type='text' name='user_key' id="userKeyHiddenInput" value="<?= $user->get_primary_key(); ?>" hidden='true'>
         <div>
-            <label for="user_email"><?= gettext("User Email"); ?>:</label>
-            <input type="email" name="user_email" id="user_email" value="<?= $user->get_email(); ?>" disabled>
+            <label for="userEmail"><?= gettext("User Email"); ?>:</label>
+            <input type="email" name="user_email" id="userEmail" value="<?= $user->get_email(); ?>" disabled>
         </div>
         <div>
             <label for="employee_key"><?= gettext("Employee Key"); ?>:</label>
@@ -114,8 +114,8 @@ function build_checkbox_permission($privilege, $checked) {
             </select>
         </div>
         <div>
-            <label for="user_status"><?= gettext("User Status:"); ?></label>
-            <select name="user_status" id="user_status">
+            <label for="userStatus"><?= gettext("User Status:"); ?></label>
+            <select name="user_status" id="userStatus">
                 <option value="deleted" <?= ($user->get_status() === 'deleted') ? 'selected' : ''; ?>>Deleted</option>
                 <option value="blocked" <?= ($user->get_status() === 'blocked') ? 'selected' : ''; ?>>Blocked</option>
                 <option value="inactive" <?= ($user->get_status() === 'inactive') ? 'selected' : ''; ?>>Inactive</option>
@@ -123,7 +123,7 @@ function build_checkbox_permission($privilege, $checked) {
             </select>
         </div>
     </fieldset>
-    <fieldset id="privilege_group" class="privilege-group">
+    <fieldset id="privilegeGroup">
         <legend><?= gettext("Privileges"); ?>:</legend>
         <?php
         foreach (sessions::$Pdr_list_of_privileges as $privilege) {
@@ -134,7 +134,7 @@ function build_checkbox_permission($privilege, $checked) {
 
     </fieldset>
     <div>
-        <input type=submit id=user_management_form_submit class='no_print' name=submit_user_data form='user_management'>
+        <input type=submit id=user_management_form_submit class='no-print' name=submit_user_data form='user_management'>
     </div>
 
 </form>

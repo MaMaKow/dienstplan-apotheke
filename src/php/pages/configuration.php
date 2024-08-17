@@ -73,11 +73,11 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 ?>
-<div id="configuration_input_div" style=font-size:larger>
+<div id="configurationFormDiv" style=font-size:larger>
     <H1><?= gettext('Configuration') ?></H1>
-    <form accept-charset='utf-8' id="configuration_form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <div id="configuration_input_div">
-            <input type="submit" class="configuration_input_button_submit" form="configuration_form">
+    <form accept-charset='utf-8' id="configurationForm" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <div id="configurationInputDiv">
+            <input type="submit" class="configuration-input-button-submit" form="configurationForm">
             <fieldset>
                 <legend>Database settings</legend>
                 <p class="hint">
@@ -106,8 +106,8 @@ echo $user_dialog->build_messages();
                        onpaste="compare_passwords()"
                        >
                 <br>
-                <img id="approve_pass_img"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_up-24px.svg" height="20">
-                <img id="disapprove_pass_img" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_down-24px.svg" height="20">
+                <img id="approvePassImage"    alt="passwords match"       style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_up-24px.svg" height="20">
+                <img id="disapprovePassImage" alt="passwords don't match" style="display:none" src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_thumb_down-24px.svg" height="20">
                 <br>
                 <label><?= gettext('Repeat passphrase') ?></label>
                 <br>
@@ -165,12 +165,12 @@ echo $user_dialog->build_messages();
             <fieldset>
                 <legend> <?= gettext('Debugging') ?></legend>
                 <p class="hint"> <?= gettext('Which types of errors should be reported to the user?') ?></p>
-                <input type="radio" id="error_reporting_error" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_ERROR . '" ' . $error_error_checked; ?>">
-                <label for="error_reporting_error"><?= gettext('Only fatal errors') ?></label>
+                <input type="radio" id="errorReportingError" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_ERROR . '" ' . $error_error_checked; ?>">
+                <label for="errorReportingError"><?= gettext('Only fatal errors') ?></label>
                 <br>
                 <br>
-                <input type="radio" id="error_reporting_warning" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_WARNING . '" ' . $error_warning_checked; ?>">
-                <label for="error_reporting_warning"><?= gettext('Also warnings') ?></label>
+                <input type="radio" id="errorReportingWarning" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_WARNING . '" ' . $error_warning_checked; ?>">
+                <label for="errorReportingWarning"><?= gettext('Also warnings') ?></label>
                 <br>
                 <br>
                 <input type="radio" id="error_reporting_notice" name="error_reporting" value="<?= \PDR\Output\HTML\configurationManager::ERROR_NOTICE . '" ' . $error_notice_checked; ?>">
@@ -222,22 +222,22 @@ echo $user_dialog->build_messages();
                 <input type="radio" name="email_method" value="smtp" <?= $email_method === 'smtp' ? 'checked="checked"' : '' ?>><?= gettext('SMTP') ?><br>
 
                 <!-- SMTP email settings -->
-                <fieldset class="configuration_smtp_settings_fieldset" style="display: <?= $email_method === 'smtp' ? 'inline' : 'none' ?>">
+                <fieldset class="configuration-smtp-settings-fieldset" style="display: <?= $email_method === 'smtp' ? 'inline' : 'none' ?>">
                     <legend><?= gettext('SMTP settings') ?>
                     </legend>
-                    <label for="email_smtp_host">Host</label><br>
-                    <input type="text" name="email_smtp_host" id="email_smtp_host" value="<?= $configuration->getEmailSmtpHost(); ?>"><br>
-                    <label for="email_smtp_port">Port</label><br>
-                    <input type="text" name="email_smtp_port" id="email_smtp_port" value="<?= $configuration->getEmailSmtpPort(); ?>"><br>
-                    <label for="email_smtp_username">User name</label><br>
-                    <input type="text" name="email_smtp_username" id="email_smtp_username" value="<?= $configuration->getEmailSmtpUsername(); ?>"><br>
-                    <label for="email_smtp_password">Password</label><br>
-                    <input type="password" name="email_smtp_password" id="email_smtp_password" value=""  autocomplete="new-password"><br>
+                    <label for="emailSmtpHost">Host</label><br>
+                    <input type="text" name="email_smtp_host" id="emailSmtpHost" value="<?= $configuration->getEmailSmtpHost(); ?>"><br>
+                    <label for="emailSmtpPort">Port</label><br>
+                    <input type="text" name="email_smtp_port" id="emailSmtpPort" value="<?= $configuration->getEmailSmtpPort(); ?>"><br>
+                    <label for="emailSmtpUsername">User name</label><br>
+                    <input type="text" name="email_smtp_username" id="emailSmtpUsername" value="<?= $configuration->getEmailSmtpUsername(); ?>"><br>
+                    <label for="emailSmtpPassword">Password</label><br>
+                    <input type="password" name="email_smtp_password" id="emailSmtpPassword" value=""  autocomplete="new-password"><br>
                 </fieldset>
             </fieldset><br>
-            <input type="submit" class="configuration_input_button_submit" form="configuration_form"><br>
-        </div><!-- id="configuration_input_div" -->
+            <input type="submit" class="configuration-input-button-submit" form="configurationForm"><br>
+        </div><!-- id="configurationInputDiv" -->
     </form>
-</div>
+</div><!-- id="configurationFormDiv" -->
 </body>
 </html>

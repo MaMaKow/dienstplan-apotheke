@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
-div#task_rotation_select_div {
+div#taskRotationSelectDiv {
     background-color: #ECE7E8;
     float: left;
     padding-top: 0.5em;
@@ -28,11 +28,11 @@ div#task_rotation_select_div {
     padding-right: 1em;
     margin: 1em;
 }
-div.image_group_container {
+div.image-group-container {
     float: right;
 }
 
-div.user_dialog_container > div.warning > span > button > img{
+div.user-dialog-container > div.warning > span > button > img{
     height: 2em;
     vertical-align: middle;
 }

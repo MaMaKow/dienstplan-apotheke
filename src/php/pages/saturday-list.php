@@ -49,7 +49,7 @@ for ($date_object = clone $date_object_start; $date_object <= $date_object_end; 
 }
 $table_body .= "</tbody>\n";
 
-$table = "<table id=saturday_list>\n";
+$table = "<table id=saturdayList>\n";
 $table .= $table_head;
 $table .= $table_body;
 $table .= "</table>\n";
@@ -136,7 +136,7 @@ function build_table_row(DateTime $date_object, int $branch_id) {
 
     $date_string = $dayFormatter->format($date_object->getTimestamp());
     if (FALSE !== $holiday) {
-        $table_row .= "<tr class='saturday_list_row_holiday'>";
+        $table_row .= "<tr class='saturday-list-row-holiday'>";
         $table_row .= "<td colspan='99'>";
         $table_row .= $date_string;
         $table_row .= "&nbsp;<span>" . $holiday . "</span>";

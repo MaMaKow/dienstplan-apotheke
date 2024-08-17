@@ -123,7 +123,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 $session->exit_on_missing_privilege('administration');
 
-//echo "<div class='centered_form_div'>";
+//echo "<div class='centered-form-div'>";
 echo "<div>";
 if (empty($List_of_branch_objects)) {
     echo "<p>"
@@ -181,7 +181,7 @@ function build_branch_input_opening_times($branch_object) {
 <form accept-charset='utf-8' method='POST' id='branch_management_form'>
 </form>
 
-<div id="branch_management_form_div">
+<div id="branchManagementFormDiv">
 
     <fieldset>
         <legend><?= gettext('Identifier'); ?></legend>
@@ -191,12 +191,12 @@ function build_branch_input_opening_times($branch_object) {
             <input form="branch_management_form" type="text" name="branch_id" id="branch_id" value="<?= $current_branch_id ?>">
         </p>
         <p>
-            <label for="branch_pep_id"><?= gettext('Branch pep id') ?>: </label>
+            <label for="branchPepId"><?= gettext('Branch pep id') ?>: </label>
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
                  class="inline-image"
                  title="<?= gettext("Awinta Smart and Awinta One have an option to export PEP data. If you uploaded such PEP data, enter your PEP Id for this branch here.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_pep_id' id="branch_pep_id" value="<?= $branch_object->getPEP(); ?>">
+            <input form="branch_management_form" type='text' name='branch_pep_id' id="branchPepId" value="<?= $branch_object->getPEP(); ?>">
         </p>
     </fieldset>
     <fieldset>
@@ -206,12 +206,12 @@ function build_branch_input_opening_times($branch_object) {
             <br>
             <input form="branch_management_form" type='text' name='branch_name' id="branch_name" value="<?= $branch_object->getName(); ?>">
         </p><p>
-            <label for="branch_short_name"><?= gettext('Branch short name') ?>: </label>
+            <label for="branchShortName"><?= gettext('Branch short name') ?>: </label>
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
                  class="inline-image"
                  title="<?= gettext("This is a short unofficial nickname for your pharmacy. It is used in pages with limited space. Please choose no more than 12 letters.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_short_name' id="branch_short_name" maxlength="16" value="<?= $branch_object->getShortName(); ?>">
+            <input form="branch_management_form" type='text' name='branch_short_name' id="branchShortName" maxlength="16" value="<?= $branch_object->getShortName(); ?>">
         </p><p>
             <label for="branch_address"><?= gettext('Branch address') ?>: </label>
             <br>
@@ -224,13 +224,13 @@ function build_branch_input_opening_times($branch_object) {
     </fieldset>
     <?= build_branch_input_opening_times($branch_object); ?>
 
-    <div id="form_buttons_container">
-        <button type='submit' form='branch_management_form' id='submit_branch_data' class="form_button no_print">
+    <div id="formButtonsContainer">
+        <button type='submit' form='branch_management_form' id='submit_branch_data' class="form-button no-print">
             <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_save.svg">
             <p> <?= gettext("Save") ?>  </p>
         </button>
         <?php if (null !== $current_branch_id) { ?>
-            <button type='submit' name="remove_branch" form='branch_management_form' id="branch_form_button_remove" class="form_button no_print" onclick='return confirmDelete()'>
+            <button type='submit' name="remove_branch" form='branch_management_form' id="branchFormButtonRemove" class="form-button no-print" onclick='return confirmDelete()'>
                 <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_delete_forever.svg">
                 <p> <?= gettext("Remove branch") ?>  </p>
             </button>

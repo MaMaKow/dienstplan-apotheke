@@ -312,7 +312,7 @@ Dienstplan Mitarbeiteransicht mit Kommentar für Personen mit Bearbeiterprivileg
 
 play around with docker Post/Redirect/Get
 
-user_dialog_contact_form_div
+userDialogContactFormDiv
 
 #### das Kontaktformular ist aus dem Script register.php erreichbar.
 

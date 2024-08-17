@@ -47,7 +47,7 @@ class AbsenceHtmlBuilder {
             $disabledInputElementState = "";
         }
 
-        $htmlText = "<select id='$htmlId' form='$htmlForm' class='absence_approval_input_select' name='approval' $disabledInputElementState>" . PHP_EOL;
+        $htmlText = "<select id='$htmlId' form='$htmlForm' name='approval' $disabledInputElementState>" . PHP_EOL;
 
         // Iterate through the list of approval states
         foreach (\PDR\Utility\AbsenceUtility::$ListOfApprovalStates as $approval) {
@@ -80,7 +80,7 @@ class AbsenceHtmlBuilder {
         if ($session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ABSENCE)) {
             $disabledInputElementState = "";
         }
-        $htmlText = "<select id='$htmlId' form='$htmlForm' class='absence_reason_input_select' name='reason_id' $disabledInputElementState>" . PHP_EOL;
+        $htmlText = "<select id='$htmlId' form='$htmlForm' name='reason_id' $disabledInputElementState>" . PHP_EOL;
         foreach (\PDR\Utility\AbsenceUtility::$ListOfAbsenceReasons as $reasonId) {
             if ($reasonId === $reasonSpecified) {
                 $htmlText .= "<option value='$reasonId' selected>" . htmlspecialchars(\PDR\Utility\AbsenceUtility::getReasonStringLocalized($reasonId)) . "</option>\n";
@@ -100,7 +100,7 @@ class AbsenceHtmlBuilder {
      * @return string The HTML code for the delete button.
      */
     public static function buildButtonSubmitDelete(\stdClass $row): string {
-        $buttonText = "<button type=submit id=delete_$row->start class='button_small delete_button no_print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
+        $buttonText = "<button type=submit id=delete_$row->start class='button-small delete_button no-print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' alt='Diese Zeile löschen'>\n"
                 . "</button>\n";
         return $buttonText;
@@ -114,7 +114,7 @@ class AbsenceHtmlBuilder {
      * @return string The HTML code for the cancel edit button.
      */
     public static function buildButtonCancelEdit(\stdClass $row): string {
-        $buttonText = "<button type=button id=cancel_$row->start class='button_small no_print' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$row->start\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
+        $buttonText = "<button type=button id=cancel_$row->start class='button-small no-print' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$row->start\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' alt='Bearbeitung abbrechen'>\n"
                 . "</button>\n";
         return $buttonText;
@@ -128,7 +128,7 @@ class AbsenceHtmlBuilder {
      * @return string The HTML code for the edit button.
      */
     public static function buildButtonEdit(\stdClass $row): string {
-        $buttonText = "<button type=button id=edit_$row->start class='button_small edit_button no_print' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
+        $buttonText = "<button type=button id=edit_$row->start class='button-small edit_button no-print' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_edit.svg' alt='Diese Zeile bearbeiten'>\n"
                 . "</button>\n";
         return $buttonText;
@@ -142,7 +142,7 @@ class AbsenceHtmlBuilder {
      * @return string The HTML code for the save button.
      */
     public static function buildButtonSubmitSave(\stdClass $row): string {
-        $buttonText = "<button type='submit' id='save_$row->start' class='button_small no_print' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+        $buttonText = "<button type='submit' id='save_$row->start' class='button-small no-print' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' alt='Veränderungen dieser Zeile speichern'>\n"
                 . "</button>\n";
         return $buttonText;
@@ -310,7 +310,7 @@ class AbsenceHtmlBuilder {
         $button = "";
         foreach ($collectionOfOverlappingAbsences as $overlappingAbsence) {
             $hiddenInput = self::buildHiddenInputOverlap($overlappingAbsence, $absenceInRow, $employeeObject);
-            $button .= "<p><button type='submit' id='overlap_" . $absenceInRow->getStart()->format("Y-m-d") . "' class='button_small no_print overlapCutButton' title='Diensen Eintrag kürzen' name='command' value='cutOverlap' style='border-radius: 32px;'>" . PHP_EOL
+            $button .= "<p><button type='submit' id='overlap_" . $absenceInRow->getStart()->format("Y-m-d") . "' class='button-small no-print overlapCutButton' title='Diensen Eintrag kürzen' name='command' value='cutOverlap' style='border-radius: 32px;'>" . PHP_EOL
                     . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_cut.svg' alt='Diensen Eintrag kürzen'>" . PHP_EOL
                     . "<span class='hint'>" . gettext("cut the above entry") . "</span>" . PHP_EOL //@todo: localization
                     . "</button></p>" . PHP_EOL;

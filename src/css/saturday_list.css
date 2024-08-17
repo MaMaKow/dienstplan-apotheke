@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
-table#saturday_list tr td span.absent {
+table#saturdayList tr td span.absent {
     color: red;
     text-decoration: underline;
 }
-table#saturday_list tr.saturday_list_row_holiday {
+table#saturdayList tr.saturday-list-row-holiday {
     font-style: italic;
 }

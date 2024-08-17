@@ -34,7 +34,7 @@ if (filter_has_var(INPUT_GET, 'request_new_password')) {
 }
 require PDR_FILE_SYSTEM_APPLICATION_PATH . "/head.php";
 
-echo "<div class=centered_form_div>";
+echo "<div class=centered-form-div>";
 if (isset($config['application_name'])) {
     $application_name = $config['application_name'];
 } else {

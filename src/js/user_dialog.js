@@ -22,10 +22,10 @@
  * @returns void
  */
 function unhide_contact_form() {
-    document.getElementById("user_dialog_contact_form_div").style.display = "inline";
+    document.getElementById("userDialogContactFormDiv").style.display = "inline";
 }
 function hide_contact_form() {
-    document.getElementById("user_dialog_contact_form_div").style.display = "none";
+    document.getElementById("userDialogContactFormDiv").style.display = "none";
 }
 
 function writeErrorToUserDialogContainer(errorString, errorId = null) {
@@ -49,9 +49,9 @@ function writeErrorToUserDialogContainer(errorString, errorId = null) {
     div.id = errorId;
     /**
      *
-     * Add div to the user_dialog_container:
+     * Add div to the user-dialog-container:
      */
-    var listOfUserDialogContainers = document.getElementsByClassName("user_dialog_container");
+    var listOfUserDialogContainers = document.getElementsByClassName("user-dialog-container");
     var userDialogContainer = listOfUserDialogContainers[0];
     userDialogContainer.appendChild(div);
 }
@@ -67,10 +67,10 @@ function removeErrorFromUserDialogContainer(errorId) {
     /**
      * <p lang=en>
      * This function does not delete every element by id.
-     * Only direct children of user_dialog_container are removed.
+     * Only direct children of user-dialog-container are removed.
      * </p>
      */
-    var listOfUserDialogContainers = document.getElementsByClassName("user_dialog_container");
+    var listOfUserDialogContainers = document.getElementsByClassName("user-dialog-container");
     var userDialogContainer = listOfUserDialogContainers[0];
     userDialogContainer.removeChild(errorElement);
 }

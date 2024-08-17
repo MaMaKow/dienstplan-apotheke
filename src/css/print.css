@@ -23,11 +23,11 @@ select {
     -webkit-appearance: none;
     border: none;
 }
-.no_print, .no_print * {
+.no-print, .no-print * {
     /*Elemente die nicht gedruckt werden sollen.*/
     display: none !important;
 }
-.only_print {
+.only-print {
     display: block;
 }
 .page-break {
@@ -37,14 +37,14 @@ select {
 tr.wochenende {
     -webkit-print-color-adjust: exact;
 }
-#main-area {
+#mainArea {
     width: 29.7cm;
     /*
     height: available;
     height: 19.0cm;
     */
 }
-div#table_overlay_area {
+div#tableOverlayArea {
     top: 0.5cm; /*equals margin-top on @page*/
     float: left;
     padding-left: 0px;
@@ -55,29 +55,29 @@ div#table_overlay_area {
     height: 19.0cm;
     */
 }
-div#weekly_rotation {
+div#weeklyRotation {
     position: fixed;
     top: 0cm;
     right: 0cm;
     width: 4cm;
     font-size: xx-small;
 }
-div#week_hours_table_div {
+div#weekHoursTableDiv {
     position: fixed;
     bottom: 2cm;
     right: 0cm;
     width: 5.2cm;
     font-size: xx-small;
 }
-table#duty_roster_table {
+table#dutyRosterTable {
     width: 85%;
     font-size: 3.5mm;
 }
-#roster_image_div {
+#rosterImageDiv {
     width: 50%;
     height: 100%;
 }
-#roster_image_div svg, #roster_image_div canvas {
+#rosterImageDiv svg, #rosterImageDiv canvas {
     width: 99%;
     height: 48%;
 }
@@ -91,7 +91,7 @@ svg foreignObject p {
  * The following styles are for:
  * marginal-employment-hours-list.php
  */
-table#marginal_employment_hours_list_table tr td {
+table#marginalEmploymentHoursListTable tr td {
     min-width: 8em;
 }
 /*

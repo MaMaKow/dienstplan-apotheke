@@ -37,7 +37,7 @@ class vacationPageBuilder {
     public function build_overview_table(int $year): string {
         $table_head = $this->build_overview_table_head($year);
         $table_body = $this->build_overview_table_body($year);
-        $table = "<table id='overtime_overview_table'>" . $table_head . $table_body . "</table>\n";
+        $table = "<table id='overtimeOverviewTable'>" . $table_head . $table_body . "</table>\n";
         return $table;
     }
 

@@ -45,7 +45,7 @@ function draw_canvas_histogram() {
     time_start = Math.min.apply(null, array_of_keys);
     time_end = Math.max.apply(null, array_of_keys);
     duration = time_end - time_start;
-    var canvas = document.getElementById('canvas_histogram');
+    var canvas = document.getElementById('canvasHistogram');
     var canvas_context = canvas.getContext('2d');
     var plot_object = new Plot(canvas.width, canvas.height);
     plot_object.max_height = Math.max.apply(null, Object.values(expectation));
@@ -72,7 +72,7 @@ function draw_line_to(item, index) {
     let factor = item[1];
     let x_pos = (current_time_in_seconds - plot_object.time_start) + Plot.outer_margin_x / plot_object.width_factor;
     let y_pos = (factor * -1) - (Plot.outer_margin_y / plot_object.height_factor);
-    let canvas = document.getElementById('canvas_histogram');
+    let canvas = document.getElementById('canvasHistogram');
     let canvas_context = canvas.getContext('2d');
     canvas_context.lineTo(x_pos, y_pos);
 }

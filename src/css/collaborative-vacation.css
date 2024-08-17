@@ -17,7 +17,7 @@
  */
 
 
-div.year_container {
+div.year-container {
     display: block;
     overflow: auto;
     /*
@@ -32,7 +32,7 @@ div.year_container {
     user-select: none; /* Non-prefixed version, currently
                           not supported by any browser */
 }
-div.year_quarter_container {
+div.year-quarter-container {
     display: block;
     overflow: auto;
 
@@ -40,7 +40,7 @@ div.year_quarter_container {
     min-height: 2em;
     page-break-after: always;
 }
-div.month_container {
+div.month-container {
     font-family: monospace;
     min-width: 12em;
     float: left;
@@ -48,7 +48,7 @@ div.month_container {
     display: inline-block;
     */
 }
-table.month_container {
+table.month-container {
     font-family: monospace;
     margin: auto;
     width: 90%;
@@ -56,7 +56,7 @@ table.month_container {
     height: 90%;
     */
 }
-tr.week_container {
+tr.week-container {
     font-family: monospace;
     /*
     width: 90%;
@@ -64,7 +64,7 @@ tr.week_container {
     display: inline-block;
     */
 }
-p.day_paragraph {
+p.day-paragraph {
     border: solid black thin;
     cursor: pointer;
     margin-bottom: 0em;
@@ -72,7 +72,7 @@ p.day_paragraph {
     font-family: monospace;
     /*-webkit-margin-before: 0em;*/
 }
-td.day_paragraph {
+td.day-paragraph {
     border: solid black thin;
     cursor: pointer;
     margin-bottom: 0em;
@@ -84,21 +84,21 @@ td.day_paragraph {
     width: 10%;
     */
 }
-td.day_paragraph strong {
+td.day-paragraph strong {
     font-size: large;
 }
-td.day_paragraph.weekday {
+td.day-paragraph.weekday {
     background-color: #ece7e8;
     width: 20%;
 }
 @media screen {
-    p.day_paragraph.today {
+    p.day-paragraph.today {
         border-color: #E6828B;
         border-width: 0.5em;
         border-style: solid;
     }
 }
-p.day_paragraph.adjacent_month, p.day_paragraph.adjacent_month strong {
+p.day-paragraph.adjacent-month, p.day-paragraph.adjacent-month strong {
     background-color: #FFFFFF;
     border: none;
     font-size: xx-small;
@@ -116,7 +116,7 @@ p.highlight, td.highlight {
 span.holiday {
     font-size: xx-small;
 }
-p span.absent_employee_container.month {
+p span.absent-employee-container.month {
     cursor: zoom-in;
     margin-right: 1em;
     /*
@@ -124,45 +124,45 @@ p span.absent_employee_container.month {
     background-color: rgba(180, 180, 180, 0.9);
     */
 }
-p span.absent_employee_container.year {
+p span.absent-employee-container.year {
     cursor: zoom-in;
     width: 2em;
     /*
     background-color: rgba(180, 180, 180, 0.9);
     */
 }
-span.absent_employee_container.Apotheker{
+span.absent-employee-container.Apotheker{
     background-color: rgba(115,172,34, 0.9);
 }
-span.absent_employee_container.Apotheker.not_yet_approved{
+span.absent-employee-container.Apotheker.not_yet_approved{
     background-image: linear-gradient(to bottom, rgba(115,172,34, 0.9) 0%, rgba(115,172,34, 0.9) 75%, red 75%, red 100%);
 }
-span.absent_employee_container.PI{
+span.absent-employee-container.PI{
     background-color: rgba(115,172,34, 0.9);
 }
-span.absent_employee_container.PI.not_yet_approved{
+span.absent-employee-container.PI.not_yet_approved{
     background-image: linear-gradient(to bottom, rgba(115,172,34, 0.9) 0%, rgba(115,172,34, 0.9) 75%, red 75%, red 100%);
 }
-span.absent_employee_container.PTA{
+span.absent-employee-container.PTA{
     background-color: rgba(189, 230, 130, 0.9);
 }
-span.absent_employee_container.PTA.not_yet_approved{
+span.absent-employee-container.PTA.not_yet_approved{
     background-image: linear-gradient(to bottom, rgba(189, 230, 130, 0.9) 0%, rgba(189, 230, 130, 0.9) 75%, red 75%, red 100%);
 
 }
-span.absent_employee_container.PKA{
+span.absent-employee-container.PKA{
     background-color: rgba(180, 180, 180, 0.9);
 }
-span.absent_employee_container.non_existing_employee{
+span.absent-employee-container.non-existing-employee{
     text-decoration: line-through;
 }
-span.absent_employee_container.not_yet_approved{
+span.absent-employee-container.not_yet_approved{
     background-image: linear-gradient(to bottom, rgba(180, 180, 180, 0.9) 0%, rgba(180, 180, 180, 0.9) 75%, red 75%, red 100%);
 }
-span.absent_employee_container.disapproved{
+span.absent-employee-container.disapproved{
     background-color: red;
 }
-div.input_box_div{
+div#inputBoxDiv{
     position: fixed;
     left: 0;
     top: 0;
@@ -178,16 +178,16 @@ div.input_box_div{
     margin: 2em;
     */
 }
-div.input_box_div #input_box_form{
+div#inputBoxDiv #inputBoxForm{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
-div.input_box_div #input_box_form input{
+div#inputBoxDiv #inputBoxForm input{
     margin: auto;
 }
-div.input_box_div #remove_form_div_span{
+div#inputBoxDiv #removeFormDivSpan{
     font-size: xx-large;
     color: black;
     background-color: white;
@@ -197,11 +197,11 @@ div.input_box_div #remove_form_div_span{
     top: 0;
     right: 0;
 }
-div.input_box_div #remove_form_div_span:hover{
+div#inputBoxDiv #removeFormDivSpan:hover{
     color: white;
     background-color: red;
 }
-button.button_tight{
+button.button-tight{
     background-color: buttonface;
     box-sizing: border-box;
     padding: 0px;

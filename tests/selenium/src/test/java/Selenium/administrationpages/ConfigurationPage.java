@@ -124,8 +124,8 @@ public class ConfigurationPage {
         /**
          * By xpaths:
          */
-        By errorReportingErrorBy = By.xpath("//*[@id=\"error_reporting_error\"]");
-        By errorReportingWarningBy = By.xpath("//*[@id=\"error_reporting_warning\"]");
+        By errorReportingErrorBy = By.xpath("//*[@id=\"errorReportingError\"]");
+        By errorReportingWarningBy = By.xpath("//*[@id=\"errorReportingWarning\"]");
         By errorReportingNoticeBy = By.xpath("//*[@id=\"error_reporting_notice\"]");
         By errorReportingAllBy = By.xpath("//*[@id=\"error_reporting_all\"]");
         /**
@@ -165,8 +165,8 @@ public class ConfigurationPage {
         /**
          * By xpaths:
          */
-        By showDisapprovedBy = By.xpath("//*[@id=\"configuration_input_div\"]/fieldset[5]/input[@value=\"0\"]");
-        By hideDisapprovedBy = By.xpath("//*[@id=\"configuration_input_div\"]/fieldset[5]/input[@value=\"1\"]");
+        By showDisapprovedBy = By.xpath("//*[@id=\"configurationInputDiv\"]/fieldset[5]/input[@value=\"0\"]");
+        By hideDisapprovedBy = By.xpath("//*[@id=\"configurationInputDiv\"]/fieldset[5]/input[@value=\"1\"]");
         /**
          * WebElements:
          */
@@ -194,8 +194,8 @@ public class ConfigurationPage {
         /**
          * By selector: The selected element is :checked
          */
-        //By showDisapprovedBy = By.cssSelector("#configuration_input_div > fieldset:nth-child(7) > input[type=radio]:nth-child(3)");
-        By emailMethodBy = By.cssSelector("#configuration_input_div > fieldset:nth-child(7) > input[type=radio]:checked");
+        //By showDisapprovedBy = By.cssSelector("#configurationInputDiv > fieldset:nth-child(7) > input[type=radio]:nth-child(3)");
+        By emailMethodBy = By.cssSelector("#configurationInputDiv > fieldset:nth-child(7) > input[type=radio]:checked");
         /**
          * WebElements:
          */
@@ -214,7 +214,7 @@ public class ConfigurationPage {
     }
 
     public void submitForm() {
-        By submitButtonBy = By.xpath("//*[@id=\"configuration_input_div\"]/input[@type=\"submit\"]");
+        By submitButtonBy = By.xpath("//*[@id=\"configurationInputDiv\"]/input[@type=\"submit\"]");
         WebElement submitButtonElement = driver.findElement(submitButtonBy);
         submitButtonElement.click();
     }

@@ -27,7 +27,7 @@ function remove_form_div_on_escape(evt) {
 }
 function remove_form_div() {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    var existing_div = document.getElementById('input_box_div');
+    var existing_div = document.getElementById('inputBoxDiv');
     if (existing_div) {
         //Reset the global variables:
         delete input_box_data_div.dataset.highlight_absence_create_intermediate_date_string;
@@ -46,7 +46,7 @@ function highlight_absence_create_start(evt) {
     var x = evt.clientX;
     var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
-    if ("input_box_div" === element_mouse_is_over.id) {
+    if ("inputBoxDiv" === element_mouse_is_over.id) {
         /*
          * The form div is already/still there.
          * There is nothing to do here:
@@ -95,7 +95,7 @@ function highlight_absence_create_intermediate(evt) {
 }
 function draw_style_highlight_absence_create() {
     var input_box_data_div = document.getElementById('input_box_data_div');
-    var list_of_day_paragraphs = document.getElementsByClassName("day_paragraph");
+    var list_of_day_paragraphs = document.getElementsByClassName("day-paragraph");
     for (var i = 0; i < list_of_day_paragraphs.length; i++) {
         var date_object_current = new Date(list_of_day_paragraphs[i].dataset.date_sql);
         if (new Date(input_box_data_div.dataset.highlight_absence_create_intermediate_date_string) < new Date(input_box_data_div.dataset.highlight_absence_create_from_date_string)) {
@@ -124,7 +124,7 @@ function highlight_absence_create_end(evt) {
     var x = evt.clientX;
     var y = evt.clientY;
     var element_mouse_is_over = document.elementFromPoint(x, y);
-    if ("input_box_div" === element_mouse_is_over.id) {
+    if ("inputBoxDiv" === element_mouse_is_over.id) {
         /*
          * The form div is already/still there.
          * There is nothing to do here:
@@ -153,14 +153,13 @@ function insert_form_div(edit_create) {
          */
         return false;
     }
-    var existing_div = document.getElementById('input_box_div');
+    var existing_div = document.getElementById('inputBoxDiv');
     if (existing_div) {
         return false; //Do not remove and rebuild when clicking inside the form.
     }
     var div = document.createElement('div');
     document.body.appendChild(div);
-    div.id = 'input_box_div';
-    div.className = 'input_box_div';
+    div.id = 'inputBoxDiv';
     fill_input_box_from_prototype(element_mouse_is_over);
     /*
      //Add a handler to BODY to catch [Esc] for closing the div.
@@ -197,7 +196,7 @@ function fill_input_box_from_prototype(element_mouse_is_over) {
      * The employee_id is transfered to the php script collaborative-vacation-input-box.php via GET
      * It is necessary for the handling of session permissions.
      */
-    var input_box_div = document.getElementById('input_box_div');
+    var input_box_div = document.getElementById('inputBoxDiv');
     var absence_details_json = element_mouse_is_over.dataset.absence_details;
     if (absence_details_json) {
         /**

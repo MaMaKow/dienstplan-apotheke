@@ -91,7 +91,7 @@ $html_select_branch;
         echo sprintf(gettext('It will be team %1$ss turn.'), $team_id_today);
     }
     ?></p>
-<table id="saturday_rotation_team_input_table" data-max_team_id="<?= $saturday_rotation->get_maximum_team_id(); ?>">
+<table id="saturdayRotationTeamInputTable" data-max_team_id="<?= $saturday_rotation->get_maximum_team_id(); ?>">
     <tr>
         <th><?= gettext("Example date") ?></th>
         <th><?= gettext("Team-Id") ?></th>

@@ -46,7 +46,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>\n";
     $tablebody .= "<td>\n";
     $tablebody .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id=delete_" . htmlspecialchars($row->Datum) . ">\n";
-    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no_print type=submit name=loeschen[" . htmlspecialchars($employee_key) . "][" . htmlspecialchars($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
+    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlspecialchars($employee_key) . "][" . htmlspecialchars($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
     $tablebody .= "</form>\n";
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
@@ -68,7 +68,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_overtime');
 
-echo "<div id=main-area>\n";
+echo "<div id=mainArea>\n";
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 
@@ -100,7 +100,7 @@ echo "<tr>\n"
  * The balance will be visibly calculated by JavaScript.
  * But the calculated value is not used as an input.
  */
-echo "<tr class='no_print'>\n";
+echo "<tr class='no-print'>\n";
 echo "<td>\n";
 echo "<input type=date id='date_chooser_input' class='datepicker' value=" . date('Y-m-d') . " name=datum form=insert_new_overtime  autofocus>\n";
 echo "</td>\n";
@@ -114,7 +114,7 @@ echo "<td>\n";
 echo "<input type=text id=grund name=grund form=insert_new_overtime>\n";
 echo "</td>\n";
 echo "<td>";
-echo "<input class=no_print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime></td>\n";
+echo "<input class=no-print type=submit name=submitStunden value='Eintragen' form=insert_new_overtime></td>\n";
 echo "</tr>\n";
 //Ausgabe
 echo "$tablebody";

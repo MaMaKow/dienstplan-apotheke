@@ -68,7 +68,7 @@ public class UserManagementPage {
     }
 
     public String getUserEmail() {
-        WebElement emailElement = driver.findElement(By.id("user_email"));
+        WebElement emailElement = driver.findElement(By.id("userEmail"));
         return emailElement.getAttribute("value");
     }
 
@@ -88,7 +88,7 @@ public class UserManagementPage {
     }
 
     private Select getUserStatusSelect() {
-        WebElement statusElement = driver.findElement(By.id("user_status"));
+        WebElement statusElement = driver.findElement(By.id("userStatus"));
         Select statusSelect = new Select(statusElement);
         return statusSelect;
     }
@@ -100,7 +100,7 @@ public class UserManagementPage {
 
     public Map<String, Boolean> getPrivileges() {
         Map<String, Boolean> privileges = new HashMap<>();
-        List<WebElement> privilegeElements = driver.findElements(By.xpath("//form[@id='user_management']/fieldset[@id='privilege_group']/input[@type='checkbox']"));
+        List<WebElement> privilegeElements = driver.findElements(By.xpath("//form[@id='user_management']/fieldset[@id='privilegeGroup']/input[@type='checkbox']"));
         for (WebElement privilegeElement : privilegeElements) {
             String privilegeName = privilegeElement.getAttribute("value");
             boolean hasPrivilege = privilegeElement.isSelected();

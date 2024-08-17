@@ -46,12 +46,12 @@ public class AbsenceYearPage {
      */
     private final By yearSelectBy;
     private Select yearSelect;
-    private By absenceFormEmployeeKeyBy = By.xpath("//select[@id=\"employee_key_select\"]");
-    private By absenceFormStartIdBy = By.xpath("//*[@id=\"input_box_form_start_date\"]");
-    private By absenceFormEndIdBy = By.xpath("//input[@id=\"input_box_form_end_date\"]");
-    private By absenceFormReasonIdBy = By.xpath("//select[@id=\"absence_reason_input_select\"]");
-    private By absenceFormCommentIdBy = By.xpath("//input[@id=\"input_box_form_comment\"]");
-    private By absenceFormSubmitButtonIdBy = By.xpath("//form[@id=\"input_box_form\"]/p/button");
+    private By absenceFormEmployeeKeyBy = By.xpath("//select[@id=\"employeeKeySelect\"]");
+    private By absenceFormStartIdBy = By.xpath("//*[@id=\"inputBoxFormStartDate\"]");
+    private By absenceFormEndIdBy = By.xpath("//input[@id=\"inputBoxFormEndDate\"]");
+    private By absenceFormReasonIdBy = By.xpath("//select[@id=\"absenceReasonInputSelect\"]");
+    private By absenceFormCommentIdBy = By.xpath("//input[@id=\"inputBoxFormComment\"]");
+    private By absenceFormSubmitButtonIdBy = By.xpath("//form[@id=\"inputBoxForm\"]/p/button");
 
     public AbsenceYearPage() {
         yearSelectBy = By.xpath("/html/body/div[3]/form/select");
@@ -86,10 +86,10 @@ public class AbsenceYearPage {
         }
         //By listOfDayParagraphsBy = By.xpath("/html/body/p");
         By listOfDayParagraphsBy = By.xpath("/html/body"
-                + "/div[contains(@class, \"year_container\")]"
-                + "/div[contains(@class, \"year_quarter_container\")]"
-                + "/div[contains(@class, \"month_container\")]"
-                + "/p[contains(@class, \"day_paragraph\")]");
+                + "/div[contains(@class, \"year-container\")]"
+                + "/div[contains(@class, \"year-quarter-container\")]"
+                + "/div[contains(@class, \"month-container\")]"
+                + "/p[contains(@class, \"day-paragraph\")]");
 
         List<WebElement> listOfDayParagraphs = driver.findElements(listOfDayParagraphsBy);
 
@@ -235,7 +235,7 @@ public class AbsenceYearPage {
              * Cicking on the dayParagraphElement will open a form. This form is
              * requested from the server via XMLHttpRequest()
              */
-            By absenceFormDeleteButtonIdBy = By.xpath("//button[@id=\"input_box_form_button_delete\"]");
+            By absenceFormDeleteButtonIdBy = By.xpath("//button[@id=\"inputBoxFormButtonDelete\"]");
             WebElement absenceFormDeleteButtonIdElement = driver.findElement(absenceFormDeleteButtonIdBy);
             /**
              * Submit form by delete:

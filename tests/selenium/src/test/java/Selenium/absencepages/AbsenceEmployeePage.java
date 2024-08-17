@@ -143,7 +143,7 @@ public class AbsenceEmployeePage {
      */
     public List<String> getUserDialogNotifications() {
         List<String> userDialogNotificationStrings = new ArrayList<>();
-        By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'notification')]/span");
+        By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"mainArea\"]/div[contains(@class, 'user-dialog-container')]/div[contains(@class, 'notification')]/span");
         List<WebElement> listOfNotificationParagraphs = driver.findElements(userDialogNotificationParagraphBy);
         for (WebElement paragraphElement : listOfNotificationParagraphs) {
             userDialogNotificationStrings.add(paragraphElement.getText());
@@ -164,7 +164,7 @@ public class AbsenceEmployeePage {
      */
     public List<String> getUserDialogErrors() {
         List<String> userDialogErrorStrings = new ArrayList<>();
-        By userDialogErrorParagraphBy = By.xpath("/html/body/div[@id='main-area']/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'error')]/span");
+        By userDialogErrorParagraphBy = By.xpath("/html/body/div[@id='mainArea']/div[contains(@class, 'user-dialog-container')]/div[contains(@class, 'error')]/span");
         List<WebElement> listOfErrorParagraphs = driver.findElements(userDialogErrorParagraphBy);
         for (WebElement paragraphElement : listOfErrorParagraphs) {
             userDialogErrorStrings.add(paragraphElement.getText());

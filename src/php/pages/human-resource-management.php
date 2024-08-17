@@ -49,7 +49,7 @@ $session->exit_on_missing_privilege('create_employee');
  * @TODO: Test what it looks like, when the input fields are in front of their labels, not behind them.
  */
 ?>
-<div class="centered_form_div">
+<div class="centered-form-div">
     <?= build_html_navigation_elements::build_select_employee($employee_key, $List_of_employees) ?>
     <form accept-charset='utf-8' method='POST' id='human_resource_management'>
 
@@ -65,20 +65,20 @@ $session->exit_on_missing_privilege('create_employee');
         <p>
             <?= human_resource_management::make_radio_profession_list($employee->profession) ?>
         </p>
-        <fieldset class="nowrap">
+        <fieldset class="no-wrap">
             <legend><?= gettext("Working hours") ?>:</legend>
             <p >
                 <label for="working_week_hours"><?= gettext("Working hours") ?>: </label>
                 <input type='number' required min='0' step='any' name='working_week_hours' id="working_week_hours" value="<?= $employee->working_week_hours ?>">
-                <span class="form_input_unit">h</span>
+                <span class="form-input-unit">h</span>
                 <br>
                 <label for="lunch_break_minutes"><?= gettext("Lunch break") ?>: </label>
                 <input type='number' required min='0' step='any' name='lunch_break_minutes' id="lunch_break_minutes" value="<?= $employee->lunch_break_minutes ?>">
-                <span class="form_input_unit">min</span>
+                <span class="form-input-unit">min</span>
                 <br>
                 <label for="holidays"><?= gettext("Vacation days"); ?>: </label>
                 <input type='number' required min='0' step='any' name='holidays' id="holidays" value="<?= $employee->holidays ?>">
-                <span class="form_input_unit">d</span>
+                <span class="form-input-unit">d</span>
             </p>
         </fieldset>
         <?= human_resource_management::make_radio_branch_list($employee->get_principle_branch_id()); ?>
@@ -102,7 +102,7 @@ $session->exit_on_missing_privilege('create_employee');
             </p>
         </fieldset>
 
-        <input type=submit id=save_new class='no_print' name=save-employee value='<?= gettext("Save Employee") ?>' form='human_resource_management'>
+        <input type=submit id=save_new class='no-print' name=save-employee value='<?= gettext("Save Employee") ?>' form='human_resource_management'>
 
     </form>
 </div>

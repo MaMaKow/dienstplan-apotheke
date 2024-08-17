@@ -187,10 +187,10 @@ class collaborative_vacation {
 
         $absences = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
 
-        $year_container_html = "<div class=year_container>\n";
+        $year_container_html = "<div class=year-container>\n";
         $year_container_html .= \form_element_builder::build_html_select_year($current_year);
-        $month_container_html = "<div class='year_quarter_container'>";
-        $month_container_html .= "<div class=month_container>";
+        $month_container_html = "<div class='year-quarter-container'>";
+        $month_container_html .= "<div class=month-container>";
         $month_container_html .= $this->get_month_name($date_start_object) . "<br>\n";
         for ($date_object = clone $date_start_object; $date_object->format('Y-m-d') <= $date_end_object->format('Y-m-d'); $date_object->add(new \DateInterval('P1D'))) {
 
@@ -200,16 +200,16 @@ class collaborative_vacation {
                 $month_container_html .= "</div>";
                 //if (in_array($current_month, array(4, 7, 10))) {
                 if (in_array($current_month, array(7))) {
-                    $month_container_html .= "</div><!-- class='year_quarter_container'-->";
-                    $month_container_html .= "<div class='year_quarter_container'>";
+                    $month_container_html .= "</div><!-- class='year-quarter-container'-->";
+                    $month_container_html .= "<div class='year-quarter-container'>";
                 }
-                $month_container_html .= "<div class='month_container'>";
+                $month_container_html .= "<div class='month-container'>";
                 $month_container_html .= $this->get_month_name($date_object) . "<br>\n";
             }
             $month_container_html .= $this->build_absence_month_paragraph($date_object, $date_object, $absences, 'year');
         }
         $month_container_html .= "</div>\n";
-        $month_container_html .= "</div><!-- class='year_quarter_container'-->\n";
+        $month_container_html .= "</div><!-- class='year-quarter-container'-->\n";
         $year_container_html .= $month_container_html;
         $year_container_html .= "</div>\n";
         return $year_container_html;
@@ -250,15 +250,15 @@ class collaborative_vacation {
         $month_container_html .= \form_element_builder::build_html_select_year($input_date_object->format('Y'));
         $month_container_html .= \form_element_builder::build_html_select_month($input_date_object->format('n'));
 
-        $week_container_html = "<table class='month_container noselect'>"
-                . "<tr class=week_container>";
+        $week_container_html = "<table class='month-container noselect'>"
+                . "<tr class=week-container>";
         for ($date_object = clone $start_date_object; $date_object->format('Y-m-d') <= $end_date_object->format('Y-m-d'); $date_object->add(new \DateInterval('P1D'))) {
             if ($current_week != $date_object->format('W')) {
                 /** begin a new month div */
                 $current_week = $date_object->format('W');
                 $current_month_name = $this->get_month_name($date_object);
                 $week_container_html .= "</tr>";
-                $week_container_html .= "<tr class=week_container>";
+                $week_container_html .= "<tr class=week-container>";
             }
 
             $week_container_html .= $this->build_absence_month_paragraph($date_object, $input_date_object, $absenceColletcion);
@@ -316,7 +316,7 @@ class collaborative_vacation {
         $emergencyService = \PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDate($dateObject);
         $emergencyServiceContent = "";
         if ('month' === $mode) {
-            $emergencyServiceContent .= "<span class='emergency_service'>"
+            $emergencyServiceContent .= "<span class='emergency-service'>"
                     . gettext("emergency service")
                     . ": "
                     . $emergencyService->getBranchNameShort()
@@ -329,7 +329,7 @@ class collaborative_vacation {
             $title .= $emergencyService->getBranchNameShort()
                     . ", ";
             $title .= $emergencyService->getEmployeeLastName();
-            $emergencyServiceContent .= "<span class='emergency_service' title='$title'>"
+            $emergencyServiceContent .= "<span class='emergency-service' title='$title'>"
                     . mb_substr(gettext('emergency service'), 0, 2)
                     . "<sub>"
                     . $emergencyService->getEmployeeShortDescriptor()
@@ -381,10 +381,10 @@ class collaborative_vacation {
                 $employeeExists = ""; //blank means existing.
             } else {
                 $profession = "";
-                $employeeExists = "non_existing_employee";
+                $employeeExists = "non-existing-employee";
             }
 
-            $spanClass = "absent_employee_container";
+            $spanClass = "absent-employee-container";
             $spanClass .= " " . $profession;
             $spanClass .= " " . $employeeExists;
             $spanClass .= " " . $absence->getApproval();
@@ -433,14 +433,14 @@ class collaborative_vacation {
 
     private function get_classes_of_day_paragraph($date_object, $is_holiday, $input_date_object) {
 
-        $Paragraph_class = array('day_paragraph');
+        $Paragraph_class = array('day-paragraph');
         if ($date_object->format('N') < 6 and !$is_holiday) {
             $Paragraph_class[] = 'weekday';
         } else {
             $Paragraph_class[] = 'weekend';
         }
         if ($date_object->format('n') !== $input_date_object->format('n')) {
-            $Paragraph_class[] = 'adjacent_month';
+            $Paragraph_class[] = 'adjacent-month';
         }
         if ($date_object->format('Y-m-d') === date('Y-m-d', time())) {
             $Paragraph_class[] = 'today';

@@ -44,7 +44,7 @@ $number_of_holidays_taken = \PDR\Database\AbsenceDatabaseHandler::getNumberOfHol
 $number_of_remaining_holidays_submitted = \PDR\Database\AbsenceDatabaseHandler::getNumberOfRemainingHolidaysSubmitted($employee_key, $year);
 $number_of_remaining_holidays_left = $number_of_holidays_due - ($number_of_holidays_taken + $number_of_remaining_holidays_submitted);
 
-$remaining_holidays_div = "<div class='remaining_holidays'>";
+$remaining_holidays_div = "<div class='remaining-holidays'>";
 $remaining_holidays_div .= "<p>";
 $remaining_holidays_div .= "<span>" . sprintf(gettext('The employee is entitled to %2$s of %3$s vacation days in the year %1$s.'), $year, $number_of_holidays_due, $number_of_holidays_principle) . " </span> ";
 $remaining_holidays_div .= "<span>" . sprintf(gettext('There have so far been taken %1$s holidays.'), $number_of_holidays_taken) . " </span> ";
@@ -73,7 +73,7 @@ while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
      *   In dem Fall könnte man eine Warnung über user_dialog senden.</p>
      */
     $html_form_id = "change_absence_entry_" . $row->start;
-    $tablebody .= "<tr class='absence_row' data-approval='$row->approval' style='height: 1em;'>"
+    $tablebody .= "<tr class='absence-row' data-approval='$row->approval' style='height: 1em;'>"
             . "<form accept-charset='utf-8' method=POST id='$html_form_id'>"
             . "\n";
     /*
@@ -137,14 +137,14 @@ while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
 require \PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require \PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
-echo "<div id=main-area>\n";
+echo "<div id=mainArea>\n";
 
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 echo \form_element_builder::build_html_select_year($year);
 echo \build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
 
-echo "<table id=absence_table class='table_with_underline_rows'>" . PHP_EOL;
+echo "<table id=absence_table class='table-with-underline-rows'>" . PHP_EOL;
 /*
  * Head
  */
@@ -156,7 +156,7 @@ echo "<tr><th>" . gettext('Start') . "</th><th>" . gettext('End') . "</th><th>" 
 
 if ($session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ABSENCE)) {
 
-    echo "<tr class=no_print id=input_line_new>\n"
+    echo "<tr class=no-print id=input_line_new>\n"
     . "<form accept-charset='utf-8' method=POST id='new_absence_entry'>\n";
     echo "<td>\n"
     . "<input type=hidden name=employee_key value=$employee_key form='new_absence_entry'>\n";
@@ -170,7 +170,7 @@ if ($session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ABSENCE)) {
     echo "<td id=tage title='Feiertage werden anschließend automatisch vom Server abgezogen.'>1</td>\n";
     echo "<td>" . \PDR\Output\HTML\AbsenceHtmlBuilder::buildApprovalInputSelect('not_yet_approved', 'new_absence_approval_select', 'new_absence_entry', $session) . "</td>" . PHP_EOL;
     echo "<td>\n";
-    echo "<button type=submit id=save_new class=no_print name=command value='insert_new' form='new_absence_entry'>" . gettext('Save') . "</button>";
+    echo "<button type=submit id=save_new class=no-print name=command value='insert_new' form='new_absence_entry'>" . gettext('Save') . "</button>";
     echo "</td>\n";
     echo "</tr>\n";
     echo "<tr style='display: none; background-color: #BDE682;' id=warning_message_tr>\n";

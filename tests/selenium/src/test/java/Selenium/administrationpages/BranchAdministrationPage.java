@@ -50,9 +50,9 @@ public class BranchAdministrationPage {
      * Form input elements:
      */
     private final By formElementBranchIdBy = By.xpath("//*[@id=\"branch_id\"]");
-    private final By formElementBranchPepIdBy = By.xpath("//*[@id=\"branch_pep_id\"]");
+    private final By formElementBranchPepIdBy = By.xpath("//*[@id=\"branchPepId\"]");
     private final By formElementBranchNameBy = By.xpath("//*[@id=\"branch_name\"]");
-    private final By formElementBranchShortNameBy = By.xpath("//*[@id=\"branch_short_name\"]");
+    private final By formElementBranchShortNameBy = By.xpath("//*[@id=\"branchShortName\"]");
     private final By formElementBranchAddressBy = By.xpath("//*[@id=\"branch_address\"]");
     private final By formElementBranchManagerBy = By.xpath("//*[@id=\"branch_manager\"]");
 
@@ -60,7 +60,7 @@ public class BranchAdministrationPage {
      * Buttons:
      */
     private final By formElementSubmitBy = By.xpath("//*[@id=\"submit_branch_data\"]");
-    private final By formElementRemoveBranchBy = By.xpath("//*[@id=\"form_buttons_container\"]/button[@id=\"branch_form_button_remove\"]");
+    private final By formElementRemoveBranchBy = By.xpath("//*[@id=\"formButtonsContainer\"]/button[@id=\"branchFormButtonRemove\"]");
 
     /**
      * opening times stored in input elements of type time

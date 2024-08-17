@@ -91,7 +91,7 @@ function auto_submit_form(form) {
     xml_http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     for (var i = 0; i < form_elements.length; i++) {
         form_element = form_elements[i];
-        if (!form_element.classList.contains('auto_submit')) {
+        if (!form_element.classList.contains('auto-submit')) {
             continue;
         }
         if ("checkbox" === form_element.type) {
@@ -224,16 +224,16 @@ function compare_passwords() {
     var second_pass = document.getElementById('second_pass').value;
     if (first_pass === second_pass && first_pass !== "") {
 //document.getElementById('clear_pass').value = 'same';
-        document.getElementById('disapprove_pass_img').style.display = 'none';
-        document.getElementById('approve_pass_img').style.display = "block";
+        document.getElementById('disapprovePassImage').style.display = 'none';
+        document.getElementById('approvePassImage').style.display = "block";
     } else if (second_pass !== "") {
 //document.getElementById('clear_pass').value = 'different';
-        document.getElementById('disapprove_pass_img').style.display = "block";
-        document.getElementById('approve_pass_img').style.display = 'none';
+        document.getElementById('disapprovePassImage').style.display = "block";
+        document.getElementById('approvePassImage').style.display = 'none';
     } else {
 //document.getElementById('clear_pass').value = 'not yet';
-        document.getElementById('disapprove_pass_img').style.display = 'none';
-        document.getElementById('approve_pass_img').style.display = 'none';
+        document.getElementById('disapprovePassImage').style.display = 'none';
+        document.getElementById('approvePassImage').style.display = 'none';
     }
 
 }
@@ -251,8 +251,6 @@ function update_pep() {
             //document.getElementById("xmlhttpresult").innerHTML = this.responseText;
         }
         document.getElementById("xmlhttpresult").innerHTML = this.responseText;
-        //let user_dialog_container = document.getElementsByClassName("user_dialog_container");
-        //user_dialog_container[0].innerHTML = this.responseText;
         /*
          * CAVE: We want to reload. But we do not want to POST again. Therefore we will not use: window.location.reload(true);
          */
@@ -263,11 +261,6 @@ function update_pep() {
     xml_http_request.send();
 }
 function reset_update_pep() {
-    console.log('reset_update_pep');
-    /*
-     document.getElementById("xmlhttpresult").innerHTML = "";
-     document.getElementById("phpscriptmessages").innerHTML = "";
-     */
     console.log(document.getElementById("pep_upload_form"));
     document.getElementById("pep_upload_form").submit();
 }
@@ -385,7 +378,7 @@ function configuration_toggle_show_smtp_options() {
     var email_method_radios = document.getElementsByName('email_method');
     for (var i = 0; i < email_method_radios.length; i++) {
         if (email_method_radios[i].checked) {
-            var configuration_smtp_settings_fieldset = document.getElementsByClassName('configuration_smtp_settings_fieldset');
+            var configuration_smtp_settings_fieldset = document.getElementsByClassName('configuration-smtp-settings-fieldset');
             if ('smtp' === email_method_radios[i].value) {
                 for (var j = 0; j < configuration_smtp_settings_fieldset.length; j++) {
                     configuration_smtp_settings_fieldset[j].style.display = 'inline';
@@ -409,7 +402,7 @@ function show_login_p_caps_warning(event) {
     /*
      * Get the warning text element
      */
-    var p_warning = document.getElementById("login_p_caps_warning");
+    var p_warning = document.getElementById("loginParagraphCapsWarning");
 
     /*
      * If "caps lock" is pressed, display the warning text

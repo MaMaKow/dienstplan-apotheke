@@ -43,7 +43,7 @@ function build_lost_password_form($user_key, $token) {
 
     if (lost_password_token_is_valid($user_key, $token)) {
         ?>
-        <div class=centered_form_div>
+        <div class=centered-form-div>
             <H1><?= $config['application_name'] ?> </H1>
             <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
                 <p><strong><?= $user->user_name ?></strong></p>

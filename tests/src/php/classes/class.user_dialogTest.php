@@ -32,7 +32,7 @@ class user_dialogTest extends PHPUnit_Framework_TestCase {
     public function testBuild_messages() {
         $this->object->add_message('Test');
         $html_should = <<<EOT
-<div class='user_dialog_container'>
+<div class='user-dialog-container'>
 <div class=error>
 <p>Test</p>
 </div>
@@ -91,9 +91,9 @@ EOT;
     public function testBuild_contact_form() {
         $contact_form = $this->object->build_contact_form();
         $this->assertEquals("
-        <div id='user_dialog_contact_form_div'>
+        <div id='userDialogContactFormDiv'>
             <a title='Schießen' href='#' onclick='hide_contact_form()'>
-            <span id='remove_form_div_span'>
+            <span id='removeFormDivSpan'>
                 x
             </span>
             </a>

@@ -38,11 +38,11 @@ public class SignInPage {
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
 
     // <input name="user_name" type="text" value="">
-    private final By usernameBy = By.id("login_input_user_name");
+    private final By usernameBy = By.id("loginInputUserName");
     // <input name="password" type="password" value="">
-    private final By passwordBy = By.id("login_input_user_password");
+    private final By passwordBy = By.id("loginInputUserPassphrase");
     // <input name="sign_in" type="submit" value="SignIn">
-    private final By signinBy = By.id("login_button_submit");
+    private final By signinBy = By.id("loginButtonSubmit");
 
     public SignInPage(WebDriver driver) {
         this.driver = driver;
@@ -59,7 +59,7 @@ public class SignInPage {
         WebDriverWait waitLong = new WebDriverWait(driver, 20);
         WebDriverWait waitShort = new WebDriverWait(driver, 1);
         try {
-            waitShort.until(ExpectedConditions.presenceOfElementLocated(By.id("login_button_submit")));
+            waitShort.until(ExpectedConditions.presenceOfElementLocated(By.id("loginButtonSubmit")));
         } catch (TimeoutException exception) {
             /**
              * <p lang=de>Wenn wir keinen Login submit button finden, dann
@@ -79,7 +79,7 @@ public class SignInPage {
                 /**
                  * Oder haben wir vielleicht nur nicht lang genug gewartet?
                  */
-                waitLong.until(ExpectedConditions.presenceOfElementLocated(By.id("login_button_submit")));
+                waitLong.until(ExpectedConditions.presenceOfElementLocated(By.id("loginButtonSubmit")));
             }
         }
         driver.findElement(usernameBy).sendKeys(userName);

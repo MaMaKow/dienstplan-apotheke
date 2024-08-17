@@ -50,7 +50,7 @@ public class UploadPepPage {
     }
 
     public void uploadFile() {
-        By selectFileBy = By.xpath("//*[@id=\"file_to_upload\"]");
+        By selectFileBy = By.xpath("//*[@id=\"fileToUpload\"]");
         WebElement selectFileElement = driver.findElement(selectFileBy);
         //Path filePath = Paths.get("PepData.asy").toAbsolutePath();
         String filePathString = "/home/seluser/selenium/PepData.asy";

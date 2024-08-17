@@ -174,7 +174,7 @@ $table_body_html .= "</tbody>";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
-<FORM method='post' class='no_print'>
+<FORM method='post' class='no-print'>
     <SELECT name='month_or_part' onchange='this.form.submit()'>
         <?php
         foreach ($Months as $month_number_option => $month_name) {
@@ -242,7 +242,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 <?php echo build_html_navigation_elements::build_button_link_roster_employee_table_page($employee_key); ?>
 <H2><?= $workforce->List_of_employees[$employee_key]->full_name ?></H2>
-<TABLE class="table_with_border" id="marginal_employment_hours_list_table">
+<TABLE class="table-with-border" id="marginalEmploymentHoursListTable">
     <THEAD>
         <TR><!--This following part is specific to German law. No other translation semms necessary.-->
             <TH>Datum</TH>
@@ -257,9 +257,9 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 A signature line for the employee or the employer or both does not seem to be necessary.
 If that ever changes:
 HTML:
-<input type="text" class="print_signature" />
+<input type="text" class="print-signature" />
 CSS:
-.print_signature {
+.print-signature {
     border: 0;
     border-bottom: 1px solid #000;
 }

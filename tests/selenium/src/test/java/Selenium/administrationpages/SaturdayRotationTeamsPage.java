@@ -184,7 +184,7 @@ public class SaturdayRotationTeamsPage {
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.numberOfElementsToBe(teamRowListBy, numberOfTeamRowsBeforeClick + 2));
 
-        By saturdayRotationTeamInputTableBy = By.xpath("//*[@id=\"saturday_rotation_team_input_table\"]");
+        By saturdayRotationTeamInputTableBy = By.xpath("//*[@id=\"saturdayRotationTeamInputTable\"]");
         WebElement saturdayRotationTeamInputTableElement = driver.findElement(saturdayRotationTeamInputTableBy);
         int newTeamId = Integer.valueOf(saturdayRotationTeamInputTableElement.getAttribute("data-max_team_id"));
         /**

@@ -67,9 +67,9 @@ if (array() !== $Roster and isset($Working_week_hours_have)) {
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-$main_div_html = "<div id='main-area'>\n";
+$main_div_html = "<div id='mainArea'>\n";
 $dateString = $date_start_object->format('W');
-$date_info_line_html = "<div id=date_info_line class='no_print'>"
+$date_info_line_html = "<div id=date_info_line class='no-print'>"
         . gettext("calendar week") . '&nbsp;'
         . $dateString
         . '&nbsp;' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))
@@ -77,25 +77,25 @@ $date_info_line_html = "<div id=date_info_line class='no_print'>"
 $main_div_html .= $date_info_line_html;
 
 //Support for various branch clients.
-$main_div_html .= "<div class='no_print'>";
+$main_div_html .= "<div class='no-print'>";
 $main_div_html .= build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects, $date_sql);
 $main_div_html .= "</div>";
 
 $duty_roster_form_html = "";
 $buttons_div_html = "";
-$buttons_div_html .= "<div id=buttons_div class=no_print>";
+$buttons_div_html .= "<div id=buttons_div class=no-print>";
 $buttons_div_html .= build_html_navigation_elements::build_button_week_backward($date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_button_week_forward($date_sql);
 $buttons_div_html .= build_html_navigation_elements::build_input_date($date_sql);
 $buttons_div_html .= "</div>";
 $duty_roster_form_html .= $buttons_div_html;
 
-$table_html = "<table id=duty_roster_table>\n";
+$table_html = "<table id=dutyRosterTable>\n";
 $table_html .= build_html_roster_views::build_roster_read_only_table_head($Roster);
 
 $table_body_html = build_html_roster_views::build_roster_readonly_table($Roster, $branch_id, array('space_constraints' => 'narrow'));
 if (isset($Overlay_message)) {
-    $overlay_message_html .= "<div class='overlay no_print'>\n";
+    $overlay_message_html .= "<div class='overlay no-print'>\n";
     $Overlay_message = array_unique($Overlay_message);
     foreach ($Overlay_message as $message) {
         $overlay_message_html .= "<H1>" . $message . "</H1>\n";
@@ -127,12 +127,12 @@ $table_foot_html .= "</tr>\n";
 $table_foot_html .= "</tfoot>\n";
 
 $table_html .= $table_foot_html;
-$table_html .= "</table><!--id=duty_roster_table-->\n";
+$table_html .= "</table><!--id=dutyRosterTable-->\n";
 
-$table_div_html = "<div id=table_overlay_area>";
+$table_div_html = "<div id=tableOverlayArea>";
 $table_div_html .= $overlay_message_html;
 $table_div_html .= $table_html;
-$table_div_html .= "</div><!--id='main-area'-->\n";
+$table_div_html .= "</div><!--id='mainArea'-->\n";
 $table_div_html .= "$weekly_rotation_div_html";
 
 $duty_roster_form_html .= $table_div_html;
@@ -143,14 +143,14 @@ $main_div_html .= $duty_roster_working_week_hours_div;
 
 echo $user_dialog->build_messages();
 
-echo '<div id="print_time_info" class="only_print"><p class="tiny">' . sprintf(gettext('Time of print: %1$s'), date('d.m.Y H:i:s')) . '</p></div>';
+echo '<div id="printTimeInfo" class="only-print"><p class="tiny">' . sprintf(gettext('Time of print: %1$s'), date('d.m.Y H:i:s')) . '</p></div>';
 echo $main_div_html;
 /* echo <<<EOF
   <p style="page-break-after: always;">&nbsp;</p>
   <p style="page-break-before: always;">&nbsp;</p>\n
   EOF;
  */
-echo "</div><!--class='main-area no_print'-->\n";
+echo "</div><!--class='mainArea no-print'-->\n";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
 </BODY>

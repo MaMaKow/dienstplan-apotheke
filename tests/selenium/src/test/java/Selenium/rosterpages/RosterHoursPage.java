@@ -138,7 +138,7 @@ public class RosterHoursPage {
 
     public WebElement getRowElement(LocalDate targetLocalDate) {
 
-        By listOfRowsBy = By.xpath("//*[@id=\"marginal_employment_hours_list_table\"]/tbody/tr");
+        By listOfRowsBy = By.xpath("//*[@id=\"marginalEmploymentHoursListTable\"]/tbody/tr");
         By rosterItemDateBy = By.xpath(".//td[1]");
         List<WebElement> listOfRowsElements = driver.findElements(listOfRowsBy);
         String dateString;

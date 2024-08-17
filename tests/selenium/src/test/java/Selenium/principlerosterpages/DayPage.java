@@ -44,7 +44,7 @@ public class DayPage {
 
     protected static WebDriver driver;
 
-    private final By weekdayChooserInputBy = By.xpath("//*[@id=\"week_day_form\"]/select");
+    private final By weekdayChooserInputBy = By.xpath("//*[@id=\"weekdayForm\"]/select");
     private final By alternationChooserInputBy = By.xpath("//*[@id=\"alternating_week_form\"]/select");
     private final By branchChooserInputBy = By.xpath("//*[@id=\"branch_form_select\"]");
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
@@ -138,7 +138,7 @@ public class DayPage {
     }
 
     public void addRosterRow() {
-        By listOfRosterRowsBy = By.xpath("/html/body/div[3]/form[@id=\"principle_roster_form\"]/table/tbody/tr/td");
+        By listOfRosterRowsBy = By.xpath("/html/body/div[3]/form[@id=\"principleRosterForm\"]/table/tbody/tr/td");
         List<WebElement> listOfRosterRowElements = driver.findElements(listOfRosterRowsBy);
         int numberOfRosterRowElements = listOfRosterRowElements.size();
         WebElement addRosterRowButtonElement = driver.findElement(addRosterRowButtonBy);
@@ -155,7 +155,7 @@ public class DayPage {
          * <td>ausgewählt wird. Das data-date_unix ist immer identisch.
          * </p>
          */
-        By rosterTableColumnBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td");
+        By rosterTableColumnBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td");
         WebElement rosterTableColumnElement = driver.findElement(rosterTableColumnBy);
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(rosterTableColumnBy));
@@ -242,7 +242,7 @@ public class DayPage {
     }
 
     private WebElement findRosterTableFirstRow() {
-        String rowXPath = "//*[@id=\"principle_roster_form\"]/table/tbody/tr/td";
+        String rowXPath = "//*[@id=\"principleRosterForm\"]/table/tbody/tr/td";
         By rowBy = By.xpath(rowXPath);
         WebElement rosterTableRowElement = driver.findElement(rowBy);
         return rosterTableRowElement;
@@ -253,7 +253,7 @@ public class DayPage {
          * Wir brauchen zwei By Variablen. CSS kann tatsächlich gerade markierte
          * options finden. XPath kann parent elements finden.
          */
-        By rowCssBy = By.cssSelector("#principle_roster_form > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
+        By rowCssBy = By.cssSelector("#principleRosterForm > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
         By rowXpathBy = By.xpath("parent::select/parent::span/parent::td");
         WebElement rosterTableRowOptionElement = driver.findElement(rowCssBy);
         WebElement rosterTableRowElement = rosterTableRowOptionElement.findElement(rowXpathBy);
@@ -382,7 +382,7 @@ public class DayPage {
          * Add new row:
          */
         addRosterRow();
-        By insertedRowBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr[(last()-1)]/td");
+        By insertedRowBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr[(last()-1)]/td");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(insertedRowBy));
 
@@ -565,8 +565,8 @@ public class DayPage {
          * AKTUELL SELEKTIERTE option ausgewählt.
          */
         if ("duty".equals(dutyOrBreak)) {
-            By dutyStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_start_sql\")]");
-            By dutyEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_end_sql\")]");
+            By dutyStartInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_start_sql\")]");
+            By dutyEndInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_end_sql\")]");
             WebElement dutyStartInputElement = driver.findElement(dutyStartInputBy);
             WebElement dutyEndInputElement = driver.findElement(dutyEndInputBy);
             wait.until(ExpectedConditions.attributeToBe(dutyStartInputBy, "value", rosterItemReadBefore.getDutyStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
@@ -574,8 +574,8 @@ public class DayPage {
             Assert.assertEquals(dutyStartInputElement.getAttribute("value"), rosterItemReadBefore.getDutyStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm")));
             Assert.assertEquals(dutyEndInputElement.getAttribute("value"), rosterItemReadBefore.getDutyEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm")));
         } else if ("break".equals(dutyOrBreak)) {
-            By breakStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_start_sql\")]");
-            By breakEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_end_sql\")]");
+            By breakStartInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_start_sql\")]");
+            By breakEndInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_end_sql\")]");
             wait.until(ExpectedConditions.attributeToBe(breakStartInputBy, "value", rosterItemReadBefore.getBreakStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
             wait.until(ExpectedConditions.attributeToBe(breakEndInputBy, "value", rosterItemReadBefore.getBreakEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
         } else {
@@ -585,7 +585,7 @@ public class DayPage {
     }
 
     private int getPlotDataBarWidthFactor() {
-        By svgImageBy = By.xpath("//*[@id=\"main-area\"]/div/div/*[name()=\"svg\"]");
+        By svgImageBy = By.xpath("//*[@id=\"mainArea\"]/div/div/*[name()=\"svg\"]");
         WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(svgImageBy));
         WebElement svgImageElement = driver.findElement(svgImageBy);

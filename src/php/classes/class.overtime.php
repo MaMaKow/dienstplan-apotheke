@@ -180,7 +180,7 @@ class overtime {
     public static function build_overview_table() {
         $table_head = overtime::build_overview_table_head();
         $table_body = overtime::build_overview_table_body();
-        $table = "<table id='overtime_overview_table'>" . $table_head . $table_body . "</table>\n";
+        $table = "<table id='overtimeOverviewTable'>" . $table_head . $table_body . "</table>\n";
         return $table;
     }
 
@@ -211,10 +211,10 @@ class overtime {
                 $date_object = new DateTime($row->Datum);
                 switch (TRUE) {
                     case 40 < $row->Saldo:
-                        $class = "positive_very_high";
+                        $class = "positive-very-high";
                         break;
                     case 20 < $row->Saldo:
-                        $class = "positive_high";
+                        $class = "positive-high";
                         break;
                     case 0 == $row->Saldo:
                         $class = "zero";
@@ -228,7 +228,7 @@ class overtime {
                 }
 
                 if ($date_object < $threeMonthsAgo) {
-                    $class .= " " . "not_updated";
+                    $class .= " " . "not-updated";
                 }
                 $table_rows .= "<tr class='$class'>";
                 $table_rows .= "<td>" . $row->employee_key . " " . $workforce->List_of_employees[$row->employee_key]->last_name . "</td>";

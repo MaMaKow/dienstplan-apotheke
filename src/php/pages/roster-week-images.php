@@ -40,15 +40,15 @@ $workforce = new workforce();
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
-echo "<div class='main-area'>\n";
-echo "<div id=navigation_elements class='no_print'>";
+echo "<div class='mainArea'>\n";
+echo "<div id=navigationElements class='no-print'>";
 echo build_html_navigation_elements::build_select_branch($mandant, $List_of_branch_objects, $date_sql);
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
 echo build_html_navigation_elements::build_button_week_forward($date_sql);
 echo build_html_navigation_elements::build_input_date($date_sql);
 echo "</div>\n";
 
-echo "<div id=roster_week_image_div class=image>\n";
+echo "<div id=rosterWeekImageDiv class=image>\n";
 $configuration = new \PDR\Application\configuration();
 $locale = $configuration->getLanguage();
 $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
@@ -58,15 +58,15 @@ for ($dateObject = clone $dateStartObject; $dateObject <= $dateEndObject; $dateO
     $date_sql = $dateObject->format('Y-m-d');
     $Roster = roster::read_roster_from_database($branch_id, $date_sql);
     $roster_image_bar_plot = new roster_image_bar_plot($Roster, 300, 200);
-    echo "<div class=image_part>\n";
+    echo "<div class=image-part>\n";
     $dateString = $dateFormatter->format($dateObject->getTimestamp());
 
     echo "<p>" . $dateString . "</p>";
     echo $roster_image_bar_plot->svg_string;
     echo "</div>\n";
 }
-echo "</div><!--id=roster_image_div-->\n";
-echo "</div><!--class='main-area no_print'-->\n";
+echo "</div><!--id=rosterImageDiv-->\n";
+echo "</div><!--class='mainArea no-print'-->\n";
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 
