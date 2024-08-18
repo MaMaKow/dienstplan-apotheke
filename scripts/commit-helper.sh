@@ -53,11 +53,18 @@ echo "Showing git status: ";
 git status;
 
 echo "Please review your changes above!";
-read -p "Ready to COMMIT? [y/n] " -N 1 decision_commit;
-if [ "y" != "$decision_commit" ] && [ "Y" != "$decision_commit" ]
-then
-    error_exit "You are not ready to commit yet.";
-fi
+while true; do
+    read -p "Ready to COMMIT? [y/n] " -n 1 decision_commit
+    echo # Move to a new line after user input
+
+    if [[ "$decision_commit" == "y" || "$decision_commit" == "Y" ]]; then
+        break
+    elif [[ "$decision_commit" == "n" || "$decision_commit" == "N" ]]; then
+        error_exit "You are not ready to commit yet."
+    else
+        echo "Invalid input. Please enter 'y' or 'n'."
+    fi
+done
 clear
 
 # Check if the current branch is one of the allowed branches for tagging:
@@ -131,17 +138,31 @@ fi
 
 git show -1
 git status
-read -p "Ready to PUSH changes and tags to remote? [y/n] " -N 1 decision_push;
-if [ "y" != "$decision_push" ] && [ "Y" != "$decision_push" ]
-then
-    error_exit "You are not ready to push yet.";
-fi
+while true; do
+    read -p "Ready to PUSH changes and tags to remote? [y/n] " -n 1 decision_push
+    echo # This is to move to a new line after the user input
+
+    if [[ "$decision_push" == "y" || "$decision_push" == "Y" ]]; then
+        break
+    elif [[ "$decision_push" == "n" || "$decision_push" == "N" ]]; then
+        error_exit "You are not ready to push yet."
+    else
+        echo "Invalid input. Please enter 'y' or 'n'."
+    fi
+done
 git push origin
 git push origin --tags
 
-read -p "Is this branch ready for TESTING branch? [y/n] " -n 1 decision_testing;
-if [ "y" != "$decision_testing" ] && [ "Y" != "$decision_testing" ]
-then
-    error_exit "Branch is not ready for testing yet.";
-fi
+while true; do
+    read -p "Is this branch ready for TESTING branch? [y/n] " -n 1 decision_testing
+    echo # This is to move to a new line after the user input
+
+    if [[ "$decision_testing" == "y" || "$decision_testing" == "Y" ]]; then
+        break
+    elif [[ "$decision_testing" == "n" || "$decision_testing" == "N" ]]; then
+        error_exit "Branch is not ready for testing yet."
+    else
+        echo "Invalid input. Please enter 'y' or 'n'."
+    fi
+done
 git push origin development:testing
