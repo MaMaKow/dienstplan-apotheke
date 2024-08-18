@@ -18,23 +18,23 @@
 require '../../../default.php';
 
 $workforce = new workforce();
-$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$employee_key = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 30);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
-    if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
+    if (!$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;
     }
-    $Principle_roster_new = user_input::get_principle_employee_roster_from_POST_secure();
+    $Principle_roster_new = \user_input::get_principle_employee_roster_from_POST_secure();
     $last_item_in_roster = end($Principle_roster_new)[0];
     $first_item_in_roster = reset($Principle_roster_new)[0];
-    $Principle_roster_old = principle_roster::read_current_principle_employee_roster_from_database($employee_key, $first_item_in_roster->date_object, $last_item_in_roster->date_object);
-    $List_of_changed_keys = user_input::get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
-    $Inserted_principle_roster_item_list = user_input::get_inserted_principle_roster_item_list($Principle_roster_new);
-    $List_of_deleted_roster_primary_keys = user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
-    principle_roster::insert_changed_entries_into_database_by_key($Principle_roster_new, $List_of_changed_keys);
-    principle_roster::insert_new_entries_into_database($Inserted_principle_roster_item_list);
-    principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
+    $Principle_roster_old = \principle_roster::read_current_principle_employee_roster_from_database($employee_key, $first_item_in_roster->date_object, $last_item_in_roster->date_object);
+    $List_of_changed_keys = \user_input::get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    $Inserted_principle_roster_item_list = \user_input::get_inserted_principle_roster_item_list($Principle_roster_new);
+    $List_of_deleted_roster_primary_keys = \user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    \principle_roster::insert_changed_entries_into_database_by_key($Principle_roster_new, $List_of_changed_keys);
+    \principle_roster::insert_new_entries_into_database($Inserted_principle_roster_item_list);
+    \principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
 }
 
 
@@ -48,7 +48,7 @@ $session->exit_on_missing_privilege('create_roster');
 $html_text = '';
 $html_text .= "<div id=mainArea>\n";
 //TODO: find out how to respect the lunch breaks!
-$html_text .= build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
+$html_text .= \build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
 
 function build_change_principle_roster_employee_form(int $alternating_week_id, int $employee_key) {
     $alternating_week = new alternating_week($alternating_week_id);
@@ -56,7 +56,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     $pseudo_date_end_object = clone $pseudo_date_start_object;
     $pseudo_date_end_object->add(new DateInterval('P6D'));
 
-    $Principle_employee_roster = principle_roster::read_current_principle_employee_roster_from_database($employee_key, clone $pseudo_date_start_object, clone $pseudo_date_end_object);
+    $Principle_employee_roster = \principle_roster::read_current_principle_employee_roster_from_database($employee_key, clone $pseudo_date_start_object, clone $pseudo_date_end_object);
     /*
      * TODO: We might stop using a transfer for the lunch breaks.
      *   This means, that the breaks will not magically appear in the principle-roster-employee.php
@@ -64,8 +64,13 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
      *   This might bring up some confusion. Should I give up calculating probably lunch_breaks alltogether?
      *     If so, should there be a warning/notice if the law wants a break to be given?
      */
-    $workforce = new workforce($pseudo_date_start_object->format('Y-m-d'), $pseudo_date_end_object->format('Y-m-d'));
-    $branch_id = $workforce->List_of_employees[$employee_key]->principle_branch_id;
+    $workforce = new workforce();
+    if ($workforce->employee_exists($employee_key)) {
+        $branch_id = $workforce->List_of_employees[$employee_key]->principle_branch_id;
+    } else {
+        $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
+        $branch_id = $networkOfBranchOffices->get_main_branch_id();
+    }
     /*
      * @todo Take care to write a warning if lunch breaks are not given.
      */
@@ -73,13 +78,13 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     $html_text = '';
 
     $html_text .= "<form method='POST' id='$form_id' class='change-principle-roster-employee-form'>";
-    $html_text .= build_html_navigation_elements::build_button_submit($form_id);
-    if (alternating_week::alternations_exist()) {
+    $html_text .= \build_html_navigation_elements::build_button_submit($form_id);
+    if (\alternating_week::alternations_exist()) {
         $monday_date = clone $alternating_week->get_monday_date_for_alternating_week(new DateTime('Monday this week'));
         $sunday_date = clone $monday_date;
         $sunday_date->add(new DateInterval('P6D'));
         $alternating_week_id_string = '<div class="inline-block-element"><p>'
-                . alternating_week::get_human_readable_string($alternating_week_id)
+                . \alternating_week::get_human_readable_string($alternating_week_id)
                 . '<br> '
                 . gettext('e.g.') . ' '
                 . gettext('calendar week') . ' ' . $monday_date->format('W')
@@ -96,19 +101,19 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     $html_text .= "<table>\n";
     $html_text .= "<thead>\n";
     $html_text .= "<tr>\n";
-    $Weekday_names = localization::get_weekday_names();
+    $Weekday_names = \localization::get_weekday_names();
     foreach ($Weekday_names as $weekday_name) {
         //Wochentag
         $html_text .= "<td width=10%>";
         $html_text .= $weekday_name;
         $html_text .= "</td>\n";
     }
-    $max_employee_count = roster::calculate_max_employee_count($Principle_employee_roster);
+    $max_employee_count = \roster::calculate_max_employee_count($Principle_employee_roster);
     $html_text .= "<tbody>\n";
     for ($table_input_row_iterator = 0; $table_input_row_iterator < $max_employee_count; $table_input_row_iterator++) {
         $html_text .= "<tr data-roster_row_iterator='$table_input_row_iterator'>\n";
         foreach (array_keys($Principle_employee_roster) as $day_iterator) {
-            $html_text .= build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_branch', 'add_hidden_employee' => $employee_key));
+            $html_text .= \build_html_roster_views::build_roster_input_row($Principle_employee_roster, $day_iterator, $table_input_row_iterator, $max_employee_count, $branch_id, array('add_select_branch', 'add_hidden_employee' => $employee_key));
         }
         $html_text .= "</tr>\n";
     }
@@ -164,7 +169,7 @@ function calculate_list_of_working_week_hours($Roster_array) {
     return $List_of_working_week_hours;
 }
 
-foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
+foreach (\alternating_week::get_alternating_week_ids() as $alternating_week_id) {
     $html_text .= "<div class=principle-roster-alternation-container>";
     $html_text .= build_change_principle_roster_employee_form($alternating_week_id, $employee_key);
     $html_text .= "</div>";
@@ -179,7 +184,6 @@ foreach (alternating_week::get_alternating_week_ids() as $alternating_week_id) {
  */
 $html_text .= "</div><!-- id=mainArea -->\n";
 echo $html_text;
-
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
 ?>
