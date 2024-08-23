@@ -32,6 +32,7 @@ class principle_roster extends roster {
      * Absent employees will be excluded from the roster array, if the option is set.
      */
     const OPTION_CONTINUE_ON_ABSENCE = 'continue_on_absence';
+    const OPTION_SHOW_FUTURE_EMPLOYEES = 'show_future_employees';
 
     public $alternating_week_id;
 
@@ -67,7 +68,9 @@ class principle_roster extends roster {
                      */
                     continue 1;
                 }
-                if (isset($workforce->List_of_employees) AND false === array_search($row->employee_key, array_keys($workforce->List_of_employees))) {
+                if (!in_array(self::OPTION_SHOW_FUTURE_EMPLOYEES, $Options) and
+                        isset($workforce->List_of_employees) and
+                        false === array_search($row->employee_key, array_keys($workforce->List_of_employees))) {
                     /*
                      * Exclude non-existent employees from the principle roster:
                      */

@@ -103,7 +103,7 @@ abstract class build_html_roster_views {
              * Change $roster_input_row_branch from the above hidden input into a visible select element:
              */
             $roster_input_row_employee = "<span>";
-            $roster_input_row_employee .= build_html_roster_views::build_roster_input_row_employee_select($roster_employee_key, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
+            $roster_input_row_employee .= build_html_roster_views::buildRosterInputRowEmployeeSelect($roster_employee_key, $day_iterator, $roster_row_iterator, $maximum_number_of_rows);
             $roster_input_row_employee .= "</span>";
         }
         $roster_input_row .= $roster_input_row_employee;
@@ -243,41 +243,42 @@ abstract class build_html_roster_views {
         return $branch_select;
     }
 
-    private static function build_roster_input_row_employee_select($roster_employee_key, $date_unix, $roster_row_iterator, $maximum_number_of_rows) {
-        $day_of_week = (int) date('N', $date_unix);
-        $date_object = DateTime::createFromFormat('U', $date_unix);
-        $alternation_id = alternating_week::get_alternating_week_for_date($date_object);
-        $alternation_factor = $alternation_id;
-        $workforce = new workforce(date('Y-m-d', $date_unix));
-        $roster_input_row_employee_select = "<select "
-                . " name=Roster[" . $date_unix . "][" . $roster_row_iterator . "][employee_key] "
-                . " tabindex=" . (($day_of_week + ( ($alternation_factor * $maximum_number_of_rows + $roster_row_iterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 1)
-                . " data-date_unix='$date_unix' "
-                . " data-roster_row_iterator='$roster_row_iterator' "
+    private static function buildRosterInputRowEmployeeSelect($rosterEmployeeKey, $dateUnix, $rosterRowIterator, $maximumNumberOfRows) {
+        $dayOfWeek = (int) date('N', $dateUnix);
+        $dateObject = DateTime::createFromFormat('U', $dateUnix);
+        $dateEndWorkforce = (clone $dateObject)->add(new DateInterval('P1Y'));
+        $alternationId = alternating_week::get_alternating_week_for_date($dateObject);
+        $alternationFactor = $alternationId;
+        $workforce = new workforce($dateObject->format('Y-m-d'), $dateEndWorkforce->format('Y-m-d'));
+        $rosterInputRowEmployeeSelect = "<select "
+                . " name=Roster[" . $dateUnix . "][" . $rosterRowIterator . "][employee_key] "
+                . " tabindex=" . (($dayOfWeek + ( ($alternationFactor * $maximumNumberOfRows + $rosterRowIterator) * self::DAYS_IN_A_WEEK )) * self::INPUT_ELEMENTS_IN_ROSTER_FORM + 1)
+                . " data-date_unix='$dateUnix' "
+                . " data-roster_row_iterator='$rosterRowIterator' "
                 . " data-roster_column_name='employee_key' "
                 . " onChange='roster_change_bar_plot_on_change_of_table(this)' "
                 . ">";
         /*
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
-        $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$roster_employee_key]->last_name) or !isset($roster_employee_key)) {
-            foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
-                if ($roster_employee_key == $employee_key and NULL !== $roster_employee_key) {
-                    $roster_input_row_employee_select .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
+        $rosterInputRowEmployeeSelect .= "<option value=''>&nbsp;</option>";
+        if (isset($workforce->List_of_employees[$rosterEmployeeKey]->last_name) or !isset($rosterEmployeeKey)) {
+            foreach ($workforce->List_of_employees as $employeeKey => $employeeObject) {
+                if ($rosterEmployeeKey == $employeeKey and NULL !== $rosterEmployeeKey) {
+                    $rosterInputRowEmployeeSelect .= "<option value=$employeeKey selected>" . $employeeObject->first_name . " " . $employeeObject->last_name . "</option>";
                 } else {
-                    $roster_input_row_employee_select .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
+                    $rosterInputRowEmployeeSelect .= "<option value=$employeeKey>" . $employeeObject->first_name . " " . $employeeObject->last_name . "</option>";
                 }
             }
         } else {
             /*
              * Unknown employee, probably someone from the past.
              */
-            $roster_input_row_employee_select .= "<option value=$roster_employee_key selected>" . $roster_employee_key . " " . gettext("Unknown employee") . "</option>";
+            $rosterInputRowEmployeeSelect .= "<option value=$rosterEmployeeKey selected>" . $rosterEmployeeKey . " " . gettext("Unknown employee") . "</option>";
         }
 
-        $roster_input_row_employee_select .= "</select>\n";
-        return $roster_input_row_employee_select;
+        $rosterInputRowEmployeeSelect .= "</select>\n";
+        return $rosterInputRowEmployeeSelect;
     }
 
     private static function build_roster_input_row_comment($Roster, $day_iterator, $roster_row_iterator, $tabindex) {
