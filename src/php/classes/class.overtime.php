@@ -82,15 +82,133 @@ class overtime {
         overtime::recalculate_balances($employee_key);
     }
 
-    public static function handle_user_input_delete() {
-        $Remove = filter_input(INPUT_POST, 'loeschen', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
-        foreach ($Remove as $employee_key => $Data) {
-            $employee_key = intval($employee_key);
-            foreach (array_keys($Data) as $date_sql) {
-                $sql_query = "DELETE FROM `Stunden` WHERE `employee_key` = :employee_key AND `Datum` = :date";
-                database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'date' => $date_sql));
-            }
+    /**
+     * Handles the deletion of an overtime entry based on user input.
+     *
+     * This function performs the following steps:
+     * 1. Retrieves and sanitizes the employee key and date from the POST request.
+     * 2. Validates the input to ensure that both the employee key and date are provided.
+     *    - If either input is invalid or missing, an error message is added to the user dialog, and the function exits.
+     * 3. Deletes the overtime entry from the database using the sanitized input.
+     * 4. Checks if the current user lacks the privilege to manage the roster.
+     *    - If so, prepares and sends an email notification about the deletion.
+     *
+     * @param \sessions $session The current user session object used to check user privileges and handle user dialogs.
+     * @return void This function does not return any value.
+     */
+    private static function handleUserInputDelete($session): void {
+        $deletionEmployeeKey = filter_input(INPUT_POST, 'deletionEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
+        $deletionDate = filter_input(INPUT_POST, 'deletionDate', FILTER_SANITIZE_SPECIAL_CHARS);
+
+        if (!$deletionEmployeeKey || !$deletionDate) {
+            // Handle invalid input
+            /**
+             * @todo I am not sure if the error message would survive POST/REDIRECT/GET.
+             */
+            $userDialog = new \user_dialog();
+            $userDialog->add_message("Error while trying to delete overtime entry.", E_USER_ERROR);
+            return;
         }
+
+        // Step 1: Delete the overtime entry
+        self::deleteOvertimeEntry($deletionEmployeeKey, $deletionDate);
+
+        // Step 2: Check if we should notify the admin
+        if (self::shouldNotifyAdmin($session)) {
+            // Step 3: Prepare and send notification
+            self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate);
+        }
+    }
+
+    /**
+     * Deletes an overtime entry from the database based on employee key and date.
+     *
+     * This function executes a SQL DELETE query to remove an overtime entry from the
+     * `Stunden` table where the `employee_key` and `Datum` match the provided parameters.
+     * It uses a prepared statement to prevent SQL injection and ensure secure database interactions.
+     *
+     * @param int $employeeKey The unique identifier of the employee whose overtime entry is to be deleted.
+     * @param string $date The date of the overtime entry to be deleted, formatted as a string.
+     * @return void This function does not return any value.
+     */
+    private static function deleteOvertimeEntry(int $employeeKey, string $date): void {
+        $sqlQuery = "DELETE FROM `Stunden` WHERE `employee_key` = :employee_key AND `Datum` = :date";
+        database_wrapper::instance()->run($sqlQuery, array('employee_key' => $employeeKey, 'date' => $date));
+    }
+
+    /**
+     * Determines whether an email notification should be sent to the administrator.
+     *
+     * This function checks if the current user session lacks the privilege to manage the roster.
+     * If the user does not have the \sessions::PRIVILEGE_CREATE_ROSTER privilege, it returns true,
+     * indicating that an email notification should be sent. Otherwise, it returns false.
+     *
+     * @param \sessions $session The current user session object used to check user privileges.
+     * @return bool True if the user lacks the required privilege and an email notification should be sent; false otherwise.
+     */
+    private static function shouldNotifyAdmin($session): bool {
+        return !$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER);
+    }
+
+    /**
+     * Formats a date string into a locale-aware short date format.
+     *
+     * This function converts a date string into a `DateTime` object and then formats it
+     * according to the specified locale using a short date format. The `IntlDateFormatter`
+     * class is used to ensure that the date is formatted in a way that is appropriate
+     * for the provided locale settings.
+     *
+     * @param string $deletionDate The date to be formatted, provided as a string. It should be in a format
+     *                              that is recognized by the `DateTime` constructor.
+     * @param string $locale The locale identifier used to format the date, e.g., 'en_US' or 'de_DE'.
+     *                       This determines how the date is presented based on regional conventions.
+     * @return string The formatted date string, which represents the original date in a short format
+     *                according to the specified locale.
+     */
+    private static function formatDeletionDate(string $deletionDate, string $locale): string {
+        $deletionDateObject = new DateTime($deletionDate);
+        $formatter = new IntlDateFormatter($locale, IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
+        return $formatter->format($deletionDateObject);
+    }
+
+    /**
+     * Prepares and sends an email notification about the deletion of an overtime entry.
+     *
+     * This function constructs an email message to notify the administrator about the deletion
+     * of an overtime entry. It formats the deletion date according to the locale settings,
+     * and includes details such as the name of the user who performed the deletion, the employee
+     * whose entry was deleted, and the date of the deletion.
+     *
+     * Steps:
+     * 1. Retrieves configuration settings and employee details.
+     * 2. Formats the date according to the locale.
+     * 3. Prepares the subject and body of the email using localized strings and formatted data.
+     * 4. Sends the email to the contact address specified in the configuration.
+     *
+     * @param \sessions $session The current user session object, used to get the name of the user who performed the deletion.
+     * @param int $employeeKey The unique identifier of the employee whose overtime entry was deleted.
+     * @param string $deletionDate The date of the deleted overtime entry, formatted as a string.
+     * @return void This function does not return any value.
+     */
+    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate): void {
+        $configuration = new \PDR\Application\configuration();
+        $workforce = new workforce();
+        $employeeName = $workforce->getEmployeeFullName($employeeKey);
+        $locale = $configuration->getLC_TIME();
+        $dateString = self::formatDeletionDate($deletionDate, $locale);
+
+        // Prepare Email
+        $subject = gettext("PDR: An overtime entry has been deleted.");
+        $messageTemplate = gettext('The user %1$s has deleted the following overtime entry:\nEmployee: %2$s\nDate: %3$s');
+        $message = sprintf($messageTemplate, $session->getUserName(), $employeeName, $dateString);
+
+        // Send Email
+        $userDialogEmail = new \user_dialog_email();
+        $userDialogEmail->send_email(
+                $configuration->getContactEmail(),
+                $subject,
+                $message
+        );
     }
 
     public static function handle_user_input($session, $employee_key) {
@@ -101,7 +219,7 @@ class overtime {
          * Deleting rows of data:
          */
         if (filter_has_var(INPUT_POST, 'loeschen')) {
-            self::handle_user_input_delete();
+            self::handleUserInputDelete($session);
         }
 
         /*

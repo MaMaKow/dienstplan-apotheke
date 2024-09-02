@@ -46,7 +46,10 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= "<tr>\n";
     $tablebody .= "<td>\n";
     $tablebody .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id=delete_" . htmlspecialchars($row->Datum) . ">\n";
-    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum)) . " <input class=no-print type=submit name=loeschen[" . htmlspecialchars($employee_key) . "][" . htmlspecialchars($row->Datum) . "] value='X' title='Diesen Datensatz löschen'>\n";
+    $tablebody .= "" . date('d.m.Y', strtotime($row->Datum));
+    $tablebody .= " <input class=no-print type=submit name=deleteRow value='X' title='Diesen Datensatz löschen'>\n";
+    $tablebody .= " <input type=hidden name=deletionEmployeeKey value='" . htmlspecialchars($employee_key) . "'>\n";
+    $tablebody .= " <input type=hidden name=deletionDate value='" . htmlspecialchars($row->Datum) . "'>\n";
     $tablebody .= "</form>\n";
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
