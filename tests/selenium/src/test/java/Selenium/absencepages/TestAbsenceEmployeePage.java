@@ -130,9 +130,9 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         try {
             absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
         } catch (Exception exception) {
-            System.out.println("Exception occurred in deleteExistingAbsence() method:");
-            System.out.println("Exception Message: " + exception.getMessage());
-            System.out.println("Stack Trace:");
+            logger.error("Exception occurred in deleteExistingAbsence() method:");
+            logger.error("Exception Message: " + exception.getMessage());
+            logger.error("Stack Trace:");
             exception.printStackTrace();
             throw exception;
         }
@@ -161,9 +161,9 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
             absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.08.2020", Absence.REASON_PARENTAL_LEAVE, "overlap at end", "not_yet_approved");
             absenceEmployeePage = absenceEmployeePage.createNewAbsence("05.08.2020", "31.12.2020", Absence.REASON_MATERNITY_LEAVE, "overlap at start", "not_yet_approved");
         } catch (Exception exception) {
-            System.out.println("Exception occurred in deleteExistingAbsence() method:");
-            System.out.println("Exception Message: " + exception.getMessage());
-            System.out.println("Stack Trace:");
+            logger.error("Exception occurred in deleteExistingAbsence() method:");
+            logger.error("Exception Message: " + exception.getMessage());
+            logger.error("Stack Trace:");
             exception.printStackTrace();
             throw exception;
         }

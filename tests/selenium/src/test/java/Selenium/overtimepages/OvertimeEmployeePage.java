@@ -18,10 +18,10 @@
  */
 package Selenium.overtimepages;
 
-import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.Overtime;
 import Selenium.driver.Wrapper;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -70,7 +70,7 @@ public class OvertimeEmployeePage {
      */
     public String getUserNameText() {
         final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         WebElement userNameSpanElement;
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
@@ -192,6 +192,8 @@ public class OvertimeEmployeePage {
     }
 
     public OvertimeEmployeePage removeOvertimeByLocalDate(LocalDate localDate) {
+
+        this.selectYear(localDate.getYear());
         WebElement overtimeRow = findOvertimeRowByDate(localDate);
         By removeButtonBy = By.xpath(".//input");
         WebElement removeButtonElement = overtimeRow.findElement(removeButtonBy);
@@ -201,7 +203,6 @@ public class OvertimeEmployeePage {
          * Vor dem Löschen erscheint ein alert mit dem Text: "Really delete this
          * data set?" Wir bestätigen diese Anfrage mit OK.
          * </p>
-         *
          */
         driver.switchTo().alert().accept();
         OvertimeEmployeePage newOvertimeEmployeePage;

@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,7 +65,7 @@ public class UploadPepPage {
      */
     public String getUserNameText() {
         // <h1>Hello userName</h1>
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
 
         return driver.findElement(user_name_spanBy).getText();
@@ -73,7 +74,7 @@ public class UploadPepPage {
     public boolean expectationIsPresent() {
         WebElement expectationElement;
         String expectationString = null;
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         int attempts = 0;
         while (attempts < 5) {
             try {

@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,13 +41,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.text.StringEscapeUtils;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-import org.testng.annotations.BeforeMethod;
 import org.threeten.extra.YearWeek;
 
 /**

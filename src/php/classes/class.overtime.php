@@ -99,6 +99,7 @@ class overtime {
     private static function handleUserInputDelete($session): void {
         $deletionEmployeeKey = filter_input(INPUT_POST, 'deletionEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
         $deletionDate = filter_input(INPUT_POST, 'deletionDate', FILTER_SANITIZE_SPECIAL_CHARS);
+        $deletionHours = filter_input(INPUT_POST, 'deletionHours', FILTER_SANITIZE_SPECIAL_CHARS);
 
         if (!$deletionEmployeeKey || !$deletionDate) {
             // Handle invalid input
@@ -116,7 +117,7 @@ class overtime {
         // Step 2: Check if we should notify the admin
         if (self::shouldNotifyAdmin($session)) {
             // Step 3: Prepare and send notification
-            self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate);
+            self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours);
         }
     }
 
@@ -167,7 +168,8 @@ class overtime {
      */
     private static function formatDeletionDate(string $deletionDate, string $locale): string {
         $deletionDateObject = new DateTime($deletionDate);
-        $formatter = new IntlDateFormatter($locale, IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
+        $formatter = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE);
+        $formatter->setPattern('dd.MM.yyyy');
         return $formatter->format($deletionDateObject);
     }
 
@@ -190,7 +192,7 @@ class overtime {
      * @param string $deletionDate The date of the deleted overtime entry, formatted as a string.
      * @return void This function does not return any value.
      */
-    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate): void {
+    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours): void {
         $configuration = new \PDR\Application\configuration();
         $workforce = new workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
@@ -199,8 +201,8 @@ class overtime {
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been deleted.");
-        $messageTemplate = gettext('The user %1$s has deleted the following overtime entry:\nEmployee: %2$s\nDate: %3$s');
-        $message = sprintf($messageTemplate, $session->getUserName(), $employeeName, $dateString);
+        $messageTemplate = gettext('The user %1$s has deleted the following overtime entry:\r\nEmployee: %2$s\r\nDate: %3$s\r\nHours:%4$s');
+        $message = sprintf($messageTemplate, $session->getUserName(), $employeeName, $dateString, $deletionHours);
 
         // Send Email
         $userDialogEmail = new \user_dialog_email();
@@ -213,12 +215,18 @@ class overtime {
 
     public static function handle_user_input($session, $employee_key) {
         if (!$session->user_has_privilege('create_overtime')) {
-            return FALSE;
+            /**
+             * In the future everyone will be able to create overtime.
+             */
+            //return FALSE;
+            $userDialog = new user_dialog();
+            $message = gettext("Your overtime changes have been logged and will be sent to the administrator for review.");
+            $userDialog->add_message($message, E_USER_NOTICE);
         }
-        /*
+        /**
          * Deleting rows of data:
          */
-        if (filter_has_var(INPUT_POST, 'loeschen')) {
+        if (filter_has_var(INPUT_POST, 'deleteRow')) {
             self::handleUserInputDelete($session);
         }
 

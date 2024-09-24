@@ -20,6 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.Branch;
 import Selenium.RealData.RealNetworkOfBranchOffices;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,7 +68,7 @@ public class BranchAdministrationPage {
      */
     public BranchAdministrationPage() {
         driver = Selenium.driver.Wrapper.getDriver();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(formElementSubmitBy));
 
     }

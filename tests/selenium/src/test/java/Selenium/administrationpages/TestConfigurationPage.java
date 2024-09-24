@@ -18,7 +18,6 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.TestPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -26,10 +25,10 @@ import org.testng.annotations.Test;
  *
  * @author Mandelkow
  */
-public class TestConfigurationPage extends TestPage {
+public class TestConfigurationPage extends Selenium.TestPage {
 
     @Test(enabled = true)
-    public void testWriteConfiguration() {
+    public void testWriteConfiguration() throws Exception {
         /**
          * Sign in:
          */
@@ -43,6 +42,19 @@ public class TestConfigurationPage extends TestPage {
          */
         try {
             configurationPage.setLocales("de_DE.utf8");
+            /**
+             * mailhog should sit on localhost in a docker container and wait
+             * for mails. mailhog does not require authentication. It will
+             * simply accept any mail. Make sure that your firewall prohibits
+             * access to the mailhog port (default: 1025)
+             *
+             */
+            configurationPage.setEmailMethod("smtp");
+            configurationPage.setEmailSmtpHost("localhost");
+            configurationPage.setEmailSmtpPort(1025);
+            configurationPage.setEmailSmtpUsername("foo_username");
+            configurationPage.setEmailSmtpPassphrase("foo_passphrase");
+
             configurationPage.submitForm();
             Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
         } catch (Exception exception) {
@@ -105,7 +117,7 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Sending emails:
          */
-        Assert.assertEquals(configurationPage.getEmailMethod(), "mail");
+        Assert.assertEquals(configurationPage.getEmailMethod(), "smtp");
     }
 
 }

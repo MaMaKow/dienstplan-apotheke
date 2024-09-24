@@ -23,6 +23,9 @@ import Selenium.signin.SignInPage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -30,6 +33,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
 import org.testng.Assert;
 import org.testng.ITestContext;
+import org.testng.Reporter;
 import org.testng.SkipException;
 import org.testng.asserts.SoftAssert;
 import org.testng.annotations.BeforeSuite;
@@ -47,14 +51,20 @@ public class TestPage {
     protected WebDriver driver;
     protected SoftAssert softAssert = new SoftAssert();
     protected PropertyFile propertyFile;
-    protected static Boolean someTestHasFailed = false;
+    public static Boolean someTestHasFailed = false;
     public String packageName;
     public String className;
     public String methodName;
     public static Workforce workforce;
+    public final Logger logger;
+
+    public TestPage() {
+        this.logger = LogManager.getLogger(this.getClass());
+    }
 
     @Test
     public void signIn() {
+
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getTestPageUrl();
@@ -88,10 +98,12 @@ public class TestPage {
     }
 
     @BeforeSuite
-    public void setUpSuite(ITestContext context) {
+    public void setUpSuite() {
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         workforce = new Workforce();
+        // Get the context manually
+        ITestContext context = Reporter.getCurrentTestResult().getTestContext();
         if (isRealWorldTest(context)) {
             return;
         }
@@ -102,16 +114,16 @@ public class TestPage {
             String testPageFolderPath = propertyFile.getUrlInstallTest();
             driver.get(testPageFolderPath + "selenium-refresh.php");
             By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
-            WebDriverWait wait = new WebDriverWait(driver, 20);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
             wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
         } catch (Exception exception) {
-            System.out.println("driver.getCurrentUrl()");
-            System.out.println(driver.getCurrentUrl());
-            System.out.println("driver.getPageSource()");
-            System.out.println(driver.getPageSource());
+            logger.error("driver.getCurrentUrl()");
+            logger.error(driver.getCurrentUrl());
+            logger.error("driver.getPageSource()");
+            logger.error(driver.getPageSource());
             throw exception;
         }
-        driver.quit();
+        //driver.quit();
     }
 
     @BeforeMethod
@@ -172,7 +184,7 @@ public class TestPage {
 
     private boolean isRealWorldTest(ITestContext context) {
         // Check if the suite name contains "testng_realworld.xml"
-        System.out.println("Suite: " + context.getSuite().getName());
+        logger.debug("Suite: " + context.getSuite().getName());
         return context.getSuite().getName().contains("testng_realworld.xml");
     }
 

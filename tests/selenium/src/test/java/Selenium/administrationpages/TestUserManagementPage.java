@@ -18,7 +18,10 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.User;
+import Selenium.UserRegistry;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -105,5 +108,23 @@ public class TestUserManagementPage extends Selenium.TestPage {
         userManagementPage.setPrivileges(oldPrivileges);
         userManagementPage.submitForm();
         Assert.assertEquals(newPrivilegesFound, newPrivileges);
+    }
+
+    @Test(enabled = true, dependsOnMethods = {"testReadUserDetails", "testEditUserDetails"}, groups = {"userManagementPage"})
+    public void testCreateUser() {
+        /**
+         * The users are created by TestRegister. They are stored in the UsersRegister.
+         * The task here is to give them their privileges.
+         */
+        UserRegistry userRegistry = new UserRegistry();
+        Map<String, User> listOfUsers = userRegistry.getAllUsers();
+        for (User user : listOfUsers.values()) {
+            UserManagementPage userManagementPage = new UserManagementPage(driver);
+            userManagementPage.goToUserByName(user.getUserName());
+            Assert.assertEquals(userManagementPage.getUserName(), user.getUserName());
+            userManagementPage.setPrivileges(user.getPrivileges());
+            userManagementPage.submitForm();
+            Assert.assertEquals(userManagementPage.getPrivileges(), user.getPrivileges());
+        }
     }
 }

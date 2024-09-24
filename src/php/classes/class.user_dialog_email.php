@@ -274,6 +274,7 @@ class user_dialog_email {
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
 
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        //$mail->SMTPDebug = 2; // Set to 2 for more detailed debug output
         try {
             /*
              * Server settings
@@ -291,6 +292,14 @@ class user_dialog_email {
                     $mail->Port = $config['email_smtp_port']; // TCP port to connect to (587 for TLS)
                     $mail->Username = $config['email_smtp_username'];
                     $mail->Password = $config['email_smtp_password'];
+                    if ("localhost" === $mail->Host and "1025" == $mail->Port) {
+                        /**
+                         * For the purpose of testing mails with mailhog, TLS and STARTTLS have to be disabled.
+                         */
+                        $mail->SMTPAuth = false; // No authentication required for MailHog
+                        $mail->SMTPSecure = ''; // Disable TLS/SSL
+                        $mail->SMTPAutoTLS = false; // Disable automatic TLS negotiation
+                    }
                     break;
                 case 'sendmail':
                     $mail->isSendmail();

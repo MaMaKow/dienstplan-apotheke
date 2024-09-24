@@ -23,6 +23,7 @@ import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import Selenium.driver.Wrapper;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -82,7 +83,7 @@ public class RosterDayEditPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         return driver.findElement(userNameSpanBy).getText();
@@ -106,7 +107,7 @@ public class RosterDayEditPage {
         By dateChooserInputSendBy = By.xpath("/html/body/div[2]/div[3]/form/input[@name=\"tagesAuswahl\"]");
         WebElement dateChooserInputSendEement = driver.findElement(dateChooserInputSendBy);
         dateChooserInputSendEement.click();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(dateChooserInputBy));
         assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), getDateString());
     }
@@ -308,7 +309,7 @@ public class RosterDayEditPage {
              * nichts zu tun.</p>
              */
         }
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         WebElement rosterInputElement = findRosterInputComment(rosterTableRow);
@@ -329,7 +330,7 @@ public class RosterDayEditPage {
         WebElement buttonRosterInputAddRowElement = driver.findElement(buttonRosterInputAddRowBy);
         int numberOfRosterTableRowsBeforeClick = driver.findElements(tableRowListXpathBy).size();
         buttonRosterInputAddRowElement.click();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.numberOfElementsToBe(tableRowListXpathBy, numberOfRosterTableRowsBeforeClick + 1));
 
         WebElement rosterTableRow = findLastRosterTableRow();

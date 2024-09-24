@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -49,6 +50,11 @@ public class UserManagementPage {
     public void goToUser(int user_key) {
         userSelectElement = new Select(driver.findElement(userSelectBy));
         userSelectElement.selectByValue(String.valueOf(user_key));
+    }
+
+    public void goToUserByName(String userName) {
+        userSelectElement = new Select(driver.findElement(userSelectBy));
+        userSelectElement.selectByVisibleText(userName);
     }
 
     private Select getUserKeySelect() {
@@ -141,8 +147,10 @@ public class UserManagementPage {
             }
         }
     }
-    // Method to submit the form
 
+    /**
+     * Method to submit the form
+     */
     public void submitForm() {
         WebElement submitButton = driver.findElement(By.id("user_management_form_submit"));
         submitButton.click(); // Click the submit button to save the changes
@@ -154,7 +162,7 @@ public class UserManagementPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
         return driver.findElement(user_name_spanBy).getText();
     }

@@ -50,6 +50,7 @@ while ($row = $result->fetch(PDO::FETCH_OBJ)) {
     $tablebody .= " <input class=no-print type=submit name=deleteRow value='X' title='Diesen Datensatz löschen'>\n";
     $tablebody .= " <input type=hidden name=deletionEmployeeKey value='" . htmlspecialchars($employee_key) . "'>\n";
     $tablebody .= " <input type=hidden name=deletionDate value='" . htmlspecialchars($row->Datum) . "'>\n";
+    $tablebody .= " <input type=hidden name=deletionHours value='" . htmlspecialchars($row->Stunden) . "'>\n";
     $tablebody .= "</form>\n";
     $tablebody .= "\n</td>\n";
     $tablebody .= "<td>\n";
@@ -69,7 +70,6 @@ $tablebody .= "</tbody>\n";
 //Start of output:
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-$session->exit_on_missing_privilege('create_overtime');
 
 echo "<div id=mainArea>\n";
 $user_dialog = new user_dialog();

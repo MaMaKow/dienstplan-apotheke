@@ -28,6 +28,7 @@ import static Selenium.rosterpages.RosterWeekTablePage.driver;
 import java.io.File;
 import java.text.ParseException;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -75,7 +76,7 @@ public class RosterEmployeePage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
         return driver.findElement(userNameSpanBy).getText();
     }

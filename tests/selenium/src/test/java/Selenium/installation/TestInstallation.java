@@ -22,21 +22,18 @@ import Selenium.Branch;
 import Selenium.HomePage;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.PropertyFile;
-import Selenium.ScreenShot;
+import Selenium.Utilities.LoggingTest;
 import Selenium.administrationpages.BranchAdministrationPage;
 import Selenium.driver.Wrapper;
 import Selenium.signin.SignInPage;
+import java.time.Duration;
+import java.util.Map;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
-import java.util.Map;
-import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 /**
  *
@@ -54,6 +51,7 @@ public class TestInstallation extends Selenium.TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testInstallation() throws Exception {
+        LoggingTest loggingTest = new LoggingTest();
         driver = Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String testPageFolderPath = propertyFile.getUrlInstallTest();
@@ -65,7 +63,7 @@ public class TestInstallation extends Selenium.TestPage {
         try {
             driver.get(testPageFolderPath + "selenium-copy.php");
             By seleniumCopyDoneBy = By.xpath("//*[@id=\"span_done\"]");
-            WebDriverWait wait = new WebDriverWait(driver, 20);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
             wait.until(ExpectedConditions.presenceOfElementLocated(seleniumCopyDoneBy));
 
             String testPageUrlPath = "dienstplan-test/";

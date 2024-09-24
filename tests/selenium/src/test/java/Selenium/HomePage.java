@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -27,12 +28,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Mandelkow Page Object encapsulates the Home Page
  */
-public class HomePage {
-
-    protected static WebDriver driver;
-
-    // <h1>Hello userName</h1>
-    private final By user_name_spanBy = By.id("MenuListItemApplicationUsername");
+public class HomePage extends Selenium.BasePage {
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
@@ -42,18 +38,6 @@ public class HomePage {
             throw new IllegalStateException("This is not Home Page of logged in user,"
                     + " current page is: " + driver.getCurrentUrl());
         }
-    }
-
-    /**
-     * Get user_name (span tag)
-     *
-     * @return String user_name text
-     */
-    public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
-
-        return driver.findElement(user_name_spanBy).getText();
     }
 
     public HomePage manageProfile() {

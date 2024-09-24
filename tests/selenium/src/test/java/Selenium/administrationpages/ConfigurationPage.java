@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -92,6 +93,87 @@ public class ConfigurationPage {
         WebElement webElement = driver.findElement(elementBy);
         webElement.clear();
         webElement.sendKeys(localeString);
+    }
+
+    public void setEmailSmtpHost(String host) {
+        /**
+         * This method can only succeed, if SMTP is chosen as the method
+         * beforehand. Or else the input will not be visible.
+         */
+        By elementBy = By.xpath("//input[@id='emailSmtpHost']");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        wait.until(ExpectedConditions.presenceOfElementLocated(elementBy));
+        WebElement webElement = driver.findElement(elementBy);
+        webElement.clear();
+        webElement.sendKeys(host);
+    }
+
+    public void setEmailSmtpPort(int port) {
+        /**
+         * This method can only succeed, if SMTP is chosen as the method
+         * beforehand. Or else the input will not be visible.
+         */
+        By elementBy = By.xpath("//input[@id='emailSmtpPort']");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        wait.until(ExpectedConditions.presenceOfElementLocated(elementBy));
+        WebElement webElement = driver.findElement(elementBy);
+        webElement.clear();
+        webElement.sendKeys(String.valueOf(port));
+    }
+
+    public void setEmailSmtpUsername(String userName) {
+        /**
+         * This method can only succeed, if SMTP is chosen as the method
+         * beforehand. Or else the input will not be visible.
+         */
+        By elementBy = By.xpath("//input[@id='emailSmtpUsername']");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        wait.until(ExpectedConditions.presenceOfElementLocated(elementBy));
+        WebElement webElement = driver.findElement(elementBy);
+        webElement.clear();
+        webElement.sendKeys(String.valueOf(userName));
+    }
+
+    public void setEmailSmtpPassphrase(String passphrase) {
+        /**
+         * This method can only succeed, if SMTP is chosen as the method
+         * beforehand. Or else the input will not be visible.
+         */
+        By elementBy = By.xpath("//input[@id='emailSmtpPassword']");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        wait.until(ExpectedConditions.presenceOfElementLocated(elementBy));
+        WebElement webElement = driver.findElement(elementBy);
+        webElement.clear();
+        webElement.sendKeys(String.valueOf(passphrase));
+    }
+
+    public void setEmailMethod(String emailMethod) throws Exception {
+        //By elementBy = By.xpath("/html/body/div[3]/form/div/fieldset/input[@name='LC_TIME']");
+        By elementBy;
+        switch (emailMethod) {
+            case "mail":
+            case "Mail":
+                elementBy = By.xpath("/html/body/div/form/div/fieldset/input[@value='mail']");
+                break;
+            case "sendmail":
+            case "Sendmail":
+                elementBy = By.xpath("/html/body/div/form/div/fieldset/input[@value='sendmail']");
+                break;
+            case "qmail":
+            case "Qmail":
+            case "QMAIL":
+                elementBy = By.xpath("/html/body/div/form/div/fieldset/input[@value='qmail']");
+                break;
+            case "smtp":
+            case "SMTP":
+                elementBy = By.xpath("/html/body/div/form/div/fieldset/input[@value='smtp']");
+                break;
+            default:
+                elementBy = By.xpath("/html/body/div/form/div/fieldset/input[@value='mail']");
+                throw new Exception("No valid email method. Please use mail, sendmail, qmail or smtp");
+        }
+        WebElement webElement = driver.findElement(elementBy);
+        webElement.click();
     }
 
     public void setApplicationName(String applicationName) {
@@ -226,7 +308,7 @@ public class ConfigurationPage {
      */
     public String getUserNameText() {
         // <h1>Hello userName</h1>
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
 
         return driver.findElement(user_name_spanBy).getText();

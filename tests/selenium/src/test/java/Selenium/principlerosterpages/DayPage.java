@@ -19,6 +19,7 @@ package Selenium.principlerosterpages;
 import Selenium.MenuFragment;
 import Selenium.PrincipleRosterItem;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -71,7 +72,7 @@ public class DayPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         return driver.findElement(userNameSpanBy).getText();
@@ -144,7 +145,7 @@ public class DayPage {
         WebElement addRosterRowButtonElement = driver.findElement(addRosterRowButtonBy);
         addRosterRowButtonElement.click();
 
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.numberOfElementsToBe(listOfRosterRowsBy, (numberOfRosterRowElements + 1)));
     }
 
@@ -157,7 +158,7 @@ public class DayPage {
          */
         By rosterTableColumnBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td");
         WebElement rosterTableColumnElement = driver.findElement(rosterTableColumnBy);
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(rosterTableColumnBy));
 
         String unixTimeString = rosterTableColumnElement.getAttribute("data-date_unix");
@@ -383,7 +384,7 @@ public class DayPage {
          */
         addRosterRow();
         By insertedRowBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr[(last()-1)]/td");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(insertedRowBy));
 
         WebElement insertedRowElement = driver.findElement(insertedRowBy);
@@ -557,7 +558,7 @@ public class DayPage {
          * The release does not seem to work properly. Move the mouse once more:
          */
         actions.moveToElement(rosterPlotElement, elementOffset, 0).build().perform();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         /**
          * CAVE! Wir bräuchten eigentlich zwei By Variablen. CSS kann
          * tatsächlich gerade markierte options finden. XPath kann parent
@@ -586,7 +587,7 @@ public class DayPage {
 
     private int getPlotDataBarWidthFactor() {
         By svgImageBy = By.xpath("//*[@id=\"mainArea\"]/div/div/*[name()=\"svg\"]");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(svgImageBy));
         WebElement svgImageElement = driver.findElement(svgImageBy);
         String barWidthFactorString = svgImageElement.getAttribute("data-bar_width_factor");

@@ -17,10 +17,15 @@
         <classes>
             <class name="Selenium.installation.TestInstallation" /><!---->
             <class name="Selenium.signin.TestLogin" />
+            <class name="Selenium.administrationpages.TestConfigurationPage" />
             <!-- Mitarbeiter müssen eingetragen werden, bevor die Dienstpläne erstellt werden können: -->
             <class name="Selenium.administrationpages.TestWorkforceManagementPage" />
+            <class name="Selenium.signin.TestRegister" />
+            <!-- TestUserManagementPage muss nach TestRegister ausgeführt werden. -->
+            <class name="Selenium.administrationpages.TestUserManagementPage" />
             <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
             <class name="Selenium.rosterpages.TestRosterDayEditPage" />
+            <class name="Selenium.overtimepages.TestOvertimeEmployeePage" />
             <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne: -->
             <class name="Selenium.principlerosterpages.TestDayPage" />
         </classes>
@@ -29,12 +34,8 @@
         <classes>
             <class name="Selenium.TestAboutPage" />
             <class name="Selenium.administrationpages.TestEmergencyServiceListPage" />
-            <!--
-            -->
             <class name="Selenium.administrationpages.TestSaturdayRotationTeamsPage" />
             <class name="Selenium.administrationpages.TestSaturdayListPage" />
-            <class name="Selenium.administrationpages.TestUserManagementPage" />
-            <class name="Selenium.administrationpages.TestConfigurationPage" />
             <class name="Selenium.administrationpages.TestUploadPepPage" />
             <!--
             -->
@@ -77,6 +78,8 @@
             <!-- Api tests MUST run after TestUserManagementPage! -->
             <class name="Selenium.rest_api.TestPOST_authenticateEndpoint" />
             <class name="Selenium.rest_api.TestGET_rosterEndpoint" />
+            <!--
+            -->
         </classes>
     </test>
 </suite>

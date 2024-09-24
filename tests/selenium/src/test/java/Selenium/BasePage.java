@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Mandelkow
+ * Copyright (C) 2024 Mandelkow
  *
  * Dienstplan Apotheke
  *
@@ -16,13 +16,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package Selenium.overtimepages;
+package Selenium;
 
-import Selenium.MenuFragment;
+import static Selenium.HomePage.driver;
 import java.time.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -30,39 +31,38 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Mandelkow
  */
-public class OvertimeOverviewPage {
+public class BasePage {
 
     protected static WebDriver driver;
+    protected final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
+    public final WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofMillis(100));
+    public final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+    public final WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(10));
+    public final Logger logger;
 
-    public OvertimeOverviewPage(WebDriver driver) {
-        this.driver = driver;
-
-        if (this.getUserNameText().isEmpty()) {
-            throw new IllegalStateException(
-                    "This is not a logged in state," + " current page is: " + driver.getCurrentUrl());
-        }
-        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToOvertimeOverview);
+    public BasePage() {
+        this.logger = LogManager.getLogger(this.getClass());
     }
 
     /**
      * Get user_name (span tag)
      *
-     * We only need this in order to check, if we are logged in.
-     *
      * @return String user_name text
      */
     public String getUserNameText() {
-        final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-
         return driver.findElement(userNameSpanBy).getText();
     }
 
-    public Float getBalanceByEmployeeName(String nameString) {
-        By employeeBalanceColumnBy = By.xpath("/html/body/table/tbody/tr/td[contains(text(), '" + nameString + "')]/parent::tr/td[2]");
-        WebElement employeeBalanceColumnElement = driver.findElement(employeeBalanceColumnBy);
-        return Float.valueOf(employeeBalanceColumnElement.getText());
+    public void logWithDetails(String message) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        // Get the caller method, class, and line number (skip 0 and 1 to find caller)
+        StackTraceElement caller = stackTrace[2];
+        String className = caller.getClassName();
+        String methodName = caller.getMethodName();
+        int lineNumber = caller.getLineNumber();
+
+        logger.debug("{} - {}:{} - {}", className, methodName, lineNumber, message);
     }
 
 }

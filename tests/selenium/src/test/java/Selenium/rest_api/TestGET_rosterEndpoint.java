@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -43,6 +44,9 @@ public class TestGET_rosterEndpoint {
 
     @Test()
     public void testGetRoster() throws IOException, Exception {
+        if (Selenium.TestPage.someTestHasFailed) {
+            throw new SkipException("Some Test has failed. Skipping all the other methods.");
+        }
         try {
             propertyFile = new PropertyFile();
             String testPageUrl = propertyFile.getTestPageUrl();

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2024-08-03 00:30+0200\n"
-"PO-Revision-Date: 2024-08-03 00:34+0200\n"
+"POT-Creation-Date: 2024-09-11 07:55+0200\n"
+"PO-Revision-Date: 2024-09-11 07:56+0200\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.5\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: pdr_gettext\n"
@@ -742,6 +742,21 @@ msgstr "An diesem Datum existiert bereits ein Eintrag."
 #: src/php/classes/class.overtime.php:
 msgid "The data was therefore not inserted in the database."
 msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
+
+#: src/php/classes/class.overtime.php:
+msgid "PDR: An overtime entry has been deleted."
+msgstr "PDR: Ein Überstundeneintrag wurde gelöscht."
+
+#: src/php/classes/class.overtime.php:
+#, php-format
+msgid ""
+"The user %1$s has deleted the following overtime entry:\\r\\nEmployee: "
+"%2$s\\r\\nDate: %3$s\\r\\nHours:%4$s"
+msgstr ""
+"Der Benutzer %1$s hat folgenden Überstunden Eintrag gelöscht:\n"
+"Teammitglied: %2$s\n"
+"Datum: %3$s\n"
+"Stunden: %4$s"
 
 #: src/php/classes/class.overtime.php: src/php/pages/overtime-read.php:
 msgid "Balance"

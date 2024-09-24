@@ -20,6 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
 import Selenium.driver.Wrapper;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import org.openqa.selenium.Alert;
@@ -54,7 +55,7 @@ public class EmergencyServiceListPage {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(MenuFragment.MenuLinkToEmergencyServiceList));
             MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToEmergencyServiceList);
@@ -225,7 +226,7 @@ public class EmergencyServiceListPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
         WebElement userNameSpanElement;
         try {

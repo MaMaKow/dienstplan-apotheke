@@ -21,6 +21,7 @@ package Selenium.absencepages;
 import Selenium.Absence;
 import Selenium.MenuFragment;
 import Selenium.driver.Wrapper;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -183,7 +184,7 @@ public class AbsenceEmployeePage {
         Select yearFormSelect = getYearFormSelect();
         yearFormSelect.selectByValue(String.valueOf(year));
         // Wait until the year dropdown's value attribute reflects the selected year
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.attributeToBe(goToYearSelectBy, "value", String.valueOf(year)));
         // Assert that the selected year matches the expected year
         assertEquals(this.getYear(), year);
@@ -559,7 +560,7 @@ public class AbsenceEmployeePage {
         WebElement overlapCutButtonElement = absenceRowElement.findElement(overlapCutButtonBy);
         overlapCutButtonElement.click();
 
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.stalenessOf(overlapCutButtonElement));
         return new AbsenceEmployeePage();
     }

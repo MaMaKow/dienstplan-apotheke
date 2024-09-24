@@ -20,9 +20,11 @@ package Selenium.signin;
 
 import Selenium.HomePage;
 import Selenium.PropertyFile;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -32,63 +34,88 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * Page Object encapsulates the Sign-in page.
  */
-public class SignInPage {
+public class SignInPage extends Selenium.BasePage {
 
-    protected static WebDriver driver;
-    private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-
-    // <input name="user_name" type="text" value="">
     private final By usernameBy = By.id("loginInputUserName");
-    // <input name="password" type="password" value="">
     private final By passwordBy = By.id("loginInputUserPassphrase");
-    // <input name="sign_in" type="submit" value="SignIn">
     private final By signinBy = By.id("loginButtonSubmit");
 
     public SignInPage(WebDriver driver) {
+        logWithDetails("get driver");
         this.driver = driver;
+        logger.debug("getUserNameText");
+        if (null != getUserNameText()) {
+            /**
+             * This user is already logged in.
+             */
+            logger.debug("found username, user is already logged in.");
+            return;
+        }
+        try {
+            logger.debug("found username, user is already logged in.");
+            WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(1));
+            waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
+        } catch (Exception e) {
+            /**
+             * Wenn wir keinen Login-button finden, gehen wir zur
+             * wahrscheinlichen Position der Login-Seite Eigentlich ist dies nur
+             * der Link zur index.php Wenn wir nicht eingelogt sind, werden wir
+             * von dort aus weiter zum login geleitet. Wenn wir eingeloggt sind,
+             * landen wir im Menü.
+             */
+            PropertyFile propertyFile = new PropertyFile();
+            driver.get(propertyFile.getTestPageUrl());
+        }
     }
 
     /**
      * Login as valid user
      *
      * @param userName
-     * @param password
+     * @param passphrase
      * @return HomePage object
+     * @throws java.lang.Exception
      */
-    public HomePage loginValidUser(String userName, String password) {
-        WebDriverWait waitLong = new WebDriverWait(driver, 20);
-        WebDriverWait waitShort = new WebDriverWait(driver, 1);
-        try {
-            waitShort.until(ExpectedConditions.presenceOfElementLocated(By.id("loginButtonSubmit")));
-        } catch (TimeoutException exception) {
+    public HomePage loginValidUser(String userName, String passphrase) throws Exception {
+        logWithDetails("login valid user");
+        logger.debug("test if logged in:");
+        String userNameText = getUserNameText();
+        if (userNameText != null && userName.equals(userNameText)) {
+            logger.debug("The exact user is logged in. Returning new Homepage");
             /**
-             * <p lang=de>Wenn wir keinen Login submit button finden, dann
-             * könnte es ja sein, dass wir bereits eingeloggt sind?</p>
-             *
-             * @todo
-             * <p>
-             * What do we do in that case? Just cotinue without logging in or
-             * stop the whole program? What might go wrong if we just accept the
-             * existing login?</p>
-             *
+             * This user is already logged in.
              */
-            if (!getUserNameText().isEmpty()) {
-                //We have already been logged in. Nothing to do here.
-                return new HomePage(driver);
-            } else {
-                /**
-                 * Oder haben wir vielleicht nur nicht lang genug gewartet?
-                 */
-                waitLong.until(ExpectedConditions.presenceOfElementLocated(By.id("loginButtonSubmit")));
-            }
+            return new HomePage(driver);
         }
+        if (userNameText != null && !userName.equals(userNameText)) {
+            logger.error("Some other user is logged in. You have to logout first!");
+            /**
+             * Some other user is still logged in.
+             */
+            throw new Exception("Some other user is logged in. You have to logout first!");
+        }
+
+        try {
+            logger.debug("Wait for signIn button");
+            waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
+            logger.debug("waited for button and found it");
+        } catch (TimeoutException exception) {
+            logger.debug("Did not find a login button with wait: " + waitShort.toString());
+            throw exception;
+        }
+        logger.debug("input userName");
+        driver.findElement(usernameBy).clear();
         driver.findElement(usernameBy).sendKeys(userName);
-        driver.findElement(passwordBy).sendKeys(password);
+        logger.debug("input passphrase");
+        driver.findElement(passwordBy).clear();
+        driver.findElement(passwordBy).sendKeys(passphrase);
+        logger.debug("click signin");
         driver.findElement(signinBy).click();
+        logger.debug("return new HomePage MenuTiles");
         return new HomePage(driver);
     }
 
-    public HomePage loginValidUser() {
+    public HomePage loginValidUser() throws Exception {
         PropertyFile propertyFile = new PropertyFile();
         String password = propertyFile.getPdrUserPassword();
         String userName = propertyFile.getPdrUserName();
@@ -105,11 +132,33 @@ public class SignInPage {
      *
      * @return String user_name text
      */
+    @Override
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-
-        return driver.findElement(userNameSpanBy).getText();
+        logWithDetails("Search for logged in username");
+        WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofMillis(100));
+        logger.debug("before try");
+        try {
+            logger.debug("before try");
+            waitShort.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
+            logger.debug("return the found username");
+            return driver.findElement(userNameSpanBy).getText();
+        } catch (Exception exception) {
+            logger.debug("catch");
+            logger.debug("Cannot find 'userNameSpan'. We might not be logged in.");
+            return null;
+        }
     }
 
+    public void moveToRegisterNewUser() {
+        By moveBy = By.xpath("/html/body/div/p[1]/a");
+        WebElement moveToRegisterNewUserLink = driver.findElement(moveBy);
+        moveToRegisterNewUserLink.click();
+    }
+
+    public void moveToResetLostPassword() {
+        By moveBy = By.xpath("/html/body/div/p[2]/a");
+        WebElement moveToResetLostPasswordLink = driver.findElement(moveBy);
+        moveToResetLostPasswordLink.click();
+
+    }
 }

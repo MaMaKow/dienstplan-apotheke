@@ -18,10 +18,24 @@
  */
 package Selenium.overtimepages;
 
-import Selenium.TestPage;
+import Selenium.HomePage;
+import Selenium.LogoutPage;
 import Selenium.Overtime;
+import Selenium.User;
+import Selenium.UserRegistry;
+import Selenium.signin.SignInPage;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Base64;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -32,9 +46,9 @@ import org.testng.annotations.Test;
  *
  * @author Martin Mandelkow <netbeans@martin-mandelkow.de>
  */
-public class TestOvertimeEmployeePage extends TestPage {
+public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
-    @Test(enabled = true)/*passed*/
+    @Test()
     public void testDisplay() {
         /**
          * Sign in:
@@ -74,5 +88,58 @@ public class TestOvertimeEmployeePage extends TestPage {
         overtimeEmployeePage.removeOvertimeByLocalDate(localDate2);
         overtimeEmployeePage.removeOvertimeByLocalDate(localDate3);
         softAssert.assertAll();
+    }
+
+    @Test(dependsOnMethods = {"testDisplay"})
+    public void testDeleteBySimpleUser() throws IOException {
+        LogoutPage logoutPage = new LogoutPage();
+        logoutPage.logout();
+        UserRegistry userRegistry = new UserRegistry();
+        User employeeUser = userRegistry.getUserByName("EmployeeUser");
+        SignInPage signInPage = new SignInPage(driver);
+        HomePage menuPage = signInPage.loginValidUser(employeeUser.getUserName(), employeeUser.getPassphrase());
+        Assert.assertEquals(menuPage.getUserNameText(), employeeUser.getUserName());
+        OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
+        LocalDate localDate = LocalDate.of(2020, Month.NOVEMBER, 24);// Tuesday 24.11.2020
+        overtimeEmployeePage.selectYear(localDate.getYear());
+        overtimeEmployeePage.selectEmployee(7); //TODO: Which employee should we choose?
+        /**
+         * Create new overtime:
+         */
+        overtimeEmployeePage.addNewOvertime(localDate, 8, "Foo");
+        overtimeEmployeePage.removeOvertimeByLocalDate(localDate);
+        logoutPage = new LogoutPage();
+        logoutPage.logout();
+
+        /**
+         * @todo Now test if there has been an email to the administrator about
+         * deleted overtimes. Make sure, that selenium_test_user does not have
+         * admin privileges. Or use a less privileged user to make the
+         * deletions.
+         */
+        // Fetch emails from MailHog API or Mailtrap API
+        String mailHogApiUrl = "http://localhost:8025/api/v2/messages";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(mailHogApiUrl);
+            String responseBody = EntityUtils.toString(httpClient.execute(request).getEntity());
+            JsonObject jsonObject = new JsonParser().parse(responseBody).getAsJsonObject();
+            String base64Body = jsonObject.get("items").getAsJsonArray()
+                    .get(0).getAsJsonObject()
+                    .get("Content").getAsJsonObject()
+                    .get("Body").getAsString();
+            // Remove all line breaks and spaces from the Base64 string
+            base64Body = base64Body.replaceAll("\\s+", "");  // This will remove spaces, tabs, and line breaks
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
+            String decodedBody = new String(decodedBytes, StandardCharsets.UTF_8);
+
+            /**
+             * Assert that the decoded email body contains expected content
+             */
+            Assert.assertTrue(decodedBody.contains("Der Benutzer EmployeeUser hat folgenden Überstunden Eintrag gelöscht:"));
+            Assert.assertTrue(decodedBody.contains("Teammitglied: Albert Krüger"));
+            Assert.assertTrue(decodedBody.contains("Datum: 24.11.2020"));
+            Assert.assertTrue(decodedBody.contains("Stunden: 8"));
+        }
+
     }
 }

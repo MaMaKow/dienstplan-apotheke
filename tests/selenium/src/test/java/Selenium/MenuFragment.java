@@ -19,6 +19,7 @@
 package Selenium;
 
 import Selenium.driver.Wrapper;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import org.openqa.selenium.By;
@@ -80,7 +81,7 @@ public class MenuFragment {
     public static Map<By, By> menuMap = new HashMap<By, By>();
 
     public static void navigateTo(WebDriver driver, By target) {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         /**
          * Scheduled Roster
          */

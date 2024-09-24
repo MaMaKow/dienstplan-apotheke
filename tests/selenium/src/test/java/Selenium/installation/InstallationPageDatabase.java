@@ -21,6 +21,7 @@ package Selenium.installation;
 import Selenium.PropertyFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -49,7 +50,7 @@ public class InstallationPageDatabase {
     }
 
     public void fillForm() throws Exception {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("database_host")));
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
 
@@ -81,7 +82,7 @@ public class InstallationPageDatabase {
     }
 
     public InstallationPageAdministrator moveToAdminPage() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
         InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
         try {
