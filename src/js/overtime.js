@@ -86,3 +86,70 @@ function overtime_input_validation() {
     }
     return true;
 }
+
+function overtime_edit_existing_entries(formId) {
+    const form = document.getElementById(formId);
+    const formParent = form.parentNode;
+    if (!formParent) {
+        console.error("Form not found with ID:", formId);
+        return;
+    }
+
+    const editDateInput = formParent.querySelector("[name='editDateNew']");
+    const editHoursInput = formParent.querySelector("[name='editHoursNew']");
+    const editReasonInput = formParent.querySelector("[name='editReasonNew']");
+
+    const deleteButton = formParent.querySelector("[id*='deleteButton_']");
+    const editButton = formParent.querySelector("[id*='editButton_']");
+    const saveButton = formParent.querySelector("[id*='save_']");
+    const cancelButton = formParent.querySelector("[id*='cancel_']");
+    deleteButton.style.display = 'none';
+    editButton.style.display = 'none';
+    saveButton.style.display = 'inline';
+    cancelButton.style.display = 'inline';
+
+    if (editReasonInput) {
+        editReasonInput.readOnly = false;
+    }
+    if (editDateInput) {
+        editDateInput.readOnly = false;
+    }
+    if (editHoursInput) {
+        editHoursInput.readOnly = false;
+    }
+}
+
+function cancelOvertimeEdit(formId) {
+    const form = document.getElementById(formId);
+    const formParent = form.parentNode;
+    if (!formParent) {
+        console.error("Form not found with ID:", formId);
+        return;
+    }
+
+    const editDateInput = formParent.querySelector("[name='editDateNew']");
+    const editHoursInput = formParent.querySelector("[name='editHoursNew']");
+    const editReasonInput = formParent.querySelector("[name='editReasonNew']");
+
+    const deleteButton = formParent.querySelector("[id*='deleteButton_']");
+    const editButton = formParent.querySelector("[id*='editButton_']");
+    const saveButton = formParent.querySelector("[id*='save_']");
+    const cancelButton = formParent.querySelector("[id*='cancel_']");
+    deleteButton.style.display = 'inline';
+    editButton.style.display = 'inline';
+    saveButton.style.display = 'none';
+    cancelButton.style.display = 'none';
+
+    if (editReasonInput) {
+        editReasonInput.value = editReasonInput.defaultValue;
+        editReasonInput.readOnly = true;
+    }
+    if (editDateInput) {
+        editDateInput.value = editDateInput.defaultValue;
+        editDateInput.readOnly = true;
+    }
+    if (editHoursInput) {
+        editHoursInput.value = editHoursInput.defaultValue;
+        editHoursInput.readOnly = true;
+    }
+}

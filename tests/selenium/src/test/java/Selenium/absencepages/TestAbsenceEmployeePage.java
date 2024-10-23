@@ -38,7 +38,12 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         /**
          * Create a new absence:
@@ -145,7 +150,12 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         /**
          * Create a new absence:

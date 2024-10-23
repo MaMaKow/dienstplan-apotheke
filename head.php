@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/javascript.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/keyboard_navigation.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/roster-day-edit.js" ></SCRIPT>
-        <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/overtime.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/user_dialog.js"></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/collaborative-vacation.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/emergency-service-list.js" ></SCRIPT>
@@ -59,6 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             $currentFile = basename($_SERVER['SCRIPT_FILENAME']);
             switch ($currentFile) {
                 case 'overtime-overview.php':
+                case 'overtime-edit.php':
                     $cssFiles[] = 'overtime.css';
                     $cssFiles[] = 'printOrientationPortrait.css';
                     break;
@@ -106,6 +106,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             switch ($currentFile) {
                 case 'user-management.php':
                     $jsFiles[] = 'unsaved-changes-prompt.js';
+                    break;
+                case 'overtime-edit.php':
+                    $jsFiles[] = 'overtime.js';
                     break;
             }
 

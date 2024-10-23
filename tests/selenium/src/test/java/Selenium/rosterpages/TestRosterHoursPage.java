@@ -44,7 +44,12 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
 
         /**
@@ -68,7 +73,12 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
 
         /**
@@ -127,7 +137,12 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         /**
          * We do not directly go to the RosterHoursPage. Instead we first create
          * an absence. We want to view this absence in the RosterHoursPage.

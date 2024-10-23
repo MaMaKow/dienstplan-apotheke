@@ -275,6 +275,11 @@ class user_dialog_email {
 
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         //$mail->SMTPDebug = 2; // Set to 2 for more detailed debug output
+        $mail->SMTPDebug = 3; // 3 = 2 plus more information about the initial connection - this level can help diagnose STARTTLS failures.
+        //$mail->SMTPDebug = 4; // 4 = Detaied Low-level data output.
+        $mail->Debugoutput = function ($str, $level) {
+            PDR\Utility\GeneralUtility::printDebugVariable($str);
+        };
         try {
             /*
              * Server settings

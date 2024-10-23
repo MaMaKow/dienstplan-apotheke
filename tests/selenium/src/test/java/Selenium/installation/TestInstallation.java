@@ -46,7 +46,12 @@ public class TestInstallation extends Selenium.TestPage {
     @Test(dependsOnMethods = {"testInstallation"})
     @Override
     public void signIn() {
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
     }
 
     @Test(enabled = true)/*passed*/
@@ -99,8 +104,14 @@ public class TestInstallation extends Selenium.TestPage {
         SignInPage signInPage = new SignInPage(driver);
         String pdr_user_password = propertyFile.getPdrUserPassword();
         String pdr_user_name = propertyFile.getPdrUserName();
-        HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
-        assertEquals(pdr_user_name, homePage.getUserNameText());
+        try {
+            HomePage homePage = signInPage.loginValidUser(pdr_user_name, pdr_user_password);
+            Assert.assertEquals(pdr_user_name, homePage.getUserNameText());
+        } catch (Exception exception) {
+            logger.error("Sign in failed due to an exception: " + exception.getMessage(), exception);
+            Assert.fail("Sign in failed. Exception: " + exception.getMessage());
+        }
+
         /**
          * <p lang=de>
          * Jetzt ist es Zeit, die Filialen zu konfigurieren. Es braucht

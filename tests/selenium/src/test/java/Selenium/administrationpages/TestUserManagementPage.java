@@ -31,7 +31,12 @@ public class TestUserManagementPage extends Selenium.TestPage {
     @Test(enabled = true)
     public void testReadUserDetails() {
         // Sign in
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
 
         // Go to the User Management page
         UserManagementPage userManagementPage = new UserManagementPage(driver);
@@ -65,7 +70,12 @@ public class TestUserManagementPage extends Selenium.TestPage {
     @Test(enabled = true, dependsOnMethods = {"testReadUserDetails"}, groups = {"userManagementPage"})
     public void testEditUserDetails() {
         // Sign in
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
 
         // Go to the User Management page
         UserManagementPage userManagementPage = new UserManagementPage(driver);

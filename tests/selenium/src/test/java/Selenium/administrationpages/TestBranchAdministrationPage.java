@@ -35,7 +35,12 @@ public class TestBranchAdministrationPage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         BranchAdministrationPage branchAdministrationPage = new BranchAdministrationPage();
         HashMap<Integer, String[]> openingTimesMap = new HashMap<>();
         openingTimesMap.put(1, new String[]{"8:00", "18:00"});

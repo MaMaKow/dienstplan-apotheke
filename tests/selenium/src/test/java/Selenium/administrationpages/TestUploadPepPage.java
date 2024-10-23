@@ -33,7 +33,12 @@ public class TestUploadPepPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         UploadPepPage uploadPepPage = new UploadPepPage(driver);
         /**
          * Find a file to upload:

@@ -31,6 +31,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class HomePage extends Selenium.BasePage {
 
     public HomePage(WebDriver driver) {
+        super(driver);  // Call to BasePage constructor
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {

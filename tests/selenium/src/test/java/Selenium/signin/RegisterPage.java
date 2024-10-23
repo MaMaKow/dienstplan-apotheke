@@ -40,6 +40,7 @@ public class RegisterPage extends Selenium.BasePage {
     private final WebDriver driver;
 
     public RegisterPage(WebDriver driver) {
+        super(driver);  // Call to BasePage constructor
         this.driver = driver;
     }
 
@@ -48,7 +49,6 @@ public class RegisterPage extends Selenium.BasePage {
         String userName = user.getUserName();
         String userEmail = user.getUserEmail();
         String passphrase = user.getPassphrase();
-        logger.debug("try to find userName input");
         try {
             WebElement userNameElement = driver.findElement(userNameBy);
             userNameElement.clear();
@@ -86,10 +86,6 @@ public class RegisterPage extends Selenium.BasePage {
         /**
          * Submit:
          */
-        logger.debug("The problem: " + mathProblemString
-                + " with " + mathProblemSummand1
-                + " plus " + mathProblemSummand2
-                + " has the solution " + mathProblemSolution);
         submitButtonElement.click();
     }
 }

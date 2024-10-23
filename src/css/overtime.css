@@ -49,3 +49,22 @@ table#overtimeOverviewTable tr.zero {
     font-style: normal;
     font-weight: normal;
 }
+
+html body div#mainArea table tbody tr td input[readOnly] {
+    background-color: transparent;
+    border: none;
+    color: inherit; /* Inherit text color from parent */
+    font-size: inherit; /* Inherit font size from parent */
+    cursor: default;
+    padding: 0; /* Remove any padding */
+    width: auto; /* Adjust width to fit content */
+    -webkit-appearance: none; /* Remove default input styling for Safari */
+    -moz-appearance: textfield;
+    appearance: textfield; /* Remove arrows for disabled number inputs */
+}
+/* Remove arrows for disabled number inputs in Chrome, Safari, Edge, and Opera */
+input[type=number][readOnly]::-webkit-outer-spin-button,
+input[type=number][readOnly]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

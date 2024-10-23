@@ -36,7 +36,12 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         /**
          * Go to page:
          */
@@ -83,7 +88,12 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
 
     @Test(groups = "realWorldInstance")
     public void testRealEmergencyServiceList() {
-        super.realSignIn();
+        try {
+            super.realSignIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed to real test page.");
+            Assert.fail();
+        }
 
         int branchId = 1;
         Integer employeeKeyInsert = 55;

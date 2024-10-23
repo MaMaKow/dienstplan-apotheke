@@ -63,7 +63,7 @@ public class TestPage {
     }
 
     @Test
-    public void signIn() {
+    public void signIn() throws Exception {
 
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
@@ -80,7 +80,7 @@ public class TestPage {
         Assert.assertEquals(homePage.getUserNameText(), pdr_user_name);
     }
 
-    public void realSignIn() {
+    public void realSignIn() throws Exception {
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getRealTestPageUrl();

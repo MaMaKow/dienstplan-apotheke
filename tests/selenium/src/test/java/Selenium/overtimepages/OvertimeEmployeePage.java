@@ -39,7 +39,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Mandelkow
  */
-public class OvertimeEmployeePage {
+public class OvertimeEmployeePage extends Selenium.BasePage {
 
     protected static WebDriver driver;
 
@@ -52,8 +52,8 @@ public class OvertimeEmployeePage {
     private final By submitButtonBy = By.xpath("/html/body/div/table/tbody/tr/td/input[@name=\"submitStunden\"]");
 
     public OvertimeEmployeePage(WebDriver driver) {
+        super(driver);  // Call to BasePage constructor
         this.driver = driver;
-
         if (this.getUserNameText().isEmpty()) {
             throw new IllegalStateException(
                     "This is not a logged in state," + " current page is: " + driver.getCurrentUrl());
@@ -69,8 +69,6 @@ public class OvertimeEmployeePage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         WebElement userNameSpanElement;
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
@@ -109,23 +107,28 @@ public class OvertimeEmployeePage {
     }
 
     private WebElement findOvertimeRowByDate(LocalDate localDate) {
-        By dateBy = By.xpath(".//td/form");
+        By dateBy = By.xpath(".//td/input[@name=\"editDateNew\"]");
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
-            if (dateElement.getText().equals(localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR))) {
+            if (dateElement.getAttribute("value").equals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY))) {
                 return overtimeRowElement;
             }
         }
         return null;
     }
 
-    public Overtime getOvertimeByCalendar(LocalDate localDate) {
+    public Overtime getOvertimeByLocalDate(LocalDate localDate) throws Exception {
         WebElement overtimeRow = findOvertimeRowByDate(localDate);
+        if (null == overtimeRow) {
+            logger.error("No overtime found for given date.");
+            throw new Exception("No overtime found for given date.");
+        }
+        //logger.debug(overtimeRow.getAttribute("innerHTML"));
         //String dateString = overtimeRow.findElement(By.xpath(".//td[1]/form")).getText();
-        float hours = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[2]")).getText());
-        float balance = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
-        String reason = overtimeRow.findElement(By.xpath(".//td[4]")).getText();
+        float hours = Float.parseFloat(overtimeRow.findElement(By.xpath(".//input[@name=\"editHoursNew\"]")).getAttribute("value"));
+        float balance = Float.parseFloat(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
+        String reason = overtimeRow.findElement(By.xpath(".//input[@name=\"editReasonNew\"]")).getAttribute("value");
         return new Overtime(localDate, hours, balance, reason);
     }
 
@@ -192,10 +195,9 @@ public class OvertimeEmployeePage {
     }
 
     public OvertimeEmployeePage removeOvertimeByLocalDate(LocalDate localDate) {
-
         this.selectYear(localDate.getYear());
         WebElement overtimeRow = findOvertimeRowByDate(localDate);
-        By removeButtonBy = By.xpath(".//input");
+        By removeButtonBy = By.xpath(".//button[@name=\"deleteRow\"]");
         WebElement removeButtonElement = overtimeRow.findElement(removeButtonBy);
         removeButtonElement.click();
         /**
@@ -204,6 +206,7 @@ public class OvertimeEmployeePage {
          * data set?" Wir bestätigen diese Anfrage mit OK.
          * </p>
          */
+        wait.until(ExpectedConditions.alertIsPresent());
         driver.switchTo().alert().accept();
         OvertimeEmployeePage newOvertimeEmployeePage;
         try {

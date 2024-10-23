@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.martin-mandelkow.pdr.tests.selenium</groupId>
     <artifactId>selenium</artifactId>
-    <version>0.31.1</version>
+    <version>0.32.0</version>
     <name>SeleniumTest</name>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

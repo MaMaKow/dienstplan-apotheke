@@ -22,6 +22,7 @@ import static Selenium.HomePage.driver;
 import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -35,13 +36,17 @@ public class BasePage {
 
     protected static WebDriver driver;
     protected final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-    public final WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofMillis(100));
-    public final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-    public final WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(10));
+    public final WebDriverWait waitShort;
+    public final WebDriverWait wait;
+    public final WebDriverWait waitLong;
     public final Logger logger;
 
-    public BasePage() {
-        this.logger = LogManager.getLogger(this.getClass());
+    public BasePage(WebDriver driver) {
+        BasePage.driver = driver;  // Initialize the driver
+        this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
+        waitShort = new WebDriverWait(driver, Duration.ofMillis(100));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        waitLong = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     /**

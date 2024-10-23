@@ -29,7 +29,12 @@ public class TestAboutPage extends TestPage {
 
     @Test(enabled = true)
     public void testGetVersion() {
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         AboutPage aboutPage = new AboutPage();
         String versionString = aboutPage.getVersion();
         Assert.assertEquals(versionString, aboutPage.getVersionStingShould());

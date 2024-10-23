@@ -43,7 +43,12 @@ public class TestEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         EmployeePage employeePage = new EmployeePage(driver);
 
         /**
@@ -89,7 +94,12 @@ public class TestEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         EmployeePage employeePage = new EmployeePage(driver);
 
         /**

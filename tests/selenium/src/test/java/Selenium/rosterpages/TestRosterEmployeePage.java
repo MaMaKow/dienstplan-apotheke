@@ -59,7 +59,12 @@ public class TestRosterEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date and go foreward and backward from there:
@@ -78,7 +83,12 @@ public class TestRosterEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Read the roster from json files and find the same values in the
@@ -117,7 +127,12 @@ public class TestRosterEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date to get a specific roster:

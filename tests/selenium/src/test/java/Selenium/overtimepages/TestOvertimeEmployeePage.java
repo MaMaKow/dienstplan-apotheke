@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -53,7 +54,12 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
 
         /**
@@ -76,10 +82,28 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         /**
          * Find the newly created overtime:
          */
-        Overtime overtime = overtimeEmployeePage.getOvertimeByCalendar(localDate3);
-        softAssert.assertEquals(overtime.getBalance(), (float) 1.5f);
-        softAssert.assertEquals(overtime.getHours(), (float) 1.0f);
-        softAssert.assertEquals(overtime.getReason(), "Bar");
+        Overtime overtime;
+        try {
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate0);
+            softAssert.assertEquals(overtime.getBalance(), (float) 8f);
+            softAssert.assertEquals(overtime.getHours(), (float) 8f);
+            softAssert.assertEquals(overtime.getReason(), "Foo");
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate1);
+            softAssert.assertEquals(overtime.getBalance(), (float) 8.5f);
+            softAssert.assertEquals(overtime.getHours(), (float) 0.5f);
+            softAssert.assertEquals(overtime.getReason(), "FloatFoo");
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate2);
+            softAssert.assertEquals(overtime.getBalance(), (float) 0.5f);
+            softAssert.assertEquals(overtime.getHours(), (float) -8.0f);
+            softAssert.assertEquals(overtime.getReason(), "NoFoo");
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate3);
+            softAssert.assertEquals(overtime.getBalance(), (float) 1.5f);
+            softAssert.assertEquals(overtime.getHours(), (float) 1.0f);
+            softAssert.assertEquals(overtime.getReason(), "Bar");
+        } catch (Exception exception) {
+            logger.error(exception.getMessage());
+            Assert.fail();
+        }
         /**
          * remove the created overtime:
          */
@@ -97,8 +121,14 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         UserRegistry userRegistry = new UserRegistry();
         User employeeUser = userRegistry.getUserByName("EmployeeUser");
         SignInPage signInPage = new SignInPage(driver);
-        HomePage menuPage = signInPage.loginValidUser(employeeUser.getUserName(), employeeUser.getPassphrase());
-        Assert.assertEquals(menuPage.getUserNameText(), employeeUser.getUserName());
+        try {
+            HomePage menuPage = signInPage.loginValidUser(employeeUser.getUserName(), employeeUser.getPassphrase());
+            Assert.assertEquals(menuPage.getUserNameText(), employeeUser.getUserName());
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
+
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
         LocalDate localDate = LocalDate.of(2020, Month.NOVEMBER, 24);// Tuesday 24.11.2020
         overtimeEmployeePage.selectYear(localDate.getYear());

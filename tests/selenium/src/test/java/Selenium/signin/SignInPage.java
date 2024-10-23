@@ -27,6 +27,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 /**
  *
@@ -40,19 +41,20 @@ public class SignInPage extends Selenium.BasePage {
     private final By passwordBy = By.id("loginInputUserPassphrase");
     private final By signinBy = By.id("loginButtonSubmit");
 
+    /**
+     *
+     * @param driver
+     */
     public SignInPage(WebDriver driver) {
-        logWithDetails("get driver");
+        super(driver);  // Call to BasePage constructor
         this.driver = driver;
-        logger.debug("getUserNameText");
         if (null != getUserNameText()) {
             /**
              * This user is already logged in.
              */
-            logger.debug("found username, user is already logged in.");
             return;
         }
         try {
-            logger.debug("found username, user is already logged in.");
             WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(1));
             waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
         } catch (Exception e) {
@@ -77,11 +79,8 @@ public class SignInPage extends Selenium.BasePage {
      * @throws java.lang.Exception
      */
     public HomePage loginValidUser(String userName, String passphrase) throws Exception {
-        logWithDetails("login valid user");
-        logger.debug("test if logged in:");
         String userNameText = getUserNameText();
         if (userNameText != null && userName.equals(userNameText)) {
-            logger.debug("The exact user is logged in. Returning new Homepage");
             /**
              * This user is already logged in.
              */
@@ -96,22 +95,19 @@ public class SignInPage extends Selenium.BasePage {
         }
 
         try {
-            logger.debug("Wait for signIn button");
             waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
-            logger.debug("waited for button and found it");
         } catch (TimeoutException exception) {
-            logger.debug("Did not find a login button with wait: " + waitShort.toString());
+            logger.error("Did not find a login button with wait: " + waitShort.toString());
             throw exception;
+        } catch (Exception exception) {
+            logger.error("Some other exception occured.");
+            Assert.fail();
         }
-        logger.debug("input userName");
         driver.findElement(usernameBy).clear();
         driver.findElement(usernameBy).sendKeys(userName);
-        logger.debug("input passphrase");
         driver.findElement(passwordBy).clear();
         driver.findElement(passwordBy).sendKeys(passphrase);
-        logger.debug("click signin");
         driver.findElement(signinBy).click();
-        logger.debug("return new HomePage MenuTiles");
         return new HomePage(driver);
     }
 
@@ -136,14 +132,11 @@ public class SignInPage extends Selenium.BasePage {
     public String getUserNameText() {
         logWithDetails("Search for logged in username");
         WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofMillis(100));
-        logger.debug("before try");
         try {
-            logger.debug("before try");
             waitShort.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
             logger.debug("return the found username");
             return driver.findElement(userNameSpanBy).getText();
         } catch (Exception exception) {
-            logger.debug("catch");
             logger.debug("Cannot find 'userNameSpan'. We might not be logged in.");
             return null;
         }

@@ -30,11 +30,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Mandelkow
  */
-public class OvertimeOverviewPage {
+public class OvertimeOverviewPage extends Selenium.BasePage {
 
     protected static WebDriver driver;
 
     public OvertimeOverviewPage(WebDriver driver) {
+        super(driver);  // Call to BasePage constructor
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {

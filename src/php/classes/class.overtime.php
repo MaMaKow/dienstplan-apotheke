@@ -24,11 +24,17 @@
  */
 class overtime {
 
-    public static function handle_user_input_insert() {
+    public static function handleUserInputInsert() {
         $user_dialog = new user_dialog();
         $employee_key = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
         $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_SPECIAL_CHARS);
         $overtime_hours_new = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        if ("" === $overtime_hours_new) {
+            /**
+             * No data sent:
+             */
+            return false;
+        }
         list($balance_old, $date_old) = overtime::get_current_balance($employee_key);
         $first_balance_row = overtime::get_first_balance($employee_key);
         /**
@@ -56,6 +62,12 @@ class overtime {
              */
             $balance_new = $first_balance_row->Saldo - $first_balance_row->Stunden;
         }
+        $overtimeReason = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_SPECIAL_CHARS);
+        /**
+         * Replace multiple spaces (including tabs and newlines) with a single space.
+         * Also trim whitespace at the beginning and the end.
+         */
+        $overtimeReasonTrimmed = trim(preg_replace('/\s+/', ' ', $overtimeReason));
 
         $sql_query = "INSERT INTO `Stunden` (`employee_key`, Datum, Stunden, Saldo, Grund)
         VALUES (:employee_key, :date, :overtime_hours, :balance, :reason)";
@@ -65,7 +77,7 @@ class overtime {
                 'date' => $date,
                 'overtime_hours' => $overtime_hours_new,
                 'balance' => $balance_new,
-                'reason' => filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_SPECIAL_CHARS)
+                'reason' => $overtimeReasonTrimmed
             ));
         } catch (Exception $exception) {
             if (database_wrapper::ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY === $exception->getMessage()) {
@@ -82,6 +94,69 @@ class overtime {
         overtime::recalculate_balances($employee_key);
     }
 
+    public static function handleUserInputUpdate($session) {
+        $employeeKey = filter_input(INPUT_POST, 'editEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
+        $dateOld = filter_input(INPUT_POST, 'editDateOld', FILTER_SANITIZE_SPECIAL_CHARS);
+        $dateNew = filter_input(INPUT_POST, 'editDateNew', FILTER_SANITIZE_SPECIAL_CHARS);
+        $overtimeHoursOld = filter_input(INPUT_POST, 'editHoursOld', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $overtimeHoursNew = filter_input(INPUT_POST, 'editHoursNew', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $overtimeReasonOld = filter_input(INPUT_POST, 'editReasonOld', FILTER_SANITIZE_SPECIAL_CHARS);
+        $overtimeReasonNew = filter_input(INPUT_POST, 'editReasonNew', FILTER_SANITIZE_SPECIAL_CHARS);
+        if ("" === $overtimeHoursNew) {
+            /**
+             * No data sent:
+             */
+            return false;
+        }
+        list($balanceOld, $dateOldBalance) = overtime::get_current_balance($employeeKey);
+        $first_balance_row = overtime::get_first_balance($employeeKey);
+        $balanceNew = $balanceOld + $overtimeHoursNew;
+
+        if (FALSE !== $first_balance_row and $first_balance_row->Datum > $dateOldBalance) {
+            /*
+             * The new entry lies before the very first entry.
+             * This is a special case.
+             * In this case we calculate the balance given on a date that lies in the future, in regard to the new data.
+             */
+            $balanceNew = $first_balance_row->Saldo - $first_balance_row->Stunden;
+        }
+        /**
+         * Replace multiple spaces (including tabs and newlines) with a single space.
+         * Also trim whitespace at the beginning and the end.
+         */
+        $overtimeReasonTrimmed = trim(preg_replace('/\s+/', ' ', $overtimeReasonNew));
+
+        $sqlQuery = "UPDATE `Stunden` "
+                . " SET Datum=:date_new, Stunden=:overtime_hours_new, Saldo=:balance_new, Grund=:reason_new "
+                . " WHERE `employee_key` = :employee_key_old AND Datum = :date_old";
+        $result = database_wrapper::instance()->run($sqlQuery, array(
+            'employee_key_old' => $employeeKey,
+            'date_new' => $dateNew,
+            'date_old' => $dateOld,
+            'overtime_hours_new' => $overtimeHoursNew,
+            'balance_new' => $balanceNew,
+            'reason_new' => $overtimeReasonTrimmed
+        ));
+        if (false === $result) {
+            $userDialog = new user_dialog();
+            $messageDatabaseError = gettext("An error has occured when trying to write overtime data to the database.");
+            $userDialog->add_message($messageDatabaseError, E_USER_ERROR);
+            $messageSeeLog = gettext("Please see the error log for details!");
+            $userDialog->add_message($messageSeeLog, E_USER_ERROR);
+            return false;
+        }
+        overtime::recalculate_balances($employeeKey);
+        try {
+            self::sendChangeNotification($session, $employeeKey,
+                    $dateOld, $dateNew,
+                    $overtimeHoursOld, $overtimeHoursNew,
+                    $overtimeReasonOld, $overtimeReasonNew
+            );
+        } catch (Exception $mailException) {
+            $userDialog->add_message($mailException->getMessage());
+        }
+    }
+
     /**
      * Handles the deletion of an overtime entry based on user input.
      *
@@ -96,19 +171,19 @@ class overtime {
      * @param \sessions $session The current user session object used to check user privileges and handle user dialogs.
      * @return void This function does not return any value.
      */
-    private static function handleUserInputDelete($session): void {
+    private static function handleUserInputDelete($session): bool {
         $deletionEmployeeKey = filter_input(INPUT_POST, 'deletionEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
         $deletionDate = filter_input(INPUT_POST, 'deletionDate', FILTER_SANITIZE_SPECIAL_CHARS);
         $deletionHours = filter_input(INPUT_POST, 'deletionHours', FILTER_SANITIZE_SPECIAL_CHARS);
 
         if (!$deletionEmployeeKey || !$deletionDate) {
-            // Handle invalid input
             /**
-             * @todo I am not sure if the error message would survive POST/REDIRECT/GET.
+             * Handle invalid input
+             * Using storeMessagesInSession() to make error message survive POST/REDIRECT/GET.
              */
             $userDialog = new \user_dialog();
             $userDialog->add_message("Error while trying to delete overtime entry.", E_USER_ERROR);
-            return;
+            return false;
         }
 
         // Step 1: Delete the overtime entry
@@ -119,6 +194,7 @@ class overtime {
             // Step 3: Prepare and send notification
             self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours);
         }
+        return true; // Return true to indicate successful completion
     }
 
     /**
@@ -159,18 +235,18 @@ class overtime {
      * class is used to ensure that the date is formatted in a way that is appropriate
      * for the provided locale settings.
      *
-     * @param string $deletionDate The date to be formatted, provided as a string. It should be in a format
+     * @param string $dateString The date to be formatted, provided as a string. It should be in a format
      *                              that is recognized by the `DateTime` constructor.
      * @param string $locale The locale identifier used to format the date, e.g., 'en_US' or 'de_DE'.
      *                       This determines how the date is presented based on regional conventions.
      * @return string The formatted date string, which represents the original date in a short format
      *                according to the specified locale.
      */
-    private static function formatDeletionDate(string $deletionDate, string $locale): string {
-        $deletionDateObject = new DateTime($deletionDate);
+    private static function formatReadableDate(string $dateString, string $locale): string {
+        $dateObject = new DateTime($dateString);
         $formatter = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE);
         $formatter->setPattern('dd.MM.yyyy');
-        return $formatter->format($deletionDateObject);
+        return $formatter->format($dateObject);
     }
 
     /**
@@ -197,7 +273,7 @@ class overtime {
         $workforce = new workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
         $locale = $configuration->getLC_TIME();
-        $dateString = self::formatDeletionDate($deletionDate, $locale);
+        $dateString = self::formatReadableDate($deletionDate, $locale);
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been deleted.");
@@ -213,33 +289,100 @@ class overtime {
         );
     }
 
-    public static function handle_user_input($session, $employee_key) {
-        if (!$session->user_has_privilege('create_overtime')) {
+    private static function sendChangeNotification(sessions $session, int $employeeKey,
+            string $dateOld, string $dateNew,
+            float $overtimeHoursOld, float $overtimeHoursNew,
+            string $overtimeReasonOld, string $overtimeReasonNew): void {
+        $configuration = new \PDR\Application\configuration();
+        $workforce = new workforce();
+        $employeeName = $workforce->getEmployeeFullName($employeeKey);
+        $locale = $configuration->getLC_TIME();
+        $dateStringOld = self::formatReadableDate($dateOld, $locale);
+        $dateStringNew = self::formatReadableDate($dateNew, $locale);
+
+        // Prepare Email
+        $subject = gettext("PDR: An overtime entry has been changed.");
+        $messageTemplate = gettext('The user %1$s has changed the following overtime entry:\r\n'
+                . 'Employee: %2$s\r\n'
+                . 'Date: %3$s\r\n'
+                . 'Hours:%4$s\r\n'
+                . 'Reason:%5$s\r\n'
+                . '\r\n'
+                . 'to the new values:\r\n'
+                . 'Date: %6$s\r\n'
+                . 'Hours: %7$s\r\n'
+                . 'Reason: %8$s\r\n'
+        );
+        $message = sprintf($messageTemplate,
+                $session->getUserName(), $employeeName,
+                $dateStringOld,
+                $overtimeHoursOld,
+                $overtimeReasonOld,
+                $dateStringNew,
+                $overtimeHoursNew,
+                $overtimeReasonNew
+        );
+
+        // Send Email
+        $userDialogEmail = new \user_dialog_email();
+        $userDialogEmail->send_email(
+                $configuration->getContactEmail(),
+                $subject,
+                $message
+        );
+    }
+
+    public static function handle_user_input($session, $employee_key): bool {
+        $userDialog = new user_dialog();
+        if (!filter_has_var(INPUT_POST, 'deleteRow')
+                and !filter_has_var(INPUT_POST, 'submitStunden')
+                and !filter_has_var(INPUT_POST, 'editDateNew')) {
             /**
-             * In the future everyone will be able to create overtime.
+             * No data has been sent.
              */
-            //return FALSE;
-            $userDialog = new user_dialog();
-            $message = gettext("Your overtime changes have been logged and will be sent to the administrator for review.");
-            $userDialog->add_message($message, E_USER_NOTICE);
+            return false;
         }
         /**
          * Deleting rows of data:
          */
         if (filter_has_var(INPUT_POST, 'deleteRow')) {
-            self::handleUserInputDelete($session);
+            $result = self::handleUserInputDelete($session);
+            if (false === $result) {
+                return false;
+            }
         }
 
-        /*
+        /**
          * Insert new data:
          */
         if (filter_has_var(INPUT_POST, 'submitStunden') and filter_has_var(INPUT_POST, 'employee_key') and filter_has_var(INPUT_POST, 'datum') and filter_has_var(INPUT_POST, 'stunden') and filter_has_var(INPUT_POST, 'grund')) {
-            self::handle_user_input_insert();
+            $result = self::handleUserInputInsert();
+            if (false === $result) {
+                return false;
+            }
         }
-        /*
+        /**
+         * Update changed data:
+         */
+        if (filter_has_var(INPUT_POST, 'editDateNew')) {
+            $result = self::handleUserInputUpdate($session);
+            if (false === $result) {
+                return false;
+            }
+        }
+        /**
          * Sorting and recalculating the entries:
          */
         overtime::recalculate_balances($employee_key);
+        if (!$session->user_has_privilege('create_overtime')) {
+            /**
+             * In the future everyone will be able to create overtime.
+             */
+            $userDialog = new user_dialog();
+            $message = gettext("Your overtime changes have been logged and will be sent to the administrator for review.");
+            $userDialog->add_message($message, E_USER_NOTICE);
+        }
+        return true;
     }
 
     public static function recalculate_balances($employee_key) {
@@ -357,7 +500,9 @@ class overtime {
                     $class .= " " . "not-updated";
                 }
                 $table_rows .= "<tr class='$class'>";
-                $table_rows .= "<td>" . $row->employee_key . " " . $workforce->List_of_employees[$row->employee_key]->last_name . "</td>";
+                $table_rows .= "<td>" . $row->employee_key . " "
+                        . $workforce->List_of_employees[$row->employee_key]->last_name
+                        . "</td>";
                 $table_rows .= "<td>" . $row->Saldo . "</td>";
                 $date_string = $date_object->format('d.m.Y');
                 $table_rows .= "<td>" . $date_string . "</td>";

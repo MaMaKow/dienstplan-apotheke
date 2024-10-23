@@ -41,7 +41,12 @@ public class TestOvertimeOverviewPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
 
         /**
@@ -49,7 +54,7 @@ public class TestOvertimeOverviewPage extends TestPage {
          */
         int employeeKey = 7;
         LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 2);
-        overtimeEmployeePage.addNewOvertimeForEmployee(employeeKey, localDate0, 8.15f, "Foo");
+        overtimeEmployeePage.addNewOvertimeForEmployee(employeeKey, localDate0, 8.25f, "Foo");
         OvertimeOverviewPage overtimeOverviewPage = new OvertimeOverviewPage(driver);
 
         /**
@@ -64,6 +69,6 @@ public class TestOvertimeOverviewPage extends TestPage {
         overtimeEmployeePage = new OvertimeEmployeePage(driver);
         overtimeEmployeePage.selectYear(localDate0.getYear());
         overtimeEmployeePage.removeOvertimeByLocalDate(localDate0);
-        Assert.assertEquals(balance, 8.15f);
+        Assert.assertEquals(balance, 8.25f);
     }
 }

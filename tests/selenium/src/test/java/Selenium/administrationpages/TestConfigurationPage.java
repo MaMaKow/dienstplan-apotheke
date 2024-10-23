@@ -18,6 +18,8 @@
  */
 package Selenium.administrationpages;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,11 +30,16 @@ import org.testng.annotations.Test;
 public class TestConfigurationPage extends Selenium.TestPage {
 
     @Test(enabled = true)
-    public void testWriteConfiguration() throws Exception {
+    public void testWriteConfiguration() {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception ex) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         /**
          * Go to page:
          */
@@ -64,7 +71,6 @@ public class TestConfigurationPage extends Selenium.TestPage {
             System.out.println("driver.getPageSource()");
             System.out.println(driver.getPageSource());
             Assert.fail();
-            throw exception;
         }
         /**
          * Set Name for Page
@@ -81,7 +87,12 @@ public class TestConfigurationPage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         /**
          * Go to page:
          */

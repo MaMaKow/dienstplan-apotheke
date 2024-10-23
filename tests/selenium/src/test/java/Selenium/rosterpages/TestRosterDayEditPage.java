@@ -47,7 +47,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
         /**
          * Move to specific date and go foreward and backward from there:
@@ -67,7 +72,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         /**
@@ -98,7 +108,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         Roster roster = new Roster();
@@ -129,7 +144,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         int numberOfEditsMax = 5;
@@ -183,7 +203,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         Roster roster = new Roster();
