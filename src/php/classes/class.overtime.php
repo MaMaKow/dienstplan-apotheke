@@ -302,16 +302,16 @@ class overtime {
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been changed.");
-        $messageTemplate = gettext('The user %1$s has changed the following overtime entry:\r\n'
-                . 'Employee: %2$s\r\n'
-                . 'Date: %3$s\r\n'
-                . 'Hours:%4$s\r\n'
-                . 'Reason:%5$s\r\n'
-                . '\r\n'
-                . 'to the new values:\r\n'
-                . 'Date: %6$s\r\n'
-                . 'Hours: %7$s\r\n'
-                . 'Reason: %8$s\r\n'
+        $messageTemplate = gettext('The user %1$s has changed the following overtime entry:' . "\r\n"
+                . 'Employee: %2$s' . "\r\n"
+                . 'Date: %3$s' . "\r\n"
+                . 'Hours:%4$s' . "\r\n"
+                . 'Reason:%5$s' . "\r\n"
+                . "\r\n"
+                . 'to the new values:' . "\r\n"
+                . 'Date: %6$s' . "\r\n"
+                . 'Hours: %7$s' . "\r\n"
+                . 'Reason: %8$s' . "\r\n"
         );
         $message = sprintf($messageTemplate,
                 $session->getUserName(), $employeeName,

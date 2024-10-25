@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -152,7 +151,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(mailHogApiUrl);
             String responseBody = EntityUtils.toString(httpClient.execute(request).getEntity());
-            JsonObject jsonObject = new JsonParser().parse(responseBody).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
             String base64Body = jsonObject.get("items").getAsJsonArray()
                     .get(0).getAsJsonObject()
                     .get("Content").getAsJsonObject()
@@ -169,6 +168,96 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
             Assert.assertTrue(decodedBody.contains("Teammitglied: Albert Krüger"));
             Assert.assertTrue(decodedBody.contains("Datum: 24.11.2020"));
             Assert.assertTrue(decodedBody.contains("Stunden: 8"));
+        }
+
+    }
+
+    @Test(dependsOnMethods = {"testDisplay"})
+    public void testEditBySimpleUser() throws IOException {
+        LogoutPage logoutPage = new LogoutPage();
+        logoutPage.logout();
+        UserRegistry userRegistry = new UserRegistry();
+        User employeeUser = userRegistry.getUserByName("EmployeeUser");
+        SignInPage signInPage = new SignInPage(driver);
+        try {
+            HomePage menuPage = signInPage.loginValidUser(employeeUser.getUserName(), employeeUser.getPassphrase());
+            Assert.assertEquals(menuPage.getUserNameText(), employeeUser.getUserName());
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
+
+        OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
+        LocalDate localDate = LocalDate.of(2020, Month.NOVEMBER, 25);// Wednesday 25.11.2020
+        overtimeEmployeePage.selectYear(localDate.getYear());
+        overtimeEmployeePage.selectEmployee(7); //TODO: Which employee should we choose?
+
+        /**
+         * Create new overtime:
+         */
+        LocalDate dateNew = LocalDate.of(2020, Month.NOVEMBER, 26);
+        float hoursNew = -6;
+        String reasonNew = "Baz";
+        overtimeEmployeePage.addNewOvertime(localDate, 7, "Bar");
+        overtimeEmployeePage.editOvertimeByLocalDate(localDate, dateNew, hoursNew, reasonNew);
+
+        /**
+         * Now test if there has been an email to the administrator about
+         * deleted overtimes.
+         */
+        // Fetch emails from MailHog API or Mailtrap API
+        String mailHogApiUrl = "http://localhost:8025/api/v2/messages";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(mailHogApiUrl);
+            String responseBody = EntityUtils.toString(httpClient.execute(request).getEntity());
+            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+            String base64Body = jsonObject.get("items").getAsJsonArray()
+                    .get(0).getAsJsonObject()
+                    .get("Content").getAsJsonObject()
+                    .get("Body").getAsString();
+            // Remove all line breaks and spaces from the Base64 string
+            base64Body = base64Body.replaceAll("\\s+", "");  // This will remove spaces, tabs, and line breaks
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
+            String decodedBody = new String(decodedBytes, StandardCharsets.UTF_8);
+
+            /**
+             * Before Assertions, remove the overtime entry:
+             */
+            overtimeEmployeePage.removeOvertimeByLocalDate(dateNew);
+            logoutPage = new LogoutPage();
+            logoutPage.logout();
+
+            /**
+             * Assert that the decoded email body contains expected content
+             */
+            //logger.debug(decodedBody);
+            // Replace non-printable characters with visible markers for logging
+            String expected = "Der Benutzer EmployeeUser hat folgenden Überstunden Eintrag geändert:\n"
+                    + "Teammitglied: Albert Krüger\n"
+                    + "Datum: 25.11.2020\n"
+                    + "Stunden: 7\n"
+                    + "Grund: Bar\n"
+                    + "\n"
+                    + "zu den neuen Werten:\n"
+                    + "Datum: 26.11.2020\n"
+                    + "Stunden: -6\n"
+                    + "Grund: Baz\n";
+            String visibleExpected = expected
+                    .replace(" ", "[SPACE] ")
+                    .replace("\n", "[NEWLINE]\n")
+                    .replace("\r", "[CR]\r")
+                    .replace("\t", "[TAB]\t");
+
+            String visibleActual = decodedBody
+                    .replace(" ", "[SPACE] ")
+                    .replace("\n", "[NEWLINE]\n")
+                    .replace("\r", "[CR]\r")
+                    .replace("\t", "[TAB]\t");
+
+            // Log the transformed strings for comparison
+            //logger.debug("Expected: " + visibleExpected);
+            //logger.debug("Actual:   " + visibleActual);
+            Assert.assertEquals(decodedBody, expected);
         }
 
     }

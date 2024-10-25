@@ -42,11 +42,11 @@ public class TestDayPage extends Selenium.TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         DayPage dayPage = new DayPage(driver);
 
         /**
@@ -70,11 +70,11 @@ public class TestDayPage extends Selenium.TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         DayPage dayPage = new DayPage(driver);
 
         /**
@@ -124,11 +124,11 @@ public class TestDayPage extends Selenium.TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         DayPage dayPage = new DayPage(driver);
 
         /**
@@ -184,11 +184,11 @@ public class TestDayPage extends Selenium.TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         DayPage dayPage = new DayPage(driver);
 
         /**
@@ -203,11 +203,11 @@ public class TestDayPage extends Selenium.TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         DayPage dayPage = new DayPage(driver);
 
         /**
@@ -237,7 +237,7 @@ public class TestDayPage extends Selenium.TestPage {
                 dayPage.createNewRosterItem(principleRosterItem);
             }
             for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
-                System.out.print(":"); // This loop takes quite a while. Make it a bit verbose.
+                System.out.print("#"); // This loop takes quite a while. Make it a bit verbose.
                 PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeKey(principleRosterItem.getEmployeeKey());
                 softAssert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
                 softAssert.assertEquals(principleRosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
@@ -257,11 +257,11 @@ public class TestDayPage extends Selenium.TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         DayPage dayPage = new DayPage(driver);
 
         /**
@@ -298,11 +298,11 @@ public class TestDayPage extends Selenium.TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         DayPage dayPage = new DayPage(driver);
 
         /**

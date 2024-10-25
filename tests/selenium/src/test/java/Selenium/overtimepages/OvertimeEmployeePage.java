@@ -21,10 +21,7 @@ package Selenium.overtimepages;
 import Selenium.MenuFragment;
 import Selenium.Overtime;
 import Selenium.driver.Wrapper;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -33,7 +30,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -47,7 +43,7 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
     private final By employeeFormSelectBy = By.xpath("//form[@id='select_employee']/select");
     private final By dateInputBy = By.xpath("//*[@id=\"date_chooser_input\"]");
     private final By hoursInputBy = By.xpath("//*[@id=\"stunden\"]");
-    private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
+    //private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
     private final By reasonInputBy = By.xpath("//*[@id=\"grund\"]");
     private final By submitButtonBy = By.xpath("/html/body/div/table/tbody/tr/td/input[@name=\"submitStunden\"]");
 
@@ -59,26 +55,6 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
                     "This is not a logged in state," + " current page is: " + driver.getCurrentUrl());
         }
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToOvertimeEdit);
-    }
-
-    /**
-     * Get user_name (span tag)
-     *
-     * We only need this in order to check, if we are logged in.
-     *
-     * @return String user_name text
-     */
-    public String getUserNameText() {
-        WebElement userNameSpanElement;
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-            userNameSpanElement = driver.findElement(userNameSpanBy);
-        } catch (NoSuchElementException noSuchElementException) {
-            wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-            userNameSpanElement = driver.findElement(userNameSpanBy);
-        }
-        String userNameString = userNameSpanElement.getText();
-        return userNameString;
     }
 
     public OvertimeEmployeePage selectYear(int year) {
@@ -101,11 +77,6 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
         return listOfOvertimeRowElements;
     }
 
-    private WebElement findOvertimeRowByIndex(int index) {
-        List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
-        return listOfOvertimeRows.get(index);
-    }
-
     private WebElement findOvertimeRowByDate(LocalDate localDate) {
         By dateBy = By.xpath(".//td/input[@name=\"editDateNew\"]");
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
@@ -124,24 +95,10 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
             logger.error("No overtime found for given date.");
             throw new Exception("No overtime found for given date.");
         }
-        //logger.debug(overtimeRow.getAttribute("innerHTML"));
-        //String dateString = overtimeRow.findElement(By.xpath(".//td[1]/form")).getText();
         float hours = Float.parseFloat(overtimeRow.findElement(By.xpath(".//input[@name=\"editHoursNew\"]")).getAttribute("value"));
         float balance = Float.parseFloat(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
         String reason = overtimeRow.findElement(By.xpath(".//input[@name=\"editReasonNew\"]")).getAttribute("value");
         return new Overtime(localDate, hours, balance, reason);
-    }
-
-    /**
-     * @deprecated The use of the Calendar class is deprecated.
-     * @param calendar
-     * @param hours
-     * @param reason
-     * @return
-     */
-    public OvertimeEmployeePage addNewOvertime(Calendar calendar, float hours, String reason) {
-        LocalDate localDate = LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
-        return addNewOvertime(localDate, hours, reason);
     }
 
     public OvertimeEmployeePage addNewOvertimeForEmployee(int employeeKey, LocalDate localDate, float hours, String reason) {
@@ -153,7 +110,6 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
         /**
          * date:
          */
-        //String dateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         WebElement dateInputElement = driver.findElement(dateInputBy);
         Wrapper.fillDateInput(dateInputElement, localDate);
         /**
@@ -208,6 +164,52 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
          */
         wait.until(ExpectedConditions.alertIsPresent());
         driver.switchTo().alert().accept();
+        OvertimeEmployeePage newOvertimeEmployeePage;
+        try {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        } catch (StaleElementReferenceException | NoSuchElementException staleElementReferenceException) {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        }
+        return newOvertimeEmployeePage;
+    }
+
+    public OvertimeEmployeePage editOvertimeByLocalDate(LocalDate localDate, LocalDate dateNew, float hoursNew, String reasonNew) {
+        this.selectYear(localDate.getYear());
+        WebElement overtimeRow = findOvertimeRowByDate(localDate);
+        String localDateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+        By editButtonBy = By.xpath(".//button[@id=\"editButton_" + localDateString + "\"]");
+        By submitEditButtonBy = By.xpath(".//button[@id=\"save_" + localDateString + "\"]");
+        WebElement editButtonElement = overtimeRow.findElement(editButtonBy);
+        editButtonElement.click();
+        waitShort.until(ExpectedConditions.invisibilityOf(editButtonElement));
+
+        By dateNewInputBy = By.xpath(".//input[@name=\"editDateNew\"]");
+        By hoursNewInputBy = By.xpath(".//input[@name=\"editHoursNew\"]");
+        By reasonNewInputBy = By.xpath(".//input[@name=\"editReasonNew\"]");
+
+        /**
+         * date:
+         */
+        WebElement dateInputElement = overtimeRow.findElement(dateNewInputBy);
+        Wrapper.fillDateInput(dateInputElement, dateNew);
+        /**
+         * hours:
+         */
+        WebElement hoursInputElement = overtimeRow.findElement(hoursNewInputBy);
+        hoursInputElement.clear();
+        hoursInputElement.sendKeys(String.valueOf(hoursNew));
+        /**
+         * reason:
+         */
+        WebElement reasonInputElement = overtimeRow.findElement(reasonNewInputBy);
+        reasonInputElement.clear();
+        reasonInputElement.sendKeys(reasonNew);
+        /**
+         * submit:
+         */
+        WebElement submitButtonElement = overtimeRow.findElement(submitEditButtonBy);
+        submitButtonElement.click();
+
         OvertimeEmployeePage newOvertimeEmployeePage;
         try {
             newOvertimeEmployeePage = new OvertimeEmployeePage(driver);

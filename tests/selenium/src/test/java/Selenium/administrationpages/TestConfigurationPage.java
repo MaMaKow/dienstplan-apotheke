@@ -18,8 +18,6 @@
  */
 package Selenium.administrationpages;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

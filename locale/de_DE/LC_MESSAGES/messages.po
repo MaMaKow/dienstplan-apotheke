@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2024-09-11 07:55+0200\n"
-"PO-Revision-Date: 2024-09-11 07:56+0200\n"
+"POT-Creation-Date: 2024-10-24 00:20+0200\n"
+"PO-Revision-Date: 2024-10-24 00:25+0200\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -511,6 +511,7 @@ msgstr "Berechtigungsfehler."
 #: src/php/classes/class.collaborative_vacation.php:
 #: src/php/classes/class.collaborative_vacation.php:
 #: src/php/classes/class.collaborative_vacation.php:
+#: src/php/classes/class.overtime.php:
 #: src/php/classes/class.user_dialog_email.php:
 #: src/php/pages/install_page_database.php:
 msgid "Please see the error log for details!"
@@ -744,6 +745,11 @@ msgid "The data was therefore not inserted in the database."
 msgstr "Die Daten wurden daher nicht in die Datenbank eingefügt."
 
 #: src/php/classes/class.overtime.php:
+msgid ""
+"An error has occured when trying to write overtime data to the database."
+msgstr "Beim Speichern der Überstunden in die Datenbank trat ein Fehler auf."
+
+#: src/php/classes/class.overtime.php:
 msgid "PDR: An overtime entry has been deleted."
 msgstr "PDR: Ein Überstundeneintrag wurde gelöscht."
 
@@ -757,6 +763,43 @@ msgstr ""
 "Teammitglied: %2$s\n"
 "Datum: %3$s\n"
 "Stunden: %4$s"
+
+#: src/php/classes/class.overtime.php:
+msgid "PDR: An overtime entry has been changed."
+msgstr "PDR: Ein Überstundeneintrag wurde geändert."
+
+#: src/php/classes/class.overtime.php:
+#, php-format
+msgid ""
+"The user %1$s has changed the following overtime entry:\r\n"
+"Employee: %2$s\r\n"
+"Date: %3$s\r\n"
+"Hours:%4$s\r\n"
+"Reason:%5$s\r\n"
+"\r\n"
+"to the new values:\r\n"
+"Date: %6$s\r\n"
+"Hours: %7$s\r\n"
+"Reason: %8$s\r\n"
+msgstr ""
+"Der Benutzer %1$s hat folgenden Überstunden Eintrag geändert:\n"
+"Teammitglied: %2$s\n"
+"Datum: %3$s\n"
+"Stunden: %4$s\n"
+"Grund: %5$s\n"
+"\n"
+"zu den neuen Werten:\n"
+"Datum: %6$s\n"
+"Stunden: %7$s\n"
+"Grund: %8$s\n"
+
+#: src/php/classes/class.overtime.php:
+msgid ""
+"Your overtime changes have been logged and will be sent to the administrator "
+"for review."
+msgstr ""
+"Deine Änderungen der Überstunden wurden protokolliert und werden zur "
+"Überprüfung an den Administrator gesendet."
 
 #: src/php/classes/class.overtime.php: src/php/pages/overtime-read.php:
 msgid "Balance"
