@@ -18,7 +18,7 @@
 require_once "../../../default.php";
 
 $tage = 7; //One week
-$user_dialog = new user_dialog();
+$userDialog = new user_dialog();
 
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
@@ -37,8 +37,7 @@ $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix
 $date_unix_start = $date_unix;
 $date_start_object = new DateTime();
 $date_start_object->setTimestamp($date_unix_start);
-
-$date_unix_end = $date_unix_start + ($tage - 1) * PDR_ONE_DAY_IN_SECONDS;
+$date_end_object = new DateTime($date_sql_end);
 
 for ($i = 0; $i < $tage; $i++) {
     $Week_dates_unix[] = strtotime(' +' . $i . ' days', $date_unix);
@@ -61,13 +60,15 @@ $Working_week_hours_have = roster::calculate_working_weekly_hours_from_branch_ro
 $duty_roster_working_week_hours_div = "";
 if (array() !== $Roster and isset($Working_week_hours_have)) {
     $Working_week_hours_should = build_html_roster_views::calculate_working_week_hours_should($Roster, $workforce);
-    $duty_roster_working_week_hours_div = build_html_roster_views::build_roster_working_week_hours_div($Working_week_hours_have, $Working_week_hours_should, $workforce);
+    $duty_roster_working_week_hours_div = build_html_roster_views::build_roster_working_week_hours_div($session, $date_end_object, $Working_week_hours_have, $Working_week_hours_should, $workforce);
 }
 
 //Produziere die Ausgabe
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $main_div_html = "<div id='mainArea'>\n";
+echo $userDialog->build_messages();
+
 $dateString = $date_start_object->format('W');
 $date_info_line_html = "<div id=date_info_line class='no-print'>"
         . gettext("calendar week") . '&nbsp;'
@@ -141,7 +142,7 @@ $main_div_html .= $duty_roster_form_html;
 $main_div_html .= $duty_roster_working_week_hours_div;
 //$main_div_html .= "</div>\n";
 
-echo $user_dialog->build_messages();
+echo $userDialog->build_messages();
 
 echo '<div id="printTimeInfo" class="only-print"><p class="tiny">' . sprintf(gettext('Time of print: %1$s'), date('d.m.Y H:i:s')) . '</p></div>';
 echo $main_div_html;

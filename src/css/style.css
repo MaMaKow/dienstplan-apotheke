@@ -400,7 +400,8 @@ img.button-image
     width: 2em;
     height: 2em;
     margin: 0px;
-    padding: 0.15em;
+    margin-bottom: 2px;
+    padding: 0.10em;
 }
 
 .button-small > img {

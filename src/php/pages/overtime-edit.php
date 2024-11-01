@@ -24,25 +24,27 @@ $dateStartObject = new DateTime("$year-01-01");
 $dateEndObject = new DateTime("$year-12-31");
 $workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
-$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-\PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
+$employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+\PDR\Utility\GeneralUtility::createCookie('employee_key', $employeeKey, 1);
 
-overtime::handle_user_input($session, $employee_key);
+\PDR\Input\OvertimeInputHandler::handleUserInput($session, $employeeKey);
 $userDialog = new user_dialog();
 if (isset($_POST) && !empty($_POST)) {
     $userDialog->storeMessagesInSession();
     // POST data has been submitted
-    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/overtime-edit.php' . "?year=$year&employee_key=$employee_key";
+    $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/overtime-edit.php' . "?year=$year&employee_key=$employeeKey";
     header('Location:' . $location);
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
 $userDialog->readMessagesFromSession();
-list($balance, $date_old) = overtime::get_current_balance($employee_key);
+$currentOvertime = \PDR\Database\OvertimeDatabaseHandler::getCurrentOvertime($employeeKey);
+$balance = $currentOvertime->getBalance();
+$date_old = $currentOvertime->getDate()->format("Y-m-d");
 /*
  * Get the overtime data for the chosen year:
  */
 $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key and Year(`Datum`) = :year ORDER BY `Datum` DESC";
-$result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key, 'year' => $year));
+$result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employeeKey, 'year' => $year));
 $tablebody = "<tbody>\n";
 $i = 1;
 while ($row = $result->fetch(PDO::FETCH_OBJ)) {
@@ -142,8 +144,8 @@ $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 
 echo form_element_builder::build_html_select_year($year);
-echo build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
-echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_key' => $employee_key));
+echo build_html_navigation_elements::build_select_employee($employeeKey, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_key' => $employeeKey));
 
 echo "<table>\n";
 //Heading
@@ -190,7 +192,7 @@ echo "$tablebody";
 echo "</table>\n";
 echo "</div>\n";
 echo "<form accept-charset='utf-8' method=POST id=insert_new_overtime onsubmit='return overtime_input_validation();'>\n"
- . "<input hidden name=employee_key value=" . htmlspecialchars($employee_key) . " form=insert_new_overtime>\n"
+ . "<input hidden name=employee_key value=" . htmlspecialchars($employeeKey) . " form=insert_new_overtime>\n"
  . "<input hidden id='user_sequence_warning' name=user_has_been_warned_about_date_sequence value='0' form=insert_new_overtime>\n"
  . "<input hidden id='date_of_last_entry' name='date_of_last_entry' value='$date_old' form=insert_new_overtime>\n"
  . "</form>\n";

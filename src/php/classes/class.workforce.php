@@ -342,7 +342,7 @@ class workforce {
      * We just return some random employee
      */
     public function get_default_employee_key() {
-        if ($_SESSION['user_object'] instanceof user) {
+        if (isset($_SESSION['user_object']) and $_SESSION['user_object'] instanceof user) {
             /**
              * Try to guess the employee_key from the logged in user:
              */

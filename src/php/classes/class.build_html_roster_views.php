@@ -561,50 +561,67 @@ abstract class build_html_roster_views {
         return $table_html;
     }
 
-    public static function build_roster_working_week_hours_div($Working_week_hours_have, $Working_week_hours_should, $workforce, $Options = NULL) {
-        if (array() === $Working_week_hours_have) {
+    public static function build_roster_working_week_hours_div(\sessions $session, \DateTime $dateObject, array $WorkingWeekHoursHave, array $Working_week_hours_should, \Workforce $workforce, array $Options = NULL) {
+        $weekHoursTableFormsHtml = "";
+
+        if (array() === $WorkingWeekHoursHave) {
             return FALSE;
         }
-        $week_hours_table_html = "<div id=weekHoursTableDiv>\n";
-        $week_hours_table_html .= '<H2>' . gettext('Hours per week') . "</H2>\n";
-        $week_hours_table_html .= "<table class='tight'>";
-        $week_hours_table_html .= "<tr>";
-        $week_hours_table_html .= "<th>" . gettext('Employee') . "</th>";
-        $week_hours_table_html .= "<th>" . gettext('Actual') . "</th>";
-        $week_hours_table_html .= "<th>" . gettext('Target') . "</th>";
-        $week_hours_table_html .= "<th>" . gettext('Deviation') . "</th>";
-        $week_hours_table_html .= "</tr>";
-        foreach ($Working_week_hours_have as $employee_key => $working_hours_have) {
-            if (isset($Options['employee_key']) and (int) $employee_key !== (int) $Options['employee_key']) {
+        $weekHoursTableHtml = "<div id=weekHoursTableDiv>\n";
+        $weekHoursTableHtml .= '<H2>' . gettext('Hours per week') . "</H2>\n";
+        $weekHoursTableHtml .= "<table class='tight'>";
+        $weekHoursTableHtml .= "<tr>";
+        $weekHoursTableHtml .= "<th>" . gettext('Employee') . "</th>";
+        $weekHoursTableHtml .= "<th>" . gettext('Actual') . "</th>";
+        $weekHoursTableHtml .= "<th>" . gettext('Target') . "</th>";
+        $weekHoursTableHtml .= "<th>" . gettext('Deviation') . "</th>";
+        $weekHoursTableHtml .= "</tr>";
+        foreach ($WorkingWeekHoursHave as $employeeKey => $workingHoursHave) {
+            if (isset($Options['employee_key']) and (int) $employeeKey !== (int) $Options['employee_key']) {
                 continue; /* Only the specified employees are shown. */
             }
-            $week_hours_table_html .= "<tr>";
-            $week_hours_table_html .= "<td>";
-            if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
-                $week_hours_table_html .= $workforce->List_of_employees[$employee_key]->last_name;
+            $weekHoursTableHtml .= "<tr>";
+            $weekHoursTableHtml .= "<td>";
+            if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+                $weekHoursTableHtml .= $workforce->List_of_employees[$employeeKey]->last_name;
             } else {
-                $week_hours_table_html .= gettext("Unknown employee") . ":" . $employee_key;
+                $weekHoursTableHtml .= gettext("Unknown employee") . ":" . $employeeKey;
             }
-            $week_hours_table_html .= "</td>";
-            $week_hours_table_html .= "<td>" . round($working_hours_have * 4, 0) / 4;
-            $week_hours_table_html .= " </td><td> ";
-            if (isset($Working_week_hours_should[$employee_key])) {
-                $week_hours_table_html .= round($Working_week_hours_should[$employee_key], 1) . "\n";
-                $differenz = $working_hours_have - $Working_week_hours_should[$employee_key];
+            $weekHoursTableHtml .= "</td>";
+            $weekHoursTableHtml .= "<td>" . round($workingHoursHave * 4, 0) / 4;
+            $weekHoursTableHtml .= " </td><td> ";
+            if (isset($Working_week_hours_should[$employeeKey])) {
+                $workingHoursShould = $Working_week_hours_should[$employeeKey];
+                $weekHoursTableHtml .= round($workingHoursShould, 1) . "\n";
+                $difference = $workingHoursHave - $workingHoursShould;
             } else {
-                $week_hours_table_html .= "???" . "\n";
-                $differenz = 0;
+                $weekHoursTableHtml .= "???" . "\n";
+                $difference = 0;
             }
-            $week_hours_table_html .= "</td>\n";
-            $week_hours_table_html .= "<td>\n";
-            $week_hours_table_html .= "<b>" . (round($differenz * 4, 0) / 4) . "</b>\n";
-            $week_hours_table_html .= "</td>\n";
-            $week_hours_table_html .= "</tr>\n";
+            $weekHoursTableHtml .= "</td>\n";
+            $weekHoursTableHtml .= "<td>\n";
+            $weekHoursTableHtml .= "<b>" . (round($difference * 4, 0) / 4) . "</b>\n";
+            $weekHoursTableHtml .= "</td>\n";
+            if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_OVERTIME)) {
+                $weekHoursTableHtml .= "<td>\n";
+                $formId = "storeOvertimeData" . $employeeKey;
+                $weekHoursTableHtml .= "<button class='button-small no-print' type=submit form='$formId' title='" . gettext("Save overtime") . "'><img src='../../../img/md_save.svg'></button>\n";
+                $weekHoursTableHtml .= "</td>\n";
+                $weekHoursTableFormsHtml .= "<form method='post' id=$formId>" . PHP_EOL; //prepare forms to be appended.
+                $weekHoursTableFormsHtml .= "<input type='hidden' form='$formId' name='employeeKey' value='$employeeKey'>" . PHP_EOL;
+                $weekHoursTableFormsHtml .= "<input type='hidden' form='$formId' name='workingHoursHave' value='$workingHoursHave'>" . PHP_EOL;
+                $weekHoursTableFormsHtml .= "<input type='hidden' form='$formId' name='workingHoursShould' value='$workingHoursShould'>" . PHP_EOL;
+                $weekHoursTableFormsHtml .= "<input type='hidden' form='$formId' name='difference' value='$difference'>" . PHP_EOL;
+                $weekHoursTableFormsHtml .= "<input type='hidden' form='$formId' name='date' value=" . $dateObject->format("Y-m-d") . ">" . PHP_EOL;
+                $weekHoursTableFormsHtml .= "</form>" . PHP_EOL;
+            }
+            $weekHoursTableHtml .= "</tr>\n";
         }
-        $week_hours_table_html .= "</table>";
+        $weekHoursTableHtml .= "</table>";
+        $weekHoursTableHtml .= $weekHoursTableFormsHtml;
 
-        $week_hours_table_html .= "</div>"; // id=weekHoursTableDiv
-        return $week_hours_table_html;
+        $weekHoursTableHtml .= "</div>"; // id=weekHoursTableDiv
+        return $weekHoursTableHtml;
     }
 
     private static function calculate_working_hours_employee_should(array $Roster, employee $employee_object) {

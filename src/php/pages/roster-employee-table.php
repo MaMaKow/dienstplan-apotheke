@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-
 $tage = 7;
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
@@ -28,12 +27,27 @@ $date_end_object->add(new DateInterval('P6D'));
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
 \PDR\Utility\GeneralUtility::createCookie('datum', $date_sql, 1);
 $workforce = new workforce($date_sql_start, $date_sql_end);
-
-$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$employee_key = (int) user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
 if (!$workforce->employee_exists($employee_key)) {
-    $_SESSION['user_object']->employee_key;
+    $employee_key = $_SESSION['user_object']->employee_key;
 }
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
+
+$userDialog = new \user_dialog();
+$userDialog->readMessagesFromSession();
+
+if ($session->user_has_privilege(sessions::PRIVILEGE_CREATE_OVERTIME)) {
+    \PDR\Input\OvertimeInputHandler::handleOvertimeInputFromRoster();
+}
+if (isset($_POST) && !empty($_POST)) {
+// POST data has been submitted, Post/Redirect/Get
+    $userDialog->storeMessagesInSession();
+    $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/roster-employee-table.php' . "?employee_key=$employee_key&datum=$date_sql";
+    header('Location:' . $location);
+    die("<p>Redirect to: <a href=$location>$location</a></p>");
+}
+
+
 /*
  * Get a list of employees:
  */
@@ -61,6 +75,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=mainArea>\n";
+echo $userDialog->build_messages();
 $dateString = $date_start_object->format('W');
 echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week-table.php?datum=" . htmlspecialchars(date('Y-m-d', $date_unix)) . "'> "
  . gettext("calendar week") . '&nbsp;'
@@ -82,7 +97,7 @@ echo "<table>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME));
 echo build_html_roster_views::build_roster_readonly_employee_table($Roster, $workforce->List_of_employees[$employee_key]->principle_branch_id);
 $table_foot_html = "<tfoot>"
-        //. "<tr class=page-break></tr>"
+//. "<tr class=page-break></tr>"
         . "\n<tr>\n";
 
 /*
@@ -108,7 +123,7 @@ echo "</table>\n";
 
 $Working_week_hours_have = roster::calculate_working_weekly_hours_from_branch_roster($Branch_roster);
 $Working_week_hours_should = build_html_roster_views::calculate_working_week_hours_should($Roster, $workforce);
-echo build_html_roster_views::build_roster_working_week_hours_div($Working_week_hours_have, $Working_week_hours_should, $workforce, array('employee_key' => $employee_key));
+echo build_html_roster_views::build_roster_working_week_hours_div($session, $date_end_object, $Working_week_hours_have, $Working_week_hours_should, $workforce, array('employee_key' => $employee_key));
 echo "</div>\n";
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';
