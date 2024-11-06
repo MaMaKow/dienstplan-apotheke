@@ -312,6 +312,7 @@ class sessions {
         /*
          * TODO: Use PDR email class
          */
+        $recipient = $user->get_email();
         $sent_result = mail($recipient, $message_subject, $message_text, $headers);
         if ($sent_result) {
             $message = "A lost password email was successfully sent.";
@@ -324,7 +325,7 @@ class sessions {
 
     public function write_lost_password_token_to_database(user $user, $token) {
         if (!is_null($user) and !is_null($token)) {
-            $user_key = $user->user_key;
+            $user_key = $user->get_primary_key();
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
             $sql_query = "INSERT INTO `users_lost_password_token` (`user_key`, `token`) VALUES (:user_key, UNHEX(:token))";
             database_wrapper::instance()->run($sql_query, array('user_key' => $user_key, 'token' => $token));
