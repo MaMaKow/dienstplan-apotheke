@@ -135,12 +135,12 @@ fi
 
 # Pull latest changes from remote to ensure the branch is up-to-date:
 echo "Pulling latest changes from remote..."
-if ! git pull --rebase origin "$current_branch"; then
-    error_exit "Pull from origin $current_branch failed. Please resolve conflicts manually or retry."
+if ! git merge origin "$current_branch"; then
+    error_exit "Merge from origin $current_branch failed. Please resolve conflicts manually or retry."
 fi
 echo "Pulling latest changes from remote..."
-if ! git pull --rebase origin master; then
-    error_exit "Pull from origin master failed. Please resolve conflicts manually or retry."
+if ! git merge origin master; then
+    error_exit "Merge from origin master failed. Please resolve conflicts manually or retry."
 fi
 
 git show -1
