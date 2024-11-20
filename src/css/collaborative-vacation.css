@@ -109,6 +109,10 @@ p.weekday, td.weekday {
 p.weekend, td.weekend {
     background-color: rgba(180, 180, 180, 0.9);
 }
+p.weekend span, td.weekend span {
+    font-size: xx-small;
+    background-color: rgba(180, 180, 180, 0.9);
+}
 p.highlight, td.highlight {
     background: linear-gradient(180deg, #00ABE7 0, #0081AF 100%), rgba(180, 180, 180, 0.9);
 }

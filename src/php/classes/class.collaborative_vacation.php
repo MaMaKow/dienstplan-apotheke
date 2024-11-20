@@ -357,12 +357,6 @@ class collaborative_vacation {
     }
 
     private function build_absence_year_absent_employees_containers(\DateTime $dateObject, \PDR\Roster\AbsenceCollection $absenceCollection, bool $isHoliday, string $mode = 'year'): string {
-        if ($dateObject->format("N") >= 6) {
-            return "";
-        }
-        if ($isHoliday) {
-            return "";
-        }
         $absentEmployeesContainers = '';
         foreach ($absenceCollection as $absence) {
             if ($absence->getStart() > $dateObject) {
