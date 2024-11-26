@@ -212,33 +212,21 @@ class OvertimeInputHandler {
         $configuration = new \PDR\Application\configuration();
         $workforce = new \workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
-        $locale = $configuration->getLC_TIME();
-        $dateStringOld = self::formatReadableDateObject($dateOld, $locale);
-        $dateStringNew = self::formatReadableDateObject($dateNew, $locale);
+        $dateStringOld = \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateOld);
+        $dateStringNew = \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateNew);
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been changed.");
-        $messageTemplate = gettext('The user %1$s has changed the following overtime entry:' . "\r\n"
-                . 'Employee: %2$s' . "\r\n"
-                . 'Date: %3$s' . "\r\n"
-                . 'Hours:%4$s' . "\r\n"
-                . 'Reason:%5$s' . "\r\n"
+        $message = sprintf(gettext('The user %1$s has changed the following overtime entry:'), $session->getUserName()) . "\r\n"
+                . gettext('Employee') . ": " . $employeeName . "\r\n"
+                . gettext('Date') . ": " . $dateStringOld . "\r\n"
+                . gettext('Hours') . ": " . $overtimeHoursOld . "\r\n"
+                . gettext('Reason') . ": " . $overtimeReasonOld . "\r\n"
                 . "\r\n"
-                . 'to the new values:' . "\r\n"
-                . 'Date: %6$s' . "\r\n"
-                . 'Hours: %7$s' . "\r\n"
-                . 'Reason: %8$s' . "\r\n"
-        );
-        $message = sprintf($messageTemplate,
-                $session->getUserName(), $employeeName,
-                $dateStringOld,
-                $overtimeHoursOld,
-                $overtimeReasonOld,
-                $dateStringNew,
-                $overtimeHoursNew,
-                $overtimeReasonNew
-        );
-
+                . gettext('to the new values:') . "\r\n"
+                . gettext('Date') . ": " . $dateStringNew . "\r\n"
+                . gettext('Hours') . ": " . $overtimeHoursNew . "\r\n"
+                . gettext('Reason') . ": " . $overtimeReasonNew . "\r\n";
         // Send Email
         $userDialogEmail = new \user_dialog_email();
         $userDialogEmail->send_email(
@@ -279,13 +267,7 @@ class OvertimeInputHandler {
      */
     private static function formatReadableDate(string $dateString, string $locale): string {
         $dateObject = new \DateTime($dateString);
-        return self::formatReadableDateObject($dateObject, $locale);
-    }
-
-    private static function formatReadableDateObject(\DateTime $dateObject, string $locale): string {
-        $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::NONE, \IntlDateFormatter::NONE);
-        $formatter->setPattern('dd.MM.yyyy');
-        return $formatter->format($dateObject);
+        return \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateObject);
     }
 
     public static function handleUserInputInsert() {

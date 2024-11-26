@@ -77,7 +77,6 @@ public class TestConfigurationPage extends Selenium.TestPage {
         configurationPage.setApplicationName(applicationName);
         configurationPage.submitForm();
         Assert.assertEquals(configurationPage.getApplicationName(), applicationName);
-
     }
 
     @Test(enabled = true, dependsOnMethods = {"testWriteConfiguration"})/*passed*/

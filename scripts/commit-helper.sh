@@ -30,9 +30,6 @@ clear;
 echo "We are in the directory"
 pwd
 echo "We are currently on the commit $current_version.";
-echo "major: $current_version_major";
-echo "minor: $current_version_minor";
-echo "patch: $current_version_patch";
 
 # Zeilennummern aus po-Datei entfernen
 # Pfad zur messages.po-Datei:
@@ -134,6 +131,16 @@ then
     git tag "$new_version"
 else
     echo "Debug: No tagging on branch $current_branch"
+fi
+
+# Pull latest changes from remote to ensure the branch is up-to-date:
+echo "Pulling latest changes from remote..."
+if ! git pull --rebase origin "$current_branch"; then
+    error_exit "Pull from origin $current_branch failed. Please resolve conflicts manually or retry."
+fi
+echo "Pulling latest changes from remote..."
+if ! git pull --rebase origin master; then
+    error_exit "Pull from origin master failed. Please resolve conflicts manually or retry."
 fi
 
 git show -1

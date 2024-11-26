@@ -47,7 +47,7 @@ class InstallDatabase {
         /**
          * Try to define an own user with minimal privileges:
          */
-        $userSelf = "pdr_" . \bin2hex(\openssl_random_pseudo_bytes(5)); //The user name must not be longer than 16 chars in mysql.
+        $userSelf = "pdr_" . \bin2hex(\openssl_random_pseudo_bytes(5)); //The username must not be longer than 16 chars in mysql.
         $installConfiguration->setDatabaseUserSelf($userSelf);
         $passphraseSelf = \bin2hex(\openssl_random_pseudo_bytes(16));
         $installConfiguration->setDatabasePassphraseSelf($passphraseSelf);

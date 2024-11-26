@@ -42,4 +42,11 @@ abstract class DateTimeUtility {
         $time_float = $hour + $minute / 60 + $second / 3600;
         return $time_float;
     }
+
+    public static function formatReadableDateObject(\DateTime $dateObject): string {
+        $configuration = new \PDR\Application\configuration();
+        $formatter = new \IntlDateFormatter($configuration->getLC_TIME(), \IntlDateFormatter::NONE, \IntlDateFormatter::NONE);
+        $formatter->setPattern('dd.MM.yyyy');
+        return $formatter->format($dateObject);
+    }
 }

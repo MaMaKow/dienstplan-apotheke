@@ -405,7 +405,7 @@ class configuration {
         'display_errors' => 0,
         'log_errors' => 1,
         'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
-        'LC_TIME' => 'C',
+        'LC_TIME' => 'de_DE',
         'timezone' => 'Europe/Berlin',
         'language' => 'de-DE',
         'mb_internal_encoding' => 'UTF-8',

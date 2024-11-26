@@ -45,7 +45,7 @@ echo "<H1>" . $application_name . "</H1>\n";
 ?>
 
 <form accept-charset='utf-8' action="?request_new_password=1" method="post">
-    <p><?= gettext("Please enter your email address, user name or user id!") ?></p>
+    <p><?= gettext("Please enter your email address or username!") ?></p>
     <input type="text" size="25" maxlength="250" name="identifier" placeholder="<?= gettext("identifier") ?>"><br>
     <input type="submit"><br>
     <?php

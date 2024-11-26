@@ -144,7 +144,7 @@ class AbsenceUtility {
 
             \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
             /**
-             * @todo use the current user name:
+             * @todo use the current username:
              */
             $currentUserName = $_SESSION['user_object']->get_user_name();
             \PDR\Database\AbsenceDatabaseHandler::insertAbsence(

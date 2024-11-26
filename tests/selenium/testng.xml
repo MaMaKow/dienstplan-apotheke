@@ -20,14 +20,16 @@
             <class name="Selenium.administrationpages.TestConfigurationPage" />
             <!-- Mitarbeiter müssen eingetragen werden, bevor die Dienstpläne erstellt werden können: -->
             <class name="Selenium.administrationpages.TestWorkforceManagementPage" />
+            <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
+            <class name="Selenium.rosterpages.TestRosterDayEditPage" />
+            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne: -->
+            <class name="Selenium.principlerosterpages.TestDayPage" />
+            <!-- TestRegister wird möglichst spät ausgeführt in der Hoffnung,
+            dass Config Änderungen dann final im Cache stehen. Aktuell kommen die Emails,
+            die eigentlich in mailhog landen sollen auf dem echten Mailserver an. -->
             <class name="Selenium.signin.TestRegister" />
             <!-- TestUserManagementPage muss nach TestRegister ausgeführt werden. -->
             <class name="Selenium.administrationpages.TestUserManagementPage" />
-            <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
-            <class name="Selenium.rosterpages.TestRosterDayEditPage" />
-            <class name="Selenium.overtimepages.TestOvertimeEmployeePage" />
-            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne: -->
-            <class name="Selenium.principlerosterpages.TestDayPage" />
         </classes>
     </test>
     <test name="Application Pages">

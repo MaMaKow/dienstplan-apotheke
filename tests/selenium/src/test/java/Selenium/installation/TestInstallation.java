@@ -32,7 +32,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 /**
@@ -56,7 +55,6 @@ public class TestInstallation extends Selenium.TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testInstallation() throws Exception {
-        LoggingTest loggingTest = new LoggingTest();
         driver = Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String testPageFolderPath = propertyFile.getUrlInstallTest();
@@ -78,13 +76,21 @@ public class TestInstallation extends Selenium.TestPage {
             /**
              * Start the actual installation process:
              */
+            logger.debug("Open installation page intro");
             InstallationPageIntro installationPageIntro = new InstallationPageIntro();
+            logger.debug("Move to installation page welcome");
             InstallationPageWelcome installationPageWelcome = installationPageIntro.moveToWelcomePage();
+            logger.debug("Move to installation page requirements");
             InstallationPageRequirements installationPageRequirements = installationPageWelcome.moveToRequirementsPage();
+            logger.debug("Move to installation page database");
             InstallationPageDatabase installationPageDatabase = installationPageRequirements.moveToDatabasePage();
+            logger.debug("Fill form");
             installationPageDatabase.fillForm();
+            logger.debug("Move to installation page administrator");
             InstallationPageAdministrator installationPageAdministrator = installationPageDatabase.moveToAdminPage();
+            logger.debug("Fill form");
             installationPageAdministrator.fillForm();
+            logger.debug("Finally move away from installation to login page");
             installationPageAdministrator.moveFromAdminPage();
         } catch (Exception exception) {
             System.out.println("driver.getCurrentUrl()");

@@ -31,7 +31,7 @@ require_once 'install_head.php';
 <h1><?= gettext("Administrator configuration") ?></h1>
 
 <form accept-charset='utf-8' method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <p><?= gettext("User name") ?>:<br>
+    <p><?= gettext("Username") ?>:<br>
         <input type="text" name="user_name" placeholder="Administrator username" required value="<?= (!empty($_SESSION['configuration']["user_name"])) ? $_SESSION['configuration']["user_name"] : "" ?>" />
     </p>
     <p>

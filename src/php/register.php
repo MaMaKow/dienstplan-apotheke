@@ -18,17 +18,22 @@
 
 /**
  * @todo Write Selenium tests for registration including errors and DDoS attacks
+ * @todo Move the methods into a class called \PDR\Input\RegistrationInputHandler
  */
 require '../../default.php';
 require "../../head.php";
 $show_form = true; //Variable ob das Registrierungsformular anezeigt werden soll
 $user_dialog = new user_dialog();
 
-
 if (filter_has_var(INPUT_GET, 'register')) {
+    if (filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_SPECIAL_CHARS) !== $_SESSION['csrfToken']) {
+        // Token does not match; possible CSRF attack
+        error_log('Invalid CSRF token. Possible cross site scripting attack. Quitting execution of script.');
+        die('Invalid CSRF token. Possible cross site scripting attack. Quitting execution of script.');
+    }
     $error = false;
-    $user_name = filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_FLAG_STRIP_LOW);
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $user_name = trim(filter_input(INPUT_POST, 'user_name', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_FLAG_STRIP_LOW));
+    $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
     $password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
     $password2 = filter_input(INPUT_POST, 'password2', FILTER_UNSAFE_RAW);
     $math_problem_solution_sent = filter_input(INPUT_POST, 'math_problem_solution', FILTER_SANITIZE_NUMBER_INT);
@@ -82,7 +87,7 @@ if (filter_has_var(INPUT_GET, 'register')) {
         $sql_query = "INSERT INTO `users` (user_name, password, email, status) VALUES (:user_name, :password, :email, 'inactive')";
         $result = database_wrapper::instance()->run($sql_query, array('user_name' => $user_name, 'password' => $password_hash, 'email' => $email));
         if ($result) {
-            send_mail_about_registration();
+            send_mail_about_registration($user_name, $email);
             echo gettext('You have been successfully registered.')
             . " "
             . sprintf(gettext('Once your user is unlocked, you can %1$s log in.%2$s'), '<a href="login.php">', '</a>');
@@ -114,12 +119,12 @@ if ($show_form) {
     $math_problem_solution = $summand1 + $summand2;
     $_SESSION['math_problem_solution'] = $math_problem_solution;
 
-
     echo "<div class=centered-form-div>";
     echo "<H1>" . $application_name . "</H1>\n";
     ?>
     <form accept-charset='utf-8' action="?register=1" method="post">
-        <input type="text" size="40" maxlength="250" name="user_name" required placeholder="<?= gettext("User name") ?>" value="<?= $user_name ?>"><br>
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrfToken']; ?>" />
+        <input type="text" size="40" maxlength="250" name="user_name" required placeholder="<?= gettext("Username") ?>" value="<?= $user_name ?>"><br>
         <input type="email" size="40" maxlength="250" name="email" required placeholder="<?= gettext("Email") ?>" value="<?= $email ?>"><br>
         <input type="password" size="40" maxlength="4096" name="password" required placeholder="<?= gettext("Passphrase") ?>"><br>
         <input type="password" size="40" maxlength="4096" name="password2" required placeholder="<?= gettext("Repeat passphrase") ?>" title="Passwort wiederholen"><br><br>
@@ -139,23 +144,35 @@ if ($show_form) {
     echo $user_dialog->build_messages();
 }
 
-function send_mail_about_registration() {
-    global $config;
-    $message_subject = quoted_printable_encode('Neuer Benutzer wurde angelegt');
-    $message_text = quoted_printable_encode("<HTML><BODY>"
-            . "Sehr geehrter Administrator,\n\n Im Dienstplanprogramm '"
-            . $config["application_name"]
-            . "' hat sich ein Benutzer angemeldet. Die Anmeldung muss zunächst <a href='"
-            . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/register_approve.php'>bestätigt werden.</a>"
-            . "</BODY></HTML>");
-    $headers = 'From: ' . $config['contact_email'] . "\r\n";
-    $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-    $headers .= "Content-Transfer-Encoding: quoted-printable";
-
-    $sent_result = mail($config['contact_email'], $message_subject, $message_text, $headers);
-    if ($sent_result) {
+/**
+ *
+ * @param string $userName
+ * @param string $userEmail
+ * @return void
+ * @todo Write selenium test for this email
+ */
+function send_mail_about_registration(string $userName, string $userEmail): void {
+    $configuration = new PDR\Application\configuration();
+    $messageSubject = quoted_printable_encode(gettext('New user has been registered'));
+    $applicationName = $configuration->getApplicationName();
+    $url = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/register_approve.php";
+    $registrationTime = date("Y-m-d H:i:s");
+    $messageText = "<HTML><BODY>"
+            . gettext('Dear Administrator,') . "<br><br>"
+            . sprintf(gettext('A user has registered to the duty roster application %1$s.'), $applicationName)
+            . '<br><br>'
+            . gettext('Registration details:') . ":" . "<br>"
+            . gettext('Username') . ": " . $userName . "<br>"
+            . gettext('Email') . ": " . $userEmail . "<br>"
+            . gettext('Registration time') . ": " . $registrationTime . "<br><br>"
+            . sprintf(gettext('Please <a href=‘%1$s’>confirm</a> the registration.'), $url)
+            . gettext('Users cannnot login before confirmation.')
+            . "</BODY></HTML>";
+    $messageTextEncoded = quoted_printable_encode($messageText);
+    unset($messageText);
+    $userDialogEmail = new user_dialog_email();
+    $mailSuccess = $userDialogEmail->send_email($configuration->getContactEmail(), $messageSubject, $messageTextEncoded);
+    if (true === $mailSuccess) {
         echo "Die Nachricht wurde versendet. Vielen Dank!<br>\n";
     } else {
         echo "Fehler beim Versenden der Nachricht. Das tut mir Leid.<br>\n";
