@@ -237,6 +237,7 @@ class configurationManager {
          */
         if (function_exists('\opcache_reset')) {
             \opcache_reset();
+            error_log("Cleared the php cache via \opcache_reset().");
         }
         return $new_config;
     }

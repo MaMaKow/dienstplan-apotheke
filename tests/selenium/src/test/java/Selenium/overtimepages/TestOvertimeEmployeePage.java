@@ -232,8 +232,8 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
              */
             //logger.debug(decodedBody);
             // Replace non-printable characters with visible markers for logging
-            String expected = "Der Benutzer EmployeeUser hat folgenden Überstunden Eintrag geändert:\n"
-                    + "Teammitglied: Albert Krüger\n"
+            String expected = "Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:\n"
+                    + "Mitarbeitende: Albert Krüger\n"
                     + "Datum: 25.11.2020\n"
                     + "Stunden: 7\n"
                     + "Grund: Bar\n"
@@ -242,18 +242,20 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
                     + "Datum: 26.11.2020\n"
                     + "Stunden: -6\n"
                     + "Grund: Baz\n";
-            String visibleExpected = expected
-                    .replace(" ", "[SPACE] ")
-                    .replace("\n", "[NEWLINE]\n")
-                    .replace("\r", "[CR]\r")
-                    .replace("\t", "[TAB]\t");
-
-            String visibleActual = decodedBody
-                    .replace(" ", "[SPACE] ")
-                    .replace("\n", "[NEWLINE]\n")
-                    .replace("\r", "[CR]\r")
-                    .replace("\t", "[TAB]\t");
-
+            /**
+             * String visibleExpected = expected
+             * .replace(" ", "[SPACE] ")
+             * .replace("\n", "[NEWLINE]\n")
+             * .replace("\r", "[CR]\r")
+             * .replace("\t", "[TAB]\t");
+             *
+             * String visibleActual = decodedBody
+             * .replace(" ", "[SPACE] ")
+             * .replace("\n", "[NEWLINE]\n")
+             * .replace("\r", "[CR]\r")
+             * .replace("\t", "[TAB]\t");
+             *
+             */
             // Log the transformed strings for comparison
             //logger.debug("Expected: " + visibleExpected);
             //logger.debug("Actual:   " + visibleActual);

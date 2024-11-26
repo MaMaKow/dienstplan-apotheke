@@ -159,9 +159,11 @@ class OvertimeDatabaseHandler {
         $sqlQueryGetEmployeeOvertimes = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` ASC";
         $result = \database_wrapper::instance()->run($sqlQueryGetEmployeeOvertimes, array('employee_key' => $employeeKey));
         $firstLoop = TRUE;
+        $initialBalance = 0;
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $balance = $row->Saldo;
             if ($firstLoop === TRUE) {
+                $initialBalance = $row->Saldo - $row->Stunden;
                 $balance = $row->Saldo - $row->Stunden;
                 $firstLoop = FALSE;
             }
@@ -172,7 +174,8 @@ class OvertimeDatabaseHandler {
             $OvertimeCollection->addOvertime($overtime);
         }
         ksort($OvertimeList);
-        $currentBalance = 0;
+        // Start with the initial balance set in the first row
+        $currentBalance = $initialBalance;
         /**
          *  @var \PDR\Roster\Overtime $overtimeObject
          */

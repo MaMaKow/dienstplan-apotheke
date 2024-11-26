@@ -29,13 +29,13 @@ import org.openqa.selenium.WebElement;
  */
 public class RegisterPage extends Selenium.BasePage {
 
-    private final By userNameBy = By.xpath("/html/body/div/form/input[1]");
-    private final By userEmailBy = By.xpath("/html/body/div/form/input[2]");
-    private final By userPassphraseBy = By.xpath("/html/body/div/form/input[3]");
-    private final By repeatPassphraseBy = By.xpath("/html/body/div/form/input[4]");
+    private final By userNameBy = By.xpath("/html/body/div/form/input[@name='user_name']");
+    private final By userEmailBy = By.xpath("/html/body/div/form/input[@name='email']");
+    private final By userPassphraseBy = By.xpath("/html/body/div/form/input[@name='password']");
+    private final By repeatPassphraseBy = By.xpath("/html/body/div/form/input[@name='password2']");
     private final By mathProblemBy = By.xpath("/html/body/div/form/label");
     private final By mathProblemSolutionInputBy = By.xpath("//*[@id=\"mathProblemSolution\"]");
-    private final By submitButtonBy = By.xpath("/html/body/div/form/input[6]");
+    private final By submitButtonBy = By.xpath("/html/body/div/form/input[@type='submit']");
 
     private final WebDriver driver;
 

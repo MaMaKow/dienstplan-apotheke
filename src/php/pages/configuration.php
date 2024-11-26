@@ -229,7 +229,7 @@ echo $user_dialog->build_messages();
                     <input type="text" name="email_smtp_host" id="emailSmtpHost" value="<?= $configuration->getEmailSmtpHost(); ?>"><br>
                     <label for="emailSmtpPort">Port</label><br>
                     <input type="text" name="email_smtp_port" id="emailSmtpPort" value="<?= $configuration->getEmailSmtpPort(); ?>"><br>
-                    <label for="emailSmtpUsername">User name</label><br>
+                    <label for="emailSmtpUsername">Username</label><br>
                     <input type="text" name="email_smtp_username" id="emailSmtpUsername" value="<?= $configuration->getEmailSmtpUsername(); ?>"><br>
                     <label for="emailSmtpPassword">Password</label><br>
                     <input type="password" name="email_smtp_password" id="emailSmtpPassword" value=""  autocomplete="new-password"><br>

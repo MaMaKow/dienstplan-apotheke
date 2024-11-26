@@ -39,7 +39,7 @@ echo "<H1>Inaktive Benutzer</H1>";
 echo "<form method='POST' id='register_approve'>";
 echo "<table id='register_approve_table'>";
 echo "<tr>"
- . "<th>" . gettext('user name') . "</th>"
+ . "<th>" . gettext('username') . "</th>"
  . "<th>" . gettext('employee key') . "</th>"
  . "<th> " . gettext('email') . "</th>"
  . "<th>" . gettext('created at') . "</th>"

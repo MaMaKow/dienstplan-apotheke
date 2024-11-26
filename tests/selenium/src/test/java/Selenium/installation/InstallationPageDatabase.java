@@ -86,11 +86,14 @@ public class InstallationPageDatabase {
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
         InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
         try {
+            /**
+             * @todo: Replace sleep with some kind of wait!
+             */
             Thread.sleep(500);
         } catch (InterruptedException ex) {
             Logger.getLogger(InstallationPageDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         InstallationPageDatabaseFormButtonElement.click();
-        return new InstallationPageAdministrator();
+        return new InstallationPageAdministrator(driver);
     }
 }

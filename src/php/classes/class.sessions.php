@@ -70,7 +70,7 @@ class sessions {
          */
         session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
         session_start();
-        if (isset($_SESSION['number_of_times_redirected'])) {
+        if (!isset($_SESSION['number_of_times_redirected'])) {
             /**
              * @TODO: Check if this is correct!
              * <p lang=de>Sollte hier isset() oder !isset() stehen?
@@ -106,6 +106,13 @@ class sessions {
          */
         if ("localhost" != $http_host AND "" != $http_host) {
             self::force_https();
+        }
+        /**
+         * Create a token against cross site request forgery (csrf).
+         * This token can be used in forms to prevent csrf.
+         */
+        if (empty($_SESSION['csrfToken'])) {
+            $_SESSION['csrfToken'] = bin2hex(random_bytes(32));
         }
 
         /**
@@ -292,7 +299,7 @@ class sessions {
                 . " '"
                 . $application_name
                 . "' "
-                . gettext("user name") . ": " . $user->get_user_name() . ", "
+                . gettext("username") . ": " . $user->get_user_name() . ", "
                 . gettext("please visit")
                 . " <a href='"
                 . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"])
