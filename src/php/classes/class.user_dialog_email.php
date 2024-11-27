@@ -267,7 +267,7 @@ class user_dialog_email {
         return $mail_success;
     }
 
-    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL) {
+    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL): bool {
         global $config;
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';

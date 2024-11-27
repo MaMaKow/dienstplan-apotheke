@@ -295,7 +295,9 @@ class sessions {
 
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
-                . sprintf(gettext('Dear %1$s,\r\n\r\n in order to set a new password for'), $user->user_name)
+                . sprintf(gettext('Dear %1$s,'), $user->user_name)
+                . \email::EMAIL_EOL . \email::EMAIL_EOL
+                . gettext('in order to set a new password for')
                 . " '"
                 . $application_name
                 . "' "
@@ -310,17 +312,10 @@ class sessions {
                 . ".</a>"
                 . gettext("Your token is valid for 24 hours.")
                 . "</BODY></HTML>");
-        $headers = 'From: ' . $config['contact_email'] . "\r\n";
-        $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "Content-Transfer-Encoding: quoted-printable";
 
-        /*
-         * TODO: Use PDR email class
-         */
         $recipient = $user->get_email();
-        $sent_result = mail($recipient, $message_subject, $message_text, $headers);
+        $userDialogEmail = new user_dialog_email();
+        $sent_result = $userDialogEmail->send_email($recipient, $message_subject, $message_text);
         if ($sent_result) {
             $message = "A lost password email was successfully sent.";
             error_log($message);

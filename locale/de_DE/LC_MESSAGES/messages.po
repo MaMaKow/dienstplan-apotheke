@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2024-11-13 21:53+0100\n"
-"PO-Revision-Date: 2024-11-13 21:54+0100\n"
+"POT-Creation-Date: 2024-11-27 21:53+0100\n"
+"PO-Revision-Date: 2024-11-27 21:54+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -171,24 +171,10 @@ msgstr "PDR: Ein Überstundeneintrag wurde gelöscht."
 
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #, php-format
-msgid ""
-"The user %1$s has deleted the following overtime entry:\\r\\nEmployee: "
-"%2$s\\r\\nDate: %3$s\\r\\nHours:%4$s"
-msgstr ""
-"Der Benutzer %1$s hat folgenden Überstunden Eintrag gelöscht:\n"
-"Teammitglied: %2$s\n"
-"Datum: %3$s\n"
-"Stunden: %4$s"
-
-#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
-msgid "PDR: An overtime entry has been changed."
-msgstr "PDR: Ein Überstundeneintrag wurde geändert."
-
-#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
-#, php-format
-msgid "The user %1$s has changed the following overtime entry:"
+msgid "The user %1$s has deleted the following overtime entry:"
 msgstr "Der Account %1$s hat folgenden Überstundeneintrag geändert:"
 
+#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/classes/PDR/Output/HTML/OvertimeHtmlBuilder.php:
 #: src/php/classes/PDR/Output/HTML/vacationPageBuilder.php:
@@ -200,6 +186,7 @@ msgstr "Mitarbeitende"
 
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
+#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/classes/PDR/Output/HTML/OvertimeHtmlBuilder.php:
 #: src/php/classes/class.roster_item.php:
 #: src/php/pages/emergency-service-list.php:
@@ -209,10 +196,12 @@ msgstr "Datum"
 
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
+#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/pages/overtime-read.php:
 msgid "Hours"
 msgstr "Stunden"
 
+#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 #: src/php/pages/absence-edit.php:
@@ -220,6 +209,15 @@ msgstr "Stunden"
 #: src/php/pages/overtime-read.php:
 msgid "Reason"
 msgstr "Grund"
+
+#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
+msgid "PDR: An overtime entry has been changed."
+msgstr "PDR: Ein Überstundeneintrag wurde geändert."
+
+#: src/php/classes/PDR/Input/OvertimeInputHandler.php:
+#, php-format
+msgid "The user %1$s has changed the following overtime entry:"
+msgstr "Der Account %1$s hat folgenden Überstundeneintrag geändert:"
 
 #: src/php/classes/PDR/Input/OvertimeInputHandler.php:
 msgid "to the new values:"
@@ -967,12 +965,14 @@ msgid "Lost password"
 msgstr "Passphrase vergessen"
 
 #: src/php/classes/class.sessions.php:
+#: src/php/classes/class.user_dialog_email.php:
 #, php-format
-msgid "Dear %1$s,\\r\\n\\r\\n in order to set a new password for"
-msgstr ""
-"Hallo %1$s,\n"
-"\n"
-"um eine neue Passphrase zu setzen für"
+msgid "Dear %1$s,"
+msgstr "Sehr geehrte(r) %1$s,"
+
+#: src/php/classes/class.sessions.php:
+msgid "in order to set a new password for"
+msgstr "um eine neue Passphrase zu setzen für"
 
 #: src/php/classes/class.sessions.php: src/php/register_approve.php:
 msgid "username"
@@ -1049,11 +1049,6 @@ msgstr "Ihr Dienstplan wurde geändert."
 #, php-format
 msgid "You are not in the roster anymore on %1$s."
 msgstr "Sie sind am %1$s nicht mehr im Dienstplan gelistet."
-
-#: src/php/classes/class.user_dialog_email.php:
-#, php-format
-msgid "Dear %1$s,"
-msgstr "Sehr geehrte(r) %1$s,"
 
 #: src/php/classes/class.user_dialog_email.php:
 msgid "Sincerely yours,"
@@ -1691,7 +1686,7 @@ msgid "If the user exists, an email has been sent."
 msgstr "Wenn der Benutzer existiert, wurde eine E-Mail versandt."
 
 #: src/php/pages/lost_password.php:
-msgid "Please enter your email address, username or user id!"
+msgid "Please enter your email address or username!"
 msgstr "Bitte geben Sie Ihren Accountnamen oder Ihre Email-Adresse an!"
 
 #: src/php/pages/lost_password.php:
@@ -2147,6 +2142,19 @@ msgstr "Fehler beim Schreiben der Trigger Datei auf die Festplatte."
 #: tests/get-database-structure.php:
 msgid "Error while writing the database hash file to disk."
 msgstr "Fehler beim Schreiben des Datenbankhashes auf die Festplatte."
+
+#, fuzzy, php-format
+#~| msgid ""
+#~| "The user %1$s has deleted the following overtime entry:\\r\\nEmployee: "
+#~| "%2$s\\r\\nDate: %3$s\\r\\nHours:%4$s"
+#~ msgid ""
+#~ "The user %1$s has deleted the following overtime entry:\\r\\nEmployee: "
+#~ "%2$s\\r\\nDate: %3$s\\r\\nHours:%4$sReason:%5$s"
+#~ msgstr ""
+#~ "Der Benutzer %1$s hat folgenden Überstunden Eintrag gelöscht:\n"
+#~ "Teammitglied: %2$s\n"
+#~ "Datum: %3$s\n"
+#~ "Stunden: %4$s"
 
 #~ msgid "User name"
 #~ msgstr "Anmeldename"

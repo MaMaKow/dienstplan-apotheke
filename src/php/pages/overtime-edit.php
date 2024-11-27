@@ -72,6 +72,7 @@ function buildFormOvertimeDelete(stdClass $rowObject) {
     $deleteFormString .= " <input type=hidden name=deletionEmployeeKey value='" . htmlspecialchars($rowObject->employee_key) . "' form='$deleteFormId'>\n";
     $deleteFormString .= " <input type=hidden name=deletionDate value='" . htmlspecialchars($rowObject->Datum) . "' form='$deleteFormId'>\n";
     $deleteFormString .= " <input type=hidden name=deletionHours value='" . htmlspecialchars($rowObject->Stunden) . "' form='$deleteFormId'>\n";
+    $deleteFormString .= " <input type=hidden name=deletionReason value='" . htmlspecialchars($rowObject->Grund) . "' form='$deleteFormId'>\n";
     $deleteFormString .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id='$deleteFormId'>\n";
     $deleteFormString .= "</form>\n";
     return $deleteFormString;

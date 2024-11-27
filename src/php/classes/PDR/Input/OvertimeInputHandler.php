@@ -149,6 +149,7 @@ class OvertimeInputHandler {
         $deletionEmployeeKey = filter_input(INPUT_POST, 'deletionEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
         $deletionDate = filter_input(INPUT_POST, 'deletionDate', FILTER_SANITIZE_SPECIAL_CHARS);
         $deletionHours = filter_input(INPUT_POST, 'deletionHours', FILTER_SANITIZE_SPECIAL_CHARS);
+        $deletionReason = filter_input(INPUT_POST, 'deletionReason', FILTER_SANITIZE_SPECIAL_CHARS);
 
         if (!$deletionEmployeeKey || !$deletionDate) {
             /**
@@ -184,7 +185,7 @@ class OvertimeInputHandler {
      * @param string $deletionDate The date of the deleted overtime entry, formatted as a string.
      * @return void This function does not return any value.
      */
-    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours): void {
+    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours, string $deletionReason): void {
         $configuration = new \PDR\Application\configuration();
         $workforce = new \workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
@@ -193,8 +194,12 @@ class OvertimeInputHandler {
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been deleted.");
-        $messageTemplate = gettext('The user %1$s has deleted the following overtime entry:\r\nEmployee: %2$s\r\nDate: %3$s\r\nHours:%4$s');
-        $message = sprintf($messageTemplate, $session->getUserName(), $employeeName, $dateString, $deletionHours);
+        $message = \sprintf(gettext('The user %1$s has deleted the following overtime entry:'), $session->getUserName()) . \email::EMAIL_EOL
+                . gettext('Employee') . ": $employeeName\r\n"
+                . gettext('Date') . ": $dateString\r\n"
+                . gettext('Hours') . ": $deletionHours\r\n"
+                . gettext('Reason') . ": $deletionReason\r\n"
+        ;
 
         // Send Email
         $userDialogEmail = new \user_dialog_email();
@@ -217,16 +222,16 @@ class OvertimeInputHandler {
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been changed.");
-        $message = sprintf(gettext('The user %1$s has changed the following overtime entry:'), $session->getUserName()) . "\r\n"
-                . gettext('Employee') . ": " . $employeeName . "\r\n"
-                . gettext('Date') . ": " . $dateStringOld . "\r\n"
-                . gettext('Hours') . ": " . $overtimeHoursOld . "\r\n"
-                . gettext('Reason') . ": " . $overtimeReasonOld . "\r\n"
-                . "\r\n"
-                . gettext('to the new values:') . "\r\n"
-                . gettext('Date') . ": " . $dateStringNew . "\r\n"
-                . gettext('Hours') . ": " . $overtimeHoursNew . "\r\n"
-                . gettext('Reason') . ": " . $overtimeReasonNew . "\r\n";
+        $message = sprintf(gettext('The user %1$s has changed the following overtime entry:'), $session->getUserName()) . \email::EMAIL_EOL
+                . gettext('Employee') . ": " . $employeeName . \email::EMAIL_EOL
+                . gettext('Date') . ": " . $dateStringOld . \email::EMAIL_EOL
+                . gettext('Hours') . ": " . $overtimeHoursOld . \email::EMAIL_EOL
+                . gettext('Reason') . ": " . $overtimeReasonOld . \email::EMAIL_EOL
+                . \email::EMAIL_EOL
+                . gettext('to the new values:') . \email::EMAIL_EOL
+                . gettext('Date') . ": " . $dateStringNew . \email::EMAIL_EOL
+                . gettext('Hours') . ": " . $overtimeHoursNew . \email::EMAIL_EOL
+                . gettext('Reason') . ": " . $overtimeReasonNew . \email::EMAIL_EOL;
         // Send Email
         $userDialogEmail = new \user_dialog_email();
         $userDialogEmail->send_email(
