@@ -389,14 +389,25 @@ class sessions {
     }
 
     public function verifyAccessToken() {
+        $token = "";
+        $headers = getallheaders();
         /**
-         * @todo Will this apache_request_headers() work with nginx? Probably not.
+         * Test if  Authorization-Header exists
          */
-        $headers = apache_request_headers();
-        $token = $headers["Authorization"];
+        if (!isset($headers['Authorization']) || empty($headers['Authorization'])) {
+            header('Content-Type: application/json', true, 401);
+            echo json_encode(['error' => 'Authorization token missing']);
+            exit;
+        }
+        $authorizationHeader = $headers["Authorization"];
+        if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
+            error_log("We have a request with bearer token.");
+            PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
+            $token = $matches[1];
+        }
         try {
             /**
-             *  Use a library or method to decode and verify the token with the secret key
+             *  Method to decode and verify the token with the secret key
              */
             $decodedToken = $this->jwtDecode($token);
 

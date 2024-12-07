@@ -380,10 +380,22 @@ https://www.pharmazeutische-zeitung.de/wie-werden-feiertage-richtig-abgerechnet-
          */
   private function build_error_message_maximum_working_hours($average_working_hours, $employee_id) {
         global $Mitarbeiter;
-        $error_message = $Mitarbeiter[$employee_id] . " arbeitet im Durchschnitt " . $average_working_hours 
+        $error_message = $Mitarbeiter[$employee_id] . " arbeitet im Durchschnitt " . $average_working_hours
                 . " das ist ein Verstoß gegen <a href='http://www.gesetze-im-internet.de/arbzg/__3.html'>§3 ArbZG</a>!";
         if (!function_exists(build_warning_messages)) {
             require_once 'src/php/build-warning-messages.php';
         }
         return build_warning_messages($error_message);
     }	    }
+
+#### Urlaubstage müssen vermutlich float sein.
+
+https://www.gesetze-im-internet.de/burlg/__5.html
+"(2) Bruchteile von Urlaubstagen, die mindestens einen halben Tag ergeben, sind auf volle Urlaubstage aufzurunden."
+Das bedeutet gleichzeitig, dass Bruchteile, die unter einen halben Tag ergeben auch als anteilige Tage zu gewähren sind.
+Es wird NICHT abgerundet.
+https://chatgpt.com/c/674ad677-abdc-8003-9644-885ef01138e5
+Wir brauchen darüber hinaus zwei extra Tabellen für Urlaube und für Urlaubsanpassungen.
+id, employee_id, year, leave_days_working_days, (leave_days_working_days_adjusted, conversion_rate_to_working_days, comments)
+und
+id, leave_entitlement_id, date, adjustment_type, adjustment_days_working_days, comments
