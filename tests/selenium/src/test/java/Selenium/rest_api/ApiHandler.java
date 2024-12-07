@@ -64,7 +64,7 @@ public class ApiHandler {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
-                .header("Authorization", accessToken)
+                .header("Authorization", "Bearer" + accessToken)
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
