@@ -22,7 +22,6 @@ import Selenium.Branch;
 import Selenium.HomePage;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.PropertyFile;
-import Selenium.Utilities.LoggingTest;
 import Selenium.administrationpages.BranchAdministrationPage;
 import Selenium.driver.Wrapper;
 import Selenium.signin.SignInPage;

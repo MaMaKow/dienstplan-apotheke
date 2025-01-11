@@ -28,22 +28,11 @@ namespace PDR\Database;
  */
 class OvertimeDatabaseHandler {
 
-    public static function insertOvertimeToDatabase(int $employeeKey, \DateTime $dateObject, float $overtimeHours, String $overtimeReasonString): void {
+    public static function insertOvertimeToDatabase(int $employeeKey, \DateTime $insertedDateObject, float $overtimeHoursNew, String $overtimeReasonString): void {
+        $balanceNew = \PDR\Database\OvertimeDatabaseHandler::calculateNewBalance($employeeKey, $overtimeHoursNew, $insertedDateObject);
         $userDialog = new \user_dialog();
-        $dateString = $dateObject->format("Y-m-d");
-        $currentOvertime = self::getCurrentOvertime($employeeKey);
-        $balanceOld = $currentOvertime->getBalance();
-        $firstOvertime = self::getFirstOvertime($employeeKey);
-        $balanceNew = $balanceOld + $overtimeHours;
+        $dateString = $insertedDateObject->format("Y-m-d");
 
-        if (null !== $firstOvertime and $firstOvertime->getDate() > $dateObject) {
-            /*
-             * The new entry lies before the very first entry.
-             * This is a special case.
-             * In this case we calculate the balance given on a date that lies in the future, in regard to the new data.
-             */
-            $balanceNew = $firstOvertime->getBalance() - $firstOvertime->getHours();
-        }
         /**
          * Replace multiple spaces (including tabs and newlines) with a single space.
          * Also trim whitespace at the beginning and the end.
@@ -56,7 +45,7 @@ class OvertimeDatabaseHandler {
             $result = \database_wrapper::instance()->run($sql_query, array(
                 'employee_key' => $employeeKey,
                 'date' => $dateString,
-                'overtime_hours' => $overtimeHours,
+                'overtime_hours' => $overtimeHoursNew,
                 'balance' => $balanceNew,
                 'reason' => $overtimeReasonTrimmed
             ));
@@ -185,6 +174,22 @@ class OvertimeDatabaseHandler {
             \database_wrapper::instance()->run($sqlQueryUpdateBalances, array('employee_key' => $overtimeObject->getEmployeeKey(), 'date' => $overtimeObject->getDate()->format("Y-m-d"), 'balance' => $currentBalance));
         }
         return TRUE;
+    }
+
+    public static function calculateNewBalance(int $employeeKey, float $overtimeHoursNew, \DateTime $insertedDateObject): float {
+        $firstOvertime = \PDR\Database\OvertimeDatabaseHandler::getFirstOvertime($employeeKey);
+        if (null !== $firstOvertime and $firstOvertime->getDate() > $insertedDateObject) {
+            /*
+             * The new entry lies before the very first entry.
+             * This is a special case.
+             * In this case we calculate the balance given on a date that lies in the future, in regard to the new data.
+             */
+            $balanceNew = $firstOvertime->getBalance() - $firstOvertime->getHours();
+            return $balanceNew;
+        }
+        $currentOvertime = \PDR\Database\OvertimeDatabaseHandler::getCurrentOvertime($employeeKey);
+        $balanceNew = $currentOvertime->getBalance() + $overtimeHoursNew;
+        return $balanceNew;
     }
 
     /**

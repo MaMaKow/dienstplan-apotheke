@@ -19,12 +19,10 @@
 package Selenium.rest_api;
 
 import Selenium.PropertyFile;
-import Selenium.TestPage;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,12 +33,14 @@ import org.testng.annotations.Test;
  * </p>
  * @author Mandelkow
  */
-public class TestPOST_authenticateEndpoint {
+public class TestPOST_authenticateEndpoint extends Selenium.TestPage {
 
     private PropertyFile propertyFile;
+    public Logger logger;
 
     @Test(enabled = true)
     public void testLogin() {
+        this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
         propertyFile = new PropertyFile();
         try {
             // Authentication endpoint on real page:
@@ -51,23 +51,26 @@ public class TestPOST_authenticateEndpoint {
             String userPassphrase = propertyFile.getPdrUserPassword();
 
             // Try authentication with wrong credentials:
+            logger.debug("Try authentication with wrong credentials:");
             POST_authenticateEndpoint authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase + "foo", testPageUrl);
-            Assert.assertFalse(authenticateEndpoint.isAuthenticated());
+            Assert.assertFalse(authenticateEndpoint.isAuthenticated(), "Login with wrong credentials should have failed, but did not.");
             // Try authentication with empty credentials:
+            logger.debug("Try authentication with empty credentials; passphrase:");
             authenticateEndpoint = new POST_authenticateEndpoint(userName, "", testPageUrl);
-            Assert.assertFalse(authenticateEndpoint.isAuthenticated());
+            Assert.assertFalse(authenticateEndpoint.isAuthenticated(), "Login with empty passphrase should have failed, but did not.");
+            logger.debug("Try authentication with empty credentials; username and passphrase:");
             authenticateEndpoint = new POST_authenticateEndpoint("", "", testPageUrl);
-            Assert.assertFalse(authenticateEndpoint.isAuthenticated());
+            Assert.assertFalse(authenticateEndpoint.isAuthenticated(), "Login with empty credentials should have failed, but did not.");
 
             // Try authentication with correct credentials:
+            logger.debug("Try authentication with correct credentials:");
             authenticateEndpoint = new POST_authenticateEndpoint(userName, userPassphrase, testPageUrl);
-            Assert.assertTrue(authenticateEndpoint.isAuthenticated());
+            Assert.assertTrue(authenticateEndpoint.isAuthenticated(), "Endpoint is not authenticated. API login failed.");
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }
-
     }
 
 }

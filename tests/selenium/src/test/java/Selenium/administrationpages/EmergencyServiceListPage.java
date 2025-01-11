@@ -71,6 +71,11 @@ public class EmergencyServiceListPage {
         selectYearSelect.selectByVisibleText(yearString);
     }
 
+    public void selectYear(int year) {
+        String yearString = String.valueOf(year);
+        selectYear(yearString);
+    }
+
     public int getYear() {
         WebElement selectYearSelectElement = driver.findElement(selectYearSelectBy);
         Select selectYearSelect = new Select(selectYearSelectElement);

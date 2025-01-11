@@ -55,7 +55,7 @@ public class BasePage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
+        waitShort.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
         return driver.findElement(userNameSpanBy).getText();
     }
 

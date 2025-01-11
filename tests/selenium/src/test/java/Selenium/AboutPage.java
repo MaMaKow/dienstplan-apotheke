@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LogCollector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -51,7 +52,7 @@ public class AboutPage extends BasePage {
             // ProcessBuilder builder = new ProcessBuilder(command).directory(new File("path/to/git/repo"));
             ProcessBuilder builder = new ProcessBuilder(command);
 
-            logger.debug("Starting git process");
+            LogCollector.debug("Starting git process");
             Process process = builder.start();
 
             // Wait for the process to complete before reading output
@@ -60,15 +61,15 @@ public class AboutPage extends BasePage {
             // Capture the output
             try (BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line = input.readLine();
-                logger.debug("Git version output: " + line);
+                LogCollector.debug("Git version output: " + line);
                 return line;  // Expected version tag
             }
 
         } catch (IOException | InterruptedException ex) {
-            logger.error("Error executing git command: " + ex.getMessage());
+            LogCollector.error("Error executing git command: " + ex.getMessage());
         }
 
-        logger.debug("Returning null due to command failure");
+        LogCollector.debug("Returning null due to command failure");
         return null;
     }
 }

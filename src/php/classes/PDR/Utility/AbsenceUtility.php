@@ -320,25 +320,13 @@ class AbsenceUtility {
      */
     public static function getRosteringYears(): array {
         $Years = array();
-        $sqlQueryDienstplan = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan` ORDER BY YEAR(`Datum`)";
-        $resultRoster = \database_wrapper::instance()->run($sqlQueryDienstplan);
-        while ($row = $resultRoster->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
+        $now = new \DateTime();
+        $firstYear = (clone$now)->sub(new \DateInterval('P6Y'));
+        $lastYear = (clone$now)->add(new \DateInterval('P2Y'));
+        for ($currentYear = clone $firstYear; $currentYear <= $lastYear; $currentYear->add(new \DateInterval('P1Y'))) {
+            $Years[] = $currentYear->format('Y');
         }
-        $sqlQueryHours = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Stunden` ORDER BY YEAR(`Datum`)";
-        $resultHours = \database_wrapper::instance()->run($sqlQueryHours);
-        while ($row = $resultHours->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
-        }
-        $sqlQueryAbsence = "SELECT DISTINCT YEAR(`start`) AS `year` FROM `absence` ORDER BY YEAR(`start`)";
-        $resultAbsence = \database_wrapper::instance()->run($sqlQueryAbsence);
-        while ($row = $resultAbsence->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
-        }
-        $Years[] = (int) (new \DateTime())->format('Y');
-        $Years[] = max($Years) + 1;
-        sort($Years);
-        return array_unique($Years);
+        return $Years;
     }
 
     /**

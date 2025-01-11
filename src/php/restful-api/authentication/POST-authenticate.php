@@ -50,7 +50,9 @@ if ($session->user_is_logged_in()) {
     // Generate and return an access token
     $accessToken = $session->generateAccessToken($session->getUserObject());
     echo json_encode(['accessToken' => $accessToken]);
+    die();
 } else {
     // Handle authentication failure
     echo json_encode(['error' => 'Authentication failed']);
+    die();
 }

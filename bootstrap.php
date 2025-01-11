@@ -68,7 +68,7 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php')) {
     /*
      * Load configuration parameters from the configuration file:
      */
-    require_once PDR_FILE_SYSTEM_APPLICATION_PATH . "config/config.php";
+    require PDR_FILE_SYSTEM_APPLICATION_PATH . "config/config.php";
     /*
      * Complement the configuration array with the default values for unset parameters:
      */

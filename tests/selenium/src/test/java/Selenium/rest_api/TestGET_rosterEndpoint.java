@@ -20,14 +20,13 @@ package Selenium.rest_api;
 
 import Selenium.PropertyFile;
 import Selenium.RosterItem;
+import Selenium.Utilities.LogCollector;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -37,7 +36,7 @@ import org.testng.asserts.SoftAssert;
  *
  * @author Mandelkow
  */
-public class TestGET_rosterEndpoint {
+public class TestGET_rosterEndpoint extends Selenium.TestPage {
 
     private PropertyFile propertyFile;
     private SoftAssert softAssert = new SoftAssert();
@@ -50,6 +49,7 @@ public class TestGET_rosterEndpoint {
         try {
             propertyFile = new PropertyFile();
             String testPageUrl = propertyFile.getTestPageUrl();
+            LogCollector.debug("Check if we are logged in:");
             if (!POST_authenticateEndpoint.isAuthenticated()) {
                 String userName = propertyFile.getPdrUserName();
                 String userPassphrase = propertyFile.getPdrUserPassword();
@@ -63,8 +63,13 @@ public class TestGET_rosterEndpoint {
             HashMap<LocalDate, HashMap> foundRoster = rosterEndpoint.getFoundRosterHashMap();
             if (null == foundRoster) {
                 Assert.fail();
+                return;
             }
-            softAssert.assertNotEquals(foundRoster.size(), 0);
+            LogCollector.debug("Found roster for dates between " + dateStart + " and " + dateEnd + ":");
+            foundRoster.forEach((localDate, action) -> {
+                LogCollector.debug(localDate.format(DateTimeFormatter.ISO_DATE));
+            });
+            softAssert.assertNotEquals(foundRoster.size(), 0, "Found no roster. The foundRoster.size() is 0");
             for (Map.Entry<LocalDate, HashMap> rosterDayEntry : foundRoster.entrySet()) {
                 LocalDate date = rosterDayEntry.getKey();
                 HashMap<Integer, RosterItem> rosterDay = rosterDayEntry.getValue();
@@ -81,15 +86,10 @@ public class TestGET_rosterEndpoint {
                      */
                     softAssert.assertEquals(weeksBetween, 0);
                     softAssert.assertEquals(rosterItem.getEmployeeFullName(), employeeFullName);
-
                 }
             }
-        } catch (IOException | InterruptedException exception) {
-            exception.printStackTrace();
-            Assert.fail();
-            throw exception;
         } catch (Exception exception) {
-            Logger.getLogger(TestGET_rosterEndpoint.class.getName()).log(Level.SEVERE, null, exception);
+            LogCollector.error(exception.getLocalizedMessage());
             exception.printStackTrace();
             Assert.fail();
             throw exception;

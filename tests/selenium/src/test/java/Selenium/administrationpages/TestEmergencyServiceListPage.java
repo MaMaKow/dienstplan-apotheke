@@ -22,6 +22,7 @@ import Selenium.RealData.RealWorkforce;
 import Selenium.rosterpages.Workforce;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.Year;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -33,6 +34,8 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
 
     @Test(groups = "emptyInstance")
     public void testEmergencyService() {
+        LocalDate localDate = LocalDate.of(2024, Month.AUGUST, 8);
+        Year someOtherYear = Year.of(2021);
         /**
          * Sign in:
          */
@@ -46,13 +49,13 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
          * Go to page:
          */
         EmergencyServiceListPage emergencyServiceListPage = new EmergencyServiceListPage(driver);
-        emergencyServiceListPage.selectYear("2021");
+        emergencyServiceListPage.selectYear(someOtherYear.getValue());
         emergencyServiceListPage.selectBranch(2);
-        Assert.assertEquals(emergencyServiceListPage.getYear(), 2021);
+        Assert.assertEquals(emergencyServiceListPage.getYear(), someOtherYear.getValue());
         Assert.assertEquals(emergencyServiceListPage.getBranchId(), 2);
-        emergencyServiceListPage.selectYear("2019");
+        emergencyServiceListPage.selectYear(localDate.getYear());
         emergencyServiceListPage.selectBranch(1);
-        Assert.assertEquals(emergencyServiceListPage.getYear(), 2019);
+        Assert.assertEquals(emergencyServiceListPage.getYear(), localDate.getYear());
         Assert.assertEquals(emergencyServiceListPage.getBranchId(), 1);
         /**
          * <p lang=de>Daten einfügen:</p>
@@ -65,7 +68,6 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
          */
         Assert.assertEquals("Apotheker", workforce.getEmployeeByFullName(employeeNameInsert).getProfession());
         Assert.assertEquals("Apotheker", workforce.getEmployeeByFullName(employeeNameChange).getProfession());
-        LocalDate localDate = LocalDate.of(2019, Month.AUGUST, 8);
         emergencyServiceListPage = emergencyServiceListPage.addLineForDate(localDate);
         emergencyServiceListPage = emergencyServiceListPage.setEmployeeNameOnDate(localDate, employeeNameInsert);
         /**
@@ -98,7 +100,7 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
         int branchId = 1;
         Integer employeeKeyInsert = 55;
         Integer employeeKeyChange = 7;
-        LocalDate localDate = LocalDate.of(2020, Month.DECEMBER, 26);
+        LocalDate localDate = LocalDate.of(2024, Month.DECEMBER, 26);
 
         /**
          * Get Workforce data:
@@ -109,7 +111,7 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
         EmergencyServiceListPage emergencyServiceListPage = new EmergencyServiceListPage(driver);
         emergencyServiceListPage.selectYear(String.valueOf(localDate.getYear()));
         emergencyServiceListPage.selectBranch(branchId);
-        Assert.assertEquals(emergencyServiceListPage.getYear(), 2020);
+        Assert.assertEquals(emergencyServiceListPage.getYear(), localDate.getYear());
         Assert.assertEquals(emergencyServiceListPage.getBranchId(), branchId);
         /**
          * <p lang=de>Nur Apotheker (und PI) können allein im Notdienst

@@ -387,4 +387,20 @@ class workforce {
             }
         }
     }
+
+    public function getEmployeesAsJson(): string {
+        $employees = [];
+        foreach ($this->List_of_employees as $employee_key => $employee) {
+            $employees[] = [
+                'id' => $employee_key,
+                'last_name' => $employee->last_name,
+                'first_name' => $employee->first_name,
+                'profession' => $employee->profession,
+                'branch' => $employee->branch,
+                'start_of_employment' => $employee->start_of_employment,
+                'end_of_employment' => $employee->end_of_employment,
+            ];
+        }
+        return json_encode($employees, JSON_PRETTY_PRINT);
+    }
 }

@@ -27,9 +27,12 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
 
 /**
  *
@@ -38,8 +41,11 @@ import java.util.logging.Logger;
 public class GET_rosterEndpoint {
 
     private HashMap<LocalDate, HashMap> foundRoster = new HashMap<>();
+    public Logger logger;
 
     public GET_rosterEndpoint(String testPageUrl, String dateStart, String dateEnd, String employeeFullName) throws InterruptedException, IOException, Exception {
+        this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
+
         String rosterEndpoint = testPageUrl + "src/php/restful-api/roster/GET-roster.php";
         HashMap listOfParameters = new HashMap<String, String>();
         listOfParameters.put("dateStart", dateStart);
@@ -50,17 +56,17 @@ public class GET_rosterEndpoint {
         try {
             response = ApiHandler.sendAuthorizedGetRequest(rosterEndpoint, listOfParameters);
         } catch (IOException exception) {
-            Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
+            logger.error(exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         } catch (InterruptedException exception) {
-            Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
+            logger.error(exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         } catch (Exception exception) {
-            Logger.getLogger(GET_rosterEndpoint.class.getName()).log(Level.SEVERE, null, exception);
+            logger.error(exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
@@ -72,6 +78,7 @@ public class GET_rosterEndpoint {
          */
         boolean isRosterData = responseBody.contains("date") && responseBody.contains("roster");
         if (isRosterData) {
+            logger.debug("Found roster data in response.");
             foundRoster = getRosterDataFromJsonResponse(responseBody);
         } else {
             System.out.println("No roster data in response:");
@@ -97,7 +104,8 @@ public class GET_rosterEndpoint {
          * Create a Json object
          */
         JsonElement jsonElement = JsonParser.parseString(response);
-
+        logger.debug("response:");
+        logger.debug(response);
         /**
          * Check if the root element is an array
          */
@@ -120,11 +128,11 @@ public class GET_rosterEndpoint {
                  * Extract roster array from the current object
                  */
                 if (!jsonObject.has("roster")) {
-                    System.err.println("no data, continue");
+                    logger.warn("no data, continue");
                     continue;
                 }
                 if (jsonObject.get("roster").isJsonNull()) {
-                    System.err.println("no data, continue");
+                    logger.warn("no data, continue");
                     continue;
                 }
                 JsonArray rosterArray = jsonObject.getAsJsonArray("roster");

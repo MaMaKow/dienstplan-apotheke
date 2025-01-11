@@ -19,12 +19,14 @@
 package Selenium.administrationpages;
 
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestConfigurationPage extends Selenium.TestPage {
 
     @Test(enabled = true)

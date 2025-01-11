@@ -37,7 +37,7 @@ class maintenance {
      */
     private $last_execution = 0;
 
-    public function __construct() {
+    public function __construct(bool $forceMaintenance = false) {
         /*
          * Check, if it is necessary to do any maintenance:
          */
@@ -50,7 +50,7 @@ class maintenance {
             $sql_query = "INSERT INTO `maintenance` SET `last_execution` =  FROM_UNIXTIME(:time)";
             database_wrapper::instance()->run($sql_query, array('time' => time()));
         }
-        if ($this->last_execution + self::MAINTENANCE_PERIOD_IN_SECONDS < time()) {
+        if (true === $forceMaintenance or $this->last_execution + self::MAINTENANCE_PERIOD_IN_SECONDS < time()) {
             $message = date('Y-m-d') . ': ' . 'Performing general maintenance.' . PHP_EOL;
             error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
             /*
@@ -119,7 +119,10 @@ class maintenance {
 
     /**
      * @see Arbeitszeitgesetz / § 16 Aushang und Arbeitszeitnachweise
-     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
+     *  (2) Der Arbeitgeber ist verpflichtet, die über die werktägliche Arbeitszeit
+     *  des § 3 Satz 1 hinausgehende Arbeitszeit der Arbeitnehmer aufzuzeichnen
+     *  und ein Verzeichnis der Arbeitnehmer zu führen, die in eine Verlängerung
+     *  der Arbeitszeit gemäß § 7 Abs. 7 eingewilligt haben.
      *  Die Nachweise sind mindestens zwei Jahre aufzubewahren.
      */
     private function cleanup_database_table_overtime() {

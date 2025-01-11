@@ -23,7 +23,9 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
 
 /**
  *
@@ -33,22 +35,27 @@ public class POST_authenticateEndpoint {
 
     private static boolean isAuthenticated = false;
     private static String accessToken = null;
+    public Logger logger;
 
     public POST_authenticateEndpoint(String userName, String userPassphrase, String testPageUrl) throws InterruptedException, IOException {
+        this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
+
         String authenticationEndpoint = testPageUrl + "src/php/restful-api/authentication/POST-authenticate.php";
         String payload = "{\"userName\":\"" + userName + "\",\"userPassphrase\":\"" + userPassphrase + "\"}";
 
         // Send the POST request
         HttpResponse<String> response = null;
         try {
-            response = ApiHandler.sendPostRequest(authenticationEndpoint, payload);
+            response = ApiHandler.sendPostRequestAsJson(authenticationEndpoint, payload);
         } catch (IOException exception) {
-            Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
+            logger.error(POST_authenticateEndpoint.class.getName());
+            logger.error(exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         } catch (InterruptedException exception) {
-            Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
+            logger.error(POST_authenticateEndpoint.class.getName());
+            logger.error(exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
@@ -58,8 +65,14 @@ public class POST_authenticateEndpoint {
         // Check if authentication was successful
         isAuthenticated = responseBody.contains("accessToken");
         if (isAuthenticated) {
+            logger.debug("Login at POST_authenticateEndpoint worked");
+            logger.debug(responseBody);
             accessToken = getTokenFromJsonResponse(responseBody);
+        } else {
+            logger.warn("Login at POST_authenticateEndpoint failed");
+            logger.debug(responseBody);
         }
+
     }
 
     private String getTokenFromJsonResponse(String response) {

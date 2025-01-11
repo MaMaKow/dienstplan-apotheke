@@ -19,12 +19,14 @@
 package Selenium;
 
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestAboutPage extends TestPage {
 
     @Test(enabled = true)

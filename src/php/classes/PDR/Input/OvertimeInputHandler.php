@@ -66,10 +66,6 @@ class OvertimeInputHandler {
                 return false;
             }
         }
-        /**
-         * Sorting and recalculating the entries:
-         */
-        \PDR\Database\OvertimeDatabaseHandler::recalculateBalances($employeeKey);
         if (!$session->user_has_privilege('create_overtime')) {
             /**
              * In the future everyone will be able to create overtime.
@@ -119,11 +115,13 @@ class OvertimeInputHandler {
          */
         \PDR\Database\OvertimeDatabaseHandler::updateOvertimeInDatabase($employeeKey, $dateOld, $dateNew, $overtimeHoursNew, $balanceNew, $overtimeReasonTrimmed);
         try {
-            self::sendChangeNotification($session, $employeeKey,
-                    $dateOld, $dateNew,
-                    $overtimeHoursOld, $overtimeHoursNew,
-                    $overtimeReasonOld, $overtimeReasonNew
-            );
+            if (self::shouldNotifyAdmin($session)) {
+                self::sendChangeNotification($session, $employeeKey,
+                        $dateOld, $dateNew,
+                        $overtimeHoursOld, $overtimeHoursNew,
+                        $overtimeReasonOld, $overtimeReasonNew
+                );
+            }
         } catch (Exception $mailException) {
             \PDR\Utility\GeneralUtility::printDebugVariable($mailException->getMessage());
             $userDialog = new \user_dialog;
@@ -167,7 +165,7 @@ class OvertimeInputHandler {
         // Step 2: Check if we should notify the admin
         if (self::shouldNotifyAdmin($session)) {
             // Step 3: Prepare and send notification
-            self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours);
+            self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours, $deletionReason);
         }
         return true; // Return true to indicate successful completion
     }
@@ -234,7 +232,7 @@ class OvertimeInputHandler {
                 . gettext('Reason') . ": " . $overtimeReasonNew . \email::EMAIL_EOL;
         // Send Email
         $userDialogEmail = new \user_dialog_email();
-        $userDialogEmail->send_email(
+        $mailResult = $userDialogEmail->send_email(
                 $configuration->getContactEmail(),
                 $subject,
                 $message
@@ -252,7 +250,8 @@ class OvertimeInputHandler {
      * @return bool True if the user lacks the required privilege and an email notification should be sent; false otherwise.
      */
     private static function shouldNotifyAdmin(\sessions $session): bool {
-        return !$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER);
+        $result = !$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER);
+        return $result;
     }
 
     /**
@@ -279,7 +278,7 @@ class OvertimeInputHandler {
         $userDialog = new \user_dialog();
         $employeeKey = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
         $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_SPECIAL_CHARS);
-        $dateObject = new \DateTime($date);
+        $insertedDateObject = new \DateTime($date);
         $overtimeHoursNew = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         if ("" === $overtimeHoursNew) {
             /**
@@ -288,14 +287,13 @@ class OvertimeInputHandler {
             return false;
         }
         $currentOvertime = \PDR\Database\OvertimeDatabaseHandler::getCurrentOvertime($employeeKey);
-        $firstOvertime = \PDR\Database\OvertimeDatabaseHandler::getFirstOvertime($employeeKey);
         /**
          * In case the user inserts a date, that is before the last inserted date, a warning is shown.
          * If the user still wishes to enter the data, the flag user_has_been_warned_about_date_sequence is set to 1.
          * We cancel the execution if that warning has not been approved.
          */
         $userHasBeenWarnedAboutDateSequence = filter_input(INPUT_POST, 'user_has_been_warned_about_date_sequence', FILTER_SANITIZE_SPECIAL_CHARS);
-        if ($dateObject < $currentOvertime->getDate() and 'true' !== $userHasBeenWarnedAboutDateSequence) {
+        if ($insertedDateObject < $currentOvertime->getDate() and 'true' !== $userHasBeenWarnedAboutDateSequence) {
             $messageInputError = gettext('An error has occurred while inserting the overtime data.');
             $userDialog->add_message($messageInputError, E_USER_ERROR);
             $messageDateWarning = gettext('The input date lies before the last existent date.');
@@ -304,18 +302,8 @@ class OvertimeInputHandler {
             $userDialog->add_message($messageJSWarning, E_USER_WARNING);
             return FALSE;
         }
-        $balanceNew = $currentOvertime->getBalance() + $overtimeHoursNew;
-
-        if (null !== $firstOvertime and $firstOvertime->getDate() > $dateObject) {
-            /*
-             * The new entry lies before the very first entry.
-             * This is a special case.
-             * In this case we calculate the balance given on a date that lies in the future, in regard to the new data.
-             */
-            $balanceNew = $firstOvertime->getBalance() - $firstOvertime->getHours();
-        }
         $overtimeReason = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_SPECIAL_CHARS);
-        \PDR\Database\OvertimeDatabaseHandler::insertOvertimeToDatabase($employeeKey, $dateObject, $overtimeHoursNew, $overtimeReason);
+        \PDR\Database\OvertimeDatabaseHandler::insertOvertimeToDatabase($employeeKey, $insertedDateObject, $overtimeHoursNew, $overtimeReason);
     }
 
     /**

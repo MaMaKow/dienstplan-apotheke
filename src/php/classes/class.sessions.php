@@ -404,6 +404,9 @@ class sessions {
             error_log("We have a request with bearer token.");
             PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
             $token = $matches[1];
+        } else {
+            echo json_encode(['error' => 'Authorization without Bearer token']);
+            exit;
         }
         try {
             /**
@@ -436,7 +439,6 @@ class sessions {
         $configuration = new PDR\Application\configuration();
         $secretKey = $configuration->getSecretKey();
         $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey);
-
         /**
          *  Token creation
          */

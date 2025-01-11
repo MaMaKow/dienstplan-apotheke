@@ -19,6 +19,7 @@
 package Selenium.signin;
 
 import Selenium.User;
+import Selenium.Utilities.LogCollector;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -54,8 +55,8 @@ public class RegisterPage extends Selenium.BasePage {
             userNameElement.clear();
             userNameElement.sendKeys(userName);
         } catch (Exception exception) {
-            logger.error(driver.getCurrentUrl());
-            logger.error(driver.getPageSource());
+            LogCollector.error(driver.getCurrentUrl());
+            LogCollector.error(driver.getPageSource());
             throw exception;
         }
         WebElement userEmailElement = driver.findElement(userEmailBy);

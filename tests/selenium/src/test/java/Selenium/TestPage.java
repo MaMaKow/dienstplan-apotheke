@@ -49,7 +49,7 @@ import org.testng.annotations.Test;
 public class TestPage {
 
     protected WebDriver driver;
-    protected SoftAssert softAssert = new SoftAssert();
+    protected SoftAssert softAssert;
     protected PropertyFile propertyFile;
     public static Boolean someTestHasFailed = false;
     public String packageName;
@@ -60,6 +60,7 @@ public class TestPage {
 
     public TestPage() {
         this.logger = LogManager.getLogger(this.getClass());
+        softAssert = new SoftAssert();
     }
 
     @Test

@@ -274,11 +274,13 @@ class user_dialog_email {
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
 
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-        //$mail->SMTPDebug = 2; // Set to 2 for more detailed debug output
-        $mail->SMTPDebug = 3; // 3 = 2 plus more information about the initial connection - this level can help diagnose STARTTLS failures.
-        //$mail->SMTPDebug = 4; // 4 = Detaied Low-level data output.
+        $mail->SMTPDebug = 0; // No output
+        //$mail->SMTPDebug = 1; // commands
+        //$mail->SMTPDebug = 2; // Data and commands
+        //$mail->SMTPDebug = 3; // 3 As 2 plus connection status
+        //$mail->SMTPDebug = 4; // 4 Detaied Low-level data output.
         $mail->Debugoutput = function ($str, $level) {
-            PDR\Utility\GeneralUtility::printDebugVariable($str);
+            error_log("Level: " . $level . " String: " . $str);
         };
         try {
             /*

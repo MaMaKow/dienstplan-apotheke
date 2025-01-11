@@ -18,16 +18,9 @@
             <class name="Selenium.installation.TestInstallation" /><!---->
             <class name="Selenium.signin.TestLogin" />
             <class name="Selenium.administrationpages.TestConfigurationPage" />
+            <class name="Selenium.signin.TestRegister" />
             <!-- Mitarbeiter müssen eingetragen werden, bevor die Dienstpläne erstellt werden können: -->
             <class name="Selenium.administrationpages.TestWorkforceManagementPage" />
-            <!-- Es müssen Dienstpläne erstellt werden, damit die "Jahre" bekannt werden: -->
-            <class name="Selenium.rosterpages.TestRosterDayEditPage" />
-            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne: -->
-            <class name="Selenium.principlerosterpages.TestDayPage" />
-            <!-- TestRegister wird möglichst spät ausgeführt in der Hoffnung,
-            dass Config Änderungen dann final im Cache stehen. Aktuell kommen die Emails,
-            die eigentlich in mailhog landen sollen auf dem echten Mailserver an. -->
-            <class name="Selenium.signin.TestRegister" />
             <!-- TestUserManagementPage muss nach TestRegister ausgeführt werden. -->
             <class name="Selenium.administrationpages.TestUserManagementPage" />
         </classes>
@@ -59,18 +52,21 @@
             -->
         </classes>
     </test>
-    <test name="Principle Roster Pages" >
+    <test name="Roster Pages" >
         <classes>
-            <class name="Selenium.principlerosterpages.TestEmployeePage" />
+            <class name="Selenium.rosterpages.TestRosterDayEditPage" />
+            <class name="Selenium.rosterpages.TestRosterWeekTablePage" />
+            <class name="Selenium.rosterpages.TestRosterEmployeePage" />
+            <class name="Selenium.rosterpages.TestRosterHoursPage" />
             <!--
             -->
         </classes>
     </test>
-    <test name="Roster Pages" >
+    <test name="Principle Roster Pages" >
         <classes>
-            <class name="Selenium.rosterpages.TestRosterWeekTablePage" />
-            <class name="Selenium.rosterpages.TestRosterEmployeePage" />
-            <class name="Selenium.rosterpages.TestRosterHoursPage" />
+            <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne: -->
+            <class name="Selenium.principlerosterpages.TestDayPage" />
+            <class name="Selenium.principlerosterpages.TestEmployeePage" />
             <!--
             -->
         </classes>
