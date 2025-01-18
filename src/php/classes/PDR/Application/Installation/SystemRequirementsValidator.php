@@ -47,7 +47,7 @@ class SystemRequirementsValidator {
         $pdrSupportedDatabaseManagementSystems = array("mysql");
         if (empty(array_intersect(\PDO::getAvailableDrivers(), $pdrSupportedDatabaseManagementSystems))) {
             $this->installUtility->addErrorMessage("No compatible database driver found. Please install one of the following database management systems and the corresponding PHP driver!");
-            $this->installUtility->addErrorMessage(explode(", ", $pdrSupportedDatabaseManagementSystems));
+            $this->installUtility->addErrorMessage(implode(", ", $pdrSupportedDatabaseManagementSystems));
             return FALSE;
         } else {
             return TRUE;
@@ -232,9 +232,9 @@ class SystemRequirementsValidator {
             return TRUE;
         }
     }
+
     private function fancy_implode($input_array, $delimiter = ", ") {
         $last = array_pop($input_array);
         return count($input_array) ? implode($delimiter, $input_array) . " " . gettext("and") . " " . $last : $last;
     }
-
 }

@@ -2,18 +2,6 @@
 
 ## Errors
 
-### Failure of functions
-
-#### Roster view
-
-Drag and drop is somehow defective. - newy inserted employees do not show up in the plot. - get rid of transform
-
-### Logical errors
-
-The following line should not be shown on saturdays and sundays, if Monday until Friday are set. "The are no opening times stored inside the database for this weekday. Please configure the opening times!"
-
-There is an error message: "No compatible database driver found. Please install one of the following database management systems and the corresponding PHP driver!" But there is no list given.
-
 ### Design errors
 
 fragment.principle-roster-day-history.php does not allways result in the chosen date. For example when the rotation weekdoes not match the chosen week. Perhaps more care should be given to the possible change dates?
