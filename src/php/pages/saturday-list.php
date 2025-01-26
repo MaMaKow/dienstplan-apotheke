@@ -21,8 +21,8 @@ require '../../../default.php';
 
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_SPECIAL_CHARS, date('Y'));
 \PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
-$date_object_start = new DateTime("first sat of jan $year");
-$date_object_end = new DateTime("last sat of dec $year");
+$dateObjectStart = new DateTime("first sat of jan $year");
+$dateObjectEnd = new DateTime("last sat of dec $year");
 
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
@@ -43,8 +43,8 @@ $table_head .= "<th>" . gettext("Scheduled in roster") . "</th>\n";
 $table_head .= "</tr>\n";
 $table_head .= "</thead>\n";
 $table_body = "<tbody>\n";
-for ($date_object = clone $date_object_start; $date_object <= $date_object_end; $date_object->add(new DateInterval('P7D'))) {
-    $table_row = \build_table_row($date_object, $branch_id);
+for ($dateObject = clone $dateObjectStart; $dateObject <= $dateObjectEnd; $dateObject->add(new DateInterval('P7D'))) {
+    $table_row = PDR\Output\HTML\SaturdayListHtmlBuilder::buildTableRow($dateObject, $branch_id);
     $table_body .= $table_row;
 }
 $table_body .= "</tbody>\n";
@@ -64,97 +64,3 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo $html;
-
-function get_saturday_rotation_team_member_names_span(saturday_rotation $saturdayRotation, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection) {
-    $SaturdayRotationTeamMemberIds = array();
-    $saturdayRotationTeamId = $saturdayRotation->team_id;
-    if (NULL !== $saturdayRotationTeamId and FALSE !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
-        /**
-         * <p lang=de>TODO: Es ist möglich, dass eine größere Zahl an Teams existiert hat, z.B. 6.
-         * Wenn die Zuweisung der Teams bereits erfolgt ist, wurde z.B. das Team 6 in der Datenbank hinterlegt.
-         * Wenn nun nur noch 4 Teams existieren, gibt $saturday_rotation->team_id;
-         *   durch die Funktion get_participation_team_id(), welche read_participation_from_database() aufruft, die gespeicherte Team id zurück.
-         * Die ist in dem array $saturday_rotation->List_of_teams aber gar nicht mehr enthalten.
-         * Wir geben in diesem Fall einen leeren Array weiter.
-         * Ist das so optimal?
-         * </p>
-         */
-        $SaturdayRotationTeamMemberIds = $saturdayRotation->List_of_teams[$saturdayRotationTeamId];
-    }
-
-    $SaturdayRotationTeamMemberNames = array();
-    foreach ($SaturdayRotationTeamMemberIds as $employeeKey) {
-
-        if ($workforce->employee_exists($employee_key)) {
-            $prefix = '<span>';
-            $suffix = '</span>';
-            if ($absenceCollection->containsEmployeeKey($employeeKey)) {
-                $prefix = '<span class="absent">';
-                $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . ')</span>';
-            }
-
-            $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->getListOfEmployees()[$employeeKey]->last_name . $suffix;
-        } else {
-            $SaturdayRotationTeamMemberNames[] = "$employeeKey???";
-        }
-    }
-    return $SaturdayRotationTeamMemberNames;
-}
-
-function getRosteredEmployeesNames(array $Roster, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
-    $RosteredEmployees = array();
-    foreach ($Roster as $RosterDayArray) {
-        foreach ($RosterDayArray as $rosterItem) {
-            if ($workforce->employee_exists($rosterItem->employee_key)) {
-                $prefix = '<span>';
-                $suffix = '</span>';
-                if ($absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
-                    $prefix = '<span class="absent">';
-                    $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($rosterItem->employee_key)->getReasonId()) . ')</span>';
-                }
-                $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->get_employee_last_name($rosterItem->employee_key) . $suffix;
-            }
-        }
-    }
-    return $RosteredEmployees;
-}
-
-function build_table_row(DateTime $date_object, int $branch_id) {
-    $saturday_rotation = new saturday_rotation($branch_id);
-    $saturday_rotation->get_participation_team_id($date_object);
-    $workforce = new workforce($date_object->format('Y-m-d'));
-    $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_object->format('Y-m-d'));
-
-    $Roster = roster::read_roster_from_database($branch_id, $date_object->format('Y-m-d'));
-
-    $table_row = "";
-    $holiday = holidays::is_holiday($date_object);
-    $configuration = new \PDR\Application\configuration();
-    $locale = $configuration->getLanguage();
-    $dayFormatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
-    $dayFormatter->setPattern('EEE dd.MM.YYYY'); // 'EEEE' represents the full weekday name
-
-    $date_string = $dayFormatter->format($date_object->getTimestamp());
-    if (FALSE !== $holiday) {
-        $table_row .= "<tr class='saturday-list-row-holiday'>";
-        $table_row .= "<td colspan='99'>";
-        $table_row .= $date_string;
-        $table_row .= "&nbsp;<span>" . $holiday . "</span>";
-        $table_row .= "</td>";
-        $table_row .= "</tr>\n";
-    } else {
-        $Rostered_employees_names = getRosteredEmployeesNames($Roster, $workforce, $absenceCollection);
-        $rostered_employees_names_string = implode(', ', $Rostered_employees_names);
-        $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names_span($saturday_rotation, $workforce, $absenceCollection);
-        $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
-        $table_row .= "<tr>";
-        $table_row .= "<td>";
-        $table_row .= $date_string;
-        $table_row .= "</td>";
-        $table_row .= "<td>" . $saturday_rotation->team_id . "</td>";
-        $table_row .= "<td>" . $saturday_rotation_team_member_names_string . "</td>";
-        $table_row .= "<td>" . $rostered_employees_names_string . "</td>";
-        $table_row .= "</tr>\n";
-    }
-    return $table_row;
-}

@@ -72,8 +72,6 @@ Mitarbeiter selbst tauschen -> Modul bauen
 
 register_approve.php merge register_approve.php with user-management.php Make this a list of all the users and their status. register_approve.php; Make it something to work with.
 
-Insert information about emergency service for saturday-list on with emergency service on fridays, saturdays or sundays.
-
 Alle Stunden und Abwesenheiten mit aktuellstem Datum zuerst. Abwesenheit mit Filter für Jahr und Reason (Checkbox zur Multi-Auswahl (Javascript?))
 
 filter for absence filter option for years and for specific reasons e.g. Vacation
