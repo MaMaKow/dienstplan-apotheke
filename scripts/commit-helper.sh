@@ -36,8 +36,7 @@ echo "We are currently on the commit $current_version.";
 po_file="./locale/de_DE/LC_MESSAGES/messages.po"
 mo_file="./locale/de_DE/LC_MESSAGES/messages.mo"
 # Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
-sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
-sed -i 's/\(#:[[:space:]]*[^0-9]*:\)[0-9]*/\1/' "$po_file"
+sed -i 's/#:[[:space:]]*.*:.*$//' "$po_file"
 echo "In Kommentaren wurden Zeilenangaben aus der $po_file-Datei entfernt."
 git add "$po_file"
 git add "$mo_file"

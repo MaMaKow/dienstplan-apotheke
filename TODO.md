@@ -6,12 +6,6 @@
 
 ### Core
 
-remove class email stub or make it a helper for PHPMailer
-
-perhaps build a real absence class with real absence objects.
-
-Checkout: backup_employee_data_update Ich habe einen weiteren Trigger hinzugefügt und wieder gelöscht. Das ist aber nicht das eigentliche Ziel. Ziel ist es, eine große employee Tabelle zu haben, in der alles drinnen steht. PS: Archiv könnte als SQL-Backup geführt werden. Aber es sollten nur die Inhalte, die länger als ein Monat alt sind, drin stehen, und dann unveränderlich,...
-
 Mitarbeiter selbst tauschen -> Modul bauen
 
 * PSR-4: Die Klassen können mal sortiert und in Ordner gepackt werden. Bei der Gelegenheit kann man direkt mal in Richtung PSR-4 denken. https://www.php-fig.org/psr/psr-4/
@@ -75,21 +69,6 @@ Mitarbeiter selbst tauschen -> Modul bauen
   * So they can span more than one single day (e.g. 22:00 on Monday until 08:00 on Tuesday).
 
 ### Web
-
-Use smudge / clean in git to Insert the version in about.php Version: 0.14.1
-
-Restructure the menu:
-
-* Dienstpläne
-* Grundpläne
-* Abwesenheiten
-* Überstunden
-
-Edit existing overtime in overtime-edit.php inside the table edit option for overtime
-
-human-resource-management.php is missing a feature to delete (archive) an employee
-
-Test password strength upon registration
 
 register_approve.php merge register_approve.php with user-management.php Make this a list of all the users and their status. register_approve.php; Make it something to work with.
 
