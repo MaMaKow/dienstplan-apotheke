@@ -100,7 +100,7 @@ $userDialog->build_messages();
                  * Employee:
                  */
                 echo "<td>\n";
-                echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($emergencyService->getEmployeeKey(), $branchId, $dateSql, $emergencyServiceIndex);
+                echo pharmacy_emergency_service_builder::build_emergency_service_table_employee_select($emergencyService->getEmployeeKey(), $branchId, $dateSql, $emergencyServiceIndex, $workforce);
                 echo "</td>\n";
                 /**
                  * Buttons:
@@ -117,7 +117,7 @@ $userDialog->build_messages();
                 $dateString = $dateObject->format("d.m.Y");
                 echo "\n<td>" . $dateString . "</td>\n";
                 echo "<td>\n";
-                echo (isset($workforce->List_of_employees[$emergencyService->getEmployee_key()])) ? $workforce->List_of_employees[$emergencyService->getEmployee_key()]->last_name : "?";
+                echo $workforce->get_employee_last_name($emergencyService->getEmployee_key());
                 echo "</td>\n";
             }
             echo "<td class='replacement-td'></td>\n</form>\n</tr>\n";

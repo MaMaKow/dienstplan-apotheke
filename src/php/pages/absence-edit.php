@@ -39,7 +39,7 @@ if (isset($_POST) && !empty($_POST)) {
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
 $number_of_holidays_due = \PDR\Utility\AbsenceUtility::getNumberOfHolidaysDue($employee_key, $workforce, $year);
-$number_of_holidays_principle = $workforce->List_of_employees[$employee_key]->holidays;
+$number_of_holidays_principle = $workforce->getListOfEmployees()[$employee_key]->holidays;
 $number_of_holidays_taken = \PDR\Database\AbsenceDatabaseHandler::getNumberOfHolidaysTaken($employee_key, $year);
 $number_of_remaining_holidays_submitted = \PDR\Database\AbsenceDatabaseHandler::getNumberOfRemainingHolidaysSubmitted($employee_key, $year);
 $number_of_remaining_holidays_left = $number_of_holidays_due - ($number_of_holidays_taken + $number_of_remaining_holidays_submitted);
@@ -142,7 +142,7 @@ echo "<div id=mainArea>\n";
 $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 echo \form_element_builder::build_html_select_year($year);
-echo \build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
+echo \build_html_navigation_elements::build_select_employee($employee_key, $workforce->getListOfEmployees());
 
 echo "<table id=absence_table class='table-with-underline-rows'>" . PHP_EOL;
 /*

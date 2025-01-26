@@ -48,7 +48,7 @@ $session->exit_on_missing_privilege('create_roster');
 $html_text = '';
 $html_text .= "<div id=mainArea>\n";
 //TODO: find out how to respect the lunch breaks!
-$html_text .= \build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
+$html_text .= \build_html_navigation_elements::build_select_employee($employee_key, $workforce->getListOfEmployees());
 
 function build_change_principle_roster_employee_form(int $alternating_week_id, int $employee_key) {
     $alternating_week = new alternating_week($alternating_week_id);
@@ -66,7 +66,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
      */
     $workforce = new workforce();
     if ($workforce->employee_exists($employee_key)) {
-        $branch_id = $workforce->List_of_employees[$employee_key]->principle_branch_id;
+        $branch_id = $workforce->getListOfEmployees()[$employee_key]->principle_branch_id;
     } else {
         $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $branch_id = $networkOfBranchOffices->get_main_branch_id();
@@ -149,9 +149,9 @@ function build_roster_table_working_week_hours(array $Roster_array, workforce $w
     foreach ($List_of_working_week_hours as $employee_key => $working_week_hours) {
         $html_text .= array_sum($working_week_hours);
         $html_text .= ' / ';
-        $html_text .= $workforce->List_of_employees[$employee_key]->working_week_hours;
-        if ($workforce->List_of_employees[$employee_key]->working_week_hours != array_sum($working_week_hours)) {
-            $difference = round(array_sum($working_week_hours) - $workforce->List_of_employees[$employee_key]->working_week_hours, 2);
+        $html_text .= $workforce->getListOfEmployees()[$employee_key]->working_week_hours;
+        if ($workforce->getListOfEmployees()[$employee_key]->working_week_hours != array_sum($working_week_hours)) {
+            $difference = round(array_sum($working_week_hours) - $workforce->getListOfEmployees()[$employee_key]->working_week_hours, 2);
             $html_text .= " <b>( " . $difference . " )</b>";
         }
     }

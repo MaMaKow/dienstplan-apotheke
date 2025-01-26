@@ -2,23 +2,9 @@
 
 ## Errors
 
-### Design errors
-
-fragment.principle-roster-day-history.php does not allways result in the chosen date. For example when the rotation weekdoes not match the chosen week. Perhaps more care should be given to the possible change dates?
-
-collaborative-vacation-year.php weird style
-
-Change the navigation menu On mobile touch devices, some menu items are not reachable.
-
-collaborative-vacation.css might contain some rules that do not match anything anymore. Please clean up.
-
-Nutzen Sie "Formular zurücksetzen" um Daten für einen neuen Mandanten einzugeben funktioniert nicht, ist auch doof
-
 ## Feature requests
 
 ### Core
-
-Encapsulate class workforce
 
 remove class email stub or make it a helper for PHPMailer
 
@@ -28,24 +14,20 @@ Checkout: backup_employee_data_update Ich habe einen weiteren Trigger hinzugefü
 
 Mitarbeiter selbst tauschen -> Modul bauen
 
-* Notdienst Eingabe-Maske
-  * use an API to get the data for the emergency services
-
-
-* database Ware-Termine / Ware-PEP
 * PSR-4: Die Klassen können mal sortiert und in Ordner gepackt werden. Bei der Gelegenheit kann man direkt mal in Richtung PSR-4 denken. https://www.php-fig.org/psr/psr-4/
 
-  * \\PDR\\Pharmacy\\Branch.php \
-  * \PDR\\Pharmacy\\NetworkOfBranchOffices.php
+
+* * \\PDR\\Pharmacy\\Branch.php \
+* \PDR\\Pharmacy\\NetworkOfBranchOffices.php
   * \\PDR\\Workforce\\Absence.php
   * \\PDR\\Workforce\\Overtime.php
   * \PDR\\Workforce\\Employee.php
   * \\PDR\\Workforce\\Workforce.php
   * \\PDR\\Workforce\\EmployeeManagement.php instead of \PDR\\Workforce\\HumanResourceManagement.php
   * \\PDR\\Roster\\Roster.php (Eine ganze Woche/Monat/beliebiger Bereich)
-
+  
   *  \\PDR\\Roster\\RosterDayArray.php (alle Items aus einem Tag)
-  *  \\PDR\\Roster\\RosterItem.php
+*  \\PDR\\Roster\\RosterItem.php
   *  \\PDR\\Roster\\RosterItemEmpty.php
   *  \\PDR\\Roster\\AlternatingWeek.php
   *  \\PDR\\Roster\\ExamineAttendance.php

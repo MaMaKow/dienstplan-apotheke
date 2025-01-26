@@ -55,7 +55,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
 /**
  * Build a div containing assignment of tasks:
  */
-$weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id);
+$weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id, $workforce);
 $Working_week_hours_have = roster::calculate_working_weekly_hours_from_branch_roster($Branch_roster);
 $duty_roster_working_week_hours_div = "";
 if (array() !== $Roster and isset($Working_week_hours_have)) {
@@ -119,7 +119,7 @@ foreach (array_keys($Roster) as $date_unix) {
 
     //Jetzt notieren wir die Urlauber und die Kranken Mitarbeiter unten in der Tabelle.
     if (!$absenceCollection->isEmpty()) {
-        $table_foot_html .= build_html_roster_views::build_absentees_column($absenceCollection);
+        $table_foot_html .= build_html_roster_views::build_absentees_column($absenceCollection, $workforce);
     } else {
         $table_foot_html .= "<td><!-- Nobody is absent --></td>";
     }

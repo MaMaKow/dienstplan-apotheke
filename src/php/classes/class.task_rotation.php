@@ -33,8 +33,7 @@ abstract class task_rotation {
      */
     const MAX_FUTURE_WEEKS = 4;
 
-    public static function task_rotation_main($Dates_unix, $task, $branch_id) {
-        global $workforce;
+    public static function task_rotation_main(array $Dates_unix, string $task, int $branch_id, workforce $workforce) {
         $number_of_filled_days = 0;
         $weekly_rotation_div_html = "<div id='weeklyRotation'>\n";
         $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
@@ -43,12 +42,12 @@ abstract class task_rotation {
         $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
         $weekdayFormatter->setPattern('EEE'); // 'EEEE' represents the full weekday name
         foreach ($Dates_unix as $date_unix) {
-            $rotation_employee_key = self::task_rotation_get_worker($date_unix, $task, $branch_id);
+            $rotation_employee_key = self::task_rotation_get_worker($date_unix, $task, $branch_id, $workforce);
             $dateString = $weekdayFormatter->format($date_unix);
             $weekly_rotation_div_html .= $dateString . ": ";
             if (NULL !== $rotation_employee_key) {
                 $number_of_filled_days++;
-                $weekly_rotation_div_html .= $workforce->List_of_employees[$rotation_employee_key]->last_name;
+                $weekly_rotation_div_html .= $workforce->get_employee_last_name($rotation_employee_key);
             }
             $weekly_rotation_div_html .= "<br>\n";
         }
@@ -59,7 +58,7 @@ abstract class task_rotation {
         return $weekly_rotation_div_html;
     }
 
-    private static function task_rotation_get_worker($date_unix, $task, $branch_id) {
+    private static function task_rotation_get_worker(int $date_unix, string $task, int $branch_id, workforce $workforce): ?int {
         $date_sql = date("Y-m-d", $date_unix);
         /*
          * We want the PTAs to take turns in the lab at a weekly basis.
@@ -83,7 +82,7 @@ abstract class task_rotation {
              */
             database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` = :date", array('date' => $date_sql));
         }
-        $rotation_employee_key = self::task_rotation_set_worker($date_unix, $task, $branch_id);
+        $rotation_employee_key = self::task_rotation_set_worker($date_unix, $task, $branch_id, $workforce);
         if (!empty($rotation_employee_key)) {
             return $rotation_employee_key;
         }
@@ -95,7 +94,7 @@ abstract class task_rotation {
      * @param string $task The task that is to be rotated.
      * @return int $rotation_employee_key A worker for a given day and task.
      */
-    private static function task_rotation_set_worker($date_unix, $task, $branch_id) {
+    private static function task_rotation_set_worker(int $date_unix, string $task, int $branch_id, workforce $workforce): ?int {
         /*
          * If nobody is stored to do a task. Then we have to decide, whos is up to do it.
          */
@@ -105,7 +104,7 @@ abstract class task_rotation {
              */
             return FALSE;
         }
-        global $workforce;
+
         $date_sql = date("Y-m-d", $date_unix);
         $rotation_employee_key = NULL;
         /*
@@ -113,8 +112,8 @@ abstract class task_rotation {
          * Currently only compounding is a task.
          */
         $List_of_compounding_rotation_employees = array();
-        foreach ($workforce->List_of_compounding_employees as $employee_key) {
-            if ($workforce->List_of_employees[$employee_key]->get_principle_branch_id() == $branch_id) {
+        foreach ($workforce->getListOfCompoundingEmployees() as $employee_key) {
+            if ($workforce->getListOfEmployees()[$employee_key]->get_principle_branch_id() == $branch_id) {
                 $List_of_compounding_rotation_employees[$employee_key] = $employee_key;
             }
         }
@@ -244,13 +243,13 @@ abstract class task_rotation {
          * The empty option is necessary to enable the deletion of employees:
          */
         $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$task_employee_key]->last_name) or !isset($task_employee_key)) {
-            foreach ($workforce->List_of_compounding_employees as $employee_key) {
-                $employee_object = $workforce->List_of_employees[$employee_key];
+        if ($workforce->employee_exists($task_employee_key) or !isset($task_employee_key)) {
+            foreach ($workforce->getListOfCompoundingEmployees() as $employee_key) {
+                $employee_object = $workforce->get_employee_object($employee_key);
                 if ($task_employee_key == $employee_key and NULL !== $task_employee_key) {
-                    $task_rotation_select_html .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
+                    $task_rotation_select_html .= "<option value=$employee_key selected>" . $employee_object->getFullName() . "</option>";
                 } else {
-                    $task_rotation_select_html .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
+                    $task_rotation_select_html .= "<option value=$employee_key>" . $employee_object->getFullName() . "</option>";
                 }
             }
         } else {

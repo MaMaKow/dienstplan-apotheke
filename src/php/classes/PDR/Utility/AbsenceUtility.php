@@ -176,7 +176,7 @@ class AbsenceUtility {
 
             // Instantiate the workforce and get the employee object.
             $workforce = new \workforce();
-            $employeeObject = $workforce->List_of_employees[$employeeKey];
+            $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
 
             // Call the method to write absence data to the database.
             return self::writeAbsenceDataToDatabase($employeeObject, $beginn, $ende, $reasonId, $comment, $approval);
@@ -342,7 +342,7 @@ class AbsenceUtility {
         $lastDayOfThisYear = new \DateTime("31.12." . $year);
         $monthsWorkedInThisYear = 0;
 
-        $employeeObject = $workforce->List_of_employees[$employeeKey];
+        $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
         $numberOfHolidaysPrinciple = $employeeObject->holidays;
         $numberOfWorkingWeekDays = $employeeObject->working_week_days;
         $numberOfHolidaysDue = $numberOfHolidaysPrinciple;

@@ -107,7 +107,7 @@ if ($approval == "approved" OR $config['hide_disapproved'] == false) {
     echo "<tr><td></td></tr>\n";
     $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
     if (!$absenceCollection->isEmpty()) {
-        echo build_html_roster_views::build_absentees_row($absenceCollection);
+        echo build_html_roster_views::build_absentees_row($absenceCollection, $workforce);
     }
 }
 echo "</table>\n";
@@ -115,7 +115,7 @@ echo "</div>\n";
 
 if (($approval == "approved" OR $config['hide_disapproved'] !== TRUE)) {
     echo "<div id=rosterImageDiv class=image>\n";
-    $roster_image_bar_plot = new roster_image_bar_plot($Roster);
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster, $workforce);
     echo $roster_image_bar_plot->svg_string;
     echo "<br>\n";
     echo "<br>\n";

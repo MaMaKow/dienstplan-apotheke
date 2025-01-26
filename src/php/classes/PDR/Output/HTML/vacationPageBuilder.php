@@ -70,14 +70,14 @@ class vacationPageBuilder {
         $workforce = new \workforce($startDateObject->format("Y-m-d"), $endDateObject->format("Y-m-d"));
         $table_rows = "<tbody>";
 
-        foreach (array_keys($workforce->List_of_employees) as $employee_key) {
+        foreach (array_keys($workforce->getListOfEmployees()) as $employee_key) {
             $number_of_holidays_due = \PDR\Utility\AbsenceUtility::getNumberOfHolidaysDue($employee_key, $workforce, $year);
-            $number_of_holidays_principle = $workforce->List_of_employees[$employee_key]->holidays;
+            $number_of_holidays_principle = $workforce->getListOfEmployees()[$employee_key]->holidays;
             $number_of_holidays_taken = \PDR\Database\AbsenceDatabaseHandler::getNumberOfHolidaysTaken($employee_key, $year);
             $number_of_remaining_holidays = $number_of_holidays_due - $number_of_holidays_taken;
 
             $table_rows .= "<tr>";
-            $table_rows .= "<td>" . $workforce->List_of_employees[$employee_key]->first_name . " " . $workforce->List_of_employees[$employee_key]->last_name . "</td>";
+            $table_rows .= "<td>" . $workforce->getEmployeeFullName($employee_key) . "</td>";
             $table_rows .= "<td>" . $number_of_holidays_due . " / " . $number_of_holidays_principle . "</td>";
             $table_rows .= "<td>" . $number_of_holidays_taken . "</td>";
             $table_rows .= "<td>" . $number_of_remaining_holidays . "</td>";

@@ -85,7 +85,7 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
     $SaturdayRotationTeamMemberNames = array();
     foreach ($SaturdayRotationTeamMemberIds as $employeeKey) {
 
-        if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+        if ($workforce->employee_exists($employee_key)) {
             $prefix = '<span>';
             $suffix = '</span>';
             if ($absenceCollection->containsEmployeeKey($employeeKey)) {
@@ -93,7 +93,7 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
                 $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . ')</span>';
             }
 
-            $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->List_of_employees[$employeeKey]->last_name . $suffix;
+            $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->getListOfEmployees()[$employeeKey]->last_name . $suffix;
         } else {
             $SaturdayRotationTeamMemberNames[] = "$employeeKey???";
         }
@@ -105,14 +105,14 @@ function getRosteredEmployeesNames(array $Roster, workforce $workforce, PDR\Rost
     $RosteredEmployees = array();
     foreach ($Roster as $RosterDayArray) {
         foreach ($RosterDayArray as $rosterItem) {
-            if (isset($workforce->List_of_employees[$rosterItem->employee_key]->last_name)) {
+            if ($workforce->employee_exists($rosterItem->employee_key)) {
                 $prefix = '<span>';
                 $suffix = '</span>';
                 if ($absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
                     $prefix = '<span class="absent">';
                     $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($rosterItem->employee_key)->getReasonId()) . ')</span>';
                 }
-                $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->List_of_employees[$rosterItem->employee_key]->last_name . $suffix;
+                $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->get_employee_last_name($rosterItem->employee_key) . $suffix;
             }
         }
     }

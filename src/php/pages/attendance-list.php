@@ -43,7 +43,7 @@ echo form_element_builder::build_html_select_year($year);
     <TR>
         <TD>Anwesenheit</TD>
         <?php
-        foreach ($workforce->List_of_employees as $employeeKey => $employee_object) {
+        foreach ($workforce->getListOfEmployees() as $employeeKey => $employee_object) {
             echo '<TD style="padding-bottom: 0" title="' . $employee_object->first_name . " " . $employee_object->last_name . '">' . mb_substr($employee_object->last_name, 0, 4) . "<br>" . $workforce->get_employee_short_descriptor($employeeKey) . "</TD>";
         }
         ?>
@@ -58,7 +58,7 @@ echo form_element_builder::build_html_select_year($year);
             $dateFormatter->setPattern('EEE dd.MM.');
             $dateString = $dateFormatter->format($currentDate);
             echo '<TR class=wochenende><TD style="padding-bottom: 0">' . $dateString . '</TD>';
-            foreach (array_keys($workforce->List_of_employees) as $employeeKey) {
+            foreach (array_keys($workforce->getListOfEmployees()) as $employeeKey) {
                 echo '<TD></TD>';
             }
         } else {
@@ -66,7 +66,7 @@ echo form_element_builder::build_html_select_year($year);
             $dateFormatter->setPattern('EEE dd.MM.YYYY');
             $dateString = $dateFormatter->format($currentDate);
             echo '<TR><TD style="padding-bottom: 0">' . $dateString . '</TD>';
-            foreach (array_keys($workforce->List_of_employees) as $employeeKey) {
+            foreach (array_keys($workforce->getListOfEmployees()) as $employeeKey) {
                 if ($absenceCollection->containsEmployeeKey($employeeKey)) {
                     $reasonShortString = mb_substr(\PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()), 0, 4);
                     echo "<TD style='padding-bottom: 0' title='" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . "'>" . $reasonShortString . "</TD>";

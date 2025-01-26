@@ -150,7 +150,7 @@ class iCalendar {
 
         $text = '';
         $text .= "DESCRIPTION:"
-                . gettext("Calendar file for employee") . " " . $roster_object->employee_key . " (" . $workforce->List_of_employees[$roster_object->employee_key]->full_name . ") \\r\\n"
+                . gettext("Calendar file for employee") . " " . $roster_object->employee_key . " (" . $workforce->getEmployeeFullName($roster_object->employee_key) . ") \\r\\n"
                 . gettext("contains the roster for") . " $branch_name. \n"
                 . gettext("Weekday") . ": $date_weekday_name\n";
         if (!empty($mittags_beginn) and !empty($mittags_ende)) {

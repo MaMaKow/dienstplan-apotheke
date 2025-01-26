@@ -240,7 +240,7 @@ $html_text .= "<tr><td></td></tr>\n";
 /*
  * Make a list of absent people:
  */
-$html_text .= build_html_roster_views::build_absentees_row($absenceCollection);
+$html_text .= build_html_roster_views::build_absentees_row($absenceCollection, $workforce);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 
@@ -253,7 +253,7 @@ if (!empty($Roster)) {
         $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     }
     $html_text .= "<div class=image>\n";
-    $roster_image_bar_plot = new roster_image_bar_plot($Roster);
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster, $workforce);
     $html_text .= $roster_image_bar_plot->svg_string;
     $html_text .= "<br>\n";
     $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);

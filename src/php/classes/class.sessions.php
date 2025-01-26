@@ -402,7 +402,7 @@ class sessions {
         $authorizationHeader = $headers["Authorization"];
         if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
             error_log("We have a request with bearer token.");
-            PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
+            //PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
             $token = $matches[1];
         } else {
             echo json_encode(['error' => 'Authorization without Bearer token']);

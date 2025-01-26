@@ -162,14 +162,14 @@ class user_dialog_email {
         ));
     }
 
-    public function aggregate_messages_about_changed_roster_to_employees($workforce) {
+    public function aggregate_messages_about_changed_roster_to_employees(workforce $workforce) {
         $sql_query = "SELECT DISTINCT `user_key` "
                 . " FROM `user_email_notification_cache`;";
         $result = database_wrapper::instance()->run($sql_query);
         while ($user_row = $result->fetch(PDO::FETCH_OBJ)) {
             $user_key = $user_row->user_key;
-
-            $aggregated_message = sprintf(gettext('Dear %1$s,'), $workforce->List_of_employees[$user_key]->full_name) . PHP_EOL . PHP_EOL;
+            $userObject = new user($user_key);
+            $aggregated_message = sprintf(gettext('Dear %1$s,'), $userObject->user_name) . PHP_EOL . PHP_EOL;
             $aggregated_ics_file = (string) "";
             $notifications_exist = FALSE;
 

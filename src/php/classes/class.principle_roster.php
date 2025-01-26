@@ -69,8 +69,8 @@ class principle_roster extends roster {
                     continue 1;
                 }
                 if (!in_array(self::OPTION_SHOW_FUTURE_EMPLOYEES, $Options) and
-                        isset($workforce->List_of_employees) and
-                        false === array_search($row->employee_key, array_keys($workforce->List_of_employees))) {
+                        array() !== $workforce->getListOfEmployees() and
+                        false === array_search($row->employee_key, array_keys($workforce->getListOfEmployees()))) {
                     /*
                      * Exclude non-existent employees from the principle roster:
                      */
@@ -132,8 +132,8 @@ class principle_roster extends roster {
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
                 $workforce = new workforce($date_object->format('Y-m-d'));
-                if (isset($workforce->List_of_employees[$employee_key])) {
-                    $branch_id = $workforce->List_of_employees[$employee_key]->principle_branch_id;
+                if (isset($workforce->getListOfEmployees()[$employee_key])) {
+                    $branch_id = $workforce->getListOfEmployees()[$employee_key]->principle_branch_id;
                 } else {
                     /*
                      * In case, the employee does not exist on this day we fall back to using the first branch.

@@ -55,7 +55,7 @@ class OvertimeHtmlBuilder {
         // Calculate the date three months ago
         $threeMonthsAgo = clone $currentDate; // Create a copy of the current date
         $threeMonthsAgo->modify('-3 months'); // Subtract three months
-        foreach (array_keys($workforce->List_of_employees) as $employeeKey) {
+        foreach (array_keys($workforce->getListOfEmployees()) as $employeeKey) {
             /**
              * @todo: Move database call to database class.
              * Create a class "Overtime" and a class "CollectionOfOvertimes"
@@ -68,9 +68,9 @@ class OvertimeHtmlBuilder {
             }
             $tableRows .= "<tr class='$class'>";
             $tableRows .= "<td>"
-                    . $workforce->List_of_employees[$currentOvertime->getEmployeeKey()]->first_name
+                    . $workforce->get_employee_first_name($currentOvertime->getEmployeeKey())
                     . "&nbsp;"
-                    . $workforce->List_of_employees[$currentOvertime->getEmployeeKey()]->last_name
+                    . $workforce->get_employee_last_name($currentOvertime->getEmployeeKey())
                     . "</td>";
             $tableRows .= "<td>" . $currentOvertime->getBalance() . "</td>";
             $dateString = $dateObject->format('d.m.Y');

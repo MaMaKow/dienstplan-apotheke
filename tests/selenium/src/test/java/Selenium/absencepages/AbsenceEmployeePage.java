@@ -20,6 +20,7 @@ package Selenium.absencepages;
 
 import Selenium.Absence;
 import Selenium.MenuFragment;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
+import org.testng.annotations.Listeners;
 
 /**
  * Represents the Selenium page object for Absence Employee Page.
@@ -45,6 +47,7 @@ import static org.testng.Assert.assertEquals;
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class AbsenceEmployeePage {
 
     private final WebDriver driver;
@@ -89,7 +92,7 @@ public class AbsenceEmployeePage {
      * Constructor for the AbsenceEmployeePage class.
      */
     public AbsenceEmployeePage() {
-
+        LogCollector.debug("Construct new AbsenceEmployeePage()");
         driver = Selenium.driver.Wrapper.getDriver();
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceEdit);
 

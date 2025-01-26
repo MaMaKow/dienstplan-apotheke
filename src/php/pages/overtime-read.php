@@ -39,7 +39,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo "<div id=mainArea>\n";
 
-echo build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_key, $workforce->getListOfEmployees());
 echo build_html_navigation_elements::build_button_open_edit_version('src/php/pages/overtime-edit.php', array('employee_key' => $employee_key));
 //echo "</div>\n";
 echo "<table>\n";

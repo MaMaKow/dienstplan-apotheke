@@ -32,12 +32,12 @@ abstract class build_html_roster_views {
      *
      * @return string HTML table row
      */
-    public static function build_absentees_row(PDR\Roster\AbsenceCollection $absenceCollection): ?string {
+    public static function build_absentees_row(PDR\Roster\AbsenceCollection $absenceCollection, workforce $workforce): ?string {
         if (NULL === $absenceCollection) {
             return FALSE;
         }
         $text = "<tr>";
-        $text .= build_html_roster_views::build_absentees_column($absenceCollection);
+        $text .= build_html_roster_views::build_absentees_column($absenceCollection, $workforce);
         $text .= "</tr>\n";
         return $text;
     }
@@ -49,14 +49,12 @@ abstract class build_html_roster_views {
      * @param $absenceCollection array expects an array of absent employees in the format array((int)employee_key => (int)id_of_reason_for_absence)
      *
      * @return string HTML table column
-     * @todo Use dependency injection and provide $workforce as a parameter to the method.
      */
-    public static function build_absentees_column(PDR\Roster\AbsenceCollection $absenceCollection): string {
-        global $workforce;
+    public static function build_absentees_column(PDR\Roster\AbsenceCollection $absenceCollection, workforce $workforce): string {
         $text = "<td class='absentees-column'><b>" . gettext("Absentees") . "</b><br>";
         foreach ($absenceCollection as $absence) {
 
-            $text .= $workforce->List_of_employees[$absence->getEmployeeKey()]->last_name;
+            $text .= $workforce->get_employee_last_name($absence->getEmployeeKey());
             $text .= " (";
             $text .= \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId());
             $text .= ")<br>";
@@ -262,8 +260,8 @@ abstract class build_html_roster_views {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $rosterInputRowEmployeeSelect .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$rosterEmployeeKey]->last_name) or !isset($rosterEmployeeKey)) {
-            foreach ($workforce->List_of_employees as $employeeKey => $employeeObject) {
+        if (isset($workforce->getListOfEmployees()[$rosterEmployeeKey]->last_name) or !isset($rosterEmployeeKey)) {
+            foreach ($workforce->getListOfEmployees() as $employeeKey => $employeeObject) {
                 if ($rosterEmployeeKey == $employeeKey and NULL !== $rosterEmployeeKey) {
                     $rosterInputRowEmployeeSelect .= "<option value=$employeeKey selected>" . $employeeObject->first_name . " " . $employeeObject->last_name . "</option>";
                 } else {
@@ -420,8 +418,8 @@ abstract class build_html_roster_views {
                         . "' data-branch_id='" . htmlspecialchars($roster_item->branch_id)
                         . "' data-date_sql='" . htmlspecialchars($roster_item->date_sql)
                         . "'>";
-                if (isset($workforce->List_of_employees[$roster_item->employee_key]->last_name)) {
-                    $zeile .= $workforce->List_of_employees[$roster_item->employee_key]->last_name;
+                if ($workforce->employee_exists($roster_item->employee_key)) {
+                    $zeile .= $workforce->get_employee_last_name($roster_item->employee_key);
                 } else {
                     $zeile .= gettext("Unknown employee") . ":" . $roster_item->employee_key;
                 }
@@ -582,8 +580,8 @@ abstract class build_html_roster_views {
             }
             $weekHoursTableHtml .= "<tr>";
             $weekHoursTableHtml .= "<td>";
-            if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
-                $weekHoursTableHtml .= $workforce->List_of_employees[$employeeKey]->last_name;
+            if ($workforce->employee_exists($employeeKey)) {
+                $weekHoursTableHtml .= $workforce->get_employee_last_name($employeeKey);
             } else {
                 $weekHoursTableHtml .= gettext("Unknown employee") . ":" . $employeeKey;
             }
@@ -691,7 +689,7 @@ abstract class build_html_roster_views {
 
     public static function calculate_working_week_hours_should(array $Roster, workforce $workforce) {
 
-        foreach ($workforce->List_of_employees as $employee_object) {
+        foreach ($workforce->getListOfEmployees() as $employee_object) {
             $Working_hours_employee_should = self::calculate_working_hours_employee_should($Roster, $employee_object);
             $Working_week_hours_should[$employee_object->get_employee_key()] = $Working_hours_employee_should;
         }
@@ -701,10 +699,10 @@ abstract class build_html_roster_views {
     public static function equals_principle_roster(roster_item $roster_item, string $parameter) {
         $workforce = new workforce($roster_item->date_sql);
         $employee_key = $roster_item->employee_key;
-        if (!isset($workforce->List_of_employees[$employee_key])) {
+        if (!isset($workforce->getListOfEmployees()[$employee_key])) {
             return FALSE;
         }
-        $Principle_roster_on_date = $workforce->List_of_employees[$employee_key]->get_principle_roster_on_date($roster_item->date_object);
+        $Principle_roster_on_date = $workforce->getListOfEmployees()[$employee_key]->get_principle_roster_on_date($roster_item->date_object);
         if (null === $Principle_roster_on_date) {
             return FALSE;
         }
