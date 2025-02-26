@@ -22,7 +22,6 @@ abstract class build_html_roster_views {
     const OPTION_SHOW_EMERGENCY_SERVICE_NAME = 'show_emergency_service_name';
     const OPTION_SHOW_CALENDAR_WEEK = 'show_calendar_week';
     const DAYS_IN_A_WEEK = 7;
-    const NUMBER_OF_BUSINESS_DAYS = 5;
     const INPUT_ELEMENTS_IN_ROSTER_FORM = 7;
 
     /**
@@ -604,80 +603,6 @@ abstract class build_html_roster_views {
 
         $week_hours_table_html .= "</div>"; // id=week_hours_table_div
         return $week_hours_table_html;
-    }
-
-    private static function calculate_working_hours_employee_should(array $Roster, employee $employee_object) {
-        $Working_hours_day_should = 0;
-        foreach (array_keys($Roster) as $date_unix) {
-            $date_sql = date('Y-m-d', $date_unix);
-            $date_object = new DateTime;
-            $date_object->setTimestamp($date_unix);
-            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
-            $Working_hours_day_should += self::calculateWorkingHoursDayEmployeeShould($date_object, $employee_object, $absenceCollection);
-        }
-        return $Working_hours_day_should;
-    }
-
-    /**
-     * Calculate the expected working hours for an employee on a given date.
-     *
-     * @param DateTime $dateObject - The date for which to calculate working hours.
-     * @param employee $employeeObject - The employee for whom to calculate working hours.
-     * @param PDR\Roster\AbsenceCollection $absenceCollection - Collection of absences for the employee.
-     * @return float - The calculated working hours for the employee on the specified date.
-     * @todo <p lang=de>Die Berechnung muss komplett umgestellt werden.
-     *  Statt die Sollstunden herunterzurechnen, müssen die Iststunden hoch gerechnet werden.</p>
-     */
-    private static function calculateWorkingHoursDayEmployeeShould(DateTime $dateObject, employee $employeeObject, PDR\Roster\AbsenceCollection $absenceCollection): float {
-        if ($absenceCollection->containsEmployeeKey($employeeObject->get_employee_key())) {
-            /**
-             * Those who are absent do not have to work.
-             * Exception: Those who reduce overtime REASON_TAKEN_OVERTIME are credited with target hours.
-             */
-            /**
-             * @var $List_of_non_respected_absence_reason_ids
-             * @see absence::$List_of_absence_reasons for a full list of absence reason ids (paid and unpaid)
-             */
-            $ListOfNonRespectedAbsenceReasonIds = array(\PDR\Utility\AbsenceUtility::REASON_TAKEN_OVERTIME);
-
-            if (!in_array(
-                            $absenceCollection->getAbsenceByEmployeeKey($employeeObject->get_employee_key())->getReasonId(),
-                            $ListOfNonRespectedAbsenceReasonIds)) {
-                return 0;
-            }
-        }
-        /**
-         *  Check if it's a holiday; no work is required on holidays.
-         */
-        if (FALSE !== holidays::is_holiday($dateObject)) {
-            return 0;
-        }
-        /**
-         *  Check for a special case where the employee works only on specific days (e.g., Tue/Thu).
-         *  TODO: Consider handling scenarios when a holiday falls on a Friday.
-         *  Is it fair to treat such employees differently?
-         */
-        if (roster::is_empty_roster_day_array($employeeObject->get_principle_roster_on_date($dateObject))
-                and !empty($employeeObject->working_week_days)) {
-            return 0;
-        }
-        if (empty($employeeObject->working_week_days)) {
-            /*
-             * In case we do not know the exact working_week_days we guess is must be 5.
-             * This happens, if there are no days in the principle roster for this employee.
-             */
-            return $employeeObject->working_week_hours / self::NUMBER_OF_BUSINESS_DAYS;
-        }
-        return $employeeObject->working_week_hours / $employeeObject->working_week_days;
-    }
-
-    public static function calculate_working_week_hours_should(array $Roster, workforce $workforce) {
-
-        foreach ($workforce->List_of_employees as $employee_object) {
-            $Working_hours_employee_should = self::calculate_working_hours_employee_should($Roster, $employee_object);
-            $Working_week_hours_should[$employee_object->get_employee_key()] = $Working_hours_employee_should;
-        }
-        return $Working_week_hours_should;
     }
 
     public static function equals_principle_roster(roster_item $roster_item, string $parameter) {

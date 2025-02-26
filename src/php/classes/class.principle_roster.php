@@ -20,8 +20,6 @@
 /**
  * The principle roster is the standard repeating roster
  *
- *
- *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
 class principle_roster extends roster {

@@ -106,9 +106,9 @@ $table_foot_html .= "</tfoot>\n";
 echo "$table_foot_html";
 echo "</table>\n";
 
-$Working_week_hours_have = roster::calculate_working_weekly_hours_from_branch_roster($Branch_roster);
-$Working_week_hours_should = build_html_roster_views::calculate_working_week_hours_should($Roster, $workforce);
-echo build_html_roster_views::build_roster_working_week_hours_div($Working_week_hours_have, $Working_week_hours_should, $workforce, array('employee_key' => $employee_key));
+$workingWeekHoursHave = \PDR\Utility\RosterUtility::calculateWorkingWeeklyHoursInTimeInterval($date_start_object, $date_end_object, $workforce, $absenceCollection);
+$workingWeekHoursShould = \PDR\Utility\RosterUtility::calculateWorkingWeekHoursShould($Roster, $workforce);
+echo build_html_roster_views::build_roster_working_week_hours_div($workingWeekHoursHave, $workingWeekHoursShould, $workforce, array('employee_key' => $employee_key));
 echo "</div>\n";
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.php';

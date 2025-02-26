@@ -125,6 +125,35 @@ class roster {
         return $Roster;
     }
 
+    /**
+     * Reads the roster data from the database for employees who belong to a specified branch but are scheduled in another branch.
+     *
+     * This method retrieves shift data from the `Dienstplan` table for employees whose standard branch matches the given `$branch_id`
+     * but who are scheduled to work in a different branch (`$other_branch_id`) on the specified dates.
+     * The function iterates over each day within the given date range and fetches the corresponding roster data.
+     * If no roster data exists for a specific day, an empty roster item is inserted to ensure proper alignment in weekly views.
+     *
+     * @param int $branch_id The ID of the standard branch to which the employees belong.
+     * @param int $other_branch_id The ID of the branch where the employees are temporarily scheduled to work.
+     * @param string $date_sql_start The start date for the query, formatted as 'Y-m-d'.
+     * @param string|null $date_sql_end The end date for the query, formatted as 'Y-m-d'. Defaults to the start date if not provided.
+     *
+     * @return array An associative array where each key is a timestamp representing a date, and the value is an array of roster items for that day.
+     *               If no roster data is found for the entire date range, an empty array is returned.
+     *
+     * Example:
+     * [
+     *     1661990400 => [
+     *         0 => roster_item, // Represents a filled roster item for the day
+     *         1 => roster_item
+     *     ],
+     *     1662076800 => [
+     *         0 => roster_item_empty // Represents an empty roster item for the day
+     *     ]
+     * ]
+     *
+     * @throws Exception If the date parsing fails or other errors occur during date operations.
+     */
     public static function read_branch_roster_from_database(int $branch_id, int $other_branch_id, string $date_sql_start, string $date_sql_end = NULL) {
         if (NULL === $date_sql_end) {
             $date_sql_end = $date_sql_start;
@@ -252,54 +281,6 @@ class roster {
         $roster_employee_count = max($Employee_count); //The number of rows is defined by the column (=day) with the most lines
 //$max_employee_count = $roster_employee_count + 1; //One additional empty row will be appended
         return $roster_employee_count;
-    }
-
-    /**
-     * Calculation of the working hours of the employees:
-     * @todo <p lang=de>Die Berechnung entspricht nicht den aktuellen gesetzlichen Vorgaben.
-     * Momentan wird die Ist-Stundenzahl rein rechnerisch aus den gearbeiteten Stunden berechnet.
-     * Von den vertraglich vereinbarten Stunden im Arbeitsvertrag werden dann die Stunden anteilig 1/5 abgezogen.
-     * RICHTIG WÄRE ABER:
-     * Die Ist-Stunden werden berechnet aus den gearbeiteten Stunden plus den Stunden laut Grundplan.
-     * "§ 2 Entgeltzahlung an Feiertagen
-     *  Für Arbeitszeit, die infolge eines gesetzlichen Feiertages ausfällt,
-     *   hat der Arbeitgeber dem Arbeitnehmer das Arbeitsentgelt zu zahlen,
-     *   das er ohne den Arbeitsausfall erhalten hätte."
-     * Die Soll-Stunden bleiben unberührt gemäß Arbeitsvertrag.
-     *
-     * Das Selbe gilt im Falle von Krankheit.
-     * § 4 Entgeltfortzahlungsgesetz Höhe des fortzuzahlenden Arbeitsentgelts
-     * (1) Für den ... Zeitraum ist dem Arbeitnehmer ... regelmäßigen Arbeitszeit zustehende Arbeitsentgelt fortzuzahlen.
-     *
-     * Im Falle von URLAUB muss anders gerechnet werden.
-     * Vergleich: https://www.mep24software.de/blog/urlaubsberechnung-teil-2
-     * "§ 11 Bundesurlaubsgesetz Urlaubsentgelt
-     * (1) Das Urlaubsentgelt bemißt sich nach dem durchschnittlichen Arbeitsverdienst..."
-     * Entsprechend muss hier ein Fünftel oder ein Sechstel der Wochenarbeitszeit angesetzt werden.
-     * </p>
-     */
-    public static function calculate_working_weekly_hours_from_branch_roster($Branch_roster) {
-        /*
-         * CAVE! This function expects an array of the format: $Branch_roster[$branch_id][$date_unix][$roster_item]
-         * The standard $Roster array ($Roster[$date_unix][$roster_item]) will not return any usefull information.
-         */
-        $Working_week_hours = array();
-        foreach ($Branch_roster as $Branch_roster_branch_array) {
-            foreach ($Branch_roster_branch_array as $Roster_day_array) {
-                foreach ($Roster_day_array as $roster_item) {
-                    if (!isset($roster_item->working_hours)) {
-                        continue 1;
-                    }
-                    if (!isset($Working_week_hours[$roster_item->employee_key])) {
-                        $Working_week_hours[$roster_item->employee_key] = $roster_item->working_hours;
-                    } else {
-                        $Working_week_hours[$roster_item->employee_key] += $roster_item->working_hours;
-                    }
-                }
-            }
-        }
-        ksort($Working_week_hours);
-        return $Working_week_hours;
     }
 
     /**
