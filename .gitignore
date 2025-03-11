@@ -5,6 +5,7 @@ config/
 
 # These files are for development purposes only: #
 ##################################################
+nb-configuration.xml
 nbproject/
 errorScreenshots/
 
