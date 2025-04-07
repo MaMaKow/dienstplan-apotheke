@@ -64,7 +64,7 @@ class PepUploadHandler {
             return "awinta";
         }
         if (str_contains($fileExtension, "ADG_")) {
-            if (FALSE === testFileContentPatternADG($_FILES["file_to_upload"]["tmp_name"])) {
+            if (FALSE === $this->testFileContentPatternADG($_FILES["file_to_upload"]["tmp_name"])) {
                 $userDialog->add_message(gettext('Sorry, your file does not have the correct format.'));
                 return FALSE;
             }
