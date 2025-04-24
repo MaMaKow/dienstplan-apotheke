@@ -28,27 +28,27 @@ namespace PDR\Output\HTML;
  */
 class SaturdayListHtmlBuilder {
 
-    public static function buildTableRow(\DateTime $dateObject, int $branchId): string {
+    public static function buildTableRow(\DateTime $dateObject, int $branchId, \PDR\DateTime\Holidays $holidays): string {
 
         $saturdayRotation = new \saturday_rotation($branchId);
-        $saturdayRotation->get_participation_team_id($dateObject);
+        $saturdayRotation->get_participation_team_id($dateObject, $holidays);
         $workforce = new \workforce($dateObject->format('Y-m-d'));
         $absenceCollection = \PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($dateObject->format('Y-m-d'));
 
         $Roster = \roster::read_roster_from_database($branchId, $dateObject->format('Y-m-d'));
         $tableRow = "";
-        $holiday = \holidays::is_holiday($dateObject);
         $configuration = new \PDR\Application\configuration();
         $locale = $configuration->getLanguage();
         $dayFormatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
         $dayFormatter->setPattern('EEE dd.MM.YYYY'); // 'EEEE' represents the full weekday name
 
         $dateString = $dayFormatter->format($dateObject->getTimestamp());
-        if (FALSE !== $holiday) {
+        if ($holidays->isHoliday($dateObject)) {
+            $holiday = $holidays->getHolidayOnDate($dateObject);
             $tableRow .= "<tr class='saturday-list-row-holiday'>";
             $tableRow .= "<td colspan='99'>";
             $tableRow .= $dateString;
-            $tableRow .= "&nbsp;<span>" . $holiday . "</span>";
+            $tableRow .= "&nbsp;<span>" . $holiday->getName() . "</span>";
             $tableRow .= "</td>";
             $tableRow .= "</tr>\n";
         } else {

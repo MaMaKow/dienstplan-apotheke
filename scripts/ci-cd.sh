@@ -57,6 +57,16 @@ fi
 cp $script_dir/fullchain.pem $repo_dir/dienstplan-apotheke/upload/fullchain.pem
 cp $script_dir/privkey.pem $repo_dir/dienstplan-apotheke/upload/privkey.pem
 
+
+# Install dependencies with composer
+# First get composer:
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'.PHP_EOL; } else { echo 'Installer corrupt'.PHP_EOL; unlink('composer-setup.php'); exit(1); }"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+# Second run composer to install the dependencies:
+php composer.phar install
+
 # configure environment for docker container
 # expose a random port and chosse random user names and passphrases
 #random_secure_web_port=$((RANDOM % 65535 + 1024))

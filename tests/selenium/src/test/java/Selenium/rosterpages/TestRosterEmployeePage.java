@@ -22,6 +22,7 @@ import Selenium.NetworkOfBranchOffices;
 import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
+import Selenium.Utilities.LogCollector;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
@@ -41,9 +42,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.testng.annotations.Test;
 import org.testng.Assert;
-
+import org.testng.annotations.Test;
 import org.threeten.extra.YearWeek;
 
 /**
@@ -60,11 +60,11 @@ public class TestRosterEmployeePage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date and go foreward and backward from there:
@@ -84,11 +84,11 @@ public class TestRosterEmployeePage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Read the roster from json files and find the same values in the
@@ -128,11 +128,11 @@ public class TestRosterEmployeePage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date to get a specific roster:
@@ -158,10 +158,11 @@ public class TestRosterEmployeePage extends TestPage {
 
             String iCalendarString;
             iCalendarString = Files.readString(downloadedICalendarFile.toPath(), Charset.forName("UTF-8"));
+            LogCollector.debug(iCalendarString);
             ICalendar ical = Biweekly.parse(iCalendarString).first();
             List<VEvent> listOfEvents = ical.getEvents();
             /**
-             * Make sure, that the number of events matche the number of roster
+             * Make sure, that the number of events matches the number of roster
              * items: I hope, that the order is the same and constant.
              */
             Assert.assertEquals(listOfEvents.size(), rosterWeek.entrySet().size());
@@ -181,7 +182,12 @@ public class TestRosterEmployeePage extends TestPage {
                  * sollte.</p>
                  */
                 RosterItem rosterItem = rosterItemEntry.getValue();
+                LogCollector.debug(rosterItem.getDutyStartLocalDateTime().format(DateTimeFormatter.ISO_DATE_TIME));
                 VEvent matchingEvent;
+                for (VEvent event : listOfEvents) {
+                    LogCollector.debug(event.getDateStart().getValue().toString());
+                    //LogCollector.debug(event.getDateEnd().getValue().toString());
+                }
 
                 /**
                  * Convert the DutyStart of the iCalendar event and the

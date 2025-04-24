@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LogCollector;
 import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
 import java.io.File;
@@ -82,17 +83,21 @@ public class TestPage {
     }
 
     public void realSignIn() throws Exception {
+        LogCollector.debug("method realSignIn()");
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getRealTestPageUrl();
+        LogCollector.debug("go to urlPageTest: " + urlPageTest);
         driver.get(urlPageTest);
-
+        LogCollector.debug("went to urlPageTest: " + driver.getCurrentUrl());
         /**
          * Sign in:
          */
+        LogCollector.debug("create new SignInPage: " + urlPageTest);
         SignInPage signInPage = new SignInPage(driver);
         String real_user_password = propertyFile.getRealPassword();
         String real_user_name = propertyFile.getRealUsername();
+        LogCollector.debug("call method signInPage.loginValidUser:");
         HomePage homePage = signInPage.loginValidUser(real_user_name, real_user_password);
         Assert.assertEquals(homePage.getUserNameText(), real_user_name);
 

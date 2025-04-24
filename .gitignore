@@ -6,6 +6,8 @@ config/
 # These files are for development purposes only: #
 ##################################################
 nbproject/
+composer.phar
+vendor/
 errorScreenshots/
 
 # Dateien, die im Dienstplan erzeugt werden #

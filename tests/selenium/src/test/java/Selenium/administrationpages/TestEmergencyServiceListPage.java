@@ -18,19 +18,27 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.LogoutPage;
 import Selenium.RealData.RealWorkforce;
-import Selenium.rosterpages.Workforce;
+import Selenium.Utilities.LogCollector;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
-import org.testng.annotations.Test;
+import java.time.format.DateTimeFormatter;
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestEmergencyServiceListPage extends Selenium.TestPage {
+
+    public TestEmergencyServiceListPage() {
+        super();
+    }
 
     @Test(groups = "emptyInstance")
     public void testEmergencyService() {
@@ -91,10 +99,15 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
     @Test(groups = "realWorldInstance")
     public void testRealEmergencyServiceList() {
         try {
+            LogoutPage logoutPage = new LogoutPage();
+            logoutPage.logout();
             super.realSignIn();
         } catch (Exception exception) {
+            exception.printStackTrace();
+            LogCollector.error(exception.getStackTrace().toString());
+            LogCollector.error(exception.getMessage());
             logger.error("Sign in failed to real test page.");
-            Assert.fail();
+            Assert.fail("Sign in failed to real test page.");
         }
 
         int branchId = 1;
@@ -109,7 +122,9 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
         RealWorkforce realWorkforce = workforceManagementPage.getAllEmployeesRealWorkforce();
 
         EmergencyServiceListPage emergencyServiceListPage = new EmergencyServiceListPage(driver);
+        LogCollector.debug("going to call method emergencyServiceListPage.selectYear()");
         emergencyServiceListPage.selectYear(String.valueOf(localDate.getYear()));
+        LogCollector.debug("Called method emergencyServiceListPage.selectYear()");
         emergencyServiceListPage.selectBranch(branchId);
         Assert.assertEquals(emergencyServiceListPage.getYear(), localDate.getYear());
         Assert.assertEquals(emergencyServiceListPage.getBranchId(), branchId);
@@ -122,14 +137,17 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
         /**
          * <p lang=de>Daten einfügen:</p>
          */
-        Assert.assertFalse(emergencyServiceListPage.rowExistsOnDate(localDate));
+        LogCollector.debug("driver.getCurrentUrl(): " + driver.getCurrentUrl());
+        LogCollector.debug("localDate: " + localDate.format(DateTimeFormatter.ISO_DATE));
+        boolean rowExistsOnDate = emergencyServiceListPage.rowExistsOnDate(localDate);
+        this.softAssert.assertFalse(emergencyServiceListPage.rowExistsOnDate(localDate));
         emergencyServiceListPage = emergencyServiceListPage.addLineForDate(localDate);
-        Assert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
+        this.softAssert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
         emergencyServiceListPage = emergencyServiceListPage.setEmployeeKeyOnDate(localDate, employeeKeyInsert);
         /**
          * <p lang=de>Daten abfragen:</p>
          */
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyInsert);
+        this.softAssert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyInsert);
         /**
          * <p lang=de>Daten ändern :</p>
          */
@@ -139,14 +157,15 @@ public class TestEmergencyServiceListPage extends Selenium.TestPage {
             exception.printStackTrace();
             System.out.println(exception.getMessage());
         }
-        Assert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyChange);
+        softAssert.assertEquals(emergencyServiceListPage.getEmployeeKeyOnDate(localDate), employeeKeyChange);
         /**
          * <p lang=de>Zeilen wieder entfernen</p>
          */
         emergencyServiceListPage = emergencyServiceListPage.doNotRemoveLineByDate(localDate);
-        Assert.assertTrue(emergencyServiceListPage.rowExistsOnDate(localDate));
-        Assert.assertNotNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
+        softAssert.assertTrue(emergencyServiceListPage.rowExistsOnDate(localDate));
+        softAssert.assertNotNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
         emergencyServiceListPage = emergencyServiceListPage.removeLineByDate(localDate);
-        Assert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
+        softAssert.assertNull(emergencyServiceListPage.getEmployeeKeyOnDate(localDate));
+        softAssert.assertAll();
     }
 }

@@ -46,19 +46,38 @@ public class AboutPage extends BasePage {
     }
 
     public String getVersionStringShould() {
-        String[] command = {"git", "describe", "--abbrev=0", "--tags"};
+        String[] commandPwd = {"pwd"};
+        String[] commandGit = {"git", "describe", "--abbrev=0", "--tags"};
         try {
             // Set working directory if necessary:
+            ProcessBuilder builderPwd = new ProcessBuilder(commandPwd);
+            Process processPwd = builderPwd.start();
+            processPwd.waitFor();
+            try (BufferedReader input = new BufferedReader(new InputStreamReader(processPwd.getInputStream()))) {
+                String line = input.readLine();
+                LogCollector.debug("pwd output: " + line);
+            }
             // ProcessBuilder builder = new ProcessBuilder(command).directory(new File("path/to/git/repo"));
-            ProcessBuilder builder = new ProcessBuilder(command);
+            ProcessBuilder builder = new ProcessBuilder(commandGit);
 
             LogCollector.debug("Starting git process");
             Process process = builder.start();
 
             // Wait for the process to complete before reading output
             process.waitFor();
+            int exitCode = process.exitValue();
+            LogCollector.debug("Git process exited with code: " + exitCode);
 
-            // Capture the output
+            //Capture Errors:
+            try (BufferedReader errorInput = new BufferedReader(
+                    new InputStreamReader(process.getErrorStream()))) {
+                String errorLine;
+                while ((errorLine = errorInput.readLine()) != null) {
+                    LogCollector.error("Git error: " + errorLine);
+                }
+            }
+
+            // Capture the output:
             try (BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line = input.readLine();
                 LogCollector.debug("Git version output: " + line);

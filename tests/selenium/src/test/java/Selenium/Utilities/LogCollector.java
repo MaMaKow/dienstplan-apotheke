@@ -41,6 +41,10 @@ public class LogCollector {
         addMessage("DEBUG " + message);
     }
 
+    public static void debug(Number message) {
+        addMessage("DEBUG " + String.valueOf(message));
+    }
+
     public static void warn(String message) {
         addMessage("WARN  " + message);
     }

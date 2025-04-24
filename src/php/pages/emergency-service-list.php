@@ -26,7 +26,7 @@ $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_I
 \PDR\Utility\GeneralUtility::createCookie('datum', $dateSql, 0.5);
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 0.5);
 $workforce = new workforce($year . "-01-01", $year . "-12-31");
-
+$holidays = new \PDR\DateTime\Holidays($year);
 \PDR\Input\EmergencyServiceInputHandler::handleUserInput($session);
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted
@@ -44,6 +44,7 @@ $listOfEmergencyServicesInYear = PDR\Database\EmergencyServiceDatabaseHandler::g
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
+require PDR_FILE_SYSTEM_APPLICATION_PATH . '/src/php/classes/class.pharmacy_emergency_service_builder.php'; // manually load class, composer does not work here.
 echo "<div id=mainAreaCentered>";
 echo "<H1 class='left-float-pool size-medium'>";
 echo "<span class='large'>" . gettext('emergency service') . "</span>";
@@ -62,7 +63,8 @@ $userDialog->build_messages();
             $dateObject = $emergencyService->getDateObject();
             $dateSql = $dateObject->format("Y-m-d");
             $dateUnix = $dateObject->getTimestamp();
-            $isHoliday = holidays::is_holiday($dateObject);
+            $isHoliday = $holidays->isHoliday($dateObject);
+
             $holidayString = "";
             $holidayHtmlClass = "";
             $weekday = date('w', $dateUnix);

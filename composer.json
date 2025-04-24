@@ -1,0 +1,14 @@
+{
+    "autoload": {
+        "psr-4": {
+            "PDR\\": "src/php/classes/PDR/"
+        },
+        "classmap": [
+            "src/php/classes/"
+        ]
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.9",
+        "eluceo/ical": "^2.14"
+    }
+}

@@ -61,7 +61,11 @@ public class SignInPage extends Selenium.BasePage {
              * landen wir im Menü.
              */
             PropertyFile propertyFile = new PropertyFile();
-            driver.get(propertyFile.getTestPageUrl());
+            /**
+             * @todo: Wenn die fogende Zeile den Wechsel zur testRealPageUrl erzwingt,
+             * gelingt der Wechsel zum Login in der realPage nicht.
+             */
+            //driver.get(propertyFile.getTestPageUrl());
         }
     }
 
@@ -74,8 +78,9 @@ public class SignInPage extends Selenium.BasePage {
      * @throws java.lang.Exception
      */
     public HomePage loginValidUser(String userName, String passphrase) throws Exception {
-
+        LogCollector.debug("method signInPage.loginValidUser()");
         try {
+            LogCollector.debug("wait for signinBy");
             waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
         } catch (TimeoutException exception) {
             String userNameText = getUserNameText();
@@ -93,12 +98,17 @@ public class SignInPage extends Selenium.BasePage {
                 throw new Exception("Some other user is logged in. You have to logout first!");
             }
         }
+        LogCollector.debug("enter sign in form data:");
         driver.findElement(usernameBy).clear();
         driver.findElement(usernameBy).sendKeys(userName);
         driver.findElement(passwordBy).clear();
         driver.findElement(passwordBy).sendKeys(passphrase);
+        LogCollector.debug("click sign in button:");
         driver.findElement(signinBy).click();
-        return new HomePage(driver);
+        LogCollector.debug("create new HomePage:");
+        HomePage newHomePage = new HomePage(driver);
+        LogCollector.debug("return new HomePage:");
+        return newHomePage;
     }
 
     public HomePage loginValidUser() throws Exception {

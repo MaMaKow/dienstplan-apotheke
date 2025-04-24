@@ -19,6 +19,7 @@
 package Selenium.rest_api;
 
 import Selenium.RosterItem;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -27,12 +28,7 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.logging.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.ReusableMessageFactory;
 
 /**
  *
@@ -41,11 +37,8 @@ import org.apache.logging.log4j.message.ReusableMessageFactory;
 public class GET_rosterEndpoint {
 
     private HashMap<LocalDate, HashMap> foundRoster = new HashMap<>();
-    public Logger logger;
 
     public GET_rosterEndpoint(String testPageUrl, String dateStart, String dateEnd, String employeeFullName) throws InterruptedException, IOException, Exception {
-        this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
-
         String rosterEndpoint = testPageUrl + "src/php/restful-api/roster/GET-roster.php";
         HashMap listOfParameters = new HashMap<String, String>();
         listOfParameters.put("dateStart", dateStart);
@@ -56,17 +49,17 @@ public class GET_rosterEndpoint {
         try {
             response = ApiHandler.sendAuthorizedGetRequest(rosterEndpoint, listOfParameters);
         } catch (IOException exception) {
-            logger.error(exception);
+            LogCollector.error(exception.getLocalizedMessage());
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         } catch (InterruptedException exception) {
-            logger.error(exception);
+            LogCollector.error(exception.getLocalizedMessage());
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         } catch (Exception exception) {
-            logger.error(exception);
+            LogCollector.error(exception.getLocalizedMessage());
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
@@ -78,11 +71,13 @@ public class GET_rosterEndpoint {
          */
         boolean isRosterData = responseBody.contains("date") && responseBody.contains("roster");
         if (isRosterData) {
-            logger.debug("Found roster data in response.");
+            LogCollector.debug("Found roster data in response.");
             foundRoster = getRosterDataFromJsonResponse(responseBody);
+            LogCollector.debug("responseBody:");
+            LogCollector.debug(responseBody);
         } else {
-            System.out.println("No roster data in response:");
-            System.out.println(responseBody);
+            LogCollector.warn("No roster data in response:");
+            LogCollector.debug(responseBody);
         }
     }
 
@@ -104,8 +99,8 @@ public class GET_rosterEndpoint {
          * Create a Json object
          */
         JsonElement jsonElement = JsonParser.parseString(response);
-        logger.debug("response:");
-        logger.debug(response);
+        LogCollector.debug("response:");
+        LogCollector.debug(response);
         /**
          * Check if the root element is an array
          */
@@ -128,11 +123,11 @@ public class GET_rosterEndpoint {
                  * Extract roster array from the current object
                  */
                 if (!jsonObject.has("roster")) {
-                    logger.warn("no data, continue");
+                    LogCollector.warn("no data, continue");
                     continue;
                 }
                 if (jsonObject.get("roster").isJsonNull()) {
-                    logger.warn("no data, continue");
+                    LogCollector.warn("no data, continue");
                     continue;
                 }
                 JsonArray rosterArray = jsonObject.getAsJsonArray("roster");

@@ -39,7 +39,7 @@ public class Listener implements ITestListener {
     // This belongs to ITestListener and will execute before each test method
     @Override
     public void onTestStart(ITestResult testResult) {
-        Reporter.log("Testcase " + testResult.getName() + " started successfully", true);
+        //Reporter.log("Testcase " + testResult.getName() + " started", true);
         LogCollector.clear(); // Clear logs at the start of each test
     }
 
@@ -63,7 +63,7 @@ public class Listener implements ITestListener {
     // This belongs to ITestListener and will execute only in the event of the skipped test method
     @Override
     public void onTestSkipped(ITestResult testResult) {
-        Reporter.log("Testcase " + testResult.getName() + " got skipped", true);
+        //Reporter.log("Testcase " + testResult.getName() + " got skipped", true);
         LogCollector.clear(); // Discard logs on skip
     }
 

@@ -255,16 +255,44 @@ class configuration {
     }
 
     /**
-     * Retrieves the language setting from the loaded configuration.
+     * Retrieves the IETF BCP 47 language code setting from the loaded configuration.
      * If not set, falls back to the default value.
      *
-     * @return string The language setting (e.g. de-DE).
+     * @return string The IETF BCP 47 language setting (e.g. de-DE).
      */
     public function getLanguage(): string {
         if (isset(self::$loadedConfig['language'])) {
             return self::$loadedConfig['language'];
         } else {
             return self::$List_of_configuration_parameters['language'];
+        }
+    }
+
+    /**
+     * Retrieves the country code setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The country code setting (e.g. DE).
+     */
+    public function getCountryCode(): string {
+        if (isset(self::$loadedConfig['countryCode'])) {
+            return self::$loadedConfig['countryCode'];
+        } else {
+            return self::$List_of_configuration_parameters['countryCode'];
+        }
+    }
+
+    /**
+     * Retrieves the state code setting from the loaded configuration.
+     * If not set, falls back to the default value.
+     *
+     * @return string The state code setting (e.g. DE-MV).
+     */
+    public function getStateCode(): string {
+        if (isset(self::$loadedConfig['stateCode'])) {
+            return self::$loadedConfig['stateCode'];
+        } else {
+            return self::$List_of_configuration_parameters['stateCode'];
         }
     }
 
@@ -406,9 +434,11 @@ class configuration {
         'display_errors' => 0,
         'log_errors' => 1,
         'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
-        'LC_TIME' => 'de_DE',
+        'LC_TIME' => 'de_DE', // underscore
         'timezone' => 'Europe/Berlin',
-        'language' => 'de-DE',
+        'language' => 'de-DE', // IETF BCP 47
+        'countryCode' => 'DE', // ISO-3166-1 ALPHA-2
+        'stateCode' => 'DE-MV', // e.g. ISO 3166-2:DE
         'mb_internal_encoding' => 'UTF-8',
         'contact_email' => '',
         'hide_disapproved' => FALSE, //We set it up to false in order not to disconcert new administrators.

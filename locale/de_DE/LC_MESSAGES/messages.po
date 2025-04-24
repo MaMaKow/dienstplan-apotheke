@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pharmacy duty roster\n"
-"POT-Creation-Date: 2025-01-26 22:28+0100\n"
-"PO-Revision-Date: 2025-01-26 22:31+0100\n"
+"POT-Creation-Date: 2025-02-17 21:56+0100\n"
+"PO-Revision-Date: 2025-02-17 22:10+0100\n"
 "Last-Translator: Martin Mandelkow <poedit@martin-mandelkow.de>\n"
 "Language-Team: MaMaKow <poedit-ux31a@martin-mandelkow.de>\n"
 "Language: de_DE@formal\n"
@@ -1275,6 +1275,14 @@ msgid ""
 msgstr ""
 "Die Meldungen in dieser Anwendung und die Dokumentation liegen in "
 "verschiedenen Sprachen vor."
+
+
+msgid "Country"
+msgstr "Staat"
+
+
+msgid "State"
+msgstr "Bundesland"
 
 
 msgid "Language"

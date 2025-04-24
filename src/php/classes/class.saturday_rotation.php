@@ -42,15 +42,15 @@ class saturday_rotation {
         $this->List_of_teams = $this->read_teams_from_database();
     }
 
-    public function get_participation_team_id(DateTime $target_date_object) {
+    public function get_participation_team_id(DateTime $target_date_object, \PDR\DateTime\Holidays $holidays) {
+
         if (6 != $target_date_object->format('N')) {
             /*
              * Until now, this function is specified to only handle saturdays.
              */
             throw new Exception("saturday_rotation only accepts saturdays as input.");
         }
-        $holiday = holidays::is_holiday($target_date_object);
-        if (FALSE !== $holiday) {
+        if ($holidays->isHoliday($target_date_object)) {
             /*
              * <p lang=de>An Feiertagen findet kein Samstagsdienst statt.</p>
              */
@@ -113,7 +113,7 @@ class saturday_rotation {
 
     protected function set_new_participation() {
         $last_team_id = NULL;
-        $last_date_object = NULL;
+        $lastDateObject = NULL;
         $sql_query = 'SELECT `date`, `team_id` FROM `saturday_rotation` WHERE `branch_id` = :branch_id and `date` <= :date ORDER BY `date` DESC LIMIT 1';
         $result = database_wrapper::instance()->run($sql_query, array(
             'branch_id' => $this->branch_id,
@@ -121,10 +121,10 @@ class saturday_rotation {
         ));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $last_team_id = (int) $row->team_id;
-            $last_date_object = new DateTime($row->date);
+            $lastDateObject = new DateTime($row->date);
         }
         if (NULL === $last_team_id) {
-            if (NULL !== $last_date_object) {
+            if (NULL !== $lastDateObject) {
                 /**
                  * <p lang=de>Eigentlich sollten $last_date_object und $last_team_id immer gemeinsam NULL sein. Wenn das nicht der Fall ist, gibt es hier einen Fehler:</p>
                  */
@@ -139,8 +139,8 @@ class saturday_rotation {
              *  zählen wir dann durch.</p>
              */
             $last_team_id = array_key_first($this->List_of_teams);
-            $last_date_object = new DateTime("03.01.1970");
-            $last_date_object->setDate(1970, 1, 3);
+            $lastDateObject = new DateTime("03.01.1970");
+            $lastDateObject->setDate(1970, 1, 3);
         }
         /*
          * Move the pointer for the array $this->List_of_teams to the position given by $last_team_id:
@@ -160,15 +160,18 @@ class saturday_rotation {
                 //return key($this->List_of_teams);
             }
         }
-
-        for ($date_object = (clone $last_date_object)->add(new DateInterval('P7D')); $date_object <= $this->target_date_object; $date_object->add(new DateInterval('P7D'))) {
+        $dateInLastLoop = clone $lastDateObject;
+        $holidays = null;
+        for ($dateObject = (clone $lastDateObject)->add(new DateInterval('P7D')); $dateObject <= $this->target_date_object; $dateObject->add(new DateInterval('P7D'))) {
+            if (null === $holidays or $dateObject->format("Y") !== $dateInLastLoop->format("Y")) {
+                $holidays = new \PDR\DateTime\Holidays($dateObject->format("Y"));
+            }
             /*
              * Move the pointer in $this->List_of_teams to next()
              * In case, we meet the end, just start at the first item again.
              */
-            $holiday = holidays::is_holiday($date_object);
-
-            if (FALSE !== $holiday) {
+            if ($holidays->isHoliday($dateObject)) {
+                $holiday = $holidays->getHolidayOnDate($dateObject);
                 /*
                  * <p lang=de>An Feiertagen findet kein Samstagsdienst statt.</p>
                  */
@@ -178,6 +181,7 @@ class saturday_rotation {
             if (FALSE === next($this->List_of_teams)) {
                 reset($this->List_of_teams);
             }
+            $dateInLastLoop = clone $dateObject;
         }
         return key($this->List_of_teams);
     }

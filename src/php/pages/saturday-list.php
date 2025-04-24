@@ -23,7 +23,7 @@ $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_SPECIAL_
 \PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 $dateObjectStart = new DateTime("first sat of jan $year");
 $dateObjectEnd = new DateTime("last sat of dec $year");
-
+$holidays = new \PDR\DateTime\Holidays($year);
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 \PDR\Utility\GeneralUtility::createCookie("mandant", $branch_id, 30);
@@ -44,7 +44,7 @@ $table_head .= "</tr>\n";
 $table_head .= "</thead>\n";
 $table_body = "<tbody>\n";
 for ($dateObject = clone $dateObjectStart; $dateObject <= $dateObjectEnd; $dateObject->add(new DateInterval('P7D'))) {
-    $table_row = PDR\Output\HTML\SaturdayListHtmlBuilder::buildTableRow($dateObject, $branch_id);
+    $table_row = PDR\Output\HTML\SaturdayListHtmlBuilder::buildTableRow($dateObject, $branch_id, $holidays);
     $table_body .= $table_row;
 }
 $table_body .= "</tbody>\n";

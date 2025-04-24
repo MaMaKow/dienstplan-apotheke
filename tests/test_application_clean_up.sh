@@ -5,13 +5,13 @@ scriptPath=`dirname $(realpath $0)`
 # provides $pdrDbUserPassword
 source $scriptPath/config/pdrDbUser.password
 
-testDirectory=/var/www/html/development/testing/
-cd $testDirectory
+#testDirectory=/var/www/html/development/testing/
+#cd $testDirectory
 
-versionString=`git -C dienstplan-apotheke describe --tags --long --abbrev=40 | tr '.-' '_'`
+#versionString=`git -C dienstplan-apotheke describe --tags --long --abbrev=40 | tr '.-' '_'`
 
 # CLEAN UP
-mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest_$versionString;"
-mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest;"
-rm -rf $testDirectory/dienstplan-test-$versionString
-rm -rf $testDirectory/dienstplan-test*
+#mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest_$versionString;"
+mariadb -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest;"
+#rm -rf $testDirectory/dienstplan-test-$versionString
+#rm -rf $testDirectory/dienstplan-test*

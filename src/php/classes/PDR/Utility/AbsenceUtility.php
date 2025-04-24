@@ -272,8 +272,12 @@ class AbsenceUtility {
         // Initialize the count of absence days.
         $days = 0;
 
+        $holidays = new \PDR\DateTime\Holidays($dateStartObject->format("Y"));
+
         // Loop through each day in the specified date range.
-        for ($dateObject = clone $dateStartObject; $dateObject <= $dateEndObject; $dateObject->add(new \DateInterval('P1D'))) {
+        for ($dateObject = clone $dateStartObject;
+                $dateObject <= $dateEndObject;
+                $dateObject->add(new \DateInterval('P1D'))) {
             // Get the weekday number (1 for Monday, 7 for Sunday).
             $currentWeekDayNumber = $dateObject->format('N');
 
@@ -286,14 +290,13 @@ class AbsenceUtility {
                  */
 
                 // Check if the current day is a holiday.
-                $holiday = \holidays::is_holiday($dateObject);
-                if (FALSE !== $holiday) {
+                if ($holidays->isHoliday($dateObject)) {
                     /*
                      * Holidays are not counted.
                      * Inform the user about not counting those days.
                      */
                     $dateString = $dateObject->format('d.m.Y');
-                    $message = $dateString . " " . gettext('is a holiday') . " (" . $holiday . ") " . gettext('and will not be counted.');
+                    $message = $dateString . " " . gettext('is a holiday') . " (" . $holidays->getHolidayOnDate($dateObject)->getName() . ") " . gettext('and will not be counted.');
                     $userDialog->add_message($message, E_USER_NOTICE);
                 } else {
                     /*

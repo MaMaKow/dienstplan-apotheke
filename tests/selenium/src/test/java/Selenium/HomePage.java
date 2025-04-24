@@ -18,11 +18,8 @@
  */
 package Selenium;
 
-import java.time.Duration;
-import org.openqa.selenium.By;
+import Selenium.Utilities.LogCollector;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -32,13 +29,18 @@ public class HomePage extends Selenium.BasePage {
 
     public HomePage(WebDriver driver) {
         super(driver);  // Call to BasePage constructor
+        LogCollector.debug("new HomePage after super(driver)");
         this.driver = driver;
 
+        LogCollector.debug("new HomePage before this.getUserNameText().isEmpty():");
         if (this.getUserNameText().isEmpty()) {
+            LogCollector.debug("true == this.getUserNameText().isEmpty()");
+            LogCollector.debug("going to throw an exception:");
             //if (result.isEmpty()) {
             throw new IllegalStateException("This is not Home Page of logged in user,"
                     + " current page is: " + driver.getCurrentUrl());
         }
+        LogCollector.debug("new HomePage done with constructor.");
     }
 
     public HomePage manageProfile() {

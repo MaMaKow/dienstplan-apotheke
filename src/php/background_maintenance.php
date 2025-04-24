@@ -32,7 +32,6 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
     }
 
     new update_database();
-    \PDR\Utility\GeneralUtility::printDebugVariable($forceMaintenance);
     new maintenance($forceMaintenance);
     // new auto_upgrader();
     echo "Done with background maintenance.";

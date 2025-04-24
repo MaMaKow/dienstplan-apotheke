@@ -66,9 +66,11 @@ public class TestGET_rosterEndpoint extends Selenium.TestPage {
                 return;
             }
             LogCollector.debug("Found roster for dates between " + dateStart + " and " + dateEnd + ":");
+            LogCollector.debug(">>> Display roster dates:");
             foundRoster.forEach((localDate, action) -> {
                 LogCollector.debug(localDate.format(DateTimeFormatter.ISO_DATE));
             });
+            LogCollector.debug("<<< End of roster dates");
             softAssert.assertNotEquals(foundRoster.size(), 0, "Found no roster. The foundRoster.size() is 0");
             for (Map.Entry<LocalDate, HashMap> rosterDayEntry : foundRoster.entrySet()) {
                 LocalDate date = rosterDayEntry.getKey();

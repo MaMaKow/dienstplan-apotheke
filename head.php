@@ -110,6 +110,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 case 'overtime-edit.php':
                     $jsFiles[] = 'overtime.js';
                     break;
+                case 'configuration.php':
+                    $jsFiles[] = 'configuration.js';
+                    break;
             }
 
             // Include JavaScript files

@@ -136,6 +136,30 @@ echo $user_dialog->build_messages();
                 <p class="hint">
                     <?= gettext("The messages in this application and the documentation exist in different languages.") ?>
                 </p>
+                <label><?= gettext('Country') ?></label>
+                <br>
+                <select name="countryCode">
+                    <?php foreach (\PDR\Output\HTML\configurationManager::$List_of_supported_countries as $countryCode => $countryName): ?>
+                        <option value="<?= htmlspecialchars($countryCode) ?>"
+                                <?= $countryCode === $configuration->getCountryCode() ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($countryName) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <br>
+                <label><?= gettext('State') ?></label>
+                <br>
+                <select name="stateCode">
+                    <?php if (!empty($configurationManager->getStatesByCountry($configuration->getCountryCode()))): ?>
+                        <?php foreach ($configurationManager->getStatesByCountry($configuration->getCountryCode()) as $stateCode => $stateName): ?>
+                            <option value="<?= htmlspecialchars($stateCode) ?>"
+                                    <?= $stateCode === $configuration->getStateCode() ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($stateName) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+                <br>
                 <label><?= gettext('Language') ?></label><br>
                 <select name="language"><?php
                     foreach (\PDR\Output\HTML\configurationManager::$List_of_supported_languages as $language_code => $language_name) {

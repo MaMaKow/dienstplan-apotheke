@@ -192,7 +192,7 @@ class OvertimeInputHandler {
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been deleted.");
-        $message = \sprintf(gettext('The user %1$s has deleted the following overtime entry:'), $session->getUserName()) . \email::EMAIL_EOL
+        $message = \sprintf(gettext('The user %1$s has deleted the following overtime entry:'), $session->getUserName()) . "\r\n"
                 . gettext('Employee') . ": $employeeName\r\n"
                 . gettext('Date') . ": $dateString\r\n"
                 . gettext('Hours') . ": $deletionHours\r\n"
@@ -220,16 +220,16 @@ class OvertimeInputHandler {
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been changed.");
-        $message = sprintf(gettext('The user %1$s has changed the following overtime entry:'), $session->getUserName()) . \email::EMAIL_EOL
-                . gettext('Employee') . ": " . $employeeName . \email::EMAIL_EOL
-                . gettext('Date') . ": " . $dateStringOld . \email::EMAIL_EOL
-                . gettext('Hours') . ": " . $overtimeHoursOld . \email::EMAIL_EOL
-                . gettext('Reason') . ": " . $overtimeReasonOld . \email::EMAIL_EOL
-                . \email::EMAIL_EOL
-                . gettext('to the new values:') . \email::EMAIL_EOL
-                . gettext('Date') . ": " . $dateStringNew . \email::EMAIL_EOL
-                . gettext('Hours') . ": " . $overtimeHoursNew . \email::EMAIL_EOL
-                . gettext('Reason') . ": " . $overtimeReasonNew . \email::EMAIL_EOL;
+        $message = sprintf(gettext('The user %1$s has changed the following overtime entry:'), $session->getUserName()) . "\r\n"
+                . gettext('Employee') . ": " . $employeeName . "\r\n"
+                . gettext('Date') . ": " . $dateStringOld . "\r\n"
+                . gettext('Hours') . ": " . $overtimeHoursOld . "\r\n"
+                . gettext('Reason') . ": " . $overtimeReasonOld . "\r\n"
+                . "\r\n"
+                . gettext('to the new values:') . "\r\n"
+                . gettext('Date') . ": " . $dateStringNew . "\r\n"
+                . gettext('Hours') . ": " . $overtimeHoursNew . "\r\n"
+                . gettext('Reason') . ": " . $overtimeReasonNew . "\r\n";
         // Send Email
         $userDialogEmail = new \user_dialog_email();
         $mailResult = $userDialogEmail->send_email(

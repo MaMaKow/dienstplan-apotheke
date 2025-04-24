@@ -9,16 +9,17 @@ ENV LANG_WHERE=DE
 ENV ENCODING=UTF-8
 ENV LANGUAGE=de_DE.UTF-8
 ENV LANG=de_DE.UTF-8
+ENV VNC_NO_PASSWORD=1
 #ENV TZ=UTC
 #RUN echo "${TZ}" > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata
 
 ENV FIREFOX_DOWNLOAD_URL="https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=de"
 RUN echo ${FIREFOX_DOWNLOAD_URL}
-RUN wget --no-verbose -O /tmp/firefox.tar.bz2 ${FIREFOX_DOWNLOAD_URL}
+RUN wget -O /tmp/firefox.tar.xz ${FIREFOX_DOWNLOAD_URL}
 RUN rm -rf /opt/firefox
 RUN rm -rf /opt/firefox-latest
-RUN tar -C /opt -xjf /tmp/firefox.tar.bz2
-RUN rm /tmp/firefox.tar.bz2
+RUN tar -C /opt -xJf /tmp/firefox.tar.xz
+RUN rm /tmp/firefox.tar.xz
 RUN mv /opt/firefox /opt/firefox-latest
 RUN ln -fs /opt/firefox-latest/firefox /usr/bin/firefox
 

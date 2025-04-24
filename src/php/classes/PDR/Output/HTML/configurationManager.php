@@ -44,6 +44,8 @@ class configurationManager {
         'LC_TIME' => FILTER_SANITIZE_SPECIAL_CHARS,
         'timezone' => FILTER_SANITIZE_SPECIAL_CHARS,
         'language' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'countryCode' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'stateCode' => FILTER_SANITIZE_SPECIAL_CHARS,
         'mb_internal_encoding' => FILTER_SANITIZE_SPECIAL_CHARS,
         'contact_email' => FILTER_SANITIZE_EMAIL,
         'hide_disapproved' => FILTER_SANITIZE_NUMBER_INT,
@@ -65,6 +67,63 @@ class configurationManager {
         'en-GB' => 'English',
         'de-DE' => 'Deutsch',
     );
+    public static $List_of_supported_countries = array(
+        'GB' => 'Great Britain',
+        'DE' => 'Deutschland',
+        'FR' => 'France',
+    );
+
+    /**
+     * @var array Liste der Länder mit ihren zugehörigen Bundesländern/Regionen
+     */
+    private
+            $ListOfStatesByCountry = [
+        'DE' => [
+            'DE-BW' => 'Baden-Württemberg',
+            'DE-BY' => 'Bayern',
+            'DE-BE' => 'Berlin',
+            'DE-BB' => 'Brandenburg',
+            'DE-HB' => 'Bremen',
+            'DE-HH' => 'Hamburg',
+            'DE-HE' => 'Hessen',
+            'DE-MV' => 'Mecklenburg-Vorpommern',
+            'DE-NI' => 'Niedersachsen',
+            'DE-NW' => 'Nordrhein-Westfalen',
+            'DE-RP' => 'Rheinland-Pfalz',
+            'DE-SL' => 'Saarland',
+            'DE-SN' => 'Sachsen',
+            'DE-ST' => 'Sachsen-Anhalt',
+            'DE-SH' => 'Schleswig-Holstein',
+            'DE-TH' => 'Thüringen',
+        ],
+        'GB' => [
+            'GB-ENG' => 'England',
+            'GB-NIR' => 'Northern Ireland',
+            'GB-SCT' => 'Scotland',
+            'GB-WLS' => 'Wales',
+        ],
+        'FR' => [
+            'FR-ARA' => 'Auvergne-Rhône-Alpes',
+            'FR-BFC' => 'Bourgogne-Franche-Comté',
+            'FR-BRE' => 'Bretagne',
+            'FR-CVL' => 'Centre-Val de Loire',
+            'FR-COR' => 'Corse',
+            'FR-GES' => 'Grand Est',
+            'FR-HDF' => 'Hauts-de-France',
+            'FR-IDF' => 'Île-de-France',
+            'FR-NOR' => 'Normandie',
+            'FR-NAQ' => 'Nouvelle-Aquitaine',
+            'FR-OCC' => 'Occitanie',
+            'FR-PDL' => 'Pays de la Loire',
+            'FR-PAC' => 'Provence-Alpes-Côte d\'Azur',
+            'FR-A' => 'Alsace', // zusätzich zum offiziellen ISO 3166-2:FR
+            'FR-57' => 'Moselle', // zusätzich zum offiziellen ISO 3166-2:FR
+        ],
+    ];
+
+    public function getStatesByCountry(string $countryCode) {
+        return $this->ListOfStatesByCountry[$countryCode];
+    }
 
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
     const ERROR_WARNING = self::ERROR_ERROR | E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;
