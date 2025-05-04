@@ -162,14 +162,14 @@ class user_dialog_email {
         ));
     }
 
-    public function aggregate_messages_about_changed_roster_to_employees($workforce) {
+    public function aggregate_messages_about_changed_roster_to_employees(workforce $workforce) {
         $sql_query = "SELECT DISTINCT `user_key` "
                 . " FROM `user_email_notification_cache`;";
         $result = database_wrapper::instance()->run($sql_query);
         while ($user_row = $result->fetch(PDO::FETCH_OBJ)) {
             $user_key = $user_row->user_key;
-
-            $aggregated_message = sprintf(gettext('Dear %1$s,'), $workforce->List_of_employees[$user_key]->full_name) . PHP_EOL . PHP_EOL;
+            $userObject = new user($user_key);
+            $aggregated_message = sprintf(gettext('Dear %1$s,'), $userObject->user_name) . PHP_EOL . PHP_EOL;
             $aggregated_ics_file = (string) "";
             $notifications_exist = FALSE;
 
@@ -267,13 +267,21 @@ class user_dialog_email {
         return $mail_success;
     }
 
-    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL) {
+    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL): bool {
         global $config;
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
         require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
 
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        $mail->SMTPDebug = 0; // No output
+        //$mail->SMTPDebug = 1; // commands
+        //$mail->SMTPDebug = 2; // Data and commands
+        //$mail->SMTPDebug = 3; // 3 As 2 plus connection status
+        //$mail->SMTPDebug = 4; // 4 Detaied Low-level data output.
+        $mail->Debugoutput = function ($str, $level) {
+            error_log("Level: " . $level . " String: " . $str);
+        };
         try {
             /*
              * Server settings
@@ -291,6 +299,14 @@ class user_dialog_email {
                     $mail->Port = $config['email_smtp_port']; // TCP port to connect to (587 for TLS)
                     $mail->Username = $config['email_smtp_username'];
                     $mail->Password = $config['email_smtp_password'];
+                    if ("localhost" === $mail->Host and "1025" == $mail->Port) {
+                        /**
+                         * For the purpose of testing mails with mailhog, TLS and STARTTLS have to be disabled.
+                         */
+                        $mail->SMTPAuth = false; // No authentication required for MailHog
+                        $mail->SMTPSecure = ''; // Disable TLS/SSL
+                        $mail->SMTPAutoTLS = false; // Disable automatic TLS negotiation
+                    }
                     break;
                 case 'sendmail':
                     $mail->isSendmail();

@@ -18,7 +18,9 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import org.openqa.selenium.By;
@@ -80,7 +82,9 @@ public class MenuFragment {
     public static Map<By, By> menuMap = new HashMap<By, By>();
 
     public static void navigateTo(WebDriver driver, By target) {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        LogCollector.debug("MenuFragment navigateTo()" + target.toString());
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(100));
         /**
          * Scheduled Roster
          */
@@ -140,11 +144,14 @@ public class MenuFragment {
         while (attempts < 7) {
             attempts++;
             try {
+                LogCollector.debug("Brute force try to wait for target...");
                 linkElement = wait.until(ExpectedConditions.presenceOfElementLocated(target));
                 break;
             } catch (NoSuchElementException noSuchElementException) {
+                LogCollector.debug("NoSuchElementException");
                 System.err.println("NoSuchElementException");
             } catch (Exception exception) {
+                LogCollector.debug("Exception");
                 System.err.println("Exception");
                 throw exception;
             }
@@ -160,18 +167,28 @@ public class MenuFragment {
          * übergeordnete Element gehovert werden.
          * </p>
          */
+
         By menuListItemBy = menuMap.get(target);
+        LogCollector.debug("First hover menuListItem" + menuListItemBy.toString());
         wait.until(ExpectedConditions.presenceOfElementLocated(menuListItemBy));
         //wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
 
         WebElement menuListItem = driver.findElement(menuListItemBy);
         wait.until(ExpectedConditions.presenceOfElementLocated(target));
         actions.moveToElement(menuListItem).perform();
+        LogCollector.debug("Check if page differs from current page");
+        LogCollector.debug("driver.getCurrentUrl(): " + driver.getCurrentUrl());
+        LogCollector.debug("linkElement.getAttribute(\"href\"): " + linkElement.getAttribute("href"));
+        linkElement = wait.until(ExpectedConditions.presenceOfElementLocated(target));
         if (!driver.getCurrentUrl().contains(linkElement.getAttribute("href"))) {
+            LogCollector.debug("Page differs from current page, clicking to new page");
             /**
              * Do not move if the page is already the correct page.
              */
+            LogCollector.debug("Click to reload page");
             linkElement.click();
+        } else {
+            LogCollector.debug("Page is target page already, no click.");
         }
         /**
          * Move the mouse back to the left top of the page:
@@ -179,8 +196,13 @@ public class MenuFragment {
          * @CAVE: This might be not exactly (0, 0) because the location we
          * move from is the center of the element.
          */
+        LogCollector.debug("Bring mouse back to top of the page.");
+        LogCollector.debug("menuListItem = driver.findElement(menuListItemBy);");
         menuListItem = driver.findElement(menuListItemBy);
+        LogCollector.debug("actions.moveToElement(menuListItem).perform();");
         actions.moveToElement(menuListItem).perform();
+        LogCollector.debug("actions.moveByOffset(-menuListItem.getLocation().getX(), 500).perform();");
         actions.moveByOffset(-menuListItem.getLocation().getX(), 500).perform();
+        LogCollector.debug("Done with menu navigation");
     }
 }

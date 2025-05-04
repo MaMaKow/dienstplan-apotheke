@@ -33,7 +33,7 @@ input[type="time"]:hover {
     border: 3px dotted #BDE682;
 }
 
-div.centered_form_div {
+div.centered-form-div {
     text-align: center;
     padding: 10px;
     border: 3px solid #73AC22;
@@ -41,18 +41,18 @@ div.centered_form_div {
     margin: auto;
 }
 
-div.centered_form_div form input {
+div.centered-form-div form input {
     margin-bottom: 1em;
 }
 
-div.centered_form_div form input[type="text"], input[type="password"], input[type="email"] {
+div.centered-form-div form input[type="text"], input[type="password"], input[type="email"] {
     /**
      * we exclude input[type="number"]
      */
     width: 200px;
 }
 
-div.centered_form_div form fieldset {
+div.centered-form-div form fieldset {
     text-align: left;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -118,7 +118,7 @@ input:checked + .slider:before {
  * <--Toggle Switch
  */
 
-span.form_input_unit{
+span.form-input-unit{
     /* a piece of text representing a physical unit of an input */
     margin-left: 1em;
 }
@@ -166,13 +166,3 @@ fieldset label {
     /*
     */
 }
-
-/*
-fieldset.hidden_content_on_load legend {
-cursor: context-menu;
-}
-
-fieldset.hidden_content_on_load :not(legend) * {
-display: none;
-}
-*/

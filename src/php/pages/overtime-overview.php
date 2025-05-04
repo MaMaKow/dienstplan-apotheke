@@ -22,5 +22,5 @@ require_once '../../../default.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
-$table = overtime::build_overview_table();
+$table = PDR\Output\HTML\OvertimeHtmlBuilder::buildOverviewTable();
 echo $table;

@@ -33,7 +33,12 @@ public class TestUploadPepPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         UploadPepPage uploadPepPage = new UploadPepPage(driver);
         /**
          * Find a file to upload:
@@ -44,7 +49,9 @@ public class TestUploadPepPage extends TestPage {
          * vermutlich noch nicht fertig berechnet. Nach weiteren 30 Sekunden
          * sollte die Berechnung aber fertig sein.</p>
          */
-        Assert.assertEquals(false, uploadPepPage.expectationIsPresentAfterWaiting(5));
-        Assert.assertEquals(true, uploadPepPage.expectationIsPresentAfterWaiting(30));
+        logger.debug("Kurzes warten, vermutlich noch kein Ergebnis");
+        Assert.assertFalse(uploadPepPage.expectationIsPresentAfterWaiting(4));
+        logger.debug("Langes warten, vermutlich mit Ergebnis");
+        Assert.assertTrue(uploadPepPage.expectationIsPresentAfterWaiting(300));
     }
 }

@@ -19,19 +19,27 @@
 package Selenium;
 
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestAboutPage extends TestPage {
 
     @Test(enabled = true)
     public void testGetVersion() {
-        super.signIn();
-        AboutPage aboutPage = new AboutPage();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
+        AboutPage aboutPage = new AboutPage(driver);
         String versionString = aboutPage.getVersion();
-        Assert.assertEquals(versionString, aboutPage.getVersionStingShould());
+        String versionStringShould = aboutPage.getVersionStringShould();
+        Assert.assertEquals(versionString, versionStringShould);
     }
 }

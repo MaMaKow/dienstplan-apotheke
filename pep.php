@@ -98,8 +98,9 @@ foreach ($List_of_pep_branch_ids as $pep_branch_id) {
             Mandant
         FROM `pep`
         WHERE `Mandant` = :pep_branch_id
-        GROUP BY round(TIME_TO_SEC(`Zeit`)/60/15)*15/60,
-            WEEKDAY(Datum)
+        GROUP BY SEC_TO_TIME(round(TIME_TO_SEC(`Zeit`)/60/15)*15*60),
+            WEEKDAY(Datum),
+            Mandant
         ";
     database_wrapper::instance()->run($sql_query, array('pep_branch_id' => $pep_branch_id));
 
@@ -110,7 +111,8 @@ foreach ($List_of_pep_branch_ids as $pep_branch_id) {
             `Mandant`
         FROM `pep`
         WHERE `Mandant` = :pep_branch_id2
-        GROUP BY DAYOFMONTH(`Datum`)
+        GROUP BY DAYOFMONTH(`Datum`),
+            Mandant
         ";
     database_wrapper::instance()->run($sql_query, array('pep_branch_id1' => $pep_branch_id, 'pep_branch_id2' => $pep_branch_id));
 
@@ -121,7 +123,8 @@ foreach ($List_of_pep_branch_ids as $pep_branch_id) {
             `Mandant`
         FROM `pep`
         WHERE `Mandant` = :pep_branch_id2
-        GROUP BY MONTH(Datum)
+        GROUP BY MONTH(Datum),
+            Mandant
         ";
     database_wrapper::instance()->run($sql_query, array('pep_branch_id1' => $pep_branch_id, 'pep_branch_id2' => $pep_branch_id));
 }

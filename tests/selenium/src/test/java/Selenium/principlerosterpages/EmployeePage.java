@@ -22,6 +22,7 @@ import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import java.text.ParseException;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -64,7 +65,7 @@ public class EmployeePage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         return driver.findElement(userNameSpanBy).getText();

@@ -19,6 +19,7 @@ package Selenium.principlerosterpages;
 import Selenium.MenuFragment;
 import Selenium.PrincipleRosterItem;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -34,6 +35,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 
 /**
@@ -44,7 +46,7 @@ public class DayPage {
 
     protected static WebDriver driver;
 
-    private final By weekdayChooserInputBy = By.xpath("//*[@id=\"week_day_form\"]/select");
+    private final By weekdayChooserInputBy = By.xpath("//*[@id=\"weekdayForm\"]/select");
     private final By alternationChooserInputBy = By.xpath("//*[@id=\"alternating_week_form\"]/select");
     private final By branchChooserInputBy = By.xpath("//*[@id=\"branch_form_select\"]");
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
@@ -71,7 +73,7 @@ public class DayPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         return driver.findElement(userNameSpanBy).getText();
@@ -138,13 +140,13 @@ public class DayPage {
     }
 
     public void addRosterRow() {
-        By listOfRosterRowsBy = By.xpath("/html/body/div[3]/form[@id=\"principle_roster_form\"]/table/tbody/tr/td");
+        By listOfRosterRowsBy = By.xpath("/html/body/div[3]/form[@id=\"principleRosterForm\"]/table/tbody/tr/td");
         List<WebElement> listOfRosterRowElements = driver.findElements(listOfRosterRowsBy);
         int numberOfRosterRowElements = listOfRosterRowElements.size();
         WebElement addRosterRowButtonElement = driver.findElement(addRosterRowButtonBy);
         addRosterRowButtonElement.click();
 
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.numberOfElementsToBe(listOfRosterRowsBy, (numberOfRosterRowElements + 1)));
     }
 
@@ -155,9 +157,9 @@ public class DayPage {
          * <td>ausgewählt wird. Das data-date_unix ist immer identisch.
          * </p>
          */
-        By rosterTableColumnBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td");
+        By rosterTableColumnBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td");
         WebElement rosterTableColumnElement = driver.findElement(rosterTableColumnBy);
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(rosterTableColumnBy));
 
         String unixTimeString = rosterTableColumnElement.getAttribute("data-date_unix");
@@ -242,7 +244,7 @@ public class DayPage {
     }
 
     private WebElement findRosterTableFirstRow() {
-        String rowXPath = "//*[@id=\"principle_roster_form\"]/table/tbody/tr/td";
+        String rowXPath = "//*[@id=\"principleRosterForm\"]/table/tbody/tr/td";
         By rowBy = By.xpath(rowXPath);
         WebElement rosterTableRowElement = driver.findElement(rowBy);
         return rosterTableRowElement;
@@ -253,8 +255,19 @@ public class DayPage {
          * Wir brauchen zwei By Variablen. CSS kann tatsächlich gerade markierte
          * options finden. XPath kann parent elements finden.
          */
-        By rowCssBy = By.cssSelector("#principle_roster_form > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
+        By rowCssBy = By.cssSelector("#principleRosterForm > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
         By rowXpathBy = By.xpath("parent::select/parent::span/parent::td");
+        /**
+         * Diese Funktion wird auch aufgerufen, um zu prüfen,
+         * ob bereits ein Eintrag mit diesem employeeKey existiert.
+         * Das verbraucht sehr viel Zeit. Um dies abzukürzen, wird hier nur ganz kurz gewartet.
+         */
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(0));
+        if (driver.findElements(rowCssBy).isEmpty()) {
+            // Element is not present
+            throw new NoSuchElementException("This employee is not in the principle roster yet.");
+        }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(rowCssBy));
         WebElement rosterTableRowOptionElement = driver.findElement(rowCssBy);
         WebElement rosterTableRowElement = rosterTableRowOptionElement.findElement(rowXpathBy);
         return rosterTableRowElement;
@@ -382,8 +395,8 @@ public class DayPage {
          * Add new row:
          */
         addRosterRow();
-        By insertedRowBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr[(last()-1)]/td");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        By insertedRowBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr[(last()-1)]/td");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(insertedRowBy));
 
         WebElement insertedRowElement = driver.findElement(insertedRowBy);
@@ -557,7 +570,7 @@ public class DayPage {
          * The release does not seem to work properly. Move the mouse once more:
          */
         actions.moveToElement(rosterPlotElement, elementOffset, 0).build().perform();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         /**
          * CAVE! Wir bräuchten eigentlich zwei By Variablen. CSS kann
          * tatsächlich gerade markierte options finden. XPath kann parent
@@ -565,8 +578,8 @@ public class DayPage {
          * AKTUELL SELEKTIERTE option ausgewählt.
          */
         if ("duty".equals(dutyOrBreak)) {
-            By dutyStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_start_sql\")]");
-            By dutyEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_end_sql\")]");
+            By dutyStartInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_start_sql\")]");
+            By dutyEndInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"duty_end_sql\")]");
             WebElement dutyStartInputElement = driver.findElement(dutyStartInputBy);
             WebElement dutyEndInputElement = driver.findElement(dutyEndInputBy);
             wait.until(ExpectedConditions.attributeToBe(dutyStartInputBy, "value", rosterItemReadBefore.getDutyStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
@@ -574,8 +587,8 @@ public class DayPage {
             Assert.assertEquals(dutyStartInputElement.getAttribute("value"), rosterItemReadBefore.getDutyStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm")));
             Assert.assertEquals(dutyEndInputElement.getAttribute("value"), rosterItemReadBefore.getDutyEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm")));
         } else if ("break".equals(dutyOrBreak)) {
-            By breakStartInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_start_sql\")]");
-            By breakEndInputBy = By.xpath("//*[@id=\"principle_roster_form\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_end_sql\")]");
+            By breakStartInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_start_sql\")]");
+            By breakEndInputBy = By.xpath("//*[@id=\"principleRosterForm\"]/table/tbody/tr/td/span/select/option[@value=\"" + employeeKey + "\" and @selected]/parent::select/parent::span/parent::td/input[contains(@name, \"break_end_sql\")]");
             wait.until(ExpectedConditions.attributeToBe(breakStartInputBy, "value", rosterItemReadBefore.getBreakStart().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
             wait.until(ExpectedConditions.attributeToBe(breakEndInputBy, "value", rosterItemReadBefore.getBreakEnd().plusMinutes((long) offsetMinutes).format(DateTimeFormatter.ofPattern("HH:mm"))));
         } else {
@@ -585,8 +598,8 @@ public class DayPage {
     }
 
     private int getPlotDataBarWidthFactor() {
-        By svgImageBy = By.xpath("//*[@id=\"main-area\"]/div/div/*[name()=\"svg\"]");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        By svgImageBy = By.xpath("//*[@id=\"mainArea\"]/div/div/*[name()=\"svg\"]");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(svgImageBy));
         WebElement svgImageElement = driver.findElement(svgImageBy);
         String barWidthFactorString = svgImageElement.getAttribute("data-bar_width_factor");

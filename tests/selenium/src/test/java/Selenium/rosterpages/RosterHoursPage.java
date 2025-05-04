@@ -21,6 +21,7 @@ package Selenium.rosterpages;
 import Selenium.TestPage;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -80,7 +81,7 @@ public class RosterHoursPage {
 
     public String getMonth() {
         /*
-        <p lang=de>Es gibt nicht nur die Möglichkeit, sin einzelne Monate anzusehen.
+        <p lang=de>Es gibt nicht nur die Möglichkeit, sich einzelne Monate anzusehen.
         Man kann auch Quartale oder das ganze Jahr auswählen.</p>
          */
         WebElement selectMonthSelectElement = driver.findElement(selectMonthSelectBy);
@@ -138,7 +139,7 @@ public class RosterHoursPage {
 
     public WebElement getRowElement(LocalDate targetLocalDate) {
 
-        By listOfRowsBy = By.xpath("//*[@id=\"marginal_employment_hours_list_table\"]/tbody/tr");
+        By listOfRowsBy = By.xpath("//*[@id=\"marginalEmploymentHoursListTable\"]/tbody/tr");
         By rosterItemDateBy = By.xpath(".//td[1]");
         List<WebElement> listOfRowsElements = driver.findElements(listOfRowsBy);
         String dateString;
@@ -171,7 +172,7 @@ public class RosterHoursPage {
      */
     public String getUserNameText() {
         // <h1>Hello userName</h1>
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
 
         return driver.findElement(user_name_spanBy).getText();

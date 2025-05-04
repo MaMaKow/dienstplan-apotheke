@@ -21,6 +21,7 @@ package Selenium.installation;
 import Selenium.PropertyFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -49,7 +50,7 @@ public class InstallationPageDatabase {
     }
 
     public void fillForm() throws Exception {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("database_host")));
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
 
@@ -63,12 +64,13 @@ public class InstallationPageDatabase {
         PropertyFile propertyFile = new PropertyFile();
         String databaseUserName = propertyFile.getDatabaseUserName();
         String databasePassword = propertyFile.getDatabasePassword();
+        String databaseHostname = propertyFile.getDatabaseHostname();
         String databasePort = propertyFile.getDatabasePort();
         String databaseName = propertyFile.getDatabaseName();
 
         databaseHostFormElement.clear();
         //databaseHostFormElement.sendKeys("localhost");
-        Selenium.driver.Wrapper.CustomSendKeysIE(databaseHostFormElement, "localhost");
+        Selenium.driver.Wrapper.CustomSendKeysIE(databaseHostFormElement, databaseHostname);
         databasePortFormElement.clear();
         databasePortFormElement.sendKeys(databasePort);
         databaseUserFormElement.clear();
@@ -80,15 +82,18 @@ public class InstallationPageDatabase {
     }
 
     public InstallationPageAdministrator moveToAdminPage() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageDatabaseFormButtonBy));
         InstallationPageDatabaseFormButtonElement = driver.findElement(InstallationPageDatabaseFormButtonBy);
         try {
+            /**
+             * @todo: Replace sleep with some kind of wait!
+             */
             Thread.sleep(500);
         } catch (InterruptedException ex) {
             Logger.getLogger(InstallationPageDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         InstallationPageDatabaseFormButtonElement.click();
-        return new InstallationPageAdministrator();
+        return new InstallationPageAdministrator(driver);
     }
 }

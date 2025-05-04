@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class SaturdayListPage {
          * Dann sollten die bisherigen Elemente stale werden.
          * Allerdings nur, wenn year sich von dem vorherigen unterscheidet.
          * </p>
-         * WebDriverWait wait = new WebDriverWait(driver, 20);
+         * WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
          * wait.until(ExpectedConditions.stalenessOf(selectYearSelectElement));
          */
         Assert.assertEquals(getYear(), year);
@@ -160,7 +161,7 @@ public class SaturdayListPage {
      */
     public String getUserNameText() {
         // <h1>Hello userName</h1>
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
 
         return driver.findElement(user_name_spanBy).getText();

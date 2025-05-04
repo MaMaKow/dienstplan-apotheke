@@ -34,7 +34,12 @@ public class TestSaturdayListPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         /**
          * Go to page:
          */

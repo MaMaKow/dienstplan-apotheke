@@ -6,9 +6,7 @@ services:
   web:
     build: .
     ports:
-            #- "${WEB_PORT}:80"
-            #- "${SECURE_WEB_PORT}:443"
-      - "8443:443"
+          - "${SECURE_WEB_PORT}:443"
     depends_on:
       - db
     environment:
@@ -16,7 +14,8 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-
+  #This database does not need volumes. Data shall not be persisted.
+  #  Tests are carried out with fresh data on every run.
   db:
     image: mysql:8.4
     environment:
@@ -24,5 +23,4 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "${DB_PORT}:3306"
+    command: --general-log --general-log-file=/var/lib/mysql/general.log

@@ -18,22 +18,28 @@
  */
 package Selenium.administrationpages;
 
-import Selenium.TestPage;
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
-public class TestConfigurationPage extends TestPage {
+@Listeners(Selenium.Utilities.Listener.class)
+public class TestConfigurationPage extends Selenium.TestPage {
 
     @Test(enabled = true)
     public void testWriteConfiguration() {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception ex) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         /**
          * Go to page:
          */
@@ -41,9 +47,31 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Set locales
          */
-        configurationPage.setLocales("de_DE.utf8");
-        configurationPage.submitForm();
-        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        try {
+            configurationPage.setLocales("de_DE.utf8");
+            /**
+             * mailhog should sit on localhost in a docker container and wait
+             * for mails. mailhog does not require authentication. It will
+             * simply accept any mail. Make sure that your firewall prohibits
+             * access to the mailhog port (default: 1025)
+             *
+             */
+            configurationPage.setEmailMethod("smtp");
+            configurationPage.setEmailSmtpHost("localhost");
+            configurationPage.setEmailSmtpPort(1025);
+            configurationPage.setEmailSmtpUsername("foo_username");
+            configurationPage.setEmailSmtpPassphrase("foo_passphrase");
+
+            configurationPage.submitForm();
+            Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+            System.out.println("driver.getCurrentUrl()");
+            System.out.println(driver.getCurrentUrl());
+            System.out.println("driver.getPageSource()");
+            System.out.println(driver.getPageSource());
+            Assert.fail();
+        }
         /**
          * Set Name for Page
          */
@@ -51,7 +79,6 @@ public class TestConfigurationPage extends TestPage {
         configurationPage.setApplicationName(applicationName);
         configurationPage.submitForm();
         Assert.assertEquals(configurationPage.getApplicationName(), applicationName);
-
     }
 
     @Test(enabled = true, dependsOnMethods = {"testWriteConfiguration"})/*passed*/
@@ -59,7 +86,12 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         /**
          * Go to page:
          */
@@ -68,7 +100,7 @@ public class TestConfigurationPage extends TestPage {
          * Check the expected values:
          */
         Assert.assertEquals(configurationPage.getApplicationName(), "Selenium Test Plan");
-        Assert.assertEquals(configurationPage.getDatabaseName(), "pdrTest");
+        Assert.assertEquals(configurationPage.getDatabaseName(), propertyFile.getDatabaseName());
         /**
          * The password MUST NOT be visible!
          */
@@ -76,7 +108,7 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Contact email
          */
-        Assert.assertTrue(configurationPage.getContactEmail().contains("selenium@"));
+        Assert.assertEquals(configurationPage.getContactEmail(), propertyFile.getAdministratorEmail());
         /**
          * Language and encoding
          */
@@ -95,7 +127,7 @@ public class TestConfigurationPage extends TestPage {
         /**
          * Sending emails:
          */
-        Assert.assertEquals(configurationPage.getEmailMethod(), "mail");
+        Assert.assertEquals(configurationPage.getEmailMethod(), "smtp");
     }
 
 }

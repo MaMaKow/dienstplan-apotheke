@@ -18,11 +18,10 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LogCollector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -31,13 +30,12 @@ import org.openqa.selenium.WebElement;
  *
  * @author Mandelkow
  */
-public class AboutPage {
+public class AboutPage extends BasePage {
 
-    private WebDriver driver;
     private final By pdrVersionSpanBy = By.id("pdrVersionSpan");
 
-    public AboutPage() {
-        driver = Selenium.driver.Wrapper.getDriver();
+    public AboutPage(WebDriver driver) {
+        super(driver);
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToApplicationAbout);
     }
 
@@ -47,19 +45,31 @@ public class AboutPage {
         return pdrVersionSpanElement.getText();
     }
 
-    public String getVersionStingShould() {
+    public String getVersionStringShould() {
+        String[] command = {"git", "describe", "--abbrev=0", "--tags"};
         try {
-            String command = "git describe --abbrev=0 --tags";
-            Process process = Runtime.getRuntime().exec(command);
-            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = input.readLine()) != null) {
-                return line;
+            // Set working directory if necessary:
+            // ProcessBuilder builder = new ProcessBuilder(command).directory(new File("path/to/git/repo"));
+            ProcessBuilder builder = new ProcessBuilder(command);
+
+            LogCollector.debug("Starting git process");
+            Process process = builder.start();
+
+            // Wait for the process to complete before reading output
+            process.waitFor();
+
+            // Capture the output
+            try (BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line = input.readLine();
+                LogCollector.debug("Git version output: " + line);
+                return line;  // Expected version tag
             }
-        } catch (IOException ex) {
-            Logger.getLogger(TestAboutPage.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (IOException | InterruptedException ex) {
+            LogCollector.error("Error executing git command: " + ex.getMessage());
         }
+
+        LogCollector.debug("Returning null due to command failure");
         return null;
     }
-
 }

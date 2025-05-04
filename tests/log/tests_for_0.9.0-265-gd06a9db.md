@@ -90,7 +90,7 @@ These things should be done before merging changes into master:
       - Error: Duplicate ID svgimg.
       - Error: Duplicate ID work_box_0.
       - Error: Duplicate ID break_box_0.
-      - Error: Stray end tag div. </div><!--class='main-area no_print'-->
+      - Error: Stray end tag div. </div><!--class='main-area no-print'-->
     * roster-day-edit.php
       - Error: Bad value 0 for attribute colspan on element th: Zero is not a positive integer. From line 330, column 43; to line 330, column 56 title_tr><th colspan=0>Marien
       - Error: Unclosed element form. From line 615, column 51; to line 615, column 56 zeptur</p><form><input

@@ -86,7 +86,7 @@ class InstallUtility {
         if (empty(self::$errorMessages)) {
             return FALSE;
         }
-        $text_html = "<div id='error_message_div'>\n";
+        $text_html = "<div id='errorMessageDiv'>\n";
         foreach (self::$errorMessages as $errorMessage) {
             $text_html .= "<p>" . $errorMessage . "</p>\n";
         }

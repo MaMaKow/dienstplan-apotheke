@@ -28,7 +28,7 @@ namespace PDR\Input;
  */
 class PepUploadHandler {
 
-    public function handleFileUpload() {
+    public function handleFileUpload(): bool {
         $userDialog = new \user_dialog();
         $targetFile = PDR_FILE_SYSTEM_APPLICATION_PATH . 'upload/' . uniqid() . "_pep";
         $uploadFileName = basename($_FILES['file_to_upload']['name']);
@@ -51,9 +51,10 @@ class PepUploadHandler {
         $userDialog->add_message($message, E_USER_NOTICE);
         echo "<input hidden type=text id=filename value='upload/" . htmlspecialchars($_FILES["file_to_upload"]["name"]) . "'>\n";
         echo "<input hidden type=text id=targetfilename value='$targetFile'>\n";
+        return true;
     }
 
-    private function determineFileFormat(\user_dialog $userDialog) {
+    private function determineFileFormat(\user_dialog $userDialog): string {
         $uploadFileName = basename($_FILES['file_to_upload']['name']);
         $fileExtension = pathinfo($uploadFileName, PATHINFO_EXTENSION);
         if ($fileExtension == "asy") {
@@ -64,7 +65,7 @@ class PepUploadHandler {
             return "awinta";
         }
         if (str_contains($fileExtension, "ADG_")) {
-            if (FALSE === testFileContentPatternADG($_FILES["file_to_upload"]["tmp_name"])) {
+            if (FALSE === $this->testFileContentPatternADG($_FILES["file_to_upload"]["tmp_name"])) {
                 $userDialog->add_message(gettext('Sorry, your file does not have the correct format.'));
                 return FALSE;
             }
@@ -85,9 +86,9 @@ class PepUploadHandler {
      * @param type $file_name
      * @return boolean
      */
-    function testFileContentPatternAsys($fileName) {
+    function testFileContentPatternAsys($fileName): bool {
         $pattern = '/[0-3][0-9]\.[0-1][0-9]\.[0-9][0-9][0-9][0-9];[0-2][0-9]:[0-5][0-9];[0-9]*,[0-9][0-9];[0-9]*;[0-9]*;[0-9]*/';
-        $this->testFileContentPattern($fileName, $pattern);
+        return $this->testFileContentPattern($fileName, $pattern);
     }
 
     /**
@@ -97,9 +98,9 @@ class PepUploadHandler {
      * @param type $fileName
      * @return boolean
      */
-    function testFileContentPatternADG($fileName) {
+    function testFileContentPatternADG($fileName): bool {
         $pattern = '/[0-3][0-9]\.[0-1][0-9]\.[0-9][0-9][0-9][0-9];[0-2][0-9]:[0-5][0-9];[0-9]*\.[0-9][0-9];[0-9]*;[0-9]*;[0-9]*/';
-        $this->testFileContentPattern($fileName, $pattern);
+        return $this->testFileContentPattern($fileName, $pattern);
     }
 
     /**
@@ -109,7 +110,7 @@ class PepUploadHandler {
      * @param type $fileName
      * @return boolean
      */
-    function testFileContentPattern($fileName, $pattern) {
+    function testFileContentPattern($fileName, $pattern): bool {
         $handle = fopen($fileName, "r");
         if ($handle) {
             $numberOfMatches = 0;
@@ -140,7 +141,7 @@ class PepUploadHandler {
         }
     }
 
-    private function handleUploadErrors(\user_dialog $user_dialog) {
+    private function handleUploadErrors(\user_dialog $user_dialog): void {
         if (UPLOAD_ERR_OK != $_FILES['file_to_upload']['error']) {
             $user_dialog->add_message(gettext('There was an error while trying to upload the file.'));
             switch ($_FILES['file_to_upload']['error']) {
@@ -195,7 +196,6 @@ EOT;
                     $user_dialog->add_message($message, E_USER_NOTICE);
                     break;
             }
-            return FALSE;
         }
     }
 }

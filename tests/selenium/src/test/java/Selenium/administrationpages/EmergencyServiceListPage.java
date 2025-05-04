@@ -20,6 +20,7 @@ package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
 import Selenium.driver.Wrapper;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import org.openqa.selenium.Alert;
@@ -28,6 +29,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -42,7 +44,7 @@ public class EmergencyServiceListPage {
     By branchFormSelectBy = By.xpath("//*[@id=\"branch_form_select\"]");
     By selectYearSelectBy = By.xpath("//*[@id=\"select_year\"]/select");
     //By selectYearSelectBy = By.xpath("/html/body/form/select[@name='year']");
-    By emergencyRowListBy = By.xpath("//*[@id=\"emergency_service_table\"]/tbody/tr");
+    By emergencyRowListBy = By.xpath("//*[@id=\"emergencyServiceTable\"]/tbody/tr");
     //By emergencyRowListBy = By.xpath("/html/body/table/tbody/tr");
     By emergencyRowEmployeeSelectBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
 
@@ -53,7 +55,7 @@ public class EmergencyServiceListPage {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(MenuFragment.MenuLinkToEmergencyServiceList));
             MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToEmergencyServiceList);
@@ -67,6 +69,11 @@ public class EmergencyServiceListPage {
         WebElement selectYearSelectElement = driver.findElement(selectYearSelectBy);
         Select selectYearSelect = new Select(selectYearSelectElement);
         selectYearSelect.selectByVisibleText(yearString);
+    }
+
+    public void selectYear(int year) {
+        String yearString = String.valueOf(year);
+        selectYear(yearString);
     }
 
     public int getYear() {
@@ -168,10 +175,12 @@ public class EmergencyServiceListPage {
     }
 
     public EmergencyServiceListPage addLineForDate(LocalDate localDate) {
+        Actions actions = new Actions(driver);
         WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
-        //dateInputElement.sendKeys(localDate.format(DateTimeFormatter.ofPattern("dd.MM")));
+        actions.moveToElement(dateInputElement).perform();
         Wrapper.fillDateInput(dateInputElement, localDate);
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
+        actions.moveToElement(submitButton).perform();
         submitButton.click();
         return new EmergencyServiceListPage(driver);
     }
@@ -222,7 +231,7 @@ public class EmergencyServiceListPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
         WebElement userNameSpanElement;
         try {

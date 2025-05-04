@@ -31,8 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
 
 /**
  *
@@ -43,12 +44,15 @@ public class NetworkOfBranchOffices {
     private Map<Integer, Branch> listOfBranches;
 
     public NetworkOfBranchOffices() {
+        this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
         listOfBranches = readFromFile();
+
     }
 
     public Map<Integer, Branch> getListOfBranches() {
         return listOfBranches;
     }
+    public static Logger logger;
 
     public Branch getBranchById(int branchId) {
         if (0 == branchId && !listOfBranches.containsKey(0)) {
@@ -82,22 +86,22 @@ public class NetworkOfBranchOffices {
             // create a reader
             reader = Files.newBufferedReader(Paths.get("networkOfBranchOffices.json"));
             // convert JSON string to Branch object
-            ArrayList<Branch> branches = new Gson().fromJson(reader, new TypeToken<ArrayList<Branch>>() {
-            }.getType());
+            ArrayList<Branch> branches = new Gson()
+                    .fromJson(reader, new TypeToken<ArrayList<Branch>>() {
+                    }.getType());
             branches.forEach(branch -> {
                 listOfBranches.put(branch.getBranchId(), branch);
             });
-        } catch (IOException ex) {
-            Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException exception) {
+            logger.error(exception.getLocalizedMessage());
         } finally {
             try {
                 reader.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException exception) {
+                logger.error(exception.getLocalizedMessage());
             }
         }
         return listOfBranches;
-
     }
 
     private static void writeToFile() {
@@ -128,13 +132,13 @@ public class NetworkOfBranchOffices {
             // create a writer:
             writer = Files.newBufferedWriter(Paths.get("networkOfBranchOffices.json"));
             gson.toJson(listOfBranches, writer);
-        } catch (IOException ex) {
-            Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException exception) {
+            logger.error(exception.getLocalizedMessage());
         } finally {
             try {
                 writer.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException exception) {
+                logger.error(exception.getLocalizedMessage());
             }
         }
     }

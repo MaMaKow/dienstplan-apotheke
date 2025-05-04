@@ -30,18 +30,16 @@ clear;
 echo "We are in the directory"
 pwd
 echo "We are currently on the commit $current_version.";
-echo "major: $current_version_major";
-echo "minor: $current_version_minor";
-echo "patch: $current_version_patch";
 
 # Zeilennummern aus po-Datei entfernen
 # Pfad zur messages.po-Datei:
 po_file="./locale/de_DE/LC_MESSAGES/messages.po"
+mo_file="./locale/de_DE/LC_MESSAGES/messages.mo"
 # Verwende sed, um die Kommentare zu entfernen und die Datei zu überschreiben
-sed -i 's/\(#:[[:space:]]*.*:\)[0-9]*$/\1/' "$po_file"
-sed -i 's/\(#:[[:space:]]*[^0-9]*:\)[0-9]*/\1/' "$po_file"
+sed -i 's/#:[[:space:]]*.*:.*$//' "$po_file"
 echo "In Kommentaren wurden Zeilenangaben aus der $po_file-Datei entfernt."
 git add "$po_file"
+git add "$mo_file"
 
 # echo "Writting current state of the database structure into the src/sql/ folder";
 # php "tests\get-database-structure.php";
@@ -51,11 +49,18 @@ echo "Showing git status: ";
 git status;
 
 echo "Please review your changes above!";
-read -p "Ready to COMMIT? [y/n] " -N 1 decision_commit;
-if [ "y" != "$decision_commit" ] && [ "Y" != "$decision_commit" ]
-then
-    error_exit "You are not ready to commit yet.";
-fi
+while true; do
+    read -p "Ready to COMMIT? [y/n] " -n 1 decision_commit
+    echo # Move to a new line after user input
+
+    if [[ "$decision_commit" == "y" || "$decision_commit" == "Y" ]]; then
+        break
+    elif [[ "$decision_commit" == "n" || "$decision_commit" == "N" ]]; then
+        error_exit "You are not ready to commit yet."
+    else
+        echo "Invalid input. Please enter 'y' or 'n'."
+    fi
+done
 clear
 
 # Check if the current branch is one of the allowed branches for tagging:
@@ -127,12 +132,43 @@ else
     echo "Debug: No tagging on branch $current_branch"
 fi
 
+# Pull latest changes from remote to ensure the branch is up-to-date:
+echo "Pulling latest changes from remote..."
+if ! git merge origin "$current_branch"; then
+    error_exit "Merge from origin $current_branch failed. Please resolve conflicts manually or retry."
+fi
+echo "Pulling latest changes from remote..."
+if ! git merge origin master; then
+    error_exit "Merge from origin master failed. Please resolve conflicts manually or retry."
+fi
+
 git show -1
 git status
-read -p "Ready to PUSH changes and tags to remote? [y/n] " -N 1 decision_push;
-if [ "y" != "$decision_push" ] && [ "Y" != "$decision_push" ]
-then
-    error_exit "You are not ready to push yet.";
-fi
+while true; do
+    read -p "Ready to PUSH changes and tags to remote? [y/n] " -n 1 decision_push
+    echo # This is to move to a new line after the user input
+
+    if [[ "$decision_push" == "y" || "$decision_push" == "Y" ]]; then
+        break
+    elif [[ "$decision_push" == "n" || "$decision_push" == "N" ]]; then
+        error_exit "You are not ready to push yet."
+    else
+        echo "Invalid input. Please enter 'y' or 'n'."
+    fi
+done
 git push origin
 git push origin --tags
+
+while true; do
+    read -p "Is this branch ready for TESTING branch? [y/n] " -n 1 decision_testing
+    echo # This is to move to a new line after the user input
+
+    if [[ "$decision_testing" == "y" || "$decision_testing" == "Y" ]]; then
+        break
+    elif [[ "$decision_testing" == "n" || "$decision_testing" == "N" ]]; then
+        error_exit "Branch is not ready for testing yet."
+    else
+        echo "Invalid input. Please enter 'y' or 'n'."
+    fi
+done
+git push origin development:testing

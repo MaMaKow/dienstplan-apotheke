@@ -19,26 +19,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
-table#emergency_service_table {
+table#emergencyServiceTable {
     clear: left;
 }
-table#emergency_service_table tr th {
+table#emergencyServiceTable tr th {
     border-bottom: solid black 3px;
 }
-table#emergency_service_table tr td {
+table#emergencyServiceTable tr td {
     border-left: none;
     border-right: none;
     border-bottom: none;
 }
 
-table#emergency_service_table td.saturday {
+table#emergencyServiceTable td.saturday {
     font-weight: bold;
 }
-table#emergency_service_table td.sunday {
+table#emergencyServiceTable td.sunday {
     font-style: italic;
     font-weight: bold;
 }
-table#emergency_service_table td.holiday {
+table#emergencyServiceTable td.holiday {
     font-weight: normal;
     text-decoration: underline;
 }
@@ -47,14 +47,14 @@ table#emergency_service_table td.holiday {
  * Make the third column invisible on the screen:
  */
 @media screen {
-    table#emergency_service_table th.replacement_td {
+    table#emergencyServiceTable th.replacement-td {
         display: none;
     }
-    table#emergency_service_table td.replacement_td {
+    table#emergencyServiceTable td.replacement-td {
         border: none;
     }
     @media print {
-        table#emergency_service_table td.replacement_td {
+        table#emergencyServiceTable td.replacement-td {
             width: 10em;
         }
     }

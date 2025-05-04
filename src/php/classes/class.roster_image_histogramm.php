@@ -151,9 +151,9 @@ abstract class roster_image_histogramm {
         $max_height = max($max_work_load, $max_workforce);
         $height_factor = ($canvas_height - ($outer_margin_y * 2)) / $max_height;
 
-        $canvas_text = "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height' >\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
+        $canvas_text = "<canvas id='canvasHistogram' width='$canvas_width' height='$canvas_height' >\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
         $canvas_text .= "<script>\n";
-        $canvas_text .= "var c = document.getElementById('canvas_histogram');\n";
+        $canvas_text .= "var c = document.getElementById('canvasHistogram');\n";
         $canvas_text .= "var ctx = c.getContext('2d');\n";
 
         /*

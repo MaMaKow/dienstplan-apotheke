@@ -18,6 +18,7 @@
  */
 package Selenium.rest_api;
 
+import Selenium.Utilities.LogCollector;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class ApiHandler {
 
-    public static HttpResponse<String> sendPostRequest(String url, String payload) throws IOException, InterruptedException {
+    public static HttpResponse<String> sendPostRequestAsJson(String url, String payload) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -44,8 +45,21 @@ public class ApiHandler {
                 .POST(HttpRequest.BodyPublishers.ofString(payload))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response;
+    }
 
-        // Handle the response
+    public static HttpResponse<String> sendPostRequestAsForm(String url, String payload) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(payload))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        LogCollector.debug("POST request with payload: " + payload);
+        LogCollector.debug(request.uri().toString());
+        LogCollector.debug(response.body());
         return response;
     }
 
@@ -64,7 +78,7 @@ public class ApiHandler {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
-                .header("Authorization", accessToken)
+                .header("Authorization", "Bearer " + accessToken)
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

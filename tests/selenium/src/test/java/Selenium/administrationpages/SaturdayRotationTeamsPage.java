@@ -21,6 +21,7 @@ package Selenium.administrationpages;
 import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.rosterpages.Workforce;
+import java.time.Duration;
 import java.util.List;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,7 +138,7 @@ public class SaturdayRotationTeamsPage {
     }
 
     public void addEmployeeToTeam(int teamId, Employee employee) {
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
         WebElement teamRowElement = getTeamRowById(teamId);
         /**
          * Add another employee:
@@ -181,10 +182,10 @@ public class SaturdayRotationTeamsPage {
         WebElement addTeamLinkElement = driver.findElement(addTeamLinkBy);
         int numberOfTeamRowsBeforeClick = getNumberOfTeamRows(); // CAVE: Be aware, that this is one less, than the number of teamRowListBy
         addTeamLinkElement.click();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.numberOfElementsToBe(teamRowListBy, numberOfTeamRowsBeforeClick + 2));
 
-        By saturdayRotationTeamInputTableBy = By.xpath("//*[@id=\"saturday_rotation_team_input_table\"]");
+        By saturdayRotationTeamInputTableBy = By.xpath("//*[@id=\"saturdayRotationTeamInputTable\"]");
         WebElement saturdayRotationTeamInputTableElement = driver.findElement(saturdayRotationTeamInputTableBy);
         int newTeamId = Integer.valueOf(saturdayRotationTeamInputTableElement.getAttribute("data-max_team_id"));
         /**
@@ -230,7 +231,7 @@ public class SaturdayRotationTeamsPage {
      */
     public String getUserNameText() {
         // <h1>Hello userName</h1>
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
 
         return driver.findElement(user_name_spanBy).getText();

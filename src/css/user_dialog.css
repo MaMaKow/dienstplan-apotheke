@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
 */
 
-div#user_dialog_contact_form_div {
+div#userDialogContactFormDiv {
     display: none;
     position: fixed;
     left: 0;
@@ -33,7 +33,7 @@ div#user_dialog_contact_form_div {
     z-index: 99;
 }
 
-div#user_dialog_contact_form_div form#contact_form {
+div#userDialogContactFormDiv form#contact_form {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -41,16 +41,16 @@ div#user_dialog_contact_form_div form#contact_form {
 
 }
 
-div#user_dialog_contact_form_div form#contact_form textarea {
+div#userDialogContactFormDiv form#contact_form textarea {
     /*width: 320px;*/
     width: 50vw;
     height: 50vh;
 }
-div#user_dialog_contact_form_div form#contact_form p {
+div#userDialogContactFormDiv form#contact_form p {
     margin: auto;
 }
 
-div#user_dialog_contact_form_div #remove_form_div_span {
+div#userDialogContactFormDiv #removeFormDivSpan {
     font-size: xx-large;
     color: black;
     background-color: white;
@@ -60,7 +60,7 @@ div#user_dialog_contact_form_div #remove_form_div_span {
     top: 0;
     right: 0;
 }
-div#user_dialog_contact_form_div #remove_form_div_span:hover {
+div#userDialogContactFormDiv #removeFormDivSpan:hover {
     color: white;
     background-color: red;
 }

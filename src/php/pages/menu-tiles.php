@@ -19,21 +19,21 @@ require_once '../../../default.php';
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
-<nav id="nav_tiles" class="no_print">
-    <ul id="navigation_tiles">
+<nav id="navigationTiles" class="no-print">
+    <ul id="navigationListTiles">
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php title="<?= gettext('Week') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_view_week.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-week-table.php title="<?= gettext('Week') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_view_week.svg" class="image-tiles"></a>
         </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-read.php title="<?= gettext('Day') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_today-24px.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-read.php title="<?= gettext('Day') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_today-24px.svg" class="image-tiles"></a>
         </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-employee-table.php title="<?= gettext('Employee') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/employee_2.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-employee-table.php title="<?= gettext('Employee') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/employee_2.svg" class="image-tiles"></a>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-read.php title="<?= gettext('Overtime') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/watch_overtime.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-read.php title="<?= gettext('Overtime') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/watch_overtime.svg" class="image-tiles"></a>
         </li>
         <li>
-            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-read.php title="<?= gettext('Absence') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg" class="image_tiles"></a>
+            <a href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-read.php title="<?= gettext('Absence') ?>"><img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg" class="image-tiles"></a>
         </li>
     </ul>
 </nav>

@@ -235,7 +235,10 @@ class configurationManager {
          * The configuration file is cashed by PHP with OPcache.
          * Therefore we have to deelete the cache to make php read the changes.
          */
-        opcache_reset();
+        if (function_exists('\opcache_reset')) {
+            \opcache_reset();
+            error_log("Cleared the php cache via \opcache_reset().");
+        }
         return $new_config;
     }
 }

@@ -160,7 +160,7 @@ class Absence implements \JsonSerializable {
     }
 
     /**
-     * Get the user name of the user who created this absence.
+     * Get the username of the user who created this absence.
      * @return string
      */
     public function getUserName(): string {

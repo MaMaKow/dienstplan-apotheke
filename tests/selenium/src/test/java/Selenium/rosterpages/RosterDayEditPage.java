@@ -23,6 +23,7 @@ import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import Selenium.driver.Wrapper;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -45,8 +46,8 @@ import static org.testng.Assert.assertEquals;
  * - Im php code muss noch der Lesen button mit einer id belegt werden. Dann
  * kann man den Wechsel zwischen den Seiten auch testen. - Die Input Elemente
  * kann man per "name" raussuchen. Roster[1612998000][3][employee_key] - Im
- * user_dialog_container kann man die Fehler auslesen. - Der Button zum
- * roster_input_row_add_row_image hat noch keine id. roster_input_add_row_button
+ * user-dialog-container kann man die Fehler auslesen. - Der Button zum
+ * roster-input-row-add-row-image hat noch keine id. roster_input_add_row_button
  * wäre gut.
  * </p>
  */
@@ -62,7 +63,7 @@ public class RosterDayEditPage {
     private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
     //private final By buttonRosterInputAddRowBy = By.id("roster_input_add_row_button");
     private final By buttonRosterInputAddRowBy = By.xpath("//*[contains(@id, \'roster_input_row_add_row_target_\')]");
-    private final By tableRowListXpathBy = By.xpath("//*[@id=\"roster_form\"]/table/tbody/tr[@data-roster_row_iterator]");
+    private final By tableRowListXpathBy = By.xpath("//*[@id=\"rosterForm\"]/table/tbody/tr[@data-roster_row_iterator]");
 
     public RosterDayEditPage(WebDriver driver) {
         this.driver = driver;
@@ -82,7 +83,7 @@ public class RosterDayEditPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         return driver.findElement(userNameSpanBy).getText();
@@ -106,7 +107,7 @@ public class RosterDayEditPage {
         By dateChooserInputSendBy = By.xpath("/html/body/div[2]/div[3]/form/input[@name=\"tagesAuswahl\"]");
         WebElement dateChooserInputSendEement = driver.findElement(dateChooserInputSendBy);
         dateChooserInputSendEement.click();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(dateChooserInputBy));
         assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), getDateString());
     }
@@ -160,7 +161,7 @@ public class RosterDayEditPage {
          * Wir nutzen zwei By Variablen. Erst die tatsächlich gerade markierte
          * options finden. Dann parent elements finden.
          */
-        By rowXpathOptionBy = By.xpath("/html/body/div/form[@id=\"roster_form\"]/table/tbody/tr/td[@class=\"roster_input_row\"]/span/select/option[@selected and text()=\"" + employeeFullName + "\"]");
+        By rowXpathOptionBy = By.xpath("/html/body/div/form[@id=\"rosterForm\"]/table/tbody/tr/td[@class=\"roster_input_row\"]/span/select/option[@selected and text()=\"" + employeeFullName + "\"]");
 
         WebElement rosterTableRowOptionElement = driver.findElement(rowXpathOptionBy);
         By rowXpathBy = By.xpath("parent::select/parent::span/parent::td/parent::tr");
@@ -169,7 +170,7 @@ public class RosterDayEditPage {
     }
 
     private WebElement findLastRosterTableRow() {
-        By rowXpathBy = By.xpath("//*[@id=\"roster_form\"]/table/tbody/tr[@data-roster_row_iterator]");
+        By rowXpathBy = By.xpath("//*[@id=\"rosterForm\"]/table/tbody/tr[@data-roster_row_iterator]");
         List<WebElement> rosterTableRowElementList = driver.findElements(rowXpathBy);
         /**
          * Get the last element:
@@ -308,7 +309,7 @@ public class RosterDayEditPage {
              * nichts zu tun.</p>
              */
         }
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         WebElement rosterInputElement = findRosterInputComment(rosterTableRow);
@@ -329,7 +330,7 @@ public class RosterDayEditPage {
         WebElement buttonRosterInputAddRowElement = driver.findElement(buttonRosterInputAddRowBy);
         int numberOfRosterTableRowsBeforeClick = driver.findElements(tableRowListXpathBy).size();
         buttonRosterInputAddRowElement.click();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.numberOfElementsToBe(tableRowListXpathBy, numberOfRosterTableRowsBeforeClick + 1));
 
         WebElement rosterTableRow = findLastRosterTableRow();

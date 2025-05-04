@@ -23,11 +23,13 @@ import Selenium.RealData.RealNetworkOfBranchOffices;
 import java.util.HashMap;
 import org.testng.annotations.Test;
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestBranchAdministrationPage extends Selenium.TestPage {
 
     @Test(enabled = true, dependsOnMethods = {"testInstallation"})
@@ -35,7 +37,12 @@ public class TestBranchAdministrationPage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         BranchAdministrationPage branchAdministrationPage = new BranchAdministrationPage();
         HashMap<Integer, String[]> openingTimesMap = new HashMap<>();
         openingTimesMap.put(1, new String[]{"8:00", "18:00"});

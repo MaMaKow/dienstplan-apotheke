@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -51,6 +52,11 @@ public class UserManagementPage {
         userSelectElement.selectByValue(String.valueOf(user_key));
     }
 
+    public void goToUserByName(String userName) {
+        userSelectElement = new Select(driver.findElement(userSelectBy));
+        userSelectElement.selectByVisibleText(userName);
+    }
+
     private Select getUserKeySelect() {
         WebElement userKeyElement = driver.findElement(userSelectBy);
         Select userKeySelect = new Select(userKeyElement);
@@ -68,7 +74,7 @@ public class UserManagementPage {
     }
 
     public String getUserEmail() {
-        WebElement emailElement = driver.findElement(By.id("user_email"));
+        WebElement emailElement = driver.findElement(By.id("userEmail"));
         return emailElement.getAttribute("value");
     }
 
@@ -88,7 +94,7 @@ public class UserManagementPage {
     }
 
     private Select getUserStatusSelect() {
-        WebElement statusElement = driver.findElement(By.id("user_status"));
+        WebElement statusElement = driver.findElement(By.id("userStatus"));
         Select statusSelect = new Select(statusElement);
         return statusSelect;
     }
@@ -100,7 +106,7 @@ public class UserManagementPage {
 
     public Map<String, Boolean> getPrivileges() {
         Map<String, Boolean> privileges = new HashMap<>();
-        List<WebElement> privilegeElements = driver.findElements(By.xpath("//form[@id='user_management']/fieldset[@id='privilege_group']/input[@type='checkbox']"));
+        List<WebElement> privilegeElements = driver.findElements(By.xpath("//form[@id='user_management']/fieldset[@id='privilegeGroup']/input[@type='checkbox']"));
         for (WebElement privilegeElement : privilegeElements) {
             String privilegeName = privilegeElement.getAttribute("value");
             boolean hasPrivilege = privilegeElement.isSelected();
@@ -141,8 +147,10 @@ public class UserManagementPage {
             }
         }
     }
-    // Method to submit the form
 
+    /**
+     * Method to submit the form
+     */
     public void submitForm() {
         WebElement submitButton = driver.findElement(By.id("user_management_form_submit"));
         submitButton.click(); // Click the submit button to save the changes
@@ -154,7 +162,7 @@ public class UserManagementPage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(user_name_spanBy));
         return driver.findElement(user_name_spanBy).getText();
     }

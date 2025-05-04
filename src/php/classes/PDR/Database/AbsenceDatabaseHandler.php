@@ -43,6 +43,19 @@ class AbsenceDatabaseHandler {
      * @param string $userName
      */
     public static function insertAbsence(int $employeeKey, string $dateStartString, string $dateEndString, int $days, int $reasonId, string $comment, ?string $approval, string $userName): void {
+        /**
+         * @var int Maximum length for the comment field
+         */
+        $maxLength = 64;
+        /**
+         * Check the length of the comment and truncate if necessary:
+         */
+        if (mb_strlen($comment) > $maxLength) {
+            $comment = mb_substr($comment, 0, $maxLength);
+            $userDialog = new \user_dialog();
+            $message = sprintf(gettext('Comment was truncated. Maximum length is %1$s characters.'), $maxLength);
+            $userDialog->add_message($message, E_USER_WARNING);
+        }
         $sqlQuery = "INSERT INTO `absence` "
                 . "(employee_key, start, end, days, reason_id, comment, user, approval) "
                 . "VALUES (:employee_key, :start, :end, :days, :reason_id, :comment, :user, :approval)";

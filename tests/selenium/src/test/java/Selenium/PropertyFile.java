@@ -143,7 +143,6 @@ public class PropertyFile {
 
     public String getUrlPageTest() {
         String urlPageTest = getTestPageUrl();
-        //String urlPageTest = properties.getProperty("urlPageTest");
         if (null != urlPageTest) {
             return urlPageTest;
         }
@@ -166,6 +165,13 @@ public class PropertyFile {
         return null;
     }
 
+    public String getDatabaseHostname() {
+        String property = properties.getProperty("databaseHostname");
+        if (null != property) {
+            return property;
+        }
+        return "localhost";
+    }
     public String getDatabasePort() {
         String property = properties.getProperty("databasePort");
         if (null != property) {

@@ -70,7 +70,7 @@ class sessions {
          */
         session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
         session_start();
-        if (isset($_SESSION['number_of_times_redirected'])) {
+        if (!isset($_SESSION['number_of_times_redirected'])) {
             /**
              * @TODO: Check if this is correct!
              * <p lang=de>Sollte hier isset() oder !isset() stehen?
@@ -106,6 +106,13 @@ class sessions {
          */
         if ("localhost" != $http_host AND "" != $http_host) {
             self::force_https();
+        }
+        /**
+         * Create a token against cross site request forgery (csrf).
+         * This token can be used in forms to prevent csrf.
+         */
+        if (empty($_SESSION['csrfToken'])) {
+            $_SESSION['csrfToken'] = bin2hex(random_bytes(32));
         }
 
         /**
@@ -288,11 +295,13 @@ class sessions {
 
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
-                . sprintf(gettext('Dear %1$s,\r\n\r\n in order to set a new password for'), $user->user_name)
+                . sprintf(gettext('Dear %1$s,'), $user->user_name)
+                . \email::EMAIL_EOL . \email::EMAIL_EOL
+                . gettext('in order to set a new password for')
                 . " '"
                 . $application_name
                 . "' "
-                . gettext("user name") . ": " . $user->get_user_name() . ", "
+                . gettext("username") . ": " . $user->get_user_name() . ", "
                 . gettext("please visit")
                 . " <a href='"
                 . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"])
@@ -303,16 +312,10 @@ class sessions {
                 . ".</a>"
                 . gettext("Your token is valid for 24 hours.")
                 . "</BODY></HTML>");
-        $headers = 'From: ' . $config['contact_email'] . "\r\n";
-        $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "Content-Transfer-Encoding: quoted-printable";
 
-        /*
-         * TODO: Use PDR email class
-         */
-        $sent_result = mail($recipient, $message_subject, $message_text, $headers);
+        $recipient = $user->get_email();
+        $userDialogEmail = new user_dialog_email();
+        $sent_result = $userDialogEmail->send_email($recipient, $message_subject, $message_text);
         if ($sent_result) {
             $message = "A lost password email was successfully sent.";
             error_log($message);
@@ -324,7 +327,7 @@ class sessions {
 
     public function write_lost_password_token_to_database(user $user, $token) {
         if (!is_null($user) and !is_null($token)) {
-            $user_key = $user->user_key;
+            $user_key = $user->get_primary_key();
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
             $sql_query = "INSERT INTO `users_lost_password_token` (`user_key`, `token`) VALUES (:user_key, UNHEX(:token))";
             database_wrapper::instance()->run($sql_query, array('user_key' => $user_key, 'token' => $token));
@@ -386,14 +389,28 @@ class sessions {
     }
 
     public function verifyAccessToken() {
+        $token = "";
+        $headers = getallheaders();
         /**
-         * @todo Will this apache_request_headers() work with nginx? Probably not.
+         * Test if  Authorization-Header exists
          */
-        $headers = apache_request_headers();
-        $token = $headers["Authorization"];
+        if (!isset($headers['Authorization']) || empty($headers['Authorization'])) {
+            header('Content-Type: application/json', true, 401);
+            echo json_encode(['error' => 'Authorization token missing']);
+            exit;
+        }
+        $authorizationHeader = $headers["Authorization"];
+        if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
+            error_log("We have a request with bearer token.");
+            //PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
+            $token = $matches[1];
+        } else {
+            echo json_encode(['error' => 'Authorization without Bearer token']);
+            exit;
+        }
         try {
             /**
-             *  Use a library or method to decode and verify the token with the secret key
+             *  Method to decode and verify the token with the secret key
              */
             $decodedToken = $this->jwtDecode($token);
 
@@ -422,7 +439,6 @@ class sessions {
         $configuration = new PDR\Application\configuration();
         $secretKey = $configuration->getSecretKey();
         $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey);
-
         /**
          *  Token creation
          */

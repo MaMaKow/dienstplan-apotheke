@@ -39,7 +39,12 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
 
         Map<Integer, Employee> listOfEmployeesMap = workforce.getListOfEmployees();
@@ -82,7 +87,12 @@ public class TestWorkforceManagementPage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
 
         /**

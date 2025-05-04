@@ -48,7 +48,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 echo form_element_builder::build_html_select_month($month_number);
 echo form_element_builder::build_html_select_year($year);
 ?>
-<TABLE class="table_with_border">
+<TABLE class="table-with-border">
     <TR>
         <TD>Name</TD>
         <TD>Von</TD>

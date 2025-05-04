@@ -77,6 +77,12 @@ class TestHtaccess {
             ],
         ]);
         $responseArray = get_headers($url, 0, $context);
+	if ($responseArray === false) {
+            $error_message = "Failed to open stream for URL: $url. Connection refused or URL is incorrect.";
+            $user_dialog->add_message($error_message, E_USER_WARNING, true);
+            return FALSE;
+        }
+
         $response = $responseArray[0];
         $responseCode = substr($response, strpos($response, " "), (strrpos($response, " ") - strpos($response, " ")));
         if (200 == $responseCode) {

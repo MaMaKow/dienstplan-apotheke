@@ -18,10 +18,34 @@
  */
 package Selenium.overtimepages;
 
-import Selenium.TestPage;
+import Selenium.Employee;
+import Selenium.HomePage;
+import Selenium.LogoutPage;
 import Selenium.Overtime;
+import Selenium.PropertyFile;
+import Selenium.User;
+import Selenium.UserRegistry;
+import Selenium.Utilities.EmailParser;
+import Selenium.Utilities.LogCollector;
+import Selenium.rest_api.ApiHandler;
+import Selenium.signin.SignInPage;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
@@ -32,40 +56,66 @@ import org.testng.annotations.Test;
  *
  * @author Martin Mandelkow <netbeans@martin-mandelkow.de>
  */
-public class TestOvertimeEmployeePage extends TestPage {
+@Listeners(Selenium.Utilities.Listener.class)
+public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = true)
     public void testDisplay() {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            LogCollector.error("Sign in failed.");
+            Assert.fail();
+        }
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
 
         /**
          * Move to specific year:
          */
-        LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 2);
-        LocalDate localDate1 = LocalDate.of(2019, Month.MARCH, 3);
-        LocalDate localDate2 = LocalDate.of(2019, Month.JULY, 5);
-        LocalDate localDate3 = LocalDate.of(2019, Month.DECEMBER, 24);
+        LocalDate localDate0 = LocalDate.of(2024, Month.JANUARY, 2);
+        LocalDate localDate1 = LocalDate.of(2024, Month.MARCH, 3);
+        LocalDate localDate2 = LocalDate.of(2024, Month.JULY, 5);
+        LocalDate localDate3 = LocalDate.of(2024, Month.DECEMBER, 24);
+
+        Employee employee = workforce.getEmployeeByFullName("Franziska Hartmann");
         overtimeEmployeePage.selectYear(localDate0.getYear());
-        overtimeEmployeePage.selectEmployee(7);
+        overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
         /**
          * Create new overtime:
          */
-        overtimeEmployeePage.addNewOvertime(localDate0, 8, "Foo");
-        overtimeEmployeePage.addNewOvertime(localDate1, 0.5f, "FloatFoo");
-        overtimeEmployeePage.addNewOvertime(localDate2, -8, "NoFoo");
-        overtimeEmployeePage.addNewOvertime(localDate3, 1, "Bar");
-        overtimeEmployeePage.addNewOvertime(localDate3, 99, "Error"); //Should not get inserted
+        overtimeEmployeePage.addNewOvertime(localDate0, 8, "Foo" + employee.getFullName());
+        overtimeEmployeePage.addNewOvertime(localDate1, 0.5f, "FloatFoo" + employee.getFullName());
+        overtimeEmployeePage.addNewOvertime(localDate2, -8, "NoFoo" + employee.getFullName());
+        overtimeEmployeePage.addNewOvertime(localDate3, 1, "Bar" + employee.getFullName());
+        overtimeEmployeePage.addNewOvertime(localDate3, 99, "Error" + employee.getFullName()); //Should not get inserted
         /**
          * Find the newly created overtime:
          */
-        Overtime overtime = overtimeEmployeePage.getOvertimeByCalendar(localDate3);
-        softAssert.assertEquals(overtime.getBalance(), (float) 1.5f);
-        softAssert.assertEquals(overtime.getHours(), (float) 1.0f);
-        softAssert.assertEquals(overtime.getReason(), "Bar");
+        Overtime overtime;
+        try {
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate0);
+            softAssert.assertEquals(overtime.getBalance(), (float) 8f);
+            softAssert.assertEquals(overtime.getHours(), (float) 8f);
+            softAssert.assertEquals(overtime.getReason(), "Foo" + employee.getFullName());
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate1);
+            softAssert.assertEquals(overtime.getBalance(), (float) 8.5f);
+            softAssert.assertEquals(overtime.getHours(), (float) 0.5f);
+            softAssert.assertEquals(overtime.getReason(), "FloatFoo" + employee.getFullName());
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate2);
+            softAssert.assertEquals(overtime.getBalance(), (float) 0.5f);
+            softAssert.assertEquals(overtime.getHours(), (float) -8.0f);
+            softAssert.assertEquals(overtime.getReason(), "NoFoo" + employee.getFullName());
+            overtime = overtimeEmployeePage.getOvertimeByLocalDate(localDate3);
+            softAssert.assertEquals(overtime.getBalance(), (float) 1.5f);
+            softAssert.assertEquals(overtime.getHours(), (float) 1.0f);
+            softAssert.assertEquals(overtime.getReason(), "Bar" + employee.getFullName());
+        } catch (Exception exception) {
+            LogCollector.error(exception.getMessage());
+            Assert.fail();
+        }
         /**
          * remove the created overtime:
          */
@@ -75,4 +125,397 @@ public class TestOvertimeEmployeePage extends TestPage {
         overtimeEmployeePage.removeOvertimeByLocalDate(localDate3);
         softAssert.assertAll();
     }
+
+    @Test(dependsOnMethods = {"testDisplay"})
+    public void testDeleteBySimpleUser() throws IOException {
+        LogCollector.debug("testDeleteBySimpleUser");
+        LogoutPage logoutPage = new LogoutPage();
+        logoutPage.logout();
+        UserRegistry userRegistry = new UserRegistry();
+        User employeeUser = userRegistry.getUserByName("EmployeeUser");
+        SignInPage signInPage = new SignInPage(driver);
+        try {
+            HomePage menuPage = signInPage.loginValidUser(employeeUser.getUserName(), employeeUser.getPassphrase());
+            Assert.assertEquals(menuPage.getUserNameText(), employeeUser.getUserName());
+        } catch (Exception exception) {
+            LogCollector.error("Sign in failed.");
+            Assert.fail();
+        }
+
+        OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
+        LocalDate localDate = LocalDate.of(2020, Month.NOVEMBER, 24);// Tuesday 24.11.2020
+        overtimeEmployeePage.selectYear(localDate.getYear());
+        Employee employee = workforce.getEmployeeByFullName("Elisabeth Lehmann");
+        overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
+        /**
+         * Create new overtime:
+         */
+        overtimeEmployeePage.addNewOvertime(localDate, 8, "Foo " + employee.getFullName());
+        overtimeEmployeePage.removeOvertimeByLocalDate(localDate);
+        Assert.assertThrows(Exception.class,
+                () -> {
+                    /**
+                     * There should not be an overtime left on that date.
+                     */
+                    overtimeEmployeePage.getOvertimeByLocalDate(localDate);
+                });
+
+        logoutPage = new LogoutPage();
+        logoutPage.logout();
+
+        /**
+         * @todo Now test if there has been an email to the administrator about
+         * deleted overtimes. Make sure, that selenium_test_user does not have
+         * admin privileges. Or use a less privileged user to make the
+         * deletions.
+         */
+        // Fetch emails from MailHog API or Mailtrap API
+        String mailHogApiUrl = "http://localhost:8025/api/v2/messages";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(mailHogApiUrl);
+            String responseBody = EntityUtils.toString(httpClient.execute(request).getEntity());
+            LogCollector.debug(responseBody);
+            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+            JsonArray listOfEmails = jsonObject.get("items").getAsJsonArray();
+            LogCollector.info("List of emails:");
+            for (JsonElement currentEmail : listOfEmails) {
+                EmailParser emailParser = new EmailParser(currentEmail.toString());
+                String subject = emailParser.getSubject();
+                LogCollector.info("Subject: " + subject);
+                if (null == subject || subject.isEmpty()) {
+                    LogCollector.warn("Subject is missing or null in email");
+                    continue;
+                }
+                if (!"PDR: Ein Überstundeneintrag wurde gelöscht.".equals(subject)) {
+                    continue;
+                }
+                String base64Body = jsonObject.get("items").getAsJsonArray()
+                        .get(0).getAsJsonObject()
+                        .get("Content").getAsJsonObject()
+                        .get("Body").getAsString();
+                // Remove all line breaks and spaces from the Base64 string
+                base64Body = base64Body.replaceAll("\\s+", "");  // This will remove spaces, tabs, and line breaks
+                byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
+                String decodedBody = new String(decodedBytes, StandardCharsets.UTF_8);
+
+                /**
+                 * Assert that the decoded email body contains expected content
+                 */
+                LogCollector.debug(decodedBody);
+                // Split the email content into lines
+                String[] emailLines = decodedBody.split("\\r?\\n");
+                // Expected content for each line
+                String[] expectedLines = {
+                    "Der Account EmployeeUser hat folgenden Überstundeneintrag gelöscht:",
+                    "Mitarbeitende: " + employee.getFullName(),
+                    "Datum: 24.11.2020",
+                    "Stunden: 8",
+                    "Grund: Foo" + " " + employee.getFullName()
+                };
+                // Ensure the email contains the correct number of lines
+                softAssert.assertEquals(emailLines.length, expectedLines.length, "Unexpected number of lines in the email.");
+
+                // Compare each line
+                for (int i = 0; i < expectedLines.length; i++) {
+                    softAssert.assertEquals(emailLines[i].trim(), expectedLines[i], "Mismatch at line " + (i + 1) + " = " + emailLines[i]);
+                }
+                softAssert.assertAll();
+            }
+        }
+
+    }
+
+    @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser"})
+    public void testEditBySimpleUser() throws IOException {
+        LogCollector.debug("testEditBySimpleUser");
+        LogoutPage logoutPage = new LogoutPage();
+        logoutPage.logout();
+        UserRegistry userRegistry = new UserRegistry();
+        User employeeUser = userRegistry.getUserByName("EmployeeUser");
+        SignInPage signInPage = new SignInPage(driver);
+        try {
+            HomePage menuPage = signInPage.loginValidUser(employeeUser.getUserName(), employeeUser.getPassphrase());
+            Assert.assertEquals(menuPage.getUserNameText(), employeeUser.getUserName());
+        } catch (Exception exception) {
+            LogCollector.error("Sign in failed.");
+            Assert.fail();
+        }
+
+        OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
+        LocalDate localDate = LocalDate.of(2020, Month.NOVEMBER, 25);// Wednesday 25.11.2020
+        overtimeEmployeePage.selectYear(localDate.getYear());
+        Employee employee = workforce.getEmployeeByFullName("Albert Krüger");
+        overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
+
+        /**
+         * Create new overtime:
+         */
+        LocalDate dateNew = LocalDate.of(2020, Month.NOVEMBER, 26);
+        float hoursNew = -6;
+        String reasonNew = "Baz";
+        LogCollector.debug("addNewOvertime");
+        overtimeEmployeePage.addNewOvertime(localDate, 7, "Bar");
+        try {
+            //driver.navigate().refresh();
+            //overtimeEmployeePage.selectYear(2020);
+            overtimeEmployeePage.selectYear(2024);
+            overtimeEmployeePage.getOvertimeByLocalDate(localDate);
+            //Thread.sleep(1000);
+            LogCollector.error("Der Eintrag wurde gefunden.");
+        } catch (Exception ex) {
+            LogCollector.error("Der Eintrag wurde nicht erstellt.");
+        }
+        LogCollector.debug("before editOvertimeByLocalDate");
+        overtimeEmployeePage.editOvertimeByLocalDate(localDate, dateNew, hoursNew, reasonNew);
+        LogCollector.debug("after editOvertimeByLocalDate");
+
+        /**
+         * Now test if there has been an email to the administrator about
+         * deleted overtimes.
+         */
+        // Fetch emails from MailHog API or Mailtrap API
+        String mailHogApiUrl = "http://localhost:8025/api/v2/messages";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(mailHogApiUrl);
+            String responseBody = EntityUtils.toString(httpClient.execute(request).getEntity());
+            JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+            String base64Body = jsonObject.get("items").getAsJsonArray()
+                    .get(0).getAsJsonObject()
+                    .get("Content").getAsJsonObject()
+                    .get("Body").getAsString();
+            // Remove all line breaks and spaces from the Base64 string
+            base64Body = base64Body.replaceAll("\\s+", "");  // This will remove spaces, tabs, and line breaks
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
+            String decodedBody = new String(decodedBytes, StandardCharsets.UTF_8);
+
+            /**
+             * Before Assertions, remove the overtime entry:
+             */
+            overtimeEmployeePage.removeOvertimeByLocalDate(dateNew);
+            logoutPage = new LogoutPage();
+            logoutPage.logout();
+
+            /**
+             * Assert that the decoded email body contains expected content
+             */
+            //LogCollector.debug(decodedBody);
+            String[] emailLines = decodedBody.split("\\r?\\n");
+            // Expected content for each line
+            String[] expectedLines = {"Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
+                "Mitarbeitende: Albert Krüger",
+                "Datum: 25.11.2020",
+                "Stunden: 7",
+                "Grund: Bar",
+                "",
+                "zu den neuen Werten:",
+                "Datum: 26.11.2020",
+                "Stunden: -6",
+                "Grund: Baz"};
+            // Compare each line
+            for (int i = 0; i < expectedLines.length; i++) {
+                softAssert.assertEquals(emailLines[i].trim(), expectedLines[i], "Mismatch at line " + (i + 1) + " = " + emailLines[i]);
+            }
+            softAssert.assertAll();
+        }
+    }
+
+    /**
+     * Ich möchte einen edge-case testen.
+     * Das Problem: Alte Überstundeneinträge werden nach 3 Jahren gelöscht.
+     * So kann ein Überstundeneintrag folgende Daten besitzen:
+     * employee=25; date=01.01.2020; Stunden=1,5; Saldo=35
+     * Der Saldo ergibt sich aus der Summe von Einträgen, die vor dem 01.01.2020 lagen.
+     * Diese Einträge sind aber ab dem 01.01.2024 nicht mehr verfügbar.
+     *
+     * Der Fehler: Dabei kam es zu fehlerhafter Berechnung der Saldo Stunden.
+     * Alle Stunden vor dem Löschdatum wurden einfach ignoriert. Der Saldo begann bei 0.
+     *
+     * Das Löschen findet erst beim Login statt. Es findet beim login aber auch nur statt,
+     * wenn es nicht bereits einmal innerhalb von 24 Stunden ausgelöst wurde.
+     * Der Test muss also sicherstellen, dass Daten aus der Vergangenheit gelöscht werden.
+     * Dann kann getestet werden, ob der Saldo korrekt erfasst und berechnet wird.
+     */
+    @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser", "testEditBySimpleUser"}, enabled = true)
+    //@Test(dependsOnMethods = {}, enabled = true)
+    public void testRecalculateBalances() throws IOException, Exception {
+        /**
+         * Zunächst brauchen wir einen Mitarbeiter, der bereits im Jahr 2019 oder früher existiert hat:
+         * z.B. Alexandra Probst (Pharmazieingenieur)
+         */
+        String employeeFullName = "Alexandra Probst";
+        Employee employee = workforce.getEmployeeByFullName(employeeFullName);
+        /**
+         * Sign in:
+         */
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            LogCollector.error("Sign in failed.");
+            Assert.fail();
+        }
+        OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
+
+        /**
+         * Move to specific year:
+         */
+        LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 3);
+        LocalDate localDate1 = LocalDate.of(2019, Month.MARCH, 3);
+        LocalDate localDate2 = LocalDate.of(2019, Month.JULY, 5);
+        LocalDate localDate3 = LocalDate.of(2019, Month.DECEMBER, 1);
+        LocalDate localDate4 = LocalDate.of(2020, Month.DECEMBER, 1);
+        LocalDate localDate5 = LocalDate.of(2022, Month.DECEMBER, 1);
+        LocalDate localDate6 = LocalDate.of(2023, Month.DECEMBER, 1);
+        LocalDate localDate7 = LocalDate.of(2024, Month.DECEMBER, 1);
+        LocalDate localDate8 = LocalDate.of(2024, Month.DECEMBER, 27);
+
+        overtimeEmployeePage.selectYearTry(localDate0.getYear());
+        overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
+        /**
+         * Create new overtime:
+         */
+        Overtime foundOvertime;
+        overtimeEmployeePage.addNewOvertime(localDate0, 8, "Foo0" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate0);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 8f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 8f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo0" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate1, 0.5f, "Foo1" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate1);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 8.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 0.5f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo1" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate2, 2, "Foo2" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate2);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 10.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 2f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo2" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate3, 1, "Foo3" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate3);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 11.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 1);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo3" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate4, 6, "Foo4" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate4);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 17.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 6f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo4" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate5, 7, "Foo5" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate5);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 24.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 7f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo5" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate6, 8, "Foo6" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate6);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 32.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 8f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo6" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate7, 9, "Foo7" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate7);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 41.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 9f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo7" + employee.getFullName());
+
+        overtimeEmployeePage.addNewOvertime(localDate8, 10, "Foo8" + employee.getFullName());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate8);
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 51.5f);
+        Assert.assertEquals(foundOvertime.getHours(), (float) 10f);
+        Assert.assertEquals(foundOvertime.getReason(), "Foo8" + employee.getFullName());
+
+        /*
+
+         */
+        /**
+         * Jetzt müssen wir eine maintenance triggern.
+         * Anschließend müssen wir zwei Dinge testen:
+         * 1. Die alten Überstundeneinträge aus 2019 sind gelöscht.
+         * 2. Die neuen Überstundeneinträge haben den korrekten Saldo.
+         */
+        LogoutPage logoutPage = new LogoutPage();
+        SignInPage signInPage = logoutPage.logout();
+        try {
+            super.signIn();
+            /**
+             * Beim Login wird die maintenance Klasse aufgerufen.
+             * Ob aber tatsächlich aufgeräumt wird, hängt davon ab,
+             * ob in den vergangenen 24 Stunden bereits einmal aufgeräumt wurde.
+             * Daher rufen wir manuell die background_maintenance.php auf
+             * und verwenden dabei forceMaintenance = true
+             */
+        } catch (Exception exception) {
+            LogCollector.error("Sign in failed.");
+            Assert.fail();
+        }
+        propertyFile = new PropertyFile();
+        String testPageUrl = propertyFile.getTestPageUrl();
+        String payload = "forceMaintenance=true";
+        String maintenanceEndpoint = testPageUrl + "src/php/background_maintenance.php";
+        HttpResponse<String> response = ApiHandler.sendPostRequestAsForm(maintenanceEndpoint, payload);
+        LogCollector.debug(response.body());
+        if (response.body().contains("Done with background maintenance.")) {
+            LogCollector.info("Maintenence is done.");
+        }
+        overtimeEmployeePage = new OvertimeEmployeePage(driver);
+        overtimeEmployeePage.selectYearTry(localDate0.getYear());
+        overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
+        try {
+            foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate0);
+            softAssert.assertTrue(false, "Einträge im Jahr 2019 sollten nicht mehr gefunden werden.");
+            LogCollector.error(foundOvertime.getLocalDate().format(DateTimeFormatter.ISO_DATE));
+            LogCollector.error(String.valueOf(foundOvertime.getBalance()));
+            LogCollector.error(foundOvertime.getReason());
+            Assert.fail("Einträge im Jahr 2019 sollten nicht mehr gefunden werden.");
+        } catch (Exception exception) {
+            /**
+             * Wir sollten direkt nach dem getOvertimeByLocalDate() hier landen.
+             * Denn der Eintrag sollte nicht mehr existieren.
+             * Somit schlägt die Suche fehl.
+             */
+            softAssert.assertTrue(true);
+            Assert.assertTrue(true);
+        }
+        //try {
+        /**
+         * Obwohl die alten Überstundeneinträge gelöscht wurden,
+         * sollte der Saldo hier korrekt sein.
+         */
+        overtimeEmployeePage.selectYearTry(localDate8.getYear());
+        overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
+        foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate8);
+        softAssert.assertEquals(foundOvertime.getBalance(), (float) 51.5f, "Balance did not match");
+        Assert.assertEquals(foundOvertime.getBalance(), (float) 51.5f, "Balance did not match");
+        softAssert.assertEquals(foundOvertime.getHours(), (float) 10f, "Current Hours did not match");
+        Assert.assertEquals(foundOvertime.getHours(), (float) 10f, "Current Hours did not match");
+        softAssert.assertEquals(foundOvertime.getReason(), "Foo8" + employee.getFullName(), "Reason did not match");
+        Assert.assertEquals(foundOvertime.getReason(), "Foo8" + employee.getFullName(), "Reason did not match");
+        /**
+         * remove the created overtime:
+         */
+        for (int i = 0; i <= 8; i++) {
+            try {
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate8);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate7);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate6);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate5);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate3);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate4);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate2);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate1);
+                overtimeEmployeePage.removeOvertimeByLocalDate(localDate0);
+            } catch (Exception e) {
+                /**
+                 * Some of these entries might not exist anymore.
+                 * That does not matter. We are just cleaning up.
+                 */
+            }
+        }
+        softAssert.assertAll();
+    }
+
 }

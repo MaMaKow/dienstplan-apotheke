@@ -20,16 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Mandelkow
 */
 
-.install_info_postive{
+.install-info-postive{
     color: green;
     margin-left: 2em;
 }
-.install_info_negative{
+.install-info-negative{
     color: red;
     margin-left: 2em;
 }
 
-pre.install_cli {
+pre.install-cli {
     overflow: auto;
     padding: 1em;
     color: black;
@@ -37,6 +37,6 @@ pre.install_cli {
     border: 1px solid #000000;
     border-radius: 3px;
 }
-div#error_message_div{
+div#errorMessageDiv{
     color: red;
 }

@@ -18,6 +18,7 @@
  */
 package Selenium.signin;
 
+import org.testng.Assert;
 import Selenium.TestPage;
 import org.testng.annotations.Test;
 
@@ -29,6 +30,11 @@ public class TestLogin extends TestPage {
 
     @Test(enabled = true)/*passed*/
     public void testLogin() {
+        try {
         super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
     }
 }

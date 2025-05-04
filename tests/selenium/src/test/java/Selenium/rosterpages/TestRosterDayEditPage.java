@@ -47,7 +47,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
         /**
          * Move to specific date and go foreward and backward from there:
@@ -67,7 +72,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         /**
@@ -98,14 +108,27 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         Roster roster = new Roster();
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (Map.Entry<LocalDate, HashMap> listOfRosterDaysEntrySet : listOfRosterDays.entrySet()) {
             LocalDate localDate = listOfRosterDaysEntrySet.getKey();
-            rosterDayEditPage.goToDate(localDate);
+            try {
+                rosterDayEditPage.goToDate(localDate);
+            } catch (Exception exception) {
+                System.out.println("driver.getCurrentUrl()");
+                System.out.println(driver.getCurrentUrl());
+                System.out.println("driver.getPageSource()");
+                System.out.println(driver.getPageSource());
+                throw exception;
+            }
             assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString());
             HashMap<Integer, RosterItem> listOfRosterItems = listOfRosterDaysEntrySet.getValue();
             listOfRosterItems.values().forEach(rosterItem -> {
@@ -121,7 +144,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         int numberOfEditsMax = 5;
@@ -175,7 +203,12 @@ public class TestRosterDayEditPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         Roster roster = new Roster();

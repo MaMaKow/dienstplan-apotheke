@@ -113,12 +113,12 @@ public class AbsenceMonthPage {
          * Cicking on the dayParagraphElement will open a form. This form is
          * requested from the server via XMLHttpRequest()
          */
-        By absenceFormEmployeeKeyBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[1]/select[@id=\"employee_key_select\"]");
-        By absenceFormStartIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[2]/input[@id=\"input_box_form_start_date\"]");
-        By absenceFormEndIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[3]/input[@id=\"input_box_form_end_date\"]");
-        By absenceFormReasonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[4]/select[@id=\"absence_reason_input_select\"]");
-        By absenceFormCommentIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[5]/input[@id=\"input_box_form_comment\"]");
-        By absenceFormSubmitButtonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[6]/button");
+        By absenceFormEmployeeKeyBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[1]/select[@id=\"employeeKeySelect\"]");
+        By absenceFormStartIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[2]/input[@id=\"input_box_form_start_date\"]");
+        By absenceFormEndIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[3]/input[@id=\"input_box_form_end_date\"]");
+        By absenceFormReasonIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[4]/select[@id=\"absenceReasonInputSelect\"]");
+        By absenceFormCommentIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[5]/input[@id=\"inputBoxFormComment\"]");
+        By absenceFormSubmitButtonIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[6]/button");
         Select absenceFormEmployeeKeyElement = (Select) driver.findElement(absenceFormEmployeeKeyBy);
         WebElement absenceFormStartIdElement = driver.findElement(absenceFormStartIdBy);
         WebElement absenceFormEndIdElement = driver.findElement(absenceFormEndIdBy);
@@ -154,12 +154,12 @@ public class AbsenceMonthPage {
              * Cicking on the dayParagraphElement will open a form. This form is
              * requested from the server via XMLHttpRequest()
              */
-            By absenceFormEmployeeKeyBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[1]/select[@id=\"employee_key_select\"]");
-            By absenceFormStartIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[2]/input[@id=\"input_box_form_start_date\"]");
-            By absenceFormEndIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[3]/input[@id=\"input_box_form_end_date\"]");
-            By absenceFormReasonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[4]/select[@id=\"absence_reason_input_select\"]");
-            By absenceFormCommentIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[5]/input[@id=\"input_box_form_comment\"]");
-            By absenceFormSubmitButtonIdBy = By.xpath("/html/body/div[3]/form[@id=\"input_box_form\"]/p[6]/button");
+            By absenceFormEmployeeKeyBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[1]/select[@id=\"employeeKeySelect\"]");
+            By absenceFormStartIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[2]/input[@id=\"input_box_form_start_date\"]");
+            By absenceFormEndIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[3]/input[@id=\"input_box_form_end_date\"]");
+            By absenceFormReasonIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[4]/select[@id=\"absenceReasonInputSelect\"]");
+            By absenceFormCommentIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[5]/input[@id=\"inputBoxFormComment\"]");
+            By absenceFormSubmitButtonIdBy = By.xpath("/html/body/div[3]/form[@id=\"inputBoxForm\"]/p[6]/button");
             Select absenceFormEmployeeKeyElement = (Select) driver.findElement(absenceFormEmployeeKeyBy);
             WebElement absenceFormStartIdElement = driver.findElement(absenceFormStartIdBy);
             WebElement absenceFormEndIdElement = driver.findElement(absenceFormEndIdBy);

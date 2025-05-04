@@ -90,6 +90,7 @@ tests/selenium/.project
 tests/selenium/.classpath
 tests/selenium/test-output/
 tests/selenium/failed_test_page.html
+tests/selenium/test-result
 .project
 /scripts/mockup-database.sh
 # Docker secrets

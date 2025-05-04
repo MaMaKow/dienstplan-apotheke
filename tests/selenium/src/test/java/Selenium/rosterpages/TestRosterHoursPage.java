@@ -44,23 +44,27 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
 
         /**
          * Move to specific month:
          */
-        Optional<Employee> firstEmployeeOptional = workforce.getListOfEmployees().values().stream().findFirst();
-        if (firstEmployeeOptional.isEmpty()) {
-            throw new Exception("No employee was found in the workforce. There has to be at least one employee!");
-        }
-        String firstEmployeeFullName = firstEmployeeOptional.get().getFullName();
+        Employee employee = workforce.getEmployeeByFullName("Alexandra Probst");
+        String someEmployeeFullName = employee.getFullName();
         rosterHoursPage.selectMonth("Juni");
         rosterHoursPage.selectYear("2020");
-        rosterHoursPage.selectEmployee(firstEmployeeFullName);
+        logger.debug("Select employee " + someEmployeeFullName);
+        rosterHoursPage.selectEmployee(someEmployeeFullName);
+
         Assert.assertEquals("Juni", rosterHoursPage.getMonth());
         Assert.assertEquals("2020", rosterHoursPage.getYear());
-        Assert.assertEquals(firstEmployeeFullName, rosterHoursPage.getEmployeeName());
+        Assert.assertEquals(someEmployeeFullName, rosterHoursPage.getEmployeeName());
     }
 
     @Test(enabled = true)/*failed*/
@@ -68,7 +72,12 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
 
         /**
@@ -127,7 +136,12 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         /**
          * We do not directly go to the RosterHoursPage. Instead we first create
          * an absence. We want to view this absence in the RosterHoursPage.

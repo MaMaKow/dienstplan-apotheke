@@ -25,7 +25,7 @@ var firstX = 0;
 var firstY = 0;
 
 function roster_change_table_on_drag_of_bar_plot(evt) {
-    if (!document.getElementById('roster_form') && !document.getElementById('principle_roster_form')) {
+    if (!document.getElementById('rosterForm') && !document.getElementById('principleRosterForm')) {
         /*
          * If there is no roster form, then there is nothing to change by moving around.
          */
@@ -296,7 +296,7 @@ function create_new_bar_element(date_unix, roster_row_iterator, bar_element_id, 
      * Assign all the known values and methods to the new object:
      */
     new_g_element.setAttributeNS(null, 'id', bar_element_id);
-    new_g_element.setAttributeNS(null, 'class', 'work_box');
+    new_g_element.setAttributeNS(null, 'class', 'work-box');
     new_g_element.setAttributeNS(null, 'onmousedown', 'roster_change_table_on_drag_of_bar_plot(evt, "group")');
     new_g_element.dataset.line = roster_row_iterator;
     new_g_element.dataset.date_unix = date_unix;

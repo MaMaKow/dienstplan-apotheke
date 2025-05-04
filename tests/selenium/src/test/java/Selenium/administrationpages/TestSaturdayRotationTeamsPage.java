@@ -42,7 +42,12 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         SaturdayRotationTeamsPage saturdayRotationTeamsPage = new SaturdayRotationTeamsPage(driver);
         saturdayRotationTeamsPage.selectBranch(2);
         Assert.assertEquals(saturdayRotationTeamsPage.getBranchId(), 2);
@@ -56,7 +61,12 @@ public class TestSaturdayRotationTeamsPage extends TestPage {
          * Sign in:
          */
         SoftAssert softAssert = new SoftAssert();
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         SaturdayRotationTeamsPage saturdayRotationTeamsPage = new SaturdayRotationTeamsPage(driver);
         /**
          * <p lang=de>

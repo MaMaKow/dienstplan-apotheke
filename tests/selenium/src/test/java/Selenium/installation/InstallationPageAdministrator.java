@@ -19,7 +19,7 @@
 package Selenium.installation;
 
 import Selenium.PropertyFile;
-import Selenium.driver.Wrapper;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,24 +30,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Mandelkow
  */
-public class InstallationPageAdministrator {
+public class InstallationPageAdministrator extends Selenium.BasePage {
 
     By InstallationPageAdminFormButtonBy;
 
-    WebDriver driver;
     WebElement InstallationPageAdminFormButtonElement;
 
-    public InstallationPageAdministrator() {
-        driver = Selenium.driver.Wrapper.getDriver();
+    public InstallationPageAdministrator(WebDriver driver) {
+        super(driver);  // Call to BasePage constructor
         InstallationPageAdminFormButtonBy = By.id("InstallPageAdministratorFormButton");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
     }
 
     public void fillForm() throws Exception {
-        driver = Selenium.driver.Wrapper.getDriver();
-
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.name("user_name")));
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
 
@@ -75,8 +71,6 @@ public class InstallationPageAdministrator {
     }
 
     public void moveFromAdminPage() {
-        driver = Selenium.driver.Wrapper.getDriver();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.presenceOfElementLocated(InstallationPageAdminFormButtonBy));
         InstallationPageAdminFormButtonElement = driver.findElement(InstallationPageAdminFormButtonBy);
         InstallationPageAdminFormButtonElement.click();

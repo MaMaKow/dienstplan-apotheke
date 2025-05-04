@@ -25,12 +25,14 @@ import java.util.List;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestAbsenceEmployeePage extends Selenium.TestPage {
 
     @Test()
@@ -38,7 +40,12 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         /**
          * Create a new absence:
@@ -130,9 +137,9 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         try {
             absenceEmployeePage = absenceEmployeePage.deleteExistingAbsence("01.01.2020");
         } catch (Exception exception) {
-            System.out.println("Exception occurred in deleteExistingAbsence() method:");
-            System.out.println("Exception Message: " + exception.getMessage());
-            System.out.println("Stack Trace:");
+            logger.error("Exception occurred in deleteExistingAbsence() method:");
+            logger.error("Exception Message: " + exception.getMessage());
+            logger.error("Stack Trace:");
             exception.printStackTrace();
             throw exception;
         }
@@ -145,7 +152,12 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         /**
          * Create a new absence:
@@ -161,9 +173,9 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
             absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.01.2020", "01.08.2020", Absence.REASON_PARENTAL_LEAVE, "overlap at end", "not_yet_approved");
             absenceEmployeePage = absenceEmployeePage.createNewAbsence("05.08.2020", "31.12.2020", Absence.REASON_MATERNITY_LEAVE, "overlap at start", "not_yet_approved");
         } catch (Exception exception) {
-            System.out.println("Exception occurred in deleteExistingAbsence() method:");
-            System.out.println("Exception Message: " + exception.getMessage());
-            System.out.println("Stack Trace:");
+            logger.error("Exception occurred in deleteExistingAbsence() method:");
+            logger.error("Exception Message: " + exception.getMessage());
+            logger.error("Stack Trace:");
             exception.printStackTrace();
             throw exception;
         }

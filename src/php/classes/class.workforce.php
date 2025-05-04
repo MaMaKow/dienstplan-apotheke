@@ -37,18 +37,17 @@ class workforce {
      *
      * @var string $date_start_sql is the date string with which the object was instantiated. It is only stored for debugging purposes.
      */
-    public $date_start_sql;
+    private $date_start_sql;
 
     /**
      *
      * @var string $date_end_sql is an optional date string with which the object was instantiated. It is only stored for debugging purposes.
      */
-    public $date_end_sql;
-    public $List_of_employees;
-    public $List_of_qualified_pharmacist_employees;
-    public $List_of_goods_receipt_employees;
-    public $List_of_compounding_employees;
-    public $List_of_branch_employees;
+    private $date_end_sql;
+    private $List_of_employees;
+    private $List_of_qualified_pharmacist_employees;
+    private $List_of_goods_receipt_employees;
+    private $List_of_compounding_employees;
     private static $List_of_short_descriptors;
     private static $List_of_all_employees;
 
@@ -84,9 +83,12 @@ class workforce {
                     . 'ORDER BY `last_name`, `first_name` ASC;';
             $result = database_wrapper::instance()->run($sql_query, array('date_end' => $date_end_sql, 'date_start' => $date_start_sql));
         }
+        $this->List_of_employees = array();
+        $this->List_of_qualified_pharmacist_employees = array();
+        $this->List_of_goods_receipt_employees = array();
+        $this->List_of_compounding_employees = array();
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $this->List_of_employees[$row->primary_key] = new employee((int) $row->primary_key, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, $row->compounding, $row->goods_receipt, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
-            $this->List_of_branch_employees[$row->branch][] = $row->primary_key;
             if (in_array($row->profession, array('Apotheker', 'PI'))) {
                 $this->List_of_qualified_pharmacist_employees[] = $row->primary_key;
             }
@@ -102,15 +104,21 @@ class workforce {
         self::$List_of_workforce_objects[$this->date_start_sql][$this->date_end_sql] = $this;
     }
 
-    /**
-     * @todo Get rid of this function!
-      public function __set($name, $value) {
-      if ('date_sql' === $name) {
-      throw new Exception('$date_sql may only be given on __construct!');
-      }
-      $this->$name = $value;
-      }
-     */
+    public function getListOfEmployees(): array {
+        return $this->List_of_employees;
+    }
+
+    public function getListOfQualifiedPharmacistEmployees(): array {
+        return $this->List_of_qualified_pharmacist_employees;
+    }
+
+    public function getListOfGoodsReceiptEmployees(): array {
+        return $this->List_of_goods_receipt_employees;
+    }
+
+    public function getListOfCompoundingEmployees(): array {
+        return $this->List_of_compounding_employees;
+    }
 
     /**
      * Get the last name of an employee
@@ -119,9 +127,16 @@ class workforce {
      * @return string <p>last name of chosen employee or '???' if the employee is not known.
      * For example if an emergency service is not yet chosen ($employee_key = NULL)</p>
      */
-    public function get_employee_last_name(int $employee_key) {
+    public function get_employee_last_name(int $employee_key): string {
         if (FALSE !== $this->get_employee_value($employee_key, 'last_name')) {
             return $this->get_employee_value($employee_key, 'last_name');
+        }
+        return $employee_key . '???';
+    }
+
+    public function get_employee_first_name(int $employee_key): string {
+        if (FALSE !== $this->get_employee_value($employee_key, 'first_name')) {
+            return $this->get_employee_value($employee_key, 'first_name');
         }
         return $employee_key . '???';
     }
@@ -342,7 +357,7 @@ class workforce {
      * We just return some random employee
      */
     public function get_default_employee_key() {
-        if ($_SESSION['user_object'] instanceof user) {
+        if (isset($_SESSION['user_object']) and $_SESSION['user_object'] instanceof user) {
             /**
              * Try to guess the employee_key from the logged in user:
              */
@@ -386,5 +401,21 @@ class workforce {
                 return $employeeKey;
             }
         }
+    }
+
+    public function getEmployeesAsJson(): string {
+        $employees = [];
+        foreach ($this->List_of_employees as $employee_key => $employee) {
+            $employees[] = [
+                'id' => $employee_key,
+                'last_name' => $employee->last_name,
+                'first_name' => $employee->first_name,
+                'profession' => $employee->profession,
+                'branch' => $employee->branch,
+                'start_of_employment' => $employee->start_of_employment,
+                'end_of_employment' => $employee->end_of_employment,
+            ];
+        }
+        return json_encode($employees, JSON_PRETTY_PRINT);
     }
 }

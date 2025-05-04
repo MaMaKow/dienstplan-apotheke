@@ -18,13 +18,12 @@
  */
 package Selenium.overtimepages;
 
-import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.Overtime;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Calendar;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -33,13 +32,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
  * @author Mandelkow
  */
-public class OvertimeEmployeePage {
+public class OvertimeEmployeePage extends Selenium.BasePage {
 
     protected static WebDriver driver;
 
@@ -47,13 +45,13 @@ public class OvertimeEmployeePage {
     private final By employeeFormSelectBy = By.xpath("//form[@id='select_employee']/select");
     private final By dateInputBy = By.xpath("//*[@id=\"date_chooser_input\"]");
     private final By hoursInputBy = By.xpath("//*[@id=\"stunden\"]");
-    private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
+    //private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
     private final By reasonInputBy = By.xpath("//*[@id=\"grund\"]");
     private final By submitButtonBy = By.xpath("/html/body/div/table/tbody/tr/td/input[@name=\"submitStunden\"]");
 
     public OvertimeEmployeePage(WebDriver driver) {
+        super(driver);  // Call to BasePage constructor
         this.driver = driver;
-
         if (this.getUserNameText().isEmpty()) {
             throw new IllegalStateException(
                     "This is not a logged in state," + " current page is: " + driver.getCurrentUrl());
@@ -61,38 +59,45 @@ public class OvertimeEmployeePage {
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToOvertimeEdit);
     }
 
-    /**
-     * Get user_name (span tag)
-     *
-     * We only need this in order to check, if we are logged in.
-     *
-     * @return String user_name text
-     */
-    public String getUserNameText() {
-        final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        WebElement userNameSpanElement;
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-            userNameSpanElement = driver.findElement(userNameSpanBy);
-        } catch (NoSuchElementException noSuchElementException) {
-            wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-            userNameSpanElement = driver.findElement(userNameSpanBy);
-        }
-        String userNameString = userNameSpanElement.getText();
-        return userNameString;
-    }
-
     public OvertimeEmployeePage selectYear(int year) {
         WebElement selectYearElement = driver.findElement(selectYearBy);
         Select selectYearSelect = new Select(selectYearElement);
+        int currentYear = Integer.parseInt(selectYearSelect.getFirstSelectedOption().getText());
+        if (currentYear == year) {
+            return this;
+        }
         selectYearSelect.selectByValue(String.valueOf(year));
         return new OvertimeEmployeePage(driver);
+    }
+
+    /**
+     * Attempts to select a specified year in the dropdown menu.
+     * If the operation fails (e.g., the year is not present or the dropdown is inaccessible),
+     * this method catches the exception and continues without throwing an error.
+     *
+     * This function is specifically designed for scenarios where we expect the year might not exist,
+     * such as when checking for deleted overtime records in years that are no longer available.
+     * It provides a safe fallback mechanism to prevent disruptions in such cases.
+     *
+     * @param year the year to be selected in the dropdown menu
+     * @return an instance of {@code OvertimeEmployeePage}, either the current page or a new one if the year is successfully selected
+     */
+    public OvertimeEmployeePage selectYearTry(int year) {
+        try {
+            return selectYear(year);
+        } catch (Exception e) {
+            LogCollector.warn("The year " + year + " could not be selected.");
+            return this;
+        }
     }
 
     public OvertimeEmployeePage selectEmployee(int employeeKey) {
         WebElement selectEmployeeElement = driver.findElement(employeeFormSelectBy);
         Select selectEmployeeSelect = new Select(selectEmployeeElement);
+        int currentEmployeeKey = Integer.parseInt(selectEmployeeSelect.getFirstSelectedOption().getAttribute("value"));
+        if (currentEmployeeKey == employeeKey) {
+            return this;
+        }
         selectEmployeeSelect.selectByValue(String.valueOf(employeeKey));
         return new OvertimeEmployeePage(driver);
     }
@@ -103,42 +108,29 @@ public class OvertimeEmployeePage {
         return listOfOvertimeRowElements;
     }
 
-    private WebElement findOvertimeRowByIndex(int index) {
-        List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
-        return listOfOvertimeRows.get(index);
-    }
-
     private WebElement findOvertimeRowByDate(LocalDate localDate) {
-        By dateBy = By.xpath(".//td/form");
+        By dateBy = By.xpath(".//td/input[@name=\"editDateNew\"]");
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
-            if (dateElement.getText().equals(localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR))) {
+            if (dateElement.getAttribute("value").equals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY))) {
                 return overtimeRowElement;
             }
         }
         return null;
     }
 
-    public Overtime getOvertimeByCalendar(LocalDate localDate) {
+    public Overtime getOvertimeByLocalDate(LocalDate localDate) throws Exception {
+        selectYearTry(localDate.getYear());
         WebElement overtimeRow = findOvertimeRowByDate(localDate);
-        //String dateString = overtimeRow.findElement(By.xpath(".//td[1]/form")).getText();
-        float hours = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[2]")).getText());
-        float balance = Float.valueOf(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
-        String reason = overtimeRow.findElement(By.xpath(".//td[4]")).getText();
+        if (null == overtimeRow) {
+            LogCollector.error("No overtime found for given date:" + localDate.format(DateTimeFormatter.ISO_DATE));
+            throw new Exception("No overtime found for given date.");
+        }
+        float hours = Float.parseFloat(overtimeRow.findElement(By.xpath(".//input[@name=\"editHoursNew\"]")).getAttribute("value"));
+        float balance = Float.parseFloat(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
+        String reason = overtimeRow.findElement(By.xpath(".//input[@name=\"editReasonNew\"]")).getAttribute("value");
         return new Overtime(localDate, hours, balance, reason);
-    }
-
-    /**
-     * @deprecated The use of the Calendar class is deprecated.
-     * @param calendar
-     * @param hours
-     * @param reason
-     * @return
-     */
-    public OvertimeEmployeePage addNewOvertime(Calendar calendar, float hours, String reason) {
-        LocalDate localDate = LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).toLocalDate();
-        return addNewOvertime(localDate, hours, reason);
     }
 
     public OvertimeEmployeePage addNewOvertimeForEmployee(int employeeKey, LocalDate localDate, float hours, String reason) {
@@ -150,7 +142,7 @@ public class OvertimeEmployeePage {
         /**
          * date:
          */
-        //String dateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        LogCollector.debug("addNewOvertime date on " + localDate.format(DateTimeFormatter.ISO_DATE));
         WebElement dateInputElement = driver.findElement(dateInputBy);
         Wrapper.fillDateInput(dateInputElement, localDate);
         /**
@@ -178,7 +170,7 @@ public class OvertimeEmployeePage {
         try {
             driver.switchTo().alert().accept();
         } catch (Exception exception) {
-            System.err.println(exception.getLocalizedMessage());
+            LogCollector.warn(exception.getLocalizedMessage());
         }
 
         OvertimeEmployeePage newOvertimeEmployeePage;
@@ -192,8 +184,9 @@ public class OvertimeEmployeePage {
     }
 
     public OvertimeEmployeePage removeOvertimeByLocalDate(LocalDate localDate) {
+        this.selectYear(localDate.getYear());
         WebElement overtimeRow = findOvertimeRowByDate(localDate);
-        By removeButtonBy = By.xpath(".//input");
+        By removeButtonBy = By.xpath(".//button[@name=\"deleteRow\"]");
         WebElement removeButtonElement = overtimeRow.findElement(removeButtonBy);
         removeButtonElement.click();
         /**
@@ -201,9 +194,57 @@ public class OvertimeEmployeePage {
          * Vor dem Löschen erscheint ein alert mit dem Text: "Really delete this
          * data set?" Wir bestätigen diese Anfrage mit OK.
          * </p>
-         *
          */
+        wait.until(ExpectedConditions.alertIsPresent());
         driver.switchTo().alert().accept();
+        OvertimeEmployeePage newOvertimeEmployeePage;
+        try {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        } catch (StaleElementReferenceException | NoSuchElementException staleElementReferenceException) {
+            newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
+        }
+        return newOvertimeEmployeePage;
+    }
+
+    public OvertimeEmployeePage editOvertimeByLocalDate(LocalDate localDate, LocalDate dateNew, float hoursNew, String reasonNew) {
+        this.selectYearTry(localDate.getYear());
+        WebElement overtimeRow = findOvertimeRowByDate(localDate);
+        String localDateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+        By editButtonBy = By.xpath(".//button[@id=\"editButton_" + localDateString + "\"]");
+        By submitEditButtonBy = By.xpath(".//button[@id=\"save_" + localDateString + "\"]");
+        LogCollector.debug(overtimeRow.getAttribute("outerHTML"));
+        LogCollector.debug(overtimeRow.getText());
+        WebElement editButtonElement = overtimeRow.findElement(editButtonBy);
+        editButtonElement.click();
+        waitShort.until(ExpectedConditions.invisibilityOf(editButtonElement));
+
+        By dateNewInputBy = By.xpath(".//input[@name=\"editDateNew\"]");
+        By hoursNewInputBy = By.xpath(".//input[@name=\"editHoursNew\"]");
+        By reasonNewInputBy = By.xpath(".//input[@name=\"editReasonNew\"]");
+
+        /**
+         * date:
+         */
+        WebElement dateInputElement = overtimeRow.findElement(dateNewInputBy);
+        Wrapper.fillDateInput(dateInputElement, dateNew);
+        /**
+         * hours:
+         */
+        WebElement hoursInputElement = overtimeRow.findElement(hoursNewInputBy);
+        hoursInputElement.clear();
+        hoursInputElement.sendKeys(String.valueOf(hoursNew));
+        /**
+         * reason:
+         */
+        WebElement reasonInputElement = overtimeRow.findElement(reasonNewInputBy);
+        reasonInputElement.clear();
+        reasonInputElement.sendKeys(reasonNew);
+        /**
+         * submit:
+         */
+        WebElement submitButtonElement = overtimeRow.findElement(submitEditButtonBy);
+        submitButtonElement.click();
+
         OvertimeEmployeePage newOvertimeEmployeePage;
         try {
             newOvertimeEmployeePage = new OvertimeEmployeePage(driver);

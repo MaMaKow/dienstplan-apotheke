@@ -77,7 +77,7 @@ echo $user_dialog->build_messages();
 <main>
     <h1><?= sprintf(gettext('User page for user %1$s'), $_SESSION['user_object']->user_name); ?></h1>
     <form action='' method='POST' id='user_form'></form>
-    <form action='' method='POST' id="user_page_password_form"></form>
+    <form action='' method='POST' id="userPagePasswordForm"></form>
     <fieldset id='email_consent'>
         <legend><?= gettext('Receive emails when the roster is changed') ?></legend>
         <?= form_element_builder::build_checkbox_switch('user_form', 'receive_emails_opt_in', $user->wants_emails_on_changed_roster()); ?>
@@ -88,19 +88,19 @@ echo $user_dialog->build_messages();
     <fieldset id='change_password'>
         <legend><?= gettext('Change passhrase'); ?></legend>
         <label><?= gettext('Old passphrase'); ?><br>
-            <input type="password" name="user_password_old" form="user_page_password_form"/>
+            <input type="password" name="user_password_old" form="userPagePasswordForm"/>
         </label><br>
         <label><?= gettext('New passphrase'); ?><br>
-            <input type="password" minlength="8" name="user_password_new" form="user_page_password_form"/>
+            <input type="password" minlength="8" name="user_password_new" form="userPagePasswordForm"/>
             <img width="16px" height="16px" src="../../../img/information.svg"
                  title="<?= gettext('A secure passphrase should be at least 8 characters long and not listed in any dictionary.') ?>"
                  >
         </label><br>
         <label><?= gettext('Repeat new passphrase'); ?><br>
-            <input type="password" minlength="8" name="user_password_repetition" form="user_page_password_form"/>
+            <input type="password" minlength="8" name="user_password_repetition" form="userPagePasswordForm"/>
         </label><br>
         <input type="password" name="user_id" value="" hidden/>
-        <input type="submit" form="user_page_password_form"/>
+        <input type="submit" form="userPagePasswordForm"/>
     </fieldset>
     <fieldset>
         <legend><?= gettext('Privileges'); ?></legend>

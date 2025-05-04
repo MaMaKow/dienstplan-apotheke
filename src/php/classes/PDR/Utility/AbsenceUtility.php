@@ -144,7 +144,7 @@ class AbsenceUtility {
 
             \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
             /**
-             * @todo use the current user name:
+             * @todo use the current username:
              */
             $currentUserName = $_SESSION['user_object']->get_user_name();
             \PDR\Database\AbsenceDatabaseHandler::insertAbsence(
@@ -176,7 +176,7 @@ class AbsenceUtility {
 
             // Instantiate the workforce and get the employee object.
             $workforce = new \workforce();
-            $employeeObject = $workforce->List_of_employees[$employeeKey];
+            $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
 
             // Call the method to write absence data to the database.
             return self::writeAbsenceDataToDatabase($employeeObject, $beginn, $ende, $reasonId, $comment, $approval);
@@ -320,25 +320,13 @@ class AbsenceUtility {
      */
     public static function getRosteringYears(): array {
         $Years = array();
-        $sqlQueryDienstplan = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan` ORDER BY `Datum`";
-        $resultRoster = \database_wrapper::instance()->run($sqlQueryDienstplan);
-        while ($row = $resultRoster->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
+        $now = new \DateTime();
+        $firstYear = (clone$now)->sub(new \DateInterval('P6Y'));
+        $lastYear = (clone$now)->add(new \DateInterval('P2Y'));
+        for ($currentYear = clone $firstYear; $currentYear <= $lastYear; $currentYear->add(new \DateInterval('P1Y'))) {
+            $Years[] = $currentYear->format('Y');
         }
-        $sqlQueryHours = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Stunden` ORDER BY `Datum`";
-        $resultHours = \database_wrapper::instance()->run($sqlQueryHours);
-        while ($row = $resultHours->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
-        }
-        $sqlQueryAbsence = "SELECT DISTINCT YEAR(`start`) AS `year` FROM `absence` ORDER BY `start`";
-        $resultAbsence = \database_wrapper::instance()->run($sqlQueryAbsence);
-        while ($row = $resultAbsence->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
-        }
-        $Years[] = (int) (new \DateTime())->format('Y');
-        $Years[] = max($Years) + 1;
-        sort($Years);
-        return array_unique($Years);
+        return $Years;
     }
 
     /**
@@ -354,7 +342,7 @@ class AbsenceUtility {
         $lastDayOfThisYear = new \DateTime("31.12." . $year);
         $monthsWorkedInThisYear = 0;
 
-        $employeeObject = $workforce->List_of_employees[$employeeKey];
+        $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
         $numberOfHolidaysPrinciple = $employeeObject->holidays;
         $numberOfWorkingWeekDays = $employeeObject->working_week_days;
         $numberOfHolidaysDue = $numberOfHolidaysPrinciple;

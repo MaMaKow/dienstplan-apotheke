@@ -28,6 +28,7 @@ import static Selenium.rosterpages.RosterWeekTablePage.driver;
 import java.io.File;
 import java.text.ParseException;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -75,7 +76,7 @@ public class RosterEmployeePage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
         return driver.findElement(userNameSpanBy).getText();
     }
@@ -161,22 +162,22 @@ public class RosterEmployeePage {
     }
 
     private By getRosterItemDutyStartXpathBy(int column, int row) {
-        By rosterItemDutyStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'duty_time\']/span[1]");
+        By rosterItemDutyStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[@class=\'duty-time\']/span[1]");
         return rosterItemDutyStartXpathBy;
     }
 
     private By getRosterItemDutyEndXpathBy(int column, int row) {
-        By rosterItemDutyEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'duty_time\')]/span[2]");
+        By rosterItemDutyEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'duty-time\')]/span[2]");
         return rosterItemDutyEndXpathBy;
     }
 
     private By getRosterItemBreakStartXpathBy(int column, int row) {
-        By rosterItemBreakStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break_time\')]/span[1]");
+        By rosterItemBreakStartXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break-time\')]/span[1]");
         return rosterItemBreakStartXpathBy;
     }
 
     private By getRosterItemBreakEndXpathBy(int column, int row) {
-        By rosterItemBreakEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break_time\')]/span[2]");
+        By rosterItemBreakEndXpathBy = By.xpath("//table/tbody/tr[" + row + "]/td[" + column + "]/span[contains(@class, \'break-time\')]/span[2]");
         return rosterItemBreakEndXpathBy;
     }
 

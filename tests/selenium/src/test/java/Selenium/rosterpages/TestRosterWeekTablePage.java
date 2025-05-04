@@ -40,7 +40,12 @@ public class TestRosterWeekTablePage extends TestPage {
             /**
              * Sign in:
              */
-            super.signIn();
+            try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
             RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
             /**
              * Move to specific date and go foreward and backward from there:
@@ -61,7 +66,12 @@ public class TestRosterWeekTablePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
 
         Roster roster = new Roster();

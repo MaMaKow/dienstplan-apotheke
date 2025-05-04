@@ -33,7 +33,7 @@ public class LogoutPage {
     public SignInPage logout() {
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
-        driver.get(propertyFile.getUrlPageTest() + "/src/php/logout.php");
+        driver.get(propertyFile.getTestPageUrl() + "/src/php/logout.php");
         return new SignInPage(driver);
     }
 }

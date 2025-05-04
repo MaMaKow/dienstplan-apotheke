@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'install_head.php';
 require_once '../classes/PDR/Application/Installation/InstallUtility.php';
 require_once '../classes/class.localization.php';
 require_once '../classes/PDR/Utility/GeneralUtility.php';
@@ -45,6 +44,7 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
         $pdrSecretDirectoriesAreNotVisible &&
         $phpExtensionRequirementsAreFulfilled &&
         $phpVersionRequirementIsFulfilled;
+require_once 'install_head.php';
 ?>
 <p><?= gettext("This page is meant to check if:") ?></p>
 <ul>
@@ -54,9 +54,9 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
          * Check if we are running on https:
          */
         if ($webserver_supports_https) {
-            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
+            echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
+            echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
@@ -67,9 +67,9 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
          * Check if there is any supported database driver available:
          */
         if ($databaseDriverIsInstalled) {
-            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
+            echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
+            echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
@@ -80,9 +80,9 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
          * Check if the PHP version is new enough to support the required features:
          */
         if ($phpExtensionRequirementsAreFulfilled) {
-            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
+            echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
+            echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
@@ -93,9 +93,9 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
          * Check if the PHP version is new enough to support the required features:
          */
         if ($phpVersionRequirementIsFulfilled) {
-            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
+            echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
+            echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
@@ -106,9 +106,9 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
          * Check if there is write access to all write-necessary directories:
          */
         if ($pdrDirectoriesAreWritable) {
-            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
+            echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
+            echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
             echo $installUtility->buildErrorMessageDiv();
         }
         ?>
@@ -119,9 +119,9 @@ $allRequirementsAreSatisfied = $databaseDriverIsInstalled &&
          * Check if there is a 403 forbidden error when trying to access hidden folders:
          */
         if ($pdrSecretDirectoriesAreNotVisible) {
-            echo "<em class = 'install_info_postive'>" . gettext("passed") . "</em>";
+            echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
-            echo "<em class = 'install_info_negative'>" . gettext("failed") . "</em>";
+            echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
             /**
              * @TODO 1. Test if this is an apache server!
              * @TODO 2. gettext()

@@ -44,8 +44,8 @@ abstract class build_html_navigation_elements {
 
     public static function build_button_open_readonly_version($url, $Name_value_array) {
         $referrer = self::build_referrer_from_array($Name_value_array);
-        $button_img = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . $url . $referrer . "' method='get'>
-		<button type='submit' class='btn-primary no_print'>
+        $button_img = "<form class='inline-form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . $url . $referrer . "' method='get'>
+		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/read-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
 			</i>
@@ -59,8 +59,8 @@ abstract class build_html_navigation_elements {
     public static function build_button_open_edit_version($url, $Name_value_array) {
         $referrer = self::build_referrer_from_array($Name_value_array);
         $button_img = "
-            <form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . $url . $referrer . "' method='get'>
-		<button type='submit' class='btn-primary no_print'>
+            <form class='inline-form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . $url . $referrer . "' method='get'>
+		<button type='submit' class='btn-primary no-print'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/edit-icon.svg' class='button-image' alt='" . gettext("Read") . "'>
 			</i>
@@ -77,8 +77,8 @@ abstract class build_html_navigation_elements {
         $yesterday_object->sub(new DateInterval('P1D'));
         $yesterday_date_string = $yesterday_object->format('Y-m-d');
         $backward_button_img = "
-            <form class='inline_form' id='button_day_backward_form'>
-		<button type='submit' class='btn-primary no_print' value='$yesterday_date_string' name='datum' id='button_day_backward' title='" . gettext('Ctrl + &#8678;') . "'>
+            <form class='inline-form' id='button_day_backward_form'>
+		<button type='submit' class='btn-primary no-print' value='$yesterday_date_string' name='datum' id='button_day_backward' title='" . gettext('Ctrl + &#8678;') . "'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("1 day backward") . "'>
 			</i>
@@ -95,8 +95,8 @@ abstract class build_html_navigation_elements {
         $tomorrow_object->add(new DateInterval('P1D'));
         $tomorow_date_string = $tomorrow_object->format('Y-m-d');
         $forward_button_img = "
-            <form class='inline_form' id='button_day_forward_form'>
-		<button type='submit' class='btn-primary no_print' value='$tomorow_date_string' name='datum' id='button_day_forward' title='" . gettext('Ctrl + &#8680;') . "'>
+            <form class='inline-form' id='button_day_forward_form'>
+		<button type='submit' class='btn-primary no-print' value='$tomorow_date_string' name='datum' id='button_day_forward' title='" . gettext('Ctrl + &#8680;') . "'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/forward.png' class='button-image' alt='" . gettext("1 day forward") . "'>
 			</i>
@@ -110,8 +110,8 @@ abstract class build_html_navigation_elements {
     public static function build_button_week_backward($date_sql) {
         $date_last_week_sql = general_calculations::get_first_day_of_week(date('Y-m-d', strtotime('last week', strtotime($date_sql))));
         $backward_button_week_img = "
-            <form class='inline_form'>
-		<button type='submit' class='btn-primary no_print' value='$date_last_week_sql' name='datum' id='button_week_backward' title='" . gettext('Ctrl + &larr;') . "'>
+            <form class='inline-form'>
+		<button type='submit' class='btn-primary no-print' value='$date_last_week_sql' name='datum' id='button_week_backward' title='" . gettext('Ctrl + &larr;') . "'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("1 week backward") . "'>
 			</i>
@@ -125,8 +125,8 @@ abstract class build_html_navigation_elements {
     public static function build_button_week_forward($date_sql) {
         $date_next_week_sql = general_calculations::get_first_day_of_week(date('Y-m-d', strtotime('next week', strtotime($date_sql))));
         $forward_button_week_img = "
-            <form class='inline_form'>
-		<button type='submit' class='btn-primary no_print' value='$date_next_week_sql' name='datum' id='button_week_forward' title='" . gettext('Ctrl + &rarr;') . "'>
+            <form class='inline-form'>
+		<button type='submit' class='btn-primary no-print' value='$date_next_week_sql' name='datum' id='button_week_forward' title='" . gettext('Ctrl + &rarr;') . "'>
 			<i class='icon-black'>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/forward.png' class='button-image' alt='" . gettext("1 week forward") . "'>
 			</i>
@@ -138,10 +138,10 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_link_download_ics_file(string $date_sql, int $employee_key) {
-        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php' method='get' id='download_ics_file_form'>"
+        $button_html = "<form class='inline-form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "webdav.php' method='get' id='download_ics_file_form'>"
                 . "<input type='hidden' name='date_string' value='$date_sql' form='download_ics_file_form'>"
                 . "<input type='hidden' name='employee_key' value='$employee_key' form='download_ics_file_form'>"
-                . " <button type='submit' class='btn-primary no_print' "
+                . " <button type='submit' class='btn-primary no-print' "
                 . " title='" . gettext("Download iCalendar file") . "'>"
                 . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/download.png' style='width:32px' alt='Download ics Kalender Datei'>"
                 . " <br>"
@@ -151,9 +151,9 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_link_roster_employee_hours_page(int $employee_key) {
-        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/marginal-employment-hours-list.php' method='get' id='roster_employee_hours_page_form'>"
+        $button_html = "<form class='inline-form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/marginal-employment-hours-list.php' method='get' id='roster_employee_hours_page_form'>"
                 . "<input type='hidden' name='employee_key' value='$employee_key' form='roster_employee_hours_page_form'>"
-                . " <button type='submit' class='btn-primary no_print' "
+                . " <button type='submit' class='btn-primary no-print' "
                 . " title='" . gettext("Employee hours list") . "'>"
                 . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_lists.svg' style='width:32px' alt='Employee hours list'>"
                 . " <br>"
@@ -163,9 +163,9 @@ abstract class build_html_navigation_elements {
     }
 
     public static function build_button_link_roster_employee_table_page(int $employee_key) {
-        $button_html = "<form class='inline_form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php' method='get' id='roster_employee_table_form'>"
+        $button_html = "<form class='inline-form' action='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-employee-table.php' method='get' id='roster_employee_table_form'>"
                 . "<input type='hidden' name='employee_key' value='$employee_key' form='roster_employee_table_form'>"
-                . " <button type='submit' class='btn-primary no_print' "
+                . " <button type='submit' class='btn-primary no-print' "
                 . " title='" . gettext("Employee roster") . "'>"
                 . " <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_lists.svg' style='width:32px' alt='Employee hours list'>"
                 . " <br>"
@@ -180,7 +180,7 @@ abstract class build_html_navigation_elements {
             return NULL;
         }
         $submit_button = "
-        <button type='submit' id='submit_button' class='btn-primary btn-save no_print' value=Absenden name='submit_roster' form='$form_id'>
+        <button type='submit' id='submit_button' class='btn-primary btn-save no-print' value=Absenden name='submit_roster' form='$form_id'>
                 <i class='icon-white'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' class='button-image' alt='" . gettext("Save") . "' >
                 </i>
@@ -192,7 +192,7 @@ abstract class build_html_navigation_elements {
 
     public static function build_button_back() {
         $back_button = "
-        <button id='back_button' class='btn-primary btn-save no_print' onClick='javascript:history.back()'>
+        <button id='back_button' class='btn-primary btn-save no-print' onClick='javascript:history.back()'>
                 <i class='icon-white'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' class='button-image' alt='" . gettext("Back") . "' >
                 </i>
@@ -209,8 +209,8 @@ abstract class build_html_navigation_elements {
             $disabled = '';
         }
         $submit_approval_button_img = "
-        <form method=post class='inline_form'>
-                <button type='submit' class='btn-secondary no_print' value='approve' name='submit_approval' $disabled>
+        <form method=post class='inline-form'>
+                <button type='submit' class='btn-secondary no-print' value='approve' name='submit_approval' $disabled>
                 <i class='icon-grey'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_up-24px.svg' class='button-image' alt='" . gettext('Approve') . "' >
                 </i>
@@ -229,8 +229,8 @@ abstract class build_html_navigation_elements {
             $disabled = '';
         }
         $submit_disapproval_button_img = "
-        <form method=post class='inline_form'>
-                <button type='submit' class='btn-secondary no_print' value='disapprove' name='submit_disapproval' $disabled>
+        <form method=post class='inline-form'>
+                <button type='submit' class='btn-secondary no-print' value='disapprove' name='submit_disapproval' $disabled>
                 <i class='icon-grey'>
                 <img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_thumb_down-24px.svg' class='button-image' alt='" . gettext("Disapprove") . "' >
                 </i>
@@ -250,7 +250,7 @@ abstract class build_html_navigation_elements {
      */
     public static function build_select_employee(int $employee_key = null, array $Employee_object_list = array()) {
         $text = "<!-- employee select form-->\n";
-        $text .= "<form method='POST' id='select_employee' class='inline_form'>\n";
+        $text .= "<form method='POST' id='select_employee' class='inline-form'>\n";
         $text .= "<select name=employee_key class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_object_list as $employee_object) {
             if ($employee_object->get_employee_key() === $employee_key) {
@@ -260,7 +260,7 @@ abstract class build_html_navigation_elements {
             }
         }
         $text .= "</select>\n";
-        $text .= "<input hidden type=submit value=select_employee name='submit_select_employee' id='submit_select_employee' class=no_print>\n";
+        $text .= "<input hidden type=submit value=select_employee name='submit_select_employee' id='submit_select_employee' class=no-print>\n";
         $text .= "</form>\n";
         $text .= "<!--/employee select form-->\n";
 
@@ -276,7 +276,7 @@ abstract class build_html_navigation_elements {
      */
     public static function build_select_user(int $user_key = null) {
         $text = "<!-- user select form-->\n";
-        $text .= "<form method='POST' id='select_user' class='inline_form'>\n";
+        $text .= "<form method='POST' id='select_user' class='inline-form'>\n";
         $text .= "<select name=user_key class='large' onChange='document.getElementById(\"submit_select_user\").click()'>\n";
         $user_base = new \PDR\Workforce\user_base();
         $user_list = $user_base->get_user_list();
@@ -289,7 +289,7 @@ abstract class build_html_navigation_elements {
             }
         }
         $text .= "</select>\n";
-        $text .= "<input hidden type=submit value=select_user name='submit_select_user' id='submit_select_user' class=no_print>\n";
+        $text .= "<input hidden type=submit value=select_user name='submit_select_user' id='submit_select_user' class=no-print>\n";
         $text .= "</form>\n";
         $text .= "<!--/user select form-->\n";
 
@@ -306,8 +306,8 @@ abstract class build_html_navigation_elements {
      */
     public static function build_select_branch(int $current_branch_id = null, array $List_of_branch_objects = array(), string $date_sql = NULL) {
         $text = "<!-- branch select form-->\n";
-        $text .= "<div id='branch_form_div' class='inline_element'>\n";
-        $text .= "<form id=branch_form method=get>\n";
+        $text .= "<div id='branch_form_div' class='inline-element'>\n";
+        $text .= "<form id=branchForm method=get>\n";
         if (null !== $date_sql) {
             $text .= "<input type=hidden name=datum value=" . $date_sql . ">\n";
         }
@@ -333,7 +333,7 @@ abstract class build_html_navigation_elements {
         $Weekday_names = localization::get_weekday_names();
 
         $html = '';
-        $html .= "<form id='week_day_form' method=post>";
+        $html .= "<form id='weekdayForm' method=post>";
         $html .= "<select class='large' name=weekday onchange=this.form.submit()>\n";
         foreach ($Weekday_names as $weekday_temp => $weekday_name) {
             if ($weekday_temp != $weekday_selected) {
@@ -359,9 +359,9 @@ abstract class build_html_navigation_elements {
 
             return NULL;
         }
-        $button_img = "<form class='inline_form' action='' method='post' id='principle_roster_delete'>
+        $button_img = "<form class='inline-form' action='' method='post' id='principle_roster_delete'>
             <input type='hidden' form='principle_roster_delete' name='principle_roster_delete' value=$alternating_week_id>
-		<button type='submit' class='btn-primary no_print'>
+		<button type='submit' class='btn-primary no-print'>
 			<i>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' class='button-image' alt='" . gettext("Delete") . "'>
 			</i>
@@ -377,9 +377,9 @@ abstract class build_html_navigation_elements {
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
             return NULL;
         }
-        $button_img = "<form class='inline_form' action='' method='post' id='principle_roster_copy_form'>
+        $button_img = "<form class='inline-form' action='' method='post' id='principle_roster_copy_form'>
             <input type='hidden' form='principle_roster_copy_form' name='principle_roster_copy_from' value=$alternating_week_id>
-		<button type='submit' class='btn-primary no_print'>
+		<button type='submit' class='btn-primary no-print'>
 			<i>
 				<img src='" . PDR_HTTP_SERVER_APPLICATION_PATH . "img/copy.svg' class='button-image' alt='" . gettext("Copy") . "'>
 			</i>

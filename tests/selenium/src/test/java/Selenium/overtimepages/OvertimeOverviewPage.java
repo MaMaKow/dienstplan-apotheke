@@ -19,6 +19,7 @@
 package Selenium.overtimepages;
 
 import Selenium.MenuFragment;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,11 +30,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Mandelkow
  */
-public class OvertimeOverviewPage {
+public class OvertimeOverviewPage extends Selenium.BasePage {
 
     protected static WebDriver driver;
 
     public OvertimeOverviewPage(WebDriver driver) {
+        super(driver);  // Call to BasePage constructor
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {
@@ -52,7 +54,7 @@ public class OvertimeOverviewPage {
      */
     public String getUserNameText() {
         final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         return driver.findElement(userNameSpanBy).getText();

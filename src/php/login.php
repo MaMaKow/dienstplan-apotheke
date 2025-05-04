@@ -28,7 +28,7 @@ if (filter_has_var(INPUT_POST, 'login')) {
 }
 require "../../head.php";
 
-echo "<div class=centered_form_div>";
+echo "<div class=centered-form-div>";
 if (isset($config['application_name'])) {
     $application_name = $config['application_name'];
 } else {
@@ -41,10 +41,10 @@ $user_dialog->build_messages();
 
 <form accept-charset='utf-8' action="" method="post">
     <input type="hidden" name="login" value="1">
-    <input type="text" size="25" maxlength="250" name="user_name" placeholder="Benutzername" id="login_input_user_name"><br>
-    <input type="password" size="25" name="user_password" placeholder="Passwort" id="login_input_user_password" ><br>
-    <input type="submit" id="login_button_submit">
-    <p class="hint" id="login_p_caps_warning" >&nbsp;<!-- Warning! Caps lock is ON. --></p>
+    <input type="text" size="25" maxlength="250" name="user_name" placeholder="Benutzername" id="loginInputUserName"><br>
+    <input type="password" size="25" name="user_password" placeholder="Passphrase" id="loginInputUserPassphrase" ><br>
+    <input type="submit" id="loginButtonSubmit">
+    <p class="hint" id="loginParagraphCapsWarning" >&nbsp;<!-- Warning! Caps lock is ON. --></p>
     <?php
     if (!empty($errorMessage)) {
         echo '<p>' . $errorMessage . '</p>';
@@ -55,8 +55,8 @@ $user_dialog->build_messages();
 <p class="unobtrusive"><a href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>/src/php/pages/lost_password.php"><?= gettext("Forgot password?") ?></a></p>
 <?= '</div>' ?>
 <script>
-    var input_password = document.getElementById("login_input_user_password");
-    var input_user = document.getElementById("login_input_user_name");
+    var input_password = document.getElementById("loginInputUserPassphrase");
+    var input_user = document.getElementById("loginInputUserName");
     /*
      * When the user presses any key on the keyboard, run the function
      */

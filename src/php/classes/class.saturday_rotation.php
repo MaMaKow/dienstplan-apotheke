@@ -156,6 +156,7 @@ class saturday_rotation {
                 error_log('Could not find $last_team_id ' . $last_team_id . ' in $this->List_of_teams');
                 // We choose to use the first team in that case:
                 reset($this->List_of_teams);
+                break;
                 //return key($this->List_of_teams);
             }
         }
@@ -250,7 +251,10 @@ class saturday_rotation {
     }
 
     public function build_input_row_employee_select(int $roster_employee_key = null, int $team_id, int $roster_row_iterator = null, $session) {
-        $workforce = new workforce();
+        $currentYear = (new DateTime())->format('Y');
+        $dateRangeMin = new DateTime('01.01.' . $currentYear);
+        $dateRangeMax = new DateTime('31.12.' . $currentYear);
+        $workforce = new workforce($dateRangeMin->format('Y-m-d'), $dateRangeMax->format('Y-m-d'));
         $option_set_select_disabled_for_unprivileged_user = "";
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
             $option_set_select_disabled_for_unprivileged_user = "disabled";
@@ -266,14 +270,14 @@ class saturday_rotation {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $roster_input_row_employee_select .= "<option value=''>&nbsp;</option>";
-        foreach ($workforce->List_of_employees as $employee_key => $employee_object) {
+        foreach ($workforce->getListOfEmployees() as $employee_key => $employee_object) {
             if ($roster_employee_key == $employee_key and NULL !== $roster_employee_key) {
-                $roster_input_row_employee_select .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
+                $roster_input_row_employee_select .= "<option value=$employee_key selected>" . $employee_object->getFullName() . "</option>";
             } else {
-                $roster_input_row_employee_select .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
+                $roster_input_row_employee_select .= "<option value=$employee_key>" . $employee_object->getFullName() . "</option>";
             }
         }
-        if (NULL !== $roster_employee_key and !isset($workforce->List_of_employees[$roster_employee_key]->last_name)) {
+        if (NULL !== $roster_employee_key and !$workforce->employee_exists($roster_employee_key)) {
             /*
              * Unknown employee, probably someone from the past.
              */

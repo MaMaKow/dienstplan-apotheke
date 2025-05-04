@@ -72,7 +72,7 @@ abstract class GeneralUtility {
         /*
          * Write a structured output to the standard error log:
          */
-        error_log('in file: ' . $backtrace['file'] . "\n on line: " . $backtrace['line'] . "\n variable: " . $variable_name . "\n value:\n " . var_export($argument_list, TRUE));
+        error_log('in file: ' . $backtrace['file'] . " on line: " . $backtrace['line'] . " variable: " . $variable_name . "\n value: " . var_export($argument_list, TRUE));
     }
 
     /**

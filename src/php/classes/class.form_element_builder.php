@@ -41,7 +41,7 @@ class form_element_builder {
         $checkbox_switch_html = <<<EOT
 <!-- Rectangular switch -->
 <label class="switch">
-    <input type="checkbox" form="$form_id" name="$name" $checked_string onchange="auto_submit_form(this.form)" class="auto_submit">
+    <input type="checkbox" form="$form_id" name="$name" $checked_string onchange="auto_submit_form(this.form)" class="auto-submit">
     <span class="slider"></span>
     <span class="text"></span>
 </label>
@@ -59,7 +59,7 @@ EOT;
 
         $Years = \PDR\Utility\AbsenceUtility::getRosteringYears();
         $html_select_year = "";
-        $html_select_year .= "<form id='select_year' class='inline_form' method=post>";
+        $html_select_year .= "<form id='select_year' class='inline-form' method=post>";
         $html_select_year .= "<select name=year class='large' onchange=this.form.submit()>";
         foreach ($Years as $year_number) {
             $html_select_year .= "<option value='$year_number'";
@@ -81,7 +81,7 @@ EOT;
     public static function build_html_select_month(int $current_month) {
         $Months = localization::get_month_names();
         $html_select_month = "";
-        $html_select_month .= "<form id='select_month' class='inline_form' method=post>";
+        $html_select_month .= "<form id='select_month' class='inline-form' method=post>";
         $html_select_month .= "<select name=month_number class='large' onchange=this.form.submit()>";
         foreach ($Months as $month_number => $month_name) {
             $html_select_month .= "<option value='$month_number'";

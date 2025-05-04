@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,13 +41,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.text.StringEscapeUtils;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-import org.testng.annotations.BeforeMethod;
 import org.threeten.extra.YearWeek;
 
 /**
@@ -64,7 +59,12 @@ public class TestRosterEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date and go foreward and backward from there:
@@ -83,7 +83,12 @@ public class TestRosterEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Read the roster from json files and find the same values in the
@@ -122,7 +127,12 @@ public class TestRosterEmployeePage extends TestPage {
         /**
          * Sign in:
          */
-        super.signIn();
+        try {
+    super.signIn();
+} catch (Exception exception) {
+    logger.error("Sign in failed.");
+    Assert.fail();
+}
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date to get a specific roster:

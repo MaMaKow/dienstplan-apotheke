@@ -159,10 +159,11 @@ class configuration {
         }
     }
 
-    public function getSecretKey() {
+    public function getSecretKey(): string {
         if (isset(self::$loadedConfig['secret_key'])) {
             return self::$loadedConfig['secret_key'];
         } else {
+            error_log("Generating new secret key for configuration");
             $secretKey = bin2hex(random_bytes(64));
             $this->write_new_config_entry('secret_key', $secretKey);
             return self::$loadedConfig['secret_key'];
@@ -405,7 +406,7 @@ class configuration {
         'display_errors' => 0,
         'log_errors' => 1,
         'error_log' => PDR_FILE_SYSTEM_APPLICATION_PATH . 'error.log',
-        'LC_TIME' => 'C',
+        'LC_TIME' => 'de_DE',
         'timezone' => 'Europe/Berlin',
         'language' => 'de-DE',
         'mb_internal_encoding' => 'UTF-8',
@@ -424,7 +425,11 @@ class configuration {
         if (file_exists($configuration_file)) {
             rename($configuration_file, $configuration_file . '_' . date(\DateTime::ATOM) . '.php');
         }
-        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export(self::$loadedConfig, true) . ';' . PHP_EOL);
+        file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export(self::$loadedConfig, true) . ';' . PHP_EOL);
         chmod($configuration_file, 0660);
+        /**
+         * Damit die neue Konfiguration sofort wirksam wird, muss der cache invalidiert werden:
+         */
+        opcache_invalidate($configuration_file, true);
     }
 }

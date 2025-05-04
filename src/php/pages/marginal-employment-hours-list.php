@@ -137,8 +137,8 @@ for ($date_object = clone $date_start_object; $date_object <= $date_end_object; 
         $table_body_html .= "<td>" . $timeStartString . "</td>";
         $table_body_html .= "<td>" . $timeEndString . "</td>";
         $table_body_html .= "<td>" . round($row['hours'], 2);
-        if (isset($workforce->List_of_employees[$employee_key])) {
-            $employee_object = $workforce->List_of_employees[$employee_key];
+        if (isset($workforce->getListOfEmployees()[$employee_key])) {
+            $employee_object = $workforce->getListOfEmployees()[$employee_key];
             $principle_working_hours = $employee_object->get_principle_roster_on_date($date_object)[0]->working_hours;
             /**
              * <p lang=de>Die folgende Rechnung ist allein nicht ganz korrekt:
@@ -174,7 +174,7 @@ $table_body_html .= "</tbody>";
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 ?>
-<FORM method='post' class='no_print'>
+<FORM method='post' class='no-print'>
     <SELECT name='month_or_part' onchange='this.form.submit()'>
         <?php
         foreach ($Months as $month_number_option => $month_name) {
@@ -228,7 +228,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
     </SELECT>
     <SELECT name='employee_key' onchange='this.form.submit()'>
         <?php
-        foreach ($workforce->List_of_employees as $employee_key_option => $employee_object) {
+        foreach ($workforce->getListOfEmployees() as $employee_key_option => $employee_object) {
             echo "<option value='$employee_key_option'";
             if ($employee_key_option == $employee_key) {
                 echo " SELECTED ";
@@ -241,8 +241,8 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 <H1>Stundenzettel</H1>
 
 <?php echo build_html_navigation_elements::build_button_link_roster_employee_table_page($employee_key); ?>
-<H2><?= $workforce->List_of_employees[$employee_key]->full_name ?></H2>
-<TABLE class="table_with_border" id="marginal_employment_hours_list_table">
+<H2><?= $workforce->getEmployeeFullName($employee_key) ?></H2>
+<TABLE class="table-with-border" id="marginalEmploymentHoursListTable">
     <THEAD>
         <TR><!--This following part is specific to German law. No other translation semms necessary.-->
             <TH>Datum</TH>
@@ -257,9 +257,9 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 A signature line for the employee or the employer or both does not seem to be necessary.
 If that ever changes:
 HTML:
-<input type="text" class="print_signature" />
+<input type="text" class="print-signature" />
 CSS:
-.print_signature {
+.print-signature {
     border: 0;
     border-bottom: 1px solid #000;
 }

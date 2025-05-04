@@ -28,12 +28,12 @@ if (isset($_FILES['file_to_upload']['name'])) {
 }
 ?>
 <p style=height:2em></p>
-<div id=main-area>
+<div id=mainArea>
     <form method="post" id='pep_upload_form' enctype="multipart/form-data">
-        <label for="file_to_upload">Eine PEP-Datei zum Hochladen auswählen:</label><br>
-        <input type="file" name="file_to_upload" id="file_to_upload" onchange=" this.form.submit(); document.body.style.cursor = 'wait';" ><br>
+        <label for="fileToUpload">Eine PEP-Datei zum Hochladen auswählen:</label><br>
+        <input type="file" name="file_to_upload" id="fileToUpload" onchange=" this.form.submit(); document.body.style.cursor = 'wait';" ><br>
     </form>
-    <p id=xmlhttpresult class=day_paragraph></p>
+    <p id=xmlhttpresult class=day-paragraph></p>
     <?php
     echo $user_dialog->build_messages();
     $histogramm = new \pep_histogramm();
@@ -43,7 +43,7 @@ if (isset($_FILES['file_to_upload']['name'])) {
     $canvas_width = 650;
     $canvas_height = 300;
     echo $histogramm->get_last_update_of_pep_data_date_string();
-    echo "<canvas id='canvas_histogram' width='$canvas_width' height='$canvas_height'>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
+    echo "<canvas id='canvasHistogram' width='$canvas_width' height='$canvas_height'>\n Your browser does not support the HTML5 canvas tag.\n </canvas>\n";
     ?>
     <script src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/draw_canvas_histogram.js" ></script>
 

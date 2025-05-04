@@ -20,7 +20,9 @@ package Selenium.absencepages;
 
 import Selenium.Absence;
 import Selenium.MenuFragment;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
+import org.testng.annotations.Listeners;
 
 /**
  * Represents the Selenium page object for Absence Employee Page.
@@ -44,6 +47,7 @@ import static org.testng.Assert.assertEquals;
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class AbsenceEmployeePage {
 
     private final WebDriver driver;
@@ -88,7 +92,7 @@ public class AbsenceEmployeePage {
      * Constructor for the AbsenceEmployeePage class.
      */
     public AbsenceEmployeePage() {
-
+        LogCollector.debug("Construct new AbsenceEmployeePage()");
         driver = Selenium.driver.Wrapper.getDriver();
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceEdit);
 
@@ -143,7 +147,7 @@ public class AbsenceEmployeePage {
      */
     public List<String> getUserDialogNotifications() {
         List<String> userDialogNotificationStrings = new ArrayList<>();
-        By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"main-area\"]/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'notification')]/span");
+        By userDialogNotificationParagraphBy = By.xpath("/html/body/div[@id=\"mainArea\"]/div[contains(@class, 'user-dialog-container')]/div[contains(@class, 'notification')]/span");
         List<WebElement> listOfNotificationParagraphs = driver.findElements(userDialogNotificationParagraphBy);
         for (WebElement paragraphElement : listOfNotificationParagraphs) {
             userDialogNotificationStrings.add(paragraphElement.getText());
@@ -164,7 +168,7 @@ public class AbsenceEmployeePage {
      */
     public List<String> getUserDialogErrors() {
         List<String> userDialogErrorStrings = new ArrayList<>();
-        By userDialogErrorParagraphBy = By.xpath("/html/body/div[@id='main-area']/div[contains(@class, 'user_dialog_container')]/div[contains(@class, 'error')]/span");
+        By userDialogErrorParagraphBy = By.xpath("/html/body/div[@id='mainArea']/div[contains(@class, 'user-dialog-container')]/div[contains(@class, 'error')]/span");
         List<WebElement> listOfErrorParagraphs = driver.findElements(userDialogErrorParagraphBy);
         for (WebElement paragraphElement : listOfErrorParagraphs) {
             userDialogErrorStrings.add(paragraphElement.getText());
@@ -183,7 +187,7 @@ public class AbsenceEmployeePage {
         Select yearFormSelect = getYearFormSelect();
         yearFormSelect.selectByValue(String.valueOf(year));
         // Wait until the year dropdown's value attribute reflects the selected year
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.attributeToBe(goToYearSelectBy, "value", String.valueOf(year)));
         // Assert that the selected year matches the expected year
         assertEquals(this.getYear(), year);
@@ -559,7 +563,7 @@ public class AbsenceEmployeePage {
         WebElement overlapCutButtonElement = absenceRowElement.findElement(overlapCutButtonBy);
         overlapCutButtonElement.click();
 
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.stalenessOf(overlapCutButtonElement));
         return new AbsenceEmployeePage();
     }
