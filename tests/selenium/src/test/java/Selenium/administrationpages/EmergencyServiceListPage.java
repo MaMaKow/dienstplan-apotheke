@@ -18,6 +18,7 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.BasePage;
 import Selenium.MenuFragment;
 import Selenium.driver.Wrapper;
 import java.time.Duration;
@@ -37,7 +38,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * @author Mandelkow
  */
-public class EmergencyServiceListPage {
+public class EmergencyServiceListPage extends BasePage {
 
     protected static WebDriver driver;
     By user_name_spanBy = By.id("MenuListItemApplicationUsername");
@@ -49,7 +50,7 @@ public class EmergencyServiceListPage {
     By emergencyRowEmployeeSelectBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
 
     public EmergencyServiceListPage(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
 
         if (getUserNameText().isEmpty()) {
             throw new IllegalStateException("This is not a logged in state,"
@@ -177,11 +178,14 @@ public class EmergencyServiceListPage {
     public EmergencyServiceListPage addLineForDate(LocalDate localDate) {
         Actions actions = new Actions(driver);
         WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
-        actions.moveToElement(dateInputElement).perform();
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", dateInputElement);
+	actions.moveToElement(dateInputElement).perform();
         Wrapper.fillDateInput(dateInputElement, localDate);
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
-        actions.moveToElement(submitButton).perform();
-        submitButton.click();
+	wait.until(ExpectedConditions.elementToBeClickable(submitButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submitButton;
+	actions.moveToElement(submitButton).click().perform();
+        //submitButton.click();
         return new EmergencyServiceListPage(driver);
     }
 
