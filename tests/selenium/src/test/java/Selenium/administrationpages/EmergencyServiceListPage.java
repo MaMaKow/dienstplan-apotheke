@@ -183,7 +183,7 @@ public class EmergencyServiceListPage extends BasePage {
         Wrapper.fillDateInput(dateInputElement, localDate);
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
 	wait.until(ExpectedConditions.elementToBeClickable(submitButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submitButton;
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submitButton);
 	actions.moveToElement(submitButton).click().perform();
         //submitButton.click();
         return new EmergencyServiceListPage(driver);
