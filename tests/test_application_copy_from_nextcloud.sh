@@ -12,7 +12,7 @@ cd $testDirectory
 
 rm -r --force $testDirectory/dienstplan-apotheke/
 #sourcePath=/var/www/html/apotheke/dienstplan-test/
-sourcePath=/var/www/html/nextcloud/data/Martin/files/Dokumente/Freizeit/Programmierung/git/dienstplan-apotheke/
+sourcePath=/var/www/nextcloud-data/Martin/files/Dokumente/Freizeit/Programmierung/git/dienstplan-apotheke/
 destinationPath=/var/www/html/development/testing/dienstplan-apotheke/
 
 echo Source:

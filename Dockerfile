@@ -7,6 +7,27 @@ RUN apt-get update && apt-get install -y \
     libicu-dev git\
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    libmcrypt-dev \
+    libxml2-dev \
+    libkrb5-dev \
+    libc-client-dev \
+    libssl-dev \
+    libkrb5-dev \
+    libicu-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zlib1g-dev \
+    libzip-dev \
+    libonig-dev \
+    git \
+    unzip
+
+# Docker PHP extensions
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-install imap 
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -17,6 +38,7 @@ WORKDIR /var/www/html/apotheke/dienstplan-test
 COPY . /var/www/html/apotheke/dienstplan-test
 # remove container secrets
 RUN rm -f /var/www/html/apotheke/dienstplan-test/.env
+RUN git config pull.rebase false 
 RUN git pull origin testing
 # There is another version of selenium-refresh.php, that fetches fresh data from the
 #   nextcloud to get the newest files under development.
