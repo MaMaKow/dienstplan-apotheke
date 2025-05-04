@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: dienstplan-apotheke-live-web
+    build: .
+    ports:
+      - "${SECURE_WEB_PORT}:443"
+    depends_on:
+      - db
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    restart: always
+
+  db:
+    container_name: dienstplan-apotheke-live-db
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command: --general-log --general-log-file=/var/lib/mysql/general.log
+    volumes:
+      - dienstplan_apotheke_live_db_data:/var/lib/mysql
+    restart: always
+
+volumes:
+  dienstplan_apotheke_live_db_data:

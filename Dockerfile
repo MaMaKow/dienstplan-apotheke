@@ -56,8 +56,8 @@ WORKDIR /var/www/html/apotheke/dienstplan-test
 COPY . /var/www/html/apotheke/dienstplan-test
 # remove container secrets
 RUN rm -f /var/www/html/apotheke/dienstplan-test/.env
-RUN git config pull.rebase false
-RUN git pull origin testing
+#RUN git config pull.rebase false
+#RUN git pull origin testing
 # There is another version of selenium-refresh.php, that fetches fresh data from the
 #   nextcloud to get the newest files under development.
 #   This file here is used in the testing stage within a docker container.
