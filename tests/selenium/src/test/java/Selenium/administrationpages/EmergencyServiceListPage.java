@@ -224,8 +224,11 @@ public class EmergencyServiceListPage extends BasePage {
         LogCollector.debug("move to element submitButton");
         actions.moveToElement(submitButton).perform();
         LogCollector.debug("Click submit button");
-        submitButton.click();
+        #submitButton.click();
         LogCollector.debug("Return new EmergencyServiceListPage");
+	wait.until(ExpectedConditions.elementToBeClickable(submitButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submitButton);
+	actions.moveToElement(submitButton).click().perform();
         return new EmergencyServiceListPage(driver);
     }
 

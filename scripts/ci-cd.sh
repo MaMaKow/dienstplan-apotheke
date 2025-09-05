@@ -5,7 +5,8 @@
 
 # The task of this script is to test the current commit in the testing branch and, if successful, to move it to the main branch.
 # git pull origin testing -> selenium tests (integration tests) -> git merge into master -> git push origin master -> cd production -> git pull origin master (update in production)
-
+(
+  flock -n 200 || { echo "Another instance is already running. Exiting."; exit 1; }
 # setup directories
 repo_dir="/home/git/repositories/dienstplan-apotheke-testing"
 hostnameInstallTest="https://docker.martin-mandelkow.de"
@@ -51,11 +52,20 @@ if [ -z "$diff_output" ]; then
     echo "No differences between testing and master branches. Exiting."
     exit 0
 fi
+# Check if docker-compose file is existent
+if [ ! -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" ]; then
+    echo "docker-compose.yml not found. Exiting."
+    exit 1
+fi
+
+
+echo HERE1
 # Get valid certificate files
 # PDR requires a connection via HTTPS. Certificates are therefore required.
 # These must be provided in the same path as this script. They are copied from here into the docker container. 
 cp $script_dir/fullchain.pem $repo_dir/dienstplan-apotheke/upload/fullchain.pem
 cp $script_dir/privkey.pem $repo_dir/dienstplan-apotheke/upload/privkey.pem
+echo HERE2
 
 
 # Install dependencies with composer
@@ -82,6 +92,7 @@ echo MYSQL_DATABASE=$random_db_name >> .env
 echo MYSQL_USER=$random_user_name >>.env
 echo MYSQL_PASSWORD=$random_user_passphrase >> .env
 urlInstallTest=$hostnameInstallTest:$random_secure_web_port/apotheke
+echo HERE3
 
 # The databaseHostname is "db". This is the hostname of the mysql container as defined in the docker-compose.yml
 # TODO: Use databaseUserName and passphrase from random instead of root
@@ -101,8 +112,11 @@ databasePassword=$random_root_passphrase
 databaseName=$random_db_name
 databasePort=3306
 EOF
+echo HERE4
 #cat $repo_dir/dienstplan-apotheke/tests/selenium/Configuration.properties
+echo HERE5
 bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh
+echo HERE6
 #docker-compose build --no-cache
 docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes
 docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" build
@@ -110,7 +124,7 @@ docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" up -d
 # Function to check if all containers are running
 check_containers() {
   # Get the status of all containers
-  STATUS=$(docker-compose ps -q | xargs docker inspect -f '{{ .State.Running }}' 2>/dev/null)
+  STATUS=$(docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" ps -q | xargs docker inspect -f '{{ .State.Running }}' 2>/dev/null)
 
   # Check if any container is not running
   if [[ "$STATUS" == *"false"* ]] || [[ -z "$STATUS" ]]; then
@@ -122,8 +136,14 @@ check_containers() {
 
 # Wait for all containers to be running
 echo "Waiting for containers to be up."
+number_of_times_containers_checked=0;
 while ! check_containers; do
     echo -n "."
+    (( number_of_times_containers_checked++ ))
+    if [ $number_of_times_containers_checked -gt 30 ]; then
+	echo "Taking to long to wait for container. Exiting."
+        exit 1;
+    fi
     sleep 1  # Wait for 1 second before checking again
 done
 #sleep 30
@@ -133,8 +153,6 @@ done
 cd "$repo_dir"/dienstplan-apotheke/tests/selenium/ || exit 
 /usr/bin/mvn test | tee ./mvn.log
 echo -e "\a" # Bell sound!
-# cleanup the docker container
-docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes
 
 test_outcome=$(cat test-result)
 if [ "$test_outcome" == "FAILED" ]; then
@@ -144,8 +162,15 @@ elif [ "$test_outcome" == "SUCCESS" ]; then
     echo "Selenium tests succeeded."
 else
     echo "Unexpected result in test-result file: $test_outcome"
+    # cleanup the docker container in case of failure:
+    docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes
     exit 1
 fi
+docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" ps -q db
+docker exec "$test_db_container" mysqldump -u root -p"$random_root_passphrase" "$random_db_name" > /tmp/db_dump.sql
+# cleanup the docker container also in case of success:
+docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes
+bash "$repo_dir/dienstplan-apotheke/scripts/start-live-test-container.sh"
 
 # if tests pass, merge into master and push
 # Check the current path
@@ -166,5 +191,5 @@ git push https://$GIT_TOKEN@github.com/MaMaKow/dienstplan-apotheke.git testing:m
 
 echo "CI/CD pipeline executed successfully."
 # finally delete the testing directory
-#rm -rf "$repo_dir"
-
+rm -rf "$repo_dir"
+) 200>/home/git/scripts/ci-cd.lock
