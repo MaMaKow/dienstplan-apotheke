@@ -18,10 +18,9 @@
  */
 package Selenium;
 
-import Selenium.rosterpages.Workforce;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import Selenium.Utilities.GsonProvider;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -128,7 +127,7 @@ public class NetworkOfBranchOffices {
          */
         Writer writer = null;
         try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = GsonProvider.createGson();
             // create a writer:
             writer = Files.newBufferedWriter(Paths.get("networkOfBranchOffices.json"));
             gson.toJson(listOfBranches, writer);

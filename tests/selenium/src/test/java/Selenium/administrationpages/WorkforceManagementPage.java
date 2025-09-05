@@ -23,6 +23,7 @@ import Selenium.MenuFragment;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.driver.Wrapper;
 import Selenium.RealData.RealWorkforce;
+import Selenium.Utilities.LogCollector;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -201,20 +202,27 @@ public class WorkforceManagementPage {
     }
 
     public WorkforceManagementPage createEmployee(Employee employeeObject) {
+        LogCollector.debug("createEmployee before try");
         try {
+            LogCollector.debug("createEmployee inside try");
             selectEmployee(employeeObject);
+            LogCollector.debug("createEmployee after first select");
 
             /**
              * If this employee exists, it will not be created again. Instead we
              * will adapt the values:
              */
+            LogCollector.debug("createEmployee after first select return");
             return setEmployeeData(employeeObject);
         } catch (Exception e) {
+            LogCollector.debug("createEmployee empty catch after fail");
             /**
              * The employee does not exist yet. It will be created.
              */
         }
+        LogCollector.debug("createEmployee select empty");
         selectEmployee("");//Select the empty new employee
+        LogCollector.debug("createEmployee move on to setEmployeeData...");
         return setEmployeeData(employeeObject);
     }
 

@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.Utilities.GsonProvider;
 import Selenium.rosterpages.Workforce;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -235,7 +236,7 @@ public class Roster {
          */
         Writer writer = null;
         try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = GsonProvider.createGson();
             // create a writer:
             writer = Files.newBufferedWriter(Paths.get("roster.json"));
             gson.toJson(listOfRosterDays, writer);

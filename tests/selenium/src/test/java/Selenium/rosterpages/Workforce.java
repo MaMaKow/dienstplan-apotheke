@@ -19,8 +19,9 @@
 package Selenium.rosterpages;
 
 import Selenium.Employee;
+import Selenium.Utilities.GsonProvider;
+import Selenium.Utilities.LogCollector;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.Reader;
@@ -71,15 +72,17 @@ public class Workforce {
         return listOfEmployees.get(employeeKey).getLastName();
     }
 
-    private final HashMap<Integer, Employee> readJsonFile() {
+    private HashMap<Integer, Employee> readJsonFile() {
         HashMap<Integer, Employee> readListOfEmployees = new HashMap<>();
         Reader reader = null;
         try {
             // create a reader
             reader = Files.newBufferedReader(Paths.get("workforce.json"));
             // convert JSON string to Employee object
-            ArrayList<Employee> employees = new Gson().fromJson(reader, new TypeToken<ArrayList<Employee>>() {
+            Gson gson = GsonProvider.createGson();
+            ArrayList<Employee> employees = gson.fromJson(reader, new TypeToken<ArrayList<Employee>>() {
             }.getType());
+
             /**
              * @todo: learn how to use a collector here:
              */
@@ -101,7 +104,7 @@ public class Workforce {
     final public void writeToFile(ArrayList<Employee> listOfEmployees) {
         Writer writer = null;
         try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = GsonProvider.createGson();
             // create a writer
             writer = Files.newBufferedWriter(Paths.get("workforce2.json"));
             // convert book object to JSON file
@@ -120,7 +123,7 @@ public class Workforce {
     public void writeToFile(HashMap<Integer, Employee> listOfEmployees) {
         Writer writer = null;
         try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    Gson gson = GsonProvider.createGson();
             // create a writer
             writer = Files.newBufferedWriter(Paths.get("workforce2.json"));
             // convert book object to JSON file

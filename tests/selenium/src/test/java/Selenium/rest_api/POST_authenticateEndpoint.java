@@ -20,9 +20,9 @@ package Selenium.rest_api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import Selenium.Utilities.GsonProvider;
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.logging.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
@@ -77,7 +77,7 @@ public class POST_authenticateEndpoint {
 
     private String getTokenFromJsonResponse(String response) {
         // Create a Gson object
-        Gson gson = new Gson();
+        Gson gson = GsonProvider.createGson();
 
         // Parse the JSON string into a JsonObject
         JsonObject jsonObject = gson.fromJson(response, JsonObject.class);

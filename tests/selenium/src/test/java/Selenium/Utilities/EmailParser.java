@@ -38,7 +38,7 @@ public class EmailParser {
     private Email email;
 
     public EmailParser(String mailJsonString) {
-        Gson gson = new Gson();
+        Gson gson = GsonProvider.createGson();
         email = gson.fromJson(mailJsonString, Email.class);
         if (email != null && email.getContent() != null && email.getContent().getHeaders() != null) {
             String subject = email.getContent().getHeaders().getSubject();
