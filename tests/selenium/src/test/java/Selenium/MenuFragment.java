@@ -22,6 +22,8 @@ import Selenium.Utilities.LogCollector;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -149,20 +151,42 @@ public class MenuFragment {
         wait.until(ExpectedConditions.presenceOfElementLocated(menuListItemBy));
         //wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
 
-        WebElement menuListItem = driver.findElement(menuListItemBy);
-        wait.until(ExpectedConditions.presenceOfElementLocated(target));
-        wait.until(ExpectedConditions.visibilityOf(menuListItem));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", menuListItem);
-        wait.until(ExpectedConditions.elementToBeClickable(menuListItem));
-        // Attempt to hover using Actions, fallback to JavaScript if needed
-        try {
-            actions.moveToElement(menuListItem).pause(Duration.ofMillis(500)).perform();
-        } catch (Exception e) {
-            LogCollector.warn("Fallback to JavaScript hover");
-            ((JavascriptExecutor) driver).executeScript(
-                    "arguments[0].dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));",
-                    menuListItem
-            );
+        WebElement menuListItem;
+        int retries = 0;
+        int maxRetries = 5;
+        while (retries < maxRetries) {
+            try {
+                // Element jedes Mal neu suchen
+
+                menuListItem = driver.findElement(menuListItemBy);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", menuListItem);
+
+                // Sicherstellen, dass es klickbar ist
+                wait.until(ExpectedConditions.elementToBeClickable(menuListItem));
+
+                // Hover versuchen
+                try {
+                    actions.moveToElement(menuListItem).pause(Duration.ofMillis(500)).perform();
+                } catch (Exception e) {
+                    LogCollector.warn("Fallback to JavaScript hover");
+                    ((JavascriptExecutor) driver).executeScript(
+                            "arguments[0].dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));",
+                            menuListItem
+                    );
+                }
+                break; // erfolgreich -> raus aus while
+            } catch (org.openqa.selenium.StaleElementReferenceException stale) {
+                LogCollector.warn("StaleElementReferenceException beim scrollIntoView – erneuter Versuch " + retries);
+                retries++;
+                try {
+                    Thread.sleep(200); // kleine Pause, bevor wir neu suchen
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        if (retries >= maxRetries) {
+            Assert.fail("menuListItem wurde nach 'maxRetries' Versuchen immer stale.");
         }
         /**
          * Mit der Map von oben im Folgenden das richtige Item zum hovern

@@ -80,7 +80,9 @@ public class UploadPepPage {
             try {
                 expectationElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id=\"expectation\"]")));
                 expectationString = expectationElement.getAttribute("data-expectation");
-                return !expectationString.equals("[]");
+                if (expectationString != null) {
+                    return !expectationString.equals("[]");
+                }
             } catch (StaleElementReferenceException | NullPointerException exception) {
                 System.err.println(exception.getMessage());
                 System.err.println(Arrays.toString(exception.getStackTrace()));
@@ -91,7 +93,7 @@ public class UploadPepPage {
         /**
          * The expectation is filled with something other than "[]":
          */
-        return !"[]".equals(expectationString);
+        return false;
     }
 
     public boolean expectationIsPresentAfterWaiting(int maximumReloads) {
@@ -103,8 +105,10 @@ public class UploadPepPage {
                     Thread.sleep(2000);
                     driver.navigate().refresh();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(UploadPepPage.class
-                            .getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UploadPepPage.class.getName())
+                            .log(Level.SEVERE, "Interrupted while waiting", ex);
+                    Thread.currentThread().interrupt(); // Best Practice
+                    return false;
                 }
             }
         }

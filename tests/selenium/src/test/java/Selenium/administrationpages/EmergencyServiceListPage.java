@@ -208,12 +208,12 @@ public class EmergencyServiceListPage extends BasePage {
         LogCollector.debug("find element dateInputElement");
         WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
         LogCollector.debug("move to element dateInputElement");
-        LogCollector.debug(dateInputElement.getLocation().getX());
-        LogCollector.debug(dateInputElement.getLocation().getY());
-        LogCollector.debug(dateInputElement.getRect().getX());
-        LogCollector.debug(dateInputElement.getRect().getY());
-        LogCollector.debug(dateInputElement.getRect().getHeight());
-        LogCollector.debug(dateInputElement.getRect().getWidth());
+        LogCollector.debug(".getLocation().getX()" + dateInputElement.getLocation().getX());
+        LogCollector.debug(".getLocation().getY()" + dateInputElement.getLocation().getY());
+        LogCollector.debug("dateInputElement.getRect().getX()" + dateInputElement.getRect().getX());
+        LogCollector.debug("dateInputElement.getRect().getY()" + dateInputElement.getRect().getY());
+        LogCollector.debug("dateInputElement.getRect().getHeight()" + dateInputElement.getRect().getHeight());
+        LogCollector.debug("dateInputElement.getRect().getWidth()" + dateInputElement.getRect().getWidth());
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", dateInputElement);
 
         actions.moveToElement(dateInputElement).perform();
@@ -223,12 +223,14 @@ public class EmergencyServiceListPage extends BasePage {
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
         LogCollector.debug("move to element submitButton");
         actions.moveToElement(submitButton).perform();
-        LogCollector.debug("Click submit button");
-        #submitButton.click();
-        LogCollector.debug("Return new EmergencyServiceListPage");
-	wait.until(ExpectedConditions.elementToBeClickable(submitButton));
+        LogCollector.debug("Wait for submit button");
+        //submitButton.click();
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton));
+        LogCollector.debug("Scroll ino view with javascript submit button");
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submitButton);
-	actions.moveToElement(submitButton).click().perform();
+        LogCollector.debug("Click with javascript submit button");
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
+        LogCollector.debug("Return new EmergencyServiceListPage");
         return new EmergencyServiceListPage(driver);
     }
 

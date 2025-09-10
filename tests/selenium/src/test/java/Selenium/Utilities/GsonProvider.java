@@ -21,17 +21,19 @@ package Selenium.Utilities;
 import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class GsonProvider {
 
     public static Gson createGson() {
         return new GsonBuilder()
                 .setPrettyPrinting()
+                // --- LocalDate ---
                 .registerTypeAdapter(LocalDate.class, new JsonSerializer<LocalDate>() {
                     @Override
                     public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
-                        // immer als ISO-8601 String speichern
-                        return new JsonPrimitive(src.toString());
+                        return new JsonPrimitive(src.toString()); // ISO-8601
                     }
                 })
                 .registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
@@ -39,17 +41,44 @@ public class GsonProvider {
                     public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                             throws JsonParseException {
                         if (json.isJsonPrimitive()) {
-                            // String-Variante ("2025-08-31")
                             return LocalDate.parse(json.getAsString());
                         } else if (json.isJsonObject()) {
-                            // Objekt-Variante {"year":2025,"month":8,"day":31}
                             JsonObject obj = json.getAsJsonObject();
-                            int year = obj.get("year").getAsInt();
-                            int month = obj.get("month").getAsInt();
-                            int day = obj.get("day").getAsInt();
-                            return LocalDate.of(year, month, day);
+                            return LocalDate.of(
+                                    obj.get("year").getAsInt(),
+                                    obj.get("month").getAsInt(),
+                                    obj.get("day").getAsInt()
+                            );
                         }
                         throw new JsonParseException("Unsupported LocalDate format: " + json);
+                    }
+                })
+                // --- LocalTime ---
+                .registerTypeAdapter(LocalTime.class, new JsonSerializer<LocalTime>() {
+                    @Override
+                    public JsonElement serialize(LocalTime src, Type typeOfSrc, JsonSerializationContext context) {
+                        return new JsonPrimitive(src.toString()); // HH:mm:ss
+                    }
+                })
+                .registerTypeAdapter(LocalTime.class, new JsonDeserializer<LocalTime>() {
+                    @Override
+                    public LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                            throws JsonParseException {
+                        return LocalTime.parse(json.getAsString());
+                    }
+                })
+                // --- LocalDateTime ---
+                .registerTypeAdapter(LocalDateTime.class, new JsonSerializer<LocalDateTime>() {
+                    @Override
+                    public JsonElement serialize(LocalDateTime src, Type typeOfSrc, JsonSerializationContext context) {
+                        return new JsonPrimitive(src.toString()); // ISO-8601
+                    }
+                })
+                .registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
+                    @Override
+                    public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                            throws JsonParseException {
+                        return LocalDateTime.parse(json.getAsString());
                     }
                 })
                 .create();
