@@ -76,6 +76,7 @@
             <!-- Api tests MUST run after TestUserManagementPage! -->
             <class name="Selenium.rest_api.TestPOST_authenticateEndpoint" />
             <class name="Selenium.rest_api.TestGET_rosterEndpoint" />
+            <class name="Selenium.rest_api.TestGET_branchEndpoint" />
             <!--
             -->
         </classes>
