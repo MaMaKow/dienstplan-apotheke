@@ -230,6 +230,57 @@ class AbsenceDatabaseHandler {
     }
 
     /**
+     * Retrieves all absence records for a specific employee within a given date period.
+     *
+     * This method queries the database for absence records where the employee key matches
+     * and the absence period overlaps with the specified date range. The query uses
+     * inclusive range checking to find any absences that overlap with the period, even
+     * if they only partially overlap.
+     *
+     * @param \DateTime $startDateObject The start date of the period to search (inclusive)
+     * @param \DateTime $endDateObject The end date of the period to search (inclusive)
+     * @param int $employeeKey The unique identifier of the employee
+     *
+     * @return \PDR\Roster\AbsenceCollection Collection of Absence objects that match the criteria,
+     *         ordered by start date. Returns an empty collection if no matches are found.
+     *
+     * @throws \PDOException If there is a database error during the query execution
+     * @throws \Exception If date formatting or object creation fails
+     *
+     *
+     * @see \PDR\Roster\Absence
+     * @see \PDR\Roster\AbsenceCollection
+     * @see \database_wrapper::run()
+     *
+     */
+    public static function getAbsenceObjectsByEmployeeKeyInPeriod(\DateTime $startDateObject, \DateTime $endDateObject, int $employeeKey): \PDR\Roster\AbsenceCollection {
+        $startDateSqlString = $startDateObject->format("Y-m-d");
+        $endDateSqlString = $endDateObject->format("Y-m-d");
+        $absenceCollection = new \PDR\Roster\AbsenceCollection();
+        $query = "SELECT * FROM `absence` WHERE `employee_key` = :employee_key and `start` <= :end AND `end` >= :start ORDER BY `start`";
+        $result = \database_wrapper::instance()->run($query, array(
+            'start' => $startDateSqlString,
+            'end' => $endDateSqlString,
+            'employee_key' => $employeeKey,
+        ));
+        while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
+            $absence = new \PDR\Roster\Absence(
+                    (int) $row->employee_key,
+                    new \DateTime($row->start),
+                    new \DateTime($row->end),
+                    (int) $row->days,
+                    (int) $row->reason_id,
+                    (string) $row->comment,
+                    (string) $row->approval,
+                    (string) $row->user,
+                    new \DateTime($row->timestamp)
+            );
+            $absenceCollection->addAbsence($absence);
+        }
+        return $absenceCollection;
+    }
+
+    /**
      * Set the approval state for a specific absence record.
      *
      * This static function updates the approval state of an absence record
@@ -311,7 +362,7 @@ class AbsenceDatabaseHandler {
         return $numberOfHolidaysTaken;
     }
 
-    public static function findOverlappingAbsences(int $employeeKey, string $startDate, string $endDate): \PDR\Roster\AbsenceCollection {
+    public static function findOverlappingAbsences(int $employeeKey, \DateTime $startDate, \DateTime $endDate): \PDR\Roster\AbsenceCollection {
         $absenceCollection = new \PDR\Roster\AbsenceCollection();
         $selectQery = "SELECT employee_key, start, end, days, reason_id, comment, approval, user, timestamp "
                 . "FROM absence "
@@ -322,9 +373,9 @@ class AbsenceDatabaseHandler {
                 . "ORDER BY `start` DESC ";
         $result = \database_wrapper::instance()->run($selectQery, array(
             "employee_key" => $employeeKey,
-            "start" => $startDate,
-            "start2" => $startDate,
-            "end" => $endDate,
+            "start" => $startDate->format("Y-m-d"),
+            "start2" => $startDate->format("Y-m-d"),
+            "end" => $endDate->format("Y-m-d"),
         ));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $start = new \DateTime($row->start);

@@ -37,11 +37,10 @@ public class GET_branchEndpoint {
     private final Branch branch;
 
     public GET_branchEndpoint(String testPageUrl, int branchId) throws InterruptedException, IOException, Exception {
-        String branchEndpoint = testPageUrl + "src/php/restful-api/branch/" + branchId;
+        String branchEndpoint = testPageUrl + "src/php/restful-api/branches/" + branchId;
         HashMap<String, String> listOfParameters = new HashMap<>();
 
-        listOfParameters.put("branchId", String.valueOf(branchId));
-
+        //listOfParameters.put("branchId", String.valueOf(branchId));
         // Send the POST request
         HttpResponse<String> response = null;
         try {
@@ -49,13 +48,11 @@ public class GET_branchEndpoint {
         } catch (IOException | InterruptedException exception) {
 
             LogCollector.error(exception.getMessage());
-            //Logger.getLogger(POST_authenticateEndpoint.class.getName()).log(Level.SEVERE, null, exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
         } catch (Exception exception) {
             LogCollector.error(exception.getMessage());
-            //Logger.getLogger(GET_branchEndpoint.class.getName()).log(Level.SEVERE, null, exception);
             exception.printStackTrace();
             System.out.println(exception.getMessage());
             throw exception;
@@ -64,7 +61,6 @@ public class GET_branchEndpoint {
         /**
          * Check if branch was successfully fetched
          */
-
         LogCollector.debug("responseBody:");
         LogCollector.debug(responseBody);
         branch = getBranchDataFromJsonResponse(responseBody);
