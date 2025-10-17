@@ -60,7 +60,18 @@ class sessions {
         gettext('request own absence');
     }
 
-    public function __construct(bool $allowUnauthorized = false) {
+    public $List_of_pages_accessible_without_login = array(
+        'login.php',
+        'POST-authenticate.php',
+        'register.php',
+        'webdav.php',
+        'lost_password.php',
+        'reset_lost_password.php',
+        'background_maintenance.php',
+        'default.php',
+    );
+
+    public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
         global $config;
         /**
@@ -71,20 +82,7 @@ class sessions {
         session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
         session_start();
         if (!isset($_SESSION['number_of_times_redirected'])) {
-            /**
-             * @TODO: Check if this is correct!
-             * <p lang=de>Sollte hier isset() oder !isset() stehen?
-             * Was genau wird hier getestet?
-             * Es geht sicherlich um die Nutzung von HTTPS.
-             * Um das zu testen und zu erzwingen wurden redirects angelegt.
-             * Damit diese nicht endlos laufen, werden sie in der $SESSION mitgezählt.
-             * Muss diese Prüfug nun vor oder nach session_start(); stattfinden?
-             * Vorher sollte $_SESSION in keinem Fall definiert sein. Oder?
-             * Was passiert denn, wenn die Variable bereits vorher gesetzt wird?
-             *
-             * In welchem genauen Fall soll die Bedingung jetzt wahr werden?
-             * </p>
-             */
+            //This is the first visit. The variable is not set yet.
             $_SESSION['number_of_times_redirected'] = 0;
         }
 
@@ -115,28 +113,6 @@ class sessions {
             $_SESSION['csrfToken'] = bin2hex(random_bytes(32));
         }
 
-        /**
-         * Force a new visitor to identify as a user (=login):
-         * The redirect obviously is not necessary on the login-page and on the register-page.
-         */
-        $List_of_pages_accessible_without_login = array(
-            'login.php',
-            'POST-authenticate.php',
-            'register.php',
-            'webdav.php',
-            'lost_password.php',
-            'reset_lost_password.php',
-            'background_maintenance.php'
-        );
-        if (
-                false === $this->user_is_logged_in()
-                and !in_array(basename($script_name), $List_of_pages_accessible_without_login)
-                and $allowUnauthorized !== true // allow creation of a session for API pages.
-        ) {
-            $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
-            header("Location:" . $location);
-            die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
-        }
         $this->keep_alive();
     }
 
@@ -342,14 +318,14 @@ class sessions {
                 $_SESSION['number_of_times_redirected'] = 0;
             }
             $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-            if (!headers_sent() and ( $_SESSION['number_of_times_redirected'] ) < 3) {
+            if (!headers_sent() and ($_SESSION['number_of_times_redirected']) < 3) {
                 $_SESSION['number_of_times_redirected']++;
                 header("Status: 301 Moved Permanently");
                 header("Location: $https_url");
                 die("<p>Dieses Programm erfordert die Nutzung von "
                         . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
                         . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
-            } elseif (( $_SESSION['number_of_times_redirected'] ) < 3) {
+            } elseif (($_SESSION['number_of_times_redirected']) < 3) {
                 $_SESSION['number_of_times_redirected']++;
                 die('<script type="javascript">document.location.href="' . $https_url . '";</script>');
             } else {
@@ -389,8 +365,10 @@ class sessions {
     }
 
     public function verifyAccessToken() {
+        //error_log("Inside verifyAccessToken");
         $token = "";
         $headers = getallheaders();
+        //PDR\Utility\GeneralUtility::printDebugVariable($headers);
         /**
          * Test if  Authorization-Header exists
          */
@@ -401,7 +379,7 @@ class sessions {
         }
         $authorizationHeader = $headers["Authorization"];
         if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
-            error_log("We have a request with bearer token.");
+            //error_log("We have a request with bearer token.");
             //PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
             $token = $matches[1];
         } else {
@@ -481,5 +459,35 @@ class sessions {
          *  Return the decoded payload
          */
         return $decodedPayload;
+    }
+
+    public function requireLogin() {
+        $scriptName = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_URL);
+
+        if (true === $this->user_is_logged_in()) {
+            /**
+             * Allready logged in, we are done requiring the login.
+             */
+            return;
+        }
+        if (in_array(basename($scriptName), $this->List_of_pages_accessible_without_login)) {
+            /**
+             * No login necessary on these pages.
+             */
+            return;
+        }
+        /**
+         *  Store the requested URL:
+         */
+        $requestUri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
+        if (empty($_SESSION['login_referrer']) and !str_contains($requestUri, 'default.php')) {
+            $_SESSION['login_referrer'] = $requestUri;
+        }
+        /**
+         * Redirect to login page:
+         */
+        $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
+        header("Location:" . $location);
+        die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
     }
 }

@@ -41,6 +41,14 @@ class roster {
             $this->array_of_days_of_roster_items = $this->read_employee_roster_from_database($employee_key, clone $date_start_object, clone $date_end_object);
             return TRUE;
         }
+        if (NULL !== $branch_id and null !== $other_branch_id) {
+            $this->array_of_days_of_roster_items = $this->read_branch_roster_from_database($branch_id, $other_branch_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
+            return TRUE;
+        }
+        if (NULL !== $branch_id) {
+            $this->array_of_days_of_roster_items = $this->read_roster_from_database($branch_id, $date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
+            return TRUE;
+        }
         throw new Exception('The object of the class ' . __CLASS__ . ' was not correctly constructed. Please check the parameters.');
     }
 
@@ -49,7 +57,7 @@ class roster {
      * @param DateTime $date_start_object The first day, that is to be read.
      * @param DateTime $date_end_object The last day, that is to be read.
      */
-    protected function read_employee_roster_from_database(int $employee_key, DateTime $date_start_object, DateTime $date_end_object) {
+    public static function read_employee_roster_from_database(int $employee_key, DateTime $date_start_object, DateTime $date_end_object) {
         /*
          * TODO: unify this with read_roster_from_database
          * Make them both one function perhaps.

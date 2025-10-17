@@ -21,12 +21,37 @@ class ApiRouter {
 
     private $routes = [];
 
-    public function addRoute($method, $pattern, $controller, $action) {
+    /**
+     * Fügt eine neue Route hinzu.
+     *
+     * @param string $method HTTP-Methode (GET, POST, ...)
+     * @param string $path Lesbarer Pfad mit Platzhaltern wie {id}, {year}, ...
+     * @param string $controller Controller-Klasse
+     * @param string $action Methode im Controller
+     * @param string $description Beschreibung für API-Consumer
+     */
+    public function addRoute($method, $path, $controller, $action, $description = '') {
+        // Platzhalter in Regex umwandeln: {id} -> (\d+), {year} -> (\d{4}), {any} -> (.+)
+        $pattern = preg_replace([
+            '/\{id\}/',
+            '/\{year\}/',
+            '/\{any\}/'
+                ], [
+            '(\d+)',
+            '(\d{4})',
+            '(.+)'
+                ], $path);
+
+        // Regex für preg_match
+        $pattern = '~^' . $pattern . '$~';
+
         $this->routes[] = [
             'method' => $method,
             'pattern' => $pattern,
             'controller' => $controller,
-            'action' => $action
+            'action' => $action,
+            'description' => $description,
+            'readable_path' => $path
         ];
     }
 
@@ -37,13 +62,18 @@ class ApiRouter {
             if ($route['method'] === $method && preg_match($route['pattern'], $apiEndpoint, $matches)) {
                 $controllerClass = $route['controller'];
                 $action = $route['action'];
+                //error_log("We found a match:");
+                //PDR\Utility\GeneralUtility::printDebugVariable($controllerClass);
+                //PDR\Utility\GeneralUtility::printDebugVariable($action);
 
                 $controller = new $controllerClass();
                 return $controller->$action($matches);
             }
         }
 
-        // Default: API-Info anzeigen
+// Default: API-Info anzeigen
+        //PDR\Utility\GeneralUtility::printDebugVariable($requestUri . " does not match any registered route.");
+        //PDR\Utility\GeneralUtility::printDebugVariable($this->routes);
         $this->showApiInfo();
     }
 
@@ -54,22 +84,24 @@ class ApiRouter {
     }
 
     private function showApiInfo() {
+        $endpoints = [];
+        foreach ($this->routes as $route) {
+            $endpoints[] = [
+                "method" => $route['method'],
+                "path" => $route['readable_path'], // lesbare Version
+                "description" => $route['description']
+            ];
+        }
+
         $response = [
             "name" => "Dienstplan-API",
             "version" => "0.1.0",
             "description" => "API zur Verwaltung von Dienstplänen in Apotheken",
-            "endpoints" => [
-                ["method" => "POST", "path" => "/auth/login", "description" => "Benutzer authentifizieren"],
-                ["method" => "GET", "path" => "/users", "description" => "Alle Benutzer auflisten"],
-                ["method" => "GET", "path" => "/users/{id}", "description" => "Bestimmten Benutzer abrufen"],
-                ["method" => "GET", "path" => "/employees", "description" => "Alle Mitarbeiter auflisten"],
-                ["method" => "GET", "path" => "/employees/{id}/absences", "description" => "Abwesenheiten eines Mitarbeiters"],
-                ["method" => "GET", "path" => "/absences", "description" => "Alle Abwesenheiten"],
-                ["method" => "GET", "path" => "/branches", "description" => "Alle Filialen auflisten"],
-                ["method" => "GET", "path" => "/branches/{id}", "description" => "Bestimmte Filiale abrufen"]
-            ]
+            "endpoints" => $endpoints
         ];
+
         header('Content-Type: application/json');
         echo json_encode($response, JSON_PRETTY_PRINT);
+        exit;
     }
 }

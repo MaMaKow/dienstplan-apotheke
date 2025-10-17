@@ -18,6 +18,7 @@
  */
 package Selenium.rest_api;
 
+import Selenium.Employee;
 import Selenium.PropertyFile;
 import Selenium.RosterItem;
 import Selenium.Utilities.LogCollector;
@@ -58,8 +59,8 @@ public class TestGET_rosterEndpoint extends Selenium.TestPage {
             String dateStart = "2020-07-01";
             String dateEnd = "2020-07-03";
             String employeeFullName = "Albert Kremer";
-
-            GET_rosterEndpoint rosterEndpoint = new GET_rosterEndpoint(testPageUrl, dateStart, dateEnd, employeeFullName);
+            Employee employee = workforce.getEmployeeByFullName(employeeFullName);
+            GET_rosterEndpoint rosterEndpoint = new GET_rosterEndpoint(testPageUrl, dateStart, dateEnd, employee);
             HashMap<LocalDate, HashMap> foundRoster = rosterEndpoint.getFoundRosterHashMap();
             if (null == foundRoster) {
                 Assert.fail();

@@ -18,9 +18,11 @@
  */
 package Selenium.rest_api;
 
+import Selenium.Employee;
 import Selenium.RosterItem;
 import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
+import Selenium.rosterpages.Workforce;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -38,12 +40,13 @@ public class GET_rosterEndpoint {
 
     private HashMap<LocalDate, HashMap> foundRoster = new HashMap<>();
 
-    public GET_rosterEndpoint(String testPageUrl, String dateStart, String dateEnd, String employeeFullName) throws InterruptedException, IOException, Exception {
-        String rosterEndpoint = testPageUrl + "src/php/restful-api/roster/GET-roster.php";
+    public GET_rosterEndpoint(String testPageUrl, String dateStart, String dateEnd, Employee employee) throws InterruptedException, IOException, Exception {
+        int branchId = employee.getBranchId();
+        String rosterEndpoint = testPageUrl + "src/php/restful-api/rosters";
         HashMap listOfParameters = new HashMap<String, String>();
         listOfParameters.put("dateStart", dateStart);
         listOfParameters.put("dateEnd", dateEnd);
-        listOfParameters.put("employeeFullName", employeeFullName);
+        listOfParameters.put("employeeKey", String.valueOf(employee.getEmployeeKey()));
         // Send the POST request
         HttpResponse<String> response = null;
         try {

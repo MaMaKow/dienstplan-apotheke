@@ -67,6 +67,8 @@ public class ApiHandler {
         String accessToken = null;
         try {
             accessToken = POST_authenticateEndpoint.getAccessToken();
+            LogCollector.debug("Using existing accessToken");
+
         } catch (Exception exception) {
             Logger.getLogger(ApiHandler.class.getName()).log(Level.SEVERE, null, exception);
             exception.printStackTrace();
@@ -82,7 +84,6 @@ public class ApiHandler {
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
         // Handle the response
         return response;
     }

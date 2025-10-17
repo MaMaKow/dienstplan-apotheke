@@ -31,28 +31,122 @@ $apiEndpoint = str_replace($basePath, '', $requestUriStripped);
 //\PDR\Utility\GeneralUtility::printDebugVariable($apiEndpoint);
 // Routes registrieren
 $router = new ApiRouter();
+/**
+ *  Authentication Routes
+ */
+$router->addRoute(
+        'POST',
+        '/auth/login',
+        'AuthController',
+        'login',
+        'Benutzeranmeldung durchführen'
+);
 
-// Authentication Routes
-$router->addRoute('POST', '~^/auth/login$~', 'AuthController', 'login');
+/**
+ *  User Routes
+ */
+$router->addRoute(
+        'GET',
+        '/users',
+        'UserController',
+        'getAllUsers',
+        'Alle Benutzer abrufen'
+);
 
-// User Routes
-$router->addRoute('GET', '~^/users$~', 'UserController', 'getAllUsers');
-$router->addRoute('GET', '~^/users/(\d+)$~', 'UserController', 'getUserById');
+$router->addRoute(
+        'GET',
+        '/users/{id}',
+        'UserController',
+        'getUserById',
+        'Details eines bestimmten Benutzers abrufen'
+);
 
-// Employee Routes
-$router->addRoute('GET', '~^/employees$~', 'EmployeeController', 'getAllEmployees');
-$router->addRoute('GET', '~^/employees/(\d+)/absences/(\d{4})$~', 'EmployeeController', 'getEmployeeAbsencesByYear');
-$router->addRoute('GET', '~^/employees/(\d+)/absences/?$~', 'EmployeeController', 'getEmployeeAbsences');
+/*
+ * Employee Routes
+ */
+$router->addRoute(
+        'GET',
+        '/employees',
+        'EmployeeController',
+        'getAllEmployees',
+        'Alle Mitarbeiter abrufen'
+);
 
-// Absence Routes
-$router->addRoute('GET', '~^/absences/(\d{4})$~', 'AbsenceController', 'getAbsencesByYear');
-$router->addRoute('GET', '~^/absences/?$~', 'AbsenceController', 'getAllAbsences');
+$router->addRoute(
+        'GET',
+        '/employees/{id}/absences/{year}',
+        'EmployeeController',
+        'getEmployeeAbsencesByYear',
+        'Abwesenheiten eines Mitarbeiters in einem bestimmten Jahr abrufen'
+);
 
-// Branch Routes
-$router->addRoute('GET', '~^/branches$~', 'BranchController', 'getAllBranches');
-$router->addRoute('GET', '~^/branches/(\d+)$~', 'BranchController', 'getBranchById');
+$router->addRoute(
+        'GET',
+        '/employees/{id}/absences',
+        'EmployeeController',
+        'getEmployeeAbsences',
+        'Alle Abwesenheiten eines Mitarbeiters abrufen'
+);
+
+/**
+ * Absence Routes
+ */
+$router->addRoute(
+        'GET',
+        '/absences/{year}',
+        'AbsenceController',
+        'getAbsencesByYear',
+        'Alle Abwesenheiten eines Jahres abrufen'
+);
+
+$router->addRoute(
+        'GET',
+        '/absences',
+        'AbsenceController',
+        'getAllAbsences',
+        'Alle Abwesenheiten abrufen'
+);
+
+/**
+  Roster Routes
+ *
+ *
+ * Optionaler Filter über Query-Parameter:
+ * - employeeKey
+ * - start
+ * - end
+ *
+ * Beispiel:
+ *   GET /rosters?employeeKey=123&start=2025-10-01&end=2025-10-31
+ *
+ */
+$router->addRoute(
+        'GET',
+        '/rosters',
+        'RosterController',
+        'getRosters',
+        'Dienstpläne abrufen (optional gefiltert nach Mitarbeiter und Zeitraum)'
+);
+
+/**
+ *
+ *   Branch Routes
+ */
+$router->addRoute(
+        'GET',
+        '/branches',
+        'BranchController',
+        'getAllBranches',
+        'Alle Filialen abrufen'
+);
+
+$router->addRoute(
+        'GET',
+        '/branches/{id}',
+        'BranchController',
+        'getBranchById',
+        'Details einer bestimmten Filiale abrufen'
+);
 
 // Request verarbeiten
 $router->handle($requestUri, $method);
-
-\PDR\Utility\GeneralUtility::printDebugVariable("After switch statement");
