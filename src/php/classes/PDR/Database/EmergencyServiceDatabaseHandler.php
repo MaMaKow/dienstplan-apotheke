@@ -140,7 +140,7 @@ class EmergencyServiceDatabaseHandler {
 
     public static function getListOfEmergencyServicesInYear(int $year, int $branchId): array {
         $listOfEmergencyServicesInYear = array();
-        $sqlQuerySelect = "SELECT * FROM emergency_services WHERE YEAR(date) = :year AND branch_id = :branch_id";
+        $sqlQuerySelect = "SELECT * FROM emergency_services WHERE YEAR(date) = :year AND branch_id = :branch_id ORDER BY `date` ASC";
         $result = \database_wrapper::instance()->run($sqlQuerySelect, array('year' => $year, 'branch_id' => $branchId));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $dateObject = new \DateTime($row->date);

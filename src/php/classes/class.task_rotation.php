@@ -31,7 +31,7 @@ abstract class task_rotation {
     /**
      * @var MAX_FUTURE_WEEKS <p>The maximum number of weeks to be planned into the future.</p>
      */
-    const MAX_FUTURE_WEEKS = 4;
+    const MAX_FUTURE_WEEKS = 8;
 
     public static function task_rotation_main(array $Dates_unix, string $task, int $branch_id, workforce $workforce) {
         $number_of_filled_days = 0;
