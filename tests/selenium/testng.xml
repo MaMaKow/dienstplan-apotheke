@@ -16,6 +16,7 @@
     <test name="Installation Pages" >
         <classes>
             <class name="Selenium.installation.TestInstallation" /><!---->
+            <class name="Selenium.signin.TestFailedLogin" />
             <class name="Selenium.signin.TestLogin" />
             <class name="Selenium.administrationpages.TestConfigurationPage" />
             <class name="Selenium.signin.TestRegister" />

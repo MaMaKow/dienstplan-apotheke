@@ -62,8 +62,8 @@ public class SignInPage extends Selenium.BasePage {
              */
             PropertyFile propertyFile = new PropertyFile();
             /**
-             * @todo: Wenn die fogende Zeile den Wechsel zur testRealPageUrl erzwingt,
-             * gelingt der Wechsel zum Login in der realPage nicht.
+             * @todo: Wenn die fogende Zeile den Wechsel zur testRealPageUrl
+             * erzwingt, gelingt der Wechsel zum Login in der realPage nicht.
              */
             //driver.get(propertyFile.getTestPageUrl());
         }
@@ -152,4 +152,73 @@ public class SignInPage extends Selenium.BasePage {
         moveToResetLostPasswordLink.click();
 
     }
+
+    /**
+     * Login mit ungültigen Credentials (für negative Tests) Diese Methode
+     * erwartet KEINEN erfolgreichen Login
+     *
+     * @param userName
+     * @param passphrase
+     * @throws java.lang.Exception
+     */
+    public void loginInvalidUser(String userName, String passphrase) throws Exception {
+        LogCollector.debug("method signInPage.loginInvalidUser()");
+
+        // Warte auf Login-Button
+        try {
+            waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
+        } catch (TimeoutException exception) {
+            LogCollector.warn("Login button not found - might already be logged in");
+            throw new Exception("Cannot perform invalid login test - not on login page");
+        }
+
+        LogCollector.debug("enter invalid sign in form data:");
+
+        // Felder leeren und Daten eingeben
+        WebElement usernameField = driver.findElement(usernameBy);
+        usernameField.clear();
+        if (userName != null && !userName.isEmpty()) {
+            usernameField.sendKeys(userName);
+        }
+
+        WebElement passwordField = driver.findElement(passwordBy);
+        passwordField.clear();
+        if (passphrase != null && !passphrase.isEmpty()) {
+            passwordField.sendKeys(passphrase);
+        }
+
+        LogCollector.debug("click sign in button:");
+        driver.findElement(signinBy).click();
+
+        // Kurz warten, um der Anwendung Zeit zu geben, zu reagieren
+        Thread.sleep(500);
+
+        LogCollector.debug("Invalid login attempt completed");
+
+        /**
+         * Prüfe, dass der Login tatsächlich fehlgeschlagen ist Wenn wir eine
+         * HomePage erstellen können und einen User finden, ist der Login
+         * fälschlicherweise erfolgreich gewesen.
+         */
+        try {
+            LogCollector.debug("Verify that login failed - try creating HomePage:");
+            HomePage newHomePage = new HomePage(driver);
+            String loggedInUser = newHomePage.getUserNameText();
+
+            // Wenn wir hier ankommen, war der Login erfolgreich - das ist FALSCH!
+            Assert.fail("Login sollte fehlschlagen, war aber erfolgreich! Eingeloggter User: " + loggedInUser);
+
+        } catch (IllegalStateException expected) {
+            // Das ist der erwartete Fall - HomePage wirft IllegalStateException bei nicht eingeloggtem User
+            LogCollector.debug("Login ist erwartungsgemäß fehlgeschlagen (IllegalStateException): " + expected.getMessage());
+        } catch (TimeoutException expected) {
+            // Alternative: TimeoutException von getUserNameText() bedeutet auch, dass kein User eingeloggt ist
+            LogCollector.debug("Login ist erwartungsgemäß fehlgeschlagen (TimeoutException): " + expected.getMessage());
+        } catch (Exception unexpected) {
+            // Andere Exceptions sollten nicht auftreten
+            LogCollector.error("Unerwartete Exception beim Prüfen des fehlgeschlagenen Logins" + unexpected.getMessage());
+            throw unexpected;
+        }
+    }
+
 }
