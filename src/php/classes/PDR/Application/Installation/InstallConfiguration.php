@@ -108,8 +108,6 @@ class InstallConfiguration {
     }
 
     public function setConfiguration($configNew): void {
-        error_log("inside setConfiguration()");
-        \PDR\Utility\GeneralUtility::printDebugVariable($configNew);
         if (!empty($configNew)) {
             foreach ($configNew as $key => $value) {
                 self::$configuration[$key] = $value;
@@ -135,11 +133,9 @@ class InstallConfiguration {
     }
 
     public function writeConfigToFile(): bool {
-        error_log("Inside writeConfigToFile");
         // self::$configuration["contact_email"] = self::$configuration["admin"]["email"];
         self::$configuration["session_secret"] = \bin2hex(\random_bytes(8)); //In case there are several instances of the program on the same machine
         unset(self::$configuration["admin"]);
-        \PDR\Utility\GeneralUtility::printDebugVariable(self::$configuration);
         $result = \file_put_contents(self::$pdrFileSystemApplicationPath . 'config/config.php', '<?php' . \PHP_EOL . '$config =' . \var_export(self::$configuration, true) . ';');
         if (FALSE === $result) {
             $installUtility = new InstallUtility();
@@ -147,7 +143,6 @@ class InstallConfiguration {
             error_log("Error while writing the configuration to the filesystem.");
             return FALSE;
         }
-        error_log("Success while writing the configuration to the filesystem.");
         return TRUE;
     }
 

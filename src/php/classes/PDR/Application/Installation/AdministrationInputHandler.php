@@ -58,7 +58,6 @@ class AdministrationInputHandler {
         /**
          * Create a user object:
          */
-        \PDR\Utility\GeneralUtility::printDebugVariable($installConfiguration->getConfiguration());
         $installConfiguration->writeConfigToFile(); // Test! Will this enable reading from the database?
         $user_base = new \PDR\Workforce\user_base();
         $user = $user_base->guess_user_by_identifier($configInput["admin"]["user_name"]);
