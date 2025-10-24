@@ -9,8 +9,8 @@
   flock -n 200 || { echo "Another instance is already running. Exiting."; exit 1; }
 # setup directories
 repo_dir="/home/git/repositories/dienstplan-apotheke-testing"
-hostnameInstallTest="https://docker.martin-mandelkow.de"
-export JAVA_HOME=/usr/lib/jvm/jre-11-openjdk/
+hostnameInstallTest="https://www.martin-mandelkow.de"
+export JAVA_HOME=/usr/lib/jvm/default-java
 ENVIRONMENT=testing # set ENVIRONMENT for the Dockerfile to testing
 
 # Determine the script's directory
@@ -29,10 +29,10 @@ source ~/.bash_profile
 
 rm -rf "$repo_dir"
 mkdir -p "$repo_dir"
-cd "$repo_dir" || exit 
+cd "$repo_dir" || exit
 # clone repository and checkout testing branch
 git clone git@github.com:MaMaKow/dienstplan-apotheke.git
-cd dienstplan-apotheke || exit 
+cd dienstplan-apotheke || exit
 git checkout testing
 git fetch --all
 # Fetch latest changes from remote
@@ -62,7 +62,7 @@ fi
 echo HERE1
 # Get valid certificate files
 # PDR requires a connection via HTTPS. Certificates are therefore required.
-# These must be provided in the same path as this script. They are copied from here into the docker container. 
+# These must be provided in the same path as this script. They are copied from here into the docker container.
 cp $script_dir/fullchain.pem $repo_dir/dienstplan-apotheke/upload/fullchain.pem
 cp $script_dir/privkey.pem $repo_dir/dienstplan-apotheke/upload/privkey.pem
 echo HERE2
@@ -150,7 +150,7 @@ done
 
 # run selenium tests
 # assuming the selenium tests are written to exit with a non-zero status on failure
-cd "$repo_dir"/dienstplan-apotheke/tests/selenium/ || exit 
+cd "$repo_dir"/dienstplan-apotheke/tests/selenium/ || exit
 /usr/bin/mvn test | tee ./mvn.log
 echo -e "\a" # Bell sound!
 
