@@ -341,7 +341,7 @@ abstract class build_html_roster_views {
         $head_table_html .= "<thead>\n";
         $head_table_html .= "<tr>\n";
 
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $locale = $configuration->getLanguage();
         $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
         $weekdayFormatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
@@ -398,7 +398,7 @@ abstract class build_html_roster_views {
         $last_day->setTimestamp(max(array_keys($Roster)));
         $workforce = new workforce($first_day->format('Y-m-d'), $last_day->format('Y-m-d'));
 
-        global $config;
+        $configuration = new PDR\Application\Configuration();
         $table_html = "";
         $table_html .= "<tbody>";
 
@@ -418,7 +418,7 @@ abstract class build_html_roster_views {
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
                 $approval = roster_approval::get_approval($date_sql, $branch_id);
-                if ("approved" !== $approval and TRUE == $config['hide_disapproved']) {
+                if ("approved" !== $approval and TRUE == $configuration->getHideDisapproved()) {
                     $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
                 }
@@ -502,7 +502,7 @@ abstract class build_html_roster_views {
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 
-        global $config;
+        $configuration = new PDR\Application\Configuration();
         $table_html = "";
         $table_html .= "<tbody>";
 
@@ -527,7 +527,7 @@ abstract class build_html_roster_views {
                  * Duty rosters have to be approved by the leader, before the staff can view them.
                  */
                 $approval = roster_approval::get_approval($date_sql, $branch_id);
-                if ("approved" !== $approval and false != $config['hide_disapproved']) {
+                if ("approved" !== $approval and false != $configuration->getHideDisapproved()) {
                     $table_html .= "<td><!--Hidden because not approved--></td>";
                     continue;
                 }

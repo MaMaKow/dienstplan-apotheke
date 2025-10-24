@@ -74,7 +74,7 @@ if (!file_exists(PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php')) {
     /*
      * Complement the configuration array with the default values for unset parameters:
      */
-    foreach (\PDR\Application\configuration::$List_of_configuration_parameters as $key => $value) {
+    foreach (\PDR\Application\Configuration::$List_of_configuration_parameters as $key => $value) {
         if (!isset($config[$key])) {
             $config[$key] = $value;
         }

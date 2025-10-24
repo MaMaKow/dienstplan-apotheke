@@ -73,13 +73,13 @@ class sessions {
 
     public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
-        global $config;
+        $configuration = new PDR\Application\Configuration();
         /**
          * In case there are several instances of the program on the same machine,
          * we need a specific identifier for the different instances.
          * Therefore we define a specific session_name:
          */
-        session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
+        session_name('PDR' . md5($configuration->getSessionSecret())); //MUST be called before session_start()
         session_start();
         if (!isset($_SESSION['number_of_times_redirected'])) {
             //This is the first visit. The variable is not set yet.
@@ -261,14 +261,8 @@ class sessions {
     }
 
     function send_mail_about_lost_password(user $user, $token) {
-        $user_dialog = new user_dialog();
-        global $config;
-        if (isset($config['application_name'])) {
-            $application_name = $config['application_name'];
-        } else {
-            $application_name = 'PDR';
-        }
-
+        $configuration = new PDR\Application\Configuration();
+        $application_name = $configuration->getApplicationName();
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
                 . sprintf(gettext('Dear %1$s,'), $user->user_name)
@@ -414,7 +408,7 @@ class sessions {
         /**
          *  Signature
          */
-        $configuration = new PDR\Application\configuration();
+        $configuration = new PDR\Application\Configuration();
         $secretKey = $configuration->getSecretKey();
         $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey);
         /**
@@ -439,7 +433,7 @@ class sessions {
         /**
          * Verify the signature using the secret key and the algorithm specified in the header
          */
-        $configuration = new PDR\Application\configuration();
+        $configuration = new PDR\Application\Configuration();
         $secretKey = $configuration->getSecretKey();
         $algorithm = $decodedHeader['algorithm'];
 

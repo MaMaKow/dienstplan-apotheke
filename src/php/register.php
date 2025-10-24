@@ -106,11 +106,8 @@ if ($show_form) {
     if (empty($email)) {
         $email = "";
     }
-    if (isset($config['application_name'])) {
-        $application_name = $config['application_name'];
-    } else {
-        $application_name = 'PDR';
-    }
+    $configuration = new PDR\Application\Configuration();
+    $application_name = $configuration->getApplicationName();
     /**
      * In order to prevent DDoS attacks against the registration form we define a simple math problem:
      */
@@ -152,7 +149,7 @@ if ($show_form) {
  * @todo Write selenium test for this email
  */
 function send_mail_about_registration(string $userName, string $userEmail): void {
-    $configuration = new PDR\Application\configuration();
+    $configuration = new PDR\Application\Configuration();
     $messageSubject = quoted_printable_encode(gettext('New user has been registered'));
     $applicationName = $configuration->getApplicationName();
     $url = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/register_approve.php";

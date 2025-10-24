@@ -49,7 +49,7 @@ echo form_element_builder::build_html_select_year($year);
         ?>
     </TR>
     <?php
-    $configuration = new \PDR\Application\configuration();
+    $configuration = new \PDR\Application\Configuration();
     $locale = $configuration->getLanguage();
     $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
     for ($currentDate = clone $dateStartObject; $currentDate <= $dateEndObject; $currentDate->modify('+1 day')) {

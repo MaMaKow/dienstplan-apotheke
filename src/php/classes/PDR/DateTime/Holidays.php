@@ -34,7 +34,7 @@ class Holidays {
     private $year;
 
     public function __construct(int $year) {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $countryCode = $configuration->getCountryCode();
         $stateCode = $configuration->getStateCode();
         $this->holidays = $this->getHolidays($year, $countryCode, $stateCode);

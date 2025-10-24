@@ -36,7 +36,7 @@ class ICalendar {
      * @return string  The ICS content
      */
     public static function buildIcsRosterEmployee(array $Roster, $createValarm = self::VALARM_NONE) {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $tzid = $configuration->getTimezone();
         $dateTimeZone = new \DateTimeZone($tzid);
         // Figure out the overall date range (not used directly by eluceo/iCal, but kept for compatibility)
@@ -150,7 +150,7 @@ class ICalendar {
         $ListOfBranchObjects = $networkOfBranchOffices->get_list_of_branch_objects();
         $branchName = $ListOfBranchObjects[$branchId]->getName();
 
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $locale = $configuration->getLanguage(); // e.g. "de-DE"
         $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
         $formatter->setPattern('EEEE'); // Full weekday name

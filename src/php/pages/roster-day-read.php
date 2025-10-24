@@ -24,11 +24,7 @@ $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
 $branch_id = user_input::get_variable_from_any_input('mandant', FILTER_SANITIZE_NUMBER_INT, min(array_keys($List_of_branch_objects)));
 \PDR\Utility\GeneralUtility::createCookie('mandant', $branch_id, 30);
-/*
- * @var $number_of_days int Number of days to show.
- * This page will show the roster of one single day.
- */
-$number_of_days = 1;
+$configuration = new PDR\Application\Configuration();
 $user_dialog = new user_dialog();
 
 $date_sql = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
@@ -99,7 +95,7 @@ echo "</div>\n";
 echo "<div id=dutyRosterTableDiv>\n";
 echo "<table id=dutyRosterTable>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME, build_html_roster_views::OPTION_SHOW_CALENDAR_WEEK));
-if ($approval == "approved" OR $config['hide_disapproved'] == false) {
+if ($approval == "approved" OR $configuration->getHideDisapproved() == false) {
 
     echo build_html_roster_views::build_roster_readonly_table($Roster, $branch_id, array('space_constraints' => 'wide'));
     echo "<tr><td></td></tr>\n";

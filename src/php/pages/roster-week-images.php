@@ -49,7 +49,7 @@ echo build_html_navigation_elements::build_input_date($date_sql);
 echo "</div>\n";
 
 echo "<div id=rosterWeekImageDiv class=image>\n";
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 $locale = $configuration->getLanguage();
 $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
 $dateFormatter->setPattern('EEEE d.MM.yyyy');

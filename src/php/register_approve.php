@@ -21,7 +21,6 @@ require_once "../../head.php";
 require '../../src/php/pages/menu.php';
 $session->exit_on_missing_privilege('administration');
 
-
 if ($approve_id = filter_input(INPUT_POST, 'approve', FILTER_SANITIZE_NUMBER_INT)) {
     //activate the user account:
     $user = new user($approve_id);
@@ -68,13 +67,9 @@ echo "</table>";
 echo "</form>";
 
 function send_mail_about_registration_approval($user_name, $recipient) {
-    global $config;
-    if (isset($config['application_name'])) {
-        $application_name = $config['application_name'];
-    } else {
-        $application_name = 'PDR';
-    }
 
+    $configuration = new PDR\Application\Configuration();
+    $application_name = $configuration->getApplicationName();
 
     $message_subject = quoted_printable_encode('Benutzer wurde aktiviert');
     $message_text = quoted_printable_encode("<HTML><BODY>"
@@ -83,7 +78,7 @@ function send_mail_about_registration_approval($user_name, $recipient) {
             . "' angemeldet. Die Anmeldung wurde durch einen Administrator bestätigt. Sie können sich jetzt <a href='"
             . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/login.php' target='_blank'>anmelden.</a>"
             . "</BODY></HTML>");
-    $headers = 'From: ' . $config['contact_email'] . "\r\n";
+    $headers = 'From: ' . $configuration->getContactEmail() . "\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";

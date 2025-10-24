@@ -268,7 +268,7 @@ class user_dialog_email {
     }
 
     public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL): bool {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
 //        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
 //        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
 //        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';

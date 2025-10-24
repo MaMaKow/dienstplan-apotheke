@@ -184,7 +184,7 @@ class OvertimeInputHandler {
      * @return void This function does not return any value.
      */
     private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours, string $deletionReason): void {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $workforce = new \workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
         $locale = $configuration->getLC_TIME();
@@ -212,7 +212,7 @@ class OvertimeInputHandler {
             \DateTime $dateOld, \DateTime $dateNew,
             float $overtimeHoursOld, float $overtimeHoursNew,
             string $overtimeReasonOld, string $overtimeReasonNew): void {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $workforce = new \workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
         $dateStringOld = \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateOld);

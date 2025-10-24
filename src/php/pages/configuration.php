@@ -24,17 +24,17 @@ $configurationManager->checkErrorLogPath();
  */
 $session->exit_on_missing_privilege('administration');
 if (isset($_POST) && !empty($_POST)) {
-    $config = \PDR\Output\HTML\configurationManager::handle_user_input($config);
+    \PDR\Output\HTML\configurationManager::handle_user_input();
     // POST data has been submitted
     $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/configuration.php' . "?user_input=handled";
     header('Location:' . $location);
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 /*
  * Check the hide_disapproved value
  */
-if (FALSE != $config['hide_disapproved']) {
+if (FALSE != $configuration->getHideDisapproved()) {
     $hide_disapproved_yes = 'checked';
     $hide_disapproved_no = '';
 } else {

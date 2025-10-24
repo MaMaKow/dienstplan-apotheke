@@ -71,8 +71,8 @@ class collaborative_vacation {
              */
             if ($_SESSION['user_object']->employee_key !== $employee_key) {
                 error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays for employee " . $employee_key);
-                global $config;
-                $recipient = $config['contact_email'];
+                $configuration = new PDR\Application\Configuration();
+                $recipient = $configuration->getContactEmail();
                 $subject = "Permission Error";
                 $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays for employee " . $employee_key;
                 $user_dialog_email->send_email($recipient, $subject, $message);
@@ -81,16 +81,14 @@ class collaborative_vacation {
             if ("" !== $employee_key_old and $_SESSION['user_object']->employee_key !== $employee_key_old) {
                 error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays from employee " . $employee_key_old);
                 $user_dialog_email = new user_dialog_email;
-                global $config;
-                $recipient = $config['contact_email'];
+                $recipient = $configuration->getContactEmail();
                 $subject = "Permission Error";
                 $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays from employee " . $employee_key_old;
                 $user_dialog_email->send_email($recipient, $subject, $message);
                 throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
             }
             $approval = "not_yet_approved";
-            global $config;
-            $recipient = $config['contact_email'];
+            $recipient = $configuration->getContactEmail();
             $subject = "An absence for " . $_SESSION['user_object']->user_name . " was changed.";
             $message = "Dear Admin,\n\n";
             $message = "An absence for " . $_SESSION['user_object']->user_name . " was inserted or changed.\n";
@@ -110,8 +108,7 @@ class collaborative_vacation {
              */
             error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " seems to misuse collaborative vacation.");
             $user_dialog_email = new user_dialog_email;
-            global $config;
-            $recipient = $config['contact_email'];
+            $recipient = $configuration->getContactEmail();
             $subject = "Permission Error";
             $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " seems to misuse collaborative vacation.";
             $user_dialog_email->send_email($recipient, $subject, $message);

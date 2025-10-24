@@ -35,7 +35,7 @@ if (isset($_POST) && !empty($_POST)) {
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
 
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 $locale = $configuration->getLanguage();
 $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
 $dateFormatter->setPattern('EEE');

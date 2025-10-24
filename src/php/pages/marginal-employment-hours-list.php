@@ -99,7 +99,7 @@ if (isset($_POST) && !empty($_POST)) {
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
 
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 $locale = $configuration->getLanguage();
 $monthFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
 $monthFormatter->setPattern('MMMM');

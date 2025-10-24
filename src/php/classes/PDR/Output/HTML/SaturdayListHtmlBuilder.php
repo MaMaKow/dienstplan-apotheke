@@ -37,7 +37,7 @@ class SaturdayListHtmlBuilder {
 
         $Roster = \roster::read_roster_from_database($branchId, $dateObject->format('Y-m-d'));
         $tableRow = "";
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $locale = $configuration->getLanguage();
         $dayFormatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
         $dayFormatter->setPattern('EEE dd.MM.YYYY'); // 'EEEE' represents the full weekday name

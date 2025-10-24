@@ -107,7 +107,7 @@ class roster_image_bar_plot {
                  */
                 $x_pos_svg_weekday_text = $this->outer_margin_x + $this->inner_margin_x;
                 $y_pos_svg_weekday_text = $this->outer_margin_y + ($this->inner_margin_y * ($line + 1)) + ($this->bar_height * $line);
-                $configuration = new \PDR\Application\configuration();
+                $configuration = new \PDR\Application\Configuration();
                 $locale = $configuration->getLanguage();
                 $formatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE, null, null, 'EEEE');
                 $weekday_string = $formatter->format($date_unix);

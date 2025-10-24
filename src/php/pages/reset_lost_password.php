@@ -38,15 +38,17 @@ function lost_password_token_is_valid($user_key, $token) {
 
 function build_lost_password_form($user_key, $token) {
     $user_dialog = new user_dialog();
-    global $config;
+    $configuration = new PDR\Application\Configuration();
     $user = new user($user_key);
 
     if (lost_password_token_is_valid($user_key, $token)) {
         ?>
         <div class=centered-form-div>
-            <H1><?= $config['application_name'] ?> </H1>
-            <form accept-charset='utf-8' action="reset_lost_password.php" method="post">
-                <p><strong><?= $user->user_name ?></strong></p>
+            <H1><?= $configuration->getApplicationName(); ?>
+            </H1>
+            <form accept-charset = 'utf-8' action = "reset_lost_password.php" method = "post">
+                <p><strong><? = $user->user_name
+                        ?></strong></p>
                 <p><?= gettext('You can change your password here. Please enter your new password twice below.') ?></p>
                 <input type='hidden' name='user_key' value='<?= $user_key ?>'>
                 <input type='hidden' name='token' value='<?= $token ?>'>

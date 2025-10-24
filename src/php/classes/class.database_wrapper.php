@@ -44,18 +44,18 @@ class database_wrapper {
     const ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY = 'Duplicate entry for key';
 
     protected function __construct() {
-        global $config;
+        $configuration = new PDR\Application\Configuration();
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
             PDO::ATTR_EMULATE_PREPARES => FALSE,
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
         );
-        $this->database_host = $config['database_host'];
-        $this->database_name = $config['database_name'];
-        $this->database_port = $config['database_port'];
-        $this->database_user_name = $config['database_user'];
-        $this->database_password = $config['database_password'];
+        $this->database_host = $configuration->getDatabaseHost();
+        $this->database_name = $configuration->getDatabaseName();
+        $this->database_port = $configuration->getDatabasePort();
+        $this->database_user_name = $configuration->getDatabaseUser();
+        $this->database_password = $configuration->getDatabasePassword();
         if (!empty($this->database_port) and 3306 != $this->database_port) {
             $port_string = 'port=' . $this->database_port . ';';
         } else {

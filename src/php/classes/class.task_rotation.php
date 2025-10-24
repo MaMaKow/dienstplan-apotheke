@@ -37,7 +37,7 @@ abstract class task_rotation {
         $number_of_filled_days = 0;
         $weekly_rotation_div_html = "<div id='weeklyRotation'>\n";
         $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $locale = $configuration->getLanguage();
         $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
         $weekdayFormatter->setPattern('EEE'); // 'EEEE' represents the full weekday name

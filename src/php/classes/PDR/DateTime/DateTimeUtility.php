@@ -44,7 +44,7 @@ abstract class DateTimeUtility {
     }
 
     public static function formatReadableDateObject(\DateTime $dateObject): string {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $formatter = new \IntlDateFormatter($configuration->getLC_TIME(), \IntlDateFormatter::NONE, \IntlDateFormatter::NONE);
         $formatter->setPattern('dd.MM.yyyy');
         return $formatter->format($dateObject);

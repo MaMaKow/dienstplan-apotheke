@@ -29,11 +29,8 @@ if (filter_has_var(INPUT_POST, 'login')) {
 require "../../head.php";
 
 echo "<div class=centered-form-div>";
-if (isset($config['application_name'])) {
-    $application_name = $config['application_name'];
-} else {
-    $application_name = 'PDR';
-}
+$configuration = new PDR\Application\Configuration();
+$application_name = $configuration->getApplicationName();
 echo "<H1>" . $application_name . "</H1>\n";
 $user_dialog = new user_dialog();
 $user_dialog->build_messages();

@@ -27,7 +27,7 @@ namespace PDR\Application;
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  * @namespace PDR\Application
  */
-class configuration {
+class Configuration {
 
     private static $loadedConfig; // This will store the loaded configuration
 
@@ -39,12 +39,20 @@ class configuration {
      */
     public function __construct() {
         if (null == self::$loadedConfig) {
-            // Load the configuration file
-            $config = array();
-            require PDR_FILE_SYSTEM_APPLICATION_PATH . "/config/config.php";
-            // Assign the loaded configuration to the class property
-            self::$loadedConfig = $config;
+            $this->loadFromFile();
         }
+    }
+
+    private function loadFromFile() {
+        // Load the configuration file
+        $config = array(); //This will be overridden by the command in the file:
+        require PDR_FILE_SYSTEM_APPLICATION_PATH . "config/config.php";
+        // Assign the loaded configuration to the class property
+        self::$loadedConfig = $config;
+    }
+
+    public function forceReload(): void {
+        $this->loadFromFile();
     }
 
     /**
@@ -409,6 +417,14 @@ class configuration {
             return self::$loadedConfig['email_smtp_password'];
         } else {
             return self::$List_of_configuration_parameters['email_smtp_password'];
+        }
+    }
+
+    public function getArrayOfLoadedConfig(): ?array {
+        if (isset(self::$loadedConfig)) {
+            return self::$loadedConfig;
+        } else {
+            return self::$List_of_configuration_parameters;
         }
     }
 

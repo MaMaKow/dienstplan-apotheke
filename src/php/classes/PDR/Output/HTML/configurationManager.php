@@ -209,7 +209,7 @@ class configurationManager {
     }
 
     public function checkErrorLogPath() {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         // Set the desired error log path
         $desiredErrorLogPath = $configuration->getErrorLog();
 
@@ -236,12 +236,16 @@ class configurationManager {
      * writes it to the configuration file
      * and then returns the new configuration array.</p>
      *
-     * @param array $config
      * @return array $new_config
      */
-    public static function handle_user_input($config) {
+    public static function handle_user_input(): void {
+        $oldConfigurationObjectBeforeInput = new \PDR\Application\Configuration(); // Old config before input
+        $oldConfigurationArrayBeforeInput = $oldConfigurationObjectBeforeInput->getArrayOfLoadedConfig();
         $user_dialog = new \user_dialog();
         $configuration_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php';
+        // Initialize the new configuration array
+        $newConfig = array();
+
         /**
          * Copy old file
          */
@@ -253,38 +257,38 @@ class configurationManager {
         /**
          * Read the POST values:
          */
-        foreach (\PDR\Application\configuration::$List_of_configuration_parameters as $key => $default_value) {
+        foreach (\PDR\Application\Configuration::$List_of_configuration_parameters as $key => $default_value) {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
                         $user_dialog->add_message(gettext('The passwords do not match.'));
-                        $new_config[$key] = $config[$key]; // revert to old password
+                        $newConfig[$key] = $oldConfigurationObjectBeforeInput->getDatabasePassword(); // revert to old password
                         continue;
                     }
                     $have_i_been_pwned = new \have_i_been_pwned();
                     if (!$have_i_been_pwned->password_is_secure($_POST['database_password'])) {
                         $user_dialog->add_message($have_i_been_pwned->get_user_information_string());
-                        $new_config[$key] = $config[$key]; // revert to old password
+                        $newConfig[$key] = $oldConfigurationObjectBeforeInput->getDatabasePassword(); // revert to old password
                         continue;
                     }
                 }
                 /*
                  * $key will be taken from POST:
                  */
-                $new_config[$key] = filter_input(INPUT_POST, $key, self::$List_of_configuration_parameter_types[$key]);
-            } elseif (isset($config[$key]) and '' !== $config[$key]) {
+                $newConfig[$key] = filter_input(INPUT_POST, $key, self::$List_of_configuration_parameter_types[$key]);
+            } elseif (isset($oldConfigurationArrayBeforeInput[$key]) and '' !== $oldConfigurationArrayBeforeInput[$key]) {
                 /*
                  * $key will be taken from old $config:
                  */
-                $new_config[$key] = $config[$key];
+                $newConfig[$key] = $oldConfigurationArrayBeforeInput[$key];
             } else {
                 /*
                  * $key will be taken from default value:
                  */
-                $new_config[$key] = $default_value;
+                $newConfig[$key] = $default_value;
             }
         }
-        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($new_config, true) . ';' . PHP_EOL);
+        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($newConfig, true) . ';' . PHP_EOL);
         if ($result === false) {
             $user_dialog = new \user_dialog;
             $user_dialog->add_message("Error while trying to write configuration file.", E_USER_ERROR);
@@ -298,6 +302,6 @@ class configurationManager {
             \opcache_reset();
             error_log("Cleared the php cache via \opcache_reset().");
         }
-        return $new_config;
+        $oldConfigurationObjectBeforeInput->forceReload();
     }
 }

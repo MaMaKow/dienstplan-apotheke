@@ -35,7 +35,7 @@ class AdministrationInputHandler {
         $configInput["admin"]["email"] = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL, FILTER_NULL_ON_FAILURE);
         $configInput["admin"]["password"] = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
         $configInput["admin"]["password2"] = filter_input(INPUT_POST, "password2", FILTER_SANITIZE_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-
+        $configInput['contact_email'] = $configInput["admin"]["email"];
         if ($configInput["admin"]["password"] !== $configInput["admin"]["password2"]) {
             $installUtility->addErrorMessage(gettext("The passwords aren't the same."));
             unset($configInput["admin"]["password"], $configInput["admin"]["password2"]); //We get rid of this values as fast as possible.
@@ -58,12 +58,8 @@ class AdministrationInputHandler {
         /**
          * Create a user object:
          */
-        /**
-         * \PDR\Workforce\user_base(); needs to access $config to connect to the database.
-         * We create the config variable and make it globally accessible.
-         */
-        global $config;
-        $config = $installConfiguration->getConfiguration();
+        \PDR\Utility\GeneralUtility::printDebugVariable($installConfiguration->getConfiguration());
+        $installConfiguration->writeConfigToFile(); // Test! Will this enable reading from the database?
         $user_base = new \PDR\Workforce\user_base();
         $user = $user_base->guess_user_by_identifier($configInput["admin"]["user_name"]);
         if (false === $user or !$user->exists()) {

@@ -17,6 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @todo Remove this file!
+ *  It is not used by any other file.
+ *  Searched on 20.10.2025
+ */
 require_once '../../default.php';
 
 $sql_query = "SELECT TABLE_NAME FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = :database_name";

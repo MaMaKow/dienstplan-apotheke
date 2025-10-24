@@ -186,7 +186,7 @@ $html_text .= $dateObject->format("d.m.");
 /*
  * Weekday:
  */
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 $locale = $configuration->getLanguage();
 $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
 $weekdayFormatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
