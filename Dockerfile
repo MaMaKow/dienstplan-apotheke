@@ -1,7 +1,7 @@
 # This Dockerfile is not to be used in production!
 # It serves for development and testing purposes only.
 # Use the official PHP image with Apache
-FROM php:8.0-apache
+FROM php:8.2-apache
 
 ARG ENVIRONMENT=production
 
