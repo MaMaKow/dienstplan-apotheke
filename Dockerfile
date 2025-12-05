@@ -8,7 +8,7 @@ ARG ENVIRONMENT=production
 # Create configuration file for Apache
 RUN echo '<Directory /var/www/html>' \
      '\n    Options Indexes FollowSymLinks' \
-     '\n    AllowOverride Limit Options' \
+     '\n    AllowOverride Limit Options FileInfo' \
      '\n    Require all granted' \
      '\n</Directory>' > /etc/apache2/conf-available/directory-listing.conf
 
