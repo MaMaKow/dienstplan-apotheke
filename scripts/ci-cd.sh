@@ -9,7 +9,7 @@
   flock -n 200 || { echo "Another instance is already running. Exiting."; exit 1; }
 # setup directories
 repo_dir="/home/git/repositories/dienstplan-apotheke-testing"
-hostnameInstallTest="https://www.martin-mandelkow.de"
+hostnameInstallTest="https://docker.martin-mandelkow.de"
 export JAVA_HOME=/usr/lib/jvm/default-java
 ENVIRONMENT=testing # set ENVIRONMENT for the Dockerfile to testing
 
@@ -70,10 +70,18 @@ echo HERE2
 
 # Install dependencies with composer
 # First get composer:
+EXPECTED_HASH=$(php -r "copy('https://composer.github.io/installer.sig', 'php://stdout');")
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'.PHP_EOL; } else { echo 'Installer corrupt'.PHP_EOL; unlink('composer-setup.php'); exit(1); }"
+ACTUAL_HASH=$(php -r "echo hash_file('SHA384', 'composer-setup.php');")
+
+if [ "$EXPECTED_HASH" != "$ACTUAL_HASH" ]; then
+  echo "ERROR: Invalid installer hash"
+  rm composer-setup.php
+  exit 1
+fi
+
 php composer-setup.php
-php -r "unlink('composer-setup.php');"
+rm composer-setup.php
 # Second run composer to install the dependencies:
 php composer.phar install
 
@@ -151,6 +159,11 @@ done
 # run selenium tests
 # assuming the selenium tests are written to exit with a non-zero status on failure
 cd "$repo_dir"/dienstplan-apotheke/tests/selenium/ || exit
+
+echo Test connection using curl:
+curl -vvv https://$urlInstallTest/dienstplan-test/
+
+
 /usr/bin/mvn test | tee ./mvn.log
 echo -e "\a" # Bell sound!
 
