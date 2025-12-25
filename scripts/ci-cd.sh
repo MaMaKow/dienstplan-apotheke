@@ -46,6 +46,11 @@ if ! git merge --no-ff origin/master; then
 fi
 echo "Merge with master completed successfully. Proceeding with the script."
 
+# Get the 3rdparty classes via composer:
+composer dump-autoload
+composer install
+#composer install --no-dev --optimize-autoloader
+
 # Check for differences between testing and master branches
 diff_output=$(git diff origin/master..origin/testing)
 if [ -z "$diff_output" ]; then

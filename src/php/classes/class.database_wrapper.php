@@ -44,7 +44,7 @@ class database_wrapper {
     const ERROR_MESSAGE_DUPLICATE_ENTRY_FOR_KEY = 'Duplicate entry for key';
 
     protected function __construct() {
-        $configuration = new PDR\Application\Configuration();
+        $configuration = new \PDR\Application\Configuration();
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
