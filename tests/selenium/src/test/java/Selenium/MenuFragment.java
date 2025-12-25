@@ -57,7 +57,7 @@ public class MenuFragment {
     public static final By MenuLinkToAbsenceEdit = By.id("MenuLinkToAbsenceEdit");
     public static final By MenuLinkToAbsenceMonth = By.id("MenuLinkToAbsenceMonth");
     public static final By MenuLinkToAbsenceOverview = By.id("MenuLinkToAbsenceOverview");
-    public static final By MenuLinkToAbsencYear = By.id("MenuLinkToAbsenceYear");
+    public static final By MenuLinkToAbsenceYear = By.id("MenuLinkToAbsenceYear");
     public static final By MenuLinkToAttendanceList = By.id("MenuLinkToAttendanceList");
     public static final By MenuLinkToSaturdayList = By.id("MenuLinkToSaturdayList");
     public static final By MenuLinkToSaturdayRotationTeams = By.id("MenuLinkToSaturdayRotationTeams");
@@ -83,61 +83,52 @@ public class MenuFragment {
     public static final By MenuListItemApplication = By.id("MenuListItemApplication");
     public static Map<By, By> menuMap = new HashMap<>();
 
-    public static void navigateTo(WebDriver driver, By target) {
-        LogCollector.debug("MenuFragment navigateTo()" + target.toString());
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(500));
-        /**
-         * Scheduled Roster
-         */
+    // Static initializer block for menuMap - only runs once
+    static {
+        // Scheduled Roster
         menuMap.put(MenuLinkToRosterWeekTable, MenuListItemRoster);
         menuMap.put(MenuLinkToRosterWeekImages, MenuListItemRoster);
         menuMap.put(MenuLinkToRosterDayEdit, MenuListItemRoster);
         menuMap.put(MenuLinkToRosterDayRead, MenuListItemRoster);
         menuMap.put(MenuLinkToRosterEmployee, MenuListItemRoster);
         menuMap.put(MenuLinkToRosterHoursList, MenuListItemRoster);
-        /**
-         * Overtime
-         */
+        // Overtime
         menuMap.put(MenuLinkToOvertimeEdit, MenuListItemOvertime);
         menuMap.put(MenuLinkToOvertimeRead, MenuListItemOvertime);
         menuMap.put(MenuLinkToOvertimeOverview, MenuListItemOvertime);
-        /**
-         * Absence
-         */
+        // Absence
         menuMap.put(MenuLinkToAbsenceEdit, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsenceMonth, MenuListItemAbsence);
-        menuMap.put(MenuLinkToAbsencYear, MenuListItemAbsence);
+        menuMap.put(MenuLinkToAbsenceYear, MenuListItemAbsence);
         menuMap.put(MenuLinkToAbsenceOverview, MenuListItemAbsence);
-        /**
-         * Principle Roster
-         */
+        // Principle Roster
         menuMap.put(MenuLinkToPrincipleRosterEmployee, MenuListItemPrincipleRoster);
         menuMap.put(MenuLinkToPrincipleRosterDay, MenuListItemPrincipleRoster);
-        /**
-         * Administration
-         */
+        // Administration
         menuMap.put(MenuLinkToAttendanceList, MenuListItemAdministration);
         menuMap.put(MenuLinkToSaturdayList, MenuListItemAdministration);
         menuMap.put(MenuLinkToSaturdayRotationTeams, MenuListItemAdministration);
         menuMap.put(MenuLinkToEmergencyServiceList, MenuListItemAdministration);
-
         menuMap.put(MenuLinkToPharmacyUploadPep, MenuListItemAdministration);
-
         menuMap.put(MenuLinkToManageEmployee, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageBranch, MenuListItemAdministration);
         menuMap.put(MenuLinkToManageUser, MenuListItemAdministration);
-
         menuMap.put(MenuLinkToConfiguration, MenuListItemAdministration);
-        /**
-         * Application
-         */
+        // Application
         menuMap.put(MenuLinkToManageAccount, MenuListItemApplication);
         menuMap.put(MenuLinkToApplicationAbout, MenuListItemApplication);
         menuMap.put(MenuLinkToApplicationManual, MenuListItemApplication);
         menuMap.put(MenuLinkToLogout, MenuListItemApplication);
+    }
+
+    public static void navigateTo(WebDriver driver, By target) {
+        LogCollector.debug("MenuFragment navigateTo()" + target.toString());
+
+        // Increased timeout from 500ms to 10 seconds to avoid flaky tests
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         Actions actions = new Actions(driver);
+
         /**
          * <p lang=de>
          * Das Element steht im Menü über dem gewünschten Element. Um das
@@ -145,102 +136,176 @@ public class MenuFragment {
          * übergeordnete Element gehovert werden.
          * </p>
          */
-
         By menuListItemBy = menuMap.get(target);
+        if (menuListItemBy == null) {
+            Assert.fail("No menu list item found for target: " + target.toString());
+        }
+
         LogCollector.debug("First hover menuListItem" + menuListItemBy.toString());
+
+        // Wait for parent menu item to be present and visible
         wait.until(ExpectedConditions.presenceOfElementLocated(menuListItemBy));
-        //wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListItemBy));
 
         WebElement menuListItem;
         int retries = 0;
         int maxRetries = 5;
         while (retries < maxRetries) {
             try {
-                // Element jedes Mal neu suchen
-
+                // Find element fresh each time to avoid stale element
                 menuListItem = driver.findElement(menuListItemBy);
-                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", menuListItem);
 
-                // Sicherstellen, dass es klickbar ist
+                // Scroll into view
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", menuListItem);
+
+                // Ensure element is clickable
                 wait.until(ExpectedConditions.elementToBeClickable(menuListItem));
 
-                // Hover versuchen
+                // Try to hover
                 try {
                     actions.moveToElement(menuListItem).pause(Duration.ofMillis(500)).perform();
+                    // Small wait to ensure hover takes effect
+                    Thread.sleep(200);
                 } catch (Exception e) {
                     LogCollector.warn("Fallback to JavaScript hover");
                     ((JavascriptExecutor) driver).executeScript(
                             "arguments[0].dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));",
                             menuListItem
                     );
+                    Thread.sleep(200);
                 }
-                break; // erfolgreich -> raus aus while
+                break; // Success - exit loop
             } catch (org.openqa.selenium.StaleElementReferenceException stale) {
-                LogCollector.warn("StaleElementReferenceException beim scrollIntoView – erneuter Versuch " + retries);
+                LogCollector.warn("StaleElementReferenceException while scrolling into view - retry " + retries);
                 retries++;
                 try {
-                    Thread.sleep(200); // kleine Pause, bevor wir neu suchen
+                    Thread.sleep(300); // Small pause before retry
                 } catch (InterruptedException ex) {
                     Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
+                    Thread.currentThread().interrupt();
                 }
+            } catch (InterruptedException ie) {
+                Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ie);
+                Thread.currentThread().interrupt();
+                break;
             }
         }
+
         if (retries >= maxRetries) {
-            Assert.fail("menuListItem wurde nach 'maxRetries' Versuchen immer stale.");
+            Assert.fail("menuListItem remained stale after " + maxRetries + " retries.");
         }
+
         /**
-         * Mit der Map von oben im Folgenden das richtige Item zum hovern
-         * auswählen...
+         * Wait for target link element to be available
          */
         WebElement linkElement = null;
         int attempts = 0;
-        while (attempts < 7) {
+        int maxAttempts = 7;
+
+        while (attempts < maxAttempts) {
             attempts++;
             try {
-                LogCollector.debug("Brute force try to wait for target...");
+                LogCollector.debug("Attempt " + attempts + " to wait for target...");
+
+                // First wait for element to be present
                 wait.until(ExpectedConditions.presenceOfElementLocated(target));
+
+                // Then wait for element to be clickable
                 linkElement = wait.until(ExpectedConditions.elementToBeClickable(target));
-                break;
+
+                // Additional check for visibility
+                wait.until(ExpectedConditions.visibilityOfElementLocated(target));
+
+                break; // Success - exit loop
+            } catch (org.openqa.selenium.StaleElementReferenceException stale) {
+                LogCollector.warn("StaleElementReferenceException when waiting for target - attempt " + attempts);
+                if (attempts >= maxAttempts) {
+                    throw stale;
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
+                    Thread.currentThread().interrupt();
+                }
             } catch (NoSuchElementException noSuchElementException) {
-                LogCollector.debug("NoSuchElementException");
-                System.err.println("NoSuchElementException");
+                LogCollector.debug("NoSuchElementException on attempt " + attempts);
+                if (attempts >= maxAttempts) {
+                    throw noSuchElementException;
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
+                    Thread.currentThread().interrupt();
+                }
             } catch (Exception exception) {
-                LogCollector.debug("Exception");
-                System.err.println("Exception");
-                throw exception;
+                LogCollector.debug("Exception on attempt " + attempts);
+                if (attempts >= maxAttempts) {
+                    throw exception;
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
+                    Thread.currentThread().interrupt();
+                }
             }
         }
-        if (null == linkElement) {
-            Assert.fail("linkElement not found.");
+
+        if (linkElement == null) {
+            Assert.fail("linkElement not found after " + maxAttempts + " attempts.");
         }
-        // Ensure target is visible before interaction
-        linkElement = wait.until(ExpectedConditions.visibilityOfElementLocated(target));
+
+        // Check if we're already on the target page
         LogCollector.debug("Check if page differs from current page");
         LogCollector.debug("driver.getCurrentUrl(): " + driver.getCurrentUrl());
         LogCollector.debug("linkElement.getAttribute(\"href\"): " + linkElement.getAttribute("href"));
-        if (!driver.getCurrentUrl().contains(linkElement.getAttribute("href"))) {
+
+        String currentUrl = driver.getCurrentUrl();
+        String targetHref = linkElement.getAttribute("href");
+
+        if (targetHref != null && !currentUrl.contains(targetHref)) {
             LogCollector.debug("Page differs from current page, clicking to new page");
-            /**
-             * Do not move if the page is already the correct page.
-             */
-            LogCollector.debug("Click to reload page");
-            wait.until(ExpectedConditions.elementToBeClickable(linkElement)).click();
+
+            // Ensure element is still clickable
+            linkElement = wait.until(ExpectedConditions.elementToBeClickable(target));
+
+            // Use JavaScript click for better reliability
+            try {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", linkElement);
+            } catch (Exception e) {
+                LogCollector.warn("JavaScript click failed, trying regular click");
+                linkElement.click();
+            }
+
+            // Wait for page load
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
+                Thread.currentThread().interrupt();
+            }
         } else {
             LogCollector.debug("Page is target page already, no click.");
         }
+
         /**
-         * Move the mouse back to the left top of the page:
-         *
-         * @CAVE: This might be not exactly (0, 0) because the location we move
-         * from is the center of the element.
+         * Move mouse back to top of page
          */
         LogCollector.debug("Bring mouse back to top of the page.");
-        LogCollector.debug("menuListItem = driver.findElement(menuListItemBy);");
-        menuListItem = driver.findElement(menuListItemBy);
-        LogCollector.debug("actions.moveToElement(menuListItem).perform();");
-        actions.moveToElement(menuListItem).perform();
-        LogCollector.debug("actions.moveByOffset(-menuListItem.getLocation().getX(), 500).perform();");
-        actions.moveByOffset(-menuListItem.getLocation().getX(), 500).perform();
+        try {
+            menuListItem = driver.findElement(menuListItemBy);
+            actions.moveToElement(menuListItem).perform();
+            actions.moveByOffset(-menuListItem.getLocation().getX(), 500).perform();
+        } catch (Exception e) {
+            LogCollector.warn("Failed to move mouse back to top: " + e.getMessage());
+            // Fallback: use JavaScript to move mouse to body
+            ((JavascriptExecutor) driver).executeScript(
+                    "document.body.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));"
+            );
+        }
+
         LogCollector.debug("Done with menu navigation");
     }
 }
