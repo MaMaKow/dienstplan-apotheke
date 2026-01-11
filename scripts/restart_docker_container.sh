@@ -31,9 +31,10 @@ chmod o+w /tmp/selenium/shared_downloads -R
 # -p 4444:4444 -> Exposes the Selenium WebDriver port, allowing your tests to connect to the Selenium server.
 # -p 7900:7900 -> Exposes the VNC server port, which allows you to view the browser running your tests in real-time using a VNC viewer.
 # -p 5900:5900 -> Another VNC server port, used by some configurations or can be an alternative VNC access point.
+# -e SE_SESSION_TIMEOUT=900 -> Increases the time to view the browser after the tests are done from 5 minutes (300 s) to 15 minutes (900 s)
 # --shm-size="2g" -> Increases the shared memory size to 2 GB, which is important for running browsers inside the container to avoid out-of-memory issues.
 # -v /tmp/selenium/shared_downloads:/home/seluser/Downloads -> Mounts the shared downloads directory so that files downloaded during tests are accessible on your host machine.
-manage_container "dienstplan_selenium" "docker run -d -p 4444:4444 -p 7900:7900 -p 5900:5900 --shm-size='2g' -v /tmp/selenium/shared_downloads:/home/seluser/Downloads dienstplan_selenium"
+manage_container "dienstplan_selenium" "docker run -d -p 4444:4444 -p 7900:7900 -p 5900:5900 -e SE_SESSION_TIMEOUT=900 --shm-size='2g' -v /tmp/selenium/shared_downloads:/home/seluser/Downloads dienstplan_selenium"
 
 # Start/restart MailHog container
 # A simple SMTP server that captures emails and provides a web interface to view them.

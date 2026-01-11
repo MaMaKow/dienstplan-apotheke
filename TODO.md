@@ -19,7 +19,7 @@ Mitarbeiter selbst tauschen -> Modul bauen
   * \\PDR\\Workforce\\Workforce.php
   * \\PDR\\Workforce\\EmployeeManagement.php instead of \PDR\\Workforce\\HumanResourceManagement.php
   * \\PDR\\Roster\\Roster.php (Eine ganze Woche/Monat/beliebiger Bereich)
-  
+
   *  \\PDR\\Roster\\RosterDayArray.php (alle Items aus einem Tag)
 *  \\PDR\\Roster\\RosterItem.php
   *  \\PDR\\Roster\\RosterItemEmpty.php
@@ -346,3 +346,6 @@ Wir brauchen darüber hinaus zwei extra Tabellen für Urlaube und für Urlaubsan
 id, employee_id, year, leave_days_working_days, (leave_days_working_days_adjusted, conversion_rate_to_working_days, comments)
 und
 id, leave_entitlement_id, date, adjustment_type, adjustment_days_working_days, comments
+
+#### Tests ergänzen für:
+sick-note-tracking.php

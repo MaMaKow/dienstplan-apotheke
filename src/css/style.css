@@ -273,30 +273,35 @@ nav ul#navigationList li p, nav ul#navigationList li span, nav ul#navigationList
     line-height: 2em; /*is equal to {nav ul#navigationList li}[height]*/
 }
 
-ul#navigationList li a:hover {
+nav ul#navigationList li a:hover, ul#navigationList li a:focus {
     background-color: #73AC22;
     color: #FFFFFF;
 }
 
-nav ul#navigationList li:hover > ul {
+nav ul#navigationList li:hover > ul.submenu, nav ul#navigationList li:focus > ul.submenu {
     display: block;
+    visibility: visible;
+    height: auto;
 }
 
-ul#navigationList ul, ul#navigationList ul li ul{
+nav ul#navigationList ul.submenu {
     display: none;
     position: absolute;
     list-style-type: none;
     padding-left: 0;
     margin-left: 2.0em;
-    z-index:  20;
+    /*z-index:  20;*/
+    visibility: hidden;
+    height: 0;
+    z-index: 1000;
 }
 
-ul#navigationList ul li {
+nav ul#navigationList ul li {
     clear: both;
     width: 100%;
 }
 
-ul#navigationList ul li a {
+nav ul#navigationList ul li a {
     font-style: inherit !important;
     display: inline-block;
     float: left;
