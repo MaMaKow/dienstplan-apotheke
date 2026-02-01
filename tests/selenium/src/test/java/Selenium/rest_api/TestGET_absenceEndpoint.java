@@ -435,7 +435,7 @@ public class TestGET_absenceEndpoint extends Selenium.TestPage {
 
         Employee employee = workforce.getEmployeeByFullName("Albert Krüger");
         int testEmployeeKey = employee.getEmployeeKey();
-        int testYear = 2020;
+        int testYear = LocalDate.now().getYear();
 
         // Create unique test data for specific employee and year
         String testStartDate = "15.09." + testYear;

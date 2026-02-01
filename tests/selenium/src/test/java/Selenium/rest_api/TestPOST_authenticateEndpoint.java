@@ -24,16 +24,32 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.SkipException;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
  * @todo <p lang=de>Die Klasse muss noch geteilt werden. Die Seitenspezifischen
- * Teile wandern in die Klasse POST_authenticatePage.java verschoben.
- * Die Teile, die von anderen API Seiten geteilt werden, wandern in eine TestApiPage.java Klasse.
+ * Teile wandern in die Klasse POST_authenticatePage.java verschoben. Die Teile,
+ * die von anderen API Seiten geteilt werden, wandern in eine TestApiPage.java
+ * Klasse.
  * </p>
  * @author Mandelkow
  */
 public class TestPOST_authenticateEndpoint extends Selenium.TestPage {
+
+    @BeforeMethod
+    public void setUpMethod(ITestResult result) {
+        if (true == Selenium.TestPage.someTestHasFailed) {
+            throw new SkipException("Some Test has failed. Skipping all the other methods.");
+        }
+        // Print the name of the class and the currently executing test method to the log file
+        packageName = this.getClass().getPackageName();
+        className = this.getClass().getSimpleName();
+        methodName = result.getMethod().getMethodName();
+        System.err.println("Package: " + packageName + ", Class: " + className + ", Method: " + methodName);
+    }
 
     private PropertyFile propertyFile;
     public Logger logger;

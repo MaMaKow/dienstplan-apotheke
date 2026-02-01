@@ -21,6 +21,7 @@ package Selenium.rosterpages;
 import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -48,16 +49,17 @@ public class TestRosterDayEditPage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
         /**
          * Move to specific date and go foreward and backward from there:
          */
-        LocalDate localDate = LocalDate.of(2020, Month.JULY, 1);
+        int currentYear = LocalDate.now().getYear();
+        LocalDate localDate = LocalDate.of(currentYear, Month.JULY, 1);
         rosterDayEditPage.goToDate(localDate); //This date is a wednesday.
         assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), rosterDayEditPage.getDateString()); //This is the corresponding monday.
         rosterDayEditPage.moveDayBackward();
@@ -73,11 +75,11 @@ public class TestRosterDayEditPage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         /**
@@ -109,11 +111,11 @@ public class TestRosterDayEditPage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         Roster roster = new Roster();
@@ -145,11 +147,11 @@ public class TestRosterDayEditPage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         int numberOfEditsMax = 5;
@@ -159,14 +161,23 @@ public class TestRosterDayEditPage extends TestPage {
         HashMap<LocalDate, HashMap> listOfRosterDays = roster.getListOfRosterDays();
         for (Map.Entry<LocalDate, HashMap> listOfRosterDaysEntrySet : listOfRosterDays.entrySet()) {
             LocalDate localDate = listOfRosterDaysEntrySet.getKey();
+            LogCollector.debug("Datum des RosterDays: " + localDate.format(DateTimeFormatter.ISO_DATE));
             rosterDayEditPage.goToDate(localDate);
+            LogCollector.debug("Datum auf der Seite: " + rosterDayEditPage.getDateString());
             HashMap<Integer, RosterItem> listOfRosterItems = listOfRosterDaysEntrySet.getValue();
             for (RosterItem rosterItem : listOfRosterItems.values()) {
+                LogCollector.debug("Arbeite mit RosterItem: " + "Mitarbeiter = " + rosterItem.getEmployeeFullName() + ", Start = " + rosterItem.getDutyStart() + ", Ende = " + rosterItem.getDutyEnd() + ", Datum: " + rosterItem.getLocalDate().format(DateTimeFormatter.ISO_DATE));
                 /**
                  * apply a random change by +- three hours to the rosterItem
                  */
                 long hourDifference = (long) Math.round(Math.random() * 6) - 3;
-                LocalDateTime dutyEndNew = rosterItem.getDutyEndLocalDateTime().plusHours(hourDifference);
+                //LocalDateTime dutyEndNew = rosterItem.getDutyEndLocalDateTime().plusHours(hourDifference);
+                LocalDateTime dutyEndNew = rosterItem.getLocalDate().atTime(
+                        rosterItem.getDutyEndLocalDateTime().toLocalTime().plusHours(hourDifference)
+                );
+
+                LogCollector.debug("Setze neues Ende zu: " + dutyEndNew.format(DateTimeFormatter.ISO_DATE_TIME));
+
                 RosterItem rosterItemNew = new RosterItem(
                         rosterItem.getEmployeeFullName(),
                         rosterItem.getLocalDate(),
@@ -177,9 +188,12 @@ public class TestRosterDayEditPage extends TestPage {
                         rosterItem.getComment(),
                         rosterItem.getBranchId());
                 rosterDayEditPage.rosterInputEditRow(rosterItem, rosterItemNew);
+                rosterDayEditPage.rosterFormSubmit();
+
                 RosterItem rosterItemFound;
                 rosterItemFound = rosterDayEditPage.getRosterItem(rosterItemNew.getEmployeeFullName());
-                rosterDayEditPage.rosterFormSubmit();
+                LogCollector.debug("Gefundenes RosterItem: " + "Mitarbeiter = " + rosterItemFound.getEmployeeFullName() + ", Start = " + rosterItemFound.getDutyStart() + ", Ende = " + rosterItemFound.getDutyEnd() + ", Tag = " + rosterItemFound.getLocalDate().format(DateTimeFormatter.ISO_DATE));
+
                 /**
                  * Finally change item back again:
                  */
@@ -204,11 +218,11 @@ public class TestRosterDayEditPage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
 
         Roster roster = new Roster();

@@ -24,9 +24,12 @@ import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
 import Selenium.absencepages.AbsenceEmployeePage;
+import static Selenium.driver.Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Optional;
@@ -55,15 +58,17 @@ public class TestRosterHoursPage extends TestPage {
         /**
          * Move to specific month:
          */
+        int currentYear = LocalDate.now().getYear();
+        int nextYear = currentYear + 1;
         Employee employee = workforce.getEmployeeByFullName("Alexandra Probst");
         String someEmployeeFullName = employee.getFullName();
         rosterHoursPage.selectMonth("Juni");
-        rosterHoursPage.selectYear("2020");
+        rosterHoursPage.selectYear(String.valueOf(nextYear));
         logger.debug("Select employee " + someEmployeeFullName);
         rosterHoursPage.selectEmployee(someEmployeeFullName);
 
         Assert.assertEquals("Juni", rosterHoursPage.getMonth());
-        Assert.assertEquals("2020", rosterHoursPage.getYear());
+        Assert.assertEquals(String.valueOf(nextYear), rosterHoursPage.getYear());
         Assert.assertEquals(someEmployeeFullName, rosterHoursPage.getEmployeeName());
     }
 
@@ -155,26 +160,32 @@ public class TestRosterHoursPage extends TestPage {
          */
         AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
         int employeeKey = 7;
-        absenceEmployeePage = absenceEmployeePage.goToYear(2020);
+        int currentYear = LocalDate.now().getYear();
+        LocalDate testMonday = LocalDate.of(currentYear, Month.JULY, 1).with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+        String testTuesdayFormatted = testMonday.plusDays(1).format(DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        String testWednesdayFormatted = testMonday.plusDays(2).format(DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+
+        String testMondayFormatted = testMonday.format(DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+        absenceEmployeePage = absenceEmployeePage.goToYear(currentYear);
         absenceEmployeePage = absenceEmployeePage.goToEmployee(employeeKey);
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", 8, "Foo comment", "not_yet_approved"); // 1 = Urlaub
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("02.07.2020", "02.07.2020", 8, "Bar comment", "not_yet_approved"); // 1 = Urlaub
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("03.07.2020", "03.07.2020", 8, "Baz comment", "not_yet_approved"); // 1 = Urlaub
-        absenceEmployeePage = absenceEmployeePage.createNewAbsence("01.07.2020", "01.07.2020", 8, "123 comment", "not_yet_approved"); // 1 = Urlaub
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence(testMondayFormatted, testMondayFormatted, 8, "Foo comment", "not_yet_approved"); // 1 = Urlaub
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence(testTuesdayFormatted, testTuesdayFormatted, 8, "Bar comment", "not_yet_approved"); // 1 = Urlaub
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence(testWednesdayFormatted, testWednesdayFormatted, 8, "Baz comment", "not_yet_approved"); // 1 = Urlaub
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence(testMondayFormatted, testMondayFormatted, 8, "123 comment", "not_yet_approved"); // 1 = Urlaub
         Absence currentAbsence;
-        currentAbsence = absenceEmployeePage.getExistingAbsence("01.07.2020", employeeKey);
+        currentAbsence = absenceEmployeePage.getExistingAbsence(testMondayFormatted, employeeKey);
         Assert.assertEquals(currentAbsence.getCommentString(), "Foo comment");
         Assert.assertEquals(currentAbsence.getDurationDays(), 1);
         Assert.assertEquals(currentAbsence.getEmployeeKey(), employeeKey);
-        Assert.assertEquals(currentAbsence.getStartDate(), LocalDate.of(2020, Month.JULY, 1));
-        Assert.assertEquals(currentAbsence.getEndDate(), LocalDate.of(2020, Month.JULY, 1));
+        Assert.assertEquals(currentAbsence.getStartDate(), testMonday);
+        Assert.assertEquals(currentAbsence.getEndDate(), testMonday);
 
         RosterHoursPage rosterHoursPage = new RosterHoursPage(driver);
         rosterHoursPage.selectEmployee(workforce.getEmployeeLastNameByKey(employeeKey));
         rosterHoursPage.selectMonth("Juli");
-        rosterHoursPage.selectYear("2020");
+        rosterHoursPage.selectYear(String.valueOf(currentYear));
 
-        String absenceString = rosterHoursPage.getAbsenceStringOnLocalDate(LocalDate.of(2020, Month.JULY, 1));
+        String absenceString = rosterHoursPage.getAbsenceStringOnLocalDate(testMonday);
         Assert.assertEquals(absenceString, "Elternzeit");
     }
 }

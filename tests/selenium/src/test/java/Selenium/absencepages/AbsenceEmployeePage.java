@@ -42,8 +42,8 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Listeners;
 
 /**
- * Represents the Selenium page object for Absence Employee Page.
- * Handles navigation, creation, editing, and deletion of absences.
+ * Represents the Selenium page object for Absence Employee Page. Handles
+ * navigation, creation, editing, and deletion of absences.
  *
  * @author Mandelkow
  */
@@ -138,12 +138,14 @@ public class AbsenceEmployeePage {
     /**
      * Retrieves notification messages displayed in the user dialog container.
      *
-     * This method searches for notification message elements within the user dialog container.
-     * It then extracts the text content of each notification
-     * message element and returns a list of strings containing the notification messages.
+     * This method searches for notification message elements within the user
+     * dialog container. It then extracts the text content of each notification
+     * message element and returns a list of strings containing the notification
+     * messages.
      *
-     * @return A list of strings representing the notification messages displayed in the user dialog container.
-     * If no notification messages are found, an empty list is returned.
+     * @return A list of strings representing the notification messages
+     * displayed in the user dialog container. If no notification messages are
+     * found, an empty list is returned.
      */
     public List<String> getUserDialogNotifications() {
         List<String> userDialogNotificationStrings = new ArrayList<>();
@@ -158,12 +160,13 @@ public class AbsenceEmployeePage {
     /**
      * Retrieves error messages displayed in the user dialog container.
      *
-     * This method searches for error message elements within the user dialog container.
-     * It then extracts the text content of each error message element and returns
-     * a list of strings containing the error messages.
+     * This method searches for error message elements within the user dialog
+     * container. It then extracts the text content of each error message
+     * element and returns a list of strings containing the error messages.
      *
-     * @return A list of strings representing the error messages displayed in the user dialog container.
-     * If no error messages are found, an empty list is returned.
+     * @return A list of strings representing the error messages displayed in
+     * the user dialog container. If no error messages are found, an empty list
+     * is returned.
      *
      */
     public List<String> getUserDialogErrors() {
@@ -180,7 +183,8 @@ public class AbsenceEmployeePage {
      * Navigates to a specific year on the Absence Employee Page.
      *
      * @param year The year to navigate to.
-     * @return A new instance of the AbsenceEmployeePage representing the selected year.
+     * @return A new instance of the AbsenceEmployeePage representing the
+     * selected year.
      */
     public AbsenceEmployeePage goToYear(int year) {
         // Select the desired year from the dropdown menu
@@ -195,7 +199,8 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Retrieves the currently selected year from the year dropdown menu on the Absence Employee Page.
+     * Retrieves the currently selected year from the year dropdown menu on the
+     * Absence Employee Page.
      *
      * @return The currently selected year as an integer.
      */
@@ -210,10 +215,12 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Selects a specific employee from the employee dropdown menu on the Absence Employee Page.
+     * Selects a specific employee from the employee dropdown menu on the
+     * Absence Employee Page.
      *
      * @param employeeKey The key or identifier of the employee to select.
-     * @return A new instance of the AbsenceEmployeePage representing the selected employee.
+     * @return A new instance of the AbsenceEmployeePage representing the
+     * selected employee.
      */
     public AbsenceEmployeePage goToEmployee(int employeeKey) {
         // Select the desired employee using their key or identifier
@@ -223,9 +230,11 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Retrieves the key or identifier of the currently selected employee from the employee dropdown menu.
+     * Retrieves the key or identifier of the currently selected employee from
+     * the employee dropdown menu.
      *
-     * @return The key or identifier of the currently selected employee as an integer.
+     * @return The key or identifier of the currently selected employee as an
+     * integer.
      */
     public int getEmployeeKey() {
         // Get the WebElement representing the currently selected employee
@@ -236,10 +245,12 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Retrieves and returns a Select element representing the year dropdown menu.
+     * Retrieves and returns a Select element representing the year dropdown
+     * menu.
      *
-     * This function finds the WebElement for the year dropdown menu using the provided
-     * 'goToYearSelectBy' locator, creates a Select object for it, and returns it.
+     * This function finds the WebElement for the year dropdown menu using the
+     * provided 'goToYearSelectBy' locator, creates a Select object for it, and
+     * returns it.
      *
      * @return A Select object representing the year dropdown menu.
      */
@@ -250,14 +261,16 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Creates a new absence record with the specified details on the Absence Employee Page.
+     * Creates a new absence record with the specified details on the Absence
+     * Employee Page.
      *
      * @param startDate The start date of the absence.
      * @param endDate The end date of the absence.
      * @param reasonId The reason code or identifier for the absence.
      * @param comment Any additional comments or notes for the absence.
      * @param approval The approval status for the absence.
-     * @return A new instance of the AbsenceEmployeePage after creating the absence.
+     * @return A new instance of the AbsenceEmployeePage after creating the
+     * absence.
      */
     public AbsenceEmployeePage createNewAbsence(String startDate, String endDate, int reasonId, String comment, String approval) {
         // Locate and initialize the necessary input elements and buttons
@@ -293,8 +306,9 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Creates a new absence record with the specified start and end dates and reason ID,
-     * with optional empty comment and "not_yet_approved" as the default approval status.
+     * Creates a new absence record with the specified start and end dates and
+     * reason ID, with optional empty comment and "not_yet_approved" as the
+     * default approval status.
      *
      * @param startDate The start date of the absence.
      * @param endDate The end date of the absence.
@@ -306,10 +320,12 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Deletes an existing absence record with the specified start date on the Absence Employee Page.
+     * Deletes an existing absence record with the specified start date on the
+     * Absence Employee Page.
      *
      * @param startDate The start date of the absence to be deleted.
-     * @return A new instance of the AbsenceEmployeePage after deleting the absence (or if no matching absence was found).
+     * @return A new instance of the AbsenceEmployeePage after deleting the
+     * absence (or if no matching absence was found).
      */
     public AbsenceEmployeePage deleteExistingAbsence(String startDate) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
@@ -322,8 +338,8 @@ public class AbsenceEmployeePage {
             WebElement deleteButton = absenceRowElement.findElement(deleteButtonBy);
             deleteButton.click();
             /**
-             * Handle the confirmation alert
-             * Alert will display: "Really delete this dataset?"
+             * Handle the confirmation alert Alert will display: "Really delete
+             * this dataset?"
              */
             Alert alert = driver.switchTo().alert();
             /**
@@ -346,7 +362,8 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Edits an existing absence record with the specified start date, updating its details on the Absence Employee Page.
+     * Edits an existing absence record with the specified start date, updating
+     * its details on the Absence Employee Page.
      *
      * @param startDateOld The old start date of the absence to be edited.
      * @param startDate The new start date for the edited absence.
@@ -354,7 +371,8 @@ public class AbsenceEmployeePage {
      * @param reasonId The new reason code or identifier for the edited absence.
      * @param comment The new comment or notes for the edited absence.
      * @param approval The new approval status for the edited absence.
-     * @return A new instance of the AbsenceEmployeePage after editing the absence (or if no matching absence was found).
+     * @return A new instance of the AbsenceEmployeePage after editing the
+     * absence (or if no matching absence was found).
      */
     public AbsenceEmployeePage editExistingAbsence(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
@@ -392,11 +410,14 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Retrieves an existing absence record based on the start date and employee key on the Absence Employee Page.
+     * Retrieves an existing absence record based on the start date and employee
+     * key on the Absence Employee Page.
      *
      * @param startDateString The start date of the absence to retrieve.
-     * @param employeeKey The key or identifier of the employee associated with the absence.
-     * @return An Absence object representing the retrieved absence record, or null if no matching absence was found.
+     * @param employeeKey The key or identifier of the employee associated with
+     * the absence.
+     * @return An Absence object representing the retrieved absence record, or
+     * null if no matching absence was found.
      */
     public Absence getExistingAbsence(String startDateString, int employeeKey) {
         // Navigate to the employee and year related to the absence
@@ -427,27 +448,31 @@ public class AbsenceEmployeePage {
         WebElement commentElement = absenceRowElement.findElement(By.xpath(".//td[4]/div"));
         String commentString = commentElement.getText();
         WebElement durationElement = absenceRowElement.findElement(By.xpath(".//td[5]"));
-        String durationString = durationElement.getText();
+        int durationDays = Integer.parseInt(durationElement.getText());
         WebElement approvalElement = absenceRowElement.findElement(By.xpath(".//td[6]/span"));
         String approvalString = approvalElement.getAttribute("data-absence_approval");
         //String approvalStringLocalized = approvalElement.getText();
 
         // Create and return an Absence object representing the retrieved absence record
-        Absence absence = new Absence(employeeKey, startDate, endDate, reasonId, commentString, approvalString);
+        Absence absence = new Absence(employeeKey, startDate, endDate, reasonId, durationDays, commentString, approvalString);
         return absence;
 
     }
 
     /**
-     * Retrieves the WebElement representing an existing absence row based on the start date and employee key.
+     * Retrieves the WebElement representing an existing absence row based on
+     * the start date and employee key.
      *
-     * This method navigates to the employee and year related to the absence, validates the selected employee
-     * and year, and iterates through absence rows to find the one with the matching start date.
+     * This method navigates to the employee and year related to the absence,
+     * validates the selected employee and year, and iterates through absence
+     * rows to find the one with the matching start date.
      *
-     * @param startDate The start date of the absence in the format "dd.MM.yyyy".
+     * @param startDate The start date of the absence in the format
+     * "dd.MM.yyyy".
      * @param employeeKey The unique key identifying the employee.
-     * @return The WebElement representing the absence row with the matching start date and employee key,
-     * or null if no matching absence row was found.
+     * @return The WebElement representing the absence row with the matching
+     * start date and employee key, or null if no matching absence row was
+     * found.
      */
     private WebElement getExistingAbsenceRowElement(String startDate, int employeeKey) {
         // Navigate to the employee and year related to the absence
@@ -478,16 +503,24 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Cancels the editing of an existing absence record without making any changes.
-     * There is a cancel button for the edit function. Test if it works.
+     * Cancels the editing of an existing absence record without making any
+     * changes. There is a cancel button for the edit function. Test if it
+     * works.
      *
-     * @param startDateOld The start date of the absence to be edited (for identifying the absence to edit).
-     * @param startDate The new start date for the edited absence (not used in this method).
-     * @param endDate The new end date for the edited absence (not used in this method).
-     * @param reasonId The new reason code or identifier for the edited absence (not used in this method).
-     * @param comment The new comment or notes for the edited absence (not used in this method).
-     * @param approval The new approval status for the edited absence (not used in this method).
-     * @return A new instance of the AbsenceEmployeePage after canceling the editing (or if no matching absence was found).
+     * @param startDateOld The start date of the absence to be edited (for
+     * identifying the absence to edit).
+     * @param startDate The new start date for the edited absence (not used in
+     * this method).
+     * @param endDate The new end date for the edited absence (not used in this
+     * method).
+     * @param reasonId The new reason code or identifier for the edited absence
+     * (not used in this method).
+     * @param comment The new comment or notes for the edited absence (not used
+     * in this method).
+     * @param approval The new approval status for the edited absence (not used
+     * in this method).
+     * @return A new instance of the AbsenceEmployeePage after canceling the
+     * editing (or if no matching absence was found).
      */
     public AbsenceEmployeePage editExistingAbsenceNot(String startDateOld, String startDate, String endDate, int reasonId, String comment, String approval) {
         for (WebElement absenceRowElement : listOfAbsenceRowElements) {
@@ -524,15 +557,18 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Checks if an absence identified by its start date and employee key has an overlap with other absences.
+     * Checks if an absence identified by its start date and employee key has an
+     * overlap with other absences.
      *
-     * This method retrieves the WebElement representing the existing absence row based on the start date
-     * and employee key. It then looks for an overlap information element within the absence row.
+     * This method retrieves the WebElement representing the existing absence
+     * row based on the start date and employee key. It then looks for an
+     * overlap information element within the absence row.
      *
-     * @param startDate The start date of the absence in the format "dd.MM.yyyy".
+     * @param startDate The start date of the absence in the format
+     * "dd.MM.yyyy".
      * @param employeeKey The unique key identifying the employee.
-     * @return true if an overlap information element is found within the absence row, indicating an overlap;
-     * false otherwise.
+     * @return true if an overlap information element is found within the
+     * absence row, indicating an overlap; false otherwise.
      *
      */
     public boolean absenceHasAnOverlap(String startDate, int employeeKey) {
@@ -546,15 +582,20 @@ public class AbsenceEmployeePage {
     }
 
     /**
-     * Cuts the overlap on an absence identified by its start date and employee key.
+     * Cuts the overlap on an absence identified by its start date and employee
+     * key.
      *
-     * This method retrieves the WebElement representing the existing absence row based on the start date
-     * and employee key. It then locates and clicks the "cut overlap" button within the absence row.
-     * Upon clicking the button, it waits for the button to become stale, indicating that the overlap has been cut.
+     * This method retrieves the WebElement representing the existing absence
+     * row based on the start date and employee key. It then locates and clicks
+     * the "cut overlap" button within the absence row. Upon clicking the
+     * button, it waits for the button to become stale, indicating that the
+     * overlap has been cut.
      *
-     * @param startDate The start date of the absence in the format "dd.MM.yyyy".
+     * @param startDate The start date of the absence in the format
+     * "dd.MM.yyyy".
      * @param employeeKey The unique key identifying the employee.
-     * @return An instance of the AbsenceEmployeePage representing the page after cutting the overlap.
+     * @return An instance of the AbsenceEmployeePage representing the page
+     * after cutting the overlap.
      *
      */
     public AbsenceEmployeePage cutOverlapOnAbsence(String startDate, int employeeKey) {

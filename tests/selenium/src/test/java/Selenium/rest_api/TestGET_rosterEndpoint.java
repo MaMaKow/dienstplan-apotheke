@@ -20,8 +20,10 @@ package Selenium.rest_api;
 
 import Selenium.Employee;
 import Selenium.PropertyFile;
+import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.Utilities.LogCollector;
+import static Selenium.driver.Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -40,10 +42,11 @@ import org.testng.asserts.SoftAssert;
 public class TestGET_rosterEndpoint extends Selenium.TestPage {
 
     private PropertyFile propertyFile;
-    private SoftAssert softAssert = new SoftAssert();
+    private final SoftAssert softAssert = new SoftAssert();
 
     @Test()
     public void testGetRoster() throws IOException, Exception {
+        Roster roster = new Roster();
         if (Selenium.TestPage.someTestHasFailed) {
             throw new SkipException("Some Test has failed. Skipping all the other methods.");
         }
@@ -56,8 +59,8 @@ public class TestGET_rosterEndpoint extends Selenium.TestPage {
                 String userPassphrase = propertyFile.getPdrUserPassword();
                 new POST_authenticateEndpoint(userName, userPassphrase, testPageUrl);
             }
-            String dateStart = "2020-07-01";
-            String dateEnd = "2020-07-03";
+            String dateStart = roster.getFirstMondayInJuly().format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+            String dateEnd = roster.getFirstMondayInJuly().plusDays(2).format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
             String employeeFullName = "Albert Kremer";
             Employee employee = workforce.getEmployeeByFullName(employeeFullName);
             GET_rosterEndpoint rosterEndpoint = new GET_rosterEndpoint(testPageUrl, dateStart, dateEnd, employee);

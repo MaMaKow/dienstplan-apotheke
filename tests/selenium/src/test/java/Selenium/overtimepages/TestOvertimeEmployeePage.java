@@ -27,6 +27,7 @@ import Selenium.User;
 import Selenium.UserRegistry;
 import Selenium.Utilities.EmailParser;
 import Selenium.Utilities.LogCollector;
+import static Selenium.driver.Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR;
 import Selenium.rest_api.ApiHandler;
 import Selenium.signin.SignInPage;
 import com.google.gson.JsonArray;
@@ -36,9 +37,11 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Base64;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -128,6 +131,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
     @Test(dependsOnMethods = {"testDisplay"})
     public void testDeleteBySimpleUser() throws IOException {
+        int currentYear = LocalDate.now().getYear();
         LogCollector.debug("testDeleteBySimpleUser");
         LogoutPage logoutPage = new LogoutPage();
         logoutPage.logout();
@@ -143,7 +147,8 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         }
 
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
-        LocalDate localDate = LocalDate.of(2020, Month.NOVEMBER, 24);// Tuesday 24.11.2020
+        LocalDate localDate = LocalDate.of(currentYear, Month.NOVEMBER, 24);
+        String localDateFormatted = localDate.format(DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
         overtimeEmployeePage.selectYear(localDate.getYear());
         Employee employee = workforce.getEmployeeByFullName("Elisabeth Lehmann");
         overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
@@ -208,7 +213,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
                 String[] expectedLines = {
                     "Der Account EmployeeUser hat folgenden Überstundeneintrag gelöscht:",
                     "Mitarbeitende: " + employee.getFullName(),
-                    "Datum: 24.11.2020",
+                    "Datum: " + localDateFormatted,
                     "Stunden: 8",
                     "Grund: Foo" + " " + employee.getFullName()
                 };
@@ -227,6 +232,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
     @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser"})
     public void testEditBySimpleUser() throws IOException {
+        int currentYear = LocalDate.now().getYear();
         LogCollector.debug("testEditBySimpleUser");
         LogoutPage logoutPage = new LogoutPage();
         logoutPage.logout();
@@ -242,7 +248,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         }
 
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
-        LocalDate localDate = LocalDate.of(2020, Month.NOVEMBER, 25);// Wednesday 25.11.2020
+        LocalDate localDate = LocalDate.of(currentYear, Month.NOVEMBER, 25);// 25.11. in the current year
         overtimeEmployeePage.selectYear(localDate.getYear());
         Employee employee = workforce.getEmployeeByFullName("Albert Krüger");
         overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
@@ -250,15 +256,13 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         /**
          * Create new overtime:
          */
-        LocalDate dateNew = LocalDate.of(2020, Month.NOVEMBER, 26);
+        LocalDate dateNew = LocalDate.of(currentYear, Month.NOVEMBER, 26);
         float hoursNew = -6;
         String reasonNew = "Baz";
         LogCollector.debug("addNewOvertime");
         overtimeEmployeePage.addNewOvertime(localDate, 7, "Bar");
         try {
-            //driver.navigate().refresh();
-            //overtimeEmployeePage.selectYear(2020);
-            overtimeEmployeePage.selectYear(2024);
+            overtimeEmployeePage.selectYear(currentYear + 4); // @TODO: Reicht auch plus zwei Jahre?
             overtimeEmployeePage.getOvertimeByLocalDate(localDate);
             //Thread.sleep(1000);
             LogCollector.error("Der Eintrag wurde gefunden.");
@@ -303,12 +307,12 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
             // Expected content for each line
             String[] expectedLines = {"Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
                 "Mitarbeitende: Albert Krüger",
-                "Datum: 25.11.2020",
+                "Datum: 25.11." + currentYear,
                 "Stunden: 7",
                 "Grund: Bar",
                 "",
                 "zu den neuen Werten:",
-                "Datum: 26.11.2020",
+                "Datum: 26.11." + currentYear,
                 "Stunden: -6",
                 "Grund: Baz"};
             // Compare each line
@@ -320,27 +324,28 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
     }
 
     /**
-     * Ich möchte einen edge-case testen.
-     * Das Problem: Alte Überstundeneinträge werden nach 3 Jahren gelöscht.
-     * So kann ein Überstundeneintrag folgende Daten besitzen:
-     * employee=25; date=01.01.2020; Stunden=1,5; Saldo=35
-     * Der Saldo ergibt sich aus der Summe von Einträgen, die vor dem 01.01.2020 lagen.
-     * Diese Einträge sind aber ab dem 01.01.2024 nicht mehr verfügbar.
+     * Ich möchte einen edge-case testen. Das Problem: Alte Überstundeneinträge
+     * werden nach 3 Jahren gelöscht. So kann ein Überstundeneintrag folgende
+     * Daten besitzen: employee=25; date=01.01.2020; Stunden=1,5; Saldo=35 Der
+     * Saldo ergibt sich aus der Summe von Einträgen, die vor dem 01.01.2020
+     * lagen. Diese Einträge sind aber ab dem 01.01.2024 nicht mehr verfügbar.
      *
      * Der Fehler: Dabei kam es zu fehlerhafter Berechnung der Saldo Stunden.
-     * Alle Stunden vor dem Löschdatum wurden einfach ignoriert. Der Saldo begann bei 0.
+     * Alle Stunden vor dem Löschdatum wurden einfach ignoriert. Der Saldo
+     * begann bei 0.
      *
-     * Das Löschen findet erst beim Login statt. Es findet beim login aber auch nur statt,
-     * wenn es nicht bereits einmal innerhalb von 24 Stunden ausgelöst wurde.
-     * Der Test muss also sicherstellen, dass Daten aus der Vergangenheit gelöscht werden.
-     * Dann kann getestet werden, ob der Saldo korrekt erfasst und berechnet wird.
+     * Das Löschen findet erst beim Login statt. Es findet beim login aber auch
+     * nur statt, wenn es nicht bereits einmal innerhalb von 24 Stunden
+     * ausgelöst wurde. Der Test muss also sicherstellen, dass Daten aus der
+     * Vergangenheit gelöscht werden. Dann kann getestet werden, ob der Saldo
+     * korrekt erfasst und berechnet wird.
      */
     @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser", "testEditBySimpleUser"}, enabled = true)
     //@Test(dependsOnMethods = {}, enabled = true)
     public void testRecalculateBalances() throws IOException, Exception {
         /**
-         * Zunächst brauchen wir einen Mitarbeiter, der bereits im Jahr 2019 oder früher existiert hat:
-         * z.B. Alexandra Probst (Pharmazieingenieur)
+         * Zunächst brauchen wir einen Mitarbeiter, der bereits vor sechs Jahren
+         * oder früher existiert hat: z.B. Alexandra Probst (Pharmazieingenieur)
          */
         String employeeFullName = "Alexandra Probst";
         Employee employee = workforce.getEmployeeByFullName(employeeFullName);
@@ -356,17 +361,32 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
 
         /**
-         * Move to specific year:
+         * Calculate dates dynamically based on current date to ensure test
+         * remains valid. PHP shows years from (now - 6 years) to (now + 2
+         * years). We create entries at (now - 5 years) which will be old enough
+         * to be deleted after 3 years, and entries from (now - 4 years) to now
+         * which should remain.
          */
-        LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 3);
-        LocalDate localDate1 = LocalDate.of(2019, Month.MARCH, 3);
-        LocalDate localDate2 = LocalDate.of(2019, Month.JULY, 5);
-        LocalDate localDate3 = LocalDate.of(2019, Month.DECEMBER, 1);
-        LocalDate localDate4 = LocalDate.of(2020, Month.DECEMBER, 1);
-        LocalDate localDate5 = LocalDate.of(2022, Month.DECEMBER, 1);
-        LocalDate localDate6 = LocalDate.of(2023, Month.DECEMBER, 1);
-        LocalDate localDate7 = LocalDate.of(2024, Month.DECEMBER, 1);
-        LocalDate localDate8 = LocalDate.of(2024, Month.DECEMBER, 27);
+        LocalDate now = LocalDate.now();
+        int oldYear = now.getYear() - 5;  // Will be deleted (older than 3 years, outside 6-year window soon)
+        int year1 = now.getYear() - 4;    // Should remain
+        int year2 = now.getYear() - 3;    // Should remain
+        int year3 = now.getYear() - 2;    // Should remain
+        int year4 = now.getYear() - 1;    // Should remain
+        int currentYear = now.getYear();  // Should remain
+
+        LocalDate localDate0 = LocalDate.of(oldYear, Month.JANUARY, 3);
+        LocalDate localDate1 = LocalDate.of(oldYear, Month.MARCH, 3);
+        LocalDate localDate2 = LocalDate.of(oldYear, Month.JULY, 5);
+        LocalDate localDate3 = LocalDate.of(oldYear, Month.DECEMBER, 1);
+        LocalDate localDate4 = LocalDate.of(year1, Month.DECEMBER, 1);
+        LocalDate localDate5 = LocalDate.of(year2, Month.DECEMBER, 1);
+        LocalDate localDate6 = LocalDate.of(year3, Month.DECEMBER, 1);
+        LocalDate localDate7 = LocalDate.of(year4, Month.DECEMBER, 1);
+        LocalDate localDate8 = LocalDate.of(currentYear, Month.JANUARY, 15);
+
+        LogCollector.info("Testing with old year (to be deleted): " + oldYear);
+        LogCollector.info("Testing with recent years (to remain): " + year1 + " to " + currentYear);
 
         overtimeEmployeePage.selectYearTry(localDate0.getYear());
         overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
@@ -432,21 +452,21 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
          */
         /**
-         * Jetzt müssen wir eine maintenance triggern.
-         * Anschließend müssen wir zwei Dinge testen:
-         * 1. Die alten Überstundeneinträge aus 2019 sind gelöscht.
-         * 2. Die neuen Überstundeneinträge haben den korrekten Saldo.
+         * Jetzt müssen wir eine maintenance triggern. Anschließend müssen wir
+         * zwei Dinge testen: 1. Die alten Überstundeneinträge aus vor fünf
+         * Jahren sind gelöscht. 2. Die neuen Überstundeneinträge haben den
+         * korrekten Saldo.
          */
         LogoutPage logoutPage = new LogoutPage();
         SignInPage signInPage = logoutPage.logout();
         try {
             super.signIn();
             /**
-             * Beim Login wird die maintenance Klasse aufgerufen.
-             * Ob aber tatsächlich aufgeräumt wird, hängt davon ab,
-             * ob in den vergangenen 24 Stunden bereits einmal aufgeräumt wurde.
-             * Daher rufen wir manuell die background_maintenance.php auf
-             * und verwenden dabei forceMaintenance = true
+             * Beim Login wird die maintenance Klasse aufgerufen. Ob aber
+             * tatsächlich aufgeräumt wird, hängt davon ab, ob in den
+             * vergangenen 24 Stunden bereits einmal aufgeräumt wurde. Daher
+             * rufen wir manuell die background_maintenance.php auf und
+             * verwenden dabei forceMaintenance = true
              */
         } catch (Exception exception) {
             LogCollector.error("Sign in failed.");
@@ -466,24 +486,24 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
         try {
             foundOvertime = overtimeEmployeePage.getOvertimeByLocalDate(localDate0);
-            softAssert.assertTrue(false, "Einträge im Jahr 2019 sollten nicht mehr gefunden werden.");
+            softAssert.assertTrue(false, "Einträge im Jahr vor fünf Jahren sollten nicht mehr gefunden werden.");
             LogCollector.error(foundOvertime.getLocalDate().format(DateTimeFormatter.ISO_DATE));
             LogCollector.error(String.valueOf(foundOvertime.getBalance()));
             LogCollector.error(foundOvertime.getReason());
-            Assert.fail("Einträge im Jahr 2019 sollten nicht mehr gefunden werden.");
+            Assert.fail("Einträge im Jahr vor fünf Jahren sollten nicht mehr gefunden werden.");
         } catch (Exception exception) {
             /**
              * Wir sollten direkt nach dem getOvertimeByLocalDate() hier landen.
-             * Denn der Eintrag sollte nicht mehr existieren.
-             * Somit schlägt die Suche fehl.
+             * Denn der Eintrag sollte nicht mehr existieren. Somit schlägt die
+             * Suche fehl.
              */
             softAssert.assertTrue(true);
             Assert.assertTrue(true);
         }
         //try {
         /**
-         * Obwohl die alten Überstundeneinträge gelöscht wurden,
-         * sollte der Saldo hier korrekt sein.
+         * Obwohl die alten Überstundeneinträge gelöscht wurden, sollte der
+         * Saldo hier korrekt sein.
          */
         overtimeEmployeePage.selectYearTry(localDate8.getYear());
         overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
@@ -510,8 +530,8 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
                 overtimeEmployeePage.removeOvertimeByLocalDate(localDate0);
             } catch (Exception e) {
                 /**
-                 * Some of these entries might not exist anymore.
-                 * That does not matter. We are just cleaning up.
+                 * Some of these entries might not exist anymore. That does not
+                 * matter. We are just cleaning up.
                  */
             }
         }

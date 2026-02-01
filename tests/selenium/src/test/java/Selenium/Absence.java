@@ -74,7 +74,17 @@ public class Absence {
         this.reasonId = reasonId;
     }
 
-    private int calculateWorkingDays(LocalDate startDate, LocalDate endDate) throws Exception {
+    public Absence(int employeeKey, LocalDate startDate, LocalDate endDate, int reasonId, int durationDays, String commentString, String approvalString) {
+        this.employeeKey = employeeKey;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.commentString = commentString;
+        this.durationDays = durationDays;
+        this.approvalString = approvalString;
+        this.reasonId = reasonId;
+    }
+
+    public int calculateWorkingDays(LocalDate startDate, LocalDate endDate) throws Exception {
         int workingDays = 0;
         LocalDate date = startDate;
         Holidays holidays = new Holidays(startDate.getYear());

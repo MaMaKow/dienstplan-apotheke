@@ -120,7 +120,7 @@ public class RosterWeekTablePage {
         return rosterWeekTablePage;
     }
 
-    public String getDate() {
+    public String getDateString() {
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         String date_value = dateChooserInput.getAttribute("value");
         return date_value;

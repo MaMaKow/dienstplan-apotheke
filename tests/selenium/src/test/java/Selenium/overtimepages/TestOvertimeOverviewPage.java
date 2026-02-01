@@ -53,7 +53,9 @@ public class TestOvertimeOverviewPage extends TestPage {
          * create an overtime first;
          */
         int employeeKey = 7;
-        LocalDate localDate0 = LocalDate.of(2019, Month.JANUARY, 2);
+        LocalDate now = LocalDate.now();
+
+        LocalDate localDate0 = LocalDate.of(now.getYear(), Month.JANUARY, 2);
         overtimeEmployeePage.addNewOvertimeForEmployee(employeeKey, localDate0, 8.25f, "Foo");
         OvertimeOverviewPage overtimeOverviewPage = new OvertimeOverviewPage(driver);
 
