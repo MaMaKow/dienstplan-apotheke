@@ -40,6 +40,7 @@ $table_head .= "<th>" . gettext("Date") . "</th>";
 $table_head .= "<th>" . gettext("Team") . "</th>";
 $table_head .= "<th>" . gettext("Team members") . "</th>";
 $table_head .= "<th>" . gettext("Scheduled in roster") . "</th>\n";
+$table_head .= "<th>" . gettext("Absent") . "</th>\n";
 $table_head .= "</tr>\n";
 $table_head .= "</thead>\n";
 $table_body = "<tbody>\n";
@@ -69,16 +70,6 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
     $SaturdayRotationTeamMemberIds = array();
     $saturdayRotationTeamId = $saturdayRotation->team_id;
     if (NULL !== $saturdayRotationTeamId and FALSE !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
-        /**
-         * <p lang=de>TODO: Es ist möglich, dass eine größere Zahl an Teams existiert hat, z.B. 6.
-         * Wenn die Zuweisung der Teams bereits erfolgt ist, wurde z.B. das Team 6 in der Datenbank hinterlegt.
-         * Wenn nun nur noch 4 Teams existieren, gibt $saturday_rotation->team_id;
-         *   durch die Funktion get_participation_team_id(), welche read_participation_from_database() aufruft, die gespeicherte Team id zurück.
-         * Die ist in dem array $saturday_rotation->List_of_teams aber gar nicht mehr enthalten.
-         * Wir geben in diesem Fall einen leeren Array weiter.
-         * Ist das so optimal?
-         * </p>
-         */
         $SaturdayRotationTeamMemberIds = $saturdayRotation->List_of_teams[$saturdayRotationTeamId];
     }
 
@@ -119,6 +110,38 @@ function getRosteredEmployeesNames(array $Roster, workforce $workforce, PDR\Rost
     return $RosteredEmployees;
 }
 
+function getAbsentEmployeesInfo(DateTime $date_object, int $branch_id, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
+    $absentEmployees = array();
+    
+    // Mitarbeiter mit regulären Abwesenheiten (Urlaub, Krankheit, etc.)
+    foreach ($absenceCollection->getIterator() as $absence) {
+        $employeeKey = $absence->getEmployeeKey();
+        if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+            $reasonString = \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId());
+            $absentEmployees[$employeeKey] = $workforce->List_of_employees[$employeeKey]->last_name . " (" . $reasonString . ")";
+        }
+    }
+    
+    // Mitarbeiter, die am Vortag Notdienst hatten
+    if (\PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDawn($date_object)) {
+        try {
+            $emergencyService = \PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDawn($date_object);
+            $employeeKey = $emergencyService->getEmployeeKey();
+            
+            if (NULL !== $employeeKey && isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+                // Nur hinzufügen, wenn nicht bereits wegen anderer Abwesenheit erfasst
+                if (!isset($absentEmployees[$employeeKey])) {
+                    $absentEmployees[$employeeKey] = $workforce->List_of_employees[$employeeKey]->last_name . " (" . gettext("Emergency service dawn") . ")";
+                }
+            }
+        } catch (\Exception $e) {
+            // Kein Notdienst gefunden, ignorieren
+        }
+    }
+    
+    return $absentEmployees;
+}
+
 function build_table_row(DateTime $date_object, int $branch_id) {
     $saturday_rotation = new saturday_rotation($branch_id);
     $saturday_rotation->get_participation_team_id($date_object);
@@ -132,7 +155,7 @@ function build_table_row(DateTime $date_object, int $branch_id) {
     $configuration = new \PDR\Application\configuration();
     $locale = $configuration->getLanguage();
     $dayFormatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
-    $dayFormatter->setPattern('EEE dd.MM.YYYY'); // 'EEEE' represents the full weekday name
+    $dayFormatter->setPattern('EEE dd.MM.YYYY');
 
     $date_string = $dayFormatter->format($date_object->getTimestamp());
     if (FALSE !== $holiday) {
@@ -147,6 +170,11 @@ function build_table_row(DateTime $date_object, int $branch_id) {
         $rostered_employees_names_string = implode(', ', $Rostered_employees_names);
         $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names_span($saturday_rotation, $workforce, $absenceCollection);
         $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
+        
+        // Abwesende Mitarbeiter ermitteln
+        $absentEmployees = getAbsentEmployeesInfo($date_object, $branch_id, $workforce, $absenceCollection);
+        $absent_employees_string = !empty($absentEmployees) ? implode(', ', $absentEmployees) : '&nbsp;';
+        
         $table_row .= "<tr>";
         $table_row .= "<td>";
         $table_row .= $date_string;
@@ -154,6 +182,7 @@ function build_table_row(DateTime $date_object, int $branch_id) {
         $table_row .= "<td>" . $saturday_rotation->team_id . "</td>";
         $table_row .= "<td>" . $saturday_rotation_team_member_names_string . "</td>";
         $table_row .= "<td>" . $rostered_employees_names_string . "</td>";
+        $table_row .= "<td><del>" . $absent_employees_string . "</del></td>";
         $table_row .= "</tr>\n";
     }
     return $table_row;
