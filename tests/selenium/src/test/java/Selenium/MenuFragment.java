@@ -264,32 +264,39 @@ public class MenuFragment {
 
         String currentUrl = driver.getCurrentUrl();
         String targetHref = linkElement.getAttribute("href");
+        try {
 
-        if (targetHref != null && !currentUrl.contains(targetHref)) {
-            LogCollector.debug("Page differs from current page, clicking to new page");
+            if (targetHref != null && !currentUrl.contains(targetHref)) {
+                LogCollector.debug("Page differs from current page, clicking to new page");
 
-            // Ensure element is still clickable
-            linkElement = wait.until(ExpectedConditions.elementToBeClickable(target));
+                // Ensure element is still clickable
+                linkElement = wait.until(ExpectedConditions.elementToBeClickable(target));
 
-            // Use JavaScript click for better reliability
-            try {
-                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", linkElement);
-            } catch (Exception e) {
-                LogCollector.warn("JavaScript click failed, trying regular click");
-                linkElement.click();
+                // Use JavaScript click for better reliability
+                try {
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", linkElement);
+                } catch (Exception e) {
+                    LogCollector.warn("JavaScript click failed, trying regular click");
+                    linkElement.click();
+                }
+
+                // Wait for page load
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
+                    Thread.currentThread().interrupt();
+                }
+            } else {
+                LogCollector.debug("Page is target page already, no click.");
             }
-
-            // Wait for page load
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
-                Thread.currentThread().interrupt();
-            }
-        } else {
-            LogCollector.debug("Page is target page already, no click.");
+        } catch (Exception e) {
+            /*
+             * Auf den Link klicken hat nicht funktioniert. Wir gehen direkt zu targetHref
+             */
+            LogCollector.warn("Click failed, navigating directly to href");
+            driver.get(targetHref);
         }
-
         /**
          * Move mouse back to top of page
          */
