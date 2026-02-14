@@ -40,6 +40,7 @@ $table_head .= "<th>" . gettext("Date") . "</th>";
 $table_head .= "<th>" . gettext("Team") . "</th>";
 $table_head .= "<th>" . gettext("Team members") . "</th>";
 $table_head .= "<th>" . gettext("Scheduled in roster") . "</th>\n";
+$table_head .= "<th>" . gettext("Absent") . "</th>\n";
 $table_head .= "</tr>\n";
 $table_head .= "</thead>\n";
 $table_body = "<tbody>\n";
@@ -64,3 +65,125 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo $html;
+
+function get_saturday_rotation_team_member_names_span(saturday_rotation $saturdayRotation, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection) {
+    $SaturdayRotationTeamMemberIds = array();
+    $saturdayRotationTeamId = $saturdayRotation->team_id;
+    if (NULL !== $saturdayRotationTeamId and FALSE !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
+        $SaturdayRotationTeamMemberIds = $saturdayRotation->List_of_teams[$saturdayRotationTeamId];
+    }
+
+    $SaturdayRotationTeamMemberNames = array();
+    foreach ($SaturdayRotationTeamMemberIds as $employeeKey) {
+
+        if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+            $prefix = '<span>';
+            $suffix = '</span>';
+            if ($absenceCollection->containsEmployeeKey($employeeKey)) {
+                $prefix = '<span class="absent">';
+                $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . ')</span>';
+            }
+
+            $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->List_of_employees[$employeeKey]->last_name . $suffix;
+        } else {
+            $SaturdayRotationTeamMemberNames[] = "$employeeKey???";
+        }
+    }
+    return $SaturdayRotationTeamMemberNames;
+}
+
+function getRosteredEmployeesNames(array $Roster, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
+    $RosteredEmployees = array();
+    foreach ($Roster as $RosterDayArray) {
+        foreach ($RosterDayArray as $rosterItem) {
+            if (isset($workforce->List_of_employees[$rosterItem->employee_key]->last_name)) {
+                $prefix = '<span>';
+                $suffix = '</span>';
+                if ($absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
+                    $prefix = '<span class="absent">';
+                    $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($rosterItem->employee_key)->getReasonId()) . ')</span>';
+                }
+                $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->List_of_employees[$rosterItem->employee_key]->last_name . $suffix;
+            }
+        }
+    }
+    return $RosteredEmployees;
+}
+
+function getAbsentEmployeesInfo(DateTime $date_object, int $branch_id, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
+    $absentEmployees = array();
+    
+    // Mitarbeiter mit regulären Abwesenheiten (Urlaub, Krankheit, etc.)
+    foreach ($absenceCollection->getIterator() as $absence) {
+        $employeeKey = $absence->getEmployeeKey();
+        if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+            $reasonString = \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId());
+            $absentEmployees[$employeeKey] = $workforce->List_of_employees[$employeeKey]->last_name . " (" . $reasonString . ")";
+        }
+    }
+    
+    // Mitarbeiter, die am Vortag Notdienst hatten
+    if (\PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDawn($date_object)) {
+        try {
+            $emergencyService = \PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDawn($date_object);
+            $employeeKey = $emergencyService->getEmployeeKey();
+            
+            if (NULL !== $employeeKey && isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+                // Nur hinzufügen, wenn nicht bereits wegen anderer Abwesenheit erfasst
+                if (!isset($absentEmployees[$employeeKey])) {
+                    $absentEmployees[$employeeKey] = $workforce->List_of_employees[$employeeKey]->last_name . " (" . gettext("Emergency service dawn") . ")";
+                }
+            }
+        } catch (\Exception $e) {
+            // Kein Notdienst gefunden, ignorieren
+        }
+    }
+    
+    return $absentEmployees;
+}
+
+function build_table_row(DateTime $date_object, int $branch_id) {
+    $saturday_rotation = new saturday_rotation($branch_id);
+    $saturday_rotation->get_participation_team_id($date_object);
+    $workforce = new workforce($date_object->format('Y-m-d'));
+    $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_object->format('Y-m-d'));
+
+    $Roster = roster::read_roster_from_database($branch_id, $date_object->format('Y-m-d'));
+
+    $table_row = "";
+    $holiday = holidays::is_holiday($date_object);
+    $configuration = new \PDR\Application\configuration();
+    $locale = $configuration->getLanguage();
+    $dayFormatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE);
+    $dayFormatter->setPattern('EEE dd.MM.YYYY');
+
+    $date_string = $dayFormatter->format($date_object->getTimestamp());
+    if (FALSE !== $holiday) {
+        $table_row .= "<tr class='saturday-list-row-holiday'>";
+        $table_row .= "<td colspan='99'>";
+        $table_row .= $date_string;
+        $table_row .= "&nbsp;<span>" . $holiday . "</span>";
+        $table_row .= "</td>";
+        $table_row .= "</tr>\n";
+    } else {
+        $Rostered_employees_names = getRosteredEmployeesNames($Roster, $workforce, $absenceCollection);
+        $rostered_employees_names_string = implode(', ', $Rostered_employees_names);
+        $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names_span($saturday_rotation, $workforce, $absenceCollection);
+        $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
+        
+        // Abwesende Mitarbeiter ermitteln
+        $absentEmployees = getAbsentEmployeesInfo($date_object, $branch_id, $workforce, $absenceCollection);
+        $absent_employees_string = !empty($absentEmployees) ? implode(', ', $absentEmployees) : '&nbsp;';
+        
+        $table_row .= "<tr>";
+        $table_row .= "<td>";
+        $table_row .= $date_string;
+        $table_row .= "</td>";
+        $table_row .= "<td>" . $saturday_rotation->team_id . "</td>";
+        $table_row .= "<td>" . $saturday_rotation_team_member_names_string . "</td>";
+        $table_row .= "<td>" . $rostered_employees_names_string . "</td>";
+        $table_row .= "<td><del>" . $absent_employees_string . "</del></td>";
+        $table_row .= "</tr>\n";
+    }
+    return $table_row;
+}
