@@ -20,6 +20,7 @@ package Selenium.signin;
 
 import Selenium.HomePage;
 import Selenium.PropertyFile;
+import Selenium.Utilities.LogCollector;
 import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
@@ -48,12 +49,6 @@ public class SignInPage extends Selenium.BasePage {
     public SignInPage(WebDriver driver) {
         super(driver);  // Call to BasePage constructor
         this.driver = driver;
-        if (null != getUserNameText()) {
-            /**
-             * This user is already logged in.
-             */
-            return;
-        }
         try {
             WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(1));
             waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
@@ -66,7 +61,11 @@ public class SignInPage extends Selenium.BasePage {
              * landen wir im Menü.
              */
             PropertyFile propertyFile = new PropertyFile();
-            driver.get(propertyFile.getTestPageUrl());
+            /**
+             * @todo: Wenn die fogende Zeile den Wechsel zur testRealPageUrl
+             * erzwingt, gelingt der Wechsel zum Login in der realPage nicht.
+             */
+            //driver.get(propertyFile.getTestPageUrl());
         }
     }
 
@@ -79,36 +78,37 @@ public class SignInPage extends Selenium.BasePage {
      * @throws java.lang.Exception
      */
     public HomePage loginValidUser(String userName, String passphrase) throws Exception {
-        String userNameText = getUserNameText();
-        if (userNameText != null && userName.equals(userNameText)) {
-            /**
-             * This user is already logged in.
-             */
-            return new HomePage(driver);
-        }
-        if (userNameText != null && !userName.equals(userNameText)) {
-            logger.error("Some other user is logged in. You have to logout first!");
-            /**
-             * Some other user is still logged in.
-             */
-            throw new Exception("Some other user is logged in. You have to logout first!");
-        }
-
+        LogCollector.debug("method signInPage.loginValidUser()");
         try {
+            LogCollector.debug("wait for signinBy");
             waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
         } catch (TimeoutException exception) {
-            logger.error("Did not find a login button with wait: " + waitShort.toString());
-            throw exception;
-        } catch (Exception exception) {
-            logger.error("Some other exception occured.");
-            Assert.fail();
+            String userNameText = getUserNameText();
+            if (userNameText != null && userName.equals(userNameText)) {
+                /**
+                 * This user is already logged in.
+                 */
+                return new HomePage(driver);
+            }
+            if (userNameText != null && !userName.equals(userNameText)) {
+                LogCollector.error("Some other user is logged in. You have to logout first!");
+                /**
+                 * Some other user is still logged in.
+                 */
+                throw new Exception("Some other user is logged in. You have to logout first!");
+            }
         }
+        LogCollector.debug("enter sign in form data:");
         driver.findElement(usernameBy).clear();
         driver.findElement(usernameBy).sendKeys(userName);
         driver.findElement(passwordBy).clear();
         driver.findElement(passwordBy).sendKeys(passphrase);
+        LogCollector.debug("click sign in button:");
         driver.findElement(signinBy).click();
-        return new HomePage(driver);
+        LogCollector.debug("create new HomePage:");
+        HomePage newHomePage = new HomePage(driver);
+        LogCollector.debug("return new HomePage:");
+        return newHomePage;
     }
 
     public HomePage loginValidUser() throws Exception {
@@ -130,14 +130,12 @@ public class SignInPage extends Selenium.BasePage {
      */
     @Override
     public String getUserNameText() {
-        logWithDetails("Search for logged in username");
         WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofMillis(100));
         try {
             waitShort.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-            logger.debug("return the found username");
             return driver.findElement(userNameSpanBy).getText();
         } catch (Exception exception) {
-            logger.debug("Cannot find 'userNameSpan'. We might not be logged in.");
+            LogCollector.error("Cannot find 'userNameSpan'. We might not be logged in.");
             return null;
         }
     }
@@ -154,4 +152,73 @@ public class SignInPage extends Selenium.BasePage {
         moveToResetLostPasswordLink.click();
 
     }
+
+    /**
+     * Login mit ungültigen Credentials (für negative Tests) Diese Methode
+     * erwartet KEINEN erfolgreichen Login
+     *
+     * @param userName
+     * @param passphrase
+     * @throws java.lang.Exception
+     */
+    public void loginInvalidUser(String userName, String passphrase) throws Exception {
+        LogCollector.debug("method signInPage.loginInvalidUser()");
+
+        // Warte auf Login-Button
+        try {
+            waitShort.until(ExpectedConditions.presenceOfElementLocated(signinBy));
+        } catch (TimeoutException exception) {
+            LogCollector.warn("Login button not found - might already be logged in");
+            throw new Exception("Cannot perform invalid login test - not on login page");
+        }
+
+        LogCollector.debug("enter invalid sign in form data:");
+
+        // Felder leeren und Daten eingeben
+        WebElement usernameField = driver.findElement(usernameBy);
+        usernameField.clear();
+        if (userName != null && !userName.isEmpty()) {
+            usernameField.sendKeys(userName);
+        }
+
+        WebElement passwordField = driver.findElement(passwordBy);
+        passwordField.clear();
+        if (passphrase != null && !passphrase.isEmpty()) {
+            passwordField.sendKeys(passphrase);
+        }
+
+        LogCollector.debug("click sign in button:");
+        driver.findElement(signinBy).click();
+
+        // Kurz warten, um der Anwendung Zeit zu geben, zu reagieren
+        Thread.sleep(500);
+
+        LogCollector.debug("Invalid login attempt completed");
+
+        /**
+         * Prüfe, dass der Login tatsächlich fehlgeschlagen ist Wenn wir eine
+         * HomePage erstellen können und einen User finden, ist der Login
+         * fälschlicherweise erfolgreich gewesen.
+         */
+        try {
+            LogCollector.debug("Verify that login failed - try creating HomePage:");
+            HomePage newHomePage = new HomePage(driver);
+            String loggedInUser = newHomePage.getUserNameText();
+
+            // Wenn wir hier ankommen, war der Login erfolgreich - das ist FALSCH!
+            Assert.fail("Login sollte fehlschlagen, war aber erfolgreich! Eingeloggter User: " + loggedInUser);
+
+        } catch (IllegalStateException expected) {
+            // Das ist der erwartete Fall - HomePage wirft IllegalStateException bei nicht eingeloggtem User
+            LogCollector.debug("Login ist erwartungsgemäß fehlgeschlagen (IllegalStateException): " + expected.getMessage());
+        } catch (TimeoutException expected) {
+            // Alternative: TimeoutException von getUserNameText() bedeutet auch, dass kein User eingeloggt ist
+            LogCollector.debug("Login ist erwartungsgemäß fehlgeschlagen (TimeoutException): " + expected.getMessage());
+        } catch (Exception unexpected) {
+            // Andere Exceptions sollten nicht auftreten
+            LogCollector.error("Unerwartete Exception beim Prüfen des fehlgeschlagenen Logins" + unexpected.getMessage());
+            throw unexpected;
+        }
+    }
+
 }

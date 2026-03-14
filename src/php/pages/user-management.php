@@ -104,9 +104,9 @@ function build_checkbox_permission($privilege, $checked) {
                 $selected = (null == $user->get_employee_key()) ? 'selected' : '';
                 echo '<option value="" ' . $selected . '></option>';
                 //Add all currently existing employees:
-                foreach ($workforce->List_of_employees as $employee_key => $employee) {
+                foreach ($workforce->getListOfEmployees() as $employee_key => $employee) {
                     // Display the first name and last name as the option text.
-                    $employeeName = $employee->first_name . ' ' . $employee->last_name;
+                    $employeeName = $employee->getFullName();
                     $selected = ($employee_key == $user->get_employee_key()) ? 'selected' : '';
                     echo '<option value="' . $employee_key . '" ' . $selected . '>' . htmlspecialchars($employeeName) . '</option>';
                 }

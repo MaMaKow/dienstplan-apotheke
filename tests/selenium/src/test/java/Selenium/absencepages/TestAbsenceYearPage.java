@@ -23,11 +23,13 @@ import java.time.LocalDate;
 import java.time.Month;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
+import org.testng.annotations.Listeners;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestAbsenceYearPage extends Selenium.TestPage {
 
     @org.testng.annotations.Test()

@@ -44,6 +44,8 @@ class configurationManager {
         'LC_TIME' => FILTER_SANITIZE_SPECIAL_CHARS,
         'timezone' => FILTER_SANITIZE_SPECIAL_CHARS,
         'language' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'countryCode' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'stateCode' => FILTER_SANITIZE_SPECIAL_CHARS,
         'mb_internal_encoding' => FILTER_SANITIZE_SPECIAL_CHARS,
         'contact_email' => FILTER_SANITIZE_EMAIL,
         'hide_disapproved' => FILTER_SANITIZE_NUMBER_INT,
@@ -65,6 +67,63 @@ class configurationManager {
         'en-GB' => 'English',
         'de-DE' => 'Deutsch',
     );
+    public static $List_of_supported_countries = array(
+        'GB' => 'Great Britain',
+        'DE' => 'Deutschland',
+        'FR' => 'France',
+    );
+
+    /**
+     * @var array Liste der Länder mit ihren zugehörigen Bundesländern/Regionen
+     */
+    private
+            $ListOfStatesByCountry = [
+        'DE' => [
+            'DE-BW' => 'Baden-Württemberg',
+            'DE-BY' => 'Bayern',
+            'DE-BE' => 'Berlin',
+            'DE-BB' => 'Brandenburg',
+            'DE-HB' => 'Bremen',
+            'DE-HH' => 'Hamburg',
+            'DE-HE' => 'Hessen',
+            'DE-MV' => 'Mecklenburg-Vorpommern',
+            'DE-NI' => 'Niedersachsen',
+            'DE-NW' => 'Nordrhein-Westfalen',
+            'DE-RP' => 'Rheinland-Pfalz',
+            'DE-SL' => 'Saarland',
+            'DE-SN' => 'Sachsen',
+            'DE-ST' => 'Sachsen-Anhalt',
+            'DE-SH' => 'Schleswig-Holstein',
+            'DE-TH' => 'Thüringen',
+        ],
+        'GB' => [
+            'GB-ENG' => 'England',
+            'GB-NIR' => 'Northern Ireland',
+            'GB-SCT' => 'Scotland',
+            'GB-WLS' => 'Wales',
+        ],
+        'FR' => [
+            'FR-ARA' => 'Auvergne-Rhône-Alpes',
+            'FR-BFC' => 'Bourgogne-Franche-Comté',
+            'FR-BRE' => 'Bretagne',
+            'FR-CVL' => 'Centre-Val de Loire',
+            'FR-COR' => 'Corse',
+            'FR-GES' => 'Grand Est',
+            'FR-HDF' => 'Hauts-de-France',
+            'FR-IDF' => 'Île-de-France',
+            'FR-NOR' => 'Normandie',
+            'FR-NAQ' => 'Nouvelle-Aquitaine',
+            'FR-OCC' => 'Occitanie',
+            'FR-PDL' => 'Pays de la Loire',
+            'FR-PAC' => 'Provence-Alpes-Côte d\'Azur',
+            'FR-A' => 'Alsace', // zusätzich zum offiziellen ISO 3166-2:FR
+            'FR-57' => 'Moselle', // zusätzich zum offiziellen ISO 3166-2:FR
+        ],
+    ];
+
+    public function getStatesByCountry(string $countryCode) {
+        return $this->ListOfStatesByCountry[$countryCode];
+    }
 
     const ERROR_ERROR = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
     const ERROR_WARNING = self::ERROR_ERROR | E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;
@@ -150,7 +209,7 @@ class configurationManager {
     }
 
     public function checkErrorLogPath() {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         // Set the desired error log path
         $desiredErrorLogPath = $configuration->getErrorLog();
 
@@ -177,12 +236,16 @@ class configurationManager {
      * writes it to the configuration file
      * and then returns the new configuration array.</p>
      *
-     * @param array $config
      * @return array $new_config
      */
-    public static function handle_user_input($config) {
+    public static function handle_user_input(): void {
+        $oldConfigurationObjectBeforeInput = new \PDR\Application\Configuration(); // Old config before input
+        $oldConfigurationArrayBeforeInput = $oldConfigurationObjectBeforeInput->getArrayOfLoadedConfig();
         $user_dialog = new \user_dialog();
         $configuration_file = PDR_FILE_SYSTEM_APPLICATION_PATH . 'config/config.php';
+        // Initialize the new configuration array
+        $newConfig = array();
+
         /**
          * Copy old file
          */
@@ -194,38 +257,38 @@ class configurationManager {
         /**
          * Read the POST values:
          */
-        foreach (\PDR\Application\configuration::$List_of_configuration_parameters as $key => $default_value) {
+        foreach (\PDR\Application\Configuration::$List_of_configuration_parameters as $key => $default_value) {
             if (isset($_POST[$key]) and '' !== $_POST[$key]) {
                 if ('database_password' === $key) {
                     if ($_POST['database_password'] !== $_POST['database_password_second']) {
                         $user_dialog->add_message(gettext('The passwords do not match.'));
-                        $new_config[$key] = $config[$key]; // revert to old password
+                        $newConfig[$key] = $oldConfigurationObjectBeforeInput->getDatabasePassword(); // revert to old password
                         continue;
                     }
                     $have_i_been_pwned = new \have_i_been_pwned();
                     if (!$have_i_been_pwned->password_is_secure($_POST['database_password'])) {
                         $user_dialog->add_message($have_i_been_pwned->get_user_information_string());
-                        $new_config[$key] = $config[$key]; // revert to old password
+                        $newConfig[$key] = $oldConfigurationObjectBeforeInput->getDatabasePassword(); // revert to old password
                         continue;
                     }
                 }
                 /*
                  * $key will be taken from POST:
                  */
-                $new_config[$key] = filter_input(INPUT_POST, $key, self::$List_of_configuration_parameter_types[$key]);
-            } elseif (isset($config[$key]) and '' !== $config[$key]) {
+                $newConfig[$key] = filter_input(INPUT_POST, $key, self::$List_of_configuration_parameter_types[$key]);
+            } elseif (isset($oldConfigurationArrayBeforeInput[$key]) and '' !== $oldConfigurationArrayBeforeInput[$key]) {
                 /*
                  * $key will be taken from old $config:
                  */
-                $new_config[$key] = $config[$key];
+                $newConfig[$key] = $oldConfigurationArrayBeforeInput[$key];
             } else {
                 /*
                  * $key will be taken from default value:
                  */
-                $new_config[$key] = $default_value;
+                $newConfig[$key] = $default_value;
             }
         }
-        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($new_config, true) . ';' . PHP_EOL);
+        $result = file_put_contents($configuration_file, '<?php' . PHP_EOL . ' $config = ' . var_export($newConfig, true) . ';' . PHP_EOL);
         if ($result === false) {
             $user_dialog = new \user_dialog;
             $user_dialog->add_message("Error while trying to write configuration file.", E_USER_ERROR);
@@ -237,7 +300,8 @@ class configurationManager {
          */
         if (function_exists('\opcache_reset')) {
             \opcache_reset();
+            error_log("Cleared the php cache via \opcache_reset().");
         }
-        return $new_config;
+        $oldConfigurationObjectBeforeInput->forceReload();
     }
 }

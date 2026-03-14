@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.martin-mandelkow.pdr.tests.selenium</groupId>
     <artifactId>selenium</artifactId>
-    <version>0.32.2</version>
+    <version>0.39.9</version>
     <name>SeleniumTest</name>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -11,6 +11,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
@@ -116,6 +122,13 @@
             <version>0.6.6</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -132,11 +145,24 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.5.3</version>
                 <configuration>
+                    <!-- TestNG Suite einbinden -->
                     <suiteXmlFiles>
                         <suiteXmlFile>./testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
+
+                    <!-- Immer komplette Stacktraces anzeigen -->
+                    <trimStackTrace>false</trimStackTrace>
+
+                    <!-- Konsolenausgabe nicht nur in Dateien umleiten -->
+                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
+
+                    <!-- Zusammenfassung im Build-Log behalten -->
+                    <printSummary>true</printSummary>
+
+                    <!-- Falls du mehr Debug willst -->
+                    <!-- <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/> -->
                 </configuration>
             </plugin>
         </plugins>

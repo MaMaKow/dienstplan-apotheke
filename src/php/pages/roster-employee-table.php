@@ -51,7 +51,7 @@ if (isset($_POST) && !empty($_POST)) {
 /*
  * Get a list of employees:
  */
-if (!isset($workforce->List_of_employees[$employee_key])) {
+if (!isset($workforce->getListOfEmployees()[$employee_key])) {
     /* This happens if a coworker is not working with us anymore.
      * He can still be chosen within abwesenheit and stunden.
      * Therefore we might get his/her id in the cookie.
@@ -68,7 +68,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
      */
-    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($workforce->List_of_employees[$employee_key]->principle_branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
+    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($workforce->getListOfEmployees()[$employee_key]->principle_branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
 }
 
 //Produce the output:
@@ -83,7 +83,7 @@ echo "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-week
  . '&nbsp;' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))
  . "</a><br>\n";
 
-echo build_html_navigation_elements::build_select_employee($employee_key, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employee_key, $workforce->getListOfEmployees());
 
 //Navigation between the weeks:
 echo build_html_navigation_elements::build_button_week_backward($date_sql);
@@ -95,7 +95,7 @@ echo "<br>";
 
 echo "<table>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME));
-echo build_html_roster_views::build_roster_readonly_employee_table($Roster, $workforce->List_of_employees[$employee_key]->principle_branch_id);
+echo build_html_roster_views::build_roster_readonly_employee_table($Roster, $workforce->getListOfEmployees()[$employee_key]->principle_branch_id);
 $table_foot_html = "<tfoot>"
 //. "<tr class=page-break></tr>"
         . "\n<tr>\n";
@@ -111,7 +111,7 @@ foreach (array_keys($Roster) as $date_unix) {
      * Now we build a row of absent employees in the foot of the table.
      */
     if (!$absenceCollection->isEmpty()) {
-        $table_foot_html .= build_html_roster_views::build_absentees_column($absenceCollection);
+        $table_foot_html .= build_html_roster_views::build_absentees_column($absenceCollection, $workforce);
     } else {
         $table_foot_html .= "</td><td>";
     }

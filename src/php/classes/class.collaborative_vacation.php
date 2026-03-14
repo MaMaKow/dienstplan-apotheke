@@ -71,8 +71,8 @@ class collaborative_vacation {
              */
             if ($_SESSION['user_object']->employee_key !== $employee_key) {
                 error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays for employee " . $employee_key);
-                global $config;
-                $recipient = $config['contact_email'];
+                $configuration = new PDR\Application\Configuration();
+                $recipient = $configuration->getContactEmail();
                 $subject = "Permission Error";
                 $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays for employee " . $employee_key;
                 $user_dialog_email->send_email($recipient, $subject, $message);
@@ -81,16 +81,14 @@ class collaborative_vacation {
             if ("" !== $employee_key_old and $_SESSION['user_object']->employee_key !== $employee_key_old) {
                 error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays from employee " . $employee_key_old);
                 $user_dialog_email = new user_dialog_email;
-                global $config;
-                $recipient = $config['contact_email'];
+                $recipient = $configuration->getContactEmail();
                 $subject = "Permission Error";
                 $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " tried to request holidays from employee " . $employee_key_old;
                 $user_dialog_email->send_email($recipient, $subject, $message);
                 throw new Exception(gettext('Permission error.') . ' ' . gettext('Please see the error log for details!'));
             }
             $approval = "not_yet_approved";
-            global $config;
-            $recipient = $config['contact_email'];
+            $recipient = $configuration->getContactEmail();
             $subject = "An absence for " . $_SESSION['user_object']->user_name . " was changed.";
             $message = "Dear Admin,\n\n";
             $message = "An absence for " . $_SESSION['user_object']->user_name . " was inserted or changed.\n";
@@ -110,8 +108,7 @@ class collaborative_vacation {
              */
             error_log("Permissions: Employee " . $_SESSION['user_object']->employee_key . " seems to misuse collaborative vacation.");
             $user_dialog_email = new user_dialog_email;
-            global $config;
-            $recipient = $config['contact_email'];
+            $recipient = $configuration->getContactEmail();
             $subject = "Permission Error";
             $message = "Permissions: Employee " . $_SESSION['user_object']->employee_key . " seems to misuse collaborative vacation.";
             $user_dialog_email->send_email($recipient, $subject, $message);
@@ -184,7 +181,7 @@ class collaborative_vacation {
         $date_end_object->setTime(0, 0, 0, 0);
         $current_month = $date_start_object->format("n");
         $current_year = $date_start_object->format("Y");
-
+        $holidays = new \PDR\DateTime\Holidays($year);
         $absences = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
 
         $year_container_html = "<div class=year-container>\n";
@@ -206,7 +203,7 @@ class collaborative_vacation {
                 $month_container_html .= "<div class='month-container'>";
                 $month_container_html .= $this->get_month_name($date_object) . "<br>\n";
             }
-            $month_container_html .= $this->build_absence_month_paragraph($date_object, $date_object, $absences, 'year');
+            $month_container_html .= $this->build_absence_month_paragraph($date_object, $date_object, $absences, $holidays, 'year');
         }
         $month_container_html .= "</div>\n";
         $month_container_html .= "</div><!-- class='year-quarter-container'-->\n";
@@ -269,44 +266,47 @@ class collaborative_vacation {
         return $month_container_html;
     }
 
-    private function build_absence_month_paragraph(\DateTime $date_object, \DateTime $input_date_object, \PDR\Roster\AbsenceCollection $absenceCollection, string $mode = 'month') {
+    private function build_absence_month_paragraph(\DateTime $date_object, \DateTime $input_date_object, \PDR\Roster\AbsenceCollection $absenceCollection, \PDR\DateTime\Holidays $holidays, string $mode = 'month') {
         // Assert that $date_object has no time (time is set to 0:00:00)
         if ($date_object->format('H:i:s') !== '00:00:00') {
             throw new \InvalidArgumentException('$date_object MUST have a time of 00:00:00.');
         }
-        $is_holiday = \holidays::is_holiday($date_object->format('U'));
-        $html_class_list = $this->get_classes_of_day_paragraph($date_object, $is_holiday, $input_date_object);
+
+        $isHoliday = $holidays->isHoliday($date_object);
+        $html_class_list = $this->get_classes_of_day_paragraph($date_object, $isHoliday, $input_date_object);
         $paragraph = "<p class='$html_class_list'";
         $paragraph .= $this->build_absence_month_paragraph_javascript();
         $paragraph .= $this->build_absence_month_get_paragraph_attributes($date_object);
         $paragraph .= ">";
-        $paragraph .= $this->build_absence_month_paragraph_content($date_object, $absenceCollection, $is_holiday, $mode);
+        $paragraph .= $this->build_absence_month_paragraph_content($date_object, $absenceCollection, $holidays, $mode);
         $paragraph .= "</p>\n";
         return $paragraph;
     }
 
-    private function build_absence_month_paragraph_content($date_object, \PDR\Roster\AbsenceCollection $absenceCollection, $is_holiday, $mode = 'month') {
+    private function build_absence_month_paragraph_content(DateTime $dateObject, \PDR\Roster\AbsenceCollection $absenceCollection, \PDR\DateTime\Holidays $holidays, string $mode = 'month') {
+        $isHoliday = $holidays->isHoliday($dateObject);
         switch ($mode) {
             case 'year':
-                $date_string = $date_object->format('d.m.');
+                $dateString = $dateObject->format('d.m.');
                 break;
             case 'month':
             default:
-                $date_string = mb_substr(\localization::gettext($date_object->format('l')), 0, 3);
-                $date_string .= ' ';
-                $date_string .= $date_object->format('d.m.');
+                $dateString = mb_substr(\localization::gettext($dateObject->format('l')), 0, 3);
+                $dateString .= ' ';
+                $dateString .= $dateObject->format('d.m.');
 
                 break;
         }
 
-        $paragraph_content = "<strong>" . $date_string . "</strong> ";
-        $paragraph_content .= $this->build_absence_year_absent_employees_containers($date_object, $absenceCollection, $is_holiday, $mode);
-        if ($is_holiday) {
-            $paragraph_content .= "<span class='holiday'>" . $is_holiday . "</span>\n";
+        $paragraphContent = "<strong>" . $dateString . "</strong> ";
+        $paragraphContent .= $this->build_absence_year_absent_employees_containers($dateObject, $absenceCollection, $mode);
+        if ($isHoliday) {
+            $holiday = $holidays->getHolidayOnDate($dateObject);
+            $paragraphContent .= "<span class='holiday'>" . $holiday->getName() . "</span>\n";
         }
-        $paragraph_content .= $this->buildAbsenceMonthParagraphAddEmergencyService($date_object, $mode);
+        $paragraphContent .= $this->buildAbsenceMonthParagraphAddEmergencyService($dateObject, $mode);
 
-        return $paragraph_content;
+        return $paragraphContent;
     }
 
     private function buildAbsenceMonthParagraphAddEmergencyService(\DateTime $dateObject, string $mode): string {
@@ -356,7 +356,7 @@ class collaborative_vacation {
         return $paragraph_javascript;
     }
 
-    private function build_absence_year_absent_employees_containers(\DateTime $dateObject, \PDR\Roster\AbsenceCollection $absenceCollection, bool $isHoliday, string $mode = 'year'): string {
+    private function build_absence_year_absent_employees_containers(\DateTime $dateObject, \PDR\Roster\AbsenceCollection $absenceCollection, string $mode = 'year'): string {
         $absentEmployeesContainers = '';
         foreach ($absenceCollection as $absence) {
             if ($absence->getStart() > $dateObject) {
@@ -425,22 +425,22 @@ class collaborative_vacation {
         return $absence_title_text;
     }
 
-    private function get_classes_of_day_paragraph($date_object, $is_holiday, $input_date_object) {
+    private function get_classes_of_day_paragraph(DateTime $dateObject, bool $isHoliday, DateTime $inputDateObject) {
 
-        $Paragraph_class = array('day-paragraph');
-        if ($date_object->format('N') < 6 and !$is_holiday) {
-            $Paragraph_class[] = 'weekday';
+        $paragraphClass = array('day-paragraph');
+        if ($dateObject->format('N') < 6 and !$isHoliday) {
+            $paragraphClass[] = 'weekday';
         } else {
-            $Paragraph_class[] = 'weekend';
+            $paragraphClass[] = 'weekend';
         }
-        if ($date_object->format('n') !== $input_date_object->format('n')) {
-            $Paragraph_class[] = 'adjacent-month';
+        if ($dateObject->format('n') !== $inputDateObject->format('n')) {
+            $paragraphClass[] = 'adjacent-month';
         }
-        if ($date_object->format('Y-m-d') === date('Y-m-d', time())) {
-            $Paragraph_class[] = 'today';
+        if ($dateObject->format('Y-m-d') === date('Y-m-d', time())) {
+            $paragraphClass[] = 'today';
         }
-        $html_class_list = implode(' ', $Paragraph_class);
-        return $html_class_list;
+        $htmlClassList = implode(' ', $paragraphClass);
+        return $htmlClassList;
     }
 
     /**

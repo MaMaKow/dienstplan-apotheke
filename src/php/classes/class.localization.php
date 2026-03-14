@@ -164,6 +164,12 @@ abstract class localization {
             case "deu":
             case "de":
                 return "de-DE";
+            case "fr-FR":
+            case "fr_FR":
+            case "fre":
+            case "fra":
+            case "fr":
+                return "fr-FR";
             default:
                 return "de-DE";
         }

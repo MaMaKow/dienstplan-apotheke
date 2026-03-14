@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.Utilities.GsonProvider;
 import Selenium.Utilities.LocalTimeDeserializer;
 import Selenium.Utilities.LocalTimeSerializer;
 import com.google.gson.Gson;
@@ -53,10 +54,7 @@ public class PrincipleRoster {
 
     private void writePrincipleRostertoJson() {
         try {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonProvider.createGson();
             String principleRosterJson = gson.toJson(principleRoster);
 
             Files.write(Paths.get("principleRoster.json"), principleRosterJson.getBytes(StandardCharsets.UTF_8));
@@ -71,10 +69,7 @@ public class PrincipleRoster {
             String jsonContent = new String(Files.readAllBytes(Paths.get("principleRoster.json")), StandardCharsets.UTF_8);
 
             // Use Gson to deserialize the JSON content into a Map<DayOfWeek, PrincipleRosterDay>
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonProvider.createGson();
             TypeToken<HashMap<DayOfWeek, PrincipleRosterDay>> token = new TypeToken<HashMap<DayOfWeek, PrincipleRosterDay>>() {
             };
             return gson.fromJson(jsonContent, token.getType());

@@ -18,13 +18,17 @@
  */
 package Selenium.administrationpages;
 
+import Selenium.BasePage;
 import Selenium.MenuFragment;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -37,19 +41,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * @author Mandelkow
  */
-public class EmergencyServiceListPage {
+public class EmergencyServiceListPage extends BasePage {
 
-    protected static WebDriver driver;
     By user_name_spanBy = By.id("MenuListItemApplicationUsername");
     By branchFormSelectBy = By.xpath("//*[@id=\"branch_form_select\"]");
     By selectYearSelectBy = By.xpath("//*[@id=\"select_year\"]/select");
-    //By selectYearSelectBy = By.xpath("/html/body/form/select[@name='year']");
     By emergencyRowListBy = By.xpath("//*[@id=\"emergencyServiceTable\"]/tbody/tr");
-    //By emergencyRowListBy = By.xpath("/html/body/table/tbody/tr");
     By emergencyRowEmployeeSelectBy = By.xpath(".//td/select[@name=\"emergency_service_employee\"]");
 
     public EmergencyServiceListPage(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
 
         if (getUserNameText().isEmpty()) {
             throw new IllegalStateException("This is not a logged in state,"
@@ -66,9 +67,23 @@ public class EmergencyServiceListPage {
     }
 
     public void selectYear(String yearString) {
+        LogCollector.debug("method selectYear() with year = " + yearString);
+        LogCollector.debug("find element selectYearSelectElement:");
         WebElement selectYearSelectElement = driver.findElement(selectYearSelectBy);
+        LogCollector.debug("javascript scroll into view selectYearSelectElement");
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", selectYearSelectElement);
+        LogCollector.debug("actions.moveToElement(dateInputElement).perform();:");
+        Actions actions = new Actions(driver);
+        actions.moveToElement(selectYearSelectElement).perform();
+        LogCollector.debug("Select selectYearSelect = new Select(selectYearSelectElement);:");
         Select selectYearSelect = new Select(selectYearSelectElement);
+        LogCollector.debug("selectYearSelect.selectByVisibleText(yearString);:");
         selectYearSelect.selectByVisibleText(yearString);
+    }
+
+    public void selectYear(int year) {
+        String yearString = String.valueOf(year);
+        selectYear(yearString);
     }
 
     public int getYear() {
@@ -90,22 +105,33 @@ public class EmergencyServiceListPage {
     }
 
     private WebElement getEmergencyRowElementByDate(LocalDate localDate) {
+        LogCollector.debug("method getEmergencyRowElementByDate()");
+
+        LogCollector.debug("find emergencyRowListElements:");
         List<WebElement> emergencyRowListElements = driver.findElements(emergencyRowListBy);
         By emergencyRowDateBy = By.xpath(".//td[1]/input[@name=\"emergency_service_date\"]");
 
+        LogCollector.debug("remove header line:");
         emergencyRowListElements.remove(0); //The first element is the heading <th></th>
+        LogCollector.debug("start for loop with emergencyRowListElements:");
         for (WebElement emergencyRowElement : emergencyRowListElements) {
+            LogCollector.debug("extract emergencyRowDateElementList:");
             List<WebElement> emergencyRowDateElementList = emergencyRowElement.findElements(emergencyRowDateBy);
             if (emergencyRowDateElementList.isEmpty()) {
+                LogCollector.debug("emergencyRowDateElementList is empty");
                 continue;
             }
+            LogCollector.debug("find emergencyRowDateElement:");
             WebElement emergencyRowDateElement = emergencyRowElement.findElement(emergencyRowDateBy);
+            LogCollector.debug("extract string emergencyRowDateString:");
             String emergencyRowDateString = emergencyRowDateElement.getAttribute("value");
             if (localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY).equals(emergencyRowDateString)) {
+                LogCollector.debug("return emergencyRowElement:");
                 return emergencyRowElement;
             }
         }
         //Wir haben nichts gefunden: return null
+        LogCollector.debug("did not find any element return null:");
         return null;
     }
 
@@ -145,11 +171,17 @@ public class EmergencyServiceListPage {
     }
 
     public boolean rowExistsOnDate(LocalDate localDate) {
+        LogCollector.debug("Method rowExistsOnDate()");
+        LogCollector.debug("find emergencyRowElement:");
         WebElement emergencyRowElement = getEmergencyRowElementByDate(localDate);
+        LogCollector.debug("localDate: " + localDate.format(DateTimeFormatter.ISO_DATE));
         if (null == emergencyRowElement) {
+            LogCollector.debug("There is no such element at all");
             //There is no such element at all
             return false;
         }
+        LogCollector.debug("There is an element:");
+        LogCollector.debug(emergencyRowElement.getAttribute("outerHTML"));
         return true;
     }
 
@@ -170,13 +202,35 @@ public class EmergencyServiceListPage {
     }
 
     public EmergencyServiceListPage addLineForDate(LocalDate localDate) {
+        LogCollector.debug("method addLineForDate");
+        LogCollector.debug("define actions");
         Actions actions = new Actions(driver);
+        LogCollector.debug("find element dateInputElement");
         WebElement dateInputElement = driver.findElement(By.xpath("//*[@id=\"add_new_line_date\"]"));
+        LogCollector.debug("move to element dateInputElement");
+        LogCollector.debug(".getLocation().getX()" + dateInputElement.getLocation().getX());
+        LogCollector.debug(".getLocation().getY()" + dateInputElement.getLocation().getY());
+        LogCollector.debug("dateInputElement.getRect().getX()" + dateInputElement.getRect().getX());
+        LogCollector.debug("dateInputElement.getRect().getY()" + dateInputElement.getRect().getY());
+        LogCollector.debug("dateInputElement.getRect().getHeight()" + dateInputElement.getRect().getHeight());
+        LogCollector.debug("dateInputElement.getRect().getWidth()" + dateInputElement.getRect().getWidth());
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", dateInputElement);
+
         actions.moveToElement(dateInputElement).perform();
+        LogCollector.debug("fill dateInputElement");
         Wrapper.fillDateInput(dateInputElement, localDate);
+        LogCollector.debug("find element submitButton");
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
+        LogCollector.debug("move to element submitButton");
         actions.moveToElement(submitButton).perform();
-        submitButton.click();
+        LogCollector.debug("Wait for submit button");
+        //submitButton.click();
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton));
+        LogCollector.debug("Scroll ino view with javascript submit button");
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submitButton);
+        LogCollector.debug("Click with javascript submit button");
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
+        LogCollector.debug("Return new EmergencyServiceListPage");
         return new EmergencyServiceListPage(driver);
     }
 
@@ -193,8 +247,8 @@ public class EmergencyServiceListPage {
         EmergencyServiceListPage emergencyServiceListPageAfterDeletion;
         try {
             /**
-             * This step often results in a stale element state.
-             * In that case we will just repeat the creation of the new page:
+             * This step often results in a stale element state. In that case we
+             * will just repeat the creation of the new page:
              */
             emergencyServiceListPageAfterDeletion = new EmergencyServiceListPage(driver);
         } catch (StaleElementReferenceException staleElementReferenceException) {

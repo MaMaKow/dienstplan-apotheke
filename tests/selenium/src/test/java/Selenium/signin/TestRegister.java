@@ -19,6 +19,7 @@
 package Selenium.signin;
 
 import Selenium.LogoutPage;
+import Selenium.PropertyFile;
 import Selenium.User;
 import Selenium.UserRegistry;
 import Selenium.administrationpages.UserManagementPage;
@@ -56,6 +57,8 @@ public class TestRegister extends Selenium.TestPage {
                 throw exception;
             }
         }
+        PropertyFile propertyFile = new PropertyFile();
+        driver.get(propertyFile.getTestPageUrl());
         SignInPage signInPage = new SignInPage(driver);
         signInPage.loginValidUser();
         for (Map.Entry<String, User> userEntry : allUsers.entrySet()) {

@@ -8,7 +8,7 @@ ARG ENVIRONMENT=production
 # Create configuration file for Apache
 RUN echo '<Directory /var/www/html>' \
      '\n    Options Indexes FollowSymLinks' \
-     '\n    AllowOverride Limit Options' \
+     '\n    AllowOverride All' \
      '\n    Require all granted' \
      '\n</Directory>' > /etc/apache2/conf-available/directory-listing.conf
 
@@ -38,10 +38,15 @@ RUN apt-get update && apt-get install -y \
     unzip \
     mariadb-client vim \
     locales \
+    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && echo "en_GB.UTF-8 UTF-8" >> /etc/locale.gen \
     && echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen \
     && locale-gen \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
+ENV LANG de_DE.UTF-8
+ENV LANGUAGE de_DE:de
+ENV LC_ALL de_DE.UTF-8
 
 # Docker PHP extensions
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
@@ -56,8 +61,9 @@ WORKDIR /var/www/html/apotheke/dienstplan-test
 COPY . /var/www/html/apotheke/dienstplan-test
 # remove container secrets
 RUN rm -f /var/www/html/apotheke/dienstplan-test/.env
-RUN git config pull.rebase false
-RUN git pull origin testing
+#RUN git config pull.rebase false
+#RUN mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+#RUN git pull origin testing
 # There is another version of selenium-refresh.php, that fetches fresh data from the
 #   nextcloud to get the newest files under development.
 #   This file here is used in the testing stage within a docker container.

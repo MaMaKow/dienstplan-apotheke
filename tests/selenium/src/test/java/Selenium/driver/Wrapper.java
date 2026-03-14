@@ -23,6 +23,7 @@ import Selenium.PropertyFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,7 +63,8 @@ public class Wrapper {
         LocalDateTime timerStart = LocalDateTime.now();
         // driver = createLocalChromeWebDriver();
         driver = createRemoteWebDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+
         LocalDateTime timerEnd = LocalDateTime.now();
         long timeToCreate = java.time.Duration.between(timerStart, timerEnd).toMillis();
         System.out.println("Time to create WebDriver: " + timeToCreate + " milliseconds");

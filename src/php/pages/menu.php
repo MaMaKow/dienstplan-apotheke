@@ -17,7 +17,7 @@
                 <?= gettext("Roster") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_today-24px.svg class="inline-image" alt="day-icon" title="Show roster views">
             </a>
-            <ul>
+            <ul class="submenu">
                 <li>
                     <a id="MenuLinkToRosterDayEdit" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/roster-day-edit.php>
                         <?= gettext("Daily input") ?>
@@ -65,7 +65,7 @@
             <span><?= gettext("Overtime") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/watch_overtime.svg class="inline-image" alt="overtime-icon" title="Show overtime">
             </span>
-            <ul>
+            <ul class="submenu">
                 <li>
                     <a id="MenuLinkToOvertimeEdit" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/overtime-edit.php>
                         <?= gettext("Overtime input") ?>
@@ -85,7 +85,7 @@
             <span><?= gettext("Absence") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_card_travel-24px.svg class="inline-image" alt="absence-icon" title="Show absence">
             </span>
-            <ul>
+            <ul class="submenu">
                 <li>
                     <a id="MenuLinkToAbsenceEdit" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/absence-edit.php title="Urlaub, Krankheit, Abwesenheit">
                         <?= gettext("Absence input") ?>
@@ -115,7 +115,7 @@
             <span><?= gettext("Principle Roster") ?>
                 <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_event_repeat.svg" class="inline-image" alt="edit-icon" title="Edit">
             </span>
-            <ul>
+            <ul class="submenu">
                 <li>
                     <a id="MenuLinkToPrincipleRosterEmployee" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/principle-roster-employee.php>
                         <?= gettext("Principle roster employee") ?>
@@ -137,7 +137,7 @@
                 <?= gettext("Administration") ?>
                 <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_settings.svg class="inline-image" alt="settings-icon" title="Show settings">
             </span>
-            <ul>
+            <ul class="submenu">
                 <li>
                     <a id="MenuLinkToAttendanceList" href=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/attendance-list.php>
                         <?= gettext("Attendance list") ?>
@@ -206,7 +206,7 @@
                 <?= $_SESSION['user_object']->user_name; ?>
             </span>
             <img src=<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/md_face_3.svg class="inline-image" alt="user-icon" title="Show user">
-            <ul>
+            <ul class="submenu">
                 <li>
                     <a id="MenuLinkToManageAccount" href="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/php/pages/user-page.php">
                         <?= gettext('Account page'); ?>

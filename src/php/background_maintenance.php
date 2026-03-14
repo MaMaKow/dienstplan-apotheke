@@ -24,6 +24,18 @@
  */
 chdir(dirname(__DIR__, 2));
 require_once 'bootstrap.php';
-new update_database();
-new maintenance();
-//new auto_upgrader();
+$forceMaintenance = false;
+if ('POST' === $_SERVER['REQUEST_METHOD']) {
+    $forceMaintenanceInput = filter_input(INPUT_POST, 'forceMaintenance');
+    if ($forceMaintenanceInput === 'true') {
+        $forceMaintenance = true;
+    }
+
+    new update_database();
+    new maintenance($forceMaintenance);
+    // new auto_upgrader();
+    echo "Done with background maintenance.";
+} else {
+    http_response_code(405); // Method Not Allowed
+    die("This endpoint only supports POST requests.");
+}

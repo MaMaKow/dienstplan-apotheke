@@ -21,7 +21,10 @@ package Selenium.rosterpages;
 import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
+import static Selenium.driver.Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,21 +44,28 @@ public class TestRosterWeekTablePage extends TestPage {
              * Sign in:
              */
             try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+                super.signIn();
+            } catch (Exception exception) {
+                logger.error("Sign in failed.");
+                Assert.fail();
+            }
             RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
             /**
              * Move to specific date and go foreward and backward from there:
              */
-            rosterWeekTablePage.goToDate("01.07.2020"); //This date is a wednesday.
-            Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+            LocalDate testDate = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.WEDNESDAY));
+            LocalDate mondayDate = testDate.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+            LocalDate mondayBeforeWeek = mondayDate.minusDays(7);
+            //String testDateFormatted = testDate.format(DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
+            String mondayDateFormatted = mondayDate.format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+            String mondayBeforeFormatted = mondayBeforeWeek.format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+
+            rosterWeekTablePage.goToDate(testDate); //This date is a wednesday.
+            Assert.assertEquals(rosterWeekTablePage.getDateString(), mondayDateFormatted); //This is the corresponding monday.
             rosterWeekTablePage.moveWeekBackward();
-            Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-22"); //This is the corresponding monday.
+            Assert.assertEquals(rosterWeekTablePage.getDateString(), mondayBeforeFormatted); //This is the corresponding monday.
             rosterWeekTablePage.moveWeekForward();
-            Assert.assertEquals(rosterWeekTablePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+            Assert.assertEquals(rosterWeekTablePage.getDateString(), mondayDateFormatted); //This is the corresponding monday.
         } catch (Exception exception) {
             Logger.getLogger(TestRosterWeekTablePage.class.getName()).log(Level.SEVERE, null, exception);
         }
@@ -67,11 +77,11 @@ public class TestRosterWeekTablePage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
 
         Roster roster = new Roster();

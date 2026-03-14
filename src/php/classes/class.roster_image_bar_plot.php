@@ -41,7 +41,7 @@ class roster_image_bar_plot {
     private $svg_inner_height;
     private $svg_outer_height;
 
-    public function __construct($Roster, $svg_width = 650, $svg_height = 424) {
+    public function __construct(array $Roster, workforce $workforce, int $svg_width = 650, int $svg_height = 424) {
         foreach ($Roster as $Roster_day_array) {
             $this->total_number_of_lines++;
             foreach ($Roster_day_array as $roster_item) {
@@ -68,16 +68,15 @@ class roster_image_bar_plot {
         $this->svg_inner_height = $this->inner_margin_x * ($this->total_number_of_lines + 1) + $this->bar_height * $this->total_number_of_lines;
         $this->svg_outer_height = $this->svg_inner_height + ($this->outer_margin_y * 2);
 
-        $this->svg_string = $this->draw_image_dienstplan($Roster, $svg_width, $svg_height);
+        $this->svg_string = $this->draw_image_dienstplan($Roster, $svg_width, $svg_height, $workforce);
     }
 
     /**
      *
-     * @global object $workforce
      * @param array $Roster
      * @return string The svg element
      */
-    private function draw_image_dienstplan($Roster, $svg_width, $svg_height) {
+    private function draw_image_dienstplan(array $Roster, int $svg_width, int $svg_height, workforce $workforce) {
         $line = 0;
 
         $svg_viewBox_x_start = $this->first_start * $this->bar_width_factor;
@@ -100,7 +99,6 @@ class roster_image_bar_plot {
                 . ">\n";
 
         foreach ($Roster as $date_unix => $Roster_day_array) {
-            $workforce = new workforce(date('Y-m-d', $date_unix));
 
             $svg_text .= "<g id='svg_img_g_$date_unix'>\n";
             if (1 < count($Roster)) {
@@ -109,7 +107,7 @@ class roster_image_bar_plot {
                  */
                 $x_pos_svg_weekday_text = $this->outer_margin_x + $this->inner_margin_x;
                 $y_pos_svg_weekday_text = $this->outer_margin_y + ($this->inner_margin_y * ($line + 1)) + ($this->bar_height * $line);
-                $configuration = new \PDR\Application\configuration();
+                $configuration = new \PDR\Application\Configuration();
                 $locale = $configuration->getLanguage();
                 $formatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE, null, null, 'EEEE');
                 $weekday_string = $formatter->format($date_unix);
@@ -136,8 +134,8 @@ class roster_image_bar_plot {
                 $working_hours = $roster_item->working_hours;
                 $width_in_hours = $dienst_ende - $dienst_beginn;
                 $break_width_in_hours = $break_end - $break_start;
-                if (isset($workforce->List_of_employees[$employee_key]->profession)) {
-                    $employee_style_class = $workforce->List_of_employees[$employee_key]->profession;
+                if (isset($workforce->getListOfEmployees()[$employee_key]->profession)) {
+                    $employee_style_class = $workforce->getListOfEmployees()[$employee_key]->profession;
                 } else {
                     $employee_style_class = '';
                 }
@@ -162,8 +160,8 @@ class roster_image_bar_plot {
                         . "<rect class='$employee_style_class' data-employee_key='$employee_key' x='$x_pos_box' y='$y_pos_box' width='$width' height='$this->bar_height' />";
                 //$svg_box_text .= "\n    <text class='$employee_style_class' x='$x_pos_box' y='$y_pos_box'  text-anchor='middle' alignment-baseline='middle'>";
                 $svg_box_text .= "\n    <text x='$x_pos_text' y='" . $y_pos_text . "'  alignment-baseline='middle'>";
-                if (isset($workforce->List_of_employees[$employee_key]->last_name)) {
-                    $svg_box_text .= $workforce->List_of_employees[$employee_key]->last_name;
+                if ($workforce->employee_exists($employee_key)) {
+                    $svg_box_text .= $workforce->get_employee_last_name($employee_key);
                 } else {
                     $svg_box_text .= gettext("Unknown employee") . ":" . $employee_key;
                 }

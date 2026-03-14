@@ -92,7 +92,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
          * The user is allowed to create an absence for anyone:
          */
         $workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
-        foreach ($workforce->List_of_employees as $employeeKeyOption => $employee_object) {
+        foreach ($workforce->getListOfEmployees() as $employeeKeyOption => $employee_object) {
             if ($employeeKeyOption == $employeeKey) {
                 $option_selected = "selected";
             } else {
@@ -111,7 +111,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
          */
         $session_employee_key = $_SESSION['user_object']->get_employee_key();
         echo "<option id='employee_key_option_" . $session_employee_key . "' value=" . $session_employee_key . ">";
-        echo $session_employee_key . " " . $workforce->List_of_employees[$session_employee_key]->last_name;
+        echo $session_employee_key . " " . $workforce->get_employee_last_name($session_employee_key);
         echo "</option>\n";
     } else {
         /*
@@ -119,7 +119,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
          * or this is an existing absence.
          */
         echo "<option id='employee_key_option_" . $employeeKey . "' value=" . $employeeKey . ">";
-        echo $employeeKey . " " . $workforce->List_of_employees[$employeeKey]->last_name;
+        echo $employeeKey . " " . $workforce->get_employee_last_name($employeeKey);
         echo "</option>\n";
     }
     ?>

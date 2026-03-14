@@ -22,6 +22,7 @@ import Selenium.Employee;
 import Selenium.MenuFragment;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.RosterItem;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.FileAvailabilityChecker;
 import Selenium.driver.Wrapper;
 import static Selenium.rosterpages.RosterWeekTablePage.driver;
@@ -92,7 +93,7 @@ public class RosterEmployeePage {
     }
 
     public RosterEmployeePage goToDate(String date) {
-        if (date.equals(getDate())) {
+        if (date.equals(getDateString())) {
             return this;
         }
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
@@ -103,7 +104,7 @@ public class RosterEmployeePage {
         return new RosterEmployeePage(driver);
     }
 
-    public String getDate() {
+    public String getDateString() {
         WebElement dateChooserInput = driver.findElement(dateChooserInputBy);
         String date_value = dateChooserInput.getAttribute("value");
         return date_value;
@@ -114,7 +115,7 @@ public class RosterEmployeePage {
      * @return localDate The localDate of the Monday in the selected week.
      */
     public LocalDate getLocalDate() {
-        String dateString = getDate();
+        String dateString = getDateString();
         LocalDate localDate = LocalDate.parse(dateString, Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
         return localDate;
     }
@@ -202,6 +203,8 @@ public class RosterEmployeePage {
          * Find the roster values in the table data:
          */
         String dateString = driver.findElement(getRosterItemDateXpathBy(column)).getText();
+        dateString = dateString.split("\\R")[0]; // An Feiertagen gibt es eine Zweite Zeile mit dem Namen des Feiertages. Die wird heir ignoriert.
+        LogCollector.debug(dateString);
         String dutyStart = driver.findElement(getRosterItemDutyStartXpathBy(column, row)).getText();
         String dutyEnd = driver.findElement(getRosterItemDutyEndXpathBy(column, row)).getText();
         String breakStart = driver.findElement(getRosterItemBreakStartXpathBy(column, row)).getText();

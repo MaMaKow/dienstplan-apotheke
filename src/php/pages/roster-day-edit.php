@@ -31,6 +31,8 @@ $date_sql = user_input::get_variable_from_any_input("datum", FILTER_SANITIZE_SPE
 \PDR\Utility\GeneralUtility::createCookie("datum", $date_sql, 0.5);
 $date_unix = strtotime($date_sql);
 $dateObject = new DateTime($date_sql);
+$holidays = new \PDR\DateTime\Holidays($dateObject->format("Y"));
+$isHoliday = $holidays->isHoliday($dateObject);
 $workforce = new workforce($date_sql);
 $user_dialog = new user_dialog();
 /**
@@ -86,7 +88,6 @@ if (isset($_POST) && !empty($_POST)) {
 }
 
 $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
-$holiday = holidays::is_holiday($date_unix);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
@@ -99,7 +100,7 @@ $Principle_roster = principle_roster::read_current_principle_roster_from_databas
 /*
  * In case there is no roster scheduled yet, create a suggestion:
  */
-if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
+if (roster::is_empty($Roster) and FALSE === $isHoliday) { //No plans on holidays.
     if (!roster::is_empty($Principle_roster)) {
         /*
          * Create roster from principle roster:
@@ -110,7 +111,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
     } elseif (6 == $dateObject->format("N")) {
         try {
             $saturday_rotation = new saturday_rotation($branch_id);
-            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($dateObject);
+            $saturday_rotation_team_id = $saturday_rotation->get_participation_team_id($dateObject, $holidays);
             $Roster = $saturday_rotation->fill_roster($saturday_rotation_team_id);
             if (!roster::is_empty($Roster)) {
                 $message = gettext('There is no roster in the database.') . " " . gettext('This is a proposal.');
@@ -124,7 +125,7 @@ if (roster::is_empty($Roster) and FALSE === $holiday) { //No plans on holidays.
 /*
  * Examine roster for errors and irregularities:
  */
-if ("7" !== date('N', $date_unix) and !holidays::is_holiday($date_unix)) {
+if ("7" !== date('N', $date_unix) and $isHoliday) {
     $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     $examine_roster->check_for_overlap($date_sql, $List_of_branch_objects, $workforce);
     $examine_roster->check_for_sufficient_employee_count();
@@ -185,15 +186,16 @@ $html_text .= $dateObject->format("d.m.");
 /*
  * Weekday:
  */
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 $locale = $configuration->getLanguage();
 $weekdayFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
 $weekdayFormatter->setPattern('EEEE'); // 'EEEE' represents the full weekday name
 
 $html_text .= " ";
 $html_text .= $weekdayFormatter->format($date_unix);
-if (FALSE !== $holiday) {
-    $html_text .= " " . $holiday . " ";
+if (FALSE !== $isHoliday) {
+    $holiday = $holidays->getHolidayOnDate($dateObject);
+    $html_text .= " " . $holiday->getName() . " ";
 }
 $html_text .= "<br>";
 $dateString = $dateObject->format('W');
@@ -240,7 +242,7 @@ $html_text .= "<tr><td></td></tr>\n";
 /*
  * Make a list of absent people:
  */
-$html_text .= build_html_roster_views::build_absentees_row($absenceCollection);
+$html_text .= build_html_roster_views::build_absentees_row($absenceCollection, $workforce);
 $html_text .= "</table>\n";
 $html_text .= "</form>\n";
 
@@ -253,7 +255,7 @@ if (!empty($Roster)) {
         $examine_roster = new examine_roster($Roster, $date_unix, $branch_id, $workforce);
     }
     $html_text .= "<div class=image>\n";
-    $roster_image_bar_plot = new roster_image_bar_plot($Roster);
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster, $workforce);
     $html_text .= $roster_image_bar_plot->svg_string;
     $html_text .= "<br>\n";
     $html_text .= roster_image_histogramm::draw_image_histogramm($Roster, $branch_id, $examine_roster->Anwesende, $date_unix);

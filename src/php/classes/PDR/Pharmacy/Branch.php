@@ -44,31 +44,31 @@ namespace PDR\Pharmacy;
 
 class Branch {
 
-    private $branch_id;
+    private $branchId;
     private $name;
-    private $short_name;
+    private $shortName;
     private $address;
     private $manager;
-    private $Opening_times;
-    private $PEP;
+    private $openingTimes;
+    private $pep;
 
-    public function __construct(int $branch_id = null) {
-        if (null !== $branch_id) {
-            $this->read_branch_data_from_database($branch_id);
+    public function __construct(int $branchId = null) {
+        if (null !== $branchId) {
+            $this->readBranchDataFromDatabase($branchId);
             return;
         }
         /**
          * In case, the object is constructed with the branch_id NULL, we build an empty branch.
          * This is used in branch-management.php to create a new branch.
          */
-        $this->branch_id = null;
+        $this->branchId = null;
         $this->name = gettext("create new branch");
-        $this->short_name = null;
+        $this->shortName = null;
         $this->address = null;
         $this->manager = null;
-        $this->Opening_times = array();
-        $this->PEP = null;
-        $this->Opening_times = array(
+        $this->openingTimes = array();
+        $this->pep = null;
+        $this->openingTimes = array(
             1 => array('day_opening_start' => "", 'day_opening_end' => ""),
             2 => array('day_opening_start' => "", 'day_opening_end' => ""),
             3 => array('day_opening_start' => "", 'day_opening_end' => ""),
@@ -85,7 +85,7 @@ class Branch {
     }
 
     public function getBranchId(): ?int {
-        return $this->branch_id;
+        return $this->branchId;
     }
 
     public function getName(): ?string {
@@ -93,7 +93,7 @@ class Branch {
     }
 
     public function getShortName(): ?string {
-        return $this->short_name;
+        return $this->shortName;
     }
 
     public function getAddress(): ?string {
@@ -105,34 +105,34 @@ class Branch {
     }
 
     public function getOpeningTimes(): ?array {
-        return $this->Opening_times;
+        return $this->openingTimes;
     }
 
-    public function getPEP(): ?string {
-        return $this->PEP;
+    public function getPep(): ?int {
+        return $this->pep;
     }
 
     /**
      * read the branch data from the database
      * @return array An array ob objects of the class branch
      */
-    private function read_branch_data_from_database(int $branch_id) {
+    private function readBranchDataFromDatabase(int $branchId) {
 
-        $sql_query = 'SELECT * FROM `branch` WHERE `branch_id` = :branch_id;';
-        $result = \database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id));
+        $sqlQuery = 'SELECT * FROM `branch` WHERE `branch_id` = :branch_id;';
+        $result = \database_wrapper::instance()->run($sqlQuery, array('branch_id' => $branchId));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
-            $this->branch_id = (int) $row->branch_id;
+            $this->branchId = (int) $row->branch_id;
             $this->name = $row->name;
-            $this->short_name = $row->short_name;
+            $this->shortName = $row->short_name;
             $this->address = $row->address;
             $this->manager = $row->manager;
-            $this->PEP = (int) $row->PEP;
-            $this->read_opening_times_from_database();
-            if ("" === $this->short_name) {
+            $this->pep = (int) $row->PEP;
+            $this->readOpeningTimesFromDatabase();
+            if ("" === $this->shortName) {
                 $location = \PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/branch-management.php';
                 $message = \sprintf(\gettext('A short name for the branch should be <a href="%1$s">configured.</a>'), $location);
-                $user_dialog = new \user_dialog();
-                $user_dialog->add_message($message, \E_USER_NOTICE, TRUE);
+                $userDialog = new \user_dialog();
+                $userDialog->add_message($message, \E_USER_NOTICE, TRUE);
             }
         }
     }
@@ -151,17 +151,29 @@ class Branch {
      *
      * @return void
      */
-    private function read_opening_times_from_database() {
-        $this->Opening_times = array();
+    private function readOpeningTimesFromDatabase(): void {
+        $this->openingTimes = array();
         for ($weekday = 1; $weekday <= 7; $weekday++) {
 
-            $sql_query = "SELECT * FROM `opening_times` WHERE `branch_id` = :branch_id AND `weekday` = :weekday";
-            $result = \database_wrapper::instance()->run($sql_query, array('branch_id' => $this->branch_id, 'weekday' => $weekday));
+            $sqlQuery = "SELECT * FROM `opening_times` WHERE `branch_id` = :branch_id AND `weekday` = :weekday";
+            $result = \database_wrapper::instance()->run($sqlQuery, array('branch_id' => $this->branchId, 'weekday' => $weekday));
             $row = $result->fetch(\PDO::FETCH_OBJ);
-            $day_opening_start = isset($row->start) ? $row->start : NULL;
-            $day_opening_end = isset($row->end) ? $row->end : NULL;
-            $this->Opening_times[$weekday]['day_opening_start'] = \roster_item::format_time_string_correct($day_opening_start);
-            $this->Opening_times[$weekday]['day_opening_end'] = \roster_item::format_time_string_correct($day_opening_end);
+            $dayOpeningStart = isset($row->start) ? $row->start : NULL;
+            $dayOpeningEnd = isset($row->end) ? $row->end : NULL;
+            $this->openingTimes[$weekday]['day_opening_start'] = \roster_item::format_time_string_correct($dayOpeningStart);
+            $this->openingTimes[$weekday]['day_opening_end'] = \roster_item::format_time_string_correct($dayOpeningEnd);
         }
+    }
+
+    public function encodeToJson(): string {
+        $jsonArray = array();
+        $jsonArray['Opening_times'] = $this->openingTimes;
+        $jsonArray['branch_id'] = $this->branchId;
+        $jsonArray['name'] = $this->name;
+        $jsonArray['short_name'] = $this->shortName;
+        $jsonArray['address'] = $this->address;
+        $jsonArray['PEP'] = $this->pep;
+        $jsonArray['manager'] = $this->manager;
+        return json_encode($jsonArray);
     }
 }

@@ -144,7 +144,7 @@ class AbsenceUtility {
 
             \PDR\Database\AbsenceDatabaseHandler::deleteAbsence($employeeKey, $startDateSql);
             /**
-             * @todo use the current user name:
+             * @todo use the current username:
              */
             $currentUserName = $_SESSION['user_object']->get_user_name();
             \PDR\Database\AbsenceDatabaseHandler::insertAbsence(
@@ -176,7 +176,7 @@ class AbsenceUtility {
 
             // Instantiate the workforce and get the employee object.
             $workforce = new \workforce();
-            $employeeObject = $workforce->List_of_employees[$employeeKey];
+            $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
 
             // Call the method to write absence data to the database.
             return self::writeAbsenceDataToDatabase($employeeObject, $beginn, $ende, $reasonId, $comment, $approval);
@@ -272,8 +272,12 @@ class AbsenceUtility {
         // Initialize the count of absence days.
         $days = 0;
 
+        $holidays = new \PDR\DateTime\Holidays($dateStartObject->format("Y"));
+
         // Loop through each day in the specified date range.
-        for ($dateObject = clone $dateStartObject; $dateObject <= $dateEndObject; $dateObject->add(new \DateInterval('P1D'))) {
+        for ($dateObject = clone $dateStartObject;
+                $dateObject <= $dateEndObject;
+                $dateObject->add(new \DateInterval('P1D'))) {
             // Get the weekday number (1 for Monday, 7 for Sunday).
             $currentWeekDayNumber = $dateObject->format('N');
 
@@ -286,14 +290,13 @@ class AbsenceUtility {
                  */
 
                 // Check if the current day is a holiday.
-                $holiday = \holidays::is_holiday($dateObject);
-                if (FALSE !== $holiday) {
+                if ($holidays->isHoliday($dateObject)) {
                     /*
                      * Holidays are not counted.
                      * Inform the user about not counting those days.
                      */
                     $dateString = $dateObject->format('d.m.Y');
-                    $message = $dateString . " " . gettext('is a holiday') . " (" . $holiday . ") " . gettext('and will not be counted.');
+                    $message = $dateString . " " . gettext('is a holiday') . " (" . $holidays->getHolidayOnDate($dateObject)->getName() . ") " . gettext('and will not be counted.');
                     $userDialog->add_message($message, E_USER_NOTICE);
                 } else {
                     /*
@@ -320,25 +323,13 @@ class AbsenceUtility {
      */
     public static function getRosteringYears(): array {
         $Years = array();
-        $sqlQueryDienstplan = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Dienstplan` ORDER BY YEAR(`Datum`)";
-        $resultRoster = \database_wrapper::instance()->run($sqlQueryDienstplan);
-        while ($row = $resultRoster->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
+        $now = new \DateTime();
+        $firstYear = (clone$now)->sub(new \DateInterval('P6Y'));
+        $lastYear = (clone$now)->add(new \DateInterval('P2Y'));
+        for ($currentYear = clone $firstYear; $currentYear <= $lastYear; $currentYear->add(new \DateInterval('P1Y'))) {
+            $Years[] = $currentYear->format('Y');
         }
-        $sqlQueryHours = "SELECT DISTINCT YEAR(`Datum`) AS `year` FROM `Stunden` ORDER BY YEAR(`Datum`)";
-        $resultHours = \database_wrapper::instance()->run($sqlQueryHours);
-        while ($row = $resultHours->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
-        }
-        $sqlQueryAbsence = "SELECT DISTINCT YEAR(`start`) AS `year` FROM `absence` ORDER BY YEAR(`start`)";
-        $resultAbsence = \database_wrapper::instance()->run($sqlQueryAbsence);
-        while ($row = $resultAbsence->fetch(\PDO::FETCH_OBJ)) {
-            $Years[] = $row->year;
-        }
-        $Years[] = (int) (new \DateTime())->format('Y');
-        $Years[] = max($Years) + 1;
-        sort($Years);
-        return array_unique($Years);
+        return $Years;
     }
 
     /**
@@ -354,7 +345,7 @@ class AbsenceUtility {
         $lastDayOfThisYear = new \DateTime("31.12." . $year);
         $monthsWorkedInThisYear = 0;
 
-        $employeeObject = $workforce->List_of_employees[$employeeKey];
+        $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
         $numberOfHolidaysPrinciple = $employeeObject->holidays;
         $numberOfWorkingWeekDays = $employeeObject->working_week_days;
         $numberOfHolidaysDue = $numberOfHolidaysPrinciple;

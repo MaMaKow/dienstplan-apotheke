@@ -99,8 +99,8 @@ class AbsenceHtmlBuilder {
      *
      * @return string The HTML code for the delete button.
      */
-    public static function buildButtonSubmitDelete(\stdClass $row): string {
-        $buttonText = "<button type=submit id=delete_$row->start class='button-small delete_button no-print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
+    public static function buildButtonSubmitDelete(string $dateString): string {
+        $buttonText = "<button type=submit id=delete_$dateString class='button-small delete_button no-print' title='Diese Zeile löschen' name=command value=delete onclick='return confirmDelete()'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_delete_forever.svg' alt='Diese Zeile löschen'>\n"
                 . "</button>\n";
         return $buttonText;
@@ -113,8 +113,8 @@ class AbsenceHtmlBuilder {
      *
      * @return string The HTML code for the cancel edit button.
      */
-    public static function buildButtonCancelEdit(\stdClass $row): string {
-        $buttonText = "<button type=button id=cancel_$row->start class='button-small no-print' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$row->start\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
+    public static function buildButtonCancelEdit(string $dateString): string {
+        $buttonText = "<button type=button id=cancel_$dateString class='button-small no-print' title='Bearbeitung abbrechen' onclick='return cancelEdit(\"$dateString\")' style='display: none; border-radius: 32px; background-color: transparent;'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/backward.png' alt='Bearbeitung abbrechen'>\n"
                 . "</button>\n";
         return $buttonText;
@@ -127,8 +127,8 @@ class AbsenceHtmlBuilder {
      *
      * @return string The HTML code for the edit button.
      */
-    public static function buildButtonEdit(\stdClass $row): string {
-        $buttonText = "<button type=button id=edit_$row->start class='button-small edit_button no-print' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$row->start\")'>\n"
+    public static function buildButtonEdit(string $dateString): string {
+        $buttonText = "<button type=button id=edit_$dateString class='button-small edit_button no-print' title='Diese Zeile bearbeiten' name=command onclick='showEdit(\"$dateString\")'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_edit.svg' alt='Diese Zeile bearbeiten'>\n"
                 . "</button>\n";
         return $buttonText;
@@ -141,8 +141,8 @@ class AbsenceHtmlBuilder {
      *
      * @return string The HTML code for the save button.
      */
-    public static function buildButtonSubmitSave(\stdClass $row): string {
-        $buttonText = "<button type='submit' id='save_$row->start' class='button-small no-print' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
+    public static function buildButtonSubmitSave(string $dateString): string {
+        $buttonText = "<button type='submit' id='save_$dateString' class='button-small no-print' title='Veränderungen dieser Zeile speichern' name='command' value='replace' style='display: none; border-radius: 32px;'>\n"
                 . "<img src='" . \PDR_HTTP_SERVER_APPLICATION_PATH . "img/md_save.svg' alt='Veränderungen dieser Zeile speichern'>\n"
                 . "</button>\n";
         return $buttonText;

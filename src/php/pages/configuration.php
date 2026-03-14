@@ -24,17 +24,17 @@ $configurationManager->checkErrorLogPath();
  */
 $session->exit_on_missing_privilege('administration');
 if (isset($_POST) && !empty($_POST)) {
-    $config = \PDR\Output\HTML\configurationManager::handle_user_input($config);
+    \PDR\Output\HTML\configurationManager::handle_user_input();
     // POST data has been submitted
     $location = PDR_HTTP_SERVER_APPLICATION_PATH . 'src/php/pages/configuration.php' . "?user_input=handled";
     header('Location:' . $location);
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 /*
  * Check the hide_disapproved value
  */
-if (FALSE != $config['hide_disapproved']) {
+if (FALSE != $configuration->getHideDisapproved()) {
     $hide_disapproved_yes = 'checked';
     $hide_disapproved_no = '';
 } else {
@@ -136,6 +136,30 @@ echo $user_dialog->build_messages();
                 <p class="hint">
                     <?= gettext("The messages in this application and the documentation exist in different languages.") ?>
                 </p>
+                <label><?= gettext('Country') ?></label>
+                <br>
+                <select name="countryCode">
+                    <?php foreach (\PDR\Output\HTML\configurationManager::$List_of_supported_countries as $countryCode => $countryName): ?>
+                        <option value="<?= htmlspecialchars($countryCode) ?>"
+                                <?= $countryCode === $configuration->getCountryCode() ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($countryName) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <br>
+                <label><?= gettext('State') ?></label>
+                <br>
+                <select name="stateCode">
+                    <?php if (!empty($configurationManager->getStatesByCountry($configuration->getCountryCode()))): ?>
+                        <?php foreach ($configurationManager->getStatesByCountry($configuration->getCountryCode()) as $stateCode => $stateName): ?>
+                            <option value="<?= htmlspecialchars($stateCode) ?>"
+                                    <?= $stateCode === $configuration->getStateCode() ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($stateName) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+                <br>
                 <label><?= gettext('Language') ?></label><br>
                 <select name="language"><?php
                     foreach (\PDR\Output\HTML\configurationManager::$List_of_supported_languages as $language_code => $language_name) {
@@ -229,7 +253,7 @@ echo $user_dialog->build_messages();
                     <input type="text" name="email_smtp_host" id="emailSmtpHost" value="<?= $configuration->getEmailSmtpHost(); ?>"><br>
                     <label for="emailSmtpPort">Port</label><br>
                     <input type="text" name="email_smtp_port" id="emailSmtpPort" value="<?= $configuration->getEmailSmtpPort(); ?>"><br>
-                    <label for="emailSmtpUsername">User name</label><br>
+                    <label for="emailSmtpUsername">Username</label><br>
                     <input type="text" name="email_smtp_username" id="emailSmtpUsername" value="<?= $configuration->getEmailSmtpUsername(); ?>"><br>
                     <label for="emailSmtpPassword">Password</label><br>
                     <input type="password" name="email_smtp_password" id="emailSmtpPassword" value=""  autocomplete="new-password"><br>

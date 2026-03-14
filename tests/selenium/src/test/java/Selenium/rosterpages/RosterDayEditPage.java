@@ -18,9 +18,10 @@
  */
 package Selenium.rosterpages;
 
-import Selenium.Employee;
+import Selenium.BasePage;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
+import Selenium.ScreenShot;
 import Selenium.driver.Wrapper;
 import java.text.ParseException;
 import java.time.Duration;
@@ -28,13 +29,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -51,7 +51,7 @@ import static org.testng.Assert.assertEquals;
  * wäre gut.
  * </p>
  */
-public class RosterDayEditPage {
+public class RosterDayEditPage extends BasePage {
 
     protected static WebDriver driver;
 
@@ -66,6 +66,7 @@ public class RosterDayEditPage {
     private final By tableRowListXpathBy = By.xpath("//*[@id=\"rosterForm\"]/table/tbody/tr[@data-roster_row_iterator]");
 
     public RosterDayEditPage(WebDriver driver) {
+        super(driver);
         this.driver = driver;
 
         if (this.getUserNameText().isEmpty()) {
@@ -152,7 +153,8 @@ public class RosterDayEditPage {
     }
 
     /**
-     * @todo This method is called seven times from different other functions. Maybe call this once and inject the result into those methods.
+     * @todo This method is called seven times from different other functions.
+     * Maybe call this once and inject the result into those methods.
      * @param employeeKey
      * @return
      */
@@ -329,8 +331,14 @@ public class RosterDayEditPage {
     public void rosterInputAddRow(RosterItem rosterItem) {
         WebElement buttonRosterInputAddRowElement = driver.findElement(buttonRosterInputAddRowBy);
         int numberOfRosterTableRowsBeforeClick = driver.findElements(tableRowListXpathBy).size();
+        ScreenShot screenShot = new ScreenShot();
+        screenShot.takeScreenShot("rosterInputAddRow-target-missing.jpg");
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", buttonRosterInputAddRowElement);
+        screenShot.takeScreenShot("rosterInputAddRow-target-missing-scrolled.jpg");
+        waitLong.until(ExpectedConditions.presenceOfElementLocated(buttonRosterInputAddRowBy));
+        waitLong.until(ExpectedConditions.visibilityOf(buttonRosterInputAddRowElement));
+        waitLong.until(ExpectedConditions.elementToBeClickable(buttonRosterInputAddRowElement));
         buttonRosterInputAddRowElement.click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.numberOfElementsToBe(tableRowListXpathBy, numberOfRosterTableRowsBeforeClick + 1));
 
         WebElement rosterTableRow = findLastRosterTableRow();

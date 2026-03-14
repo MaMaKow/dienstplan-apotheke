@@ -18,16 +18,14 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LogCollector;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
 
 /**
  *
@@ -41,19 +39,23 @@ public class ScreenShot {
     }
 
     public void takeScreenShot(String packageName, String className, String methodName) {
+        String fileName = "errorScreenshots" + File.separator
+                + packageName
+                + "-"
+                + className
+                + "-"
+                + methodName
+                + ".jpg";
+        takeScreenShot(fileName);
+    }
+
+    public void takeScreenShot(String fileName) {
         driver = Selenium.driver.Wrapper.getDriver();
         File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         try {
-            FileUtils.copyFile(scrFile, new File(
-                    "errorScreenshots" + File.separator
-                    + packageName
-                    + "-"
-                    + className
-                    + "-"
-                    + methodName
-                    + ".jpg"), true, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
-            Logger.getLogger(ScreenShot.class.getName()).log(Level.SEVERE, null, ex);
+            FileUtils.copyFile(scrFile, new File("errorScreenshots" + File.separator + fileName), true, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            LogCollector.error(exception.getLocalizedMessage());
         }
     }
 

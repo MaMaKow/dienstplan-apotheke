@@ -19,14 +19,11 @@
 package Selenium;
 
 import Selenium.Utilities.Holidays;
+import Selenium.Utilities.LogCollector;
 import com.google.common.collect.ImmutableMap;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -71,13 +68,23 @@ public class Absence {
             this.durationDays = calculateWorkingDays(startDate, endDate);
         } catch (Exception ex) {
             this.durationDays = 0;
-            Logger.getLogger(Absence.class.getName()).log(Level.SEVERE, null, ex);
+            LogCollector.error(ex.getMessage());
         }
         this.approvalString = approvalString;
         this.reasonId = reasonId;
     }
 
-    private int calculateWorkingDays(LocalDate startDate, LocalDate endDate) throws Exception {
+    public Absence(int employeeKey, LocalDate startDate, LocalDate endDate, int reasonId, int durationDays, String commentString, String approvalString) {
+        this.employeeKey = employeeKey;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.commentString = commentString;
+        this.durationDays = durationDays;
+        this.approvalString = approvalString;
+        this.reasonId = reasonId;
+    }
+
+    public int calculateWorkingDays(LocalDate startDate, LocalDate endDate) throws Exception {
         int workingDays = 0;
         LocalDate date = startDate;
         Holidays holidays = new Holidays(startDate.getYear());

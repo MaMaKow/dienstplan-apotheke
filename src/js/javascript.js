@@ -75,10 +75,11 @@ function test_http_server_application_path(http_server_application_path) {
     xml_http_request.send();
 }
 
-function query_webserver_without_response(url) {
+function query_webserver_without_response(url, postData = null) {
     var xml_http_request = new XMLHttpRequest();
-    xml_http_request.open("GET", url, true);
-    xml_http_request.send();
+    xml_http_request.open("POST", url, true);
+    xml_http_request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xml_http_request.send(postData);
 }
 
 function auto_submit_form(form) {

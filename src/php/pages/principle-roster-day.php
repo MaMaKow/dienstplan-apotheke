@@ -144,7 +144,7 @@ echo $html_text;
 if (!empty($Principle_roster)) {
     echo "<div class=image-group-container>\n";
     echo "<div class=image>\n";
-    $roster_image_bar_plot = new roster_image_bar_plot($Principle_roster);
+    $roster_image_bar_plot = new roster_image_bar_plot($Principle_roster, $workforce);
     echo $roster_image_bar_plot->svg_string;
     echo "<br>\n";
     $Changing_times = \roster::calculate_changing_times($Principle_roster);

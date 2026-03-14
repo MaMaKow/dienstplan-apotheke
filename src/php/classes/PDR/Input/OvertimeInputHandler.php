@@ -66,10 +66,6 @@ class OvertimeInputHandler {
                 return false;
             }
         }
-        /**
-         * Sorting and recalculating the entries:
-         */
-        \PDR\Database\OvertimeDatabaseHandler::recalculateBalances($employeeKey);
         if (!$session->user_has_privilege('create_overtime')) {
             /**
              * In the future everyone will be able to create overtime.
@@ -119,11 +115,13 @@ class OvertimeInputHandler {
          */
         \PDR\Database\OvertimeDatabaseHandler::updateOvertimeInDatabase($employeeKey, $dateOld, $dateNew, $overtimeHoursNew, $balanceNew, $overtimeReasonTrimmed);
         try {
-            self::sendChangeNotification($session, $employeeKey,
-                    $dateOld, $dateNew,
-                    $overtimeHoursOld, $overtimeHoursNew,
-                    $overtimeReasonOld, $overtimeReasonNew
-            );
+            if (self::shouldNotifyAdmin($session)) {
+                self::sendChangeNotification($session, $employeeKey,
+                        $dateOld, $dateNew,
+                        $overtimeHoursOld, $overtimeHoursNew,
+                        $overtimeReasonOld, $overtimeReasonNew
+                );
+            }
         } catch (Exception $mailException) {
             \PDR\Utility\GeneralUtility::printDebugVariable($mailException->getMessage());
             $userDialog = new \user_dialog;
@@ -149,6 +147,7 @@ class OvertimeInputHandler {
         $deletionEmployeeKey = filter_input(INPUT_POST, 'deletionEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
         $deletionDate = filter_input(INPUT_POST, 'deletionDate', FILTER_SANITIZE_SPECIAL_CHARS);
         $deletionHours = filter_input(INPUT_POST, 'deletionHours', FILTER_SANITIZE_SPECIAL_CHARS);
+        $deletionReason = filter_input(INPUT_POST, 'deletionReason', FILTER_SANITIZE_SPECIAL_CHARS);
 
         if (!$deletionEmployeeKey || !$deletionDate) {
             /**
@@ -166,7 +165,7 @@ class OvertimeInputHandler {
         // Step 2: Check if we should notify the admin
         if (self::shouldNotifyAdmin($session)) {
             // Step 3: Prepare and send notification
-            self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours);
+            self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours, $deletionReason);
         }
         return true; // Return true to indicate successful completion
     }
@@ -184,8 +183,8 @@ class OvertimeInputHandler {
      * @param string $deletionDate The date of the deleted overtime entry, formatted as a string.
      * @return void This function does not return any value.
      */
-    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours): void {
-        $configuration = new \PDR\Application\configuration();
+    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours, string $deletionReason): void {
+        $configuration = new \PDR\Application\Configuration();
         $workforce = new \workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
         $locale = $configuration->getLC_TIME();
@@ -193,8 +192,12 @@ class OvertimeInputHandler {
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been deleted.");
-        $messageTemplate = gettext('The user %1$s has deleted the following overtime entry:\r\nEmployee: %2$s\r\nDate: %3$s\r\nHours:%4$s');
-        $message = sprintf($messageTemplate, $session->getUserName(), $employeeName, $dateString, $deletionHours);
+        $message = \sprintf(gettext('The user %1$s has deleted the following overtime entry:'), $session->getUserName()) . "\r\n"
+                . gettext('Employee') . ": $employeeName\r\n"
+                . gettext('Date') . ": $dateString\r\n"
+                . gettext('Hours') . ": $deletionHours\r\n"
+                . gettext('Reason') . ": $deletionReason\r\n"
+        ;
 
         // Send Email
         $userDialogEmail = new \user_dialog_email();
@@ -209,39 +212,27 @@ class OvertimeInputHandler {
             \DateTime $dateOld, \DateTime $dateNew,
             float $overtimeHoursOld, float $overtimeHoursNew,
             string $overtimeReasonOld, string $overtimeReasonNew): void {
-        $configuration = new \PDR\Application\configuration();
+        $configuration = new \PDR\Application\Configuration();
         $workforce = new \workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
-        $locale = $configuration->getLC_TIME();
-        $dateStringOld = self::formatReadableDateObject($dateOld, $locale);
-        $dateStringNew = self::formatReadableDateObject($dateNew, $locale);
+        $dateStringOld = \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateOld);
+        $dateStringNew = \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateNew);
 
         // Prepare Email
         $subject = gettext("PDR: An overtime entry has been changed.");
-        $messageTemplate = gettext('The user %1$s has changed the following overtime entry:' . "\r\n"
-                . 'Employee: %2$s' . "\r\n"
-                . 'Date: %3$s' . "\r\n"
-                . 'Hours:%4$s' . "\r\n"
-                . 'Reason:%5$s' . "\r\n"
+        $message = sprintf(gettext('The user %1$s has changed the following overtime entry:'), $session->getUserName()) . "\r\n"
+                . gettext('Employee') . ": " . $employeeName . "\r\n"
+                . gettext('Date') . ": " . $dateStringOld . "\r\n"
+                . gettext('Hours') . ": " . $overtimeHoursOld . "\r\n"
+                . gettext('Reason') . ": " . $overtimeReasonOld . "\r\n"
                 . "\r\n"
-                . 'to the new values:' . "\r\n"
-                . 'Date: %6$s' . "\r\n"
-                . 'Hours: %7$s' . "\r\n"
-                . 'Reason: %8$s' . "\r\n"
-        );
-        $message = sprintf($messageTemplate,
-                $session->getUserName(), $employeeName,
-                $dateStringOld,
-                $overtimeHoursOld,
-                $overtimeReasonOld,
-                $dateStringNew,
-                $overtimeHoursNew,
-                $overtimeReasonNew
-        );
-
+                . gettext('to the new values:') . "\r\n"
+                . gettext('Date') . ": " . $dateStringNew . "\r\n"
+                . gettext('Hours') . ": " . $overtimeHoursNew . "\r\n"
+                . gettext('Reason') . ": " . $overtimeReasonNew . "\r\n";
         // Send Email
         $userDialogEmail = new \user_dialog_email();
-        $userDialogEmail->send_email(
+        $mailResult = $userDialogEmail->send_email(
                 $configuration->getContactEmail(),
                 $subject,
                 $message
@@ -259,7 +250,8 @@ class OvertimeInputHandler {
      * @return bool True if the user lacks the required privilege and an email notification should be sent; false otherwise.
      */
     private static function shouldNotifyAdmin(\sessions $session): bool {
-        return !$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER);
+        $result = !$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER);
+        return $result;
     }
 
     /**
@@ -279,20 +271,14 @@ class OvertimeInputHandler {
      */
     private static function formatReadableDate(string $dateString, string $locale): string {
         $dateObject = new \DateTime($dateString);
-        return self::formatReadableDateObject($dateObject, $locale);
-    }
-
-    private static function formatReadableDateObject(\DateTime $dateObject, string $locale): string {
-        $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::NONE, \IntlDateFormatter::NONE);
-        $formatter->setPattern('dd.MM.yyyy');
-        return $formatter->format($dateObject);
+        return \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateObject);
     }
 
     public static function handleUserInputInsert() {
         $userDialog = new \user_dialog();
         $employeeKey = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
         $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_SPECIAL_CHARS);
-        $dateObject = new \DateTime($date);
+        $insertedDateObject = new \DateTime($date);
         $overtimeHoursNew = filter_input(INPUT_POST, 'stunden', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         if ("" === $overtimeHoursNew) {
             /**
@@ -301,14 +287,13 @@ class OvertimeInputHandler {
             return false;
         }
         $currentOvertime = \PDR\Database\OvertimeDatabaseHandler::getCurrentOvertime($employeeKey);
-        $firstOvertime = \PDR\Database\OvertimeDatabaseHandler::getFirstOvertime($employeeKey);
         /**
          * In case the user inserts a date, that is before the last inserted date, a warning is shown.
          * If the user still wishes to enter the data, the flag user_has_been_warned_about_date_sequence is set to 1.
          * We cancel the execution if that warning has not been approved.
          */
         $userHasBeenWarnedAboutDateSequence = filter_input(INPUT_POST, 'user_has_been_warned_about_date_sequence', FILTER_SANITIZE_SPECIAL_CHARS);
-        if ($dateObject < $currentOvertime->getDate() and 'true' !== $userHasBeenWarnedAboutDateSequence) {
+        if ($insertedDateObject < $currentOvertime->getDate() and 'true' !== $userHasBeenWarnedAboutDateSequence) {
             $messageInputError = gettext('An error has occurred while inserting the overtime data.');
             $userDialog->add_message($messageInputError, E_USER_ERROR);
             $messageDateWarning = gettext('The input date lies before the last existent date.');
@@ -317,18 +302,8 @@ class OvertimeInputHandler {
             $userDialog->add_message($messageJSWarning, E_USER_WARNING);
             return FALSE;
         }
-        $balanceNew = $currentOvertime->getBalance() + $overtimeHoursNew;
-
-        if (null !== $firstOvertime and $firstOvertime->getDate() > $dateObject) {
-            /*
-             * The new entry lies before the very first entry.
-             * This is a special case.
-             * In this case we calculate the balance given on a date that lies in the future, in regard to the new data.
-             */
-            $balanceNew = $firstOvertime->getBalance() - $firstOvertime->getHours();
-        }
         $overtimeReason = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_SPECIAL_CHARS);
-        \PDR\Database\OvertimeDatabaseHandler::insertOvertimeToDatabase($employeeKey, $dateObject, $overtimeHoursNew, $overtimeReason);
+        \PDR\Database\OvertimeDatabaseHandler::insertOvertimeToDatabase($employeeKey, $insertedDateObject, $overtimeHoursNew, $overtimeReason);
     }
 
     /**

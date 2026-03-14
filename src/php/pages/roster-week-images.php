@@ -49,7 +49,7 @@ echo build_html_navigation_elements::build_input_date($date_sql);
 echo "</div>\n";
 
 echo "<div id=rosterWeekImageDiv class=image>\n";
-$configuration = new \PDR\Application\configuration();
+$configuration = new \PDR\Application\Configuration();
 $locale = $configuration->getLanguage();
 $dateFormatter = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::NONE);
 $dateFormatter->setPattern('EEEE d.MM.yyyy');
@@ -57,7 +57,7 @@ $dateFormatter->setPattern('EEEE d.MM.yyyy');
 for ($dateObject = clone $dateStartObject; $dateObject <= $dateEndObject; $dateObject->add(new DateInterval('P1D'))) {
     $date_sql = $dateObject->format('Y-m-d');
     $Roster = roster::read_roster_from_database($branch_id, $date_sql);
-    $roster_image_bar_plot = new roster_image_bar_plot($Roster, 300, 200);
+    $roster_image_bar_plot = new roster_image_bar_plot($Roster, $workforce, 300, 200);
     echo "<div class=image-part>\n";
     $dateString = $dateFormatter->format($dateObject->getTimestamp());
 

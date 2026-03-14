@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LogCollector;
 import Selenium.rosterpages.Workforce;
 import Selenium.signin.SignInPage;
 import java.io.File;
@@ -49,7 +50,7 @@ import org.testng.annotations.Test;
 public class TestPage {
 
     protected WebDriver driver;
-    protected SoftAssert softAssert = new SoftAssert();
+    protected SoftAssert softAssert;
     protected PropertyFile propertyFile;
     public static Boolean someTestHasFailed = false;
     public String packageName;
@@ -60,6 +61,7 @@ public class TestPage {
 
     public TestPage() {
         this.logger = LogManager.getLogger(this.getClass());
+        softAssert = new SoftAssert();
     }
 
     @Test
@@ -81,17 +83,21 @@ public class TestPage {
     }
 
     public void realSignIn() throws Exception {
+        LogCollector.debug("method realSignIn()");
         driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getRealTestPageUrl();
+        LogCollector.debug("go to urlPageTest: " + urlPageTest);
         driver.get(urlPageTest);
-
+        LogCollector.debug("went to urlPageTest: " + driver.getCurrentUrl());
         /**
          * Sign in:
          */
+        LogCollector.debug("create new SignInPage: " + urlPageTest);
         SignInPage signInPage = new SignInPage(driver);
         String real_user_password = propertyFile.getRealPassword();
         String real_user_name = propertyFile.getRealUsername();
+        LogCollector.debug("call method signInPage.loginValidUser:");
         HomePage homePage = signInPage.loginValidUser(real_user_name, real_user_password);
         Assert.assertEquals(homePage.getUserNameText(), real_user_name);
 

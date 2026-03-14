@@ -49,7 +49,9 @@ public class TestUploadPepPage extends TestPage {
          * vermutlich noch nicht fertig berechnet. Nach weiteren 30 Sekunden
          * sollte die Berechnung aber fertig sein.</p>
          */
-        Assert.assertFalse(uploadPepPage.expectationIsPresentAfterWaiting(5));
+        logger.debug("Kurzes warten, vermutlich noch kein Ergebnis");
+        Assert.assertFalse(uploadPepPage.expectationIsPresentAfterWaiting(4));
+        logger.debug("Langes warten, vermutlich mit Ergebnis");
         Assert.assertTrue(uploadPepPage.expectationIsPresentAfterWaiting(300));
     }
 }

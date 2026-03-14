@@ -23,11 +23,13 @@ import Selenium.RealData.RealNetworkOfBranchOffices;
 import java.util.HashMap;
 import org.testng.annotations.Test;
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestBranchAdministrationPage extends Selenium.TestPage {
 
     @Test(enabled = true, dependsOnMethods = {"testInstallation"})

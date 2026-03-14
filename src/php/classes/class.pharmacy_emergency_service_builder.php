@@ -24,11 +24,7 @@
  */
 class pharmacy_emergency_service_builder {
 
-    public static function build_emergency_service_table_employee_select($employee_key_selected, $branch_id, $date_sql, $emergencyServiceIndex) {
-        global $workforce;
-        if (NULL === $workforce) {
-            $workforce = new workforce();
-        }
+    public static function build_emergency_service_table_employee_select($employee_key_selected, $branch_id, $date_sql, $emergencyServiceIndex, workforce $workforce) {
         $table_employee_select = "";
         $table_employee_select .= "<input type='hidden' name=emergency_service_branch value='$branch_id'>";
         $table_employee_select .= "<input type='hidden' name=emergency_service_date_old value='$date_sql'>";
@@ -39,13 +35,13 @@ class pharmacy_emergency_service_builder {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $table_employee_select .= "<option value=''>&nbsp;</option>";
-        if (isset($workforce->List_of_employees[$employee_key_selected]->last_name) or !isset($employee_key_selected)) {
-            foreach ($workforce->List_of_qualified_pharmacist_employees as $employee_key) {
-                $employee_object = $workforce->List_of_employees[$employee_key];
+        if (!isset($employee_key_selected) or $workforce->employee_exists($employee_key_selected)) {
+            foreach ($workforce->getListOfQualifiedPharmacistEmployees() as $employee_key) {
+                $employee_object = $workforce->get_employee_object($employee_key);
                 if ($employee_key_selected == $employee_key and NULL !== $employee_key_selected) {
-                    $table_employee_select .= "<option value=$employee_key selected>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>";
+                    $table_employee_select .= "<option value=$employee_key selected>" . $employee_object->getFullName() . "</option>";
                 } else {
-                    $table_employee_select .= "<option value=$employee_key>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>\n";
+                    $table_employee_select .= "<option value=$employee_key>" . $employee_object->getFullName() . "</option>\n";
                 }
             }
         } else {

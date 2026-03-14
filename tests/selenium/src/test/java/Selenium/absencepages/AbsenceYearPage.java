@@ -58,7 +58,7 @@ public class AbsenceYearPage {
         yearSelectBy = By.xpath("/html/body/div[3]/form/select");
         //yearSelectBy = By.xpath("/html/body/div/form[@id=\"select_year\"]/select");
         driver = Selenium.driver.Wrapper.getDriver();
-        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsencYear);
+        MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceYear);
 
     }
 

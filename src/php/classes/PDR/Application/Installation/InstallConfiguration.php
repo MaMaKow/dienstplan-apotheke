@@ -83,6 +83,14 @@ class InstallConfiguration {
         return self::$configuration['database_host'];
     }
 
+    public function getDatabasePort(): string {
+        return self::$configuration['database_port'];
+    }
+
+    public function getDatabaseManagementSystem(): string {
+        return self::$configuration['database_management_system'];
+    }
+
     public function setDatabasePassphraseSelf(string $passphrase): void {
         self::$databasePassphraseSelf = $passphrase;
     }
@@ -99,16 +107,18 @@ class InstallConfiguration {
         return self::$configuration;
     }
 
-    public function setConfiguration($config): void {
-        if (!empty($config)) {
-            foreach ($config as $key => $value) {
+    public function setConfiguration($configNew): void {
+        if (!empty($configNew)) {
+            foreach ($configNew as $key => $value) {
                 self::$configuration[$key] = $value;
             }
         }
     }
 
     private function readConfigFromSession() {
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
         if (!empty($_SESSION['configuration'])) {
             foreach ($_SESSION['configuration'] as $key => $value) {
                 if (!isset(self::$configuration[$key])) {
@@ -123,13 +133,14 @@ class InstallConfiguration {
     }
 
     public function writeConfigToFile(): bool {
-        self::$configuration["contact_email"] = self::$configuration["admin"]["email"];
+        // self::$configuration["contact_email"] = self::$configuration["admin"]["email"];
         self::$configuration["session_secret"] = \bin2hex(\random_bytes(8)); //In case there are several instances of the program on the same machine
         unset(self::$configuration["admin"]);
         $result = \file_put_contents(self::$pdrFileSystemApplicationPath . 'config/config.php', '<?php' . \PHP_EOL . '$config =' . \var_export(self::$configuration, true) . ';');
         if (FALSE === $result) {
             $installUtility = new InstallUtility();
             $installUtility->addErrorMessage(\gettext("Error while writing the configuration to the filesystem."));
+            error_log("Error while writing the configuration to the filesystem.");
             return FALSE;
         }
         return TRUE;

@@ -108,4 +108,13 @@ class AbsenceCollection implements \IteratorAggregate {
         }
         return $listOfEmployeeKeys;
     }
+
+    public function getAbsencesAsJson(): string {
+        $arrayOfAbsences = array();
+        foreach ($this->absences as $key => $currentAbsence) {
+            // Use underscore notation for API responses:
+            $arrayOfAbsences[$key] = $currentAbsence->jsonSerialize();
+        }
+        return json_encode($arrayOfAbsences);
+    }
 }

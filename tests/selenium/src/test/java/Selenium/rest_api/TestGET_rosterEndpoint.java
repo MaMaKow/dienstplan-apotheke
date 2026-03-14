@@ -18,16 +18,18 @@
  */
 package Selenium.rest_api;
 
+import Selenium.Employee;
 import Selenium.PropertyFile;
+import Selenium.Roster;
 import Selenium.RosterItem;
+import Selenium.Utilities.LogCollector;
+import static Selenium.driver.Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -37,34 +39,43 @@ import org.testng.asserts.SoftAssert;
  *
  * @author Mandelkow
  */
-public class TestGET_rosterEndpoint {
+public class TestGET_rosterEndpoint extends Selenium.TestPage {
 
     private PropertyFile propertyFile;
-    private SoftAssert softAssert = new SoftAssert();
+    private final SoftAssert softAssert = new SoftAssert();
 
     @Test()
     public void testGetRoster() throws IOException, Exception {
+        Roster roster = new Roster();
         if (Selenium.TestPage.someTestHasFailed) {
             throw new SkipException("Some Test has failed. Skipping all the other methods.");
         }
         try {
             propertyFile = new PropertyFile();
             String testPageUrl = propertyFile.getTestPageUrl();
+            LogCollector.debug("Check if we are logged in:");
             if (!POST_authenticateEndpoint.isAuthenticated()) {
                 String userName = propertyFile.getPdrUserName();
                 String userPassphrase = propertyFile.getPdrUserPassword();
                 new POST_authenticateEndpoint(userName, userPassphrase, testPageUrl);
             }
-            String dateStart = "2020-07-01";
-            String dateEnd = "2020-07-03";
+            String dateStart = roster.getFirstMondayInJuly().format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
+            String dateEnd = roster.getFirstMondayInJuly().plusDays(2).format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
             String employeeFullName = "Albert Kremer";
-
-            GET_rosterEndpoint rosterEndpoint = new GET_rosterEndpoint(testPageUrl, dateStart, dateEnd, employeeFullName);
+            Employee employee = workforce.getEmployeeByFullName(employeeFullName);
+            GET_rosterEndpoint rosterEndpoint = new GET_rosterEndpoint(testPageUrl, dateStart, dateEnd, employee);
             HashMap<LocalDate, HashMap> foundRoster = rosterEndpoint.getFoundRosterHashMap();
             if (null == foundRoster) {
                 Assert.fail();
+                return;
             }
-            softAssert.assertNotEquals(foundRoster.size(), 0);
+            LogCollector.debug("Found roster for dates between " + dateStart + " and " + dateEnd + ":");
+            LogCollector.debug(">>> Display roster dates:");
+            foundRoster.forEach((localDate, action) -> {
+                LogCollector.debug(localDate.format(DateTimeFormatter.ISO_DATE));
+            });
+            LogCollector.debug("<<< End of roster dates");
+            softAssert.assertNotEquals(foundRoster.size(), 0, "Found no roster. The foundRoster.size() is 0");
             for (Map.Entry<LocalDate, HashMap> rosterDayEntry : foundRoster.entrySet()) {
                 LocalDate date = rosterDayEntry.getKey();
                 HashMap<Integer, RosterItem> rosterDay = rosterDayEntry.getValue();
@@ -81,15 +92,10 @@ public class TestGET_rosterEndpoint {
                      */
                     softAssert.assertEquals(weeksBetween, 0);
                     softAssert.assertEquals(rosterItem.getEmployeeFullName(), employeeFullName);
-
                 }
             }
-        } catch (IOException | InterruptedException exception) {
-            exception.printStackTrace();
-            Assert.fail();
-            throw exception;
         } catch (Exception exception) {
-            Logger.getLogger(TestGET_rosterEndpoint.class.getName()).log(Level.SEVERE, null, exception);
+            LogCollector.error(exception.getLocalizedMessage());
             exception.printStackTrace();
             Assert.fail();
             throw exception;

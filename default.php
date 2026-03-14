@@ -22,7 +22,7 @@ require_once 'bootstrap.php';
  * session management
  */
 $session = new sessions;
-
+$session->requireLogin();
 /*
  * Guess the navigator (=browser) language from HTTP_ACCEPT_LANGUAGE:
  * This is used in the head.php

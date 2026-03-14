@@ -19,6 +19,7 @@
 package Selenium.signin;
 
 import Selenium.User;
+import Selenium.Utilities.LogCollector;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,13 +30,13 @@ import org.openqa.selenium.WebElement;
  */
 public class RegisterPage extends Selenium.BasePage {
 
-    private final By userNameBy = By.xpath("/html/body/div/form/input[1]");
-    private final By userEmailBy = By.xpath("/html/body/div/form/input[2]");
-    private final By userPassphraseBy = By.xpath("/html/body/div/form/input[3]");
-    private final By repeatPassphraseBy = By.xpath("/html/body/div/form/input[4]");
+    private final By userNameBy = By.xpath("/html/body/div/form/input[@name='user_name']");
+    private final By userEmailBy = By.xpath("/html/body/div/form/input[@name='email']");
+    private final By userPassphraseBy = By.xpath("/html/body/div/form/input[@name='password']");
+    private final By repeatPassphraseBy = By.xpath("/html/body/div/form/input[@name='password2']");
     private final By mathProblemBy = By.xpath("/html/body/div/form/label");
     private final By mathProblemSolutionInputBy = By.xpath("//*[@id=\"mathProblemSolution\"]");
-    private final By submitButtonBy = By.xpath("/html/body/div/form/input[6]");
+    private final By submitButtonBy = By.xpath("/html/body/div/form/input[@type='submit']");
 
     private final WebDriver driver;
 
@@ -54,8 +55,8 @@ public class RegisterPage extends Selenium.BasePage {
             userNameElement.clear();
             userNameElement.sendKeys(userName);
         } catch (Exception exception) {
-            logger.error(driver.getCurrentUrl());
-            logger.error(driver.getPageSource());
+            LogCollector.error(driver.getCurrentUrl());
+            LogCollector.error(driver.getPageSource());
             throw exception;
         }
         WebElement userEmailElement = driver.findElement(userEmailBy);

@@ -18,25 +18,12 @@
  */
 package Selenium;
 
-import Selenium.rosterpages.Workforce;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.temporal.TemporalAdjusters;
 import org.threeten.extra.YearWeek;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -46,9 +33,10 @@ public class Roster {
 
     private HashMap<Integer, RosterItem> listOfRosterItems; //Diese sind die Items in einem Tag.
     private HashMap<LocalDate, HashMap> listOfRosterDays;
+    private LocalDate firstMondayInJuly;
 
     public Roster() {
-        readRosterFromFile();
+        createTestRoster();
     }
 
     public HashMap<LocalDate, HashMap> getListOfRosterDays() {
@@ -113,87 +101,30 @@ public class Roster {
         return rosterWeeksByEmployeeKey;
     }
 
-    /*
-    public static void main(String args[]) {
-        Roster roster = new Roster();
-        //roster.writeRosterToFile();
-    }
-     */
-    //private Roster readRosterFromFile(Date dateFrom, Date dateUntil) {
-    //private HashMap<LocalDate, HashMap> readRosterFromFile() {
-    private void readRosterFromFile() {
-
-        Reader reader = null;
-        try {
-            RosterItem rosterItem;
-            // create a reader
-            reader = Files.newBufferedReader(Paths.get("roster.json"));
-            // convert JSON string to Roster object
-            String rosterJson;
-            rosterJson = Files.readString(Paths.get("roster.json"));
-            JsonElement jsonFoo = (new JsonParser()).parse(rosterJson);
-            JsonObject jsonObject = jsonFoo.getAsJsonObject();
-            Set<Map.Entry<String, JsonElement>> jsonEntrySet = jsonObject.entrySet();
-
-            listOfRosterDays = new HashMap<>();
-            for (Map.Entry<String, JsonElement> jsonDayEntry : jsonEntrySet) {
-                String dateString = jsonDayEntry.getKey();
-                JsonElement jsonRosterDay = jsonDayEntry.getValue();
-                LocalDate localDate = LocalDate.parse(dateString);
-                Set<Map.Entry<String, JsonElement>> jsonDayRosterEntrySet = jsonRosterDay.getAsJsonObject().entrySet();
-                listOfRosterItems = new HashMap<>();
-                for (Map.Entry<String, JsonElement> jsonDayRosterEntry : jsonDayRosterEntrySet) {
-                    int rowNumber = Integer.parseInt(jsonDayRosterEntry.getKey());
-                    JsonElement entryValue = jsonDayRosterEntry.getValue();
-                    String dutyStart = entryValue.getAsJsonObject().get("dutyStart").getAsString();
-                    String dutyEnd = entryValue.getAsJsonObject().get("dutyEnd").getAsString();
-                    String breakStart = entryValue.getAsJsonObject().get("breakStart").getAsString();
-                    String breakEnd = entryValue.getAsJsonObject().get("breakEnd").getAsString();
-                    String employeeFullName = entryValue.getAsJsonObject().get("employeeFullName").getAsString();
-                    int branchId = entryValue.getAsJsonObject().get("branchId").getAsInt();
-                    String comment = null;
-                    try {
-                        comment = entryValue.getAsJsonObject().get("comment").getAsString();
-                    } catch (Exception e) {
-                        /**
-                         * comment was not set. Nothing to do here.
-                         */
-                    }
-                    rosterItem = new RosterItem(employeeFullName, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
-                    listOfRosterItems.put(rowNumber, rosterItem);
-                }
-                listOfRosterDays.put(localDate, listOfRosterItems);
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Workforce.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        //return roster;
-    }
-
-    private void writeRosterToFile() {
+    private void createTestRoster() {
         LocalDate localDate;
         /**
          * Fill one day into the roster:
          */
-        listOfRosterItems.clear();
-        localDate = LocalDate.of(2020, Month.JULY, 1);
+        LocalDate today = LocalDate.now();
+        int currentYear = today.getYear();
+        int nextYear = currentYear + 1;
+        int lastYear = currentYear - 1;
+        listOfRosterItems = new HashMap<>();
+        listOfRosterDays = new HashMap<>();
+        firstMondayInJuly = LocalDate.of(currentYear, Month.JULY, 1).with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+        localDate = firstMondayInJuly;
         listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
         listOfRosterItems.put(1, new RosterItem("Elisabeth Lehmann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
         listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", "Dies ist ein Kommentar", 1));
         listOfRosterItems.put(3, new RosterItem("Albert Baumann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
+
         /**
          * Add another day:
          */
-        listOfRosterItems.clear();
-        localDate = LocalDate.of(2020, Month.JULY, 2);
+        listOfRosterItems = new HashMap<>();
+        localDate = LocalDate.of(currentYear, Month.JULY, 2).with(TemporalAdjusters.nextOrSame(DayOfWeek.TUESDAY));
         listOfRosterItems.put(0, new RosterItem("Albert Krüger", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
         listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
         listOfRosterItems.put(2, new RosterItem("Albert Kremer", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
@@ -202,55 +133,37 @@ public class Roster {
         /**
          * Add another day:
          */
-        listOfRosterItems.clear();
-        localDate = LocalDate.of(2020, Month.JULY, 3);
+        listOfRosterItems = new HashMap<>();
+        localDate = LocalDate.of(currentYear, Month.JULY, 3).with(TemporalAdjusters.nextOrSame(DayOfWeek.WEDNESDAY));
         listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
         listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
         listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
         listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
-         * Add another day in 2021:
+         * Add another day in next year:
          */
-        listOfRosterItems.clear();
-        localDate = LocalDate.of(2021, Month.JANUARY, 4);
+        listOfRosterItems = new HashMap<>();
+        localDate = LocalDate.of(nextYear, Month.JANUARY, 4).with(TemporalAdjusters.nextOrSame(DayOfWeek.THURSDAY));
         listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
         listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
         listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
         listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
         listOfRosterDays.put(localDate, listOfRosterItems);
         /**
-         * Add another day in 2019:
+         * Add another day in last year:
          */
-        listOfRosterItems.clear();
-        localDate = LocalDate.of(2019, Month.DECEMBER, 30);
-        listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
-        listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
-        listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
-        listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
-        listOfRosterDays.put(localDate, listOfRosterItems);
+        listOfRosterItems = new HashMap<>();
 
-        /**
-         * Write to JSON file
-         */
-        Writer writer = null;
-        try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            // create a writer:
-            writer = Files.newBufferedWriter(Paths.get("roster.json"));
-            gson.toJson(listOfRosterDays, writer);
-        } catch (IOException ex) {
-            Logger.getLogger(Workforce.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                writer.close();
-
-            } catch (IOException ex) {
-                Logger.getLogger(Workforce.class
-                        .getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        localDate = LocalDate.of(lastYear, Month.DECEMBER, 30).with(TemporalAdjusters.previousOrSame(DayOfWeek.FRIDAY));
+        listOfRosterItems.put(0, new RosterItem("Albert Kremer", localDate, "09:30", "18:00", "13:00", "13:30", null, 1));
+        listOfRosterItems.put(1, new RosterItem("Albert Baumann", localDate, "08:00", "16:30", "12:00", "12:30", null, 1));
+        listOfRosterItems.put(2, new RosterItem("Albert Krüger", localDate, "08:00", "16:30", "11:30", "12:00", null, 1));
+        listOfRosterItems.put(3, new RosterItem("Elisabeth Lehmann", localDate, "09:00", "18:00", "12:30", "13:00", null, 1));
+        listOfRosterDays.put(localDate, listOfRosterItems);
     }
 
+    public LocalDate getFirstMondayInJuly() {
+        return firstMondayInJuly;
+    }
 }

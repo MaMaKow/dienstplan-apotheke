@@ -19,12 +19,14 @@
 package Selenium.administrationpages;
 
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
  *
  * @author Mandelkow
  */
+@Listeners(Selenium.Utilities.Listener.class)
 public class TestConfigurationPage extends Selenium.TestPage {
 
     @Test(enabled = true)
@@ -77,7 +79,6 @@ public class TestConfigurationPage extends Selenium.TestPage {
         configurationPage.setApplicationName(applicationName);
         configurationPage.submitForm();
         Assert.assertEquals(configurationPage.getApplicationName(), applicationName);
-
     }
 
     @Test(enabled = true, dependsOnMethods = {"testWriteConfiguration"})/*passed*/
@@ -98,35 +99,36 @@ public class TestConfigurationPage extends Selenium.TestPage {
         /**
          * Check the expected values:
          */
-        Assert.assertEquals(configurationPage.getApplicationName(), "Selenium Test Plan");
-        Assert.assertEquals(configurationPage.getDatabaseName(), propertyFile.getDatabaseName());
+        softAssert.assertEquals(configurationPage.getApplicationName(), "Selenium Test Plan");
+        softAssert.assertEquals(configurationPage.getDatabaseName(), propertyFile.getDatabaseName());
         /**
          * The password MUST NOT be visible!
          */
-        Assert.assertEquals(configurationPage.getDatabasePassword(), "");
+        softAssert.assertEquals(configurationPage.getDatabasePassword(), "");
         /**
          * Contact email
          */
-        Assert.assertEquals(configurationPage.getContactEmail(), propertyFile.getAdministratorEmail());
+        softAssert.assertEquals(configurationPage.getContactEmail(), propertyFile.getAdministratorEmail());
         /**
          * Language and encoding
          */
-        Assert.assertEquals(configurationPage.getLanguage(), "Deutsch");
-        Assert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
-        Assert.assertEquals(configurationPage.getEncoding(), "UTF-8");
+        softAssert.assertEquals(configurationPage.getLanguage(), "Deutsch");
+        softAssert.assertEquals(configurationPage.getLocales(), "de_DE.utf8");
+        softAssert.assertEquals(configurationPage.getEncoding(), "UTF-8");
         /**
          * Error log verbosity:
          */
-        Assert.assertEquals(configurationPage.getErrorReporting(), null);
-        Assert.assertTrue(configurationPage.getErrorLogPath().contains("error.log"));
+        softAssert.assertEquals(configurationPage.getErrorReporting(), null);
+        softAssert.assertTrue(configurationPage.getErrorLogPath().contains("error.log"));
         /**
          * Approval:
          */
-        Assert.assertEquals(configurationPage.getHideDisapproved(), false);
+        softAssert.assertEquals(configurationPage.getHideDisapproved(), false);
         /**
          * Sending emails:
          */
-        Assert.assertEquals(configurationPage.getEmailMethod(), "smtp");
+        softAssert.assertEquals(configurationPage.getEmailMethod(), "smtp");
+        softAssert.assertAll();
     }
 
 }

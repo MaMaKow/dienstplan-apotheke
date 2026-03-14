@@ -154,6 +154,31 @@ class NetworkOfBranchOffices {
     }
 
     /**
+     * Get all branches as JSON string.
+     *
+     * This method returns all branches in the network as a JSON encoded string.
+     * Each branch object is converted to JSON using its encodeToJson() method.
+     *
+     * @return string JSON encoded string containing all branches
+     */
+    public function getAllBranchesAsJson(): string {
+        $branchesArray = array();
+
+        // Ensure we have the branch objects loaded
+        if (empty(self::$List_of_branch_objects)) {
+            new \PDR\Pharmacy\NetworkOfBranchOffices();
+        }
+
+        // Convert each branch object to array format for JSON encoding
+        foreach (self::$List_of_branch_objects as $branchObject) {
+            $branchData = json_decode($branchObject->encodeToJson(), true);
+            $branchesArray[] = $branchData;
+        }
+
+        return json_encode($branchesArray, JSON_PRETTY_PRINT);
+    }
+
+    /**
      * Redirect the browser to the branch management form
      *
      * If no branch is setup yet (e.g, directly after installation, or if all the branches have been deleted)

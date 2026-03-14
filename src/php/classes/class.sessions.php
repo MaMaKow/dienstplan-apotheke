@@ -60,31 +60,29 @@ class sessions {
         gettext('request own absence');
     }
 
-    public function __construct(bool $allowUnauthorized = false) {
+    public $List_of_pages_accessible_without_login = array(
+        'login.php',
+        'POST-authenticate.php',
+        'register.php',
+        'webdav.php',
+        'lost_password.php',
+        'reset_lost_password.php',
+        'background_maintenance.php',
+        'default.php',
+    );
+
+    public function __construct() {
         ini_set('session.use_strict_mode', '1'); //Do not allow non-initiaized sessions in order to prevent session fixation.
-        global $config;
+        $configuration = new PDR\Application\Configuration();
         /**
          * In case there are several instances of the program on the same machine,
          * we need a specific identifier for the different instances.
          * Therefore we define a specific session_name:
          */
-        session_name('PDR' . md5($config["session_secret"])); //MUST be called before session_start()
+        session_name('PDR' . md5($configuration->getSessionSecret())); //MUST be called before session_start()
         session_start();
-        if (isset($_SESSION['number_of_times_redirected'])) {
-            /**
-             * @TODO: Check if this is correct!
-             * <p lang=de>Sollte hier isset() oder !isset() stehen?
-             * Was genau wird hier getestet?
-             * Es geht sicherlich um die Nutzung von HTTPS.
-             * Um das zu testen und zu erzwingen wurden redirects angelegt.
-             * Damit diese nicht endlos laufen, werden sie in der $SESSION mitgezählt.
-             * Muss diese Prüfug nun vor oder nach session_start(); stattfinden?
-             * Vorher sollte $_SESSION in keinem Fall definiert sein. Oder?
-             * Was passiert denn, wenn die Variable bereits vorher gesetzt wird?
-             *
-             * In welchem genauen Fall soll die Bedingung jetzt wahr werden?
-             * </p>
-             */
+        if (!isset($_SESSION['number_of_times_redirected'])) {
+            //This is the first visit. The variable is not set yet.
             $_SESSION['number_of_times_redirected'] = 0;
         }
 
@@ -107,29 +105,14 @@ class sessions {
         if ("localhost" != $http_host AND "" != $http_host) {
             self::force_https();
         }
-
         /**
-         * Force a new visitor to identify as a user (=login):
-         * The redirect obviously is not necessary on the login-page and on the register-page.
+         * Create a token against cross site request forgery (csrf).
+         * This token can be used in forms to prevent csrf.
          */
-        $List_of_pages_accessible_without_login = array(
-            'login.php',
-            'POST-authenticate.php',
-            'register.php',
-            'webdav.php',
-            'lost_password.php',
-            'reset_lost_password.php',
-            'background_maintenance.php'
-        );
-        if (
-                false === $this->user_is_logged_in()
-                and !in_array(basename($script_name), $List_of_pages_accessible_without_login)
-                and $allowUnauthorized !== true // allow creation of a session for API pages.
-        ) {
-            $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
-            header("Location:" . $location);
-            die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
+        if (empty($_SESSION['csrfToken'])) {
+            $_SESSION['csrfToken'] = bin2hex(random_bytes(32));
         }
+
         $this->keep_alive();
     }
 
@@ -278,21 +261,17 @@ class sessions {
     }
 
     function send_mail_about_lost_password(user $user, $token) {
-        $user_dialog = new user_dialog();
-        global $config;
-        if (isset($config['application_name'])) {
-            $application_name = $config['application_name'];
-        } else {
-            $application_name = 'PDR';
-        }
-
+        $configuration = new PDR\Application\Configuration();
+        $application_name = $configuration->getApplicationName();
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
-                . sprintf(gettext('Dear %1$s,\r\n\r\n in order to set a new password for'), $user->user_name)
+                . sprintf(gettext('Dear %1$s,'), $user->user_name)
+                . \email::EMAIL_EOL . \email::EMAIL_EOL
+                . gettext('in order to set a new password for')
                 . " '"
                 . $application_name
                 . "' "
-                . gettext("user name") . ": " . $user->get_user_name() . ", "
+                . gettext("username") . ": " . $user->get_user_name() . ", "
                 . gettext("please visit")
                 . " <a href='"
                 . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"])
@@ -303,17 +282,10 @@ class sessions {
                 . ".</a>"
                 . gettext("Your token is valid for 24 hours.")
                 . "</BODY></HTML>");
-        $headers = 'From: ' . $config['contact_email'] . "\r\n";
-        $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "Content-Transfer-Encoding: quoted-printable";
 
-        /*
-         * TODO: Use PDR email class
-         */
         $recipient = $user->get_email();
-        $sent_result = mail($recipient, $message_subject, $message_text, $headers);
+        $userDialogEmail = new user_dialog_email();
+        $sent_result = $userDialogEmail->send_email($recipient, $message_subject, $message_text);
         if ($sent_result) {
             $message = "A lost password email was successfully sent.";
             error_log($message);
@@ -340,14 +312,14 @@ class sessions {
                 $_SESSION['number_of_times_redirected'] = 0;
             }
             $https_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-            if (!headers_sent() and ( $_SESSION['number_of_times_redirected'] ) < 3) {
+            if (!headers_sent() and ($_SESSION['number_of_times_redirected']) < 3) {
                 $_SESSION['number_of_times_redirected']++;
                 header("Status: 301 Moved Permanently");
                 header("Location: $https_url");
                 die("<p>Dieses Programm erfordert die Nutzung von "
                         . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
                         . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
-            } elseif (( $_SESSION['number_of_times_redirected'] ) < 3) {
+            } elseif (($_SESSION['number_of_times_redirected']) < 3) {
                 $_SESSION['number_of_times_redirected']++;
                 die('<script type="javascript">document.location.href="' . $https_url . '";</script>');
             } else {
@@ -387,14 +359,30 @@ class sessions {
     }
 
     public function verifyAccessToken() {
+        //error_log("Inside verifyAccessToken");
+        $token = "";
+        $headers = getallheaders();
+        //PDR\Utility\GeneralUtility::printDebugVariable($headers);
         /**
-         * @todo Will this apache_request_headers() work with nginx? Probably not.
+         * Test if  Authorization-Header exists
          */
-        $headers = apache_request_headers();
-        $token = $headers["Authorization"];
+        if (!isset($headers['Authorization']) || empty($headers['Authorization'])) {
+            header('Content-Type: application/json', true, 401);
+            echo json_encode(['error' => 'Authorization token missing']);
+            exit;
+        }
+        $authorizationHeader = $headers["Authorization"];
+        if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
+            //error_log("We have a request with bearer token.");
+            //PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
+            $token = $matches[1];
+        } else {
+            echo json_encode(['error' => 'Authorization without Bearer token']);
+            exit;
+        }
         try {
             /**
-             *  Use a library or method to decode and verify the token with the secret key
+             *  Method to decode and verify the token with the secret key
              */
             $decodedToken = $this->jwtDecode($token);
 
@@ -420,10 +408,9 @@ class sessions {
         /**
          *  Signature
          */
-        $configuration = new PDR\Application\configuration();
+        $configuration = new PDR\Application\Configuration();
         $secretKey = $configuration->getSecretKey();
         $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey);
-
         /**
          *  Token creation
          */
@@ -446,7 +433,7 @@ class sessions {
         /**
          * Verify the signature using the secret key and the algorithm specified in the header
          */
-        $configuration = new PDR\Application\configuration();
+        $configuration = new PDR\Application\Configuration();
         $secretKey = $configuration->getSecretKey();
         $algorithm = $decodedHeader['algorithm'];
 
@@ -466,5 +453,35 @@ class sessions {
          *  Return the decoded payload
          */
         return $decodedPayload;
+    }
+
+    public function requireLogin() {
+        $scriptName = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_URL);
+
+        if (true === $this->user_is_logged_in()) {
+            /**
+             * Allready logged in, we are done requiring the login.
+             */
+            return;
+        }
+        if (in_array(basename($scriptName), $this->List_of_pages_accessible_without_login)) {
+            /**
+             * No login necessary on these pages.
+             */
+            return;
+        }
+        /**
+         *  Store the requested URL:
+         */
+        $requestUri = filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_URL);
+        if (empty($_SESSION['login_referrer']) and !str_contains($requestUri, 'default.php')) {
+            $_SESSION['login_referrer'] = $requestUri;
+        }
+        /**
+         * Redirect to login page:
+         */
+        $location = PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php";
+        header("Location:" . $location);
+        die('<p>Bitte zuerst <a href="' . $location . '">einloggen</a></p>' . PHP_EOL);
     }
 }

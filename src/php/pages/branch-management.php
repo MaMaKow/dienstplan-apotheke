@@ -196,7 +196,7 @@ function build_branch_input_opening_times($branch_object) {
                  class="inline-image"
                  title="<?= gettext("Awinta Smart and Awinta One have an option to export PEP data. If you uploaded such PEP data, enter your PEP Id for this branch here.") ?>">
             <br>
-            <input form="branch_management_form" type='text' name='branch_pep_id' id="branchPepId" value="<?= $branch_object->getPEP(); ?>">
+            <input form="branch_management_form" type='text' name='branch_pep_id' id="branchPepId" value="<?= $branch_object->getPep(); ?>">
         </p>
     </fieldset>
     <fieldset>

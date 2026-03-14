@@ -35,6 +35,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 
 /**
@@ -256,6 +257,17 @@ public class DayPage {
          */
         By rowCssBy = By.cssSelector("#principleRosterForm > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
         By rowXpathBy = By.xpath("parent::select/parent::span/parent::td");
+        /**
+         * Diese Funktion wird auch aufgerufen, um zu prüfen,
+         * ob bereits ein Eintrag mit diesem employeeKey existiert.
+         * Das verbraucht sehr viel Zeit. Um dies abzukürzen, wird hier nur ganz kurz gewartet.
+         */
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(0));
+        if (driver.findElements(rowCssBy).isEmpty()) {
+            // Element is not present
+            throw new NoSuchElementException("This employee is not in the principle roster yet.");
+        }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(rowCssBy));
         WebElement rosterTableRowOptionElement = driver.findElement(rowCssBy);
         WebElement rosterTableRowElement = rosterTableRowOptionElement.findElement(rowXpathBy);
         return rosterTableRowElement;

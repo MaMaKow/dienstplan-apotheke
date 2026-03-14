@@ -48,7 +48,7 @@ class pep_histogramm {
 
         $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
         $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects();
-        $branch_pep_id = $List_of_branch_objects[$branch_id]->getPEP();
+        $branch_pep_id = $List_of_branch_objects[$branch_id]->getPep();
         if (empty($branch_pep_id)) {
             return FALSE;
         }

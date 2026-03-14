@@ -19,11 +19,11 @@
 
 abstract class roster_headcount {
 
-    public static function get_roster_of_qualified_pharmacist_employees($Roster, $workforce) {
+    public static function get_roster_of_qualified_pharmacist_employees(array $Roster, workforce $workforce): array {
         $Roster_of_qualified_pharmacist_employees = array();
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
-                if (in_array($roster_item_object->employee_key, $workforce->List_of_qualified_pharmacist_employees)) {
+                if (in_array($roster_item_object->employee_key, $workforce->getListOfQualifiedPharmacistEmployees())) {
                     $Roster_of_qualified_pharmacist_employees[$roster_item_object->date_unix][] = $roster_item_object;
                 }
             }
@@ -31,9 +31,9 @@ abstract class roster_headcount {
         return $Roster_of_qualified_pharmacist_employees;
     }
 
-    public static function get_roster_of_goods_receipt_employees($Roster, $workforce) {
+    public static function get_roster_of_goods_receipt_employees(array $Roster, workforce $workforce) {
         $Roster_of_goods_receipt_employees = array();
-        $List_of_goods_receipt_employees = $workforce->List_of_goods_receipt_employees;
+        $List_of_goods_receipt_employees = $workforce->getListOfGoodsReceiptEmployees();
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
                 $employee_key = $roster_item_object->employee_key;
@@ -112,7 +112,7 @@ abstract class roster_headcount {
         $sql_query = "SELECT * FROM `opening_times` WHERE `weekday` = :weekday AND `branch_id` = :branch_id";
         $result = database_wrapper::instance()->run($sql_query, array('branch_id' => $branch_id, 'weekday' => $weekday));
         $row = $result->fetch(PDO::FETCH_OBJ);
-        if (!empty($row->start) and!empty($row->end)) {
+        if (!empty($row->start) and !empty($row->end)) {
             $Opening_times['day_opening_start'] = roster_item::convert_time_to_seconds($row->start);
             $Opening_times['day_opening_end'] = roster_item::convert_time_to_seconds($row->end);
             return $Opening_times;
@@ -144,5 +144,4 @@ abstract class roster_headcount {
         }
         return 0;
     }
-
 }

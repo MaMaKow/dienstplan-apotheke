@@ -35,9 +35,9 @@ abstract class examine_attendance {
                 if (NULL !== $rosterItem->employee_key and $absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
                     $scheduledEmployeeWithAbsenceKey = $rosterItem->employee_key;
                     $messageUnsafe = sprintf(gettext('%1$s is absent (%2$s) and should not be in the roster.'),
-                            $workforce->List_of_employees[$scheduledEmployeeWithAbsenceKey]->first_name . " " . $workforce->List_of_employees[$scheduledEmployeeWithAbsenceKey]->last_name,
+                            $workforce->getEmployeeFullName($scheduledEmployeeWithAbsenceKey),
                             \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($scheduledEmployeeWithAbsenceKey)->getReasonId()
-                    ));
+                            ));
                     $messageSafe = htmlspecialchars($messageUnsafe);
                     /**
                      * @todo Add a function to build the button. Make it viable for the insert and the remove button.
@@ -102,7 +102,7 @@ abstract class examine_attendance {
                     //TODO: Set a link to add the employee via JavaScript?
                     $duty_start = $principle_roster_object->duty_start_sql;
                     $duty_end = $principle_roster_object->duty_end_sql;
-                    $message_unsafe = $workforce->List_of_employees[$arbeiter]->first_name . " " . $workforce->List_of_employees[$arbeiter]->last_name;
+                    $message_unsafe = $workforce->getEmployeeFullName($arbeiter);
                     $message_unsafe .= " ($duty_start - $duty_end)";
                     $message_safe = htmlspecialchars($message_unsafe);
                     $message_safe .= "&nbsp"

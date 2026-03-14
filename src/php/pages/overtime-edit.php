@@ -72,6 +72,7 @@ function buildFormOvertimeDelete(stdClass $rowObject) {
     $deleteFormString .= " <input type=hidden name=deletionEmployeeKey value='" . htmlspecialchars($rowObject->employee_key) . "' form='$deleteFormId'>\n";
     $deleteFormString .= " <input type=hidden name=deletionDate value='" . htmlspecialchars($rowObject->Datum) . "' form='$deleteFormId'>\n";
     $deleteFormString .= " <input type=hidden name=deletionHours value='" . htmlspecialchars($rowObject->Stunden) . "' form='$deleteFormId'>\n";
+    $deleteFormString .= " <input type=hidden name=deletionReason value='" . htmlspecialchars($rowObject->Grund) . "' form='$deleteFormId'>\n";
     $deleteFormString .= "<form accept-charset='utf-8' onsubmit='return confirmDelete()' method=POST id='$deleteFormId'>\n";
     $deleteFormString .= "</form>\n";
     return $deleteFormString;
@@ -144,7 +145,7 @@ $user_dialog = new user_dialog();
 echo $user_dialog->build_messages();
 
 echo form_element_builder::build_html_select_year($year);
-echo build_html_navigation_elements::build_select_employee($employeeKey, $workforce->List_of_employees);
+echo build_html_navigation_elements::build_select_employee($employeeKey, $workforce->getListOfEmployees());
 echo build_html_navigation_elements::build_button_open_readonly_version('src/php/pages/overtime-read.php', array('employee_key' => $employeeKey));
 
 echo "<table>\n";

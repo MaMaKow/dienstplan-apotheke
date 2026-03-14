@@ -19,12 +19,14 @@
 package Selenium;
 
 import static Selenium.HomePage.driver;
+import Selenium.Utilities.LogCollector;
 import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -42,6 +44,7 @@ public class BasePage {
     public final Logger logger;
 
     public BasePage(WebDriver driver) {
+        LogCollector.debug("BasePage constructor:");
         BasePage.driver = driver;  // Initialize the driver
         this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
         waitShort = new WebDriverWait(driver, Duration.ofMillis(100));
@@ -55,8 +58,16 @@ public class BasePage {
      * @return String user_name text
      */
     public String getUserNameText() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-        return driver.findElement(userNameSpanBy).getText();
+        LogCollector.debug("method getUserNameText()");
+        LogCollector.debug("waitShort.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));");
+        LogCollector.debug("driver.getCurrentUrl(): " + driver.getCurrentUrl());
+        waitShort.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
+        LogCollector.debug("find userNameSpan");
+        WebElement userNameSpan = driver.findElement(userNameSpanBy);
+        LogCollector.debug("get userNameText");
+        String userNameText = userNameSpan.getText();
+        LogCollector.debug("return userNameText");
+        return userNameText;
     }
 
     public void logWithDetails(String message) {

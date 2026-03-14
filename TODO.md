@@ -2,53 +2,17 @@
 
 ## Errors
 
-### Failure of functions
-
-#### Roster view
-
-Drag and drop is somehow defective. - newy inserted employees do not show up in the plot. - get rid of transform
-
-### Logical errors
-
-The following line should not be shown on saturdays and sundays, if Monday until Friday are set. "The are no opening times stored inside the database for this weekday. Please configure the opening times!"
-
-There is an error message: "No compatible database driver found. Please install one of the following database management systems and the corresponding PHP driver!" But there is no list given.
-
-### Design errors
-
-fragment.principle-roster-day-history.php does not allways result in the chosen date. For example when the rotation weekdoes not match the chosen week. Perhaps more care should be given to the possible change dates?
-
-collaborative-vacation-year.php weird style
-
-Change the navigation menu On mobile touch devices, some menu items are not reachable.
-
-collaborative-vacation.css might contain some rules that do not match anything anymore. Please clean up.
-
-Nutzen Sie "Formular zurücksetzen" um Daten für einen neuen Mandanten einzugeben funktioniert nicht, ist auch doof
-
 ## Feature requests
 
 ### Core
 
-Encapsulate class workforce
-
-remove class email stub or make it a helper for PHPMailer
-
-perhaps build a real absence class with real absence objects.
-
-Checkout: backup_employee_data_update Ich habe einen weiteren Trigger hinzugefügt und wieder gelöscht. Das ist aber nicht das eigentliche Ziel. Ziel ist es, eine große employee Tabelle zu haben, in der alles drinnen steht. PS: Archiv könnte als SQL-Backup geführt werden. Aber es sollten nur die Inhalte, die länger als ein Monat alt sind, drin stehen, und dann unveränderlich,...
-
 Mitarbeiter selbst tauschen -> Modul bauen
 
-* Notdienst Eingabe-Maske
-  * use an API to get the data for the emergency services
-
-
-* database Ware-Termine / Ware-PEP
 * PSR-4: Die Klassen können mal sortiert und in Ordner gepackt werden. Bei der Gelegenheit kann man direkt mal in Richtung PSR-4 denken. https://www.php-fig.org/psr/psr-4/
 
-  * \\PDR\\Pharmacy\\Branch.php \
-  * \PDR\\Pharmacy\\NetworkOfBranchOffices.php
+
+* * \\PDR\\Pharmacy\\Branch.php \
+* \PDR\\Pharmacy\\NetworkOfBranchOffices.php
   * \\PDR\\Workforce\\Absence.php
   * \\PDR\\Workforce\\Overtime.php
   * \PDR\\Workforce\\Employee.php
@@ -57,7 +21,7 @@ Mitarbeiter selbst tauschen -> Modul bauen
   * \\PDR\\Roster\\Roster.php (Eine ganze Woche/Monat/beliebiger Bereich)
 
   *  \\PDR\\Roster\\RosterDayArray.php (alle Items aus einem Tag)
-  *  \\PDR\\Roster\\RosterItem.php
+*  \\PDR\\Roster\\RosterItem.php
   *  \\PDR\\Roster\\RosterItemEmpty.php
   *  \\PDR\\Roster\\AlternatingWeek.php
   *  \\PDR\\Roster\\ExamineAttendance.php
@@ -106,24 +70,7 @@ Mitarbeiter selbst tauschen -> Modul bauen
 
 ### Web
 
-Use smudge / clean in git to Insert the version in about.php Version: 0.14.1
-
-Restructure the menu:
-
-* Dienstpläne
-* Grundpläne
-* Abwesenheiten
-* Überstunden
-
-Edit existing overtime in overtime-edit.php inside the table edit option for overtime
-
-human-resource-management.php is missing a feature to delete (archive) an employee
-
-Test password strength upon registration
-
 register_approve.php merge register_approve.php with user-management.php Make this a list of all the users and their status. register_approve.php; Make it something to work with.
-
-Insert information about emergency service for saturday-list on with emergency service on fridays, saturdays or sundays.
 
 Alle Stunden und Abwesenheiten mit aktuellstem Datum zuerst. Abwesenheit mit Filter für Jahr und Reason (Checkbox zur Multi-Auswahl (Javascript?))
 
@@ -380,10 +327,25 @@ https://www.pharmazeutische-zeitung.de/wie-werden-feiertage-richtig-abgerechnet-
          */
   private function build_error_message_maximum_working_hours($average_working_hours, $employee_id) {
         global $Mitarbeiter;
-        $error_message = $Mitarbeiter[$employee_id] . " arbeitet im Durchschnitt " . $average_working_hours 
+        $error_message = $Mitarbeiter[$employee_id] . " arbeitet im Durchschnitt " . $average_working_hours
                 . " das ist ein Verstoß gegen <a href='http://www.gesetze-im-internet.de/arbzg/__3.html'>§3 ArbZG</a>!";
         if (!function_exists(build_warning_messages)) {
             require_once 'src/php/build-warning-messages.php';
         }
         return build_warning_messages($error_message);
     }	    }
+
+#### Urlaubstage müssen vermutlich float sein.
+
+https://www.gesetze-im-internet.de/burlg/__5.html
+"(2) Bruchteile von Urlaubstagen, die mindestens einen halben Tag ergeben, sind auf volle Urlaubstage aufzurunden."
+Das bedeutet gleichzeitig, dass Bruchteile, die unter einen halben Tag ergeben auch als anteilige Tage zu gewähren sind.
+Es wird NICHT abgerundet.
+https://chatgpt.com/c/674ad677-abdc-8003-9644-885ef01138e5
+Wir brauchen darüber hinaus zwei extra Tabellen für Urlaube und für Urlaubsanpassungen.
+id, employee_id, year, leave_days_working_days, (leave_days_working_days_adjusted, conversion_rate_to_working_days, comments)
+und
+id, leave_entitlement_id, date, adjustment_type, adjustment_days_working_days, comments
+
+#### Tests ergänzen für:
+sick-note-tracking.php

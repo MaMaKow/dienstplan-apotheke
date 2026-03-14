@@ -91,14 +91,14 @@ class user_dialog_email {
                     $context_string = gettext("You have been added to the roster.");
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
-                    $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
+                    $ics_file = \PDR\Output\ICalendar\ICalendar::buildIcsRosterEmployee($Single_employee_roster);
                     self::save_notification_about_changed_roster_to_database(user::guess_user_key_by_employee_key($roster_item_object->employee_key), $roster_item_object->date_sql, $message, $ics_file);
                 }
                 if (!empty($Changed_roster_employee_key_list[$date_unix]) and in_array($roster_item_object->employee_key, $Changed_roster_employee_key_list[$date_unix])) {
                     $context_string = gettext("Your roster has changed.");
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
-                    $ics_file = iCalendar::build_ics_roster_employee($Single_employee_roster);
+                    $ics_file = \PDR\Output\ICalendar\ICalendar::buildIcsRosterEmployee($Single_employee_roster);
                     self::save_notification_about_changed_roster_to_database(user::guess_user_key_by_employee_key($roster_item_object->employee_key), $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
@@ -162,14 +162,14 @@ class user_dialog_email {
         ));
     }
 
-    public function aggregate_messages_about_changed_roster_to_employees($workforce) {
+    public function aggregate_messages_about_changed_roster_to_employees(workforce $workforce) {
         $sql_query = "SELECT DISTINCT `user_key` "
                 . " FROM `user_email_notification_cache`;";
         $result = database_wrapper::instance()->run($sql_query);
         while ($user_row = $result->fetch(PDO::FETCH_OBJ)) {
             $user_key = $user_row->user_key;
-
-            $aggregated_message = sprintf(gettext('Dear %1$s,'), $workforce->List_of_employees[$user_key]->full_name) . PHP_EOL . PHP_EOL;
+            $userObject = new user($user_key);
+            $aggregated_message = sprintf(gettext('Dear %1$s,'), $userObject->user_name) . PHP_EOL . PHP_EOL;
             $aggregated_ics_file = (string) "";
             $notifications_exist = FALSE;
 
@@ -267,36 +267,38 @@ class user_dialog_email {
         return $mail_success;
     }
 
-    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL) {
-        global $config;
-        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
-        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
-        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
+    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL): bool {
+        $configuration = new \PDR\Application\Configuration();
+//        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
+//        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
+//        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
 
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-        //$mail->SMTPDebug = 2; // Set to 2 for more detailed debug output
-        $mail->SMTPDebug = 3; // 3 = 2 plus more information about the initial connection - this level can help diagnose STARTTLS failures.
-        //$mail->SMTPDebug = 4; // 4 = Detaied Low-level data output.
+        $mail->SMTPDebug = 0; // No output
+        //$mail->SMTPDebug = 1; // commands
+        //$mail->SMTPDebug = 2; // Data and commands
+        //$mail->SMTPDebug = 3; // 3 As 2 plus connection status
+        //$mail->SMTPDebug = 4; // 4 Detaied Low-level data output.
         $mail->Debugoutput = function ($str, $level) {
-            PDR\Utility\GeneralUtility::printDebugVariable($str);
+            error_log("Level: " . $level . " String: " . $str);
         };
         try {
             /*
              * Server settings
              */
-            switch ($config['email_method']) {
+            switch ($configuration->getEmailMethod()) {
                 case 'smtp':
-                    if (!isset($config['email_smtp_host'], $config['email_smtp_port'], $config['email_smtp_username'], $config['email_smtp_password'])) {
+                    if (empty($configuration->getEmailSmtpHost()) or empty($configuration->getEmailSmtpPort()) or empty($configuration->getEmailSmtpUsername()) or empty($configuration->getEmailSmtpPassword())) {
                         \PDR\Utility\GeneralUtility::printDebugVariable('Error while sending mail: SMTP not correctly configured');
                         return FALSE;
                     }
                     $mail->isSMTP();
                     $mail->SMTPAuth = true;
                     $mail->SMTPSecure = 'tls'; // Enable TLS encryption, `ssl` also accepted
-                    $mail->Host = $config['email_smtp_host'];
-                    $mail->Port = $config['email_smtp_port']; // TCP port to connect to (587 for TLS)
-                    $mail->Username = $config['email_smtp_username'];
-                    $mail->Password = $config['email_smtp_password'];
+                    $mail->Host = $configuration->getEmailSmtpHost();
+                    $mail->Port = $configuration->getEmailSmtpPort(); // TCP port to connect to (587 for TLS)
+                    $mail->Username = $configuration->getEmailSmtpUsername();
+                    $mail->Password = $configuration->getEmailSmtpPassword();
                     if ("localhost" === $mail->Host and "1025" == $mail->Port) {
                         /**
                          * For the purpose of testing mails with mailhog, TLS and STARTTLS have to be disabled.
@@ -320,7 +322,7 @@ class user_dialog_email {
             /*
              * Recipients
              */
-            $mail->setFrom($config['contact_email'], $config['application_name'] . ' Mailer');
+            $mail->setFrom($configuration->getContactEmail(), $configuration->getApplicationName() . ' Mailer');
             $mail->addAddress($recipient);
             /*
              * Attachments
@@ -334,7 +336,7 @@ class user_dialog_email {
             $mail->CharSet = 'UTF-8';
             $mail->Encoding = 'base64';
             $mail->isHTML(FALSE);
-            $mail->Subject = $config['application_name'] . ": " . $subject;
+            $mail->Subject = $configuration->getApplicationName() . ": " . $subject;
             $mail->Body = $message;
             //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 

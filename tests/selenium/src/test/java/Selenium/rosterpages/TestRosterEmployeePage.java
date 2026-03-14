@@ -22,6 +22,8 @@ import Selenium.NetworkOfBranchOffices;
 import Selenium.Roster;
 import Selenium.RosterItem;
 import Selenium.TestPage;
+import Selenium.Utilities.LogCollector;
+import static Selenium.driver.Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
@@ -36,14 +38,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.testng.annotations.Test;
 import org.testng.Assert;
-
+import org.testng.annotations.Test;
 import org.threeten.extra.YearWeek;
 
 /**
@@ -60,22 +64,26 @@ public class TestRosterEmployeePage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date and go foreward and backward from there:
          */
+        int currentYear = LocalDate.now().getYear();
+        LocalDate testDate = LocalDate.of(currentYear, Month.JULY, 1);
+        LocalDate mondayDate = testDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate mondayWeekBefore = mondayDate.minusDays(7);
 
-        rosterEmployeePage = rosterEmployeePage.goToDate("01.07.2020"); //This date is a wednesday.
-        Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+        rosterEmployeePage = rosterEmployeePage.goToDate(testDate);
+        Assert.assertEquals(rosterEmployeePage.getDateString(), mondayDate.format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY));
         rosterEmployeePage = rosterEmployeePage.moveWeekBackward();
-        Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-22"); //This is the corresponding monday.
+        Assert.assertEquals(rosterEmployeePage.getDateString(), mondayWeekBefore.format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY));
         rosterEmployeePage = rosterEmployeePage.moveWeekForward();
-        Assert.assertEquals(rosterEmployeePage.getDate(), "2020-06-29"); //This is the corresponding monday.
+        Assert.assertEquals(rosterEmployeePage.getDateString(), mondayDate.format(DATE_TIME_FORMATTER_YEAR_MONTH_DAY));
     }
 
     @Test(enabled = true)/*failed*/
@@ -84,11 +92,11 @@ public class TestRosterEmployeePage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Read the roster from json files and find the same values in the
@@ -128,11 +136,11 @@ public class TestRosterEmployeePage extends TestPage {
          * Sign in:
          */
         try {
-    super.signIn();
-} catch (Exception exception) {
-    logger.error("Sign in failed.");
-    Assert.fail();
-}
+            super.signIn();
+        } catch (Exception exception) {
+            logger.error("Sign in failed.");
+            Assert.fail();
+        }
         RosterEmployeePage rosterEmployeePage = new RosterEmployeePage(driver);
         /**
          * Move to specific date to get a specific roster:
@@ -158,10 +166,11 @@ public class TestRosterEmployeePage extends TestPage {
 
             String iCalendarString;
             iCalendarString = Files.readString(downloadedICalendarFile.toPath(), Charset.forName("UTF-8"));
+            LogCollector.debug(iCalendarString);
             ICalendar ical = Biweekly.parse(iCalendarString).first();
             List<VEvent> listOfEvents = ical.getEvents();
             /**
-             * Make sure, that the number of events matche the number of roster
+             * Make sure, that the number of events matches the number of roster
              * items: I hope, that the order is the same and constant.
              */
             Assert.assertEquals(listOfEvents.size(), rosterWeek.entrySet().size());
@@ -181,7 +190,12 @@ public class TestRosterEmployeePage extends TestPage {
                  * sollte.</p>
                  */
                 RosterItem rosterItem = rosterItemEntry.getValue();
+                LogCollector.debug(rosterItem.getDutyStartLocalDateTime().format(DateTimeFormatter.ISO_DATE_TIME));
                 VEvent matchingEvent;
+                for (VEvent event : listOfEvents) {
+                    LogCollector.debug(event.getDateStart().getValue().toString());
+                    //LogCollector.debug(event.getDateEnd().getValue().toString());
+                }
 
                 /**
                  * Convert the DutyStart of the iCalendar event and the

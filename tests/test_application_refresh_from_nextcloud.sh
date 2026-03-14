@@ -7,7 +7,7 @@ scriptPath=`dirname $(realpath $0)`
 testDirectory=/var/www/html/development/testing/
 cd $testDirectory
 
-sourcePath=/var/www/html/nextcloud/data/Martin/files/Dokumente/Freizeit/Programmierung/git/dienstplan-apotheke/
+sourcePath=/home/martin/Sync/dienstplan-apotheke/
 destinationPath=/var/www/html/development/testing/dienstplan-test/
 
 echo Source:

@@ -1,4 +1,7 @@
-<?php header('Content-Type: text/html; charset=utf-8'); ?>
+<?php
+header('Content-Type: text/html; charset=utf-8');
+$configuration = new PDR\Application\Configuration();
+?>
 <!DOCTYPE html>
 <!--
 Copyright (C) 2017 Mandelkow
@@ -16,10 +19,10 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<HTML lang='<?= strstr($config["language"], '_', TRUE) ?>'>
-    <HEAD lang="<?= $config["language"] ?>">
+<HTML lang='<?= strstr($configuration->getLanguage(), '_', TRUE) ?>'>
+    <HEAD lang="<?= $configuration->getLanguage() ?>">
         <META charset=UTF-8>
-        <TITLE><?= $config['application_name'] ?></TITLE>
+        <TITLE><?= $configuration->getApplicationName() ?></TITLE>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/class.roster_item.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/translations.js" ></SCRIPT>
         <SCRIPT src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>src/js/javascript.js" ></SCRIPT>
@@ -109,6 +112,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     break;
                 case 'overtime-edit.php':
                     $jsFiles[] = 'overtime.js';
+                    break;
+                case 'configuration.php':
+                    $jsFiles[] = 'configuration.js';
                     break;
             }
 

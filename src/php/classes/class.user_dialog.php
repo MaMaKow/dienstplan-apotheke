@@ -160,9 +160,9 @@ class user_dialog {
         if (!filter_has_var(INPUT_POST, 'submit_contact_form')) {
             return FALSE;
         }
-        global $config;
-        $application_name = $config['application_name'];
-        $recipient = $config['contact_email'];
+        $configuration = new PDR\Application\Configuration();
+        $application_name = $configuration->getApplicationName();
+        $recipient = $configuration->getContactEmail();
         $subject = $application_name . " " . gettext('has a comment');
 
         $message = self::contact_form_send_mail_build_message();

@@ -81,7 +81,7 @@ public class RosterHoursPage {
 
     public String getMonth() {
         /*
-        <p lang=de>Es gibt nicht nur die Möglichkeit, sin einzelne Monate anzusehen.
+        <p lang=de>Es gibt nicht nur die Möglichkeit, sich einzelne Monate anzusehen.
         Man kann auch Quartale oder das ganze Jahr auswählen.</p>
          */
         WebElement selectMonthSelectElement = driver.findElement(selectMonthSelectBy);
