@@ -248,4 +248,34 @@ public class RosterWeekTablePage {
         RosterItem rosterItem = new Selenium.RosterItem(employeeKey, localDate, dutyStart, dutyEnd, breakStart, breakEnd, comment, branchId);
         return rosterItem;
     }
+
+    public float getWorkingHoursHaveByFullName(String fullName) {
+        By workingHoursHaveBy = By.xpath(".//td[2]");
+        WebElement workingHoursLineElement = getWorkingHoursLineByFullName(fullName);
+        WebElement workingHoursHaveElement = workingHoursLineElement.findElement(workingHoursHaveBy);
+        Float workingHoursHave = Float.valueOf(workingHoursHaveElement.getText());
+        return workingHoursHave;
+    }
+
+    public float getWorkingHoursShouldByFullName(String fullName) {
+        By workingHoursShouldBy = By.xpath(".//td[3]");
+        WebElement workingHoursLineElement = getWorkingHoursLineByFullName(fullName);
+        WebElement workingHoursShouldElement = workingHoursLineElement.findElement(workingHoursShouldBy);
+        Float workingHoursShould = Float.valueOf(workingHoursShouldElement.getText());
+        return workingHoursShould;
+    }
+
+    public float getWorkingHoursDiffByFullName(String fullName) {
+        By workingHoursDiffBy = By.xpath(".//td[3]");
+        WebElement workingHoursLineElement = getWorkingHoursLineByFullName(fullName);
+        WebElement workingHoursDiffElement = workingHoursLineElement.findElement(workingHoursDiffBy);
+        Float workingHoursDiff = Float.valueOf(workingHoursDiffElement.getText());
+        return workingHoursDiff;
+    }
+
+    private WebElement getWorkingHoursLineByFullName(String fullName) {
+        By workingHoursLineBy = By.xpath("//*[@id=\"week_hours_table_div\"]/table/tbody/tr/td[contains(text(),'" + fullName + "')]/parent::tr");
+        WebElement workingHoursLineElement = driver.findElement(workingHoursLineBy);
+        return workingHoursLineElement;
+   }
 }

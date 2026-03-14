@@ -59,6 +59,7 @@
             <class name="Selenium.rosterpages.TestRosterEmployeePage" />
             <class name="Selenium.rosterpages.TestRosterWeekTablePage" />
             <class name="Selenium.rosterpages.TestRosterHoursPage" />
+            <class name="Selenium.rosterpages.TestRosterWeekTableOvertimeAbsences" />
             <!--
             -->
         </classes>
