@@ -110,6 +110,36 @@ class employee {
         }
         return $this->Principle_roster[$date_unix];
     }
+    /**
+     * Calculates the principle working hours for the employee on a specified date.
+     *
+     * This function retrieves the employee's roster for the given date, calculates the principle working hours
+     * for that day, and returns the sum. If the roster for the specified date is not already loaded, it fetches
+     * the roster from the database and caches it for future use.
+     *
+     * @param DateTime $date_object The date for which to calculate the employee's principle working hours.
+     * @return int The sum of the employee's working hours on the specified date.
+     */
+    public function getPrincipleHoursOnDate(DateTime $date_object) {
+        /**
+         * @var int $date_unix Unix timestamp representing the $date_object.
+         */
+        $date_unix = $date_object->getTimestamp();
+
+        // Check if the roster for this date is already cached; if not, load it from the database.
+        if (empty($this->Principle_roster[$date_unix])) {
+            $Example_roster = principle_roster::read_current_principle_employee_roster_from_database($this->primary_key, clone $date_object, clone $date_object);
+            $this->Principle_roster[$date_unix] = $Example_roster[$date_unix];
+        }
+
+        // Sum the working hours for the employee in the roster for the specified date.
+        $sumOfHours = 0;
+        foreach ($this->Principle_roster[$date_unix] as $principleRosterItem) {
+            $sumOfHours += $principleRosterItem->working_hours;
+        }
+
+        return $sumOfHours;
+    }
 
     public function get_employee_key() {
         return $this->primary_key;

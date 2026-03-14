@@ -30,18 +30,16 @@ $overlay_message_html = "";
 
 $date_sql_user_input = user_input::get_variable_from_any_input('datum', FILTER_SANITIZE_NUMBER_INT, date('Y-m-d'));
 $date_sql = general_calculations::get_first_day_of_week($date_sql_user_input);
-$date_unix = strtotime($date_sql);
+ 
+$date_unix_start = strtotime($date_sql);
+$dateStartObject = new \DateTime();
+$dateStartObject->setTimestamp($date_unix_start);
+$dateEndObject = clone $dateStartObject;
+$dateEndObject->add(new \DateInterval('P6D'));
+$date_sql_end = $dateEndObject->format('Y-m-d');
 $date_sql_start = $date_sql;
-$date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
 \PDR\Utility\GeneralUtility::createCookie('datum', $date_sql, 0.5);
-$date_unix_start = $date_unix;
-$date_start_object = new DateTime();
-$date_start_object->setTimestamp($date_unix_start);
-$date_end_object = new DateTime($date_sql_end);
 
-for ($i = 0; $i < $tage; $i++) {
-    $Week_dates_unix[] = strtotime(' +' . $i . ' days', $date_unix);
-}
 
 //Hole eine Liste aller Mitarbeiter
 $workforce = new workforce($date_sql_start, $date_sql_end);
@@ -56,11 +54,12 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
  * Build a div containing assignment of tasks:
  */
 $weekly_rotation_div_html = task_rotation::task_rotation_main(array_keys($Roster), "Rezeptur", $branch_id, $workforce);
-$Working_week_hours_have = roster::calculate_working_weekly_hours_from_branch_roster($Branch_roster);
+$listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($dateStartObject, $dateEndObject);
+$workingWeekHoursHave = \PDR\Utility\RosterUtility::calculateWorkingWeeklyHoursInTimeInterval($dateStartObject, $dateEndObject, $workforce, $listOfAbsences);
 $duty_roster_working_week_hours_div = "";
-if (array() !== $Roster and isset($Working_week_hours_have)) {
-    $Working_week_hours_should = build_html_roster_views::calculate_working_week_hours_should($Roster, $workforce);
-    $duty_roster_working_week_hours_div = build_html_roster_views::build_roster_working_week_hours_div($session, $date_end_object, $Working_week_hours_have, $Working_week_hours_should, $workforce);
+if (isset($workingWeekHoursHave)) {
+    $workingWeekHoursShould = PDR\Utility\RosterUtility::calculateWorkingWeekHoursShould($Roster, $workforce);
+    $duty_roster_working_week_hours_div = build_html_roster_views::build_roster_working_week_hours_div($session, $dateEndObject,$workingWeekHoursHave, $workingWeekHoursShould, $workforce);
 }
 
 //Produziere die Ausgabe
@@ -69,11 +68,11 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $main_div_html = "<div id='mainArea'>\n";
 echo $userDialog->build_messages();
 
-$dateString = $date_start_object->format('W');
+$dateString = $dateStartObject->format('W');
 $date_info_line_html = "<div id=date_info_line class='no-print'>"
         . gettext("calendar week") . '&nbsp;'
         . $dateString
-        . '&nbsp;' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($date_start_object))
+        . '&nbsp;' . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($dateStartObject))
         . "</div>\n";
 $main_div_html .= $date_info_line_html;
 
