@@ -97,6 +97,28 @@ class AbsenceCollection implements \IteratorAggregate {
     }
 
     /**
+     * Retrieve the absence entry for a specific employee on a specific day.
+     *
+     * This method iterates through the absences in the collection and returns the first
+     * absence entry that corresponds to the specified employee key.
+     * @CAVE! There might be multiple Absence objects of the same employee. This function only finds the first one.
+     * @todo <p>Vacation and sickness are treated differently in class.roster.php calculateWorkingWeeklyHoursInTimeInterval().
+     * We should probably return an array of multiple absences OR forbid overlapping absences more rigidly.</p>
+     *
+     * @param int $employeeKey The unique identifier for the employee.
+     * @param \DateTime $date The specified day.
+     * @return Absence|null The Absence object for the specified employee, or null if not found.
+     */
+    public function getAbsenceByEmployeeKeyOnDate(int $employeeKey, \DateTime $date): ?Absence {
+        foreach ($this->absences as $currentAbsence) {
+            if ($currentAbsence->getEmployeeKey() === $employeeKey and $currentAbsence->getStart() <= $date and $currentAbsence->getEnd() >= $date) {
+                return $currentAbsence;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the list of employee keys from the absences.
      *
      * @return array - An array of employee keys.

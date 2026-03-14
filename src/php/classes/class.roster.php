@@ -263,54 +263,6 @@ class roster {
     }
 
     /**
-     * Calculation of the working hours of the employees:
-     * @todo <p lang=de>Die Berechnung entspricht nicht den aktuellen gesetzlichen Vorgaben.
-     * Momentan wird die Ist-Stundenzahl rein rechnerisch aus den gearbeiteten Stunden berechnet.
-     * Von den vertraglich vereinbarten Stunden im Arbeitsvertrag werden dann die Stunden anteilig 1/5 abgezogen.
-     * RICHTIG WÄRE ABER:
-     * Die Ist-Stunden werden berechnet aus den gearbeiteten Stunden plus den Stunden laut Grundplan.
-     * "§ 2 Entgeltzahlung an Feiertagen
-     *  Für Arbeitszeit, die infolge eines gesetzlichen Feiertages ausfällt,
-     *   hat der Arbeitgeber dem Arbeitnehmer das Arbeitsentgelt zu zahlen,
-     *   das er ohne den Arbeitsausfall erhalten hätte."
-     * Die Soll-Stunden bleiben unberührt gemäß Arbeitsvertrag.
-     *
-     * Das Selbe gilt im Falle von Krankheit.
-     * § 4 Entgeltfortzahlungsgesetz Höhe des fortzuzahlenden Arbeitsentgelts
-     * (1) Für den ... Zeitraum ist dem Arbeitnehmer ... regelmäßigen Arbeitszeit zustehende Arbeitsentgelt fortzuzahlen.
-     *
-     * Im Falle von URLAUB muss anders gerechnet werden.
-     * Vergleich: https://www.mep24software.de/blog/urlaubsberechnung-teil-2
-     * "§ 11 Bundesurlaubsgesetz Urlaubsentgelt
-     * (1) Das Urlaubsentgelt bemißt sich nach dem durchschnittlichen Arbeitsverdienst..."
-     * Entsprechend muss hier ein Fünftel oder ein Sechstel der Wochenarbeitszeit angesetzt werden.
-     * </p>
-     */
-    public static function calculate_working_weekly_hours_from_branch_roster($Branch_roster) {
-        /*
-         * CAVE! This function expects an array of the format: $Branch_roster[$branch_id][$date_unix][$roster_item]
-         * The standard $Roster array ($Roster[$date_unix][$roster_item]) will not return any usefull information.
-         */
-        $Working_week_hours = array();
-        foreach ($Branch_roster as $Branch_roster_branch_array) {
-            foreach ($Branch_roster_branch_array as $Roster_day_array) {
-                foreach ($Roster_day_array as $roster_item) {
-                    if (!isset($roster_item->working_hours)) {
-                        continue 1;
-                    }
-                    if (!isset($Working_week_hours[$roster_item->employee_key])) {
-                        $Working_week_hours[$roster_item->employee_key] = $roster_item->working_hours;
-                    } else {
-                        $Working_week_hours[$roster_item->employee_key] += $roster_item->working_hours;
-                    }
-                }
-            }
-        }
-        ksort($Working_week_hours);
-        return $Working_week_hours;
-    }
-
-    /**
      * Test if a duty roster is completely empty
      *
      * @param array $Roster
