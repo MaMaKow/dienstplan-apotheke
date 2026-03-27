@@ -450,4 +450,19 @@ class user {
                 . " WHERE `user_name` = :user_name";
         database_wrapper::instance()->run($sql_query, array('user_name' => $this->user_name));
     }
+
+    public function getJsonData() {
+        $publicData = [
+            'primary_key' => $this->primary_key,
+            'employee_key' => $this->employee_key,
+            'user_name' => $this->user_name,
+            'email' => $this->email,
+            'status' => $this->status,
+            'receive_emails_on_changed_roster' => $this->receive_emails_on_changed_roster,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'privileges' => $this->privileges,
+        ];
+        return json_encode($publicData, JSON_PRETTY_PRINT);
+    }
 }

@@ -48,6 +48,14 @@ class user_base {
         return $this->user_list;
     }
 
+    public function getUserIdListJson() {
+        $listOfUserIds[] = array();
+        foreach ($this->user_list as $user) {
+            $listOfUserIds[] = $user->get_primary_key;
+        }
+        return json_encode($listOfUserIds, JSON_PRETTY_PRINT);
+    }
+
     /**
      *
      * @param string $identifier

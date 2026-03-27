@@ -222,6 +222,7 @@ public class EmergencyServiceListPage extends BasePage {
         LogCollector.debug("find element submitButton");
         WebElement submitButton = driver.findElement(By.xpath("//*[@id=\"add_new_line_submit\"]"));
         LogCollector.debug("move to element submitButton");
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submitButton);
         actions.moveToElement(submitButton).perform();
         LogCollector.debug("Wait for submit button");
         //submitButton.click();
