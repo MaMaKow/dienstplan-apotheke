@@ -115,6 +115,9 @@ public class DayPage {
     }
 
     public void goToBranch(int branchId) {
+        if (getBranchId() == branchId) {
+            return;
+        }
         WebElement branchChooserInput = driver.findElement(branchChooserInputBy);
         Select branchChooserSelect = new Select(branchChooserInput);
         branchChooserSelect.selectByValue(String.valueOf(branchId));
@@ -210,13 +213,14 @@ public class DayPage {
             rosterValue = rosterInputElement.getAttribute("value");
         } else {
             /**
-             * <p lang=de>Wenn ein nicht leerer Kommentar gesetzt wurde,
-             * ist das Kommentarfeld ohnehin bereits angezeigt.
-             * Daher sparen wir uns an dieser Stelle die folgende Option
-             * um das Kommentarfeld sichtbar zu machen:</p>
-             * // WebElement showCommentLink = findRosterInputCommentShowLinkInTableRow(rosterTableRow);
-             * // showCommentLink.click();
-             * // rosterValue = rosterInputElement.getAttribute("value");
+             * <p lang=de>Wenn ein nicht leerer Kommentar gesetzt wurde, ist das
+             * Kommentarfeld ohnehin bereits angezeigt. Daher sparen wir uns an
+             * dieser Stelle die folgende Option um das Kommentarfeld sichtbar
+             * zu machen:</p>
+             * // WebElement showCommentLink =
+             * findRosterInputCommentShowLinkInTableRow(rosterTableRow); //
+             * showCommentLink.click(); // rosterValue =
+             * rosterInputElement.getAttribute("value");
              */
         }
         return rosterValue;
@@ -258,9 +262,9 @@ public class DayPage {
         By rowCssBy = By.cssSelector("#principleRosterForm > table > tbody > tr > td > span > select > option:checked[value=\"" + employeeKey + "\"]");
         By rowXpathBy = By.xpath("parent::select/parent::span/parent::td");
         /**
-         * Diese Funktion wird auch aufgerufen, um zu prüfen,
-         * ob bereits ein Eintrag mit diesem employeeKey existiert.
-         * Das verbraucht sehr viel Zeit. Um dies abzukürzen, wird hier nur ganz kurz gewartet.
+         * Diese Funktion wird auch aufgerufen, um zu prüfen, ob bereits ein
+         * Eintrag mit diesem employeeKey existiert. Das verbraucht sehr viel
+         * Zeit. Um dies abzukürzen, wird hier nur ganz kurz gewartet.
          */
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(0));
         if (driver.findElements(rowCssBy).isEmpty()) {
@@ -528,8 +532,9 @@ public class DayPage {
         PrincipleRosterItem rosterItemReadBefore = getRosterItemByEmployeeKey(employeeKey);
         /**
          * <p lang=de>
-         * CAVE: Ich bin nicht sicher, wie man am besten den Zusammenhang zwischen
-         * Pixel und Minuten regeln sollte. Die hier gewählten Zahlen sind experimentell erschlossen.
+         * CAVE: Ich bin nicht sicher, wie man am besten den Zusammenhang
+         * zwischen Pixel und Minuten regeln sollte. Die hier gewählten Zahlen
+         * sind experimentell erschlossen.
          * </p>
          */
         WebElement rosterPlotElement;

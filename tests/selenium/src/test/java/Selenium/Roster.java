@@ -34,6 +34,7 @@ public class Roster {
     private HashMap<Integer, RosterItem> listOfRosterItems; //Diese sind die Items in einem Tag.
     private HashMap<LocalDate, HashMap> listOfRosterDays;
     private LocalDate firstMondayInJuly;
+    private LocalDate secondMondayInJuly;
 
     public Roster() {
         createTestRoster();
@@ -165,5 +166,9 @@ public class Roster {
 
     public LocalDate getFirstMondayInJuly() {
         return firstMondayInJuly;
+    }
+
+    public LocalDate getSecondMondayInJuly() {
+        return secondMondayInJuly;
     }
 }

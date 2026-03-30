@@ -19,37 +19,45 @@
 package Selenium;
 
 import Selenium.Utilities.GsonProvider;
-import Selenium.Utilities.LocalTimeDeserializer;
-import Selenium.Utilities.LocalTimeSerializer;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * @todo Stand März 2026 wird die alternationId und die branchId nicht
+ * tatsächlich genutzt.
  * @author Mandelkow
  */
 public class PrincipleRoster {
 
-    private HashMap<DayOfWeek, PrincipleRosterDay> principleRoster;
+    private final HashMap<DayOfWeek, PrincipleRosterDay> principleRoster;
     private final int alternationId;
     private final int branchId;
 
+    /**
+     * @todo: Beide Parameter sollten entfernt werden. Sie werden nicht
+     * vernünftig genutzt. Die Information sollte fest in den einzelnen Items
+     * stehen.
+     * @param branchId
+     * @param alternationId
+     */
     public PrincipleRoster(int branchId, int alternationId) {
         this.alternationId = alternationId;
         this.branchId = branchId;
         principleRoster = (HashMap<DayOfWeek, PrincipleRosterDay>) readPrincipleRosterFromFile();
         //writePrincipleRostertoJson();
+    }
+
+    public PrincipleRoster() {
+        this(1, 0);
     }
 
     private void writePrincipleRostertoJson() {

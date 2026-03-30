@@ -87,4 +87,9 @@ public class PrincipleRosterItem {
         return this.comment;
     }
 
+    public float getWorkHours() {
+        float workDurationSeconds = dutyEnd.toSecondOfDay() - dutyStart.toSecondOfDay();
+        float breakDurationSeconds = breakEnd.toSecondOfDay() - breakStart.toSecondOfDay();
+        return (workDurationSeconds - breakDurationSeconds) / 3600;
+    }
 }

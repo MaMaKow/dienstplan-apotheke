@@ -183,8 +183,8 @@ public class RosterWeekTablePage {
     /**
      * @param dayOfWeek Monday is 1 Sunday is 7
      * @param employeeFullName full name of the employee
-     * @return RosterItem the first roster item, that is found for this employee.
-     * CAVE: There could be more items for the same employee!
+     * @return RosterItem the first roster item, that is found for this
+     * employee. CAVE: There could be more items for the same employee!
      */
     public RosterItem getRosterItemByEmployeeKey(DayOfWeek dayOfWeek, String employeeFullName) {
 
@@ -249,33 +249,34 @@ public class RosterWeekTablePage {
         return rosterItem;
     }
 
-    public float getWorkingHoursHaveByFullName(String fullName) {
+    public float getWorkingHoursHaveByLastName(String lastName) {
         By workingHoursHaveBy = By.xpath(".//td[2]");
-        WebElement workingHoursLineElement = getWorkingHoursLineByFullName(fullName);
+        WebElement workingHoursLineElement = getWorkingHoursLineByLastName(lastName);
         WebElement workingHoursHaveElement = workingHoursLineElement.findElement(workingHoursHaveBy);
         Float workingHoursHave = Float.valueOf(workingHoursHaveElement.getText());
         return workingHoursHave;
     }
 
-    public float getWorkingHoursShouldByFullName(String fullName) {
+    public float getWorkingHoursShouldByLastName(String lastName) {
         By workingHoursShouldBy = By.xpath(".//td[3]");
-        WebElement workingHoursLineElement = getWorkingHoursLineByFullName(fullName);
+        WebElement workingHoursLineElement = getWorkingHoursLineByLastName(lastName);
         WebElement workingHoursShouldElement = workingHoursLineElement.findElement(workingHoursShouldBy);
         Float workingHoursShould = Float.valueOf(workingHoursShouldElement.getText());
         return workingHoursShould;
     }
 
-    public float getWorkingHoursDiffByFullName(String fullName) {
-        By workingHoursDiffBy = By.xpath(".//td[3]");
-        WebElement workingHoursLineElement = getWorkingHoursLineByFullName(fullName);
+    public float getWorkingHoursDiffByLastName(String lastName) {
+        By workingHoursDiffBy = By.xpath(".//td[4]");
+        WebElement workingHoursLineElement = getWorkingHoursLineByLastName(lastName);
         WebElement workingHoursDiffElement = workingHoursLineElement.findElement(workingHoursDiffBy);
         Float workingHoursDiff = Float.valueOf(workingHoursDiffElement.getText());
         return workingHoursDiff;
     }
 
-    private WebElement getWorkingHoursLineByFullName(String fullName) {
-        By workingHoursLineBy = By.xpath("//*[@id=\"week_hours_table_div\"]/table/tbody/tr/td[contains(text(),'" + fullName + "')]/parent::tr");
+    private WebElement getWorkingHoursLineByLastName(String lastName) {
+
+        By workingHoursLineBy = By.xpath("//*[@id=\"weekHoursTableDiv\"]/table/tbody/tr/td[contains(text(),'" + lastName + "')]/parent::tr");
         WebElement workingHoursLineElement = driver.findElement(workingHoursLineBy);
         return workingHoursLineElement;
-   }
+    }
 }

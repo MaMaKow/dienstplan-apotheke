@@ -100,6 +100,8 @@ $table_foot_html = "<tfoot>"
 //. "<tr class=page-break></tr>"
         . "\n<tr>\n";
 
+$absenceCollectionForHoursCalculation = PDR\Database\AbsenceDatabaseHandler::getAbsenceObjectsByEmployeeKeyInPeriod($date_start_object, $date_end_object, $employee_key);
+
 /*
  * We are having a look into the absence data:
  */
@@ -121,7 +123,7 @@ $table_foot_html .= "</tfoot>\n";
 echo "$table_foot_html";
 echo "</table>\n";
 
-$workingWeekHoursHave = \PDR\Utility\RosterUtility::calculateWorkingWeeklyHoursInTimeInterval($date_start_object, $date_end_object, $workforce, $absenceCollection);
+$workingWeekHoursHave = \PDR\Utility\RosterUtility::calculateWorkingWeeklyHoursInTimeInterval($date_start_object, $date_end_object, $workforce, $absenceCollectionForHoursCalculation);
 $workingWeekHoursShould = \PDR\Utility\RosterUtility::calculateWorkingWeekHoursShould($Roster, $workforce);
 echo build_html_roster_views::build_roster_working_week_hours_div($session, $date_end_object, $workingWeekHoursHave, $workingWeekHoursShould, $workforce, array('employee_key' => $employee_key));
 echo "</div>\n";

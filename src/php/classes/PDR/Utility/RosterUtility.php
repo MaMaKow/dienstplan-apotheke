@@ -62,7 +62,7 @@ class RosterUtility {
         if ($dateStartObject > $dateEndObject) {
             throw new \Exception("The start date must be before the end date!");
         }
-        $listOfEmployees = $workforce->List_of_employees;
+        $listOfEmployees = $workforce->getListOfEmployees();
         $WorkingWeekHours = array();
         /**
          * <p lang=de>Für jeden Mitarbeiter wird nun ein persönlicher Dienstplan aus der Datenbank gelesen.</p>
@@ -76,29 +76,38 @@ class RosterUtility {
              */
             $employeeRoster = new \roster($dateStartObject, $dateEndObject, $employeeKey);
             $arrayOfDaysOfRosterItems = $employeeRoster->array_of_days_of_roster_items;
-            foreach ($arrayOfDaysOfRosterItems as $arrayOfRosterItems) {
+            foreach ($arrayOfDaysOfRosterItems as $day => $arrayOfRosterItems) {
+                //error_log('Tag:' . $day);
+                $hoursWorkedReal = 0;
+                /**
+                 * <p lang=de>Da die roster Klasse den array $employeeRoster mit emptyRosterItems auffüllt,
+                 *  wenn nicht gearbeitet wird, sollte hier stets etwas in der Schleife laufen.
+                 * Dadurch sollte sichergestellt sein, dass $dateObject auch
+                 * nach der foreach Schleife für die weiteren Schritte zur
+                 * Verfügung steht, selbst, wenn nicht gearbeitet wird.</p>
+                 *
+                 */
                 foreach ($arrayOfRosterItems as $rosterItem) {
                     /**
                      * <p lang=de>Diese Schleife geht durch alle Dienstplan-Daten eines Mitarbeiters.</p>
                      */
                     $dateObject = $rosterItem->get_date_object();
                     $absence = $listOfAbsences->getAbsenceByEmployeeKeyOnDate($employeeKey, $dateObject);
-                    $hoursWorkedReal = 0;
                     /**
                      *  <p lang=de>Die Mitarbeitende Person hat an diesem Tag tatsächlich $hoursWorkedReal Stunden gearbeitet.</p>
                      */
                     $hoursWorkedReal += $rosterItem->get_working_hours();
-                    /**
-                     * <p lang=de>Bei Feiertagen und bei bestimmten Abwesenheiten werden Stunden gemäß Grundplan angenommen.</p>
-                     */
-                    $hoursWorkedTheoretically = self::calculateHoursWorkedTheoretically($employee, $dateObject, $absence);
-
-                    /**
-                     * Für die Mitarbeiterin werden $hoursWorkedByLaw Stunden angenommen.
-                     */
-                    $hoursWorkedByLaw = max($hoursWorkedReal, $hoursWorkedTheoretically);
-                    $WorkingWeekHours[$employeeKey] += $hoursWorkedByLaw;
                 }
+                /**
+                 * <p lang=de>Bei Feiertagen und bei bestimmten Abwesenheiten werden Stunden gemäß Grundplan angenommen.</p>
+                 */
+                $hoursWorkedTheoretically = self::calculateHoursWorkedTheoretically($employee, $dateObject, $absence);
+
+                /**
+                 * Für die Mitarbeiterin werden $hoursWorkedByLaw Stunden angenommen.
+                 */
+                $hoursWorkedByLaw = max($hoursWorkedReal, $hoursWorkedTheoretically);
+                $WorkingWeekHours[$employeeKey] += $hoursWorkedByLaw;
             }
             /**
              * <p lang=de>Im Zeitraum werden für die mitarbeitende Person $WorkingWeekHours[$employeeKey] Stunden insgesamt angenommen.
@@ -125,9 +134,12 @@ class RosterUtility {
      * @return float The calculated theoretical working hours for the employee on the specified date.
      */
     private static function calculateHoursWorkedTheoretically(\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
+        //error_log('Mitarbeiter: ' . $employee->full_name . ' ' . 'Datum: ' . $dateObject->format('Y-m-d'));
         $hoursWorkedTheoretically = 0;
-        $isPublicHoliday = \holidays::is_holiday($dateObject);
+        $holidays = new \PDR\DateTime\Holidays($dateObject->format("Y"));
+        $isPublicHoliday = $holidays->isHoliday($dateObject);
         if ($isPublicHoliday) {
+            //error_log('Feiertag gewährt Stunden.');
             $hoursWorkedTheoretically = self::calculateWorkingHoursOnHoliday($employee, $dateObject, $absence);
         }
 
@@ -137,14 +149,31 @@ class RosterUtility {
          * § 4 Entgeltfortzahlungsgesetz Höhe des fortzuzahlenden Arbeitsentgelts
          * (1) Für den ... Zeitraum ist dem Arbeitnehmer ... regelmäßigen Arbeitszeit zustehende Arbeitsentgelt fortzuzahlen.
          */
+        if (null !== $absence) {
+            //error_log('Abwesenheit Grund: ' . $absence->getReasonId() . ' ' . AbsenceUtility::getReasonStringLocalized($absence->getReasonId()));
+        } else {
+
+            //error_log('Keine Abwesenheit.');
+        }
         if (null !== $absence and (
                 $absence->getReasonId() === \PDR\Utility\AbsenceUtility::REASON_PAID_LEAVE_OF_ABSENCE
                 or $absence->getReasonId() === \PDR\Utility\AbsenceUtility::REASON_SICKNESS)) {
             /**
              * Die Mitarbeiterin hat an diesem Tag theoretisch $hoursWorkedTheoretically Stunden gearbeitet mit dem Grund $absence->getReasonId().
              */
+            //error_log('Abwesenheit gewährt Stunden laut Grundplan.');
             $hoursWorkedTheoretically = $employee->getPrincipleHoursOnDate($dateObject);
         }
+        if (!$isPublicHoliday && null !== $absence and (
+                $absence->getReasonId() === \PDR\Utility\AbsenceUtility::REASON_VACATION
+                or $absence->getReasonId() === \PDR\Utility\AbsenceUtility::REASON_REMAINING_VACATION)) {
+            /**
+             * Die Mitarbeiterin hat an diesem Tag theoretisch $hoursWorkedTheoretically Stunden gearbeitet mit dem Grund $absence->getReasonId().
+             */
+            //error_log('Abwesenheit gewährt Stunden als Anteil der Woche gemäß Vertrag.');
+            $hoursWorkedTheoretically = self::calculateContractualDailyHours($employee, $dateObject);
+        }
+        //error_log('$hoursWorkedTheoretically: ' . $hoursWorkedTheoretically);
         return $hoursWorkedTheoretically;
     }
 
@@ -196,24 +225,39 @@ class RosterUtility {
          * \PDR\Utility\AbsenceUtility::REASON_SICKNESS_OF_CHILD,
          * \PDR\Utility\AbsenceUtility::REASON_TAKEN_OVERTIME,
          */
-        if (null !== $absence and (!in_array($absence->getReasonId(), array(
-                    \PDR\Utility\AbsenceUtility::REASON_MATERNITY_LEAVE,
-                    \PDR\Utility\AbsenceUtility::REASON_PARENTAL_LEAVE,
-                    \PDR\Utility\AbsenceUtility::REASON_REMAINING_VACATION,
-                    \PDR\Utility\AbsenceUtility::REASON_VACATION,
+        if (null !== $absence and (in_array($absence->getReasonId(), array(
+                    \PDR\Utility\AbsenceUtility::REASON_PAID_LEAVE_OF_ABSENCE,
+                    \PDR\Utility\AbsenceUtility::REASON_SICKNESS,
+                    \PDR\Utility\AbsenceUtility::REASON_SICKNESS_OF_CHILD,
+                    \PDR\Utility\AbsenceUtility::REASON_TAKEN_OVERTIME,
                 )))) {
             /**
-             * Die Mitarbeitende Person an diesem Tag theoretisch Stunden gearbeitet obwohl ohnehin abwesend.
-             * Denn außer den oben genannten Gründen werden alle anderen Gründe anerkannt.
+             * Die Mitarbeitende Person hat an diesem Tag theoretisch Stunden gearbeitet obwohl ohnehin abwesend.
+             * Denn die oben genannten Gründen werden anerkannt.
              */
             $hoursWorkedTheoretically = $employee->getPrincipleHoursOnDate($dateObject);
+        }
+        if (null !== $absence and (in_array($absence->getReasonId(), array(
+                    \PDR\Utility\AbsenceUtility::REASON_VACATION,
+                    \PDR\Utility\AbsenceUtility::REASON_REMAINING_VACATION,
+                )))) {
+            /**
+             * Die Mitarbeitende Person hat an diesem Tag theoretisch Stunden gearbeitet obwohl ohnehin abwesend.
+             * Denn die oben genannten Gründen werden anerkannt.
+             * Da dem Mitarbeiter durch den Urlaub am Feiertag kein Nachteil entstehen soll,
+             * nehmen wir das Maximum aus Grundplan und Durchschnittsstunden:
+             */
+            $hoursWorkedTheoretically = max(
+                    self::calculateContractualDailyHours($employee, $dateObject),
+                    $employee->getPrincipleHoursOnDate($dateObject)
+            );
         }
         return $hoursWorkedTheoretically;
     }
 
     public static function calculateWorkingWeekHoursShould(array $roster, \workforce $workforce): array {
         $workingWeekHoursShould = array();
-        foreach ($workforce->List_of_employees as $employeeObject) {
+        foreach ($workforce->getListOfEmployees() as $employeeObject) {
             $workingHoursEmployeeShould = self::calculateWorkingHoursEmployeeShould($roster, $employeeObject);
             $workingWeekHoursShould[$employeeObject->get_employee_key()] = $workingHoursEmployeeShould;
         }
@@ -245,12 +289,6 @@ class RosterUtility {
             /**
              * Those who are absent do not have to work.
              * Exception: Those who reduce overtime REASON_TAKEN_OVERTIME are credited with target hours.
-             * @todo "§ 11 Bundesurlaubsgesetz Urlaubsentgelt (1) Das Urlaubsentgelt bemißt sich nach dem durchschnittlichen Arbeitsverdienst..."
-             * Entsprechend muss hier ein Fünftel oder ein Sechstel der Wochenarbeitszeit angesetzt werden.
-             *   const REASON_VACATION = 1;
-             *   const REASON_REMAINING_VACATION = 2;
-             * Im Falle von URLAUB muss anders gerechnet werden.
-             * @see Vergleich: https://www.mep24software.de/blog/urlaubsberechnung-teil-2
              *
              * Während der Elternzeit besteht kein Arbeitsverhältnis, das bedeutet, dass während dieser Zeit weder Soll- noch Ist-Stunden anfallen.
              *  const REASON_PARENTAL_LEAVE = 8;
@@ -263,17 +301,32 @@ class RosterUtility {
              * @see AbsenceUtility::$List_of_absence_reasons for a full list of absence reason ids (paid and unpaid)
              */
             $noWorkAbsenceReasonIds = array(
-                \PDR\Utility\AbsenceUtility::REASON_VACATION,
-                \PDR\Utility\AbsenceUtility::REASON_REMAINING_VACATION,
                 \PDR\Utility\AbsenceUtility::REASON_SICKNESS_OF_CHILD,
                 \PDR\Utility\AbsenceUtility::REASON_MATERNITY_LEAVE,
                 \PDR\Utility\AbsenceUtility::REASON_PARENTAL_LEAVE,
             );
-
+            /*
+             * "§ 11 Bundesurlaubsgesetz Urlaubsentgelt (1) Das Urlaubsentgelt bemißt sich nach dem durchschnittlichen Arbeitsverdienst..."
+             * Entsprechend muss hier ein Fünftel oder ein Sechstel der Wochenarbeitszeit angesetzt werden.
+             *   const REASON_VACATION = 1;
+             *   const REASON_REMAINING_VACATION = 2;
+             * Im Falle von URLAUB muss anders gerechnet werden.
+             * @see Vergleich: https://www.mep24software.de/blog/urlaubsberechnung-teil-2
+             */
             if (in_array(
                             $absenceCollection->getAbsenceByEmployeeKey($employeeObject->get_employee_key())->getReasonId(),
                             $noWorkAbsenceReasonIds)) {
                 return 0;
+            }
+            $vacationAbsenceReasonIds = array(
+                \PDR\Utility\AbsenceUtility::REASON_VACATION,
+                \PDR\Utility\AbsenceUtility::REASON_REMAINING_VACATION,
+            );
+
+            if (in_array(
+                            $absenceCollection->getAbsenceByEmployeeKey($employeeObject->get_employee_key())->getReasonId(),
+                            $vacationAbsenceReasonIds)) {
+                return self::calculateContractualDailyHours($employeeObject, $dateObject);
             }
         }
 
@@ -282,15 +335,6 @@ class RosterUtility {
          * We do not check this here.
          * It is managed by the calculateWorkingWeeklyHoursInTimeInterval function in the class \PDR\Utility\RosterUtility.
          */
-        /**
-         *  Check for a special case where the employee works only on specific days (e.g., Tue/Thu).
-         *  TODO: Consider handling scenarios when a holiday falls on a Friday.
-         *  Is it fair to treat such employees differently?
-         */
-        if (\roster::is_empty_roster_day_array($employeeObject->get_principle_roster_on_date($dateObject))
-                and !empty($employeeObject->working_week_days)) {
-            return 0;
-        }
         /**
          * The hours from the principle roster:
          * @todo <p lang=de>
@@ -301,10 +345,23 @@ class RosterUtility {
          * In diesem Fall würde dem Mitarbeiter bei einem Feiertag am Freitag nur...
          * </p>
          */
-        $principleHoursOnDate = $employeeObject->getPrincipleHoursOnDate($dateObject);
-        if (0 !== $principleHoursOnDate) {
-            return $principleHoursOnDate;
+        //$principleHoursOnDate = $employeeObject->getPrincipleHoursOnDate($dateObject);
+        //if (0 !== $principleHoursOnDate) {
+        //    return $principleHoursOnDate;
+        //}
+
+        return self::calculateContractualDailyHours($employeeObject, $dateObject);
+    }
+
+    private static function calculateContractualDailyHours($employeeObject, $dateObject) {
+        /**
+         *  Check for a special case where the employee works only on specific days (e.g., Tue/Thu).
+         */
+        if (\roster::is_empty_roster_day_array($employeeObject->get_principle_roster_on_date($dateObject))
+                and !empty($employeeObject->working_week_days)) {
+            return 0;
         }
+
         if (!empty($employeeObject->working_week_days)) {
             /*
              * In case we do know the exact working_week_days we divide by them.
@@ -314,7 +371,11 @@ class RosterUtility {
         /**
          * If nothing else fits, then we take the proportion of the general business days
          * This happens, if there are no days in the principle roster for this employee:
+         * But we only do this from Monday to Friday.
          */
+        if (6 <= $dateObject->format('N')) {
+            return 0;
+        }
         return $employeeObject->working_week_hours / self::NUMBER_OF_BUSINESS_DAYS;
     }
 }

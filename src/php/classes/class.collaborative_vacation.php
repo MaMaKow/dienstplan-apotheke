@@ -229,6 +229,8 @@ class collaborative_vacation {
      * @return string HTML div element containing a calendar with absences.
      */
     public function build_absence_month($year, $month_number) {
+        $holidays = new \PDR\DateTime\Holidays($year);
+
         $input_date_object = new \DateTime();
         $input_date_object->setDate($year, $month_number, 1);
         $start_date_object = clone $input_date_object;
@@ -258,7 +260,7 @@ class collaborative_vacation {
                 $week_container_html .= "<tr class=week-container>";
             }
 
-            $week_container_html .= $this->build_absence_month_paragraph($date_object, $input_date_object, $absenceColletcion);
+            $week_container_html .= $this->build_absence_month_paragraph($date_object, $input_date_object, $absenceColletcion, $holidays, 'month');
         }
         $week_container_html .= "</tr></table></div>\n";
         $month_container_html .= $week_container_html;

@@ -156,6 +156,8 @@ public class TestPage {
              * Mark this whole test suite as failed:
              */
             someTestHasFailed = true;
+            LogCollector.error("Test failed. See page source below:");
+            LogCollector.error(driver.getPageSource());
         }
     }
 

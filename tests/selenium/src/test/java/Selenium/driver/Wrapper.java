@@ -18,7 +18,6 @@
  */
 package Selenium.driver;
 
-import Selenium.Employee;
 import Selenium.PropertyFile;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
@@ -41,11 +39,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
 
@@ -64,6 +60,7 @@ public class Wrapper {
         // driver = createLocalChromeWebDriver();
         driver = createRemoteWebDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+        driver.manage().window().maximize();
 
         LocalDateTime timerEnd = LocalDateTime.now();
         long timeToCreate = java.time.Duration.between(timerStart, timerEnd).toMillis();
@@ -209,15 +206,16 @@ public class Wrapper {
      * Fills a date input field with the provided date string using JavaScript
      * execution.
      *
-     * This method takes a WebElement representing a date input field and a
-     * date string in the format specified by
+     * This method takes a WebElement representing a date input field and a date
+     * string in the format specified by
      * Employee.DATE_TIME_FORMATTER_DAY_MONTH_YEAR. The date string is parsed
      * into a LocalDate object, and then the fillDateInput method is called to
      * populate the input field using the parsed date.
      *
      * @param dateInputElement The WebElement representing the date input field
      * to be filled.
-     * @param localDateString The date string to be parsed and set in the input field.
+     * @param localDateString The date string to be parsed and set in the input
+     * field.
      * @since 2023-08-08
      */
     public static void fillDateInput(WebElement dateInputElement, String localDateString) {
@@ -280,11 +278,15 @@ public class Wrapper {
     }
 
     /**
-     * Checks if a specific text is present among the options within a Select element.
+     * Checks if a specific text is present among the options within a Select
+     * element.
      *
-     * @param select The Select element to examine for the presence of the specified text.
-     * @param optionText The text to be checked for existence within the options of the Select element.
-     * @return true if the specified text is found among the options, false otherwise.
+     * @param select The Select element to examine for the presence of the
+     * specified text.
+     * @param optionText The text to be checked for existence within the options
+     * of the Select element.
+     * @return true if the specified text is found among the options, false
+     * otherwise.
      */
     public static boolean isOptionTextPresent(Select select, String optionText) {
         // Retrieve the list of options from the Select element

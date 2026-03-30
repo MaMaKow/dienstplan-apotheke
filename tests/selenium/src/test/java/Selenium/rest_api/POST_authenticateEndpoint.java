@@ -18,27 +18,23 @@
  */
 package Selenium.rest_api;
 
+import Selenium.TestPage;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import Selenium.Utilities.GsonProvider;
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.message.ReusableMessageFactory;
 
 /**
  *
  * @author Mandelkow
  */
-public class POST_authenticateEndpoint {
+public class POST_authenticateEndpoint extends TestPage {
 
     private static boolean isAuthenticated = false;
     private static String accessToken = null;
-    public Logger logger;
 
     public POST_authenticateEndpoint(String userName, String userPassphrase, String testPageUrl) throws InterruptedException, IOException {
-        this.logger = LogManager.getLogger(this.getClass(), ReusableMessageFactory.INSTANCE);
 
         String authenticationEndpoint = testPageUrl + "src/php/restful-api/authentication/POST-authenticate.php";
         String payload = "{\"userName\":\"" + userName + "\",\"userPassphrase\":\"" + userPassphrase + "\"}";

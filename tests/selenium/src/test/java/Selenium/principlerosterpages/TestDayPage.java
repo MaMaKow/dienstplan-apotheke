@@ -22,9 +22,7 @@ import Selenium.PrincipleRosterItem;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.format.TextStyle;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.testng.Assert;
@@ -81,7 +79,6 @@ public class TestDayPage extends Selenium.TestPage {
          * Test principle rosters with given alternationId and branchId:
          */
         int employeeKey;
-        int branchId = 1;
         int alternationId = 0;
         // Initializing an array containing
         // all the days of the Week
@@ -89,7 +86,7 @@ public class TestDayPage extends Selenium.TestPage {
         for (DayOfWeek dayOfWeek : week) {
             System.out.print("dayOfWeek: ");
             System.out.print(dayOfWeek.getValue());
-            PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+            PrincipleRoster principleRoster = new PrincipleRoster();
             PrincipleRosterDay principleRosterWeekday = principleRoster.getPrincipleRosterDay(dayOfWeek);
             if (null == principleRosterWeekday) {
                 continue;
@@ -101,7 +98,7 @@ public class TestDayPage extends Selenium.TestPage {
             for (PrincipleRosterItem principleRosterItem : listOfPrincipleRosterItems) {
                 System.out.print(";");
                 employeeKey = principleRosterItem.getEmployeeKey();
-                dayPage.goToBranch(branchId);
+                dayPage.goToBranch(principleRosterItem.getBranchId());
                 dayPage.goToAlternation(alternationId);
                 dayPage.goToWeekday(dayOfWeek);
                 PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeKey(employeeKey);
@@ -134,24 +131,22 @@ public class TestDayPage extends Selenium.TestPage {
         /**
          * Move to specific month:
          */
-        int branchId = 1;
         int alternationId = 0;
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
         int employeeKey = 4;
 
-        dayPage.goToBranch(branchId);
         dayPage.goToAlternation(alternationId);
         dayPage.goToWeekday(dayOfWeek);
 
-        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRoster principleRoster = new PrincipleRoster();
         PrincipleRosterDay principleRosterMonday = principleRoster.getPrincipleRosterDay(dayOfWeek);
         PrincipleRosterItem principleRosterItem = principleRosterMonday.getPrincipleRosterItemByEmployeeKey(employeeKey);
         /**
          * principleRosterItemChanged holds the values, into which the
          * principleRosterItem will be changed.
          */
-        int employeeKeyChanged = 13;
-        PrincipleRosterItem principleRosterItemChanged = new PrincipleRosterItem(employeeKeyChanged, dayOfWeek, LocalTime.of(11, 05), LocalTime.of(16, 10), LocalTime.of(12, 35), LocalTime.of(13, 10), null, branchId);
+        PrincipleRosterItem principleRosterItemChanged = new PrincipleRosterItem(employeeKey, dayOfWeek, LocalTime.of(11, 05), LocalTime.of(16, 10), LocalTime.of(12, 35), LocalTime.of(13, 10), null, 1);
+        dayPage.goToBranch(principleRosterItem.getBranchId());
 
         dayPage.changeRosterInputDutyStart(employeeKey, principleRosterItemChanged.getDutyStart());
         dayPage.changeRosterInputDutyEnd(employeeKey, principleRosterItemChanged.getDutyEnd());
@@ -159,7 +154,8 @@ public class TestDayPage extends Selenium.TestPage {
         dayPage.changeRosterInputBreakEnd(employeeKey, principleRosterItemChanged.getBreakEnd());
         dayPage.changeRosterInputEmployee(employeeKey, principleRosterItemChanged.getEmployeeKey());
         dayPage.rosterFormSubmit();
-        PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeKey(employeeKeyChanged);
+        dayPage.goToBranch(principleRosterItemChanged.getBranchId());
+        PrincipleRosterItem rosterItemRead = dayPage.getRosterItemByEmployeeKey(employeeKey);
         softAssert.assertEquals(rosterItemRead.getDutyStart(), principleRosterItemChanged.getDutyStart());
         softAssert.assertEquals(rosterItemRead.getDutyEnd(), principleRosterItemChanged.getDutyEnd());
         softAssert.assertEquals(rosterItemRead.getBreakStart(), principleRosterItemChanged.getBreakStart());
@@ -169,11 +165,11 @@ public class TestDayPage extends Selenium.TestPage {
         /**
          * Revert the changes for the next test:
          */
-        dayPage.changeRosterInputDutyStart(employeeKeyChanged, principleRosterItem.getDutyStart());
-        dayPage.changeRosterInputDutyEnd(employeeKeyChanged, principleRosterItem.getDutyEnd());
-        dayPage.changeRosterInputBreakStart(employeeKeyChanged, principleRosterItem.getBreakStart());
-        dayPage.changeRosterInputBreakEnd(employeeKeyChanged, principleRosterItem.getBreakEnd());
-        dayPage.changeRosterInputEmployee(employeeKeyChanged, employeeKey);
+        dayPage.changeRosterInputDutyStart(employeeKey, principleRosterItem.getDutyStart());
+        dayPage.changeRosterInputDutyEnd(employeeKey, principleRosterItem.getDutyEnd());
+        dayPage.changeRosterInputBreakStart(employeeKey, principleRosterItem.getBreakStart());
+        dayPage.changeRosterInputBreakEnd(employeeKey, principleRosterItem.getBreakEnd());
+        dayPage.changeRosterInputEmployee(employeeKey, employeeKey);
         dayPage.rosterFormSubmit();
         softAssert.assertAll();
     }
@@ -211,11 +207,6 @@ public class TestDayPage extends Selenium.TestPage {
         DayPage dayPage = new DayPage(driver);
 
         /**
-         * Move to specific branch:
-         */
-        int branchId = 1;
-        dayPage.goToBranch(branchId);
-        /**
          * alternationId MUST be 0! There is no other alternation yet. Therefore
          * there is no SELECT element for it yet.
          *
@@ -223,7 +214,7 @@ public class TestDayPage extends Selenium.TestPage {
         int alternationId = 0;
         dayPage.goToAlternation(alternationId);
 
-        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRoster principleRoster = new PrincipleRoster();
         // Iterate through all weekdays
         for (DayOfWeek dayOfWeek : principleRoster.getAllWeekdays()) {
             System.out.print("d"); // This loop takes quite a while. Make it a bit verbose.
@@ -231,13 +222,15 @@ public class TestDayPage extends Selenium.TestPage {
             PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
 
             dayPage.goToWeekday(dayOfWeek);
-            dayPage.addRosterRow();
             for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
                 System.out.print("."); // This loop takes quite a while. Make it a bit verbose.
+                dayPage.goToBranch(principleRosterItem.getBranchId());
+                dayPage.addRosterRow();
                 dayPage.createNewRosterItem(principleRosterItem);
             }
             for (PrincipleRosterItem principleRosterItem : principleRosterDay.getlistOfPrincipleRosterItems().values()) {
                 System.out.print("#"); // This loop takes quite a while. Make it a bit verbose.
+                dayPage.goToBranch(principleRosterItem.getBranchId());
                 PrincipleRosterItem principleRosterItemRead = dayPage.getRosterItemByEmployeeKey(principleRosterItem.getEmployeeKey());
                 softAssert.assertEquals(principleRosterItemRead.getDutyStart(), principleRosterItem.getDutyStart());
                 softAssert.assertEquals(principleRosterItemRead.getEmployeeLastName(workforce), principleRosterItem.getEmployeeLastName(workforce));
@@ -267,15 +260,14 @@ public class TestDayPage extends Selenium.TestPage {
         /**
          * Move to specific month:
          */
-        int branchId = 1;
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
         int employeeKey = 4; //TODO: Hier könnte eine for-Schleife stehen. Die geht dann alle employees in principleRosterMonday durch.
         int alternationId = 0;
-        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRoster principleRoster = new PrincipleRoster();
         PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
         PrincipleRosterItem principleRosterItem = principleRosterDay.getPrincipleRosterItemByEmployeeKey(employeeKey);
 
-        dayPage.goToBranch(branchId);
+        dayPage.goToBranch(principleRosterItem.getBranchId());
         dayPage.goToAlternation(alternationId);
         dayPage.goToWeekday(dayOfWeek);
 
@@ -308,20 +300,19 @@ public class TestDayPage extends Selenium.TestPage {
         /**
          * Move to specific month:
          */
-        int branchId = 1;
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
         int employeeKey = 4; //TODO: Hier könnte eine for-Schleife stehen. Die geht dann alle employees in principleRosterMonday durch.
         int alternationId = 0;
 
-        dayPage.goToBranch(branchId);
         dayPage.goToAlternation(alternationId);
         dayPage.goToWeekday(dayOfWeek);
-        PrincipleRoster principleRoster = new PrincipleRoster(branchId, alternationId);
+        PrincipleRoster principleRoster = new PrincipleRoster();
         PrincipleRosterDay principleRosterDay = principleRoster.getPrincipleRosterDay(dayOfWeek);
         PrincipleRosterItem principleRosterItem = principleRosterDay.getPrincipleRosterItemByEmployeeKey(employeeKey);
         try {
             int dutyOffset = 90;
             int breakOffset = 120;
+            dayPage.goToBranch(principleRosterItem.getBranchId());
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeKey, dutyOffset, "duty");
             dayPage.changeRosterByDragAndDrop(dayPage.getUnixTime(), employeeKey, breakOffset, "break");
             dayPage.rosterFormSubmit();
