@@ -57,15 +57,6 @@
                 "breakEnd": "13:00",
                 "branchId": 1
             },
-            "6": {
-                "employeeKey": 8,
-                "weekday": "MONDAY",
-                "dutyStart": "09:30",
-                "dutyEnd": "17:30",
-                "breakStart": "13:00",
-                "breakEnd": "13:30",
-                "branchId": 1
-            },
             "7": {
                 "employeeKey": 2,
                 "weekday": "MONDAY",
@@ -191,10 +182,10 @@
             "6": {
                 "employeeKey": 8,
                 "weekday": "TUESDAY",
-                "dutyStart": "09:30",
+                "dutyStart": "12:30",
                 "dutyEnd": "17:30",
-                "breakStart": "13:00",
-                "breakEnd": "13:30",
+                "breakStart": null,
+                "breakEnd": null,
                 "branchId": 1
             },
             "7": {
@@ -268,7 +259,7 @@
                 "employeeKey": 3,
                 "weekday": "WEDNESDAY",
                 "dutyStart": "08:00",
-                "dutyEnd": "16:30",
+                "dutyEnd": "15:30",
                 "breakStart": "11:30",
                 "breakEnd": "12:00",
                 "branchId": 1
@@ -316,15 +307,6 @@
                 "dutyEnd": "17:30",
                 "breakStart": "12:30",
                 "breakEnd": "13:00",
-                "branchId": 1
-            },
-            "6": {
-                "employeeKey": 8,
-                "weekday": "WEDNESDAY",
-                "dutyStart": "09:30",
-                "dutyEnd": "17:30",
-                "breakStart": "13:00",
-                "breakEnd": "13:30",
                 "branchId": 1
             },
             "7": {
@@ -398,7 +380,7 @@
                 "employeeKey": 3,
                 "weekday": "THURSDAY",
                 "dutyStart": "08:00",
-                "dutyEnd": "16:30",
+                "dutyEnd": "17:30",
                 "breakStart": "11:30",
                 "breakEnd": "12:00",
                 "branchId": 1
@@ -452,9 +434,9 @@
                 "employeeKey": 8,
                 "weekday": "THURSDAY",
                 "dutyStart": "09:30",
-                "dutyEnd": "17:30",
-                "breakStart": "13:00",
-                "breakEnd": "13:30",
+                "dutyEnd": "14:30",
+                "breakStart": null,
+                "breakEnd": null,
                 "branchId": 1
             },
             "7": {
@@ -576,15 +558,6 @@
                 "dutyEnd": "17:30",
                 "breakStart": "12:30",
                 "breakEnd": "13:00",
-                "branchId": 1
-            },
-            "6": {
-                "employeeKey": 8,
-                "weekday": "FRIDAY",
-                "dutyStart": "09:30",
-                "dutyEnd": "17:30",
-                "breakStart": "13:00",
-                "breakEnd": "13:30",
                 "branchId": 1
             },
             "7": {
