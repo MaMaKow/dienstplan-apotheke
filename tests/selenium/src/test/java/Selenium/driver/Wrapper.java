@@ -39,6 +39,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -81,6 +82,21 @@ public class Wrapper {
 
     private WebDriver createRemoteWebDriver() {
         FirefoxOptions options = new FirefoxOptions();
+        FirefoxProfile profile = new FirefoxProfile();
+        // Download-Panel nach dem Download nicht öffnen
+        profile.setPreference("browser.download.panel.shown", false);
+        profile.setPreference("browser.download.animateNotifications", false);
+
+        // Optional: Download-Ordner und automatisches Speichern konfigurieren
+        profile.setPreference("browser.download.folderList", 2);
+        profile.setPreference("browser.download.dir", "/home/seluser/Downloads");
+        profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
+                "text/calendar,application/ics,text/x-vcalendar");
+        profile.setPreference("browser.download.useDownloadDir", true);
+        profile.setPreference("browser.download.manager.showWhenStarting", false);
+        profile.setPreference("browser.download.manager.focusWhenStarting", false);
+
+        options.setProfile(profile);
         try {
             driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
         } catch (MalformedURLException ex) {

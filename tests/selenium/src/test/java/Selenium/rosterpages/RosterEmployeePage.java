@@ -222,6 +222,7 @@ public class RosterEmployeePage {
     }
 
     public File downloadICSFile() {
+        downloadedICalendarFile.getParentFile().mkdirs(); // Verzeichnis anlegen falls nötig
         downloadedICalendarFile.delete();
         By downloadButtonBy = By.xpath("//*[@id=\"download_ics_file_form\"]/button");
         WebElement downloadButtonElement = driver.findElement(downloadButtonBy);

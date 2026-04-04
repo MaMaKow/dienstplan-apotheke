@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -123,6 +124,13 @@ public class MenuFragment {
 
     public static void navigateTo(WebDriver driver, By target) {
         LogCollector.debug("MenuFragment navigateTo()" + target.toString());
+        // Download-Leiste schließen, falls sie das Menü blockiert
+        try {
+            ((JavascriptExecutor) driver).executeScript("window.focus();");
+            driver.findElement(By.tagName("body")).sendKeys(Keys.ESCAPE);
+            Thread.sleep(200);
+        } catch (Exception ignored) {
+        }
 
         // Increased timeout from 500ms to 10 seconds to avoid flaky tests
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));

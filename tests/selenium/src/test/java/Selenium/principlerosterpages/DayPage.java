@@ -236,13 +236,24 @@ public class DayPage {
         String dutyEnd = getRosterValueDutyEndInTabeRow(rosterTableRow);
         String breakStart = getRosterValueBreakStartInTableRow(rosterTableRow);
         String breakEnd = getRosterValueBreakEndByEmployeeKey(rosterTableRow);
+        LocalTime dutyStartLocalTime;
+        LocalTime dutyEndLocalTime;
+        LocalTime breakStartLocalTime = null;
+        LocalTime breakEndLocalTime = null;
+        try {
+            breakStartLocalTime = LocalTime.parse(breakStart, DateTimeFormatter.ISO_TIME);
+            breakEndLocalTime = LocalTime.parse(breakEnd, DateTimeFormatter.ISO_TIME);
+        } catch (Exception e) {
+        }
+        dutyStartLocalTime = LocalTime.parse(dutyStart, DateTimeFormatter.ISO_TIME);
+        dutyEndLocalTime = LocalTime.parse(dutyEnd, DateTimeFormatter.ISO_TIME);
         int branchId = getRosterValueBranchId();
         String comment = getRosterValueComment(rosterTableRow);
         PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(employeeKey, localDate.getDayOfWeek(),
-                LocalTime.parse(dutyStart, DateTimeFormatter.ISO_TIME),
-                LocalTime.parse(dutyEnd, DateTimeFormatter.ISO_TIME),
-                LocalTime.parse(breakStart, DateTimeFormatter.ISO_TIME),
-                LocalTime.parse(breakEnd, DateTimeFormatter.ISO_TIME),
+                dutyStartLocalTime,
+                dutyEndLocalTime,
+                breakStartLocalTime,
+                breakEndLocalTime,
                 comment, branchId);
         return principleRosterItem;
     }
@@ -423,7 +434,9 @@ public class DayPage {
          */
         By breakStartInputBy = By.xpath(".//*[contains(@name, \"break_start_sql\")]");
         WebElement breakStartRosterInputElement = insertedRowElement.findElement(breakStartInputBy);
-        breakStartRosterInputElement.sendKeys(rosterItem.getBreakStart().format(DateTimeFormatter.ofPattern("HH:mm")));
+        if (null != rosterItem.getBreakStart()) {
+            breakStartRosterInputElement.sendKeys(rosterItem.getBreakStart().format(DateTimeFormatter.ofPattern("HH:mm")));
+        }
         /**
          * comment:
          */
@@ -459,7 +472,9 @@ public class DayPage {
          */
         By breakEndInputBy = By.xpath(".//*[contains(@name, \"break_end_sql\")]");
         WebElement breakEndRosterInputElement = insertedRowElement.findElement(breakEndInputBy);
-        breakEndRosterInputElement.sendKeys(rosterItem.getBreakEnd().format(DateTimeFormatter.ofPattern("HH:mm")));
+        if (null != rosterItem.getBreakEnd()) {
+            breakEndRosterInputElement.sendKeys(rosterItem.getBreakEnd().format(DateTimeFormatter.ofPattern("HH:mm")));
+        }
         /**
          * employee:
          */

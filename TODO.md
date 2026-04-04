@@ -304,7 +304,7 @@ Wochenstunden > Ist, Soll, Diff > <button>Eintragen</button>
 #### Überstunden Eingabe:
 beim allerersten Eintrag meckert das Programm.
 #### Überstundenberechnung für Weihnachten korrekt durchrechnen
-und Silvester
+und Silvester plus Tests
 #### Fehler auffangen beim Versenden von leeren Werten
 ./src/php/pages/overtime-edit.php
 #### Sonntagsarbeit
