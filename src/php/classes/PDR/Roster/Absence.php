@@ -195,6 +195,7 @@ class Absence implements \JsonSerializable {
             'end' => $this->end->format('Y-m-d H:i:s'),
             'days' => $this->days,
             'reasonId' => $this->reasonId,
+            'reasonString' => \PDR\Utility\AbsenceUtility::getReasonStringLocalized($this->reasonId),        
             'comment' => $this->comment,
             'userName' => $this->userName,
             'approval' => $this->approval,
