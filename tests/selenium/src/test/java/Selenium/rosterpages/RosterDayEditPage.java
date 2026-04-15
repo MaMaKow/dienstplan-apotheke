@@ -22,19 +22,21 @@ import Selenium.BasePage;
 import Selenium.MenuFragment;
 import Selenium.RosterItem;
 import Selenium.ScreenShot;
+import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -53,41 +55,21 @@ import static org.testng.Assert.assertEquals;
  */
 public class RosterDayEditPage extends BasePage {
 
-    protected static WebDriver driver;
-
     private final By dateChooserInputBy = By.id("date_chooser_input");
     private final By buttonSubmitBy = By.id("submit_button");
     private final By buttonDayBackwardBy = By.id("button_day_backward");
     private final By buttonDayForwardBy = By.id("button_day_forward");
     private final By branchFormSelectBy = By.id("branch_form_select");
-    private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
-    //private final By buttonRosterInputAddRowBy = By.id("roster_input_add_row_button");
     private final By buttonRosterInputAddRowBy = By.xpath("//*[contains(@id, \'roster_input_row_add_row_target_\')]");
     private final By tableRowListXpathBy = By.xpath("//*[@id=\"rosterForm\"]/table/tbody/tr[@data-roster_row_iterator]");
 
     public RosterDayEditPage(WebDriver driver) {
         super(driver);
-        this.driver = driver;
-
         if (this.getUserNameText().isEmpty()) {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToRosterDayEdit);
-    }
-
-    /**
-     * Get user_name (span tag)
-     *
-     * We only need this in order to check, if we are logged in.
-     *
-     * @return String user_name text
-     */
-    public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-
-        return driver.findElement(userNameSpanBy).getText();
     }
 
     public RosterDayEditPage manageProfile() {
@@ -108,7 +90,6 @@ public class RosterDayEditPage extends BasePage {
         By dateChooserInputSendBy = By.xpath("/html/body/div[2]/div[3]/form/input[@name=\"tagesAuswahl\"]");
         WebElement dateChooserInputSendEement = driver.findElement(dateChooserInputSendBy);
         dateChooserInputSendEement.click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(dateChooserInputBy));
         assertEquals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), getDateString());
     }
@@ -172,13 +153,24 @@ public class RosterDayEditPage extends BasePage {
     }
 
     private WebElement findLastRosterTableRow() {
-        By rowXpathBy = By.xpath("//*[@id=\"rosterForm\"]/table/tbody/tr[@data-roster_row_iterator]");
-        List<WebElement> rosterTableRowElementList = driver.findElements(rowXpathBy);
+        WebElement rosterTableRowElement = null;
+        List<WebElement> rosterTableRowElementList = findAllRosterTableRows();
         /**
          * Get the last element:
          */
-        WebElement rosterTableRowElement = rosterTableRowElementList.get(rosterTableRowElementList.size() - 1);
+        try {
+            rosterTableRowElement = rosterTableRowElementList.get(rosterTableRowElementList.size() - 1);
+        } catch (Exception exception) {
+            LogCollector.debug(exception.getMessage());
+            LogCollector.debug("Keine Zeile im Dienstplan gefunden.");
+        }
         return rosterTableRowElement;
+    }
+
+    private List<WebElement> findAllRosterTableRows() {
+        By rowXpathBy = By.xpath("//*[@id=\"rosterForm\"]/table/tbody/tr[@data-roster_row_iterator]");
+        List<WebElement> rosterTableRowElementList = driver.findElements(rowXpathBy);
+        return rosterTableRowElementList;
     }
 
     private WebElement findRosterInputEmployee(WebElement rosterTableRow) {
@@ -311,7 +303,6 @@ public class RosterDayEditPage extends BasePage {
              * nichts zu tun.</p>
              */
         }
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
 
         WebElement rosterInputElement = findRosterInputComment(rosterTableRow);
@@ -340,7 +331,11 @@ public class RosterDayEditPage extends BasePage {
         waitLong.until(ExpectedConditions.elementToBeClickable(buttonRosterInputAddRowElement));
         buttonRosterInputAddRowElement.click();
         wait.until(ExpectedConditions.numberOfElementsToBe(tableRowListXpathBy, numberOfRosterTableRowsBeforeClick + 1));
-
+        try {
+            Thread.sleep(Duration.ofMillis(200));
+        } catch (InterruptedException ex) {
+            LogCollector.debug(ex.getMessage());
+        }
         WebElement rosterTableRow = findLastRosterTableRow();
         this.changeRosterInputEmployee(rosterTableRow, rosterItem.getEmployeeKey());
         this.changeRosterInputDutyStart(rosterTableRow, rosterItem.getDutyStart());
@@ -414,4 +409,15 @@ public class RosterDayEditPage extends BasePage {
         return rosterItem;
     }
 
+    /**
+     * This function empties all the existing roster rows, but does not submit.
+     * If it would submit, the roster would be filled with new data from the
+     * PrincipleRoster automatically.
+     */
+    public void deleteAllRosterRows() {
+        List<WebElement> listOfRosterTableRows = findAllRosterTableRows();
+        for (WebElement rosterTableRow : listOfRosterTableRows) {
+            changeRosterInputEmployee(rosterTableRow, null);
+        }
+    }
 }

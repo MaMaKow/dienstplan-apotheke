@@ -78,7 +78,7 @@ public class TestGET_absenceEndpoint extends Selenium.TestPage {
 
             // Setup: Create test absence
             super.signIn(); // Ensure we're signed in for web operations
-            absenceEmployeePage = new AbsenceEmployeePage();
+            absenceEmployeePage = new AbsenceEmployeePage(driver);
             absenceEmployeePage = absenceEmployeePage.goToYear(currentYear);
             absenceEmployeePage = absenceEmployeePage.goToEmployee(testEmployeeKey);
 
@@ -201,7 +201,7 @@ public class TestGET_absenceEndpoint extends Selenium.TestPage {
 
             // Setup: Create test absence for specific year
             super.signIn(); // Ensure we're signed in for web operations
-            absenceEmployeePage = new AbsenceEmployeePage();
+            absenceEmployeePage = new AbsenceEmployeePage(driver);
             absenceEmployeePage = absenceEmployeePage.goToYear(testYear);
             absenceEmployeePage = absenceEmployeePage.goToEmployee(testEmployeeKey);
 
@@ -332,7 +332,7 @@ public class TestGET_absenceEndpoint extends Selenium.TestPage {
 
             // Setup: Create test absence
             super.signIn(); // Ensure we're signed in for web operations
-            absenceEmployeePage = new AbsenceEmployeePage();
+            absenceEmployeePage = new AbsenceEmployeePage(driver);
             absenceEmployeePage = absenceEmployeePage.goToYear(currentYear);
             absenceEmployeePage = absenceEmployeePage.goToEmployee(testEmployeeKey);
 
@@ -449,7 +449,7 @@ public class TestGET_absenceEndpoint extends Selenium.TestPage {
 
             // Setup: Create test absence for specific employee and year
             super.signIn(); // Ensure we're signed in for web operations
-            absenceEmployeePage = new AbsenceEmployeePage();
+            absenceEmployeePage = new AbsenceEmployeePage(driver);
             absenceEmployeePage = absenceEmployeePage.goToYear(testYear);
             absenceEmployeePage = absenceEmployeePage.goToEmployee(testEmployeeKey);
 

@@ -62,9 +62,20 @@ if (filter_has_var(INPUT_POST, "rosterActionCommand")) {
  * Get new/changed rosters from user input and put them into the database.
  */
 if (filter_has_var(INPUT_POST, 'Roster')) {
-    $Roster = user_input::get_Roster_from_POST_secure();
-    if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
-        user_input::roster_write_user_input_to_database($Roster, $branch_id);
+    try {
+        $RosterFromPost = user_input::get_Roster_from_POST_secure();
+        if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
+            user_input::roster_write_user_input_to_database($RosterFromPost, $branch_id);
+            $user_dialog->add_message(gettext('Roster saved successfully.'));
+        }
+    } catch (Exception $exception) {
+        // Log the error for debugging
+        error_log('Error processing roster POST data: ' . $exception->getMessage());
+        // Show a user-friendly message
+        $user_dialog->add_message(
+                gettext('The submitted roster data was invalid. Please check the times.') . ' ' . $exception->getMessage(),
+                E_USER_ERROR
+        );
     }
 }
 $Roster = roster::read_roster_from_database($branch_id, $date_sql);

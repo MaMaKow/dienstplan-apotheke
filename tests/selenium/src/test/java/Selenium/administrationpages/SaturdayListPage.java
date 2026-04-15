@@ -19,6 +19,7 @@
 package Selenium.administrationpages;
 
 import Selenium.MenuFragment;
+import Selenium.Utilities.LogCollector;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -65,11 +66,12 @@ public class SaturdayListPage {
         Select selectYearSelect = new Select(selectYearSelectElement);
         selectYearSelect.selectByVisibleText(String.valueOf(year));
         /**
-         * <p lang=de>Jetzt könnte die Seite neu geladen werden.
-         * Dann sollten die bisherigen Elemente stale werden.
-         * Allerdings nur, wenn year sich von dem vorherigen unterscheidet.
+         * <p lang=de>Jetzt könnte die Seite neu geladen werden. Dann sollten
+         * die bisherigen Elemente stale werden. Allerdings nur, wenn year sich
+         * von dem vorherigen unterscheidet.
          * </p>
-         * WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+         * WebDriverWait wait = new WebDriverWait(driver,
+         * Duration.ofSeconds(3));
          * wait.until(ExpectedConditions.stalenessOf(selectYearSelectElement));
          */
         Assert.assertEquals(getYear(), year);
@@ -144,13 +146,18 @@ public class SaturdayListPage {
 
     public ArrayList<String> getScheduledEmployeesOnDate(LocalDate targetDate) {
         ArrayList<String> scheduledEmployees = new ArrayList<>();
-        WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
-        WebElement scheduledEmployeesWebElement = saturdayRowElement.findElement(saturdayRowScheduledEmployeesBy);
-        By listOfMembersBy = By.xpath(".//span");
-        List<WebElement> listOfMemberElements = scheduledEmployeesWebElement.findElements(listOfMembersBy);
-        listOfMemberElements.forEach(memberElement -> {
-            scheduledEmployees.add(memberElement.getText());
-        });
+        try {
+
+            WebElement saturdayRowElement = getSaturdayRowElementByDate(targetDate);
+            WebElement scheduledEmployeesWebElement = saturdayRowElement.findElement(saturdayRowScheduledEmployeesBy);
+            By listOfMembersBy = By.xpath(".//span");
+            List<WebElement> listOfMemberElements = scheduledEmployeesWebElement.findElements(listOfMembersBy);
+            listOfMemberElements.forEach(memberElement -> {
+                scheduledEmployees.add(memberElement.getText());
+            });
+        } catch (Exception e) {
+            LogCollector.warn("Nobody found in saturday list.");
+        }
         return scheduledEmployees;
     }
 

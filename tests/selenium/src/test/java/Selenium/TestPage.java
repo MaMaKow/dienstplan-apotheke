@@ -62,12 +62,12 @@ public class TestPage {
     public TestPage() {
         this.logger = LogManager.getLogger(this.getClass());
         softAssert = new SoftAssert();
+        driver = Selenium.driver.Wrapper.getDriver();
     }
 
     @Test
     public void signIn() throws Exception {
 
-        driver = Selenium.driver.Wrapper.getDriver();
         propertyFile = new PropertyFile();
         String urlPageTest = propertyFile.getTestPageUrl();
         driver.get(urlPageTest);

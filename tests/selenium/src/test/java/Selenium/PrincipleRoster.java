@@ -117,4 +117,30 @@ public class PrincipleRoster {
         return branchId;
     }
 
+    /**
+     * Berechnet die wöchentliche Gesamtarbeitszeit eines Mitarbeiters anhand
+     * seines Grundplans.
+     *
+     * <p>
+     * Die Methode summiert die Arbeitsstunden aller
+     * {@link PrincipleRosterItem}-Einträge über alle Wochentage des Grundplans
+     * hinweg. Dabei werden auch Tage mit mehreren Einträgen (z.B. Früh- und
+     * Spätdienst) korrekt berücksichtigt.</p>
+     *
+     * @param employeeKey der Schlüssel des Mitarbeiters, dessen
+     * Grundplanstunden berechnet werden sollen
+     * @return die Summe aller Arbeitsstunden aus dem Grundplan als
+     * {@code float}
+     */
+    public float getTotalWorkHoursForEmployee(int employeeKey) {
+        return getPrincipleRosterByEmployee(employeeKey)
+                .values().stream()
+                .flatMap(day -> day.getlistOfPrincipleRosterItems().values().stream())
+                .map(PrincipleRosterItem::getWorkHours)
+                .reduce(0.0f, Float::sum);
+    }
+
+    public float getTotalWorkHoursForEmployee(Employee employee) {
+        return getTotalWorkHoursForEmployee(employee.getEmployeeKey());
+    }
 }

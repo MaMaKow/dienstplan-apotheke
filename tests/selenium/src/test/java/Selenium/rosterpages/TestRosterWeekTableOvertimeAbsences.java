@@ -23,17 +23,25 @@ import Selenium.NetworkOfBranchOffices;
 import Selenium.PrincipleRoster;
 import Selenium.PrincipleRosterDay;
 import Selenium.PrincipleRosterItem;
+import Selenium.RosterItem;
 import Selenium.TestPage;
 import Selenium.Utilities.LogCollector;
 import Selenium.absencepages.AbsenceEmployeePage;
+import Selenium.administrationpages.SaturdayListPage;
 import Selenium.driver.Wrapper;
+import Selenium.models.EmployeeHoursRow;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.Year;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -41,6 +49,15 @@ import org.testng.annotations.Test;
  * @author Martin Mandelkow
  */
 public class TestRosterWeekTableOvertimeAbsences extends TestPage {
+
+    private RosterWeekTablePage rosterWeekTablePage;
+    private static final float SATURDAY_EXTRA_HOURS = 6.0f; // Könnte eventuell an die Öffnungszeiten angepasst werden. Ist vorerst aber fest auf 6 Stunden gesetzt.
+
+    @BeforeMethod
+    public void setUp() {
+        driver = Selenium.driver.Wrapper.getDriver();
+        rosterWeekTablePage = new RosterWeekTablePage(driver);
+    }
 
     @Test()
     public void testOvertimeAbsenceCalculationInCurrentYear() {
@@ -72,7 +89,7 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
         /**
          * Read the calculated hours from the weekly roster table page:
          */
-        RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
+        rosterWeekTablePage = rosterWeekTablePage.ensureOnRosterWeekTablePage();  // Stellt sicher, dass wir auf der richtigen Seite sind
         rosterWeekTablePage.goToDate(secondMondayInJuly);
         HashMap<Integer, Employee> listOfEmployees = workforce.getListOfEmployees();
         for (Employee employee : listOfEmployees.values()) {
@@ -82,19 +99,10 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
             if (null != employee.getEndOfEmployment() && employee.getEndOfEmployment().isBefore(secondMondayInJuly)) {
                 continue;
             }
-            //float employeePrincipleWorkingHoursHave = employee.getWorkingHours();
-            //float employeePrincipleWorkingHoursShould = employee.getWorkingHours();
-            //float employeePrinciplePrincipleWorkingHoursDiff = employeePrincipleWorkingHoursHave - employeePrincipleWorkingHoursShould;
             PrincipleRoster principleRoster = new PrincipleRoster(employee.getBranchId(), alternationId);
             float expectedHave = calculateExpectedHaveHours(employee, principleRoster, firstDayInWeek, lastDayInWeek);
             float expectedShould = employee.getWorkingHours(); // Vertragsstunden
-            float expectedDiff = expectedHave - expectedShould;
-            float scheduledWorkingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(employee.getLastName());
-            float scheduledWorkingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(employee.getLastName());
-            float scheduledWorkingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(employee.getLastName());
-            softAssert.assertEquals(scheduledWorkingHoursHave, expectedHave, "Have bei Mitarbeiter: " + employee.getFullName());
-            softAssert.assertEquals(scheduledWorkingHoursShould, expectedShould, "Should bei Mitarbeiter: " + employee.getFullName());
-            softAssert.assertEquals(scheduledWorkingHoursDiff, expectedDiff, "Diff bei Mitarbeiter: " + employee.getFullName());
+            assertEmployeeHours(employee, expectedHave, expectedShould);
         }
         softAssert.assertAll();
     }
@@ -113,6 +121,7 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
         LocalDate firstDayInWeek = thirdMondayInJuly;
         LocalDate lastDayInWeek = thirdMondayInJuly.plusDays(4); // Mo–Fr, kein Samstag
 
+        List<EmployeeHoursRow> listOfEmployeeHoursRows = new ArrayList<>();
         Employee elisabethLehmann = workforce.getEmployeeByFullName("Elisabeth Lehmann");   // REASON_SICKNESS ohne Feiertag
         Employee emmaGrimm = workforce.getEmployeeByFullName("Emma Grimm");                 // REASON_MATERNITY_LEAVE
         Employee franziskaHartmann = workforce.getEmployeeByFullName("Franziska Hartmann"); // REASON_TAKEN_OVERTIME
@@ -126,25 +135,15 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
             LogCollector.fatal(exception.getMessage());
             softAssert.fail();
         }
-
-        float workingHoursHave;
-        float workingHoursShould;
-        float workingHoursDiff;
-        RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
+        rosterWeekTablePage = rosterWeekTablePage.ensureOnRosterWeekTablePage();  // Stellt sicher, dass wir auf der richtigen Seite sind
         rosterWeekTablePage.goToDate(thirdMondayInJuly);
-
         /**
          * Elisabeth Lehmann: Krank am Montag (kein Feiertag). § 4 EFZG:
          * Have-Stunden werden laut Grundplan gutgeschrieben (8,5 h/Tag × 5 =
          * 42,5 h). Should = calculateContractualDailyHours = 40 / 5 = 8 h × 5 =
          * 40 h. Diff = +2,5 h.
          */
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(elisabethLehmann.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(elisabethLehmann.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(elisabethLehmann.getLastName());
-        softAssert.assertEquals(workingHoursHave, 42.5f, "Elisabeth Lehmann Have");
-        softAssert.assertEquals(workingHoursShould, 40.0f, "Elisabeth Lehmann Should");
-        softAssert.assertEquals(workingHoursDiff, 2.5f, "Elisabeth Lehmann Diff");
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(elisabethLehmann, 42.5f, 40.0f));
 
         /**
          * Emma Grimm: Mutterschutz am Montag. REASON_MATERNITY_LEAVE ist in
@@ -152,12 +151,7 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
          * 09:00–18:00 − 0,5 h = 8,5 h Have / 8 h Should je Tag. Total: Have =
          * 34 h, Should = 32 h, Diff = +2 h.
          */
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(emmaGrimm.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(emmaGrimm.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(emmaGrimm.getLastName());
-        softAssert.assertEquals(workingHoursHave, 34.0f, "Emma Grimm Have");
-        softAssert.assertEquals(workingHoursShould, 32.0f, "Emma Grimm Should");
-        softAssert.assertEquals(workingHoursDiff, 2.0f, "Emma Grimm Diff");
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(emmaGrimm, 34.0f, 32.0f));
 
         /**
          * Franziska Hartmann: Überstundenabbau am Montag.
@@ -168,12 +162,7 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
          * 08:00–16:30 − 0,5 h = 8 h Have / 8 h Should je Tag. Total: Have = 32
          * h, Should = 40 h, Diff = −8 h.
          */
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(franziskaHartmann.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(franziskaHartmann.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(franziskaHartmann.getLastName());
-        softAssert.assertEquals(workingHoursHave, 32.0f, "Franziska Hartmann Have");
-        softAssert.assertEquals(workingHoursShould, 40.0f, "Franziska Hartmann Should");
-        softAssert.assertEquals(workingHoursDiff, -8.0f, "Franziska Hartmann Diff");
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(franziskaHartmann, 32.0f, 40.0f));
 
         /**
          * Marie Fischer: Resturlaub am Montag. § 11 BUrlG analog zu
@@ -182,13 +171,11 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
          * Grundplan: 09:30–18:00 − 0,5 h = 8 h Have / 8 h Should je Tag. Total:
          * Have = 40 h, Should = 40 h, Diff = 0 h.
          */
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(marieFischer.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(marieFischer.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(marieFischer.getLastName());
-        softAssert.assertEquals(workingHoursHave, 40.0f, "Marie Fischer Have");
-        softAssert.assertEquals(workingHoursShould, 40.0f, "Marie Fischer Should");
-        softAssert.assertEquals(workingHoursDiff, 0.0f, "Marie Fischer Diff");
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(marieFischer, 40.0f, 40.0f));
 
+        for (EmployeeHoursRow row : listOfEmployeeHoursRows) {
+            assertEmployeeHours(row.getEmployee(), row.getHoursHave(), row.getHoursShould());
+        }
         softAssert.assertAll();
     }
 
@@ -230,61 +217,130 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
         /**
          * Read the calculated hours from the weekly roster table page:
          */
-        float workingHoursHave;
-        float workingHoursShould;
-        float workingHoursDiff;
-        RosterWeekTablePage rosterWeekTablePage = new RosterWeekTablePage(driver);
+        rosterWeekTablePage = rosterWeekTablePage.ensureOnRosterWeekTablePage();  // Stellt sicher, dass wir auf der richtigen Seite sind
         rosterWeekTablePage.goToDate(tagDerArbeit);
 
         // Annabell Neuhaus mit Urlaub
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(anabellNeuhaus.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(anabellNeuhaus.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(anabellNeuhaus.getLastName());
-        softAssert.assertEquals(workingHoursHave, 40.0f, "Annabell Neuhaus Have");
-        softAssert.assertEquals(workingHoursShould, 40.0f, "Annabell Neuhaus Should");
-        softAssert.assertEquals(workingHoursDiff, 0.0f, "Annabell Neuhaus Diff");
-
+        assertEmployeeHours(anabellNeuhaus, 40, 40);
         // Alexandra Probst mit Freistellung
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(alexandaProbst.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(alexandaProbst.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(alexandaProbst.getLastName());
-        softAssert.assertEquals(workingHoursHave, 40.0f, "Alexanda Probst  Have");
-        softAssert.assertEquals(workingHoursShould, 40.0f, "Alexanda Probst Should");
-        softAssert.assertEquals(workingHoursDiff, 0.0f, "Alexanda Probst Diff");
-
+        assertEmployeeHours(alexandaProbst, 40, 40);
         // Albert Kremer in Elternzeit
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(albertKremer.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(albertKremer.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(albertKremer.getLastName());
-        softAssert.assertEquals(workingHoursHave, 32.0f, "Albert Kremer Have");
-        softAssert.assertEquals(workingHoursShould, 32.0f, "Albert Kremer Should");
-        softAssert.assertEquals(workingHoursDiff, 0.0f, "Albert Kremer Diff");
-
+        assertEmployeeHours(albertKremer, 32, 32);
         // Franziska Hartmann ohne weitere Abwesenheit
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(franziskaHartmann.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(franziskaHartmann.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(franziskaHartmann.getLastName());
-        softAssert.assertEquals(workingHoursHave, 40.0f, "Franziska Hartmann Have");
-        softAssert.assertEquals(workingHoursShould, 40.0f, "Franziska Hartmann Should");
-        softAssert.assertEquals(workingHoursDiff, 0.0f, "Franziska Hartmann Diff");
-
+        assertEmployeeHours(franziskaHartmann, 40, 40);
         // Lea Dietrich mit Kind krank
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(leaDietrich.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(leaDietrich.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(leaDietrich.getLastName());
-        softAssert.assertEquals(workingHoursHave, 40.0f, "Lea Dietrich Have");
-        softAssert.assertEquals(workingHoursShould, 32.0f, "Lea Dietrich Should");
-        softAssert.assertEquals(workingHoursDiff, 8.0f, "Lea Dietrich Diff");
-
+        assertEmployeeHours(leaDietrich, 40, 32);
         // Albert Jansen 2-Tage Woche
-        workingHoursHave = rosterWeekTablePage.getWorkingHoursHaveByLastName(albertJansen.getLastName());
-        workingHoursShould = rosterWeekTablePage.getWorkingHoursShouldByLastName(albertJansen.getLastName());
-        workingHoursDiff = rosterWeekTablePage.getWorkingHoursDiffByLastName(albertJansen.getLastName());
-        softAssert.assertEquals(workingHoursHave, 10.0f, "Albert Jansen Have");
-        softAssert.assertEquals(workingHoursShould, 10.0f, "Albert Jansen Should");
-        softAssert.assertEquals(workingHoursDiff, 0.0f, "Albert Jansen Diff");
-
+        assertEmployeeHours(albertJansen, 10, 10);
         // Assert all:
+        softAssert.assertAll();
+    }
+
+    @Test(enabled = true)
+    public void testOvertimeAbsenceCalculationChristmas() {
+        /**
+         * Zu Weihnachten und zu Silvester gilt die Regel, dass trotz verkürzter
+         * Öffnungszeiten die volle Arbeitszeit als gearbeitet gilt.
+         *
+         * @todo: <p lang=de>Abwesenheiten als takenOvertime oder
+         * paidLeaveOfAbsence markieren. Bei fehlender Markierung von
+         * paidLeaveOfAbsence als Standardlösung ausgehen.</p>
+         */
+        // Definiere Mitarbeiter und Filiale
+        Employee franziskaHartmann = workforce.getEmployeeByFullName("Franziska Hartmann"); // Mit Notdienst (berechnet bis 22 Uhr)
+        Employee anabellNeuhaus = workforce.getEmployeeByFullName("Anabell Neuhaus");
+        Employee alexandaProbst = workforce.getEmployeeByFullName("Alexandra Probst");
+        Employee albertKremer = workforce.getEmployeeByFullName("Albert Kremer");
+        Employee leaDietrich = workforce.getEmployeeByFullName("Lea Dietrich"); // Nicht eingeplant, bekommt trotzdem Stunden
+        Employee albertJansen = workforce.getEmployeeByFullName("Albert Jansen"); // Überstunden genommen
+        Employee elisabethLehmann = workforce.getEmployeeByFullName("Elisabeth Lehmann"); // Freistellung
+
+        List<EmployeeHoursRow> listOfEmployeeHoursRows = new ArrayList<>();
+
+        int branchId = 1;
+
+        // Definiere Datum:
+        Year currentYear = Year.now();
+        LocalDate christmasDate = LocalDate.of(currentYear.getValue(), Month.DECEMBER, 24);
+        LocalDate christmasMonday = christmasDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate christmasSaturday = christmasMonday.plusDays(5);
+        LocalDate christmasSunday = christmasMonday.plusDays(6);
+        LocalDate silvesterDate = LocalDate.of(currentYear.getValue(), Month.DECEMBER, 31);
+
+        SaturdayListPage saturdayListPage = new SaturdayListPage(driver);
+        ArrayList<String> scheduledEmployeesOnSaturday = saturdayListPage.getScheduledEmployeesOnDate(christmasSaturday);
+        softAssert.assertNotNull(scheduledEmployeesOnSaturday, "Scheduled employees list should not be null");
+
+        // Erstelle Abwesenheit Überstunden für Albert Jansen
+        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage(driver);
+        absenceEmployeePage = absenceEmployeePage.goToEmployee(albertJansen.getEmployeeKey());
+        absenceEmployeePage = absenceEmployeePage.createNewAbsence(christmasDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), christmasDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), Absence.REASON_TAKEN_OVERTIME, "Überstundenabbau", "approved");
+        // Erstelle Abwesenheit Freistellung für Elisabeth Lehmann
+        absenceEmployeePage = absenceEmployeePage.goToEmployee(elisabethLehmann.getEmployeeKey());
+        absenceEmployeePage.createNewAbsence(christmasDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), christmasDate.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), Absence.REASON_PAID_LEAVE_OF_ABSENCE, "Freistellung", "approved");
+
+        try {
+            /* Zunächst wird ein Dienstplan nach Grundplan für die ganze Woche erstellt.
+             * Später werden für den 24.12. spezifische Dienste eingetragen.
+             * Das ganze funktioniert so nicht, wenn der 24.12. auf ein Wochenende fällt.
+             * @todo: Dafür brauchen wir noch spezifische Berechnungen.
+             * @todo: Wir brauchen auch Berechnungen für die zwei Personen, die am Samstag zusätzliche Stunden arbeiten.
+             */
+            createRosterFromPrincipleInRange(christmasMonday, christmasSunday);
+        } catch (Exception ex) {
+            LogCollector.error(ex.getMessage());
+            softAssert.fail();
+        }
+        createRosterForChristmas();
+        /**
+         * Read the calculated hours from the weekly roster table page:
+         */
+        rosterWeekTablePage = rosterWeekTablePage.ensureOnRosterWeekTablePage();  // Stellt sicher, dass wir auf der richtigen Seite sind
+        rosterWeekTablePage.goToDate(christmasDate);
+        rosterWeekTablePage.selectBranch(branchId);
+        // Annabell Neuhaus
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(anabellNeuhaus, 40, anabellNeuhaus.getWorkingHours()));
+        // Alexandra Probst
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(alexandaProbst, 40, 40));
+
+        // Franziska Hartmann
+        /**
+         * Franziska Hartmann wird mit Notdienst eingeteilt. Je nach Wochentag
+         * von Heiligabend kann das aber unterschiedliche Überstunden ergeben.
+         *
+         * @todo: Wir brauchen noch eine Funktion, die den Erwartungswert aus
+         * ihrem Grundplan und dem Wochentag korrekt vorausberechnet.
+         */
+        PrincipleRoster principleRoster = new PrincipleRoster();
+        HashMap<DayOfWeek, PrincipleRosterDay> franziskaHartmannWeekRoster = principleRoster.getPrincipleRosterByEmployee(franziskaHartmann.getEmployeeKey());
+        PrincipleRosterDay franziskaHartmannDayRoster = franziskaHartmannWeekRoster.get(silvesterDate.getDayOfWeek());
+        PrincipleRosterItem franziskaHartmannRosterItem = franziskaHartmannDayRoster.getPrincipleRosterItem(0);
+        LocalTime franziskaHartmannDutyEnd = franziskaHartmannRosterItem.getDutyEnd();
+        float overtime = Duration.between(franziskaHartmannDutyEnd, LocalTime.of(22, 0)).toMinutes() / 60.0f;
+        overtime += 0.5;// Franziska Hartmann arbeitet ohne Pause.
+        float workingWeekTime = 40 + overtime;
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(franziskaHartmann, workingWeekTime, 40));
+
+        // Albert Kremer
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(albertKremer, 40, 40));
+
+        // Lea Dietrich ist nicht im Dienstplan eingetragen und sollte trotzdem volle Stunden bekommen.
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(leaDietrich, 40, 40));
+
+        // Elisabeth Lehmann ist freigestellt und sollte daher volle Stunden bekommen.
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(elisabethLehmann, principleRoster.getTotalWorkHoursForEmployee(elisabethLehmann), 40));
+
+        // Albert Jansen nimmt Überstunden und sollte daher keine Stunden bekommen.
+        listOfEmployeeHoursRows.add(new EmployeeHoursRow(albertJansen, 5, 10));
+
+        // Gehe durch alle Mitarbeiter und prüfe die Stunden:
+        for (EmployeeHoursRow row : listOfEmployeeHoursRows) {
+            // Ergänze Stunden bei Mitarbeitern, die am Samstag arbeiten:
+            if (scheduledEmployeesOnSaturday.contains(row.getEmployee().getFullName())) {
+                row.setHoursHave(row.getHoursHave() + SATURDAY_EXTRA_HOURS);
+            }
+            assertEmployeeHours(row.getEmployee(), row.getHoursHave(), row.getHoursShould());
+        }
         softAssert.assertAll();
     }
 
@@ -296,7 +352,7 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
         Employee albertKremer = workforce.getEmployeeByFullName("Albert Kremer");
         Employee leaDietrich = workforce.getEmployeeByFullName("Lea Dietrich");              // Feiertag plus Kind krank
 
-        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
+        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage(driver);
         // Erstelle Abwesenheit Urlaub für Annabell Neuhaus
         absenceEmployeePage.goToEmployee(anabellNeuhaus.getEmployeeKey());
         absenceEmployeePage = absenceEmployeePage.createNewAbsence(tagDerArbeit.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), tagDerArbeit.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), Absence.REASON_VACATION, "comment", "approved");
@@ -342,6 +398,36 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
         }
     }
 
+    private void createRosterForChristmas() {
+        // Definiere Mitarbeiter und Filiale
+        Employee franziskaHartmann = workforce.getEmployeeByFullName("Franziska Hartmann");
+        Employee anabellNeuhaus = workforce.getEmployeeByFullName("Anabell Neuhaus");
+        Employee alexandaProbst = workforce.getEmployeeByFullName("Alexandra Probst");
+        Employee albertKremer = workforce.getEmployeeByFullName("Albert Kremer");
+        int branchId = 1;
+
+        // Definiere Datum:
+        Year currentYear = Year.now();
+        LocalDate christmasDate = LocalDate.of(currentYear.getValue(), Month.DECEMBER, 24);
+        LocalDate silvesterDate = LocalDate.of(currentYear.getValue(), Month.DECEMBER, 31);
+
+        // Erstelle Dienste:
+        RosterItem rosterItemFranziskaHartmann = new RosterItem(franziskaHartmann.getFullName(), christmasDate, "08:00", "22:00", "", "", "Notdienst", branchId);
+        RosterItem rosterItemAnabellNeuhaus = new RosterItem(anabellNeuhaus.getFullName(), christmasDate, "08:00", "13:00", "", "", "comment", branchId);
+        RosterItem rosterItemAlexandaProbst = new RosterItem(alexandaProbst.getFullName(), christmasDate, "08:00", "13:00", "", "", "comment", branchId);
+        RosterItem rosterItemAlbertKremer = new RosterItem(albertKremer.getFullName(), christmasDate, "08:00", "13:00", "", "", "comment", branchId);
+
+        RosterDayEditPage rosterDayEditPage = new RosterDayEditPage(driver);
+        rosterDayEditPage.selectBranch(branchId);
+        rosterDayEditPage.goToDate(christmasDate);
+        rosterDayEditPage.deleteAllRosterRows();
+        rosterDayEditPage.rosterInputAddRow(rosterItemFranziskaHartmann);
+        rosterDayEditPage.rosterInputAddRow(rosterItemAnabellNeuhaus);
+        rosterDayEditPage.rosterInputAddRow(rosterItemAlexandaProbst);
+        rosterDayEditPage.rosterInputAddRow(rosterItemAlbertKremer);
+        rosterDayEditPage.rosterFormSubmit();
+    }
+
     private float calculateExpectedHaveHours(Employee employee, PrincipleRoster principleRoster,
             LocalDate startDate, LocalDate endDate) {
         float totalHours = 0.0f;
@@ -368,7 +454,7 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
 
         String mondayFormatted = thirdMondayInJuly.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR);
 
-        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
+        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage(driver);
 
         // Krank: Elisabeth Lehmann
         absenceEmployeePage.goToEmployee(elisabethLehmann.getEmployeeKey());
@@ -393,5 +479,21 @@ public class TestRosterWeekTableOvertimeAbsences extends TestPage {
         absenceEmployeePage = absenceEmployeePage.createNewAbsence(
                 mondayFormatted, mondayFormatted,
                 Absence.REASON_REMAINING_VACATION, "comment", "approved");
+    }
+
+    private void assertEmployeeHours(Employee employee,
+            float expectedHave,
+            float expectedShould
+    ) {
+        //rosterWeekTablePage = rosterWeekTablePage.ensureOnRosterWeekTablePage();  // Stellt sicher, dass wir auf der richtigen Seite sind
+        float expectedDiff = expectedHave - expectedShould;
+        String lastName = employee.getLastName();
+        float have = rosterWeekTablePage.getWorkingHoursHaveByLastName(lastName);
+        float should = rosterWeekTablePage.getWorkingHoursShouldByLastName(lastName);
+        float diff = rosterWeekTablePage.getWorkingHoursDiffByLastName(lastName);
+
+        softAssert.assertEquals(have, expectedHave, employee.getFullName() + " Have");
+        softAssert.assertEquals(should, expectedShould, employee.getFullName() + " Should");
+        softAssert.assertEquals(diff, expectedDiff, employee.getFullName() + " Diff");
     }
 }

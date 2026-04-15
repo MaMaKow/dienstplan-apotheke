@@ -18,6 +18,7 @@
  */
 package Selenium.rosterpages;
 
+import Selenium.BasePage;
 import Selenium.TestPage;
 import Selenium.Employee;
 import Selenium.MenuFragment;
@@ -25,7 +26,6 @@ import Selenium.RosterItem;
 import Selenium.driver.Wrapper;
 import java.text.ParseException;
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -34,20 +34,15 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 /**
  *
  * @author Mandelkow Page Object encapsulates the Home Page
  */
-public class RosterWeekTablePage {
+public class RosterWeekTablePage extends BasePage {
 
-    protected static WebDriver driver;
-
-    private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
     private final By dateChooserInputBy = By.id("date_chooser_input");
     private final By buttonWeekBackwardBy = By.id("button_week_backward");
     private final By buttonWeekForwardBy = By.id("button_week_forward");
@@ -57,8 +52,7 @@ public class RosterWeekTablePage {
 
     //private final By dutyRosterTableBy = By.id("dutyRosterTable");
     public RosterWeekTablePage(WebDriver driver) {
-        this.driver = driver;
-
+        super(driver);
         if (this.getUserNameText().isEmpty()) {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
@@ -66,15 +60,12 @@ public class RosterWeekTablePage {
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToRosterWeekTable);
     }
 
-    /**
-     * Get user_name (span tag)
-     *
-     * @return String user_name text
-     */
-    public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-        return driver.findElement(userNameSpanBy).getText();
+    public RosterWeekTablePage ensureOnRosterWeekTablePage() {
+        if (!driver.getCurrentUrl().contains("roster-week-table.php")) {
+            return new RosterWeekTablePage(driver);
+        }
+        return this;
+
     }
 
     public RosterWeekTablePage manageProfile() {

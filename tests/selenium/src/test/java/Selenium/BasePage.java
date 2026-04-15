@@ -21,6 +21,8 @@ package Selenium;
 import static Selenium.HomePage.driver;
 import Selenium.Utilities.LogCollector;
 import java.time.Duration;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
@@ -42,6 +44,7 @@ public class BasePage {
     public final WebDriverWait wait;
     public final WebDriverWait waitLong;
     public final Logger logger;
+    //public static final DateTimeFormatter DATE_TIME_FORMATTER_HOUR_MINUTE = DateTimeFormatter.ofPattern("mm:HH", Locale.GERMANY);
 
     public BasePage(WebDriver driver) {
         LogCollector.debug("BasePage constructor:");

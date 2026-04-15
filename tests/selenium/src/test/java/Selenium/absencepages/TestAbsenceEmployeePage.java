@@ -52,7 +52,7 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
             logger.error("Sign in failed.");
             Assert.fail();
         }
-        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
+        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage(driver);
         /**
          * Create a new absence:
          */
@@ -177,7 +177,7 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
             logger.error("Sign in failed.");
             Assert.fail();
         }
-        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
+        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage(driver);
         /**
          * Create a new absence:
          */

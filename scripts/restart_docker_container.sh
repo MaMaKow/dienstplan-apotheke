@@ -1,43 +1,27 @@
 #!/bin/bash
 
-# Function to restart or run a container
-manage_container() {
-    local IMAGE_NAME="$1"
-    local RUN_COMMAND="$2"
+# Get the directory where this script resides
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Go to the compose directory (relative to script)
+COMPOSE_DIR="$SCRIPT_DIR/../tests/selenium"
 
-    # Find the container ID based on the image name
-    local CONTAINER_ID=$(docker ps -q --filter "ancestor=$IMAGE_NAME")
-
-    # Check if a container was found and restart or run it
-    if [ -z "$CONTAINER_ID" ]; then
-        echo "No container found for image: $IMAGE_NAME"
-        eval "$RUN_COMMAND"
-    else
-        echo "Restarting container ID: $CONTAINER_ID"
-        docker stop "$CONTAINER_ID"
-        docker start "$CONTAINER_ID"
-    fi
-
-    # Display the status of the container
-    docker ps --filter "id=$CONTAINER_ID"
-}
-
-# Prepare the shared downloads directory with appropriate permissions
+# Prepare shared downloads directory
 mkdir -p /tmp/selenium/shared_downloads
 chmod o+w /tmp/selenium/ -R
 chmod o+w /tmp/selenium/shared_downloads -R
 
-# Start/restart Selenium container
-# -p 4444:4444 -> Exposes the Selenium WebDriver port, allowing your tests to connect to the Selenium server.
-# -p 7900:7900 -> Exposes the VNC server port, which allows you to view the browser running your tests in real-time using a VNC viewer.
-# -p 5900:5900 -> Another VNC server port, used by some configurations or can be an alternative VNC access point.
-# -e SE_SESSION_TIMEOUT=900 -> Increases the time to view the browser after the tests are done from 5 minutes (300 s) to 15 minutes (900 s)
-# --shm-size="2g" -> Increases the shared memory size to 2 GB, which is important for running browsers inside the container to avoid out-of-memory issues.
-# -v /tmp/selenium/shared_downloads:/home/seluser/Downloads -> Mounts the shared downloads directory so that files downloaded during tests are accessible on your host machine.
-manage_container "dienstplan_selenium" "docker run -d -p 4444:4444 -p 7900:7900 -p 5900:5900 -e SE_SESSION_TIMEOUT=900 --shm-size='2g' -v /tmp/selenium/shared_downloads:/home/seluser/Downloads dienstplan_selenium"
+# Go to the compose directory and start Firefox + video recorder
+cd "$COMPOSE_DIR"
+docker-compose down   # remove any existing containers from previous runs
+docker-compose up -d
 
-# Start/restart MailHog container
-# A simple SMTP server that captures emails and provides a web interface to view them.
-# the SMTP server starts on port 1025
-# the HTTP server starts on port 8025
-manage_container "mailhog/mailhog" "docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog"
+# Start MailHog (standalone, not part of compose)
+if [ -z "$(docker ps -q --filter ancestor=mailhog/mailhog)" ]; then
+    docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
+else
+    docker restart mailhog
+fi
+
+# Show status
+docker-compose ps
+docker ps --filter name=mailhog

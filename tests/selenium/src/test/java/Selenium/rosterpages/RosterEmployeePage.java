@@ -18,27 +18,24 @@
  */
 package Selenium.rosterpages;
 
-import Selenium.Employee;
+import Selenium.BasePage;
 import Selenium.MenuFragment;
 import Selenium.NetworkOfBranchOffices;
 import Selenium.RosterItem;
 import Selenium.Utilities.LogCollector;
 import Selenium.driver.FileAvailabilityChecker;
 import Selenium.driver.Wrapper;
-import static Selenium.rosterpages.RosterWeekTablePage.driver;
 import java.io.File;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -49,11 +46,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Mandelkow
  */
-public class RosterEmployeePage {
+public class RosterEmployeePage extends BasePage {
 
-    protected static WebDriver driver;
-
-    private final By userNameSpanBy = By.id("MenuListItemApplicationUsername");
     private final By dateChooserInputBy = By.id("date_chooser_input");
     private final By buttonWeekBackwardBy = By.id("button_week_backward");
     private final By buttonWeekForwardBy = By.id("button_week_forward");
@@ -62,24 +56,12 @@ public class RosterEmployeePage {
     private final File downloadedICalendarFile = new File("/tmp/selenium/shared_downloads/Calendar.ics");
 
     public RosterEmployeePage(WebDriver driver) {
-        this.driver = driver;
-
+        super(driver);
         if (this.getUserNameText().isEmpty()) {
             throw new IllegalStateException("This is not a logged in state,"
                     + " current page is: " + driver.getCurrentUrl());
         }
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToRosterEmployee);
-    }
-
-    /**
-     * Get user_name (span tag)
-     *
-     * @return String user_name text
-     */
-    public String getUserNameText() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.presenceOfElementLocated(userNameSpanBy));
-        return driver.findElement(userNameSpanBy).getText();
     }
 
     public RosterEmployeePage manageProfile() {

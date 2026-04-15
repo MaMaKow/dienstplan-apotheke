@@ -142,7 +142,12 @@ class RosterUtility {
             //error_log('Feiertag gewährt Stunden.');
             $hoursWorkedTheoretically = self::calculateWorkingHoursOnHoliday($employee, $dateObject, $absence);
         }
-
+        /**
+         * Zu Weihnachten werden die Stunden laut Grundplan gutgeschrieben, auch wenn nicht gearbeitet wird. Das gleiche gilt für Silvester.
+         */
+        if ("24.12." == $dateObject->format('d.m.') or "31.12." == $dateObject->format('d.m.')) {
+            $hoursWorkedTheoretically = self::calculateWorkingHoursOnChristmas($employee, $dateObject, $absence);
+        }
         /**
          * <p lang=de>Wenn der Mitarbeiter mit Stundenanspruch abwesend ist, nehmen wir statt dessen den Grundplan.
          * Das ist der Fall bei REASON_SICKNESS oder REASON_PAID_LEAVE_OF_ABSENCE.</p>
@@ -251,6 +256,39 @@ class RosterUtility {
                     self::calculateContractualDailyHours($employee, $dateObject),
                     $employee->getPrincipleHoursOnDate($dateObject)
             );
+        }
+        return $hoursWorkedTheoretically;
+    }
+
+    private static function calculateWorkingHoursOnChristmas(\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
+        $hoursWorkedTheoretically = 0;
+
+        if (null === $absence) {
+            $hoursWorkedTheoretically = $employee->getPrincipleHoursOnDate($dateObject);
+            return $hoursWorkedTheoretically;
+        }
+
+
+        if (null !== $absence and (in_array($absence->getReasonId(), array(
+                    \PDR\Utility\AbsenceUtility::REASON_PAID_LEAVE_OF_ABSENCE,
+                    \PDR\Utility\AbsenceUtility::REASON_SICKNESS,
+                )))) {
+            /**
+             * Die Mitarbeitende Person hat an diesem Tag theoretisch Stunden gearbeitet obwohl ohnehin abwesend.
+             * Denn die oben genannten Gründen werden anerkannt.
+             */
+            $hoursWorkedTheoretically = $employee->getPrincipleHoursOnDate($dateObject);
+        }
+        if (null !== $absence and (in_array($absence->getReasonId(), array(
+                    \PDR\Utility\AbsenceUtility::REASON_VACATION,
+                    \PDR\Utility\AbsenceUtility::REASON_REMAINING_VACATION,
+                )))) {
+            /**
+             * Die Mitarbeitende Person hat an diesem Tag theoretisch Stunden gearbeitet obwohl ohnehin abwesend.
+             * Denn die oben genannten Gründen werden anerkannt.
+             * Es gelten die vertraglichen Durchschnittsstunden:
+             */
+            $hoursWorkedTheoretically = self::calculateContractualDailyHours($employee, $dateObject);
         }
         return $hoursWorkedTheoretically;
     }

@@ -19,6 +19,7 @@
 package Selenium.absencepages;
 
 import Selenium.Absence;
+import Selenium.BasePage;
 import Selenium.MenuFragment;
 import Selenium.Utilities.LogCollector;
 import Selenium.driver.Wrapper;
@@ -48,9 +49,8 @@ import org.testng.annotations.Listeners;
  * @author Mandelkow
  */
 @Listeners(Selenium.Utilities.Listener.class)
-public class AbsenceEmployeePage {
+public class AbsenceEmployeePage extends BasePage {
 
-    private final WebDriver driver;
     Map<Integer, String> listOfAbsenceReasons;
     /**
      * Basic navigation:
@@ -80,8 +80,8 @@ public class AbsenceEmployeePage {
     /**
      * Edit or delete existing absence:
      */
-    private By absenceRowsBy;
-    private List<WebElement> listOfAbsenceRowElements;
+    private final By absenceRowsBy;
+    private final List<WebElement> listOfAbsenceRowElements;
 
     private final By deleteButtonBy = By.xpath(".//td[7]/button[1]");
     private final By cancelButtonBy = By.xpath(".//td[7]/button[2]");
@@ -90,9 +90,12 @@ public class AbsenceEmployeePage {
 
     /**
      * Constructor for the AbsenceEmployeePage class.
+     *
+     * @param driver WebDriver
      */
-    public AbsenceEmployeePage() {
-        LogCollector.debug("Construct new AbsenceEmployeePage()");
+    public AbsenceEmployeePage(WebDriver driver) {
+        super(driver);
+        LogCollector.debug("Construct new AbsenceEmployeePage(driver)");
         driver = Selenium.driver.Wrapper.getDriver();
         MenuFragment.navigateTo(driver, MenuFragment.MenuLinkToAbsenceEdit);
 
@@ -195,7 +198,7 @@ public class AbsenceEmployeePage {
         wait.until(ExpectedConditions.attributeToBe(goToYearSelectBy, "value", String.valueOf(year)));
         // Assert that the selected year matches the expected year
         assertEquals(this.getYear(), year);
-        return new AbsenceEmployeePage();
+        return new AbsenceEmployeePage(driver);
     }
 
     /**
@@ -226,7 +229,7 @@ public class AbsenceEmployeePage {
         // Select the desired employee using their key or identifier
         employeeFormSelect.selectByValue(String.valueOf(employeeKey));
         // Return a new instance of the AbsenceEmployeePage for the selected employee
-        return new AbsenceEmployeePage();
+        return new AbsenceEmployeePage(driver);
     }
 
     /**
@@ -297,9 +300,10 @@ public class AbsenceEmployeePage {
         approvalInputSelectElement.selectByValue(approval);
         // Click the submit button to create the absence
         createNewAbsenceSubmitButtonElement.click();
+        wait.until(ExpectedConditions.stalenessOf(createNewAbsenceSubmitButtonElement));
 
         // Return a new instance of the AbsenceEmployeePage after creating the absence
-        return new AbsenceEmployeePage();
+        return new AbsenceEmployeePage(driver);
         // String durationString = durationOutputElement.getText();
         //int duration = Integer.parseInt(durationString);
 
@@ -349,16 +353,16 @@ public class AbsenceEmployeePage {
             // Create a new instance of AbsenceEmployeePage and return it
             AbsenceEmployeePage newAbsenceEmployeePage;
             try {
-                newAbsenceEmployeePage = new AbsenceEmployeePage();
+                newAbsenceEmployeePage = new AbsenceEmployeePage(driver);
             } catch (StaleElementReferenceException exception) {
-                newAbsenceEmployeePage = new AbsenceEmployeePage();
+                newAbsenceEmployeePage = new AbsenceEmployeePage(driver);
             } catch (NoSuchElementException noSuchElementException) {
-                newAbsenceEmployeePage = new AbsenceEmployeePage();
+                newAbsenceEmployeePage = new AbsenceEmployeePage(driver);
             }
             return newAbsenceEmployeePage;
         }
         // Return a new instance of AbsenceEmployeePage if no matching absence was found
-        return new AbsenceEmployeePage();
+        return new AbsenceEmployeePage(driver);
     }
 
     /**
@@ -403,10 +407,10 @@ public class AbsenceEmployeePage {
             submitButtonElement.click();
 
             // Return a new instance of the AbsenceEmployeePage after editing the absence
-            return new AbsenceEmployeePage();
+            return new AbsenceEmployeePage(driver);
         }
         // Return a new instance of AbsenceEmployeePage if no matching absence was found
-        return new AbsenceEmployeePage();
+        return new AbsenceEmployeePage(driver);
     }
 
     /**
@@ -549,10 +553,10 @@ public class AbsenceEmployeePage {
             WebElement cancelButtonElement = absenceRowElement.findElement(cancelButtonBy);
             cancelButtonElement.click();
             // Return a new instance of the AbsenceEmployeePage after canceling the editing
-            return new AbsenceEmployeePage();
+            return new AbsenceEmployeePage(driver);
         }
         // Return a new instance of AbsenceEmployeePage if no matching absence was found
-        return new AbsenceEmployeePage();
+        return new AbsenceEmployeePage(driver);
 
     }
 
@@ -606,6 +610,6 @@ public class AbsenceEmployeePage {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.stalenessOf(overlapCutButtonElement));
-        return new AbsenceEmployeePage();
+        return new AbsenceEmployeePage(driver);
     }
 }

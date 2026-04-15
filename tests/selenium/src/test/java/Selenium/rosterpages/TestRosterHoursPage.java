@@ -158,7 +158,7 @@ public class TestRosterHoursPage extends TestPage {
          * @todo If absences will ever be written to from a json data file, use
          * that instead of hardcoding the values here!
          */
-        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage();
+        AbsenceEmployeePage absenceEmployeePage = new AbsenceEmployeePage(driver);
         int employeeKey = 7;
         int currentYear = LocalDate.now().getYear();
         LocalDate testMonday = LocalDate.of(currentYear, Month.JULY, 1).with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));

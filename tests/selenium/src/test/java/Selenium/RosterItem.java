@@ -19,10 +19,11 @@
 package Selenium;
 
 import Selenium.rosterpages.Workforce;
-import Selenium.TestPage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  *
@@ -33,16 +34,13 @@ public class RosterItem {
     private final Integer employeeKey;
     private final Employee employeeObject;
     private final LocalDate localDate;
-    private final String dutyStart;
-    private final String dutyEnd;
-    private final String breakStart;
-    private final String breakEnd;
     private final Integer branchId;
     private final String comment;
     private LocalDateTime dutyStartLocalDateTime;
     private LocalDateTime dutyEndLocalDateTime;
     private LocalDateTime breakStartLocalDateTime;
     private LocalDateTime breakEndLocalDateTime;
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_HOUR_MINUTE = DateTimeFormatter.ofPattern("HH:mm", Locale.GERMANY);
 
     /**
      *
@@ -62,7 +60,6 @@ public class RosterItem {
         this.employeeObject = workforce.getEmployeeByKey(employeeKey);
         this.localDate = LocalDate.from(localDate);
 
-        this.dutyStart = dutyStart;
         try {
             LocalTime dutyStartLocalTime = LocalTime.parse(dutyStart);
             dutyStartLocalDateTime = localDate.atTime(dutyStartLocalTime);
@@ -70,7 +67,6 @@ public class RosterItem {
             dutyStartLocalDateTime = null;
         }
 
-        this.dutyEnd = dutyEnd;
         try {
             LocalTime dutyEndLocalTime = LocalTime.parse(dutyEnd);
             dutyEndLocalDateTime = localDate.atTime(dutyEndLocalTime);
@@ -78,7 +74,6 @@ public class RosterItem {
             dutyEndLocalDateTime = null;
         }
 
-        this.breakStart = breakStart;
         try {
             LocalTime breakStartLocalTime = LocalTime.parse(breakStart);
             breakStartLocalDateTime = localDate.atTime(breakStartLocalTime);
@@ -86,7 +81,6 @@ public class RosterItem {
             breakStartLocalDateTime = null;
         }
 
-        this.breakEnd = breakEnd;
         try {
             LocalTime breakEndLocalTime = LocalTime.parse(breakEnd);
             breakEndLocalDateTime = localDate.atTime(breakEndLocalTime);
@@ -108,7 +102,6 @@ public class RosterItem {
         }
         this.localDate = LocalDate.from(localDate);
 
-        this.dutyStart = dutyStart;
         try {
             LocalTime dutyStartLocalTime = LocalTime.parse(dutyStart);
             dutyStartLocalDateTime = localDate.atTime(dutyStartLocalTime);
@@ -116,7 +109,6 @@ public class RosterItem {
             dutyStartLocalDateTime = null;
         }
 
-        this.dutyEnd = dutyEnd;
         try {
             LocalTime dutyEndLocalTime = LocalTime.parse(dutyEnd);
             dutyEndLocalDateTime = localDate.atTime(dutyEndLocalTime);
@@ -124,7 +116,6 @@ public class RosterItem {
             dutyEndLocalDateTime = null;
         }
 
-        this.breakStart = breakStart;
         try {
             LocalTime breakStartLocalTime = LocalTime.parse(breakStart);
             breakStartLocalDateTime = localDate.atTime(breakStartLocalTime);
@@ -132,7 +123,6 @@ public class RosterItem {
             breakStartLocalDateTime = null;
         }
 
-        this.breakEnd = breakEnd;
         try {
             LocalTime breakEndLocalTime = LocalTime.parse(breakEnd);
             breakEndLocalDateTime = localDate.atTime(breakEndLocalTime);
@@ -153,51 +143,63 @@ public class RosterItem {
     }
 
     public Integer getEmployeeKey() {
-        return this.employeeKey;
+        return employeeKey;
     }
 
     public LocalDate getLocalDate() {
-        return this.localDate;
+        return localDate;
     }
 
     public String getDutyStart() {
-        return this.dutyStart;
+        if (null != dutyStartLocalDateTime) {
+            return dutyStartLocalDateTime.format(DATE_TIME_FORMATTER_HOUR_MINUTE);
+        }
+        return "";
     }
 
     public LocalDateTime getDutyStartLocalDateTime() {
-        return this.dutyStartLocalDateTime;
+        return dutyStartLocalDateTime;
     }
 
     public String getDutyEnd() {
-        return this.dutyEnd;
+        if (null != dutyEndLocalDateTime) {
+            return dutyEndLocalDateTime.format(DATE_TIME_FORMATTER_HOUR_MINUTE);
+        }
+        return "";
     }
 
     public LocalDateTime getDutyEndLocalDateTime() {
-        return this.dutyEndLocalDateTime;
+        return dutyEndLocalDateTime;
     }
 
     public String getBreakStart() {
-        return this.breakStart;
+        if (null != breakStartLocalDateTime) {
+            return breakStartLocalDateTime.format(DATE_TIME_FORMATTER_HOUR_MINUTE);
+        }
+        return "";
     }
 
     public LocalDateTime getBreakStartLocalDateTime() {
-        return this.breakStartLocalDateTime;
+        return breakStartLocalDateTime;
     }
 
     public String getBreakEnd() {
-        return this.breakEnd;
+        if (null != breakEndLocalDateTime) {
+            return breakEndLocalDateTime.format(DATE_TIME_FORMATTER_HOUR_MINUTE);
+        }
+        return "";
     }
 
     public LocalDateTime getBreakEndLocalDateTime() {
-        return this.breakEndLocalDateTime;
+        return breakEndLocalDateTime;
     }
 
     public int getBranchId() {
-        return this.branchId;
+        return branchId;
     }
 
     public String getComment() {
-        return this.comment;
+        return comment;
     }
 
 }

@@ -56,9 +56,7 @@ import org.threeten.extra.YearWeek;
  */
 public class TestRosterEmployeePage extends TestPage {
 
-    private final String iCalendarFileName = "Calendar.ics";
-
-    @Test(enabled = true)/*passed*/
+    @Test(enabled = true)
     public void testDateNavigation() {
         /**
          * Sign in:
