@@ -22,7 +22,7 @@ class EmployeeController extends BaseController {
 
     public function getAllEmployees($matches) {
         try {
-            $workforce = new \workforce(date('Y-m-d'));
+            $workforce = new \PDR\Workforce\Workforce(date('Y-m-d'));
             $jsonEncodedWorkforce = $workforce->getEmployeesAsJson();
             $this->sendJson(json_decode($jsonEncodedWorkforce));
         } catch (Exception $e) {

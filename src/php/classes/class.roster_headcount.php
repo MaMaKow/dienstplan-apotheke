@@ -19,7 +19,7 @@
 
 abstract class roster_headcount {
 
-    public static function get_roster_of_qualified_pharmacist_employees(array $Roster, workforce $workforce): array {
+    public static function get_roster_of_qualified_pharmacist_employees(array $Roster, PDR\Workforce\Workforce $workforce): array {
         $Roster_of_qualified_pharmacist_employees = array();
         foreach ($Roster as $roster_day) {
             foreach ($roster_day as $roster_item_object) {
@@ -31,7 +31,7 @@ abstract class roster_headcount {
         return $Roster_of_qualified_pharmacist_employees;
     }
 
-    public static function get_roster_of_goods_receipt_employees(array $Roster, workforce $workforce) {
+    public static function get_roster_of_goods_receipt_employees(array $Roster, PDR\Workforce\Workforce $workforce) {
         $Roster_of_goods_receipt_employees = array();
         $List_of_goods_receipt_employees = $workforce->getListOfGoodsReceiptEmployees();
         foreach ($Roster as $roster_day) {

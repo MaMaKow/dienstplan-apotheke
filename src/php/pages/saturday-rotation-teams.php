@@ -19,7 +19,7 @@
  */
 require '../../../default.php';
 $this_saturday_date_object = new DateTime("this saturday");
-$workforce = new workforce();
+$workforce = new PDR\Workforce\Workforce();
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 \PDR\Utility\GeneralUtility::createCookie("mandant", $branch_id, 30);

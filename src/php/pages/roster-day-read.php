@@ -66,7 +66,7 @@ if (isset($approval)) {
 /*
  * Get a list of all employees:
  */
-$workforce = new workforce($date_sql);
+$workforce = new PDR\Workforce\Workforce($date_sql);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.

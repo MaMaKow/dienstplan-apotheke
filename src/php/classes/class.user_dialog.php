@@ -187,7 +187,7 @@ class user_dialog {
 
         global $workforce;
         if (!isset($workforce)) {
-            $workforce = new workforce();
+            $workforce = new PDR\Workforce\Workforce();
         }
         $paragraph_separator = "\n\n\n\n";
         $message = "";

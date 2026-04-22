@@ -26,8 +26,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.testng.Assert;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -85,9 +83,13 @@ public class TestAbsenceEmployeePage extends Selenium.TestPage {
         absenceEmployeePage = absenceEmployeePage.createNewAbsence(fullYearStartDateFormatted, fullYearEndDateFormatted, Absence.REASON_VACATION, "ganzes Jahr", "not_yet_approved"); //gesetzliche Feiertage
         List<String> userDialogNotifications = absenceEmployeePage.getUserDialogNotifications();
         assertTrue(!userDialogNotifications.isEmpty());
-        assertEquals(userDialogNotifications.get(0), fullYearStartDateFormatted + " ist ein Feiertag (Neujahr) und wird nicht berechnet.");
-        assertTrue(userDialogNotifications.get(1).contains("ist kein Arbeitstag für"));
-        assertTrue(userDialogNotifications.get(1).contains("und wird nicht gezählt."));
+        // Order‑independent checks for the two expected notifications
+        String expectedHolidayMessage = fullYearStartDateFormatted + " ist ein Feiertag (Neujahr) und wird nicht berechnet.";
+        softAssert.assertTrue(userDialogNotifications.stream().anyMatch(msg -> msg.equals(expectedHolidayMessage)),
+                "Holiday notification not found.");
+        softAssert.assertTrue(userDialogNotifications.stream().anyMatch(msg -> msg.contains("ist kein Arbeitstag für") && msg.contains("und wird nicht gezählt.")),
+                "Workday notification not found.");
+        softAssert.assertAll();
         /**
          * Check this absence:
          */

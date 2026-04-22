@@ -253,10 +253,10 @@ abstract class build_html_navigation_elements {
         $text .= "<form method='POST' id='select_employee' class='inline-form'>\n";
         $text .= "<select name=employee_key class='large' onChange='document.getElementById(\"submit_select_employee\").click()'>\n";
         foreach ($Employee_object_list as $employee_object) {
-            if ($employee_object->get_employee_key() === $employee_key) {
-                $text .= "<option selected value='" . $employee_object->get_employee_key() . "'>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>\n";
+            if ($employee_object->getEmployeeKey() === $employee_key) {
+                $text .= "<option selected value='" . $employee_object->getEmployeeKey() . "'>" . $employee_object->getFirstName() . " " . $employee_object->getLastName() . "</option>\n";
             } else {
-                $text .= "<option value='" . $employee_object->get_employee_key() . "'>" . $employee_object->first_name . " " . $employee_object->last_name . "</option>\n";
+                $text .= "<option value='" . $employee_object->getEmployeeKey() . "'>" . $employee_object->getFirstName() . " " . $employee_object->getLastName() . "</option>\n";
             }
         }
         $text .= "</select>\n";

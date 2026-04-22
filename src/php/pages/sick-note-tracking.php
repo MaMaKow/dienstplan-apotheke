@@ -41,7 +41,7 @@ $endOfMonth->add(new DateInterval('P1M'));
 $endOfMonth->sub(new DateInterval('PT1S'));
 
 $absenceCollectionMonth = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($startOfMonth, $endOfMonth);
-$workforce = new workforce($startOfMonth->format("Y-m-d"), $endOfMonth->format("Y-m-d"));
+$workforce = new PDR\Workforce\Workforce($startOfMonth->format("Y-m-d"), $endOfMonth->format("Y-m-d"));
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -75,9 +75,9 @@ echo form_element_builder::build_html_select_year($year);
             $reason_sickness_of_child_checked = "✘";
         }
         echo '<TR style="padding-bottom: 0">';
-        $employee_object = $workforce->get_employee_object($absenceObject->getEmployeeKey());
+        $employee_object = $workforce->getEmployeeObject($absenceObject->getEmployeeKey());
         echo '<TD style="padding-bottom: 0">'
-        . $employee_object->first_name . " " . $employee_object->last_name
+        . $employee_object->getFirstName() . " " . $employee_object->getLastName()
         . "</TD>";
         echo '<TD style="padding-bottom: 0">'
         . $absenceObject->getStart()->format("d.m.Y")

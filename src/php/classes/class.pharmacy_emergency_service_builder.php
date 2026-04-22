@@ -24,7 +24,7 @@
  */
 class pharmacy_emergency_service_builder {
 
-    public static function build_emergency_service_table_employee_select($employee_key_selected, $branch_id, $date_sql, $emergencyServiceIndex, workforce $workforce) {
+    public static function build_emergency_service_table_employee_select(?int $employee_key_selected, int $branch_id, string $date_sql, int $emergencyServiceIndex, PDR\Workforce\Workforce $workforce) {
         $table_employee_select = "";
         $table_employee_select .= "<input type='hidden' name=emergency_service_branch value='$branch_id'>";
         $table_employee_select .= "<input type='hidden' name=emergency_service_date_old value='$date_sql'>";
@@ -35,9 +35,9 @@ class pharmacy_emergency_service_builder {
          * The empty option is necessary to enable the deletion of employees from the roster:
          */
         $table_employee_select .= "<option value=''>&nbsp;</option>";
-        if (!isset($employee_key_selected) or $workforce->employee_exists($employee_key_selected)) {
+        if (!isset($employee_key_selected) or $workforce->employeeExists($employee_key_selected)) {
             foreach ($workforce->getListOfQualifiedPharmacistEmployees() as $employee_key) {
-                $employee_object = $workforce->get_employee_object($employee_key);
+                $employee_object = $workforce->getEmployeeObject($employee_key);
                 if ($employee_key_selected == $employee_key and NULL !== $employee_key_selected) {
                     $table_employee_select .= "<option value=$employee_key selected>" . $employee_object->getFullName() . "</option>";
                 } else {

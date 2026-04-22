@@ -38,8 +38,8 @@ if ($weekday > 1) {
  */
 \PDR\Utility\GeneralUtility::createCookie('alternating_week_id', $alternating_week_id, 1);
 \PDR\Utility\GeneralUtility::createCookie('weekday', $weekday, 1);
-$workforce = new workforce();
-$employee_key = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$workforce = new PDR\Workforce\Workforce();
+$employee_key = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 
 function handle_roster_input($branch_id, $date_object, $session) {
     if (!$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER)) {
@@ -123,8 +123,8 @@ $html_text = '';
 $html_text .= "<form accept-charset='utf-8' id=principleRosterForm method=post>\n";
 $html_text .= "<script> "
         . " var Roster_array = " . json_encode($Principle_roster, JSON_UNESCAPED_UNICODE) . ";\n"
-        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
-        . " var List_of_employee_professions = " . json_encode($workforce->get_list_of_employee_professions(), JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_names = " . json_encode($workforce->getListOfEmployeeNames(), JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_professions = " . json_encode($workforce->getListOfEmployeeProfessions(), JSON_UNESCAPED_UNICODE) . ";\n"
         . "</script>\n";
 $html_text .= "<table>\n";
 $max_employee_count = \roster::calculate_max_employee_count($Principle_roster);

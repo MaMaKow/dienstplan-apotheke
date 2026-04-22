@@ -19,6 +19,7 @@ package Selenium.principlerosterpages;
 import Selenium.PrincipleRoster;
 import Selenium.PrincipleRosterDay;
 import Selenium.PrincipleRosterItem;
+import Selenium.Utilities.LogCollector;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -97,6 +98,7 @@ public class TestDayPage extends Selenium.TestPage {
             Collection<PrincipleRosterItem> listOfPrincipleRosterItems = principleRosterWeekday.getlistOfPrincipleRosterItems().values();
             for (PrincipleRosterItem principleRosterItem : listOfPrincipleRosterItems) {
                 System.out.print(";");
+                LogCollector.debug(principleRosterItem.getEmployeeLastName(workforce));
                 employeeKey = principleRosterItem.getEmployeeKey();
                 dayPage.goToBranch(principleRosterItem.getBranchId());
                 dayPage.goToAlternation(alternationId);

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-//$workforce = new workforce();
+//$workforce = new PDR\Workforce\Workforce();
 $user_dialog = new user_dialog();
 
 $user_key = user_input::get_variable_from_any_input('user_key', FILTER_SANITIZE_NUMBER_INT, $_SESSION['user_object']->get_primary_key());
@@ -98,7 +98,7 @@ function build_checkbox_permission($privilege, $checked) {
             <label for="employee_key"><?= gettext("Employee Key"); ?>:</label>
             <select name="employee_key" id="employee_key">
                 <?php
-                $workforce = new workforce(date("Y-m-d"), date("Y-12-31"));
+                $workforce = new PDR\Workforce\Workforce(date("Y-m-d"), date("Y-12-31"));
                 $employeeKey = $user->get_employee_key();
 
                 $selected = (null == $user->get_employee_key()) ? 'selected' : '';

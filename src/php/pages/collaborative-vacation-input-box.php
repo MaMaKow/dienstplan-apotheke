@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_once "../../../default.php";
-$workforce = new workforce();
+$workforce = new PDR\Workforce\Workforce();
 
 if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     /*
@@ -36,7 +36,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     $dateStartObject = new DateTime($Absence_details['start']);
     $dateEndObject = new DateTime($Absence_details['end']);
     $employeeKey = $Absence_details['employeeKey'];
-    $employeeObject = $workforce->get_employee_object($employeeKey);
+    $employeeObject = $workforce->getEmployeeObject($employeeKey);
     $days = PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays($dateStartObject, $dateEndObject, $employeeObject);
 
     $absence = new PDR\Roster\Absence(
@@ -66,10 +66,10 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         'date_range_max' => FILTER_SANITIZE_SPECIAL_CHARS,
     );
     $Highlight_details = filter_var_array($Highlight_details_unsafe, $filters);
-    $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+    $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
     $dateStartObject = new DateTime($Highlight_details['date_range_min']);
     $dateEndObject = new DateTime($Highlight_details['date_range_max']);
-    $employeeObject = $workforce->get_employee_object($employeeKey);
+    $employeeObject = $workforce->getEmployeeObject($employeeKey);
     $days = PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays(clone $dateStartObject, clone $dateEndObject, $employeeObject);
     $absence = new PDR\Roster\Absence($employeeKey,
             $dateStartObject, $dateEndObject, $days,
@@ -81,7 +81,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
     );
     $Absence_details['mode'] = "create";
 } else {
-    $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+    $employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 }
 ?>
 <form accept-charset='utf-8' id="inputBoxForm" method="POST">
@@ -91,7 +91,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
         /*
          * The user is allowed to create an absence for anyone:
          */
-        $workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
+        $workforce = new PDR\Workforce\Workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
         foreach ($workforce->getListOfEmployees() as $employeeKeyOption => $employee_object) {
             if ($employeeKeyOption == $employeeKey) {
                 $option_selected = "selected";
@@ -99,7 +99,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
                 $option_selected = "";
             }
             echo "<option id='employee_key_option_$employeeKeyOption' value='$employeeKeyOption' $option_selected>";
-            echo "$employeeKeyOption $employee_object->last_name";
+            echo $employeeKeyOption . " " . $employee_object->getLastName();
             echo "</option>\n";
         }
     } elseif ($session->user_has_privilege('request_own_absence') and "" === $employeeKey) {
@@ -109,9 +109,9 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
          * @todo <p>This has to be tested very intensively!</p>
          * CAVE! This get_employee_key() might be empty.
          */
-        $session_employee_key = $_SESSION['user_object']->get_employee_key();
+        $session_employee_key = $_SESSION['user_object']->getEmployeeKey();
         echo "<option id='employee_key_option_" . $session_employee_key . "' value=" . $session_employee_key . ">";
-        echo $session_employee_key . " " . $workforce->get_employee_last_name($session_employee_key);
+        echo $session_employee_key . " " . $workforce->getEmployeeLastName($session_employee_key);
         echo "</option>\n";
     } else {
         /*
@@ -119,7 +119,7 @@ if (filter_has_var(INPUT_GET, 'absence_details_json')) {
          * or this is an existing absence.
          */
         echo "<option id='employee_key_option_" . $employeeKey . "' value=" . $employeeKey . ">";
-        echo $employeeKey . " " . $workforce->get_employee_last_name($employeeKey);
+        echo $employeeKey . " " . $workforce->getEmployeeLastName($employeeKey);
         echo "</option>\n";
     }
     ?>
@@ -152,8 +152,8 @@ if ($session->user_has_privilege('create_absence') and "edit" === $Absence_detai
 }
 if (
         $session->user_has_privilege('create_absence')
-        or ( $session->user_has_privilege('request_own_absence')
-        and ( $_SESSION['user_object']->get_employee_key() === $employeeKey
+        or ($session->user_has_privilege('request_own_absence')
+        and ($_SESSION['user_object']->getEmployeeKey() === $employeeKey
         or "" === $employeeKey)
         )
 ) {

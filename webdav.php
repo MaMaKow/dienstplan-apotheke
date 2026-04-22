@@ -31,8 +31,8 @@ if (!isset($_SESSION['user_object']) or null === $_SESSION['user_object']->get_p
 $days_into_the_future = user_input::get_variable_from_any_input('days_into_the_future', FILTER_SANITIZE_SPECIAL_CHARS, 30);
 $date_string = user_input::get_variable_from_any_input('date_string', FILTER_SANITIZE_SPECIAL_CHARS, date('Y-m-d'));
 $date_start_object = new \DateTime($date_string);
-$workforce = new workforce($date_string);
-$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$workforce = new PDR\Workforce\Workforce($date_string);
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 $create_valarm = user_input::get_variable_from_any_input('create_valarm', FILTER_SANITIZE_NUMBER_INT, 0);
 $date_end_object = clone $date_start_object;
 $date_end_object->add(new \DateInterval('P' . $days_into_the_future . 'D'));

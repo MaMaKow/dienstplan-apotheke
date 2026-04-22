@@ -32,7 +32,7 @@ $dateStartObject->setTime(0, 0, 0);
 $dateEndObject = clone $dateStartObject;
 $dateEndObject->setDate($year, $month_number, $dateStartObject->format("t"));
 //The employee list needs a date, because nobody is working with us forever.
-$workforce = new workforce($dateStartObject->format('Y-m-d'));
+$workforce = new PDR\Workforce\Workforce($dateStartObject->format('Y-m-d'));
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
@@ -44,7 +44,7 @@ echo form_element_builder::build_html_select_year($year);
         <TD>Anwesenheit</TD>
         <?php
         foreach ($workforce->getListOfEmployees() as $employeeKey => $employee_object) {
-            echo '<TD style="padding-bottom: 0" title="' . $employee_object->first_name . " " . $employee_object->last_name . '">' . mb_substr($employee_object->last_name, 0, 4) . "<br>" . $workforce->get_employee_short_descriptor($employeeKey) . "</TD>";
+            echo '<TD style="padding-bottom: 0" title="' . $employee_object->getFirstName() . " " . $employee_object->getLastName() . '">' . mb_substr($employee_object->getLastName(), 0, 4) . "<br>" . $workforce->getEmployeeShortDescriptor($employeeKey) . "</TD>";
         }
         ?>
     </TR>

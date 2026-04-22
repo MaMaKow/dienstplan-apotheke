@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require '../../../default.php';
-$workforce = new workforce();
-$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$workforce = new PDR\Workforce\Workforce();
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
 $sql_query = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` DESC";
 $result = database_wrapper::instance()->run($sql_query, array('employee_key' => $employee_key));

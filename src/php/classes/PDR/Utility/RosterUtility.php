@@ -46,14 +46,14 @@ class RosterUtility {
      *
      * @param \DateTime                        $dateStartObject  The start date of the time interval.
      * @param \DateTime                        $dateEndObject    The end date of the time interval.
-     * @param \workforce                       $workforce        The workforce object containing the list of employees.
+     * @param \PDR\Workforce\Workforce         $workforce        The workforce object containing the list of employees.
      * @param \PDR\Roster\AbsenceCollection    $listOfAbsences   Collection of absences to consider in the calculation.
      *
      * @return array An associative array mapping employee keys to their total working hours.
      *
      * @throws \Exception If the start date is later than the end date.
      */
-    public static function calculateWorkingWeeklyHoursInTimeInterval(\DateTime $dateStartObject, \DateTime $dateEndObject, \workforce $workforce, \PDR\Roster\AbsenceCollection $listOfAbsences): array {
+    public static function calculateWorkingWeeklyHoursInTimeInterval(\DateTime $dateStartObject, \DateTime $dateEndObject, \PDR\Workforce\Workforce $workforce, \PDR\Roster\AbsenceCollection $listOfAbsences): array {
         /**
          * <p lang=de>Wir gehen jetzt durch den Plan und berechnen die gearbeiteten Stunden.
          * Dabei werden an jedem Tag auch die Arbeitsstunden beachtet,
@@ -68,7 +68,7 @@ class RosterUtility {
          * <p lang=de>Für jeden Mitarbeiter wird nun ein persönlicher Dienstplan aus der Datenbank gelesen.</p>
          */
         foreach ($listOfEmployees as $employee) {
-            $employeeKey = $employee->get_employee_key();
+            $employeeKey = $employee->getEmployeeKey();
             $WorkingWeekHours[$employeeKey] = 0;
             /**
              * <p lang=de>Der $employee_roster enthält alle Tage von $dateStartObject bis $dateEndObject.
@@ -127,14 +127,13 @@ class RosterUtility {
      *
      * If none of these conditions apply, the theoretical working hours remain at 0.
      *
-     * @param \employee                 $employee   The employee for whom the calculation is performed.
+     * @param \PDR\Workforce\employee                 $employee   The employee for whom the calculation is performed.
      * @param \DateTime                 $dateObject The date for which the theoretical hours are calculated.
      * @param \PDR\Roster\Absence|null  $absence    The absence record for the employee on the given date, if any.
      *
      * @return float The calculated theoretical working hours for the employee on the specified date.
      */
-    private static function calculateHoursWorkedTheoretically(\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
-        //error_log('Mitarbeiter: ' . $employee->full_name . ' ' . 'Datum: ' . $dateObject->format('Y-m-d'));
+    private static function calculateHoursWorkedTheoretically(\PDR\Workforce\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
         $hoursWorkedTheoretically = 0;
         $holidays = new \PDR\DateTime\Holidays($dateObject->format("Y"));
         $isPublicHoliday = $holidays->isHoliday($dateObject);
@@ -191,13 +190,13 @@ class RosterUtility {
      *   then the employee's principle hours are credited even if absent.
      * - For absences with the above reasons, no additional hours are credited (resulting in 0 hours).
      *
-     * @param \employee                 $employee   The employee for whom the holiday working hours are calculated.
+     * @param \PDR\Workforce\employee                 $employee   The employee for whom the holiday working hours are calculated.
      * @param \DateTime                 $dateObject The date of the public holiday.
      * @param \PDR\Roster\Absence|null  $absence    The absence record for the employee on this date, if any.
      *
      * @return float The credited working hours for the employee on the holiday.
      */
-    private static function calculateWorkingHoursOnHoliday(\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
+    private static function calculateWorkingHoursOnHoliday(\PDR\Workforce\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
         $hoursWorkedTheoretically = 0;
         /**
          * An Feiertagen werden die Arbeitsstunden gemäß Grundplan angenommen.
@@ -255,16 +254,16 @@ class RosterUtility {
         return $hoursWorkedTheoretically;
     }
 
-    public static function calculateWorkingWeekHoursShould(array $roster, \workforce $workforce): array {
+    public static function calculateWorkingWeekHoursShould(array $roster, \PDR\Workforce\Workforce $workforce): array {
         $workingWeekHoursShould = array();
         foreach ($workforce->getListOfEmployees() as $employeeObject) {
             $workingHoursEmployeeShould = self::calculateWorkingHoursEmployeeShould($roster, $employeeObject);
-            $workingWeekHoursShould[$employeeObject->get_employee_key()] = $workingHoursEmployeeShould;
+            $workingWeekHoursShould[$employeeObject->getEmployeeKey()] = $workingHoursEmployeeShould;
         }
         return $workingWeekHoursShould;
     }
 
-    private static function calculateWorkingHoursEmployeeShould(array $Roster, \employee $employeeObject): float {
+    private static function calculateWorkingHoursEmployeeShould(array $Roster, \PDR\Workforce\employee $employeeObject): float {
         $workingHoursDayShould = 0;
         foreach (array_keys($Roster) as $dateUnix) {
             $dateSql = date('Y-m-d', $dateUnix);
@@ -284,8 +283,8 @@ class RosterUtility {
      * @param PDR\Roster\AbsenceCollection $absenceCollection - Collection of absences for the employee.
      * @return float - The calculated working hours for the employee on the specified date.
      */
-    private static function calculateWorkingHoursDayEmployeeShould(\DateTime $dateObject, \employee $employeeObject, \PDR\Roster\AbsenceCollection $absenceCollection): float {
-        if ($absenceCollection->containsEmployeeKey($employeeObject->get_employee_key())) {
+    private static function calculateWorkingHoursDayEmployeeShould(\DateTime $dateObject, \PDR\Workforce\employee $employeeObject, \PDR\Roster\AbsenceCollection $absenceCollection): float {
+        if ($absenceCollection->containsEmployeeKey($employeeObject->getEmployeeKey())) {
             /**
              * Those who are absent do not have to work.
              * Exception: Those who reduce overtime REASON_TAKEN_OVERTIME are credited with target hours.
@@ -314,7 +313,7 @@ class RosterUtility {
              * @see Vergleich: https://www.mep24software.de/blog/urlaubsberechnung-teil-2
              */
             if (in_array(
-                            $absenceCollection->getAbsenceByEmployeeKey($employeeObject->get_employee_key())->getReasonId(),
+                            $absenceCollection->getAbsenceByEmployeeKey($employeeObject->getEmployeeKey())->getReasonId(),
                             $noWorkAbsenceReasonIds)) {
                 return 0;
             }
@@ -324,7 +323,7 @@ class RosterUtility {
             );
 
             if (in_array(
-                            $absenceCollection->getAbsenceByEmployeeKey($employeeObject->get_employee_key())->getReasonId(),
+                            $absenceCollection->getAbsenceByEmployeeKey($employeeObject->getEmployeeKey())->getReasonId(),
                             $vacationAbsenceReasonIds)) {
                 return self::calculateContractualDailyHours($employeeObject, $dateObject);
             }
@@ -358,15 +357,15 @@ class RosterUtility {
          *  Check for a special case where the employee works only on specific days (e.g., Tue/Thu).
          */
         if (\roster::is_empty_roster_day_array($employeeObject->get_principle_roster_on_date($dateObject))
-                and !empty($employeeObject->working_week_days)) {
+                and !empty($employeeObject->getWorkingWeekDays())) {
             return 0;
         }
 
-        if (!empty($employeeObject->working_week_days)) {
+        if (!empty($employeeObject->getWorkingWeekDays())) {
             /*
              * In case we do know the exact working_week_days we divide by them.
              */
-            return $employeeObject->working_week_hours / $employeeObject->working_week_days;
+            return $employeeObject->getWorkingWeekHours() / $employeeObject->getWorkingWeekDays();
         }
         /**
          * If nothing else fits, then we take the proportion of the general business days
@@ -376,6 +375,6 @@ class RosterUtility {
         if (6 <= $dateObject->format('N')) {
             return 0;
         }
-        return $employeeObject->working_week_hours / self::NUMBER_OF_BUSINESS_DAYS;
+        return $employeeObject->getWorkingWeekHours() / self::NUMBER_OF_BUSINESS_DAYS;
     }
 }

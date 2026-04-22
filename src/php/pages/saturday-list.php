@@ -18,7 +18,6 @@
  */
 
 require '../../../default.php';
-
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_SPECIAL_CHARS, date('Y'));
 \PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 $dateObjectStart = new DateTime("first sat of jan $year");
@@ -66,7 +65,7 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 
 echo $html;
 
-function get_saturday_rotation_team_member_names_span(saturday_rotation $saturdayRotation, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection) {
+function get_saturday_rotation_team_member_names_span(saturday_rotation $saturdayRotation, PDR\Workforce\Workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection) {
     $SaturdayRotationTeamMemberIds = array();
     $saturdayRotationTeamId = $saturdayRotation->team_id;
     if (NULL !== $saturdayRotationTeamId and FALSE !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
@@ -76,7 +75,7 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
     $SaturdayRotationTeamMemberNames = array();
     foreach ($SaturdayRotationTeamMemberIds as $employeeKey) {
 
-        if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+        if (isset($workforce->getListOfEmployees()[$employeeKey]) and !empty($workforce->getListOfEmployees()[$employeeKey]->getLastName())) {
             $prefix = '<span>';
             $suffix = '</span>';
             if ($absenceCollection->containsEmployeeKey($employeeKey)) {
@@ -84,7 +83,7 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
                 $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . ')</span>';
             }
 
-            $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->List_of_employees[$employeeKey]->last_name . $suffix;
+            $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->getListOfEmployees()[$employeeKey]->getLastName() . $suffix;
         } else {
             $SaturdayRotationTeamMemberNames[] = "$employeeKey???";
         }
@@ -92,60 +91,60 @@ function get_saturday_rotation_team_member_names_span(saturday_rotation $saturda
     return $SaturdayRotationTeamMemberNames;
 }
 
-function getRosteredEmployeesNames(array $Roster, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
+function getRosteredEmployeesNames(array $Roster, PDR\Workforce\Workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
     $RosteredEmployees = array();
     foreach ($Roster as $RosterDayArray) {
         foreach ($RosterDayArray as $rosterItem) {
-            if (isset($workforce->List_of_employees[$rosterItem->employee_key]->last_name)) {
+            if (isset($workforce->getListOfEmployees()[$rosterItem->employee_key]) and !empty($workforce->getListOfEmployees()[$rosterItem->employee_key]->getLastName())) {
                 $prefix = '<span>';
                 $suffix = '</span>';
                 if ($absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
                     $prefix = '<span class="absent">';
                     $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($rosterItem->employee_key)->getReasonId()) . ')</span>';
                 }
-                $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->List_of_employees[$rosterItem->employee_key]->last_name . $suffix;
+                $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->getListOfEmployees()[$rosterItem->employee_key]->getLastName() . $suffix;
             }
         }
     }
     return $RosteredEmployees;
 }
 
-function getAbsentEmployeesInfo(DateTime $date_object, int $branch_id, workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
+function getAbsentEmployeesInfo(\DateTime $date_object, int $branch_id, PDR\Workforce\Workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
     $absentEmployees = array();
-    
+
     // Mitarbeiter mit regulären Abwesenheiten (Urlaub, Krankheit, etc.)
     foreach ($absenceCollection->getIterator() as $absence) {
         $employeeKey = $absence->getEmployeeKey();
-        if (isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+        if (isset($workforce->getListOfEmployees()[$employeeKey])) {
             $reasonString = \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId());
-            $absentEmployees[$employeeKey] = $workforce->List_of_employees[$employeeKey]->last_name . " (" . $reasonString . ")";
+            $absentEmployees[$employeeKey] = $workforce->getListOfEmployees()[$employeeKey]->getLastName() . " (" . $reasonString . ")";
         }
     }
-    
+
     // Mitarbeiter, die am Vortag Notdienst hatten
     if (\PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDawn($date_object)) {
         try {
             $emergencyService = \PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDawn($date_object);
             $employeeKey = $emergencyService->getEmployeeKey();
-            
-            if (NULL !== $employeeKey && isset($workforce->List_of_employees[$employeeKey]->last_name)) {
+
+            if (NULL !== $employeeKey && isset($workforce->getListOfEmployees()[$employeeKey])) {
                 // Nur hinzufügen, wenn nicht bereits wegen anderer Abwesenheit erfasst
                 if (!isset($absentEmployees[$employeeKey])) {
-                    $absentEmployees[$employeeKey] = $workforce->List_of_employees[$employeeKey]->last_name . " (" . gettext("Emergency service dawn") . ")";
+                    $absentEmployees[$employeeKey] = $workforce->getListOfEmployees()[$employeeKey]->getLastName() . " (" . gettext("Emergency service dawn") . ")";
                 }
             }
         } catch (\Exception $e) {
             // Kein Notdienst gefunden, ignorieren
         }
     }
-    
+
     return $absentEmployees;
 }
 
-function build_table_row(DateTime $date_object, int $branch_id) {
-    $saturday_rotation = new saturday_rotation($branch_id);
+function build_table_row(\DateTime $date_object, int $branch_id) {
+    $saturday_rotation = new \saturday_rotation($branch_id);
     $saturday_rotation->get_participation_team_id($date_object);
-    $workforce = new workforce($date_object->format('Y-m-d'));
+    $workforce = new PDR\Workforce\Workforce($date_object->format('Y-m-d'));
     $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_object->format('Y-m-d'));
 
     $Roster = roster::read_roster_from_database($branch_id, $date_object->format('Y-m-d'));
@@ -170,11 +169,11 @@ function build_table_row(DateTime $date_object, int $branch_id) {
         $rostered_employees_names_string = implode(', ', $Rostered_employees_names);
         $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names_span($saturday_rotation, $workforce, $absenceCollection);
         $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
-        
+
         // Abwesende Mitarbeiter ermitteln
         $absentEmployees = getAbsentEmployeesInfo($date_object, $branch_id, $workforce, $absenceCollection);
         $absent_employees_string = !empty($absentEmployees) ? implode(', ', $absentEmployees) : '&nbsp;';
-        
+
         $table_row .= "<tr>";
         $table_row .= "<td>";
         $table_row .= $date_string;

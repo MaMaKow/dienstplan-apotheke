@@ -40,7 +40,7 @@ class principle_roster extends roster {
         if (NULL === $dateEndObject) {
             $dateEndObject = $dateStartObject;
         }
-        $workforce = new workforce($dateStartObject->format('Y-m-d'), $dateEndObject->format('Y-m-d'));
+        $workforce = new PDR\Workforce\Workforce($dateStartObject->format('Y-m-d'), $dateEndObject->format('Y-m-d'));
         if (array() !== $Options and !is_array($Options)) {
             $Options = (array) $Options;
         }
@@ -131,9 +131,9 @@ class principle_roster extends roster {
                  * If there is no roster on a given day, we insert one empty roster_item.
                  * This is important for weekly views. Non existent rosters would misalign the tables.
                  */
-                $workforce = new workforce($date_object->format('Y-m-d'));
+                $workforce = new PDR\Workforce\Workforce($date_object->format('Y-m-d'));
                 if (isset($workforce->getListOfEmployees()[$employee_key])) {
-                    $branch_id = $workforce->getListOfEmployees()[$employee_key]->principle_branch_id;
+                    $branch_id = $workforce->getListOfEmployees()[$employee_key]->getPrincipleBranchId();
                 } else {
                     /*
                      * In case, the employee does not exist on this day we fall back to using the first branch.

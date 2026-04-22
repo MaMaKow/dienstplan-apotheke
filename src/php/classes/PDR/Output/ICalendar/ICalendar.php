@@ -144,7 +144,7 @@ class ICalendar {
         $mittagsBeginn = $rosterObject->break_start_sql;
         $mittagsEnde = $rosterObject->break_end_sql;
         $dateUnix = $rosterObject->date_unix;
-        $workforce = new \workforce($rosterObject->date_sql);
+        $workforce = new \PDR\Workforce\Workforce($rosterObject->date_sql);
         $branchId = $rosterObject->branch_id;
         $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $ListOfBranchObjects = $networkOfBranchOffices->get_list_of_branch_objects();

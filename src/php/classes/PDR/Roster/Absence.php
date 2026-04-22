@@ -31,7 +31,7 @@ namespace PDR\Roster;
 class Absence implements \JsonSerializable {
 
     /**
-     * @var int primary key of an \employee
+     * @var int primary key of an \PDR\Workforce\employee
      */
     private $employeeKey;
 

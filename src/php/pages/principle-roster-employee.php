@@ -17,8 +17,8 @@
  */
 require '../../../default.php';
 
-$workforce = new workforce();
-$employee_key = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$workforce = new PDR\Workforce\Workforce();
+$employee_key = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 30);
 
 if (filter_has_var(INPUT_POST, 'submit_roster')) {
@@ -64,9 +64,9 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
      *   This might bring up some confusion. Should I give up calculating probably lunch_breaks alltogether?
      *     If so, should there be a warning/notice if the law wants a break to be given?
      */
-    $workforce = new workforce();
-    if ($workforce->employee_exists($employee_key)) {
-        $branch_id = $workforce->getListOfEmployees()[$employee_key]->principle_branch_id;
+    $workforce = new PDR\Workforce\Workforce();
+    if ($workforce->employeeExists($employee_key)) {
+        $branch_id = $workforce->getListOfEmployees()[$employee_key]->getPrincipleBranchId();
     } else {
         $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
         $branch_id = $networkOfBranchOffices->get_main_branch_id();
@@ -95,7 +95,7 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     }
     $html_text .= "<script> "
             . " var Roster_array = " . json_encode($Principle_employee_roster, JSON_UNESCAPED_UNICODE) . ";\n"
-            . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
+            . " var List_of_employee_names = " . json_encode($workforce->getListOfEmployeeNames(), JSON_UNESCAPED_UNICODE) . ";\n"
             . "</script>\n";
 
     $html_text .= "<table>\n";
@@ -142,16 +142,16 @@ function build_change_principle_roster_employee_form(int $alternating_week_id, i
     return $html_text;
 }
 
-function build_roster_table_working_week_hours(array $Roster_array, workforce $workforce) {
+function build_roster_table_working_week_hours(array $Roster_array, PDR\Workforce\Workforce $workforce) {
     $html_text = '';
     $html_text .= gettext("Hours per week") . "&nbsp;";
     $List_of_working_week_hours = calculate_list_of_working_week_hours($Roster_array);
     foreach ($List_of_working_week_hours as $employee_key => $working_week_hours) {
         $html_text .= array_sum($working_week_hours);
         $html_text .= ' / ';
-        $html_text .= $workforce->getListOfEmployees()[$employee_key]->working_week_hours;
-        if ($workforce->getListOfEmployees()[$employee_key]->working_week_hours != array_sum($working_week_hours)) {
-            $difference = round(array_sum($working_week_hours) - $workforce->getListOfEmployees()[$employee_key]->working_week_hours, 2);
+        $html_text .= $workforce->getListOfEmployees()[$employee_key]->getWorkingWeekHours();
+        if ($workforce->getListOfEmployees()[$employee_key]->getWorkingWeekHours() != array_sum($working_week_hours)) {
+            $difference = round(array_sum($working_week_hours) - $workforce->getListOfEmployees()[$employee_key]->getWorkingWeekHours(), 2);
             $html_text .= " <b>( " . $difference . " )</b>";
         }
     }

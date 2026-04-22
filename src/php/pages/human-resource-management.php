@@ -22,8 +22,8 @@ require '../../../default.php';
 if ($session->user_has_privilege(sessions::PRIVILEGE_ADMINISTRATION)) {
     human_resource_management::write_employee_data_to_database(); //$success = write_employee_data_to_database();
 }
-$workforce = new workforce();
-$employee_key = user_input::convert_post_empty_to_php_null(user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key()));
+$workforce = new PDR\Workforce\Workforce();
+$employee_key = user_input::convert_post_empty_to_php_null(user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey()));
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted
@@ -33,15 +33,15 @@ if (isset($_POST) && !empty($_POST)) {
 }
 
 try {
-    $employee = $workforce->get_employee_object($employee_key);
+    $employee = $workforce->getEmployeeObject($employee_key);
 } catch (Exception $exception) {
-    $employee = $workforce->get_empty_employee();
+    $employee = $workforce->getEmptyEmployee();
 }
 /**
  * add a "new employee" to the list. This can be used as a template to create a new employee.
  */
 $List_of_employees = $workforce->getListOfEmployees();
-$List_of_employees[] = new \employee(NULL, gettext("new employee"), null, 40, 30, null, false, false, null, null, null, 28);
+$List_of_employees[] = new PDR\Workforce\employee(NULL, gettext("new employee"), null, 40, 30, null, false, false, null, null, null, 28);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_employee');
@@ -54,48 +54,48 @@ $session->exit_on_missing_privilege('create_employee');
     <form accept-charset='utf-8' method='POST' id='human_resource_management'>
 
         <fieldset>
-            <input type='hidden' name='employee_key' id="employee_key" value="<?= $employee ? $employee->get_employee_key() : "" ?>">
+            <input type='hidden' name='employee_key' id="employee_key" value="<?= $employee ? $employee->getEmployeeKey() : "" ?>">
             <legend><?= gettext("Personal Data") ?>:</legend>
             <label for="last_name"><?= gettext("Last name") ?>: </label>
-            <input type='text' name='last_name' id="last_name" value="<?= $employee->last_name ? $employee->last_name : "" ?>">
+            <input type='text' name='last_name' id="last_name" value="<?= $employee->getLastName() ? $employee->getLastName() : "" ?>">
             <br>
             <label for="first_name"><?= gettext("First name") ?>: </label>
-            <input type='text' name='first_name' id="first_name" value="<?= $employee->first_name ?>">
+            <input type='text' name='first_name' id="first_name" value="<?= $employee->getFirstName() ?>">
         </fieldset>
         <p>
-            <?= human_resource_management::make_radio_profession_list($employee->profession) ?>
+            <?= human_resource_management::make_radio_profession_list($employee->getProfession()) ?>
         </p>
         <fieldset class="no-wrap">
             <legend><?= gettext("Working hours") ?>:</legend>
             <p >
                 <label for="working_week_hours"><?= gettext("Working hours") ?>: </label>
-                <input type='number' required min='0' step='any' name='working_week_hours' id="working_week_hours" value="<?= $employee->working_week_hours ?>">
+                <input type='number' required min='0' step='any' name='working_week_hours' id="working_week_hours" value="<?= $employee->getWorkingWeekHours() ?>">
                 <span class="form-input-unit">h</span>
                 <br>
                 <label for="lunch_break_minutes"><?= gettext("Lunch break") ?>: </label>
-                <input type='number' required min='0' step='any' name='lunch_break_minutes' id="lunch_break_minutes" value="<?= $employee->lunch_break_minutes ?>">
+                <input type='number' required min='0' step='any' name='lunch_break_minutes' id="lunch_break_minutes" value="<?= $employee->getLunchBreakMinutes() ?>">
                 <span class="form-input-unit">min</span>
                 <br>
                 <label for="holidays"><?= gettext("Vacation days"); ?>: </label>
-                <input type='number' required min='0' step='any' name='holidays' id="holidays" value="<?= $employee->holidays ?>">
+                <input type='number' required min='0' step='any' name='holidays' id="holidays" value="<?= $employee->getHolidays() ?>">
                 <span class="form-input-unit">d</span>
             </p>
         </fieldset>
-        <?= human_resource_management::make_radio_branch_list($employee->get_principle_branch_id()); ?>
+        <?= human_resource_management::make_radio_branch_list($employee->getPrincipleBranchId()); ?>
         <fieldset>
             <legend><?= gettext("Abilities") ?></legend>
-            <?= human_resource_management::make_checkbox_ability("goods_receipt", gettext("Goods receipt"), $employee->can_do_goods_receipt()); ?>
+            <?= human_resource_management::make_checkbox_ability("goods_receipt", gettext("Goods receipt"), $employee->canDoGoodsReceipt()); ?>
             <br>
-            <?= human_resource_management::make_checkbox_ability("compounding", gettext("Compounding"), $employee->can_do_compounding()); ?>
+            <?= human_resource_management::make_checkbox_ability("compounding", gettext("Compounding"), $employee->canDoCompounding()); ?>
         </fieldset>
         <fieldset>
             <legend><?= gettext("Employment") ?></legend>
             <p>
                 <label for="start_of_employment"><?= gettext("Start of employment") ?>: </label>
-                <input type='date' id="start_of_employment" name='start_of_employment' value="<?= $employee->start_of_employment ?>">
+                <input type='date' id="start_of_employment" name='start_of_employment' value="<?= $employee->getStartOfEmployment() ?>">
                 <br>
                 <label for="end_of_employment"><?= gettext("End of employment") ?>:  </label>
-                <input type='date' name='end_of_employment' id="end_of_employment" value="<?= $employee->end_of_employment ?>">
+                <input type='date' name='end_of_employment' id="end_of_employment" value="<?= $employee->getEndOfEmployment() ?>">
                 <img src="<?= PDR_HTTP_SERVER_APPLICATION_PATH ?>img/information.svg"
                      class="inline-image"
                      title="<?= gettext("This is the last day the employee worked.") ?>">

@@ -28,7 +28,7 @@ class examine_roster {
     private $Roster_of_goods_receipt_employees;
     private $Opening_times;
 
-    public function __construct(array $Roster, int $date_unix, int $branch_id, workforce $workforce) {
+    public function __construct(array $Roster, int $date_unix, int $branch_id, PDR\Workforce\Workforce $workforce) {
 
         $this->Roster_of_all_employees = $Roster;
         $this->Roster_of_qualified_pharmacist_employees = roster_headcount::get_roster_of_qualified_pharmacist_employees($Roster, $workforce);
@@ -59,7 +59,7 @@ class examine_roster {
      * @param array $List_of_branch_objects
      * @param object $workforce
      */
-    public function check_for_overlap(string $date_sql, array $List_of_branch_objects, workforce $workforce) {
+    public function check_for_overlap(string $date_sql, array $List_of_branch_objects, PDR\Workforce\Workforce $workforce) {
         $user_dialog = new user_dialog();
         $sql_query = "SELECT `first`.`employee_key`,"
                 . " `first`.`Dienstbeginn` as first_start, `first`.`Dienstende` as first_end, "
@@ -76,7 +76,7 @@ class examine_roster {
         $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql));
         while ($row = $result->fetch(PDO::FETCH_OBJ)) {
             $message = sprintf(gettext('Conflict at employee %1$s <br>%2$s to %3$s (%4$s) <br>with<br>%5$s to %6$s (%7$s)'),
-                    $workforce->get_employee_last_name($row->employee_key),
+                    $workforce->getEmployeeLastName($row->employee_key),
                     $row->first_start, $row->first_end, $List_of_branch_objects[$row->first_branch]->getShortName(),
                     $row->second_start, $row->second_end, $List_of_branch_objects[$row->second_branch]->getShortName()
             );

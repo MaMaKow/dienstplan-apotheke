@@ -18,6 +18,7 @@
  */
 package Selenium;
 
+import Selenium.Utilities.LogCollector;
 import Selenium.rosterpages.Workforce;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -94,6 +95,7 @@ public class PrincipleRosterItem {
         try {
             breakDurationSeconds = breakEnd.toSecondOfDay() - breakStart.toSecondOfDay();
         } catch (Exception e) {
+            LogCollector.warn("break duration could not be calculated.");
         }
         return (workDurationSeconds - breakDurationSeconds) / 3600;
     }

@@ -128,7 +128,7 @@ class AbsenceDatabaseHandler {
          * We define a list of still existing coworkers.
          *  There might be workers in the database, that do not work anymore, but still have vacations registered in the database.
          */
-        $workforce = new \workforce($dateSql);
+        $workforce = new \PDR\Workforce\Workforce($dateSql);
         if (!isset($workforce)) {
             throw new \UnexpectedValueException("\$workforce must be set but was '$workforce'. ");
         }
@@ -138,7 +138,7 @@ class AbsenceDatabaseHandler {
         $sqlQuery = "SELECT * FROM `absence` WHERE `start` <= :start AND `end` >= :end;";
         $result = \database_wrapper::instance()->run($sqlQuery, array('start' => $dateSql, 'end' => $dateSql));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
-            if (!$workforce->employee_exists($row->employee_key)) {
+            if (!$workforce->employeeExists($row->employee_key)) {
                 /**
                  * <p lang=de>
                  * Es werden nur Mitarbeiter ausgegeben, die auch noch arbeiten.
@@ -169,7 +169,7 @@ class AbsenceDatabaseHandler {
      * @param int $employeeKey The employee key for whom to retrieve absence information.
      * @return \PDR\Roster\Absence|null An absence object if found, or null if no absence records are found.
      */
-    public static function getSpecificAbsenceObject(\DateTime $dateObject, int $employeeKey): ?\PDR\Roster\Absence {
+    public static function getSpecificAbsenceObject(\DateTime $dateObject, ?int $employeeKey): ?\PDR\Roster\Absence {
         $absence = null;
         $dateSqlString = $dateObject->format("Y-m-d");
         $query = "SELECT *

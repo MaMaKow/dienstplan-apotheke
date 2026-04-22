@@ -24,7 +24,7 @@
  */
 abstract class examine_attendance {
 
-    public static function checkForAttendantAbsentees(array $Roster, PDR\Roster\AbsenceCollection $absenceCollection, workforce $workforce) {
+    public static function checkForAttendantAbsentees(array $Roster, PDR\Roster\AbsenceCollection $absenceCollection, PDR\Workforce\Workforce $workforce) {
         $userDialog = new user_dialog();
         if (array() === $Roster) {
             return FALSE;
@@ -73,7 +73,7 @@ abstract class examine_attendance {
         $userDialog = new user_dialog();
         $RosterWorkers = self::get_roster_workers($Roster);
         $PrincipleRosterWorkers = self::get_roster_workers($PrincipleRoster);
-        $workforce = new workforce($dateObject->format('Y-m-d'));
+        $workforce = new PDR\Workforce\Workforce($dateObject->format('Y-m-d'));
 
         $EmployeeDifference = array_diff($PrincipleRosterWorkers, $RosterWorkers);
         self::trimAbsentEmployees($EmployeeDifference, $absenceCollection);

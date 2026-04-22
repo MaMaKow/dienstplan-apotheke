@@ -22,9 +22,9 @@ require '../../../default.php';
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_INT, date('Y'));
 $dateStartObject = new DateTime("$year-01-01");
 $dateEndObject = new DateTime("$year-12-31");
-$workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
+$workforce = new PDR\Workforce\Workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
-$employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$employeeKey = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employeeKey, 1);
 
 \PDR\Input\OvertimeInputHandler::handleUserInput($session, $employeeKey);

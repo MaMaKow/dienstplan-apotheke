@@ -33,7 +33,7 @@ abstract class task_rotation {
      */
     const MAX_FUTURE_WEEKS = 8;
 
-    public static function task_rotation_main(array $Dates_unix, string $task, int $branch_id, workforce $workforce) {
+    public static function task_rotation_main(array $Dates_unix, string $task, int $branch_id, PDR\Workforce\Workforce $workforce) {
         $number_of_filled_days = 0;
         $weekly_rotation_div_html = "<div id='weeklyRotation'>\n";
         $weekly_rotation_div_html .= "<h2>" . $task . "</h2>\n";
@@ -47,7 +47,7 @@ abstract class task_rotation {
             $weekly_rotation_div_html .= $dateString . ": ";
             if (NULL !== $rotation_employee_key) {
                 $number_of_filled_days++;
-                $weekly_rotation_div_html .= $workforce->get_employee_last_name($rotation_employee_key);
+                $weekly_rotation_div_html .= $workforce->getEmployeeLastName($rotation_employee_key);
             }
             $weekly_rotation_div_html .= "<br>\n";
         }
@@ -58,7 +58,7 @@ abstract class task_rotation {
         return $weekly_rotation_div_html;
     }
 
-    private static function task_rotation_get_worker(int $date_unix, string $task, int $branch_id, workforce $workforce): ?int {
+    private static function task_rotation_get_worker(int $date_unix, string $task, int $branch_id, PDR\Workforce\Workforce $workforce): ?int {
         $date_sql = date("Y-m-d", $date_unix);
         /*
          * We want the PTAs to take turns in the lab at a weekly basis.
@@ -94,7 +94,7 @@ abstract class task_rotation {
      * @param string $task The task that is to be rotated.
      * @return int $rotation_employee_key A worker for a given day and task.
      */
-    private static function task_rotation_set_worker(int $date_unix, string $task, int $branch_id, workforce $workforce): ?int {
+    private static function task_rotation_set_worker(int $date_unix, string $task, int $branch_id, PDR\Workforce\Workforce $workforce): ?int {
         /*
          * If nobody is stored to do a task. Then we have to decide, whos is up to do it.
          */
@@ -113,7 +113,7 @@ abstract class task_rotation {
          */
         $List_of_compounding_rotation_employees = array();
         foreach ($workforce->getListOfCompoundingEmployees() as $employee_key) {
-            if ($workforce->getListOfEmployees()[$employee_key]->get_principle_branch_id() == $branch_id) {
+            if ($workforce->getListOfEmployees()[$employee_key]->getPrincipleBranchId() == $branch_id) {
                 $List_of_compounding_rotation_employees[$employee_key] = $employee_key;
             }
         }
@@ -229,7 +229,7 @@ abstract class task_rotation {
         $task_employee_key = self::read_task_employee_from_database($task, $date_sql, $branch_id);
         global $workforce;
         if (NULL === $workforce) {
-            $workforce = new workforce($date_sql);
+            $workforce = new PDR\Workforce\Workforce($date_sql);
         }
         $task_rotation_select_html = "";
         $task_rotation_select_html .= "<div id='taskRotationSelectDiv'>";
@@ -243,9 +243,9 @@ abstract class task_rotation {
          * The empty option is necessary to enable the deletion of employees:
          */
         $task_rotation_select_html .= "<option value=''>&nbsp;</option>";
-        if ($workforce->employee_exists($task_employee_key) or !isset($task_employee_key)) {
+        if ($workforce->employeeExists($task_employee_key) or !isset($task_employee_key)) {
             foreach ($workforce->getListOfCompoundingEmployees() as $employee_key) {
-                $employee_object = $workforce->get_employee_object($employee_key);
+                $employee_object = $workforce->getEmployeeObject($employee_key);
                 if ($task_employee_key == $employee_key and NULL !== $task_employee_key) {
                     $task_rotation_select_html .= "<option value=$employee_key selected>" . $employee_object->getFullName() . "</option>";
                 } else {

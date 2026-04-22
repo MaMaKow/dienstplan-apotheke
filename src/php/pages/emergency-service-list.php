@@ -25,7 +25,7 @@ $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_I
 \PDR\Utility\GeneralUtility::createCookie('mandant', $branchId, 30);
 \PDR\Utility\GeneralUtility::createCookie('datum', $dateSql, 0.5);
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 0.5);
-$workforce = new workforce($year . "-01-01", $year . "-12-31");
+$workforce = new PDR\Workforce\Workforce($year . "-01-01", $year . "-12-31");
 $holidays = new \PDR\DateTime\Holidays($year);
 \PDR\Input\EmergencyServiceInputHandler::handleUserInput($session);
 if (isset($_POST) && !empty($_POST)) {
@@ -119,7 +119,7 @@ $userDialog->build_messages();
                 $dateString = $dateObject->format("d.m.Y");
                 echo "\n<td>" . $dateString . "</td>\n";
                 echo "<td>\n";
-                echo $workforce->get_employee_last_name($emergencyService->getEmployee_key());
+                echo $workforce->getEmployeeLastName($emergencyService->getEmployee_key());
                 echo "</td>\n";
             }
             echo "<td class='replacement-td'></td>\n</form>\n</tr>\n";
