@@ -30,7 +30,7 @@ class roster {
      */
     public $array_of_days_of_roster_items = array();
 
-    function __construct(DateTime $date_start_object, DateTime $date_end_object = NULL, int $employee_key = NULL, int $branch_id = NULL, int $other_branch_id = NULL) {
+    function __construct(DateTime $date_start_object, DateTime $date_end_object = NULL, ?int $employee_key = NULL, ?int $branch_id = NULL, ?int $other_branch_id = NULL) {
         if (NULL === $date_start_object) {
             throw new Exception('A start date must be given for ' . __METHOD__);
         }

@@ -18,6 +18,7 @@ package Selenium.principlerosterpages;
 
 import Selenium.MenuFragment;
 import Selenium.PrincipleRosterItem;
+import Selenium.Utilities.LogCollector;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -26,7 +27,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -34,9 +38,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.Point;
 
 /**
  *
@@ -240,13 +241,18 @@ public class DayPage {
         LocalTime dutyEndLocalTime;
         LocalTime breakStartLocalTime = null;
         LocalTime breakEndLocalTime = null;
-        try {
-            breakStartLocalTime = LocalTime.parse(breakStart, DateTimeFormatter.ISO_TIME);
-            breakEndLocalTime = LocalTime.parse(breakEnd, DateTimeFormatter.ISO_TIME);
-        } catch (Exception e) {
-        }
         dutyStartLocalTime = LocalTime.parse(dutyStart, DateTimeFormatter.ISO_TIME);
         dutyEndLocalTime = LocalTime.parse(dutyEnd, DateTimeFormatter.ISO_TIME);
+        try {
+            breakStartLocalTime = LocalTime.parse(breakStart, DateTimeFormatter.ISO_TIME);
+        } catch (Exception e) {
+            LogCollector.warn("breakStart cloud not be parsed:\"" + breakStart + "\"");
+        }
+        try {
+            breakEndLocalTime = LocalTime.parse(breakEnd, DateTimeFormatter.ISO_TIME);
+        } catch (Exception e) {
+            LogCollector.warn("breakEnd cloud not be parsed:\"" + breakEnd + "\"");
+        }
         int branchId = getRosterValueBranchId();
         String comment = getRosterValueComment(rosterTableRow);
         PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(employeeKey, localDate.getDayOfWeek(),
@@ -436,6 +442,18 @@ public class DayPage {
         WebElement breakStartRosterInputElement = insertedRowElement.findElement(breakStartInputBy);
         if (null != rosterItem.getBreakStart()) {
             breakStartRosterInputElement.sendKeys(rosterItem.getBreakStart().format(DateTimeFormatter.ofPattern("HH:mm")));
+        } else {
+            breakStartRosterInputElement.clear();
+        }
+        /**
+         * break end:
+         */
+        By breakEndInputBy = By.xpath(".//*[contains(@name, \"break_end_sql\")]");
+        WebElement breakEndRosterInputElement = insertedRowElement.findElement(breakEndInputBy);
+        if (null != rosterItem.getBreakEnd()) {
+            breakEndRosterInputElement.sendKeys(rosterItem.getBreakEnd().format(DateTimeFormatter.ofPattern("HH:mm")));
+        } else {
+            breakEndRosterInputElement.clear();
         }
         /**
          * comment:
@@ -466,14 +484,6 @@ public class DayPage {
             //wait.until(ExpectedConditions.visibilityOfElementLocated(commentInputBy));
             WebElement commentRosterInputElement = insertedRowElement.findElement(commentInputBy);
             commentRosterInputElement.sendKeys(rosterItem.getComment());
-        }
-        /**
-         * break end:
-         */
-        By breakEndInputBy = By.xpath(".//*[contains(@name, \"break_end_sql\")]");
-        WebElement breakEndRosterInputElement = insertedRowElement.findElement(breakEndInputBy);
-        if (null != rosterItem.getBreakEnd()) {
-            breakEndRosterInputElement.sendKeys(rosterItem.getBreakEnd().format(DateTimeFormatter.ofPattern("HH:mm")));
         }
         /**
          * employee:

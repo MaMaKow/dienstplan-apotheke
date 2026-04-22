@@ -38,7 +38,7 @@ class examine_rosterTest extends PHPUnit_Framework_TestCase {
      * @param string $date_sql Date string in mysql date format
      */
     public function date_instantiator($date_sql) {
-        $this->workforce = new workforce($date_sql);
+        $this->workforce = new PDR\Workforce\Workforce($date_sql);
         $date_unix = strtotime($date_sql);
         $this->Roster = roster::read_roster_from_database($this->branch_id, $date_sql);
         $this->instance = new examine_roster($this->Roster, $date_unix, $this->branch_id, $this->workforce);
@@ -64,7 +64,7 @@ class examine_rosterTest extends PHPUnit_Framework_TestCase {
     public function testcheck_for_overlap($date_sql, $result) {
         $this->date_instantiator($date_sql);
         user_dialog::$Messages = array();
-        $workforce = new workforce($date_sql);
+        $workforce = new PDR\Workforce\Workforce($date_sql);
         $this->assertTrue($this->instance->check_for_overlap($date_sql, $this->List_of_branch_objects, $workforce));
         $this->assertTrue($result === user_dialog::$Messages);
     }

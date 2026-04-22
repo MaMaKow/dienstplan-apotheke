@@ -33,7 +33,7 @@ $date_unix = strtotime($date_sql);
 $dateObject = new DateTime($date_sql);
 $holidays = new \PDR\DateTime\Holidays($dateObject->format("Y"));
 $isHoliday = $holidays->isHoliday($dateObject);
-$workforce = new workforce($date_sql);
+$workforce = new PDR\Workforce\Workforce($date_sql);
 $user_dialog = new user_dialog();
 /**
  * @todo POST/REDIRECT/GET
@@ -185,8 +185,8 @@ $html_text .= $user_dialog->build_messages();
 $html_text .= "<form accept-charset='utf-8' id='rosterForm' method=post>\n";
 $html_text .= "<script> "
         . " var Roster_array = " . json_encode($Roster, JSON_UNESCAPED_UNICODE) . ";\n"
-        . " var List_of_employee_names = " . json_encode($workforce->get_list_of_employee_names(), JSON_UNESCAPED_UNICODE) . ";\n"
-        . " var List_of_employee_professions = " . json_encode($workforce->get_list_of_employee_professions(), JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_names = " . json_encode($workforce->getListOfEmployeeNames(), JSON_UNESCAPED_UNICODE) . ";\n"
+        . " var List_of_employee_professions = " . json_encode($workforce->getListOfEmployeeProfessions(), JSON_UNESCAPED_UNICODE) . ";\n"
         . "</script>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";

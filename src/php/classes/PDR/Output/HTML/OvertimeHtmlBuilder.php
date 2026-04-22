@@ -47,7 +47,7 @@ class OvertimeHtmlBuilder {
     private static function buildOverviewTableBody() {
         $startDateObject = new \DateTime("October last year");
         $endDateObject = new \DateTime("last day of December this year");
-        $workforce = new \workforce($startDateObject->format("Y-m-d"), $endDateObject->format("Y-m-d"));
+        $workforce = new \PDR\Workforce\Workforce($startDateObject->format("Y-m-d"), $endDateObject->format("Y-m-d"));
         $tableRows = "<tbody>";
         // Create a DateTime object for the current date
         $currentDate = new \DateTime();
@@ -68,9 +68,9 @@ class OvertimeHtmlBuilder {
             }
             $tableRows .= "<tr class='$class'>";
             $tableRows .= "<td>"
-                    . $workforce->get_employee_first_name($currentOvertime->getEmployeeKey())
+                    . $workforce->getEmployeeFirstName($currentOvertime->getEmployeeKey())
                     . "&nbsp;"
-                    . $workforce->get_employee_last_name($currentOvertime->getEmployeeKey())
+                    . $workforce->getEmployeeLastName($currentOvertime->getEmployeeKey())
                     . "</td>";
             $tableRows .= "<td>" . $currentOvertime->getBalance() . "</td>";
             $dateString = $dateObject->format('d.m.Y');

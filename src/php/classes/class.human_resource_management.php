@@ -52,8 +52,8 @@ abstract class human_resource_management {
             $Worker["start_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "start_of_employment", FILTER_SANITIZE_SPECIAL_CHARS));
             $Worker["end_of_employment"] = database_wrapper::null_from_post_to_mysql(filter_input(INPUT_POST, "end_of_employment", FILTER_SANITIZE_SPECIAL_CHARS));
 
-            $workforce = new workforce();
-            if (null != $Worker["employee_key"] and $workforce->employee_exists($Worker["employee_key"])) {
+            $workforce = new PDR\Workforce\Workforce();
+            if (null != $Worker["employee_key"] and $workforce->employeeExists($Worker["employee_key"])) {
                 $result_archive = self::archiveExistingEmployee($Worker);
                 $result_update = self::updateExistingEmployee($Worker);
                 return $result_update;

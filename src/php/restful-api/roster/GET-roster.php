@@ -32,8 +32,8 @@ $session->verifyAccessToken();
  */
 $dateStartString = \user_input::getVariableFromSpecificInput('dateStart', INPUT_GET, FILTER_SANITIZE_SPECIAL_CHARS, (new DateTime('now'))->format("Y-m-d"));
 $dateEndString = \user_input::getVariableFromSpecificInput('dateEnd', INPUT_GET, FILTER_SANITIZE_SPECIAL_CHARS, $dateStartString);
-$workforce = new \workforce($dateStartString, $dateEndString);
-$defaultEmployeeKey = $workforce->get_default_employee_key();
+$workforce = new \PDR\Workforce\Workforce($dateStartString, $dateEndString);
+$defaultEmployeeKey = $workforce->getDefaultEmployeeKey();
 $defaultEmployeeFullName = $workforce->getEmployeeFullName($defaultEmployeeKey);
 $employeeFullName = \user_input::getVariableFromSpecificInput('employeeFullName', INPUT_GET, FILTER_SANITIZE_SPECIAL_CHARS, $defaultEmployeeFullName);
 $employeeKey = $workforce->getKeyByFullName($employeeFullName);

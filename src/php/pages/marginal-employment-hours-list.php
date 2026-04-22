@@ -86,11 +86,11 @@ if ($month_or_part <= 12) {
     }
 }
 
-$workforce = new workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
-$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$workforce = new PDR\Workforce\Workforce($date_start_object->format('Y-m-d'), $date_end_object->format('Y-m-d'));
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
-if (!$workforce->employee_exists($employee_key)) {
-    $employee_key = $workforce->get_default_employee_key();
+if (!$workforce->employeeExists($employee_key)) {
+    $employee_key = $workforce->getDefaultEmployeeKey();
 }
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted

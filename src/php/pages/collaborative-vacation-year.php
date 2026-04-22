@@ -20,8 +20,8 @@ $year = \user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_
 $month_number = \user_input::get_variable_from_any_input('month_number', FILTER_SANITIZE_NUMBER_INT, date("n"));
 $dateStartObject = new DateTime("$year-01-01");
 $dateEndObject = new DateTime("$year-12-31");
-$workforce = new workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
-$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$workforce = new PDR\Workforce\Workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
+$employee_key = user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 \PDR\Utility\GeneralUtility::createCookie('month_number', $month_number, 1);
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);

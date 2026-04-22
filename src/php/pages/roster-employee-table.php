@@ -26,9 +26,9 @@ $date_end_object = clone $date_start_object;
 $date_end_object->add(new DateInterval('P6D'));
 $date_sql_end = date('Y-m-d', strtotime('+ ' . ($tage - 1) . ' days', $date_unix));
 \PDR\Utility\GeneralUtility::createCookie('datum', $date_sql, 1);
-$workforce = new workforce($date_sql_start, $date_sql_end);
-$employee_key = (int) user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
-if (!$workforce->employee_exists($employee_key)) {
+$workforce = new PDR\Workforce\Workforce($date_sql_start, $date_sql_end);
+$employee_key = (int) user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
+if (!$workforce->employeeExists($employee_key)) {
     $employee_key = $_SESSION['user_object']->employee_key;
 }
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employee_key, 1);
@@ -57,7 +57,7 @@ if (!isset($workforce->getListOfEmployees()[$employee_key])) {
      * Therefore we might get his/her id in the cookie.
      * Now we just change it to someone, who is actually there:
      */
-    $employee_key = $workforce->get_default_employee_key();
+    $employee_key = $workforce->getDefaultEmployeeKey();
 }
 
 $roster_object = new roster(clone $date_start_object, clone $date_end_object, $employee_key, NULL);
@@ -68,7 +68,7 @@ foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*
      * The $Branch_roster contanins all the rosters from all branches, including the current branch.
      */
-    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($workforce->getListOfEmployees()[$employee_key]->principle_branch_id, $other_branch_id, $date_sql_start, $date_sql_end);
+    $Branch_roster[$other_branch_id] = roster::read_branch_roster_from_database($workforce->getListOfEmployees()[$employee_key]->getPrincipleBranchId(), $other_branch_id, $date_sql_start, $date_sql_end);
 }
 
 //Produce the output:
@@ -95,7 +95,7 @@ echo "<br>";
 
 echo "<table>\n";
 echo build_html_roster_views::build_roster_read_only_table_head($Roster, array(build_html_roster_views::OPTION_SHOW_EMERGENCY_SERVICE_NAME));
-echo build_html_roster_views::build_roster_readonly_employee_table($Roster, $workforce->getListOfEmployees()[$employee_key]->principle_branch_id);
+echo build_html_roster_views::build_roster_readonly_employee_table($Roster, $workforce->getListOfEmployees()[$employee_key]->getPrincipleBranchId());
 $table_foot_html = "<tfoot>"
 //. "<tr class=page-break></tr>"
         . "\n<tr>\n";

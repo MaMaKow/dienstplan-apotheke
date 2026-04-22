@@ -46,14 +46,14 @@ class EmergencyService {
     }
 
     public function getEmployeeShortDescriptor() {
-        $workforce = new \workforce();
-        return $workforce->get_employee_short_descriptor($this->employeeKey);
+        $workforce = new \PDR\Workforce\Workforce();
+        return $workforce->getEmployeeShortDescriptor($this->employeeKey);
     }
 
     public function getEmployeeLastName(): string {
-        $workforce = new \workforce($this->dateObject->format('Y-m-d'));
+        $workforce = new \PDR\Workforce\Workforce($this->dateObject->format('Y-m-d'));
         if (is_integer($this->employeeKey)) {
-            $employeeLastName = $workforce->get_employee_last_name($this->employeeKey);
+            $employeeLastName = $workforce->getEmployeeLastName($this->employeeKey);
             return $employeeLastName;
         }
         return '???';

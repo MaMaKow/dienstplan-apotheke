@@ -162,7 +162,7 @@ class user_dialog_email {
         ));
     }
 
-    public function aggregate_messages_about_changed_roster_to_employees(workforce $workforce) {
+    public function aggregate_messages_about_changed_roster_to_employees(PDR\Workforce\Workforce $workforce) {
         $sql_query = "SELECT DISTINCT `user_key` "
                 . " FROM `user_email_notification_cache`;";
         $result = database_wrapper::instance()->run($sql_query);

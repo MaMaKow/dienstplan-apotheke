@@ -42,7 +42,7 @@ $date_sql_start = $date_sql;
 
 
 //Hole eine Liste aller Mitarbeiter
-$workforce = new workforce($date_sql_start, $date_sql_end);
+$workforce = new PDR\Workforce\Workforce($date_sql_start, $date_sql_end);
 $Roster = roster::read_roster_from_database($branch_id, $date_sql_start, $date_sql_end);
 foreach (array_keys($List_of_branch_objects) as $other_branch_id) {
     /*

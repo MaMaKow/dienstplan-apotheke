@@ -281,21 +281,21 @@ class roster_item implements \JsonSerializable {
 
     public function check_roster_item_sequence() {
         $user_dialog = new user_dialog();
-        $workforce = new workforce();
+        $workforce = new PDR\Workforce\Workforce();
         if ($this->break_end_int > $this->duty_end_int) {
-            $error_message = sprintf(gettext('The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break starts, before it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->getEmployeeShortDescriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if (!empty($this->break_start_int) and $this->break_start_int < $this->duty_start_int) {
-            $error_message = sprintf(gettext('The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break starts, before duty begins.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->getEmployeeShortDescriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if ($this->break_end_int < $this->break_start_int) {
-            $error_message = sprintf(gettext('The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
+            $error_message = sprintf(gettext('The break ends, after duty ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->getEmployeeShortDescriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
         if ($this->duty_end_int < $this->duty_start_int) {
-            $error_message = sprintf(gettext('The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->get_employee_short_descriptor($this->employee_key), $this->duty_start_sql);
+            $error_message = sprintf(gettext('The duty starts, after it ends.<br>Employee id: %1$s<br>Start of duty: %2$s'), $workforce->getEmployeeShortDescriptor($this->employee_key), $this->duty_start_sql);
             $user_dialog->add_message($error_message, E_USER_ERROR, TRUE);
         }
     }

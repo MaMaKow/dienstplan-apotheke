@@ -33,7 +33,7 @@ $date_unix_start = strtotime($date_sql);
 \PDR\Utility\GeneralUtility::createCookie("datum", $date_sql, 0.5);
 $date_unix_end = $date_unix_start + ($tage - 1) * PDR_ONE_DAY_IN_SECONDS;
 
-$workforce = new workforce();
+$workforce = new PDR\Workforce\Workforce();
 /*
  * Start of output:
  */

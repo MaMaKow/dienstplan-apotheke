@@ -19,7 +19,7 @@ require_once '../../../default.php';
 /*
  * Get a list of all employees:
  */
-$workforce = new workforce();
+$workforce = new PDR\Workforce\Workforce();
 
 $user = $_SESSION['user_object'];
 

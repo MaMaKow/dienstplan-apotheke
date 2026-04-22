@@ -175,7 +175,7 @@ class AbsenceUtility {
             }
 
             // Instantiate the workforce and get the employee object.
-            $workforce = new \workforce();
+            $workforce = new \PDR\Workforce\Workforce();
             $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
 
             // Call the method to write absence data to the database.
@@ -189,7 +189,7 @@ class AbsenceUtility {
     /**
      * Write absence data to the database for a given employee.
      *
-     * @param \employee $employeeObject The employee for whom to write absence data.
+     * @param \PDR\Workforce\employee $employeeObject The employee for whom to write absence data.
      * @param string $beginn The start date of the absence period.
      * @param string $ende The end date of the absence period.
      * @param int $reasonId The reason code for the absence.
@@ -197,13 +197,13 @@ class AbsenceUtility {
      * @param string $approval The approval status for the absence (default: 'approved').
      * @return bool Returns true if the operation is successful, otherwise false.
      */
-    private static function writeAbsenceDataToDatabase(\employee $employeeObject, string $beginn, string $ende, int $reasonId, string $comment = null, string $approval = 'approved'): bool {
+    private static function writeAbsenceDataToDatabase(\PDR\Workforce\employee $employeeObject, string $beginn, string $ende, int $reasonId, string $comment = null, string $approval = 'approved'): bool {
         // Create DateTime objects for the start and end dates of the absence.
         $dateStartObject = new \DateTime($beginn);
         $dateEndObject = new \DateTime($ende);
 
         // Get the employee key.
-        $employeeKey = $employeeObject->get_employee_key();
+        $employeeKey = $employeeObject->getEmployeeKey();
 
         // Calculate the number of absence days using the provided method.
         $days = self::calculateEmployeeAbsenceDays(clone $dateStartObject, clone $dateEndObject, $employeeObject);
@@ -265,7 +265,7 @@ class AbsenceUtility {
      * @param employee $employeeObject The employee for whom to calculate absence days.
      * @return int The total number of absence days within the specified range.
      */
-    public static function calculateEmployeeAbsenceDays(\DateTime $dateStartObject, \DateTime $dateEndObject, \employee $employeeObject): int {
+    public static function calculateEmployeeAbsenceDays(\DateTime $dateStartObject, \DateTime $dateEndObject, \PDR\Workforce\employee $employeeObject): int {
         // Create a user dialog instance to handle messages.
         $userDialog = new \user_dialog();
 
@@ -283,7 +283,7 @@ class AbsenceUtility {
 
             // Check if the employee normally works on the current day.
             if (!\roster::is_empty_roster_day_array($employeeObject->get_principle_roster_on_date($dateObject))
-                    or (0 === $employeeObject->working_week_days and $currentWeekDayNumber < 6)) {
+                    or (0 == $employeeObject->getWorkingWeekDays() and $currentWeekDayNumber < 6)) {
                 /*
                  * The employee normally does not work on this day.
                  * This might be Saturdays and Sundays, or a specific non-working day.
@@ -307,7 +307,7 @@ class AbsenceUtility {
             } else {
                 // The current day is a working day for the employee.
                 $dateString = $dateObject->format('D d.m.Y');
-                $message = sprintf(gettext('%1$s is not a working day for %2$s and will not be counted.'), $dateString, $employeeObject->full_name);
+                $message = sprintf(gettext('%1$s is not a working day for %2$s and will not be counted.'), $dateString, $employeeObject->getFullName());
                 $userDialog->add_message($message, E_USER_NOTICE);
             }
         }
@@ -336,26 +336,26 @@ class AbsenceUtility {
      * Calculate the number of holidays due for an employee in a given year.
      *
      * @param int $employeeKey The unique identifier for the employee.
-     * @param Workforce $workforce The workforce object containing employee data.
+     * @param \PDR\Workforce\Workforce $workforce The workforce object containing employee data.
      * @param int $year The year for which to calculate holidays.
      * @return int The number of holidays due.
      */
-    public static function getNumberOfHolidaysDue($employeeKey, $workforce, $year): int {
+    public static function getNumberOfHolidaysDue(int $employeeKey, \PDR\Workforce\Workforce $workforce, int $year): int {
         $firstDayOfThisYear = new \DateTime("01.01." . $year);
         $lastDayOfThisYear = new \DateTime("31.12." . $year);
         $monthsWorkedInThisYear = 0;
 
         $employeeObject = $workforce->getListOfEmployees()[$employeeKey];
-        $numberOfHolidaysPrinciple = $employeeObject->holidays;
-        $numberOfWorkingWeekDays = $employeeObject->working_week_days;
+        $numberOfHolidaysPrinciple = $employeeObject->getHolidays();
+        $numberOfWorkingWeekDays = $employeeObject->getWorkingWeekDays();
         $numberOfHolidaysDue = $numberOfHolidaysPrinciple;
-        if (NULL !== $employeeObject->start_of_employment) {
-            $startOfEmployment = new \DateTime($employeeObject->start_of_employment);
+        if (NULL !== $employeeObject->getStartOfEmployment()) {
+            $startOfEmployment = new \DateTime($employeeObject->getStartOfEmployment());
         } else {
             $startOfEmployment = $firstDayOfThisYear;
         }
-        if (NULL !== $employeeObject->end_of_employment) {
-            $endOfEmployment = new \DateTime($employeeObject->end_of_employment);
+        if (NULL !== $employeeObject->getEndOfEmployment()) {
+            $endOfEmployment = new \DateTime($employeeObject->getEndOfEmployment());
         } else {
             $endOfEmployment = $lastDayOfThisYear;
         }

@@ -185,7 +185,7 @@ class OvertimeInputHandler {
      */
     private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours, string $deletionReason): void {
         $configuration = new \PDR\Application\Configuration();
-        $workforce = new \workforce();
+        $workforce = new \PDR\Workforce\Workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
         $locale = $configuration->getLC_TIME();
         $dateString = self::formatReadableDate($deletionDate, $locale);
@@ -213,7 +213,7 @@ class OvertimeInputHandler {
             float $overtimeHoursOld, float $overtimeHoursNew,
             string $overtimeReasonOld, string $overtimeReasonNew): void {
         $configuration = new \PDR\Application\Configuration();
-        $workforce = new \workforce();
+        $workforce = new \PDR\Workforce\Workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
         $dateStringOld = \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateOld);
         $dateStringNew = \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateNew);
@@ -323,8 +323,8 @@ class OvertimeInputHandler {
         $difference = (float) filter_input(INPUT_POST, 'difference', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $overtimeHours = $workingHoursHave - $workingHoursShould;
         if ($difference !== $overtimeHours) {
-            PDR\Utility\GeneralUtility::printDebugVariable($difference);
-            PDR\Utility\GeneralUtility::printDebugVariable($overtimeHours);
+            \PDR\Utility\GeneralUtility::printDebugVariable($difference);
+            \PDR\Utility\GeneralUtility::printDebugVariable($overtimeHours);
             throw new \Exception("Error while calculating the overtime.");
         }
         /**

@@ -6,7 +6,7 @@
 class workforceTest extends PHPUnit_Framework_TestCase {
 
     /**
-     * @var workforce
+     * @var Workforce
      */
     protected $object;
 
@@ -15,7 +15,7 @@ class workforceTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new workforce('2018-10-01');
+        $this->object = new PDR\Workforce\Workforce('2018-10-01');
     }
 
     /**
@@ -33,8 +33,8 @@ class workforceTest extends PHPUnit_Framework_TestCase {
         $this->assertObjectHasAttribute('List_of_compounding_employees', $this->object);
 
         $this->assertCount(18, $this->object->List_of_employees);
-        $this->assertSame($this->object->List_of_employees[5]->full_name, "Ma Maier");
-        $this->assertSame($this->object->List_of_employees[5]->working_week_days, 5);
+        $this->assertSame($this->object->List_of_employees[5]->getFullName(), "Ma Maier");
+        $this->assertSame($this->object->List_of_employees[5]->getWorkingWeekDays(), 5);
         $this->assertSame($this->object->List_of_branch_employees[1], array(
             0 => 2,
             1 => 5,
@@ -81,5 +81,4 @@ class workforceTest extends PHPUnit_Framework_TestCase {
             4 => 16,
         ));
     }
-
 }

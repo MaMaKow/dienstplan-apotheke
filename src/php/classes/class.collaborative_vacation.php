@@ -128,8 +128,8 @@ class collaborative_vacation {
          * Insert new entry data into the table absence:
          */
         if ("save" === $command) {
-            $workforce = new \workforce();
-            $employee_object = $workforce->get_employee_object($employee_key);
+            $workforce = new \PDR\Workforce\Workforce();
+            $employee_object = $workforce->getEmployeeObject($employee_key);
             $days = \PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays(new DateTime($start_date_string), new DateTime($end_date_string), $employee_object);
             PDR\Database\AbsenceDatabaseHandler::insertAbsence($employee_key, $start_date_string, $end_date_string, $days, $reason_id, $comment, $approval, $_SESSION['user_object']->user_name);
         }
@@ -370,10 +370,10 @@ class collaborative_vacation {
 
             $employeeKey = $absence->getEmployeeKey();
 
-            $workforce = new workforce($dateObject->format('Y-m-d'));
-            $employeeRepresentation = $workforce->get_employee_short_descriptor($employeeKey);
-            if ($workforce->employee_exists($employeeKey)) {
-                $profession = $workforce->get_employee_profession($employeeKey);
+            $workforce = new PDR\Workforce\Workforce($dateObject->format('Y-m-d'));
+            $employeeRepresentation = $workforce->getEmployeeShortDescriptor($employeeKey);
+            if ($workforce->employeeExists($employeeKey)) {
+                $profession = $workforce->getEmployeeProfession($employeeKey);
                 $employeeExists = ""; //blank means existing.
             } else {
                 $profession = "";
@@ -389,7 +389,7 @@ class collaborative_vacation {
                 /*
                  * In the year mode there is not enough space for the last names:
                  */
-                $employeeRepresentation = mb_substr($workforce->get_employee_last_name($employeeKey), 0, 16);
+                $employeeRepresentation = mb_substr($workforce->getEmployeeLastName($employeeKey), 0, 16);
             }
 
             $absentEmployeesContainers .= "<span "
@@ -406,13 +406,13 @@ class collaborative_vacation {
 
     /**
      *
-     * @param workforce $workforce
+     * @param PDR\Workforce\Workforce $workforce
      * @param array $absence
      * @return string
      * @todo Perhaps build a real absence object from a real absence class.
      */
-    private function build_absence_year_absent_employees_containers_title_text(\workforce $workforce, \PDR\Roster\Absence $absence): string {
-        $absence_title_text = $workforce->get_employee_last_name($absence->getEmployeeKey()) . "\n";
+    private function build_absence_year_absent_employees_containers_title_text(PDR\Workforce\Workforce $workforce, \PDR\Roster\Absence $absence): string {
+        $absence_title_text = $workforce->getEmployeeLastName($absence->getEmployeeKey()) . "\n";
         $absence_title_text .= \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId()) . "\n";
         $absence_title_text .= $absence->getComment() . "\n";
         $dateObjectAbenceStart = $absence->getStart();

@@ -63,7 +63,7 @@ class maintenance {
             /*
              * user_dialog_email:
              */
-            $workforce = new workforce();
+            $workforce = new PDR\Workforce\Workforce();
             $user_dialog_email = new user_dialog_email();
             $user_dialog_email->clean_up_user_email_notification_cache();
             $user_dialog_email->aggregate_messages_about_changed_roster_to_employees($workforce);

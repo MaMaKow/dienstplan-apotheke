@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace PDR\Workforce;
+
 /**
  * An employee is someone, who works on one of the branches. The person can be scheduled into rosters, take vacation and collect overtime hours.
  *   An employee may register as a \user. The user_key WILL NOT be the the employee_key.
@@ -26,10 +28,10 @@
 class employee {
 
     private $primary_key;
-    public $first_name;
-    public $last_name;
-    public $full_name;
-    public $profession;
+    private $first_name;
+    private $last_name;
+    private $full_name;
+    private $profession;
     private $goods_receipt;
     private $compounding;
 
@@ -37,28 +39,28 @@ class employee {
      *
      * @var int The branch_id of the typical branch, on which the most working hours are done.
      */
-    public $principle_branch_id;
+    private $principle_branch_id;
 
     /**
      *
      * @var float The working hours per week as contracted in the employment contract.
      */
-    public $working_week_hours;
+    private $working_week_hours;
 
     /**
      *
      * @var float The number of days per week, which the employee normally works on.
      *   This can be a float if an employee works different days on alternating weeks.
      */
-    public $working_week_days;
-    public $lunch_break_minutes;
+    private $working_week_days;
+    private $lunch_break_minutes;
 
     /**
      *
      * @var string The first day on which the employee did work.
      *   This might be a day before the start of the actual contract.
      */
-    public $start_of_employment;
+    private $start_of_employment;
 
     /**
      *
@@ -66,14 +68,14 @@ class employee {
      *   This might be a day after the start of the actual contract.
      *   This might also be a day without work if the employee was sick or had holidays or overtime left.
      */
-    public $end_of_employment;
+    private $end_of_employment;
 
     /**
      *
      * @var int The number of vacation days per year, which the employee is granted.
      *   This is not a float, at least not in Germany. In Germany the number has to be rounded up [ceil()].
      */
-    public $holidays;
+    private $holidays;
 
     /**
      *
@@ -81,35 +83,36 @@ class employee {
      */
     private $Principle_roster;
 
-    public function __construct($private_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $compounding, $goods_receipt, $branch, $start_of_employment, $end_of_employment, $holidays) {
-        $this->primary_key = $private_key;
-        $this->last_name = $last_name;
-        $this->first_name = $first_name;
-        $this->full_name = $first_name . " " . $last_name;
-        $this->working_week_hours = $working_week_hours;
-        $this->lunch_break_minutes = $lunch_break_minutes;
+    public function __construct($primaryKey, $lastName, $firstName, $workingWeekHours, $lunchBreakMinutes, $profession, $compounding, $goodsReceipt, $branch, $startOfEmployment, $endOfEmployment, $holidays) {
+        $this->primary_key = $primaryKey;
+        $this->last_name = $lastName;
+        $this->first_name = $firstName;
+        $this->full_name = $firstName . " " . $lastName;
+        $this->working_week_hours = $workingWeekHours;
+        $this->lunch_break_minutes = $lunchBreakMinutes;
         $this->profession = $profession;
         $this->compounding = $compounding;
-        $this->goods_receipt = $goods_receipt;
-        $this->start_of_employment = $start_of_employment;
-        $this->end_of_employment = $end_of_employment;
+        $this->goods_receipt = $goodsReceipt;
+        $this->start_of_employment = $startOfEmployment;
+        $this->end_of_employment = $endOfEmployment;
         $this->holidays = $holidays;
         $this->principle_branch_id = $branch;
         $this->Principle_roster = array();
-        $this->working_week_days = principle_roster::get_working_week_days($this->primary_key);
+        $this->working_week_days = \principle_roster::get_working_week_days($this->primary_key);
     }
 
-    public function get_principle_roster_on_date(DateTime $date_object) {
+    public function get_principle_roster_on_date(\DateTime $date_object): array {
         /**
          * @var int $date_unix is the unix timestamp representing the $date_object.
          */
         $date_unix = $date_object->getTimestamp();
         if (empty($this->Principle_roster[$date_unix])) {
-            $Example_roster = principle_roster::read_current_principle_employee_roster_from_database($this->primary_key, clone $date_object, clone $date_object);
+            $Example_roster = \principle_roster::read_current_principle_employee_roster_from_database($this->primary_key, clone $date_object, clone $date_object);
             $this->Principle_roster[$date_unix] = $Example_roster[$date_unix];
         }
         return $this->Principle_roster[$date_unix];
     }
+
     /**
      * Calculates the principle working hours for the employee on a specified date.
      *
@@ -120,7 +123,7 @@ class employee {
      * @param DateTime $date_object The date for which to calculate the employee's principle working hours.
      * @return int The sum of the employee's working hours on the specified date.
      */
-    public function getPrincipleHoursOnDate(DateTime $date_object) {
+    public function getPrincipleHoursOnDate(\DateTime $date_object): float {
         /**
          * @var int $date_unix Unix timestamp representing the $date_object.
          */
@@ -128,7 +131,7 @@ class employee {
 
         // Check if the roster for this date is already cached; if not, load it from the database.
         if (empty($this->Principle_roster[$date_unix])) {
-            $Example_roster = principle_roster::read_current_principle_employee_roster_from_database($this->primary_key, clone $date_object, clone $date_object);
+            $Example_roster = \principle_roster::read_current_principle_employee_roster_from_database($this->primary_key, clone $date_object, clone $date_object);
             $this->Principle_roster[$date_unix] = $Example_roster[$date_unix];
         }
 
@@ -141,23 +144,59 @@ class employee {
         return $sumOfHours;
     }
 
-    public function get_employee_key() {
+    public function getEmployeeKey(): ?int {
         return $this->primary_key;
     }
 
-    public function getFullName() {
+    public function getFullName(): ?string {
         return $this->first_name . " " . $this->last_name;
     }
 
-    public function get_principle_branch_id() {
+    public function getLastName(): ?string {
+        return $this->last_name;
+    }
+
+    public function getFirstName(): ?string {
+        return $this->first_name;
+    }
+
+    public function getPrincipleBranchId(): ?int {
         return $this->principle_branch_id;
     }
 
-    public function can_do_goods_receipt() {
+    public function getProfession(): ?string {
+        return $this->profession;
+    }
+
+    public function getStartOfEmployment(): ?string {
+        return $this->start_of_employment;
+    }
+
+    public function getEndOfEmployment(): ?string {
+        return $this->end_of_employment;
+    }
+
+    public function canDoGoodsReceipt(): ?bool {
         return $this->goods_receipt;
     }
 
-    public function can_do_compounding() {
+    public function canDoCompounding(): ?bool {
         return $this->compounding;
+    }
+
+    public function getWorkingWeekHours(): ?float {
+        return $this->working_week_hours;
+    }
+
+    public function getWorkingWeekDays(): ?float {
+        return $this->working_week_days;
+    }
+
+    public function getLunchBreakMinutes(): ?float {
+        return $this->lunch_break_minutes;
+    }
+
+    public function getHolidays(): ?int {
+        return $this->holidays;
     }
 }

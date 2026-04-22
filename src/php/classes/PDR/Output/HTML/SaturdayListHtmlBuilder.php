@@ -32,7 +32,7 @@ class SaturdayListHtmlBuilder {
 
         $saturdayRotation = new \saturday_rotation($branchId);
         $saturdayRotation->get_participation_team_id($dateObject, $holidays);
-        $workforce = new \workforce($dateObject->format('Y-m-d'));
+        $workforce = new \PDR\Workforce\Workforce($dateObject->format('Y-m-d'));
         $absenceCollection = \PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($dateObject->format('Y-m-d'));
 
         $Roster = \roster::read_roster_from_database($branchId, $dateObject->format('Y-m-d'));
@@ -70,7 +70,7 @@ class SaturdayListHtmlBuilder {
         return $tableRow;
     }
 
-    private static function getSaturdayRotationTeamMemberNamesSpan(\saturday_rotation $saturdayRotation, \workforce $workforce, \PDR\Roster\AbsenceCollection $absenceCollection) {
+    private static function getSaturdayRotationTeamMemberNamesSpan(\saturday_rotation $saturdayRotation, \PDR\Workforce\Workforce $workforce, \PDR\Roster\AbsenceCollection $absenceCollection) {
         $SaturdayRotationTeamMemberIds = array();
         $saturdayRotationTeamId = $saturdayRotation->team_id;
         if (NULL !== $saturdayRotationTeamId and FALSE !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
@@ -89,7 +89,7 @@ class SaturdayListHtmlBuilder {
         $SaturdayRotationTeamMemberNames = array();
         foreach ($SaturdayRotationTeamMemberIds as $employeeKey) {
 
-            if ($workforce->employee_exists($employeeKey)) {
+            if ($workforce->employeeExists($employeeKey)) {
                 $prefix = '<span>';
                 $suffix = '</span>';
                 if ($absenceCollection->containsEmployeeKey($employeeKey)) {
@@ -97,7 +97,7 @@ class SaturdayListHtmlBuilder {
                     $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($employeeKey)->getReasonId()) . ')</span>';
                 }
 
-                $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->getListOfEmployees()[$employeeKey]->last_name . $suffix;
+                $SaturdayRotationTeamMemberNames[] = $prefix . $workforce->getListOfEmployees()[$employeeKey]->getLastName() . $suffix;
             } else {
                 $SaturdayRotationTeamMemberNames[] = "$employeeKey???";
             }
@@ -105,18 +105,18 @@ class SaturdayListHtmlBuilder {
         return $SaturdayRotationTeamMemberNames;
     }
 
-    private static function getRosteredEmployeesNames(array $Roster, \workforce $workforce, \PDR\Roster\AbsenceCollection $absenceCollection): array {
+    private static function getRosteredEmployeesNames(array $Roster, \PDR\Workforce\Workforce $workforce, \PDR\Roster\AbsenceCollection $absenceCollection): array {
         $RosteredEmployees = array();
         foreach ($Roster as $RosterDayArray) {
             foreach ($RosterDayArray as $rosterItem) {
-                if ($workforce->employee_exists($rosterItem->employee_key)) {
+                if ($workforce->employeeExists($rosterItem->employee_key)) {
                     $prefix = '<span>';
                     $suffix = '</span>';
                     if ($absenceCollection->containsEmployeeKey($rosterItem->employee_key)) {
                         $prefix = '<span class="absent">';
                         $suffix = "&nbsp;(" . \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absenceCollection->getAbsenceByEmployeeKey($rosterItem->employee_key)->getReasonId()) . ')</span>';
                     }
-                    $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->get_employee_last_name($rosterItem->employee_key) . $suffix;
+                    $RosteredEmployees[$rosterItem->employee_key] = $prefix . $workforce->getEmployeeLastName($rosterItem->employee_key) . $suffix;
                 }
             }
         }

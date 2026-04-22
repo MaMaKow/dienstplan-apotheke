@@ -20,8 +20,8 @@ $year = \user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_
 
 $dateStartObject = new \DateTime("$year-01-01");
 $dateEndObject = new \DateTime("$year-12-31");
-$workforce = new \workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
-$employeeKey = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->get_default_employee_key());
+$workforce = new \PDR\Workforce\Workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
+$employeeKey = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employeeKey, 30);
@@ -39,7 +39,7 @@ if (isset($_POST) && !empty($_POST)) {
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
 $number_of_holidays_due = \PDR\Utility\AbsenceUtility::getNumberOfHolidaysDue($employeeKey, $workforce, $year);
-$number_of_holidays_principle = $workforce->getListOfEmployees()[$employeeKey]->holidays;
+$number_of_holidays_principle = $workforce->getListOfEmployees()[$employeeKey]->getHolidays();
 $number_of_holidays_taken = \PDR\Database\AbsenceDatabaseHandler::getNumberOfHolidaysTaken($employeeKey, $year);
 $number_of_remaining_holidays_submitted = \PDR\Database\AbsenceDatabaseHandler::getNumberOfRemainingHolidaysSubmitted($employeeKey, $year);
 $number_of_remaining_holidays_left = $number_of_holidays_due - ($number_of_holidays_taken + $number_of_remaining_holidays_submitted);
@@ -84,7 +84,7 @@ foreach ($listOfAbsences as $absence) {
     $tablebody .= $absence->getEnd()->format("d.m.Y") . "</div>";
     $tablebody .= "<input id=end_in_" . $absence->getStart()->format("Y-m-d") . " style='display: none;' type=date name='ende' value=" . $absence->getEnd()->format("Y-m-d") . " form='$html_form_id'> ";
     if ($session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ABSENCE)) {
-        $tablebody .= \PDR\Output\HTML\AbsenceHtmlBuilder::buildButtonCutOverlap($collectionOfOverlappingAbsences, $absence, $workforce->get_employee_object($employeeKey));
+        $tablebody .= \PDR\Output\HTML\AbsenceHtmlBuilder::buildButtonCutOverlap($collectionOfOverlappingAbsences, $absence, $workforce->getEmployeeObject($employeeKey));
     }
     $tablebody .= "</td>\n";
 

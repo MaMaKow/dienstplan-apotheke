@@ -258,7 +258,7 @@ class saturday_rotation {
         $currentYear = (new DateTime())->format('Y');
         $dateRangeMin = new DateTime('01.01.' . $currentYear);
         $dateRangeMax = new DateTime('31.12.' . $currentYear);
-        $workforce = new workforce($dateRangeMin->format('Y-m-d'), $dateRangeMax->format('Y-m-d'));
+        $workforce = new PDR\Workforce\Workforce($dateRangeMin->format('Y-m-d'), $dateRangeMax->format('Y-m-d'));
         $option_set_select_disabled_for_unprivileged_user = "";
         if (!$session->user_has_privilege(sessions::PRIVILEGE_CREATE_ROSTER)) {
             $option_set_select_disabled_for_unprivileged_user = "disabled";
@@ -281,7 +281,7 @@ class saturday_rotation {
                 $roster_input_row_employee_select .= "<option value=$employee_key>" . $employee_object->getFullName() . "</option>";
             }
         }
-        if (NULL !== $roster_employee_key and !$workforce->employee_exists($roster_employee_key)) {
+        if (NULL !== $roster_employee_key and !$workforce->employeeExists($roster_employee_key)) {
             /*
              * Unknown employee, probably someone from the past.
              */
