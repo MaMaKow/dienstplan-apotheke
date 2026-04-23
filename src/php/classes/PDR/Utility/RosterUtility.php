@@ -259,7 +259,7 @@ class RosterUtility {
         return $hoursWorkedTheoretically;
     }
 
-    private static function calculateWorkingHoursOnChristmas(\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
+    private static function calculateWorkingHoursOnChristmas(\PDR\Workforce\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
         $hoursWorkedTheoretically = 0;
 
         if (null === $absence) {
