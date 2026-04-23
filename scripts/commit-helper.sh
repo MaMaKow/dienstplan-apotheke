@@ -38,6 +38,31 @@ get_highest_version() {
     | sort -V \
     | tail -n 1
 }
+
+check_git_safety_state() {
+    # Rebase aktiv?
+    if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+        echo "ERROR: Rebase ist aktiv."
+        echo "commit-helper.sh darf während eines Rebase nicht ausgeführt werden."
+        exit 1
+    fi
+
+    # Merge aktiv?
+    if [ -f .git/MERGE_HEAD ]; then
+        echo "ERROR: Merge-Konflikt erkannt."
+        echo "Bitte zuerst Merge abschließen."
+        exit 1
+    fi
+
+    # Cherry-pick aktiv?
+    if [ -f .git/CHERRY_PICK_HEAD ]; then
+        echo "ERROR: Cherry-pick ist aktiv."
+        echo "Bitte zuerst Cherry-pick abschließen."
+        exit 1
+    fi
+}
+
+check_git_safety_state
 # Prüfe, ob Änderungen vorliegen:
 check_staged_changes
 
