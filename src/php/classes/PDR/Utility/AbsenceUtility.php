@@ -189,7 +189,7 @@ class AbsenceUtility {
     /**
      * Write absence data to the database for a given employee.
      *
-     * @param \PDR\Workforce\employee $employeeObject The employee for whom to write absence data.
+     * @param \PDR\Workforce\Employee $employeeObject The employee for whom to write absence data.
      * @param string $beginn The start date of the absence period.
      * @param string $ende The end date of the absence period.
      * @param int $reasonId The reason code for the absence.
@@ -197,7 +197,7 @@ class AbsenceUtility {
      * @param string $approval The approval status for the absence (default: 'approved').
      * @return bool Returns true if the operation is successful, otherwise false.
      */
-    private static function writeAbsenceDataToDatabase(\PDR\Workforce\employee $employeeObject, string $beginn, string $ende, int $reasonId, string $comment = null, string $approval = 'approved'): bool {
+    private static function writeAbsenceDataToDatabase(\PDR\Workforce\Employee $employeeObject, string $beginn, string $ende, int $reasonId, string $comment = null, string $approval = 'approved'): bool {
         // Create DateTime objects for the start and end dates of the absence.
         $dateStartObject = new \DateTime($beginn);
         $dateEndObject = new \DateTime($ende);
@@ -265,7 +265,7 @@ class AbsenceUtility {
      * @param employee $employeeObject The employee for whom to calculate absence days.
      * @return int The total number of absence days within the specified range.
      */
-    public static function calculateEmployeeAbsenceDays(\DateTime $dateStartObject, \DateTime $dateEndObject, \PDR\Workforce\employee $employeeObject): int {
+    public static function calculateEmployeeAbsenceDays(\DateTime $dateStartObject, \DateTime $dateEndObject, \PDR\Workforce\Employee $employeeObject): int {
         // Create a user dialog instance to handle messages.
         $userDialog = new \user_dialog();
 

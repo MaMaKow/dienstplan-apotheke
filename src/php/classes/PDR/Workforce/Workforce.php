@@ -90,7 +90,7 @@ class Workforce {
         $this->ListOfGoodsReceiptEmployees = array();
         $this->ListOfCompoundingEmployees = array();
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
-            $this->ListOfEmployees[$row->primary_key] = new \PDR\Workforce\employee((int) $row->primary_key, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, $row->compounding, $row->goods_receipt, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
+            $this->ListOfEmployees[$row->primary_key] = new \PDR\Workforce\Employee((int) $row->primary_key, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, $row->compounding, $row->goods_receipt, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
             if (in_array($row->profession, array('Apotheker', 'PI'))) {
                 $this->ListOfQualifiedPharmacistEmployees[] = $row->primary_key;
             }
@@ -166,7 +166,7 @@ class Workforce {
         $sqlQuery = 'SELECT * FROM `employees` ORDER BY `last_name`, `first_name` ASC;';
         $result = \database_wrapper::instance()->run($sqlQuery);
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
-            $ListOfAllEmployees[$row->primary_key] = new \PDR\Workforce\employee((int) $row->primary_key, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, $row->compounding, $row->goods_receipt, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
+            $ListOfAllEmployees[$row->primary_key] = new \PDR\Workforce\Employee((int) $row->primary_key, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, $row->compounding, $row->goods_receipt, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
         }
         return $ListOfAllEmployees;
     }
@@ -184,9 +184,9 @@ class Workforce {
         return $employeeKey . '???';
     }
 
-    public function getEmployeeObject(?int $employeeKey): \PDR\Workforce\employee {
+    public function getEmployeeObject(?int $employeeKey): \PDR\Workforce\Employee {
         if (isset(self::$ListOfAllEmployees[$employeeKey])) {
-            if (self::$ListOfAllEmployees[$employeeKey] instanceof \PDR\Workforce\employee) {
+            if (self::$ListOfAllEmployees[$employeeKey] instanceof \PDR\Workforce\Employee) {
                 return self::$ListOfAllEmployees[$employeeKey];
             }
         }
@@ -194,7 +194,7 @@ class Workforce {
     }
 
     public function employeeExists(?int $employeeKey): bool {
-        if (isset($this->ListOfEmployees[$employeeKey]) and $this->ListOfEmployees[$employeeKey] instanceof \PDR\Workforce\employee) {
+        if (isset($this->ListOfEmployees[$employeeKey]) and $this->ListOfEmployees[$employeeKey] instanceof \PDR\Workforce\Employee) {
             return TRUE;
         }
         return FALSE;
@@ -306,7 +306,7 @@ class Workforce {
      * @param type $numberOfCharactersOfFirstName
      * @param type $numberOfCharactersOfLastName
      */
-    private function changeShortDescriptorByChars(\PDR\Workforce\employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void {
+    private function changeShortDescriptorByChars(\PDR\Workforce\Employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void {
         $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
         /**
          * Only add this variant, if it does not create another duplicate:
@@ -322,14 +322,14 @@ class Workforce {
      * @param int $numberOfCharactersOfFirstName
      * @param int $numberOfCharactersOfLastName
      */
-    private function changeShortDescriptorWithKey(\PDR\Workforce\employee $employeeKey, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void {
+    private function changeShortDescriptorWithKey(\PDR\Workforce\Employee $employeeKey, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void {
         $employee = $this->getEmployeeObject($employeeKey);
         $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
         $shortDescriptor .= $employee->getEmployeeKey();
         self::$ListOfShortDescriptors[$employeeKey] = $shortDescriptor;
     }
 
-    private function createShortDescriptor(\PDR\Workforce\employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): string {
+    private function createShortDescriptor(\PDR\Workforce\Employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): string {
         $shortDescriptor = "";
         $shortDescriptor .= mb_substr($employee->getFirstName(), 0, $numberOfCharactersOfFirstName);
         $shortDescriptor .= mb_substr($employee->getLastName(), 0, $numberOfCharactersOfLastName);
@@ -349,7 +349,7 @@ class Workforce {
                 return $employeeKey;
             }
         }
-        if (!empty($this->ListOfEmployees and min($this->ListOfEmployees) instanceof \PDR\Workforce\employee)) {
+        if (!empty($this->ListOfEmployees and min($this->ListOfEmployees) instanceof \PDR\Workforce\Employee)) {
             $employee = min($this->ListOfEmployees);
             $employeeKey = $employee->getEmployeeKey();
             return $employeeKey;
@@ -360,7 +360,7 @@ class Workforce {
         return NULL;
     }
 
-    public function getEmptyEmployee(): \PDR\Workforce\employee {
+    public function getEmptyEmployee(): \PDR\Workforce\Employee {
         $privateKey = null;
         $lastName = null;
         $firstName = null;
@@ -374,7 +374,7 @@ class Workforce {
         $startOfEmployment = null;
         $endOfEmployment = null;
         $holidays = 28;
-        $employee = new \PDR\Workforce\employee($privateKey, $lastName, $firstName, $workingWeekHours, $lunchBreakMinutes, $profession, $compounding, $goodsReceipt, $branchId, $startOfEmployment, $endOfEmployment, $holidays);
+        $employee = new \PDR\Workforce\Employee($privateKey, $lastName, $firstName, $workingWeekHours, $lunchBreakMinutes, $profession, $compounding, $goodsReceipt, $branchId, $startOfEmployment, $endOfEmployment, $holidays);
         return $employee;
     }
 

@@ -25,7 +25,7 @@ class employeeTest extends PHPUnit_Framework_TestCase {
         $start_of_employment = '2015-01-01';
         $end_of_employment = NULL;
         $holidays = 28;
-        $this->object = new employee($employee_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch, $start_of_employment, $end_of_employment, $holidays);
+        $this->object = new PDR\Workforce\Employee($employee_key, $last_name, $first_name, $working_week_hours, $lunch_break_minutes, $profession, $branch, $start_of_employment, $end_of_employment, $holidays);
     }
 
     /**
@@ -48,5 +48,4 @@ class employeeTest extends PHPUnit_Framework_TestCase {
         $duty_end_sql = $Principle_roster[$date_object->getTimestamp()][0]->__get('duty_end_sql');
         $this->assertEquals('20:00', $duty_end_sql);
     }
-
 }

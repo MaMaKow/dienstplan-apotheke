@@ -156,11 +156,11 @@ class AbsenceHtmlBuilder {
      *
      * @param \PDR\Roster\Absence $overlappingAbsence The overlapping absence.
      * @param \PDR\Roster\Absence $absenceInRow The original absence for which the overlap is being cut.
-     * @param \PDR\Workforce\employee $employeeObject The employee object associated with the absences.
+     * @param \PDR\Workforce\Employee $employeeObject The employee object associated with the absences.
      *
      * @return string The HTML hidden input field containing the serialized JSON representation of the new absence.
      */
-    private static function buildHiddenInputOverlapCutStart(\PDR\Roster\Absence $overlappingAbsence, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\employee $employeeObject): string {
+    private static function buildHiddenInputOverlapCutStart(\PDR\Roster\Absence $overlappingAbsence, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\Employee $employeeObject): string {
         $startWithoutOverlap = (clone $overlappingAbsence->getEnd())->add(new \DateInterval('P1D'));
         $days = \PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays(clone $startWithoutOverlap, clone $absenceInRow->getEnd(), $employeeObject);
 
@@ -187,11 +187,11 @@ class AbsenceHtmlBuilder {
      *
      * @param \PDR\Roster\Absence $overlappingAbsence The overlapping absence.
      * @param \PDR\Roster\Absence $absenceInRow The original absence for which the overlap is being cut.
-     * @param \PDR\Workforce\employee $employeeObject The employee object associated with the absences.
+     * @param \PDR\Workforce\Employee $employeeObject The employee object associated with the absences.
      *
      * @return string The HTML hidden input field containing the serialized JSON representation of the new absence.
      */
-    private static function buildHiddenInputOverlapCutEnd(\PDR\Roster\Absence $overlappingAbsence, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\employee $employeeObject): string {
+    private static function buildHiddenInputOverlapCutEnd(\PDR\Roster\Absence $overlappingAbsence, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\Employee $employeeObject): string {
         $endWithoutOverlap = (clone $overlappingAbsence->getStart())->sub(new \DateInterval('P1D'));
         $days = \PDR\Utility\AbsenceUtility::calculateEmployeeAbsenceDays(clone $absenceInRow->getStart(), clone $endWithoutOverlap, $employeeObject);
         $newAbsenceWithoutOverap = new \PDR\Roster\Absence(
@@ -219,7 +219,7 @@ class AbsenceHtmlBuilder {
      *
      * @param \PDR\Roster\Absence $overlappingAbsence The overlapping absence.
      * @param \PDR\Roster\Absence $absenceInRow The original absence for which the overlap is being handled.
-     * @param \PDR\Workforce\employee $employeeObject The employee object associated with the absences.
+     * @param \PDR\Workforce\Employee $employeeObject The employee object associated with the absences.
      *
      * @return string The HTML hidden input field containing the serialized JSON representation of the new absence.
      *
@@ -249,7 +249,7 @@ class AbsenceHtmlBuilder {
      * Description: This scenario is not handled.
      *
      */
-    public static function buildHiddenInputOverlap(\PDR\Roster\Absence $overlappingAbsence, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\employee $employeeObject): string {
+    public static function buildHiddenInputOverlap(\PDR\Roster\Absence $overlappingAbsence, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\Employee $employeeObject): string {
         $hiddenInput = "";
         if ($overlappingAbsence->getStart() < $absenceInRow->getStart() and $overlappingAbsence->getEnd() <= $absenceInRow->getEnd()) {
             // Cut at the start
@@ -300,10 +300,10 @@ class AbsenceHtmlBuilder {
      *
      * @param \PDR\Roster\AbsenceCollection $collectionOfOverlappingAbsences The collection of overlapping absences.
      * @param \PDR\Roster\Absence $absenceInRow The absence in the row.
-     * @param \PDR\Workforce\employee $employeeObject The employee object.
+     * @param \PDR\Workforce\Employee $employeeObject The employee object.
      * @return string HTML for the button to cut overlapping absences.
      */
-    public static function buildButtonCutOverlap(\PDR\Roster\AbsenceCollection $collectionOfOverlappingAbsences, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\employee $employeeObject): string {
+    public static function buildButtonCutOverlap(\PDR\Roster\AbsenceCollection $collectionOfOverlappingAbsences, \PDR\Roster\Absence $absenceInRow, \PDR\Workforce\Employee $employeeObject): string {
         if ($collectionOfOverlappingAbsences->isEmpty()) {
             return "";
         }

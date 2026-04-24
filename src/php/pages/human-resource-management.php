@@ -41,7 +41,7 @@ try {
  * add a "new employee" to the list. This can be used as a template to create a new employee.
  */
 $List_of_employees = $workforce->getListOfEmployees();
-$List_of_employees[] = new PDR\Workforce\employee(NULL, gettext("new employee"), null, 40, 30, null, false, false, null, null, null, 28);
+$List_of_employees[] = new PDR\Workforce\Employee(NULL, gettext("new employee"), null, 40, 30, null, false, false, null, null, null, 28);
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
 $session->exit_on_missing_privilege('create_employee');

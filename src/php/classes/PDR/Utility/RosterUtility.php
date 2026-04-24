@@ -127,13 +127,13 @@ class RosterUtility {
      *
      * If none of these conditions apply, the theoretical working hours remain at 0.
      *
-     * @param \PDR\Workforce\employee                 $employee   The employee for whom the calculation is performed.
+     * @param \PDR\Workforce\Employee                 $employee   The employee for whom the calculation is performed.
      * @param \DateTime                 $dateObject The date for which the theoretical hours are calculated.
      * @param \PDR\Roster\Absence|null  $absence    The absence record for the employee on the given date, if any.
      *
      * @return float The calculated theoretical working hours for the employee on the specified date.
      */
-    private static function calculateHoursWorkedTheoretically(\PDR\Workforce\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
+    private static function calculateHoursWorkedTheoretically(\PDR\Workforce\Employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
         $hoursWorkedTheoretically = 0;
         $holidays = new \PDR\DateTime\Holidays($dateObject->format("Y"));
         $isPublicHoliday = $holidays->isHoliday($dateObject);
@@ -195,13 +195,13 @@ class RosterUtility {
      *   then the employee's principle hours are credited even if absent.
      * - For absences with the above reasons, no additional hours are credited (resulting in 0 hours).
      *
-     * @param \PDR\Workforce\employee                 $employee   The employee for whom the holiday working hours are calculated.
+     * @param \PDR\Workforce\Employee                 $employee   The employee for whom the holiday working hours are calculated.
      * @param \DateTime                 $dateObject The date of the public holiday.
      * @param \PDR\Roster\Absence|null  $absence    The absence record for the employee on this date, if any.
      *
      * @return float The credited working hours for the employee on the holiday.
      */
-    private static function calculateWorkingHoursOnHoliday(\PDR\Workforce\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
+    private static function calculateWorkingHoursOnHoliday(\PDR\Workforce\Employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
         $hoursWorkedTheoretically = 0;
         /**
          * An Feiertagen werden die Arbeitsstunden gemäß Grundplan angenommen.
@@ -259,7 +259,7 @@ class RosterUtility {
         return $hoursWorkedTheoretically;
     }
 
-    private static function calculateWorkingHoursOnChristmas(\PDR\Workforce\employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
+    private static function calculateWorkingHoursOnChristmas(\PDR\Workforce\Employee $employee, \DateTime $dateObject, ?\PDR\Roster\Absence $absence): float {
         $hoursWorkedTheoretically = 0;
 
         if (null === $absence) {
@@ -301,7 +301,7 @@ class RosterUtility {
         return $workingWeekHoursShould;
     }
 
-    private static function calculateWorkingHoursEmployeeShould(array $Roster, \PDR\Workforce\employee $employeeObject): float {
+    private static function calculateWorkingHoursEmployeeShould(array $Roster, \PDR\Workforce\Employee $employeeObject): float {
         $workingHoursDayShould = 0;
         foreach (array_keys($Roster) as $dateUnix) {
             $dateSql = date('Y-m-d', $dateUnix);
@@ -321,7 +321,7 @@ class RosterUtility {
      * @param PDR\Roster\AbsenceCollection $absenceCollection - Collection of absences for the employee.
      * @return float - The calculated working hours for the employee on the specified date.
      */
-    private static function calculateWorkingHoursDayEmployeeShould(\DateTime $dateObject, \PDR\Workforce\employee $employeeObject, \PDR\Roster\AbsenceCollection $absenceCollection): float {
+    private static function calculateWorkingHoursDayEmployeeShould(\DateTime $dateObject, \PDR\Workforce\Employee $employeeObject, \PDR\Roster\AbsenceCollection $absenceCollection): float {
         if ($absenceCollection->containsEmployeeKey($employeeObject->getEmployeeKey())) {
             /**
              * Those who are absent do not have to work.

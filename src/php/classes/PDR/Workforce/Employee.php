@@ -25,7 +25,7 @@ namespace PDR\Workforce;
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
-class employee {
+class Employee {
 
     private $primary_key;
     private $first_name;
