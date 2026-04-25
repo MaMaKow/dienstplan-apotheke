@@ -2,7 +2,7 @@ FROM selenium/standalone-firefox:latest
 
 # Add the locale modification command
 USER root
-RUN sed -i '/de_DE.UTF-8/s/^# //g' /etc/locale.gen && sudo locale-gen
+RUN sed -i '/de_DE.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 ENV LC_ALL de_DE.UTF-8
 ENV LANG_WHICH=de
 ENV LANG_WHERE=DE
@@ -14,14 +14,13 @@ ENV VNC_NO_PASSWORD=1
 #RUN echo "${TZ}" > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata
 
 ENV FIREFOX_DOWNLOAD_URL="https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=de"
-RUN echo ${FIREFOX_DOWNLOAD_URL}
-RUN wget -O /tmp/firefox.tar.xz ${FIREFOX_DOWNLOAD_URL}
-RUN rm -rf /opt/firefox
-RUN rm -rf /opt/firefox-latest
-RUN tar -C /opt -xJf /tmp/firefox.tar.xz
-RUN rm /tmp/firefox.tar.xz
-RUN mv /opt/firefox /opt/firefox-latest
-RUN ln -fs /opt/firefox-latest/firefox /usr/bin/firefox
+#RUN echo ${FIREFOX_DOWNLOAD_URL}
+RUN wget -O /tmp/firefox.tar.xz ${FIREFOX_DOWNLOAD_URL} && \
+    rm -rf /opt/firefox /opt/firefox-latest && \
+    tar -C /opt -xJf /tmp/firefox.tar.xz && \
+    rm /tmp/firefox.tar.xz && \
+    mv /opt/firefox /opt/firefox-latest && \
+    ln -fs /opt/firefox-latest/firefox /usr/bin/firefox
 
 # Switch back to the default user "seluser" used by the base image
 USER seluser

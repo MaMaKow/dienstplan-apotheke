@@ -7,11 +7,17 @@
 # git pull origin testing -> selenium tests (integration tests) -> git merge into master -> git push origin master -> cd production -> git pull origin master (update in production)
 (
   flock -n 200 || { echo "Another instance is already running. Exiting."; exit 1; }
+set -e
+set -o pipefail
+cleanup() {
+    docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes 2>/dev/null || true
+    rm -rf "$repo_dir"
+}
+trap cleanup EXIT
 # setup directories
 repo_dir="/home/git/repositories/dienstplan-apotheke-testing"
 hostnameInstallTest="https://docker.martin-mandelkow.de"
 export JAVA_HOME=/usr/lib/jvm/default-java
-ENVIRONMENT=testing # set ENVIRONMENT for the Dockerfile to testing
 
 # Determine the script's directory
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -34,10 +40,14 @@ cd "$repo_dir" || exit
 git clone git@github.com:MaMaKow/dienstplan-apotheke.git
 cd dienstplan-apotheke || exit
 git checkout testing
-git fetch --all
 # Fetch latest changes from remote
-git fetch origin
+git fetch --all
 
+diff_output=$(git diff origin/master..origin/testing)
+if [ -z "$diff_output" ]; then
+    echo "No differences. Exiting."
+    exit 0
+fi
 # Test if the merge with master branch will succeed
 if ! git merge --no-ff origin/master; then
     echo "Automatic merge not possible. Exiting."
@@ -51,12 +61,6 @@ composer dump-autoload
 composer install
 #composer install --no-dev --optimize-autoloader
 
-# Check for differences between testing and master branches
-diff_output=$(git diff origin/master..origin/testing)
-if [ -z "$diff_output" ]; then
-    echo "No differences between testing and master branches. Exiting."
-    exit 0
-fi
 # Check if docker-compose file is existent
 if [ ! -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" ]; then
     echo "docker-compose.yml not found. Exiting."
@@ -75,20 +79,15 @@ echo HERE2
 
 # Install dependencies with composer
 # First get composer:
-EXPECTED_HASH=$(php -r "copy('https://composer.github.io/installer.sig', 'php://stdout');")
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-ACTUAL_HASH=$(php -r "echo hash_file('SHA384', 'composer-setup.php');")
-
-if [ "$EXPECTED_HASH" != "$ACTUAL_HASH" ]; then
-  echo "ERROR: Invalid installer hash"
-  rm composer-setup.php
-  exit 1
-fi
-
-php composer-setup.php
-rm composer-setup.php
-# Second run composer to install the dependencies:
-php composer.phar install
+#EXPECTED_HASH=$(php -r "copy('https://composer.github.io/installer.sig', 'php://stdout');")
+#php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+#ACTUAL_HASH=$(php -r "echo hash_file('SHA384', 'composer-setup.php');")
+#
+#if [ "$EXPECTED_HASH" != "$ACTUAL_HASH" ]; then
+#  echo "ERROR: Invalid installer hash"
+#  rm composer-setup.php
+#  exit 1
+#fi
 
 # configure environment for docker container
 # expose a random port and chosse random user names and passphrases
@@ -98,7 +97,8 @@ random_db_name=$(tr -dc a-z </dev/urandom | head -c 64; echo);
 random_user_name=$(tr -dc a-z </dev/urandom | head -c 32; echo);
 random_user_passphrase=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32; echo);
 random_root_passphrase=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32; echo);
-echo > .env # Clean up old data from .env file
+truncate -s 0 .env # Clean up old data from .env file
+echo ENVIRONMENT=testing >> .env # set ENVIRONMENT for the Dockerfile to testing
 echo SECURE_WEB_PORT=$random_secure_web_port >> .env
 echo MYSQL_ROOT_PASSWORD=$random_root_passphrase >> .env
 echo MYSQL_DATABASE=$random_db_name >> .env
@@ -125,11 +125,10 @@ databasePassword=$random_root_passphrase
 databaseName=$random_db_name
 databasePort=3306
 EOF
-echo HERE4
-#cat $repo_dir/dienstplan-apotheke/tests/selenium/Configuration.properties
-echo HERE5
-bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh
-echo HERE6
+echo "Start the selenium containers and mailhog"
+bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh # Selenium and mailhog docker containers
+
+echo "Start the Webserver docker container to hold the dienstplan-apotheke application"
 #docker-compose build --no-cache
 docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes
 docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" build
@@ -152,7 +151,7 @@ echo "Waiting for containers to be up."
 number_of_times_containers_checked=0;
 while ! check_containers; do
     echo -n "."
-    (( number_of_times_containers_checked++ ))
+    (( number_of_times_containers_checked++ )) || true
     if [ $number_of_times_containers_checked -gt 30 ]; then
 	echo "Taking to long to wait for container. Exiting."
         exit 1;
@@ -165,8 +164,8 @@ done
 # assuming the selenium tests are written to exit with a non-zero status on failure
 cd "$repo_dir"/dienstplan-apotheke/tests/selenium/ || exit
 
-echo Test connection using curl:
-curl -vvv https://$urlInstallTest/dienstplan-test/
+echo "Test connection using curl:"
+curl -vvv $urlInstallTest/dienstplan-test/
 
 
 /usr/bin/mvn test | tee ./mvn.log
@@ -184,7 +183,7 @@ else
     docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes
     exit 1
 fi
-docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" ps -q db
+test_db_container=$(docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" ps -q db)
 docker exec "$test_db_container" mysqldump -u root -p"$random_root_passphrase" "$random_db_name" > /tmp/db_dump.sql
 # cleanup the docker container also in case of success:
 docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes
@@ -196,16 +195,16 @@ echo "Current path:"
 pwd
 
 # Attempt to blank auth ssl (not needed if using PAT, usually used for SSH)
-echo "Trying to authenticate using SSH"
-ssh -T git@github.com
+#echo "Trying to authenticate using SSH"
+# ssh -T git@github.com || true
 
 # Try pushing to GitHub using the branch 'testing' to 'master'
 echo "Trying to push using branch 'testing' to 'master'"
 git push origin testing:master
 
 # Second attempt to push using a token
-echo "Trying to authenticate with token and push"
-git push https://$GIT_TOKEN@github.com/MaMaKow/dienstplan-apotheke.git testing:master
+#echo "Trying to authenticate with token and push"
+#git push https://$GIT_TOKEN@github.com/MaMaKow/dienstplan-apotheke.git testing:master
 
 echo "CI/CD pipeline executed successfully."
 # finally delete the testing directory

@@ -3,7 +3,7 @@
 # Use the official PHP image with Apache
 FROM php:8.0-apache
 
-ARG ENVIRONMENT=production
+#ARG ENVIRONMENT=production
 
 # Create configuration file for Apache
 RUN echo '<Directory /var/www/html>' \
@@ -26,8 +26,6 @@ RUN apt-get update && apt-get install -y \
     libkrb5-dev \
     libc-client-dev \
     libssl-dev \
-    libkrb5-dev \
-    libicu-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
