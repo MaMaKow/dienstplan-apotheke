@@ -60,6 +60,7 @@ abstract class task_rotation {
 
     private static function task_rotation_get_worker(int $date_unix, string $task, int $branch_id, PDR\Workforce\Workforce $workforce): ?int {
         $date_sql = date("Y-m-d", $date_unix);
+        $monday_date_sql = self::get_monday_date_sql_from_date_unix($date_unix);
         /*
          * We want the PTAs to take turns in the lab at a weekly basis.
          * We sort them by employee id and check for the last one to take his turn.
@@ -70,7 +71,7 @@ abstract class task_rotation {
         /*
          * Was this day already planned?
          */
-        $rotation_employee_key = self::read_task_employee_from_database($task, $date_sql, $branch_id);
+        $rotation_employee_key = self::read_task_employee_from_database($task, $monday_date_sql, $branch_id);
         if (NULL !== $rotation_employee_key) {
             $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($date_sql);
 
@@ -80,7 +81,7 @@ abstract class task_rotation {
             /*
              * If an employee is absent, then he/she can obviously not take the task:
              */
-            database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` = :date", array('date' => $date_sql));
+            database_wrapper::instance()->run("DELETE FROM `task_rotation` WHERE `date` = :date and `task` = :task and `branch_id` = :branch_id", array('date' => $monday_date_sql, 'task' => $task, 'branch_id' => $branch_id));
         }
         $rotation_employee_key = self::task_rotation_set_worker($date_unix, $task, $branch_id, $workforce);
         if (!empty($rotation_employee_key)) {
@@ -106,6 +107,7 @@ abstract class task_rotation {
         }
 
         $date_sql = date("Y-m-d", $date_unix);
+        $monday_date_sql = self::get_monday_date_sql_from_date_unix($date_unix);
         $rotation_employee_key = NULL;
         /*
          * Make a list of people who can do the task:
@@ -127,8 +129,8 @@ abstract class task_rotation {
          * From that point onwards, we will assign people to the task.
          * The assigning will take place on multiple days until the $date_sql.
          */
-        $sql_query = "SELECT * FROM `task_rotation` WHERE `date` <= :date and `task` = :task and `branch_id` = :branch_id ORDER BY `date` DESC LIMIT 1";
-        $result = database_wrapper::instance()->run($sql_query, array('date' => $date_sql, 'task' => $task, 'branch_id' => $branch_id));
+        $sql_query = "SELECT * FROM `task_rotation` WHERE `date` < :date and `task` = :task and `branch_id` = :branch_id ORDER BY `date` DESC LIMIT 1";
+        $result = database_wrapper::instance()->run($sql_query, array('date' => $monday_date_sql, 'task' => $task, 'branch_id' => $branch_id));
         $row = $result->fetch(PDO::FETCH_OBJ);
         if (empty($row->date)) {
             if (NULL === $List_of_compounding_rotation_employees) {
@@ -141,76 +143,55 @@ abstract class task_rotation {
             $sql_query = "INSERT INTO `task_rotation` (`task`, `date`, `employee_key`, `branch_id`) VALUES (:task, :date, :employee_key, :branch_id)";
             database_wrapper::instance()->run($sql_query, array(
                 'task' => $task,
-                'date' => $date_sql,
+                'date' => $monday_date_sql,
                 'branch_id' => $branch_id,
                 'employee_key' => $rotation_employee_key
             ));
             return $rotation_employee_key;
         }
 
-        $temp_date_object = new DateTime($row->date);
-        $stop_time_object = new DateTime();
-        $stop_time_object->setTimestamp($date_unix);
-        for ($temp_date_object->add(new DateInterval('P1D')); $temp_date_object <= $stop_time_object; $temp_date_object->add(new DateInterval('P1D'))) {
-            $latest_allowed_date_object = new DateTime('today');
-            $latest_allowed_date_object->add(new DateInterval('P' . task_rotation::MAX_FUTURE_WEEKS . 'W'));
-            if ($temp_date_object > $latest_allowed_date_object) {
-                /*
-                 * This value is only calculated and stored in the database,
-                 * if it is in the past or in the near future.
-                 * This is to make sure, that fresh absences and new employees can be regarded.
-                 * In the case of far future. An empty value is returned.
-                 */
-                return NULL;
-            }
-
-            $from_date_object = clone $temp_date_object;
-            $from_date_object->setISODate($from_date_object->format("Y"), $from_date_object->format("W"), 0); //Sunday
-            $from_date_object->sub(new DateInterval('P' . $task_workers_count . 'W')); //Sunday $task_workers_count weeks ago
-            $to_date_object = clone $temp_date_object;
-            $to_date_object->setISODate($to_date_object->format("Y"), $to_date_object->format("W"), 0); //Sunday
-            /*
-             * Remove absent employees for this day from the list of current available rotation employees:
-             */
-            $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($temp_date_object->format('Y-m-d'));
-            $List_of_current_compounding_rotation_employees = array_diff($List_of_compounding_rotation_employees, $absenceCollection->getListOfEmployeeKeys());
-            if (array() === $List_of_current_compounding_rotation_employees) {
-                /*
-                 * There is nobody here today to do the task.
-                 */
-                return FALSE;
-            }
-            $Done_rotation_count = self::read_done_rotation_count_from_database($List_of_current_compounding_rotation_employees, $from_date_object->format('Y-m-d'), $to_date_object->format('Y-m-d'));
-            if (array() === $Done_rotation_count) {
-                $next_rotation_employee_key = current($List_of_current_compounding_rotation_employees);
-            } else {
-                $next_rotation_employee_key = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
-            }
-            /**
-             * Take the employee, who did the task the least in the last weeks:
-             * min($Done_rotation_count) is the minimum number someone did the task.
-             * array_keys($Done_rotation_count, min($Done_rotation_count) is the employee_key(s) as an array of all the employees, who worked the least.
-             * current() just takes one of those least task-working employees.
-             */
-            if (!empty($next_rotation_employee_key)) {
-                $rotation_employee_key = $next_rotation_employee_key;
-            }
-            self::write_task_employee_to_database($task, $temp_date_object->format('Y-m-d'), $branch_id, $rotation_employee_key);
+        $latest_allowed_date_object = new DateTime('today');
+        $latest_allowed_date_object->add(new DateInterval('P' . task_rotation::MAX_FUTURE_WEEKS . 'W'));
+        $monday_date_object = new DateTime($monday_date_sql);
+        if ($monday_date_object > $latest_allowed_date_object) {
+            return NULL;
         }
+
+        $List_of_current_compounding_rotation_employees = self::get_available_employees_for_week($List_of_compounding_rotation_employees, $monday_date_object);
+        if (array() === $List_of_current_compounding_rotation_employees) {
+            return FALSE;
+        }
+        $from_date_object = clone $monday_date_object;
+        $from_date_object->sub(new DateInterval('P' . $task_workers_count . 'W'));
+        $Done_rotation_count = self::read_done_rotation_count_from_database($task, $branch_id, $List_of_current_compounding_rotation_employees, $from_date_object->format('Y-m-d'), $monday_date_sql);
+        if (array() === $Done_rotation_count) {
+            $next_rotation_employee_key = current($List_of_current_compounding_rotation_employees);
+        } else {
+            $next_rotation_employee_key = current(array_keys($Done_rotation_count, min($Done_rotation_count)));
+        }
+        if (!empty($next_rotation_employee_key)) {
+            $rotation_employee_key = $next_rotation_employee_key;
+        }
+        self::write_task_employee_to_database($task, $monday_date_sql, $branch_id, $rotation_employee_key);
         return $rotation_employee_key;
     }
 
-    private static function read_done_rotation_count_from_database($List_of_compounding_rotation_employees, $from_date_sql, $to_date_sql) {
+    private static function read_done_rotation_count_from_database(string $task, int $branch_id, array $List_of_compounding_rotation_employees, string $from_date_sql, string $to_date_sql): array {
         $Done_rotation_count = array();
         foreach ($List_of_compounding_rotation_employees as $employee_key) {
             $Done_rotation_count[$employee_key] = 0;
             $sql_query = "SELECT `employee_key`, COUNT(`date`) as `count`"
                     . "FROM `task_rotation` "
                     . "WHERE "
+                    . "`task` = :task "
+                    . "AND `branch_id` = :branch_id "
+                    . "AND "
                     . "`employee_key` = :employee_key "
-                    . "AND `date` > :date_from "
+                    . "AND `date` >= :date_from "
                     . "AND `date` < :date_to ";
             $result = database_wrapper::instance()->run($sql_query, array(
+                'task' => $task,
+                'branch_id' => $branch_id,
                 'employee_key' => $employee_key,
                 'date_from' => $from_date_sql,
                 'date_to' => $to_date_sql
@@ -222,6 +203,32 @@ abstract class task_rotation {
         }
         asort($Done_rotation_count);
         return $Done_rotation_count;
+    }
+
+    private static function get_monday_date_sql_from_date_unix(int $date_unix): string {
+        $date_object = new DateTime();
+        $date_object->setTimestamp($date_unix);
+        $date_object->setISODate((int) $date_object->format('o'), (int) $date_object->format('W'), 1);
+        return $date_object->format('Y-m-d');
+    }
+
+    private static function get_available_employees_for_week(array $employee_keys, DateTime $monday_date_object): array {
+        $available_employees = array();
+        foreach ($employee_keys as $employee_key) {
+            $number_of_absent_weekdays = 0;
+            for ($day_offset = 0; $day_offset < 5; $day_offset++) {
+                $day_date_object = clone $monday_date_object;
+                $day_date_object->add(new DateInterval('P' . $day_offset . 'D'));
+                $absenceCollection = PDR\Database\AbsenceDatabaseHandler::readAbsenteesOnDate($day_date_object->format('Y-m-d'));
+                if (TRUE === $absenceCollection->containsEmployeeKey($employee_key)) {
+                    $number_of_absent_weekdays++;
+                }
+            }
+            if (2 >= $number_of_absent_weekdays) {
+                $available_employees[$employee_key] = $employee_key;
+            }
+        }
+        return $available_employees;
     }
 
     public static function build_html_task_rotation_select($task, $date_sql, $branch_id) {
