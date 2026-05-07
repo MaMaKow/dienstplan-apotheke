@@ -24,3 +24,10 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     command: --general-log --general-log-file=/var/lib/mysql/general.log
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI / API
+    networks:
+      - default       # Damit web → mailhog per Hostname erreichbar ist

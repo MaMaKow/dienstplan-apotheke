@@ -57,8 +57,8 @@ public class TestConfigurationPage extends Selenium.TestPage {
              *
              */
             configurationPage.setEmailMethod("smtp");
-            configurationPage.setEmailSmtpHost("localhost");
-            configurationPage.setEmailSmtpPort(1025);
+            configurationPage.setEmailSmtpHost(propertyFile.getSmtpHost());
+            configurationPage.setEmailSmtpPort(propertyFile.getSmtpPort());
             configurationPage.setEmailSmtpUsername("foo_username");
             configurationPage.setEmailSmtpPassphrase("foo_passphrase");
 

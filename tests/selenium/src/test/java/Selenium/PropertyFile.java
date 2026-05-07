@@ -172,6 +172,7 @@ public class PropertyFile {
         }
         return "localhost";
     }
+
     public String getDatabasePort() {
         String property = properties.getProperty("databasePort");
         if (null != property) {
@@ -212,4 +213,13 @@ public class PropertyFile {
         return getPdrUserPassword();
     }
 
+    public String getSmtpHost() {
+        String property = properties.getProperty("smtpHost");
+        return (property != null) ? property : "localhost"; // Fallback für Abwärtskompatibilität
+    }
+
+    public int getSmtpPort() {
+        String property = properties.getProperty("smtpPort");
+        return (property != null) ? Integer.parseInt(property) : 1025;
+    }
 }

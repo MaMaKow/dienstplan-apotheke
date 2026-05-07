@@ -182,7 +182,13 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
             LogCollector.debug(responseBody);
             JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
             JsonArray listOfEmails = jsonObject.get("items").getAsJsonArray();
-            LogCollector.info("List of emails:");
+            LogCollector.debug("List of emails:");
+            LogCollector.debug(listOfEmails.toString());
+            if (listOfEmails.isEmpty()) {
+                Assert.fail("Keine E-Mail in MailHog gefunden. "
+                        + "Die Anwendung hat keine Änderungs-Benachrichtigung gesendet. Oder der Zugriff auf Mailhog ist gestört.");
+            }
+
             for (JsonElement currentEmail : listOfEmails) {
                 EmailParser emailParser = new EmailParser(currentEmail.toString());
                 String subject = emailParser.getSubject();
@@ -248,7 +254,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         }
 
         OvertimeEmployeePage overtimeEmployeePage = new OvertimeEmployeePage(driver);
-        LocalDate localDate = LocalDate.of(currentYear, Month.NOVEMBER, 25);// 25.11. in the current year
+        LocalDate localDate = LocalDate.of(currentYear, Month.NOVEMBER, 25);
         overtimeEmployeePage.selectYear(localDate.getYear());
         Employee employee = workforce.getEmployeeByFullName("Albert Krüger");
         overtimeEmployeePage.selectEmployee(employee.getEmployeeKey());
@@ -259,16 +265,19 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         LocalDate dateNew = LocalDate.of(currentYear, Month.NOVEMBER, 26);
         float hoursNew = -6;
         String reasonNew = "Baz";
+
         LogCollector.debug("addNewOvertime");
         overtimeEmployeePage.addNewOvertime(localDate, 7, "Bar");
+
+        // Verify the entry was NOT created in a far-future year (expected behavior)
         try {
-            overtimeEmployeePage.selectYear(currentYear + 4); // @TODO: Reicht auch plus zwei Jahre?
+            overtimeEmployeePage.selectYear(currentYear + 4);
             overtimeEmployeePage.getOvertimeByLocalDate(localDate);
-            //Thread.sleep(1000);
             LogCollector.error("Der Eintrag wurde gefunden.");
         } catch (Exception ex) {
             LogCollector.error("Der Eintrag wurde nicht erstellt.");
         }
+
         LogCollector.debug("before editOvertimeByLocalDate");
         overtimeEmployeePage.editOvertimeByLocalDate(localDate, dateNew, hoursNew, reasonNew);
         LogCollector.debug("after editOvertimeByLocalDate");
@@ -283,29 +292,29 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
             HttpGet request = new HttpGet(mailHogApiUrl);
             String responseBody = EntityUtils.toString(httpClient.execute(request).getEntity());
             JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-            String base64Body = jsonObject.get("items").getAsJsonArray()
-                    .get(0).getAsJsonObject()
-                    .get("Content").getAsJsonObject()
-                    .get("Body").getAsString();
-            // Remove all line breaks and spaces from the Base64 string
-            base64Body = base64Body.replaceAll("\\s+", "");  // This will remove spaces, tabs, and line breaks
-            byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
-            String decodedBody = new String(decodedBytes, StandardCharsets.UTF_8);
+            JsonArray items = jsonObject.get("items").getAsJsonArray();
 
-            /**
-             * Before Assertions, remove the overtime entry:
-             */
+            // Cleanup BEFORE assertions so DB is always clean even on test failure
             overtimeEmployeePage.removeOvertimeByLocalDate(dateNew);
             logoutPage = new LogoutPage();
             logoutPage.logout();
 
-            /**
-             * Assert that the decoded email body contains expected content
-             */
-            //LogCollector.debug(decodedBody);
+            // Guard: fail clearly if no email arrived instead of cryptic IndexOutOfBoundsException
+            if (items.isEmpty()) {
+                Assert.fail("Keine E-Mail in MailHog gefunden. "
+                        + "Die Anwendung hat keine Änderungs-Benachrichtigung gesendet.");
+            }
+
+            String base64Body = items.get(0).getAsJsonObject()
+                    .get("Content").getAsJsonObject()
+                    .get("Body").getAsString();
+            base64Body = base64Body.replaceAll("\\s+", "");
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
+            String decodedBody = new String(decodedBytes, StandardCharsets.UTF_8);
+
             String[] emailLines = decodedBody.split("\\r?\\n");
-            // Expected content for each line
-            String[] expectedLines = {"Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
+            String[] expectedLines = {
+                "Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
                 "Mitarbeitende: Albert Krüger",
                 "Datum: 25.11." + currentYear,
                 "Stunden: 7",
@@ -314,10 +323,11 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
                 "zu den neuen Werten:",
                 "Datum: 26.11." + currentYear,
                 "Stunden: -6",
-                "Grund: Baz"};
-            // Compare each line
+                "Grund: Baz"
+            };
             for (int i = 0; i < expectedLines.length; i++) {
-                softAssert.assertEquals(emailLines[i].trim(), expectedLines[i], "Mismatch at line " + (i + 1) + " = " + emailLines[i]);
+                softAssert.assertEquals(emailLines[i].trim(), expectedLines[i],
+                        "Mismatch at line " + (i + 1) + " = " + emailLines[i]);
             }
             softAssert.assertAll();
         }

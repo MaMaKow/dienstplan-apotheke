@@ -124,6 +124,8 @@ databaseHostname=db
 databasePassword=$random_root_passphrase
 databaseName=$random_db_name
 databasePort=3306
+smtpHost=mailhog
+smtpPort=1025
 EOF
 echo "Start the selenium containers and mailhog"
 bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh # Selenium and mailhog docker containers
