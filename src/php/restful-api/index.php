@@ -55,6 +55,14 @@ $router->addRoute(
 
 $router->addRoute(
         'GET',
+        '/users/me',
+        'UserController',
+        'getMyUserData',
+        'Daten des aktuell angemeldeten Benutzers abrufen'
+);
+
+$router->addRoute(
+        'GET',
         '/users/{id}',
         'UserController',
         'getUserById',

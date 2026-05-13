@@ -33,6 +33,10 @@ class UserController extends BaseController {
     }
 
     public function getUserById($matches) {
+        if (($matches[1] ?? null) === 'me') {
+            return $this->getMyUserData();
+        }
+
         $this->requireAdminPrivileges();
 
         try {
@@ -40,7 +44,7 @@ class UserController extends BaseController {
             $user = new \user($userId);
 
             // Sicherheitsrelevante Daten entfernen
-            $userData = $user->getSafeUserData(); // Diese Methode müsste implementiert werden
+            $userData = $user->getSafeUserData();
             $this->sendJson($userData);
         } catch (Exception $e) {
             $this->sendError($e->getMessage());
