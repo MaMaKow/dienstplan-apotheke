@@ -46,4 +46,25 @@ class UserController extends BaseController {
             $this->sendError($e->getMessage());
         }
     }
+    /**
+     * Returns the currently authenticated user as safe JSON data.
+     */
+    public function getMyUserData() {
+        try {
+            if (!$this->session->user_is_logged_in()) {
+                $this->sendError('Not authenticated', 401);
+            }
+
+            $currentUser = $this->session->getUserObject();
+            if (!$currentUser instanceof \user) {
+                $this->sendError('Not authenticated', 401);
+            }
+
+            $userData = $currentUser->getSafeUserData();
+            $this->sendJson($userData, 200);
+        } catch (Exception $e) {
+            $this->sendError($e->getMessage());
+        }
+    }
+
 }

@@ -451,6 +451,26 @@ class user {
         database_wrapper::instance()->run($sql_query, array('user_name' => $this->user_name));
     }
 
+
+    /**
+     * Returns all non-sensitive user data as an associative array.
+     *
+     * @return array<string, mixed>
+     */
+    public function getSafeUserData(): array {
+        return [
+            'primary_key' => $this->primary_key,
+            'employee_key' => $this->employee_key,
+            'user_name' => $this->user_name,
+            'email' => $this->email,
+            'status' => $this->status,
+            'receive_emails_on_changed_roster' => $this->receive_emails_on_changed_roster,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'privileges' => is_array($this->privileges) ? $this->privileges : [],
+        ];
+    }
+
     public function getJsonData() {
         $publicData = [
             'primary_key' => $this->primary_key,
