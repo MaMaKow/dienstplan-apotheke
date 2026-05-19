@@ -320,8 +320,8 @@ class OvertimeInputHandler {
         $dateObject = new \DateTime($dateString);
         $workingHoursHave = (float) filter_input(INPUT_POST, 'workingHoursHave', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $workingHoursShould = (float) filter_input(INPUT_POST, 'workingHoursShould', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $difference = (float) filter_input(INPUT_POST, 'difference', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $overtimeHours = $workingHoursHave - $workingHoursShould;
+        $difference = round((float) filter_input(INPUT_POST, 'difference', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION), 2);
+        $overtimeHours = round($workingHoursHave - $workingHoursShould, 2);
         if ($difference !== $overtimeHours) {
             \PDR\Utility\GeneralUtility::printDebugVariable($difference);
             \PDR\Utility\GeneralUtility::printDebugVariable($overtimeHours);
