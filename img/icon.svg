@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 512 512"
+   width="512"
+   height="512"
+   version="1.1"
+   id="svg26"
+   sodipodi:docname="dienstplan-apotheke-icon(2).svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview26"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.0054175"
+     inkscape:cx="179.52742"
+     inkscape:cy="219.80919"
+     inkscape:window-width="1680"
+     inkscape:window-height="981"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg26" />
+  <title
+     id="title1">Dienstplan Apotheke</title>
+  <desc
+     id="desc1">App-Icon: Apothekenpille kombiniert mit Kalender und grünem Häkchen</desc>
+  <defs
+     id="defs7">
+    <!-- Hintergrund-Verlauf -->
+    <radialGradient
+       id="bg"
+       cx="44%"
+       cy="38%"
+       r="68%"
+       gradientUnits="objectBoundingBox">
+      <stop
+         offset="0%"
+         stop-color="#E3F2FD"
+         id="stop1" />
+      <stop
+         offset="100%"
+         stop-color="#90CAF9"
+         id="stop2" />
+    </radialGradient>
+    <!-- Pillen-Verlauf -->
+    <linearGradient
+       id="pg"
+       x1="-95.376884"
+       y1="-95.376884"
+       x2="-95.376884"
+       y2="95.376884"
+       gradientTransform="scale(1.6303741,0.61335617)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         stop-color="#FFFFFF"
+         id="stop3" />
+      <stop
+         offset="100%"
+         stop-color="#E4F1FB"
+         id="stop4" />
+    </linearGradient>
+    <!-- Schatten Pille (SVG 1.1, kein feDropShadow) -->
+    <filter
+       id="ps"
+       x="-0.1130719"
+       y="-0.30892857"
+       width="1.2326797"
+       height="1.6892857">
+      <feGaussianBlur
+         in="SourceAlpha"
+         stdDeviation="14"
+         result="blur"
+         id="feGaussianBlur4" />
+      <feOffset
+         dx="2"
+         dy="8"
+         in="blur"
+         result="offset"
+         id="feOffset4" />
+      <feFlood
+         flood-color="#0D47A1"
+         flood-opacity="0.22"
+         result="color"
+         id="feFlood4" />
+      <feComposite
+         in="color"
+         in2="offset"
+         operator="in"
+         result="shadow"
+         id="feComposite4" />
+      <feMerge
+         id="feMerge5">
+        <feMergeNode
+           in="shadow"
+           id="feMergeNode4" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode5" />
+      </feMerge>
+    </filter>
+    <!-- Schatten Kalender (SVG 1.1, kein feDropShadow) -->
+    <filter
+       id="cs"
+       x="-0.23074713"
+       y="-0.22588235"
+       width="1.4729885"
+       height="1.5208824">
+      <feGaussianBlur
+         in="SourceAlpha"
+         stdDeviation="16"
+         result="blur"
+         id="feGaussianBlur5" />
+      <feOffset
+         dx="2"
+         dy="10"
+         in="blur"
+         result="offset"
+         id="feOffset5" />
+      <feFlood
+         flood-color="#0D47A1"
+         flood-opacity="0.28"
+         result="color"
+         id="feFlood5" />
+      <feComposite
+         in="color"
+         in2="offset"
+         operator="in"
+         result="shadow"
+         id="feComposite5" />
+      <feMerge
+         id="feMerge7">
+        <feMergeNode
+           in="shadow"
+           id="feMergeNode6" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode7" />
+      </feMerge>
+    </filter>
+    <!-- Clip linke Pillenhälfte (lokales Koordinatensystem der Pille) -->
+    <clipPath
+       id="pillLeft">
+      <rect
+         x="-152"
+         y="-55"
+         width="152"
+         height="110"
+         id="rect7" />
+    </clipPath>
+  </defs>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- Hintergrund                                     -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect
+     id="hintergrund"
+     width="512"
+     height="512"
+     rx="100"
+     fill="url(#bg)" />
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- Apothekenkreuz – dezent, 10 % Opazität          -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g
+     id="apothekenkreuz"
+     opacity="0.1"
+     fill="#1565c0"
+     transform="translate(20,20)"
+     style="fill:#008351;fill-opacity:1;opacity:0.4">
+    <rect
+       x="0"
+       y="28"
+       width="84"
+       height="28"
+       rx="7"
+       id="rect8"
+       style="fill:#008351;fill-opacity:1" />
+    <rect
+       x="28"
+       y="0"
+       width="28"
+       height="84"
+       rx="7"
+       id="rect9"
+       style="fill:#008351;fill-opacity:1" />
+  </g>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- Pille / Kapsel                                  -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g
+     id="pille"
+     filter="url(#ps)"
+     transform="rotate(-11,2459.6139,-1613.5866)">
+    <!-- Pillen-Körper -->
+    <ellipse
+       cx="0"
+       cy="0"
+       rx="153"
+       ry="56"
+       fill="url(#pg)"
+       stroke="#1565c0"
+       stroke-width="5"
+       id="ellipse9"
+       style="display:inline;opacity:0.6;fill:url(#pg);stroke:#008351;stroke-width:2;stroke-dasharray:none;stroke-opacity:1" />
+    <!-- Linke Hälfte: leichter Blaustich -->
+    <ellipse
+       cx="0"
+       cy="0"
+       rx="153"
+       ry="56"
+       fill="#ddf0ff"
+       opacity="0.38"
+       clip-path="url(#pillLeft)"
+       id="ellipse10" />
+    <!-- Trennlinie Mitte -->
+    <line
+       x1="0"
+       y1="-51"
+       x2="0"
+       y2="51"
+       stroke="#1565c0"
+       stroke-width="3"
+       opacity="0.28"
+       id="line10" />
+    <!-- Spekulärer Glanzreflex -->
+    <ellipse
+       cx="-18"
+       cy="-18"
+       rx="88"
+       ry="22"
+       fill="#ffffff"
+       opacity="0.42"
+       id="ellipse11" />
+  </g>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- Kalender-Karte                                  -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g
+     id="kalender"
+     filter="url(#cs)"
+     transform="matrix(1.9508389,0,0,1.9508389,-251.36559,-393.28912)">
+    <!-- Kartenkörper (weiß) -->
+    <rect
+       x="169"
+       y="250"
+       width="174"
+       height="160"
+       rx="16"
+       fill="#ffffff"
+       stroke="#1565c0"
+       stroke-width="3.5"
+       id="rect11" />
+    <circle
+       cx="318.3356"
+       cy="317.78378"
+       r="7"
+       fill="#bbdefb"
+       id="circle26-6-56" />
+    <!-- Kopfzeile blau -->
+    <rect
+       x="169"
+       y="250"
+       width="174"
+       height="46"
+       fill="#1565c0"
+       rx="16"
+       id="rect12" />
+    <!-- Unterkante der Kopfzeile gerade abschließen -->
+    <rect
+       x="169"
+       y="278"
+       width="174"
+       height="18"
+       fill="#1565c0"
+       id="rect13" />
+    <!-- Ringbindungs-Clips -->
+    <rect
+       x="208"
+       y="240"
+       width="13"
+       height="28"
+       rx="6.5"
+       fill="#0d47a1"
+       id="rect14" />
+    <rect
+       x="291"
+       y="240"
+       width="13"
+       height="28"
+       rx="6.5"
+       fill="#0d47a1"
+       id="rect15" />
+    <!-- Tages-Gitter: 3 Zeilen × 4 Spalten -->
+    <circle
+       cx="203"
+       cy="318"
+       r="7"
+       fill="#bbdefb"
+       id="circle15" />
+    <circle
+       cx="232"
+       cy="318"
+       r="7"
+       fill="#bbdefb"
+       id="circle16" />
+    <circle
+       cx="261"
+       cy="318"
+       r="7"
+       fill="#bbdefb"
+       id="circle17" />
+    <circle
+       cx="290"
+       cy="318"
+       r="7"
+       fill="#bbdefb"
+       id="circle18" />
+    <circle
+       cx="203"
+       cy="344"
+       r="7"
+       fill="#bbdefb"
+       id="circle19" />
+    <circle
+       cx="232"
+       cy="344"
+       r="7"
+       fill="#bbdefb"
+       id="circle20" />
+    <circle
+       cx="261"
+       cy="344"
+       r="7"
+       fill="#bbdefb"
+       id="circle21" />
+    <circle
+       cx="290"
+       cy="344"
+       r="7"
+       fill="#bbdefb"
+       id="circle22" />
+    <circle
+       cx="318.3356"
+       cy="343.92639"
+       r="7"
+       fill="#bbdefb"
+       id="circle26-6-5" />
+    <circle
+       cx="203"
+       cy="370"
+       r="7"
+       fill="#bbdefb"
+       id="circle23" />
+    <circle
+       cx="232"
+       cy="370"
+       r="7"
+       fill="#bbdefb"
+       id="circle24" />
+    <circle
+       cx="261"
+       cy="370"
+       r="7"
+       fill="#bbdefb"
+       id="circle25" />
+    <circle
+       cx="290"
+       cy="370"
+       r="7"
+       fill="#bbdefb"
+       id="circle26" />
+    <circle
+       cx="318.3356"
+       cy="369.55637"
+       r="7"
+       fill="#bbdefb"
+       id="circle26-6" />
+    <circle
+       cx="202.99921"
+       cy="395.63004"
+       r="7"
+       fill="#bbdefb"
+       id="circle23-9" />
+    <circle
+       cx="231.99921"
+       cy="395.63004"
+       r="7"
+       fill="#bbdefb"
+       id="circle24-1" />
+    <circle
+       cx="260.99921"
+       cy="395.63004"
+       r="7"
+       fill="#bbdefb"
+       id="circle25-2" />
+    <circle
+       cx="289.99921"
+       cy="395.63004"
+       r="7"
+       fill="#bbdefb"
+       id="circle26-7" />
+    <circle
+       cx="318.33481"
+       cy="395.1864"
+       r="7"
+       fill="#bbdefb"
+       id="circle26-6-0" />
+  </g>
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- Grünes Häkchen                                  -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <path
+     id="haekchen"
+     d="m 196.50897,291.46944 47.81609,51.49425 88.27587,-110.34483"
+     stroke="#2e7d32"
+     stroke-width="23.908"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     fill="none"
+     style="opacity:0.8" />
+  <metadata
+     id="metadata26">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Dienstplan Apotheke</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>
