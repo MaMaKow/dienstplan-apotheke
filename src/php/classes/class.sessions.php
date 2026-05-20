@@ -367,18 +367,13 @@ class sessions {
          * Test if  Authorization-Header exists
          */
         if (!isset($headers['Authorization']) || empty($headers['Authorization'])) {
-            header('Content-Type: application/json', true, 401);
-            echo json_encode(['error' => 'Authorization token missing']);
-            exit;
+            $this->sendErrorAndExit('Authorization token missing', 401);
         }
         $authorizationHeader = $headers["Authorization"];
         if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
-            //error_log("We have a request with bearer token.");
-            //PDR\Utility\GeneralUtility::printDebugVariable($matches[0]);
             $token = $matches[1];
         } else {
-            echo json_encode(['error' => 'Authorization without Bearer token']);
-            exit;
+            $this->sendErrorAndExit('Authorization without Bearer token', 401);
         }
         try {
             /**
@@ -390,12 +385,10 @@ class sessions {
              *  Check token expiration
              */
             if ($decodedToken['expires'] < time()) {
-                echo json_encode(['error' => 'Token expired']);
-                exit;
+                $this->sendErrorAndExit('Token expired', 401);
             }
         } catch (Exception $exception) {
-            echo json_encode(['error' => 'Invalid token']);
-            exit;
+                $this->sendErrorAndExit('Invalid Token', 401);
         }
     }
 
@@ -453,6 +446,12 @@ class sessions {
          *  Return the decoded payload
          */
         return $decodedPayload;
+    }
+
+    private function sendErrorAndExit(string $message, int $statusCode = 401) :void {
+        header('Content-Type: application/json', true, $statusCode);
+        echo json_encode(['error' => $message]);
+        exit;
     }
 
     public function requireLogin() {
