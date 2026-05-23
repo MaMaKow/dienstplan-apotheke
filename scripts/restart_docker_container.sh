@@ -33,13 +33,14 @@ else
     docker restart dienstplan_selenium
 fi
 
-echo "Start MailHog (standalone)"
-if [ -z "$(docker ps -aq --filter name=^mailhog$)" ]; then
-    docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
-else
-    docker restart mailhog
-fi
+# Mailhog ist jetzt Bestandteil der docker-compose.yml. Das ist notwendig um den Netzwerkzugamg zwischen den Containern zu garantieren.
+#echo "Start MailHog (standalone)"
+#if [ -z "$(docker ps -aq --filter name=^mailhog$)" ]; then
+#    docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
+#else
+#    docker restart mailhog
+#fi
 
 echo "Show docker status"
 docker ps --filter name=dienstplan_selenium
-docker ps --filter name=mailhog
+#docker ps --filter name=mailhog
