@@ -130,6 +130,7 @@ smtpHost=mailhog
 smtpPort=1025
 EOF
 echo "Start the selenium container"
+docker stop $(docker ps -a --filter "name=mailhog" -q)
 cat $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh
 bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh # Selenium docker container
 
