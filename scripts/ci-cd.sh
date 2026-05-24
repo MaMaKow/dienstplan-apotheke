@@ -127,8 +127,9 @@ databasePort=3306
 smtpHost=mailhog
 smtpPort=1025
 EOF
-echo "Start the selenium containers and mailhog"
-bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh # Selenium and mailhog docker containers
+echo "Start the selenium container"
+cat $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh
+bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh # Selenium docker container
 
 echo "Start the Webserver docker container to hold the dienstplan-apotheke application"
 #docker-compose build --no-cache
