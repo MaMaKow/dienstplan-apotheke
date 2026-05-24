@@ -23,7 +23,6 @@ package Selenium;
  * @author Mandelkow
  */
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,8 +45,7 @@ public class UserRegistry {
             PRIVILEGE_APPROVE_ROSTER,
             PRIVILEGE_CREATE_OVERTIME,
             PRIVILEGE_CREATE_ABSENCE,
-            PRIVILEGE_REQUEST_OWN_ABSENCE
-    );
+            PRIVILEGE_REQUEST_OWN_ABSENCE);
 
     public static void addUser(User user) {
         users.put(user.getUserName(), user);
@@ -69,8 +67,7 @@ public class UserRegistry {
                 UserRegistry.PRIVILEGE_APPROVE_ROSTER, true,
                 UserRegistry.PRIVILEGE_CREATE_OVERTIME, true,
                 UserRegistry.PRIVILEGE_CREATE_ABSENCE, true,
-                UserRegistry.PRIVILEGE_REQUEST_OWN_ABSENCE, true
-        );
+                UserRegistry.PRIVILEGE_REQUEST_OWN_ABSENCE, true);
         Map<String, Boolean> managerPrivileges = Map.of(
                 UserRegistry.PRIVILEGE_ADMINISTRATION, false,
                 UserRegistry.PRIVILEGE_CREATE_EMPLOYEE, false,
@@ -78,8 +75,7 @@ public class UserRegistry {
                 UserRegistry.PRIVILEGE_APPROVE_ROSTER, true,
                 UserRegistry.PRIVILEGE_CREATE_OVERTIME, true,
                 UserRegistry.PRIVILEGE_CREATE_ABSENCE, true,
-                UserRegistry.PRIVILEGE_REQUEST_OWN_ABSENCE, true
-        );
+                UserRegistry.PRIVILEGE_REQUEST_OWN_ABSENCE, true);
         Map<String, Boolean> employeePrivileges = Map.of(
                 UserRegistry.PRIVILEGE_ADMINISTRATION, false,
                 UserRegistry.PRIVILEGE_CREATE_EMPLOYEE, false,
@@ -87,8 +83,7 @@ public class UserRegistry {
                 UserRegistry.PRIVILEGE_APPROVE_ROSTER, false,
                 UserRegistry.PRIVILEGE_CREATE_OVERTIME, false,
                 UserRegistry.PRIVILEGE_CREATE_ABSENCE, false,
-                UserRegistry.PRIVILEGE_REQUEST_OWN_ABSENCE, true
-        );
+                UserRegistry.PRIVILEGE_REQUEST_OWN_ABSENCE, true);
         addUser(new User("AdminUser", "admin@localhost", generateRandomString(16), adminPrivileges));
         addUser(new User("EmployeeUser", "employee@localhost", generateRandomString(16), employeePrivileges));
         addUser(new User("ManagerUser", "manager@localhost", generateRandomString(16), managerPrivileges));

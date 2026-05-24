@@ -93,7 +93,8 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         overtimeEmployeePage.addNewOvertime(localDate1, 0.5f, "FloatFoo" + employee.getFullName());
         overtimeEmployeePage.addNewOvertime(localDate2, -8, "NoFoo" + employee.getFullName());
         overtimeEmployeePage.addNewOvertime(localDate3, 1, "Bar" + employee.getFullName());
-        overtimeEmployeePage.addNewOvertime(localDate3, 99, "Error" + employee.getFullName()); //Should not get inserted
+        overtimeEmployeePage.addNewOvertime(localDate3, 99, "Error" + employee.getFullName()); // Should not get
+                                                                                               // inserted
         /**
          * Find the newly created overtime:
          */
@@ -129,14 +130,13 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         softAssert.assertAll();
     }
 
-    @Test(dependsOnMethods = {"testDisplay"})
+    @Test(dependsOnMethods = { "testDisplay" })
     public void testDeleteBySimpleUser() throws IOException {
         int currentYear = LocalDate.now().getYear();
         LogCollector.debug("testDeleteBySimpleUser");
         LogoutPage logoutPage = new LogoutPage();
         logoutPage.logout();
-        UserRegistry userRegistry = new UserRegistry();
-        User employeeUser = userRegistry.getUserByName("EmployeeUser");
+        User employeeUser = UserRegistry.getUserByName("EmployeeUser");
         SignInPage signInPage = new SignInPage(driver);
         try {
             HomePage menuPage = signInPage.loginValidUser(employeeUser.getUserName(), employeeUser.getPassphrase());
@@ -156,12 +156,19 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
          * Create new overtime:
          */
         overtimeEmployeePage.addNewOvertime(localDate, 8, "Foo " + employee.getFullName());
+        try {
+            overtimeEmployeePage.getOvertimeByLocalDate(localDate);
+        } catch (Exception e) {
+            Assert.fail("Error while trying to find the created overtime.");
+        }
         overtimeEmployeePage.removeOvertimeByLocalDate(localDate);
         Assert.assertThrows(Exception.class,
                 () -> {
                     /**
                      * There should not be an overtime left on that date.
                      */
+                    LogCollector.debug("There should not be an overtime left on " + localDateFormatted);
+                    LogCollector.debug("There should now be an exception being thrown.");
                     overtimeEmployeePage.getOvertimeByLocalDate(localDate);
                 });
 
@@ -170,9 +177,9 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
         /**
          * @todo Now test if there has been an email to the administrator about
-         * deleted overtimes. Make sure, that selenium_test_user does not have
-         * admin privileges. Or use a less privileged user to make the
-         * deletions.
+         *       deleted overtimes. Make sure, that selenium_test_user does not have
+         *       admin privileges. Or use a less privileged user to make the
+         *       deletions.
          */
         // Fetch emails from MailHog API or Mailtrap API
         String mailHogApiUrl = "http://localhost:8025/api/v2/messages";
@@ -205,7 +212,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
                         .get("Content").getAsJsonObject()
                         .get("Body").getAsString();
                 // Remove all line breaks and spaces from the Base64 string
-                base64Body = base64Body.replaceAll("\\s+", "");  // This will remove spaces, tabs, and line breaks
+                base64Body = base64Body.replaceAll("\\s+", ""); // This will remove spaces, tabs, and line breaks
                 byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
                 String decodedBody = new String(decodedBytes, StandardCharsets.UTF_8);
 
@@ -217,18 +224,20 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
                 String[] emailLines = decodedBody.split("\\r?\\n");
                 // Expected content for each line
                 String[] expectedLines = {
-                    "Der Account EmployeeUser hat folgenden Überstundeneintrag gelöscht:",
-                    "Mitarbeitende: " + employee.getFullName(),
-                    "Datum: " + localDateFormatted,
-                    "Stunden: 8",
-                    "Grund: Foo" + " " + employee.getFullName()
+                        "Der Account EmployeeUser hat folgenden Überstundeneintrag gelöscht:",
+                        "Mitarbeitende: " + employee.getFullName(),
+                        "Datum: " + localDateFormatted,
+                        "Stunden: 8",
+                        "Grund: Foo" + " " + employee.getFullName()
                 };
                 // Ensure the email contains the correct number of lines
-                softAssert.assertEquals(emailLines.length, expectedLines.length, "Unexpected number of lines in the email.");
+                softAssert.assertEquals(emailLines.length, expectedLines.length,
+                        "Unexpected number of lines in the email.");
 
                 // Compare each line
                 for (int i = 0; i < expectedLines.length; i++) {
-                    softAssert.assertEquals(emailLines[i].trim(), expectedLines[i], "Mismatch at line " + (i + 1) + " = " + emailLines[i]);
+                    softAssert.assertEquals(emailLines[i].trim(), expectedLines[i],
+                            "Mismatch at line " + (i + 1) + " = " + emailLines[i]);
                 }
                 softAssert.assertAll();
             }
@@ -236,7 +245,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
     }
 
-    @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser"})
+    @Test(dependsOnMethods = { "testDisplay", "testDeleteBySimpleUser" })
     public void testEditBySimpleUser() throws IOException {
         int currentYear = LocalDate.now().getYear();
         LogCollector.debug("testEditBySimpleUser");
@@ -299,7 +308,8 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
             logoutPage = new LogoutPage();
             logoutPage.logout();
 
-            // Guard: fail clearly if no email arrived instead of cryptic IndexOutOfBoundsException
+            // Guard: fail clearly if no email arrived instead of cryptic
+            // IndexOutOfBoundsException
             if (items.isEmpty()) {
                 Assert.fail("Keine E-Mail in MailHog gefunden. "
                         + "Die Anwendung hat keine Änderungs-Benachrichtigung gesendet.");
@@ -314,16 +324,16 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
             String[] emailLines = decodedBody.split("\\r?\\n");
             String[] expectedLines = {
-                "Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
-                "Mitarbeitende: Albert Krüger",
-                "Datum: 25.11." + currentYear,
-                "Stunden: 7",
-                "Grund: Bar",
-                "",
-                "zu den neuen Werten:",
-                "Datum: 26.11." + currentYear,
-                "Stunden: -6",
-                "Grund: Baz"
+                    "Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
+                    "Mitarbeitende: Albert Krüger",
+                    "Datum: 25.11." + currentYear,
+                    "Stunden: 7",
+                    "Grund: Bar",
+                    "",
+                    "zu den neuen Werten:",
+                    "Datum: 26.11." + currentYear,
+                    "Stunden: -6",
+                    "Grund: Baz"
             };
             for (int i = 0; i < expectedLines.length; i++) {
                 softAssert.assertEquals(emailLines[i].trim(), expectedLines[i],
@@ -350,8 +360,8 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
      * Vergangenheit gelöscht werden. Dann kann getestet werden, ob der Saldo
      * korrekt erfasst und berechnet wird.
      */
-    @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser", "testEditBySimpleUser"}, enabled = true)
-    //@Test(dependsOnMethods = {}, enabled = true)
+    @Test(dependsOnMethods = { "testDisplay", "testDeleteBySimpleUser", "testEditBySimpleUser" }, enabled = true)
+    // @Test(dependsOnMethods = {}, enabled = true)
     public void testRecalculateBalances() throws IOException, Exception {
         /**
          * Zunächst brauchen wir einen Mitarbeiter, der bereits vor sechs Jahren
@@ -378,12 +388,12 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
          * which should remain.
          */
         LocalDate now = LocalDate.now();
-        int oldYear = now.getYear() - 5;  // Will be deleted (older than 3 years, outside 6-year window soon)
-        int year1 = now.getYear() - 4;    // Should remain
-        int year2 = now.getYear() - 3;    // Should remain
-        int year3 = now.getYear() - 2;    // Should remain
-        int year4 = now.getYear() - 1;    // Should remain
-        int currentYear = now.getYear();  // Should remain
+        int oldYear = now.getYear() - 5; // Will be deleted (older than 3 years, outside 6-year window soon)
+        int year1 = now.getYear() - 4; // Should remain
+        int year2 = now.getYear() - 3; // Should remain
+        int year3 = now.getYear() - 2; // Should remain
+        int year4 = now.getYear() - 1; // Should remain
+        int currentYear = now.getYear(); // Should remain
 
         LocalDate localDate0 = LocalDate.of(oldYear, Month.JANUARY, 3);
         LocalDate localDate1 = LocalDate.of(oldYear, Month.MARCH, 3);
@@ -459,7 +469,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         Assert.assertEquals(foundOvertime.getReason(), "Foo8" + employee.getFullName());
 
         /*
-
+        
          */
         /**
          * Jetzt müssen wir eine maintenance triggern. Anschließend müssen wir
@@ -510,7 +520,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
             softAssert.assertTrue(true);
             Assert.assertTrue(true);
         }
-        //try {
+        // try {
         /**
          * Obwohl die alten Überstundeneinträge gelöscht wurden, sollte der
          * Saldo hier korrekt sein.

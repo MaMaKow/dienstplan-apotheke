@@ -10,6 +10,8 @@
 set -e
 set -o pipefail
 cleanup() {
+    docker logs dienstplan-apotheke_web_1 2>&1 | grep -i "overtime\|error\|warning" | tail -20
+    docker logs dienstplan-apotheke_mailhog_1
     docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes 2>/dev/null || true
     rm -rf "$repo_dir"
 }
