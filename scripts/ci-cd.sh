@@ -169,7 +169,8 @@ cd "$repo_dir"/dienstplan-apotheke/tests/selenium/ || exit
 
 echo "Test connection using curl:"
 curl -vvv $urlInstallTest/dienstplan-test/
-
+# Mailhog vom web-Container aus testen:
+docker exec dienstplan-apotheke_web_1 curl -s http://mailhog:8025/api/v2/messages | head -c 200
 
 /usr/bin/mvn test | tee ./mvn.log
 echo -e "\a" # Bell sound!

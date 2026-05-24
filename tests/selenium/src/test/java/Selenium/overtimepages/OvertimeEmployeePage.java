@@ -45,12 +45,12 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
     private final By employeeFormSelectBy = By.xpath("//form[@id='select_employee']/select");
     private final By dateInputBy = By.xpath("//*[@id=\"date_chooser_input\"]");
     private final By hoursInputBy = By.xpath("//*[@id=\"stunden\"]");
-    //private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
+    // private final By balanceNewSpanBy = By.xpath("//*[@id=\"balance_new\"]");
     private final By reasonInputBy = By.xpath("//*[@id=\"grund\"]");
     private final By submitButtonBy = By.xpath("/html/body/div/table/tbody/tr/td/input[@name=\"submitStunden\"]");
 
     public OvertimeEmployeePage(WebDriver driver) {
-        super(driver);  // Call to BasePage constructor
+        super(driver); // Call to BasePage constructor
         this.driver = driver;
         if (this.getUserNameText().isEmpty()) {
             throw new IllegalStateException(
@@ -72,15 +72,19 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
 
     /**
      * Attempts to select a specified year in the dropdown menu.
-     * If the operation fails (e.g., the year is not present or the dropdown is inaccessible),
+     * If the operation fails (e.g., the year is not present or the dropdown is
+     * inaccessible),
      * this method catches the exception and continues without throwing an error.
      *
-     * This function is specifically designed for scenarios where we expect the year might not exist,
-     * such as when checking for deleted overtime records in years that are no longer available.
+     * This function is specifically designed for scenarios where we expect the year
+     * might not exist,
+     * such as when checking for deleted overtime records in years that are no
+     * longer available.
      * It provides a safe fallback mechanism to prevent disruptions in such cases.
      *
      * @param year the year to be selected in the dropdown menu
-     * @return an instance of {@code OvertimeEmployeePage}, either the current page or a new one if the year is successfully selected
+     * @return an instance of {@code OvertimeEmployeePage}, either the current page
+     *         or a new one if the year is successfully selected
      */
     public OvertimeEmployeePage selectYearTry(int year) {
         try {
@@ -113,7 +117,8 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
         List<WebElement> listOfOvertimeRows = getListOfOvertimeRows();
         for (WebElement overtimeRowElement : listOfOvertimeRows) {
             WebElement dateElement = overtimeRowElement.findElement(dateBy);
-            if (dateElement.getAttribute("value").equals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY))) {
+            if (dateElement.getAttribute("value")
+                    .equals(localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY))) {
                 return overtimeRowElement;
             }
         }
@@ -127,13 +132,15 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
             LogCollector.error("No overtime found for given date:" + localDate.format(DateTimeFormatter.ISO_DATE));
             throw new Exception("No overtime found for given date.");
         }
-        float hours = Float.parseFloat(overtimeRow.findElement(By.xpath(".//input[@name=\"editHoursNew\"]")).getAttribute("value"));
+        float hours = Float.parseFloat(
+                overtimeRow.findElement(By.xpath(".//input[@name=\"editHoursNew\"]")).getAttribute("value"));
         float balance = Float.parseFloat(overtimeRow.findElement(By.xpath(".//td[3]")).getText());
         String reason = overtimeRow.findElement(By.xpath(".//input[@name=\"editReasonNew\"]")).getAttribute("value");
         return new Overtime(localDate, hours, balance, reason);
     }
 
-    public OvertimeEmployeePage addNewOvertimeForEmployee(int employeeKey, LocalDate localDate, float hours, String reason) {
+    public OvertimeEmployeePage addNewOvertimeForEmployee(int employeeKey, LocalDate localDate, float hours,
+            String reason) {
         this.selectEmployee(employeeKey);
         return addNewOvertime(localDate, hours, reason);
     }
@@ -167,12 +174,16 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
          * Daten korrekt sind?" Wir akzeptieren hier einfach die Abfrage.
          * </p>
          */
-        try {
-            driver.switchTo().alert().accept();
-        } catch (Exception exception) {
-            LogCollector.warn(exception.getLocalizedMessage());
-        }
 
+        try {
+            wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert().accept();
+        } catch (org.openqa.selenium.TimeoutException timeoutException) {
+            /**
+             * Kein Alert erschienen — das ist der Normalfall für die meisten Einträge.
+             */
+            LogCollector.debug("No confirmation alert after submit, continuing normally.");
+        }
         OvertimeEmployeePage newOvertimeEmployeePage;
         try {
             newOvertimeEmployeePage = new OvertimeEmployeePage(driver);
@@ -206,7 +217,8 @@ public class OvertimeEmployeePage extends Selenium.BasePage {
         return newOvertimeEmployeePage;
     }
 
-    public OvertimeEmployeePage editOvertimeByLocalDate(LocalDate localDate, LocalDate dateNew, float hoursNew, String reasonNew) {
+    public OvertimeEmployeePage editOvertimeByLocalDate(LocalDate localDate, LocalDate dateNew, float hoursNew,
+            String reasonNew) {
         this.selectYearTry(localDate.getYear());
         WebElement overtimeRow = findOvertimeRowByDate(localDate);
         String localDateString = localDate.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY);
