@@ -266,7 +266,7 @@ class sessions {
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
                 . sprintf(gettext('Dear %1$s,'), $user->user_name)
-                . \email::EMAIL_EOL . \email::EMAIL_EOL
+                . "\r\n" . "\r\n"
                 . gettext('in order to set a new password for')
                 . " '"
                 . $application_name
