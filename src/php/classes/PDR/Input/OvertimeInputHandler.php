@@ -42,10 +42,12 @@ class OvertimeInputHandler {
          * Deleting rows of data:
          */
         if (filter_has_var(INPUT_POST, 'deleteRow')) {
+            error_log("OvertimeInputHandler: Deleting rows of data");
             $result = self::handleUserInputDelete($session);
             if (false === $result) {
                 return false;
             }
+            error_log("OvertimeInputHandler: Deleted rows of data");
         }
 
         /**
@@ -160,10 +162,13 @@ class OvertimeInputHandler {
         }
 
         // Step 1: Delete the overtime entry
+        error_log("OvertimeInputHandler: Actually tell the OvertimeDatabaseHandler to delete the entry.");
         \PDR\Database\OvertimeDatabaseHandler::deleteOvertimeEntry($deletionEmployeeKey, $deletionDate);
 
         // Step 2: Check if we should notify the admin
+        error_log("OvertimeInputHandler: Think about sending an email.");
         if (self::shouldNotifyAdmin($session)) {
+            error_log("OvertimeInputHandler: Yes, we will send an email.");
             // Step 3: Prepare and send notification
             self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours, $deletionReason);
         }
@@ -184,6 +189,7 @@ class OvertimeInputHandler {
      * @return void This function does not return any value.
      */
     private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours, string $deletionReason): void {
+        error_log("OvertimeInputHandler: Entering sendDeletionNotification for employeeKey=$employeeKey, date=$deletionDate");
         $configuration = new \PDR\Application\Configuration();
         $workforce = new \PDR\Workforce\Workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
@@ -201,11 +207,12 @@ class OvertimeInputHandler {
 
         // Send Email
         $userDialogEmail = new \user_dialog_email();
-        $userDialogEmail->send_email(
+        $result = $userDialogEmail->send_email(
                 $configuration->getContactEmail(),
                 $subject,
                 $message
         );
+        \PDR\Utility\GeneralUtility::printDebugVariable($result);
     }
 
     private static function sendChangeNotification(\sessions $session, int $employeeKey,
@@ -237,6 +244,7 @@ class OvertimeInputHandler {
                 $subject,
                 $message
         );
+        error_log("OvertimeInputHandler: sendChangeNotification mail result = " . var_export($mailResult, true));
     }
 
     /**
@@ -251,6 +259,7 @@ class OvertimeInputHandler {
      */
     private static function shouldNotifyAdmin(\sessions $session): bool {
         $result = !$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER);
+        error_log("OvertimeInputHandler: shouldNotifyAdmin = " . ($result ? 'true' : 'false'));
         return $result;
     }
 

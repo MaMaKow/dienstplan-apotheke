@@ -274,9 +274,9 @@ class user_dialog_email {
 //        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
 
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-        $mail->SMTPDebug = 0; // No output
+        //$mail->SMTPDebug = 0; // No output
         //$mail->SMTPDebug = 1; // commands
-        //$mail->SMTPDebug = 2; // Data and commands
+        $mail->SMTPDebug = 2; // Data and commands
         //$mail->SMTPDebug = 3; // 3 As 2 plus connection status
         //$mail->SMTPDebug = 4; // 4 Detaied Low-level data output.
         $mail->Debugoutput = function ($str, $level) {
@@ -286,6 +286,10 @@ class user_dialog_email {
             /*
              * Server settings
              */
+            error_log("send_email: method=" . $configuration->getEmailMethod()
+                    . " host=" . $configuration->getEmailSmtpHost()
+                    . " port=" . $configuration->getEmailSmtpPort()
+                    . " recipient=" . $recipient);
             switch ($configuration->getEmailMethod()) {
                 case 'smtp':
                     if (empty($configuration->getEmailSmtpHost()) or empty($configuration->getEmailSmtpPort()) or empty($configuration->getEmailSmtpUsername()) or empty($configuration->getEmailSmtpPassword())) {
@@ -303,6 +307,7 @@ class user_dialog_email {
                         /**
                          * For the purpose of testing mails with mailhog, TLS and STARTTLS have to be disabled.
                          */
+                        error_log("send_email: MailHog mode detected — disabling TLS and auth");
                         $mail->SMTPAuth = false; // No authentication required for MailHog
                         $mail->SMTPSecure = ''; // Disable TLS/SSL
                         $mail->SMTPAutoTLS = false; // Disable automatic TLS negotiation
@@ -339,8 +344,9 @@ class user_dialog_email {
             $mail->Subject = $configuration->getApplicationName() . ": " . $subject;
             $mail->Body = $message;
             //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
+            error_log("send_email: Calling mail->send() now");
             $mail_success = $mail->send();
+            error_log("send_email: mail->send() returned " . var_export($mail_success, true));
             return $mail_success;
         } catch (Exception $exception) {
             \PDR\Utility\GeneralUtility::printDebugVariable('Email Message could not be sent. Mailer Error: ', $mail->ErrorInfo, $exception);
