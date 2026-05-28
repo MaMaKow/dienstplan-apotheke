@@ -476,6 +476,6 @@ class Configuration {
         /**
          * Damit die neue Konfiguration sofort wirksam wird, muss der cache invalidiert werden:
          */
-        opcache_invalidate($configuration_file, true);
+        \opcache_invalidate($configuration_file, true);
     }
 }

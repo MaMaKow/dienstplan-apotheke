@@ -42,13 +42,13 @@ RUN apt-get update && apt-get install -y \
     && locale-gen \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
-ENV LANG de_DE.UTF-8
-ENV LANGUAGE de_DE:de
-ENV LC_ALL de_DE.UTF-8
+ENV LANG=de_DE.UTF-8
+ENV LANGUAGE=de_DE:de
+ENV LC_ALL=de_DE.UTF-8
 
 # Docker PHP extensions
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    docker-php-ext-install imap pdo pdo_mysql gettext calendar
+    docker-php-ext-install opcache imap pdo pdo_mysql gettext calendar
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

@@ -3,7 +3,7 @@ FROM selenium/standalone-firefox:latest
 # Add the locale modification command
 USER root
 RUN sed -i '/de_DE.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
-ENV LC_ALL de_DE.UTF-8
+ENV LC_ALL=de_DE.UTF-8
 ENV LANG_WHICH=de
 ENV LANG_WHERE=DE
 ENV ENCODING=UTF-8

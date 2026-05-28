@@ -10,10 +10,12 @@
 set -e
 set -o pipefail
 cleanup() {
+
     docker logs dienstplan-apotheke_web_1 2>&1 | grep -i "overtime\|error\|warning" | tail -20
     docker logs dienstplan-apotheke_mailhog_1
-    docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes 2>/dev/null || true
-    rm -rf "$repo_dir"
+    docker exec dienstplan-apotheke_web_1 cat /var/www/html/apotheke/dienstplan-test/error.log 
+    #docker-compose -f "$repo_dir/dienstplan-apotheke/docker-compose.yml" down --volumes 2>/dev/null || true
+    #rm -rf "$repo_dir"
 }
 trap cleanup EXIT
 # setup directories
@@ -41,6 +43,7 @@ cd "$repo_dir" || exit
 # clone repository and checkout testing branch
 git clone git@github.com:MaMaKow/dienstplan-apotheke.git
 cd dienstplan-apotheke || exit
+git fetch origin testing:testing
 git checkout testing
 # Fetch latest changes from remote
 git fetch --all
@@ -119,7 +122,7 @@ urlInstallTest=$urlInstallTest/
 testPageUrl=$urlInstallTest/dienstplan-test/
 pdrUserName=$random_user_name
 pdrUserPassword=$random_user_passphrase
-administratorEmail=$random_user_name@localhost
+administratorEmail=$random_user_name@example.com
 administratorEmployeeId=5
 databaseUserName=root
 databaseHostname=db
