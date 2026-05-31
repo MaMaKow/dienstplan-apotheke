@@ -303,7 +303,17 @@ class user_dialog_email {
                     $mail->Port = $configuration->getEmailSmtpPort(); // TCP port to connect to (587 for TLS)
                     $mail->Username = $configuration->getEmailSmtpUsername();
                     $mail->Password = $configuration->getEmailSmtpPassword();
-                    if ("localhost" === $mail->Host and "1025" == $mail->Port) {
+                    $isMailHog = (
+                            $mail->Port == 1025 &&
+                            in_array($mail->Host, [
+                                'localhost', // localhost outside of docker tests
+                                '127.0.0.1', // IPv4 loopback
+                                '::1', // IPv6 loopback
+                                'mailhog', // hostname for docker tests
+                                'docker.martin-mandelkow.de'  // current specific hostname for testing
+                            ])
+                    );
+                    if ($isMailHog) {
                         /**
                          * For the purpose of testing mails with mailhog, TLS and STARTTLS have to be disabled.
                          */
