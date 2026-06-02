@@ -10,7 +10,7 @@
 set -e
 set -o pipefail
 cleanup() {
-
+    set +e   # Fehler in cleanup erlauben
     docker logs dienstplan-apotheke_web_1 2>&1 | grep -i "overtime\|error\|warning" | tail -20
     docker logs dienstplan-apotheke_mailhog_1
     docker exec dienstplan-apotheke_web_1 cat /var/www/html/apotheke/dienstplan-test/error.log 
@@ -133,7 +133,10 @@ smtpHost=mailhog
 smtpPort=1025
 EOF
 echo "Start the selenium container"
-docker stop $(docker ps -a --filter "name=mailhog" -q)
+oldExistingMailhog=$(docker ps -a --filter "name=mailhog" -q)
+if [ -n "$oldExistingMailhog" ]; then
+    docker stop "$oldExistingMailhog"
+fi
 cat $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh
 bash $repo_dir/dienstplan-apotheke/scripts/restart_docker_container.sh # Selenium docker container
 
