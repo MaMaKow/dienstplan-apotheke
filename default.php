@@ -32,3 +32,8 @@ if (filter_has_var(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE')) {
     $navigator_languages = preg_split('/[,;]/', filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_SPECIAL_CHARS));
     $navigator_language = $navigator_languages[0]; //ignore the other options
 }
+/**
+ * Check if there are emails to send from the contact form of the previous page:
+ */
+$user_dialog = new user_dialog();
+$user_dialog->contact_form_send_mail();
