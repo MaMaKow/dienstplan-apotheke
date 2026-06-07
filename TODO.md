@@ -257,22 +257,6 @@ Ich hätte gerne die Option, für jeden Mitarbeiter festzulegen, wie die Überst
 
 Dienstplan Mitarbeiteransicht mit Kommentar für Personen mit Bearbeiterprivileg
 
-play around with docker Post/Redirect/Get
-
-userDialogContactFormDiv
-
-#### das Kontaktformular ist aus dem Script register.php erreichbar.
-
-Dadurch kommt es mitunter zu Kommunikation aus scannern, die die website untersuchen.
-
-Vielleicht sollte ich für register.php auch ein rate-limiting einsetzen. und für vergessene Passwörter auch. Da kamen am 04.10.2022 sehr viele Emails von einem bot, der den Dienstplan tiefgehend untersucht hat.
-
-
-Write selenium tests for user-management.php
-Write selenium tests for maintenance
-    Create data for an employee in the past; end the employment of the employee; logout; login; make sure, that the data is gone.
-    How can we force maintenance to happen during the testing period?
-
 Logviewer für das error.log in die / in eine Administraor-Ansicht einbauen.
 
 Löschen von Usern inklusive Löschen von Benutzerberechtigungen
@@ -282,10 +266,6 @@ Get rid of PDR_ONE_DAY_IN_SECONDS!
 In marginal-employment-hours-list.php Feiertage mit Einbauen
 Datei umbenennen z.B. employmee-hours-list.php
 Hochformat für den Druck
-
-In overtime-edit.php die Möglichkeit einbauen, einzelne Überstunden zu ändern.
-
-Write/Update tests for user-management.php
 
 get rid of: "global $config;", use "$configuration = new \PDR\Application\configuration();" instead
 
@@ -299,16 +279,45 @@ https://docs.docker.com/language/php/containerize/
 
 #### Menü Eintrag für Listen getrennt von Administration
 ### Überstunden
-#### Überstunden eintragen aus der Wochenansicht Mitarbeiter
-Wochenstunden > Ist, Soll, Diff > <button>Eintragen</button>
 #### Überstunden Eingabe:
 beim allerersten Eintrag meckert das Programm.
 #### Überstundenberechnung für Weihnachten korrekt durchrechnen
 und Silvester plus Tests
-#### Fehler auffangen beim Versenden von leeren Werten
-./src/php/pages/overtime-edit.php
 #### Sonntagsarbeit
 PTA erhalten an Sonntagen 85% Zuschlag auf ihre Stunden
+
+
+#### Tests ergänzen für:
+sick-note-tracking.php
+
+
+### Compliance / Arbeitsrecht
+
+#### Automatische Prüfung der Ruhezeit (§ 5 ArbZG)
+
+Warnung erzeugen, wenn zwischen zwei Diensten weniger als 11 Stunden Ruhezeit liegen.
+
+#### Prüfung auf aufeinanderfolgende Arbeitstage
+
+Warnung bei zu vielen Arbeitstagen ohne freien Tag.
+
+#### Prüfung von Minderjährigen
+
+Sonderregeln für Auszubildende und Minderjährige nach JArbSchG berücksichtigen.
+
+#### Mutterschutz
+
+Automatische Warnungen bei Diensten, die gegen MuSchG verstoßen.
+
+#### Prüfbericht
+
+Einen Gesamtbericht erzeugen:
+- ArbZG
+- MuSchG
+- JArbSchG
+- interne Regeln
+
+mit Ampelsystem (OK / Warnung / Fehler).
 #### Feiertage
 https://www.pharmazeutische-zeitung.de/wie-werden-feiertage-richtig-abgerechnet-146396/
 ... dass für Feiertage die Zeit gutgeschrieben werden muss, die man ansonsten normalerweise gearbeitet hätte (§ 2 Entgeltfortzahlungsgesetz). ...
@@ -347,5 +356,123 @@ id, employee_id, year, leave_days_working_days, (leave_days_working_days_adjuste
 und
 id, leave_entitlement_id, date, adjustment_type, adjustment_days_working_days, comments
 
-#### Tests ergänzen für:
-sick-note-tracking.php
+### Dienstplanqualität
+
+#### Fairness-Auswertung
+
+Kennzahlen je Mitarbeiter:
+
+- Anzahl Samstage
+- Anzahl Spätschichten
+- Anzahl Frühschichten
+- Anzahl Notdienste
+- Anzahl geteilte Dienste
+
+mit Vergleich zum Teamdurchschnitt.
+
+#### Konflikterkennung
+
+Automatische Warnung wenn:
+
+- mehrere Schlüsselpersonen gleichzeitig fehlen
+- Filiale unter Mindestbesetzung fällt
+- Notdienstbesetzung nicht ausreichend ist
+
+#### Simulation
+
+Dienstplan für einen Zeitraum simulieren, ohne Datenbankänderung.
+
+### Abwesenheiten
+
+#### Krankmeldung
+
+Krankmeldungen mit:
+
+- Beginn
+- Ende
+- AU vorhanden ja/nein
+- Datum der AU
+
+verwalten.
+
+### Notdienst
+
+#### Apothekennotdienst importieren
+
+Import offizieller Notdienstpläne.
+
+#### Notdienststatistik
+
+Auswertung:
+
+- Anzahl Notdienste pro Mitarbeiter
+- Anzahl Notdienste pro Filiale
+- Historie mehrerer Jahre
+
+### Benachrichtigungen
+
+#### Änderungszusammenfassung
+
+Bei Dienstplanänderungen nur eine Sammelmail senden.
+
+#### Benutzerbenachrichtigung konfigurieren
+
+Benutzer kann wählen:
+
+- E-Mail
+- iCalendar
+- keine Benachrichtigung
+
+### Sicherheit
+
+#### Audit Log
+
+Protokollieren:
+
+- Wer hat was geändert?
+- Alter Wert
+- Neuer Wert
+- Zeitpunkt
+
+#### Zwei-Faktor-Authentifizierung
+
+TOTP-Unterstützung für Administratoren.
+
+### API
+
+#### OpenAPI Dokumentation
+
+OpenAPI 3.1 Spezifikation erzeugen.
+
+#### API Tests
+
+Automatisierte API Integrationstests.
+
+### Import / Export
+
+#### CSV Import Mitarbeiter
+
+Mitarbeiterstammdaten per CSV importieren.
+
+#### CSV Export Dienstplan
+
+Export für externe Auswertungen.
+
+#### DATEV Export
+
+Vorbereitung der Daten für Lohnabrechnung.
+
+### Tests
+
+#### Tests für Arbeitszeitgesetz
+
+Unit-Tests für:
+
+- Ruhezeiten
+- Höchstarbeitszeit
+- Feiertage
+- Nachtarbeit
+
+#### Regressionstests für bekannte Fehler
+
+Für jeden behobenen Bug einen reproduzierbaren Testfall anlegen.
