@@ -34,9 +34,10 @@ public class POST_authenticateEndpoint extends TestPage {
     private static boolean isAuthenticated = false;
     private static String accessToken = null;
 
-    public POST_authenticateEndpoint(String userName, String userPassphrase, String testPageUrl) throws InterruptedException, IOException {
+    public POST_authenticateEndpoint(String userName, String userPassphrase, String testPageUrl)
+            throws InterruptedException, IOException {
 
-        String authenticationEndpoint = testPageUrl + "src/php/restful-api/authentication/POST-authenticate.php";
+        String authenticationEndpoint = testPageUrl + "src/php/restful-api/auth/login";
         String payload = "{\"userName\":\"" + userName + "\",\"userPassphrase\":\"" + userPassphrase + "\"}";
 
         // Send the POST request

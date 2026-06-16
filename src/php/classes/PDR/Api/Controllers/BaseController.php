@@ -19,23 +19,31 @@
 
 abstract class BaseController {
 
-    protected $session;
+    /**
+     * @var user object holding a user instance of the currently authenticated user.
+     *  Will be null if no valid JWT token is provided in the request.
+     */
+    protected $userObject;
 
     public function __construct() {
         $this->initializeSession();
     }
 
     protected function initializeSession() {
-        $this->session = new sessions();
-        $this->session->verifyAccessToken(); //Beendet die Ausführung des Scripts bei fehlendem Login
+        $jwtHandler = new \PDR\Security\JwtHandler();
+        $this->userObject = $jwtHandler->verifyAccessToken(); //Beendet die Ausführung des Scripts bei fehlendem Login
     }
 
     protected function requireAdminPrivileges() {
-        if (!$this->session->user_has_privilege(\sessions::PRIVILEGE_ADMINISTRATION)) {
+        if (!$this->userObject->has_privilege(\sessions::PRIVILEGE_ADMINISTRATION)) {
             $this->sendError('You need administrative privileges for this action.', 403);
         }
     }
 
+    /**
+     * @param mixed $data
+     * @param int $statusCode
+     */
     protected function sendJson($data, $statusCode = 200) {
         http_response_code($statusCode);
         header('Content-Type: application/json');
@@ -43,7 +51,7 @@ abstract class BaseController {
         exit;
     }
 
-    protected function sendError($message, $statusCode = 400) {
+    protected function sendError(string $message, $statusCode = 400) {
         $this->sendJson(['error' => $message], $statusCode);
     }
 
@@ -52,6 +60,6 @@ abstract class BaseController {
         if ($data !== null) {
             $response['data'] = $data;
         }
-        $this->sendJson($response);
+        $this->sendJson($response, 200);
     }
 }

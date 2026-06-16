@@ -34,7 +34,7 @@ class AuthController extends BaseController {
             // Check if the content length exceeds the limit
             if (strlen($jsonData) > $maxContentLength) {
                 // Handle the request with excessive content length
-                echo json_encode(['error' => 'Request payload too large']);
+                $this->sendError('Request payload too large', 401);
                 exit;
             }
             // Decode JSON data
@@ -42,7 +42,7 @@ class AuthController extends BaseController {
 
             if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
                 // Handle JSON decoding error
-                echo json_encode(['error' => 'Invalid JSON data']);
+                $this->sendError('Invalid JSON data', 401);
                 exit;
             }
 
@@ -52,28 +52,24 @@ class AuthController extends BaseController {
 
             // Validiere Username-Format (aber NICHT das Passwort!)
             if (empty($userName)) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Username is required']);
+                $this->sendError('Username is required', 400);
                 exit;
             }
 
             if (empty($userPassphrase)) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Password is required']);
+                $this->sendError('Password is required', 400);
                 exit;
             }
 
             // Username-Länge und Format prüfen
             if (strlen($userName) > 255) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Username too long']);
+                $this->sendError('Username too long', 400);
                 exit;
             }
 
             // Nur alphanumerische Zeichen, Unterstriche und Bindestriche erlauben
             if (!preg_match('/^[a-zA-Z0-9_\-]+$/', $userName)) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Invalid username format']);
+                $this->sendError('Invalid username format', 400);
                 exit;
             }
 
@@ -81,9 +77,8 @@ class AuthController extends BaseController {
             try {
                 $session = new sessions();
             } catch (Exception $e) {
-                http_response_code(500);
                 error_log("Session creation failed: " . $e->getMessage());
-                echo json_encode(['error' => 'Internal server error']);
+                $this->sendError('Internal server error', 500);
                 exit;
             }
             // User authentication
@@ -91,12 +86,13 @@ class AuthController extends BaseController {
 
             if ($session->user_is_logged_in()) {
                 // Generate and return an access token
-                $accessToken = $session->generateAccessToken($session->getUserObject());
-                echo json_encode(['accessToken' => $accessToken]);
+                $jwtHandler = new \PDR\Security\JwtHandler();
+                $accessToken = $jwtHandler->generateAccessToken($session->getUserObject());
+                $this->sendSuccess(['accessToken' => $accessToken]);
                 die();
             } else {
                 // Handle authentication failure
-                echo json_encode(['error' => 'Authentication failed']);
+                $this->sendError('Authentication failed', 401);
                 die();
             }
         } catch (Exception $e) {

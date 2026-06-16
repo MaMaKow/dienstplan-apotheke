@@ -60,9 +60,8 @@ class sessions {
         gettext('request own absence');
     }
 
-    public $List_of_pages_accessible_without_login = array(
+    private $List_of_pages_accessible_without_login = array(
         'login.php',
-        'POST-authenticate.php',
         'register.php',
         'webdav.php',
         'lost_password.php',
@@ -94,7 +93,7 @@ class sessions {
         $http_host = filter_input(INPUT_SERVER, "HTTP_HOST", FILTER_SANITIZE_URL);
         $script_name = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_URL);
 
-        if ("localhost" != $http_host AND "" != $http_host) {
+        if ("localhost" != $http_host and "" != $http_host) {
             header("strict-transport-security: max-age=31536000");
         }
         /**
@@ -102,7 +101,7 @@ class sessions {
          * We make an exception for localhost. If data is not sent through the net, there is no absolute need for HTTPS.
          * People are still free to use it on their own. Administrators are able to force it in Apache (or any other web server).
          */
-        if ("localhost" != $http_host AND "" != $http_host) {
+        if ("localhost" != $http_host and "" != $http_host) {
             self::force_https();
         }
         /**
@@ -116,7 +115,7 @@ class sessions {
         $this->keep_alive();
     }
 
-    private function keep_alive() {
+    private function keep_alive(): void {
         /*
          * e dot mortoray at ecircle dot com
          * There is a nuance we found with session timing out although the user is still active in the session.  The problem has to do with never modifying the session variable.
@@ -137,7 +136,7 @@ class sessions {
      *
      * @return boolean TRUE for exisiting permission, FALSE for missing permission.
      */
-    public function user_has_privilege($privilege) {
+    public function user_has_privilege(string $privilege): bool {
         return ($_SESSION['user_object']->has_privilege($privilege));
     }
 
@@ -145,34 +144,34 @@ class sessions {
         return $_SESSION['user_object']->get_user_name();
     }
 
-    public function exit_on_missing_privilege($privilege) {
+    public function exit_on_missing_privilege(string $privilege): void {
         if (!$this->user_has_privilege($privilege)) {
             $user_dialog = new user_dialog();
             $request_uri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
             $message = gettext('You are missing the necessary permission to use this page.')
-                    . ' ' . gettext('Please contact the administrator if you feel this is an error.')
-                    . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
-                    . '" ' . gettext('is required for') . ' ' . basename($request_uri) . ')';
+                . ' ' . gettext('Please contact the administrator if you feel this is an error.')
+                . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
+                . '" ' . gettext('is required for') . ' ' . basename($request_uri) . ')';
             $user_dialog->add_message($message, E_USER_ERROR);
             echo $user_dialog->build_messages();
             exit();
         }
     }
 
-    public function create_message_on_missing_privilege($privilege, $error_type = E_USER_ERROR) {
+    public function create_message_on_missing_privilege(string $privilege, int $error_type = E_USER_ERROR): void {
         if (!$this->user_has_privilege($privilege)) {
             $user_dialog = new user_dialog();
             $message = gettext('You are missing the necessary permission to perform this action.')
-                    . ' ' . gettext('Please contact the administrator if you feel this is an error.')
-                    . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
-                    . '" ' . gettext('is required.') . ')';
+                . ' ' . gettext('Please contact the administrator if you feel this is an error.')
+                . ' ("' . localization::gettext(str_replace('_', ' ', $privilege))
+                . '" ' . gettext('is required.') . ')';
             $user_dialog->add_message($message, $error_type);
         }
     }
 
-    public function login($user_name, $user_password, $redirect = TRUE) {
+    public function login(string $user_name, string $user_password, bool $redirect = true): bool {
         $user_dialog = new user_dialog;
-        if (empty($user_password) OR empty($user_name)) {
+        if (empty($user_password) or empty($user_name)) {
             $user_dialog->add_message("No login credentials were given.", E_USER_ERROR);
             return FALSE;
         }
@@ -255,33 +254,33 @@ class sessions {
         return FALSE;
     }
 
-    public static function logout() {
+    public static function logout(): void {
         session_destroy();
         header("Location: " . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/login.php");
     }
 
-    function send_mail_about_lost_password(user $user, $token) {
+    public function send_mail_about_lost_password(user $user, string $token): void {
         $configuration = new PDR\Application\Configuration();
         $application_name = $configuration->getApplicationName();
         $message_subject = quoted_printable_encode(gettext('Lost password'));
         $message_text = quoted_printable_encode("<HTML><BODY>"
-                . sprintf(gettext('Dear %1$s,'), $user->user_name)
-                . "\r\n" . "\r\n"
-                . gettext('in order to set a new password for')
-                . " '"
-                . $application_name
-                . "' "
-                . gettext("username") . ": " . $user->get_user_name() . ", "
-                . gettext("please visit")
-                . " <a href='"
-                . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"])
-                . "/reset_lost_password.php?"
-                . "user_key=" . $user->get_primary_key()
-                . "&token=$token'>"
-                . gettext("this address")
-                . ".</a>"
-                . gettext("Your token is valid for 24 hours.")
-                . "</BODY></HTML>");
+            . sprintf(gettext('Dear %1$s,'), $user->user_name)
+            . "\r\n" . "\r\n"
+            . gettext('in order to set a new password for')
+            . " '"
+            . $application_name
+            . "' "
+            . gettext("username") . ": " . $user->get_user_name() . ", "
+            . gettext("please visit")
+            . " <a href='"
+            . "https://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"])
+            . "/reset_lost_password.php?"
+            . "user_key=" . $user->get_primary_key()
+            . "&token=$token'>"
+            . gettext("this address")
+            . ".</a>"
+            . gettext("Your token is valid for 24 hours.")
+            . "</BODY></HTML>");
 
         $recipient = $user->get_email();
         $userDialogEmail = new user_dialog_email();
@@ -295,7 +294,7 @@ class sessions {
         }
     }
 
-    public function write_lost_password_token_to_database(user $user, $token) {
+    public function write_lost_password_token_to_database(user $user, string $token): bool {
         if (!is_null($user) and !is_null($token)) {
             $user_key = $user->get_primary_key();
             database_wrapper::instance()->run("DELETE FROM `users_lost_password_token` WHERE `time_created` <= NOW() - INTERVAL 1 DAY");
@@ -306,7 +305,7 @@ class sessions {
         return FALSE;
     }
 
-    private static function force_https() {
+    private static function force_https(): void {
         if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
             if (!isset($_SESSION['number_of_times_redirected'])) {
                 $_SESSION['number_of_times_redirected'] = 0;
@@ -317,144 +316,35 @@ class sessions {
                 header("Status: 301 Moved Permanently");
                 header("Location: $https_url");
                 die("<p>Dieses Programm erfordert die Nutzung von "
-                        . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
-                        . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
+                    . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
+                    . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
             } elseif (($_SESSION['number_of_times_redirected']) < 3) {
                 $_SESSION['number_of_times_redirected']++;
                 die('<script type="javascript">document.location.href="' . $https_url . '";</script>');
             } else {
                 die("<p>Dieses Programm erfordert die Nutzung von "
-                        . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
-                        . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
+                    . "<a title='Article about HTTPS on german Wikipedia' href='https://de.wikipedia.org/w/index.php?title=HTTPS'>HTTPS</a>."
+                    . " Nur so kann die Übertragung von sensiblen Daten geschützt werden.</p>\n");
             }
         }
     }
 
-    public function user_is_logged_in() {
-        if (!empty($_SESSION['user_object'])
-                and $_SESSION['user_object'] instanceof user
-                and $_SESSION['user_object']->exists()) {
+    public function user_is_logged_in(): bool {
+        if (
+            !empty($_SESSION['user_object'])
+            and $_SESSION['user_object'] instanceof user
+            and $_SESSION['user_object']->exists()
+        ) {
             return true;
         }
         return false;
     }
 
-    public function getUserObject() {
-        return $_SESSION['user_object'];
+    public function getUserObject(): ?user {
+        return $_SESSION['user_object'] ?? null;
     }
 
-    public function generateAccessToken(user $user) {
-        $payload = [
-            'userPrimaryKey' => $user->get_primary_key(),
-            'userName' => $user->get_user_name(),
-            'expires' => time() + 3600, // Token expiration time (e.g., 1 hour)
-        ];
-
-        /**
-         *  Encode the payload and sign it with a secret key
-         */
-        $token = $this->jwtEncode($payload);
-
-        return $token;
-    }
-
-    public function verifyAccessToken() {
-        //error_log("Inside verifyAccessToken");
-        $token = "";
-        $headers = getallheaders();
-        //PDR\Utility\GeneralUtility::printDebugVariable($headers);
-        /**
-         * Test if  Authorization-Header exists
-         */
-        if (!isset($headers['Authorization']) || empty($headers['Authorization'])) {
-            $this->sendErrorAndExit('Authorization token missing', 401);
-        }
-        $authorizationHeader = $headers["Authorization"];
-        if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
-            $token = $matches[1];
-        } else {
-            $this->sendErrorAndExit('Authorization without Bearer token', 401);
-        }
-        try {
-            /**
-             *  Method to decode and verify the token with the secret key
-             */
-            $decodedToken = $this->jwtDecode($token);
-
-            /**
-             *  Check token expiration
-             */
-            if ($decodedToken['expires'] < time()) {
-                $this->sendErrorAndExit('Token expired', 401);
-            }
-        } catch (Exception $exception) {
-                $this->sendErrorAndExit('Invalid Token', 401);
-        }
-    }
-
-    private function jwtEncode(array $payload): string {
-        $algorithm = 'sha512';
-        $header = ['algorithm' => $algorithm, 'type' => 'JWT'];
-        $jsonHeader = json_encode($header);
-        $jsonPayload = json_encode($payload);
-
-        /**
-         *  Signature
-         */
-        $configuration = new PDR\Application\Configuration();
-        $secretKey = $configuration->getSecretKey();
-        $signature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey);
-        /**
-         *  Token creation
-         */
-        $token = base64_encode($jsonHeader) . '.' . base64_encode($jsonPayload) . '.' . base64_encode($signature);
-        return $token;
-    }
-
-    private function jwtDecode(string $token): array {
-        list($header, $payload, $signature) = explode('.', $token);
-
-        /**
-         *  Decode the JSON-encoded header and payload
-         */
-        $jsonHeader = base64_decode($header);
-        $decodedHeader = json_decode($jsonHeader, true);
-        $jsonPayload = base64_decode($payload);
-        $decodedPayload = json_decode($jsonPayload, true);
-        $decodedSignature = base64_decode($signature); //Is this the missing step?
-
-        /**
-         * Verify the signature using the secret key and the algorithm specified in the header
-         */
-        $configuration = new PDR\Application\Configuration();
-        $secretKey = $configuration->getSecretKey();
-        $algorithm = $decodedHeader['algorithm'];
-
-        /**
-         *  Re-create the signature to compare with the one in the token
-         */
-        $expectedSignature = hash_hmac($algorithm, $jsonHeader . '.' . $jsonPayload, $secretKey, false);
-
-        /**
-         *  Compare the expected signature with the one in the token
-         */
-        if (!hash_equals($decodedSignature, $expectedSignature)) {
-            throw new Exception('Invalid signature');
-        }
-
-        /**
-         *  Return the decoded payload
-         */
-        return $decodedPayload;
-    }
-
-    private function sendErrorAndExit(string $message, int $statusCode = 401) :void {
-        header('Content-Type: application/json', true, $statusCode);
-        echo json_encode(['error' => $message]);
-        exit;
-    }
-
-    public function requireLogin() {
+    public function requireLogin(): void {
         $scriptName = filter_input(INPUT_SERVER, "SCRIPT_NAME", FILTER_SANITIZE_URL);
 
         if (true === $this->user_is_logged_in()) {
