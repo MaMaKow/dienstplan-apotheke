@@ -88,7 +88,7 @@ class AuthController extends BaseController {
                 // Generate and return an access token
                 $jwtHandler = new \PDR\Security\JwtHandler();
                 $accessToken = $jwtHandler->generateAccessToken($session->getUserObject());
-                $this->sendSuccess(['accessToken' => $accessToken]);
+                $this->sendJson(['accessToken' => $accessToken]);
                 die();
             } else {
                 // Handle authentication failure

@@ -54,12 +54,4 @@ abstract class BaseController {
     protected function sendError(string $message, $statusCode = 400) {
         $this->sendJson(['error' => $message], $statusCode);
     }
-
-    protected function sendSuccess($data = null, $message = 'Success') {
-        $response = ['message' => $message];
-        if ($data !== null) {
-            $response['data'] = $data;
-        }
-        $this->sendJson($response, 200);
-    }
 }
