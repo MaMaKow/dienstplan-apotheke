@@ -24,6 +24,7 @@ import Selenium.NetworkOfBranchOffices;
 import Selenium.driver.Wrapper;
 import Selenium.RealData.RealWorkforce;
 import Selenium.Utilities.LogCollector;
+import Selenium.Utilities.MaintenanceHelper;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -224,6 +225,42 @@ public class WorkforceManagementPage {
         selectEmployee("");//Select the empty new employee
         LogCollector.debug("createEmployee move on to setEmployeeData...");
         return setEmployeeData(employeeObject);
+    }
+
+    /**
+     * This function will set the start and end of employment far into the past.
+     * Theoretically Maintenance should delete the employee afterwards.
+     *
+     * @param employeeObject
+     * @return
+     */
+    public WorkforceManagementPage deleteEmployee(Employee employeeObject) {
+        LogCollector.debug("deleteEmployee before try");
+        try {
+            LogCollector.debug("deleteEmployee inside try");
+            selectEmployee(employeeObject);
+            LogCollector.debug("deleteEmployee after first select");
+            NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+            Employee employeeDeletionObject;
+            employeeDeletionObject = new Employee(String.valueOf(employeeObject.getEmployeeKey()),
+                    "Be Deleted",
+                    "Will",
+                    employeeObject.getProfession(),
+                    "0", "0", "0",
+                    employeeObject.getBranchString(networkOfBranchOffices), "false", "false",
+                    "1990-01-01", "1990-02-01"
+            );
+            LogCollector.debug("deleteEmployee after first select return");
+            WorkforceManagementPage result = setEmployeeData(employeeDeletionObject);
+            MaintenanceHelper.runMaintenance();
+            return result;
+        } catch (Exception e) {
+            LogCollector.debug("deleteEmployee empty catch after fail");
+            /**
+             * The employee did not exist.
+             */
+        }
+        return this;
     }
 
     public Employee getEmployeeObject() {

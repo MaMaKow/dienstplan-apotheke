@@ -27,6 +27,7 @@ import Selenium.User;
 import Selenium.UserRegistry;
 import Selenium.Utilities.EmailParser;
 import Selenium.Utilities.LogCollector;
+import Selenium.Utilities.MaintenanceHelper;
 import static Selenium.driver.Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR;
 import Selenium.rest_api.ApiHandler;
 import Selenium.signin.SignInPage;
@@ -94,7 +95,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         overtimeEmployeePage.addNewOvertime(localDate2, -8, "NoFoo" + employee.getFullName());
         overtimeEmployeePage.addNewOvertime(localDate3, 1, "Bar" + employee.getFullName());
         overtimeEmployeePage.addNewOvertime(localDate3, 99, "Error" + employee.getFullName()); // Should not get
-                                                                                               // inserted
+        // inserted
         /**
          * Find the newly created overtime:
          */
@@ -130,7 +131,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         softAssert.assertAll();
     }
 
-    @Test(dependsOnMethods = { "testDisplay" })
+    @Test(dependsOnMethods = {"testDisplay"})
     public void testDeleteBySimpleUser() throws IOException {
         int currentYear = LocalDate.now().getYear();
         LogCollector.debug("testDeleteBySimpleUser");
@@ -177,9 +178,9 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
         /**
          * @todo Now test if there has been an email to the administrator about
-         *       deleted overtimes. Make sure, that selenium_test_user does not have
-         *       admin privileges. Or use a less privileged user to make the
-         *       deletions.
+         * deleted overtimes. Make sure, that selenium_test_user does not have
+         * admin privileges. Or use a less privileged user to make the
+         * deletions.
          */
         // Fetch emails from MailHog API or Mailtrap API
         String mailHogApiUrl = "http://localhost:8025/api/v2/messages";
@@ -224,11 +225,11 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
                 String[] emailLines = decodedBody.split("\\r?\\n");
                 // Expected content for each line
                 String[] expectedLines = {
-                        "Der Account EmployeeUser hat folgenden Überstundeneintrag gelöscht:",
-                        "Mitarbeitende: " + employee.getFullName(),
-                        "Datum: " + localDateFormatted,
-                        "Stunden: 8",
-                        "Grund: Foo" + " " + employee.getFullName()
+                    "Der Account EmployeeUser hat folgenden Überstundeneintrag gelöscht:",
+                    "Mitarbeitende: " + employee.getFullName(),
+                    "Datum: " + localDateFormatted,
+                    "Stunden: 8",
+                    "Grund: Foo" + " " + employee.getFullName()
                 };
                 // Ensure the email contains the correct number of lines
                 softAssert.assertEquals(emailLines.length, expectedLines.length,
@@ -245,7 +246,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
     }
 
-    @Test(dependsOnMethods = { "testDisplay", "testDeleteBySimpleUser" })
+    @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser"})
     public void testEditBySimpleUser() throws IOException {
         int currentYear = LocalDate.now().getYear();
         LogCollector.debug("testEditBySimpleUser");
@@ -324,16 +325,16 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
 
             String[] emailLines = decodedBody.split("\\r?\\n");
             String[] expectedLines = {
-                    "Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
-                    "Mitarbeitende: Albert Krüger",
-                    "Datum: 25.11." + currentYear,
-                    "Stunden: 7",
-                    "Grund: Bar",
-                    "",
-                    "zu den neuen Werten:",
-                    "Datum: 26.11." + currentYear,
-                    "Stunden: -6",
-                    "Grund: Baz"
+                "Der Account EmployeeUser hat folgenden Überstundeneintrag geändert:",
+                "Mitarbeitende: Albert Krüger",
+                "Datum: 25.11." + currentYear,
+                "Stunden: 7",
+                "Grund: Bar",
+                "",
+                "zu den neuen Werten:",
+                "Datum: 26.11." + currentYear,
+                "Stunden: -6",
+                "Grund: Baz"
             };
             for (int i = 0; i < expectedLines.length; i++) {
                 softAssert.assertEquals(emailLines[i].trim(), expectedLines[i],
@@ -360,7 +361,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
      * Vergangenheit gelöscht werden. Dann kann getestet werden, ob der Saldo
      * korrekt erfasst und berechnet wird.
      */
-    @Test(dependsOnMethods = { "testDisplay", "testDeleteBySimpleUser", "testEditBySimpleUser" }, enabled = true)
+    @Test(dependsOnMethods = {"testDisplay", "testDeleteBySimpleUser", "testEditBySimpleUser"}, enabled = true)
     // @Test(dependsOnMethods = {}, enabled = true)
     public void testRecalculateBalances() throws IOException, Exception {
         /**
@@ -469,7 +470,7 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
         Assert.assertEquals(foundOvertime.getReason(), "Foo8" + employee.getFullName());
 
         /*
-        
+
          */
         /**
          * Jetzt müssen wir eine maintenance triggern. Anschließend müssen wir
@@ -488,18 +489,10 @@ public class TestOvertimeEmployeePage extends Selenium.TestPage {
              * rufen wir manuell die background_maintenance.php auf und
              * verwenden dabei forceMaintenance = true
              */
+            MaintenanceHelper.runMaintenance();
         } catch (Exception exception) {
             LogCollector.error("Sign in failed.");
             Assert.fail();
-        }
-        propertyFile = new PropertyFile();
-        String testPageUrl = propertyFile.getTestPageUrl();
-        String payload = "forceMaintenance=true";
-        String maintenanceEndpoint = testPageUrl + "src/php/background_maintenance.php";
-        HttpResponse<String> response = ApiHandler.sendPostRequestAsForm(maintenanceEndpoint, payload);
-        LogCollector.debug(response.body());
-        if (response.body().contains("Done with background maintenance.")) {
-            LogCollector.info("Maintenence is done.");
         }
         overtimeEmployeePage = new OvertimeEmployeePage(driver);
         overtimeEmployeePage.selectYearTry(localDate0.getYear());

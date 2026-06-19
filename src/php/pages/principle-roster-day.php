@@ -45,7 +45,7 @@ function handle_roster_input($branch_id, $date_object, $session) {
     if (!$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER)) {
         return FALSE;
     }
-    $Principle_roster_old = \principle_roster::read_current_principle_roster_from_database($branch_id, $date_object);
+    $Principle_roster_old = \principle_roster::read_current_principle_roster_from_database($branch_id, $date_object, $date_object, array(principle_roster::OPTION_SHOW_FUTURE_EMPLOYEES));
     try {
         $Principle_roster_new = \user_input::get_principle_roster_day_from_POST_secure();
     } catch (\Exception $exception) {
@@ -68,7 +68,7 @@ function handle_roster_input($branch_id, $date_object, $session) {
             throw $exception;
         }
     }
-    $List_of_deleted_roster_primary_keys = \user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    $List_of_deleted_roster_primary_keys = \user_input::getDeletedRosterPrimaryKeyList($Principle_roster_new, $Principle_roster_old);
     $List_of_changed_keys = \user_input::get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     $Inserted_principle_roster_item_list = \user_input::get_inserted_principle_roster_item_list($Principle_roster_new);
     \principle_roster::insert_changed_entries_into_database_by_key($Principle_roster_new, $List_of_changed_keys);
@@ -77,7 +77,7 @@ function handle_roster_input($branch_id, $date_object, $session) {
     /**
      * <p lang=de>Dies sind roster_items, bei denen per SELECT der employee geändert wurde:<p>
      */
-    $Changed_roster_item_list = \user_input::get_changed_roster_item_list($Principle_roster_new, $Principle_roster_old);
+    $Changed_roster_item_list = \user_input::getChangedRosterItemList($Principle_roster_new, $Principle_roster_old);
     \principle_roster::invalidate_removed_entries_in_database($Changed_roster_item_list);
 }
 

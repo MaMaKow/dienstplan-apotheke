@@ -617,33 +617,38 @@ abstract class user_input {
      * Der primary_key wird vom alten employee übertragen.
      * Der alte employee taucht aber nicht mehr auf, um ihn mit dem alten Plan zu vergleichen.
      * </p>
-     * @param array $Roster_new The newly submitted roster
-     * @param array $Roster_old The old roster stored in the database
+     * @param array $rosterNew The newly submitted roster
+     * @param array $rosterOld The old roster stored in the database
      */
-    public static function get_changed_roster_item_list(array $Roster_new, array $Roster_old) {
-        $Changed_roster_item_list = array();
-        foreach ($Roster_old as $date_unix => $Roster_day_array_old) {
-            foreach ($Roster_day_array_old as $roster_row_iterator => $roster_item) {
-                if (!array_key_exists($roster_row_iterator, $Roster_new[$date_unix])) {
+    public static function getChangedRosterItemList(array $rosterNew, array $rosterOld): array {
+        $changedRosterItemList = array();
+        foreach ($rosterOld as $dateUnix => $rosterDayArrayOld) {
+            foreach ($rosterDayArrayOld as $rosterItemOld) {
+                if (!isset($rosterNew[$dateUnix])) {
                     continue;
                 }
-                if ($Roster_new[$date_unix][$roster_row_iterator] instanceof roster_item_empty) {
-                    continue;
-                }
-                if ($roster_item->primary_key !== $Roster_new[$date_unix][$roster_row_iterator]->primary_key) {
-                    throw new Exception("<p lang=de>Ich erwarte, dass der primary key zwischen den Plänen unverändert bleibt.</p>");
-                }
-                if ($roster_item->employee_key !== $Roster_new[$date_unix][$roster_row_iterator]->employee_key) {
-                    $Changed_roster_item_list[] = $roster_item->primary_key;
+                // Suche im neuen Roster nach demselben primary_key
+                foreach ($rosterNew[$dateUnix] as $rosterItemNew) {
+                    if ($rosterItemNew instanceof roster_item_empty) {
+                        continue;
+                    }
+                    if ($rosterItemOld->primary_key !== $rosterItemNew->primary_key) {
+                        continue;
+                    }
+                    if ($rosterItemOld->employee_key !== $rosterItemNew->employee_key) {
+                        $changedRosterItemList[] = $rosterItemOld->primary_key;
+                    }
+                    // Wir haben das Roster Item mit dem selben primary_key gefunden. Ende der Schleife.
+                    break;
                 }
             }
         }
-        return $Changed_roster_item_list;
+        return $changedRosterItemList;
     }
 
-    public static function get_deleted_roster_primary_key_list(array $Roster_new, array $Roster_old) {
-        $List_of_primary_keys_in_old_roster = array();
-        $List_of_primary_keys_in_new_roster = array();
+    public static function getDeletedRosterPrimaryKeyList(array $rosterNew, array $rosterOld): array {
+        $listOfPrimaryKeysInOldRoster = array();
+        $listOfPrimaryKeysInNewRoster = array();
         /*
          * TODO: <p lang="de">Sobald es eine Klasse \PDR\Roster\Roster mit dem Inhalt \PDR\Roster\RosterDayArray gibt, sollte dies eine feste funktion werden:
          *  function get_primary_keys() {}
@@ -652,22 +657,22 @@ abstract class user_input {
          *   Die Werte in den items können private gestellt werden und zukünftig über funktionen ungleich dem magischen __get() angefordert werden.
          * </p>
          */
-        foreach ($Roster_old as $Roster_old_day_array) {
-            foreach ($Roster_old_day_array as $roster_old_item) {
-                if (isset($roster_old_item->employee_key)) {
-                    $List_of_primary_keys_in_old_roster[] = $roster_old_item->primary_key;
+        foreach ($rosterOld as $rosterOldDayArray) {
+            foreach ($rosterOldDayArray as $rosterOldItem) {
+                if (isset($rosterOldItem->employee_key)) {
+                    $listOfPrimaryKeysInOldRoster[] = $rosterOldItem->primary_key;
                 }
             }
         }
-        foreach ($Roster_new as $Roster_new_day_array) {
-            foreach ($Roster_new_day_array as $roster_new_item) {
-                if (isset($roster_new_item->employee_key) and isset($roster_new_item->primary_key)) {
-                    $List_of_primary_keys_in_new_roster[] = $roster_new_item->primary_key;
+        foreach ($rosterNew as $rosterNewDayArray) {
+            foreach ($rosterNewDayArray as $rosterNewItem) {
+                if (isset($rosterNewItem->employee_key) and isset($rosterNewItem->primary_key)) {
+                    $listOfPrimaryKeysInNewRoster[] = $rosterNewItem->primary_key;
                 }
             }
         }
-        $Deleted_roster_primary_key_list = array_diff($List_of_primary_keys_in_old_roster, $List_of_primary_keys_in_new_roster);
-        return $Deleted_roster_primary_key_list;
+        $deletedRosterPrimaryKeyList = array_diff($listOfPrimaryKeysInOldRoster, $listOfPrimaryKeysInNewRoster);
+        return $deletedRosterPrimaryKeyList;
     }
 
     private static function get_inserted_roster_employee_key_list($Roster, $Roster_old) {

@@ -68,6 +68,7 @@
             <!-- Erst wird das Erstellen von Plänen ohne Grundplan versucht. Anschließend folgen die Grundpläne: -->
             <class name="Selenium.principlerosterpages.TestDayPage" />
             <class name="Selenium.principlerosterpages.TestEmployeePage" />
+            <class name="Selenium.principlerosterpages.TestDayPageFutureEmployee" />
             <class name="Selenium.rosterpages.TestRosterWeekTableOvertimeAbsences" /><!-- funktioniert erst nach Erstellung des Grundplanes-->
             <!--
             -->

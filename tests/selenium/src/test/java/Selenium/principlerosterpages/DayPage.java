@@ -344,10 +344,14 @@ public class DayPage {
         return rosterInputElement;
     }
 
-    public void changeRosterInputEmployee(int employeeKeyOld, int employeeKeyNew) {
+    public void changeRosterInputEmployee(int employeeKeyOld, Integer employeeKeyNew) {
         WebElement rosterInputEmployeeElement = findRosterInputEmployeeByEmployeeKey(employeeKeyOld);
         Select inputElementSelect = new Select(rosterInputEmployeeElement);
-        inputElementSelect.selectByValue(String.valueOf(employeeKeyNew));
+        if (null != employeeKeyNew) {
+            inputElementSelect.selectByValue(String.valueOf(employeeKeyNew));
+        } else {
+            inputElementSelect.selectByValue("");
+        }
     }
 
     public void changeRosterInputDutyStart(int employeeKey, LocalTime time) {

@@ -31,7 +31,7 @@ if (filter_has_var(INPUT_POST, 'submit_roster')) {
     $Principle_roster_old = \principle_roster::read_current_principle_employee_roster_from_database($employee_key, $first_item_in_roster->date_object, $last_item_in_roster->date_object);
     $List_of_changed_keys = \user_input::get_changed_principle_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
     $Inserted_principle_roster_item_list = \user_input::get_inserted_principle_roster_item_list($Principle_roster_new);
-    $List_of_deleted_roster_primary_keys = \user_input::get_deleted_roster_primary_key_list($Principle_roster_new, $Principle_roster_old);
+    $List_of_deleted_roster_primary_keys = \user_input::getDeletedRosterPrimaryKeyList($Principle_roster_new, $Principle_roster_old);
     \principle_roster::insert_changed_entries_into_database_by_key($Principle_roster_new, $List_of_changed_keys);
     \principle_roster::insert_new_entries_into_database($Inserted_principle_roster_item_list);
     \principle_roster::invalidate_removed_entries_in_database($List_of_deleted_roster_primary_keys);
