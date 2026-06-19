@@ -26,7 +26,9 @@
  *
  */
 class database_wrapper {
-
+    /**
+     * @var database_wrapper The singleton instance of the class database_wrapper
+     */
     protected static $instance;
 
     /**
@@ -70,14 +72,14 @@ class database_wrapper {
         } catch (PDOException $exception) {
             \PDR\Utility\GeneralUtility::printDebugVariable($exception);
             $message = gettext('There was an error while connecting to the database.')
-                    . " " . gettext('Please see the error log for more details!')
-                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+                . " " . gettext('Please see the error log for more details!')
+                . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         } catch (Exception $exception) {
             \PDR\Utility\GeneralUtility::printDebugVariable($exception);
             $message = gettext('There was an error while connecting to the database.')
-                    . " " . gettext('Please see the error log for more details!')
-                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+                . " " . gettext('Please see the error log for more details!')
+                . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         }
     }
@@ -183,7 +185,7 @@ class database_wrapper {
 
     public static function database_table_column_exists($database_name, $table_name, $column_name): bool {
         $sql_query = "SELECT * FROM information_schema.COLUMNS "
-                . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name";
+            . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND COLUMN_NAME = :column_name";
         $result = self::instance()->run($sql_query, array(
             'database_name' => $database_name,
             'table_name' => $table_name,
@@ -197,7 +199,7 @@ class database_wrapper {
 
     public static function database_table_index_exists($database_name, $table_name, $index_name): bool {
         $sql_query = "SELECT count(*) as index_exists FROM information_schema.statistics "
-                . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND index_name = :index_name";
+            . "WHERE TABLE_SCHEMA = :database_name AND TABLE_NAME = :table_name AND index_name = :index_name";
         $result = self::instance()->run($sql_query, array(
             'database_name' => $database_name,
             'table_name' => $table_name,
@@ -270,8 +272,8 @@ class database_wrapper {
         if (TRUE === $this->pdo->inTransaction()) {
             $this->pdo->rollBack();
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!')
-                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+                . " " . gettext('Please see the error log for more details!')
+                . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             $user_dialog = new user_dialog();
             $user_dialog->add_message($message, E_USER_ERROR);
             throw $exception;
@@ -288,8 +290,8 @@ class database_wrapper {
              * \PDR\Utility\GeneralUtility::printDebugVariable($exception);
              */
             $message = gettext('There was an error while querying the database.')
-                    . " " . gettext('Please see the error log for more details!')
-                    . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
+                . " " . gettext('Please see the error log for more details!')
+                . " " . sprintf(gettext('The error log resides in: %1$s'), ini_get('error_log'));
             die("<p>$message</p>");
         }
     }

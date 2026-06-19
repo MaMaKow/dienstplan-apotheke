@@ -18,13 +18,22 @@
  */
 require_once 'BaseController.php';
 
-class EmployeeController extends BaseController {
+use PDR\Roster\OvertimeCollection;
+use PDR\Roster\Overtime;
+use \PDR\Database\OvertimeDatabaseHandler;
 
-    public function getAllEmployees($matches) {
+class OvertimeController extends BaseController {
+
+    public function getOvertimesByEmployee($matches) {
         try {
-            $workforce = new \PDR\Workforce\Workforce(date('Y-m-d'));
-            $jsonEncodedWorkforce = $workforce->getEmployeesAsJson();
-            $this->sendJson(json_decode($jsonEncodedWorkforce));
+            $employeeKey = (int) $matches[1];
+
+            $overtimeCollection = OvertimeDatabaseHandler::getEmployeeOvertimes(
+                $employeeKey,
+            );
+
+            $jsonEncodedOvertimes = $overtimeCollection->getOvertimesAsJson();
+            $this->sendJson(json_decode($jsonEncodedOvertimes));
         } catch (Exception $e) {
             $this->sendError($e->getMessage());
         }

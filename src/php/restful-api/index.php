@@ -83,7 +83,7 @@ $router->addRoute(
 $router->addRoute(
         'GET',
         '/employees/{id}/absences/{year}',
-        'EmployeeController',
+        'AbsenceController',
         'getEmployeeAbsencesByYear',
         'Abwesenheiten eines Mitarbeiters in einem bestimmten Jahr abrufen'
 );
@@ -91,9 +91,17 @@ $router->addRoute(
 $router->addRoute(
         'GET',
         '/employees/{id}/absences',
-        'EmployeeController',
+        'AbsenceController',
         'getEmployeeAbsences',
         'Alle Abwesenheiten eines Mitarbeiters abrufen'
+);
+
+$router->addRoute(
+        'GET',
+        '/employees/{id}/overtimes',
+        'OvertimeController',
+        'getEmployeeOvertimes',
+        'Alle Überstunden eines Mitarbeiters abrufen'
 );
 
 /**
@@ -116,7 +124,7 @@ $router->addRoute(
 );
 
 /**
-  Roster Routes
+ * Roster Routes
  *
  *
  * Optionaler Filter über Query-Parameter:

@@ -60,7 +60,7 @@ class OvertimeDatabaseHandler {
             } else {
                 \PDR\Utility\GeneralUtility::printDebugVariable($exception);
                 $messageDatabaseError = gettext('There was an error while querying the database.')
-                        . " " . gettext('Please see the error log for more details!');
+                    . " " . gettext('Please see the error log for more details!');
                 die("<p>$messageDatabaseError</p>");
             }
         }
@@ -69,8 +69,8 @@ class OvertimeDatabaseHandler {
 
     public static function updateOvertimeInDatabase(int $employeeKey, \DateTime $dateOld, \DateTime $dateNew, float $overtimeHoursNew, float $balanceNew, String $overtimeReasonString): bool {
         $sqlQuery = "UPDATE `Stunden` "
-                . " SET Datum=:date_new, Stunden=:overtime_hours_new, Saldo=:balance_new, Grund=:reason_new "
-                . " WHERE `employee_key` = :employee_key_old AND Datum = :date_old";
+            . " SET Datum=:date_new, Stunden=:overtime_hours_new, Saldo=:balance_new, Grund=:reason_new "
+            . " WHERE `employee_key` = :employee_key_old AND Datum = :date_old";
         $result = \database_wrapper::instance()->run($sqlQuery, array(
             'employee_key_old' => $employeeKey,
             'date_new' => $dateNew->format("Y-m-d"),
@@ -95,9 +95,9 @@ class OvertimeDatabaseHandler {
      * <p>The last balance stored in the database for a given employee. Current means, that the date (`Datum`) of the entry is the highest.</p>
      *
      * @param int $employeeKey
-     * @return array [$balance, $date]
+     * @return \PDR\Roster\Overtime
      */
-    public static function getCurrentOvertime($employeeKey): \PDR\Roster\Overtime {
+    public static function getCurrentOvertime(int $employeeKey): \PDR\Roster\Overtime {
         $sqlQueryGetBalance = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` DESC LIMIT 1";
         $result = \database_wrapper::instance()->run($sqlQueryGetBalance, array('employee_key' => $employeeKey));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
@@ -108,14 +108,34 @@ class OvertimeDatabaseHandler {
             $employeeKey = (int) $row->employee_key;
             $balance = (float) $row->Saldo;
             $hours = (float) $row->Stunden;
+            $reason = (string) $row->Grund;
             $dateObject = new \DateTime($row->Datum);
-            $overtime = new \PDR\Roster\Overtime($employeeKey, $dateObject, $hours, $balance);
+            $overtime = new \PDR\Roster\Overtime($employeeKey, $dateObject, $hours, $balance, $reason);
             return $overtime;
         }
-        $overtimeBlank = new \PDR\Roster\Overtime($employeeKey, new \DateTime(), 0, 0);
+        $overtimeBlank = new \PDR\Roster\Overtime($employeeKey, new \DateTime(), 0, 0, "");
         return $overtimeBlank;
     }
 
+    public static function getEmployeeOvertimes(int $employeeKey): \PDR\Roster\OvertimeCollection {
+        $OvertimeCollection = new \PDR\Roster\OvertimeCollection();
+        $sqlQueryGetBalance = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` DESC";
+        $result = \database_wrapper::instance()->run($sqlQueryGetBalance, array('employee_key' => $employeeKey));
+        while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
+            /*
+             * We cast the result to float,
+             * so in case there is no balance yet, we just set it to 0.
+             */
+            $employeeKey = (int) $row->employee_key;
+            $balance = (float) $row->Saldo;
+            $hours = (float) $row->Stunden;
+            $reason = (string) $row->Grund;
+            $dateObject = new \DateTime($row->Datum);
+            $overtime = new \PDR\Roster\Overtime($employeeKey, $dateObject, $hours, $balance, $reason);
+            $OvertimeCollection->addOvertime($overtime);
+        }
+        return $OvertimeCollection;
+    }
     /**
      * <p>
      * The first balance stored in the database for a given employee.
@@ -125,15 +145,16 @@ class OvertimeDatabaseHandler {
      * @param int $employeeKey
      * @return Overtime object
      */
-    public static function getFirstOvertime($employeeKey): ?\PDR\Roster\Overtime {
+    public static function getFirstOvertime(int $employeeKey): ?\PDR\Roster\Overtime {
         $sqlQueryGetOvertime = "SELECT * FROM `Stunden` WHERE `employee_key` = :employee_key ORDER BY `Datum` ASC LIMIT 1";
         $result = \database_wrapper::instance()->run($sqlQueryGetOvertime, array('employee_key' => $employeeKey));
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $employeeKey = (int) $row->employee_key;
             $balance = (float) $row->Saldo;
             $hours = (float) $row->Stunden;
+            $reason = (string) $row->Grund;
             $dateObject = new \DateTime($row->Datum);
-            $overtime = new \PDR\Roster\Overtime($employeeKey, $dateObject, $hours, $balance);
+            $overtime = new \PDR\Roster\Overtime($employeeKey, $dateObject, $hours, $balance, $reason);
             return $overtime;
         }
         return null;
@@ -151,6 +172,7 @@ class OvertimeDatabaseHandler {
         $initialBalance = 0;
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $balance = $row->Saldo;
+            $reason = (string) $row->Grund;
             if ($firstLoop === TRUE) {
                 $initialBalance = $row->Saldo - $row->Stunden;
                 $balance = $row->Saldo - $row->Stunden;
@@ -159,7 +181,7 @@ class OvertimeDatabaseHandler {
             $dateUnix = strtotime($row->Datum);
             $dateObject = new \DateTime($row->Datum);
             $OvertimeList[$dateUnix] = $row;
-            $overtime = new \PDR\Roster\Overtime($employeeKey, $dateObject, $row->Stunden, $balance);
+            $overtime = new \PDR\Roster\Overtime($employeeKey, $dateObject, $row->Stunden, $balance, $reason);
             $OvertimeCollection->addOvertime($overtime);
         }
         ksort($OvertimeList);

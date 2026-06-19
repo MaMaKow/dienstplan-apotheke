@@ -20,6 +20,11 @@ require_once 'BaseController.php';
 
 class AbsenceController extends BaseController {
 
+    /**
+     * Get all absences for a specific year
+     * @param array $matches The regex matches containing the year
+     * @return void
+     */
     public function getAbsencesByYear($matches) {
         try {
             $year = (int) $matches[1];
@@ -28,8 +33,8 @@ class AbsenceController extends BaseController {
             $endDateObject = (new DateTime())->setDate($year, 12, 31);
 
             $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod(
-                    $startDateObject,
-                    $endDateObject
+                $startDateObject,
+                $endDateObject
             );
 
             $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();
@@ -39,6 +44,9 @@ class AbsenceController extends BaseController {
         }
     }
 
+    /**
+     * Get all absences of an employee for the current year
+     */
     public function getAllAbsences($matches) {
         try {
             $currentYear = date('Y');
@@ -47,8 +55,60 @@ class AbsenceController extends BaseController {
             $endDateObject = (new DateTime())->setDate($currentYear, 12, 31);
 
             $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod(
-                    $startDateObject,
-                    $endDateObject
+                $startDateObject,
+                $endDateObject
+            );
+
+            $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();
+            $this->sendJson(json_decode($jsonEncodedAbsences));
+        } catch (Exception $e) {
+            $this->sendError($e->getMessage());
+        }
+    }
+
+    /**
+     * Get all absences of an employee for a specific year
+     * @param array $matches The regex matches containing the employee ID and year
+     * @return void
+     */
+    public function getEmployeeAbsencesByYear($matches) {
+        try {
+            $employeeKey = (int) $matches[1];
+            $year = (int) $matches[2];
+
+            $startDateObject = (new DateTime())->setDate($year, 1, 1);
+            $endDateObject = (new DateTime())->setDate($year, 12, 31);
+
+            $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAbsenceObjectsByEmployeeKeyInPeriod(
+                $startDateObject,
+                $endDateObject,
+                $employeeKey
+            );
+
+            $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();
+            $this->sendJson(json_decode($jsonEncodedAbsences));
+        } catch (Exception $e) {
+            $this->sendError($e->getMessage());
+        }
+    }
+
+    /**
+     * Get all absences of an employee for the current year
+     * @param array $matches The regex matches containing the employee ID
+     * @return void
+     */
+    public function getEmployeeAbsences($matches) {
+        try {
+            $employeeKey = (int) $matches[1];
+            $currentYear = date('Y');
+
+            $startDateObject = (new DateTime())->setDate($currentYear, 1, 1);
+            $endDateObject = (new DateTime())->setDate($currentYear, 12, 31);
+
+            $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAbsenceObjectsByEmployeeKeyInPeriod(
+                $startDateObject,
+                $endDateObject,
+                $employeeKey
             );
 
             $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();

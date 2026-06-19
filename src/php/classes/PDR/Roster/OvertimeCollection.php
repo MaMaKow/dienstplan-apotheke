@@ -51,4 +51,11 @@ class OvertimeCollection implements \IteratorAggregate, \Countable {
     public function count(): int {
         return count($this->listOfOvertimes);
     }
+    public function getOvertimesAsJson(): string {
+        $overtimesArray = [];
+        foreach ($this->listOfOvertimes as $overtime) {
+            $overtimesArray[] = $overtime->toArray();
+        }
+        return json_encode($overtimesArray);
+    }
 }

@@ -36,13 +36,15 @@ class Overtime {
     private int $employeeKey;
     private \DateTime $dateObject;
     private float $hours;
-    private float $balance;
+    private ?float $balance;
+    private string $reason;
 
-    public function __construct(int $employeeKey, \DateTime $dateObject, float $hours, float $balance = null) {
+    public function __construct(int $employeeKey, \DateTime $dateObject, float $hours, ?float $balance = null, string $reason = "") {
         $this->employeeKey = $employeeKey;
         $this->dateObject = $dateObject;
         $this->hours = $hours;
         $this->balance = $balance;
+        $this->reason = $reason;
     }
 
     public function getEmployeeKey(): int {
@@ -57,7 +59,25 @@ class Overtime {
         return $this->hours;
     }
 
-    public function getBalance(): float {
+    public function getBalance(): ?float {
         return $this->balance;
+    }
+
+    public function getReason(): string {
+        return $this->reason;
+    }
+
+    public function toArray(): array {
+        return [
+            'employeeKey' => $this->employeeKey,
+            'date' => $this->dateObject->format('Y-m-d'),
+            'hours' => $this->hours,
+            'balance' => $this->balance,
+            'reason' => $this->reason,
+        ];
+    }
+
+    public function encodeToJson(): string {
+        return json_encode($this->toArray());
     }
 }
