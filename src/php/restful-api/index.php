@@ -100,7 +100,7 @@ $router->addRoute(
         'GET',
         '/employees/{id}/overtimes',
         'OvertimeController',
-        'getEmployeeOvertimes',
+        'getOvertimesByEmployee',
         'Alle Überstunden eines Mitarbeiters abrufen'
 );
 
