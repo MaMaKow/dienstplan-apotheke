@@ -49,7 +49,9 @@ public class TestDayPageFutureEmployee extends Selenium.TestPage {
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
         LocalDate today = LocalDate.now();
         LocalDate nextYear = today.plusYears(1);
-        Employee futureEmployee = new Employee("999", "Future", "Test", "PTA", "40", "30", "28", "Hauptapotheke am großen Platz", "true", "true", nextYear.format(Wrapper.DATE_TIME_FORMATTER_YEAR_MONTH_DAY), "");
+        Employee futureEmployee = new Employee("999", "Future", "Test", "PTA", "40", "30", "28",
+                "Hauptapotheke am großen Platz", "true", "true",
+                nextYear.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), "");
         workforceManagementPage.createEmployee(futureEmployee);
 
         // 2. Go to principle roster day for a date after that start date
@@ -64,11 +66,14 @@ public class TestDayPageFutureEmployee extends Selenium.TestPage {
         principleRosterDayPage.goToBranch(0);
 
         // 3. Add a shift for this employee and submit
-        PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(futureEmployee.getEmployeeKey(), DayOfWeek.MONDAY, LocalTime.of(10, 30), LocalTime.of(17, 45), LocalTime.of(13, 0), LocalTime.of(13, 30), "future comment", 0);
+        PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(futureEmployee.getEmployeeKey(),
+                DayOfWeek.MONDAY, LocalTime.of(10, 30), LocalTime.of(17, 45), LocalTime.of(13, 0), LocalTime.of(13, 30),
+                "future comment", 0);
         principleRosterDayPage.createNewRosterItem(principleRosterItem);
 
         // 4. Verify employee appears in the roster
-        PrincipleRosterItem foundPrincipleRosterItem = principleRosterDayPage.getRosterItemByEmployeeKey(futureEmployee.getEmployeeKey());
+        PrincipleRosterItem foundPrincipleRosterItem = principleRosterDayPage
+                .getRosterItemByEmployeeKey(futureEmployee.getEmployeeKey());
         softAssert.assertEquals(foundPrincipleRosterItem.getEmployeeKey(), principleRosterItem.getEmployeeKey());
         softAssert.assertEquals(foundPrincipleRosterItem.getDutyStart(), principleRosterItem.getDutyStart());
         softAssert.assertEquals(foundPrincipleRosterItem.getDutyEnd(), principleRosterItem.getDutyEnd());
