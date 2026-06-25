@@ -65,7 +65,7 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
     try {
         $RosterFromPost = user_input::get_Roster_from_POST_secure();
         if (filter_has_var(INPUT_POST, 'submit_roster') && $session->user_has_privilege('create_roster')) {
-            user_input::roster_write_user_input_to_database($RosterFromPost, $branch_id);
+            user_input::roster_write_user_input_to_database($RosterFromPost);
             $user_dialog->add_message(gettext('Roster saved successfully.'));
         }
     } catch (Exception $exception) {
@@ -73,8 +73,8 @@ if (filter_has_var(INPUT_POST, 'Roster')) {
         error_log('Error processing roster POST data: ' . $exception->getMessage());
         // Show a user-friendly message
         $user_dialog->add_message(
-                gettext('The submitted roster data was invalid. Please check the times.') . ' ' . $exception->getMessage(),
-                E_USER_ERROR
+            gettext('The submitted roster data was invalid. Please check the times.') . ' ' . $exception->getMessage(),
+            E_USER_ERROR
         );
     }
 }
@@ -184,10 +184,10 @@ $html_text .= build_html_navigation_elements::build_input_date($date_sql);
 $html_text .= $user_dialog->build_messages();
 $html_text .= "<form accept-charset='utf-8' id='rosterForm' method=post>\n";
 $html_text .= "<script> "
-        . " var Roster_array = " . json_encode($Roster, JSON_UNESCAPED_UNICODE) . ";\n"
-        . " var List_of_employee_names = " . json_encode($workforce->getListOfEmployeeNames(), JSON_UNESCAPED_UNICODE) . ";\n"
-        . " var List_of_employee_professions = " . json_encode($workforce->getListOfEmployeeProfessions(), JSON_UNESCAPED_UNICODE) . ";\n"
-        . "</script>\n";
+    . " var Roster_array = " . json_encode($Roster, JSON_UNESCAPED_UNICODE) . ";\n"
+    . " var List_of_employee_names = " . json_encode($workforce->getListOfEmployeeNames(), JSON_UNESCAPED_UNICODE) . ";\n"
+    . " var List_of_employee_professions = " . json_encode($workforce->getListOfEmployeeProfessions(), JSON_UNESCAPED_UNICODE) . ";\n"
+    . "</script>\n";
 $html_text .= "<table>\n";
 $html_text .= "<tr>\n";
 $html_text .= "<td>";
@@ -211,10 +211,10 @@ if (FALSE !== $isHoliday) {
 $html_text .= "<br>";
 $dateString = $dateObject->format('W');
 $html_text .= gettext("calendar week")
-        . '&nbsp;'
-        . $dateString
-        . '&nbsp;'
-        . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($dateObject));
+    . '&nbsp;'
+    . $dateString
+    . '&nbsp;'
+    . alternating_week::get_human_readable_string(alternating_week::get_alternating_week_for_date($dateObject));
 if (TRUE === PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDay($dateObject)) {
     $emergencyService = PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDate($dateObject);
     $html_text .= "<br>" . gettext("EMERGENCY SERVICE") . "<br>" . $emergencyService->getEmployeeLastName() . " / " . $emergencyService->getBranchNameShort();
@@ -280,4 +280,3 @@ require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/fragments/fragment.footer.ph
 
 echo "</body>\n";
 echo "</html>";
-?>

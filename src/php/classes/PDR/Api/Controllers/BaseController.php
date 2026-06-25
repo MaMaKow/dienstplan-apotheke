@@ -37,9 +37,15 @@ abstract class BaseController {
     protected function requireAdminPrivileges() {
         if (!$this->userObject->has_privilege(\sessions::PRIVILEGE_ADMINISTRATION)) {
             $this->sendError('You need administrative privileges for this action.', 403);
+            exit;
         }
     }
-
+    protected function requireRosterEditPrivileges() {
+        if (!$this->userObject->has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER)) {
+            $this->sendError('You need roster edit privileges for this action.', 403);
+            exit;
+        }
+    }
     /**
      * @param mixed $data
      * @param int $statusCode
@@ -53,5 +59,6 @@ abstract class BaseController {
 
     protected function sendError(string $message, $statusCode = 400) {
         $this->sendJson(['error' => $message], $statusCode);
+        exit;
     }
 }

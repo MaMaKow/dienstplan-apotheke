@@ -57,7 +57,7 @@ class RosterActionHandler {
         $roster = \roster::read_roster_from_database($branchId, $dateSql);
         // Add the new element to the existing roster:
         $roster[$dateObject->format('U')][] = $rosterItem;
-        \user_input::roster_write_user_input_to_database($roster, $branchId);
+        \user_input::roster_write_user_input_to_database($roster);
         return true;
     }
 
@@ -74,14 +74,14 @@ class RosterActionHandler {
         // Decode the JSON string into an associative array
         $rosterItemArray = json_decode($rosterItemJson, true);
         $rosterItem = new \roster_item(
-                $rosterItemArray['date_sql'],
-                $rosterItemArray['employee_key'],
-                $rosterItemArray['branch_id'],
-                $rosterItemArray['duty_start_sql'],
-                $rosterItemArray['duty_end_sql'],
-                $rosterItemArray['break_start_sql'],
-                $rosterItemArray['break_end_sql'],
-                $rosterItemArray['comment']
+            $rosterItemArray['date_sql'],
+            $rosterItemArray['employee_key'],
+            $rosterItemArray['branch_id'],
+            $rosterItemArray['duty_start_sql'],
+            $rosterItemArray['duty_end_sql'],
+            $rosterItemArray['break_start_sql'],
+            $rosterItemArray['break_end_sql'],
+            $rosterItemArray['comment']
         );
         \user_input::removeRosterItemFromDatabase($rosterItem);
         return true;

@@ -143,6 +143,20 @@ $router->addRoute(
         'getRosters',
         'Dienstpläne abrufen (optional gefiltert nach Mitarbeiter und Zeitraum)'
 );
+$router->addRoute(
+        'PUT',
+        '/rosters/{branch_id}/{date_start}/{date_end}',
+        'RosterController',
+        'updateRoster',
+        'Dienstplan aktualisieren'
+);
+$router->addRoute(
+        'DELETE',
+        '/rosters/{branch_id}/{date}',
+        'RosterController',
+        'deleteRoster',
+        'Dienstplan löschen'
+);
 
 /**
  *

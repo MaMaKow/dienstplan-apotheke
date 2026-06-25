@@ -18,6 +18,8 @@
  */
 require_once 'BaseController.php';
 
+use PDR\Utility\GeneralUtility;
+
 class RosterController extends BaseController {
 
     public function getRosters($matches) {
@@ -39,18 +41,70 @@ class RosterController extends BaseController {
                 throw new InvalidArgumentException('Invalid date format. Expected YYYY-MM-DD.');
             }
 
-            // Debug
-            //\PDR\Utility\GeneralUtility::printDebugVariable($employeeKey);
-            //\PDR\Utility\GeneralUtility::printDebugVariable($branchId);
-            //\PDR\Utility\GeneralUtility::printDebugVariable($startDate);
-            //\PDR\Utility\GeneralUtility::printDebugVariable($endDate);
-            // Je nach Kombination der Filter passende Funktion aufrufen:
             if (null !== $employeeKey or null !== $branchId) {
                 $roster = new roster($startDate, $endDate, $employeeKey, $branchId);
                 $this->sendJson(json_decode($roster->encodeToJson(), true));
             } else {
                 throw new \Exception("You must provide either a 'branch' or an 'employee' parameter.");
             }
+        } catch (Exception $exception) {
+            PDR\Utility\GeneralUtility::printDebugVariable($exception);
+            $this->sendError($exception->getMessage());
+        }
+    }
+
+    /**
+     * Updates a roster in the database.
+     *
+     * @param array $matches
+     * @return void
+     */
+    public function updateRoster($matches) {
+        $this->requireRosterEditPrivileges(); // Will exit if the user does not have the required privileges.
+        $branchIdInput = $matches['0'];
+        $dateStartInput = $matches['1'];
+        $dateEndInput = $matches['2'];
+
+        try {
+            $rosterFromPut = user_input::getRosterFromPutSecure();
+            $firstRosterDay = reset($rosterFromPut);
+            $firstRosterItem = reset($firstRosterDay);
+            $lastRosterDay = end($rosterFromPut);
+            $lastRosterItem = end($lastRosterDay);
+            if ($firstRosterItem->get_branch_id() != $branchIdInput) {
+                throw new InvalidArgumentException('The provided branch ID does not match the URL parameters.');
+            }
+            if ($firstRosterItem->get_date_start() != $dateStartInput) {
+                GeneralUtility::printDebugVariable($firstRosterItem->get_date_sql());
+                GeneralUtility::printDebugVariable($dateStartInput);
+                throw new InvalidArgumentException('The provided start date does not match the URL parameters.');
+            }
+            if ($lastRosterItem->get_date_sql() != $dateEndInput) {
+                GeneralUtility::printDebugVariable($lastRosterItem->get_date_sql());
+                GeneralUtility::printDebugVariable($dateEndInput);
+                throw new InvalidArgumentException('The provided end date does not match the URL parameters.');
+            }
+            user_input::roster_write_user_input_to_database($rosterFromPut);
+            $this->sendJson(['message' => 'Roster updated successfully'], 200);
+        } catch (Exception $exception) {
+            PDR\Utility\GeneralUtility::printDebugVariable($exception);
+            $this->sendError($exception->getMessage());
+        }
+    }
+
+    /**
+     * Deletes a roster day from the database.
+     *
+     * @param array $matches
+     * @return void
+     */
+    public function deleteRoster($matches) {
+        $this->requireRosterEditPrivileges(); // Will exit if the user does not have the required privileges.
+        try {
+            $branchId = $matches['0'];
+            $date = $matches['1'];
+            user_input::deleteRosterDayFromDatabase($branchId, $date);
+            $this->sendJson(['message' => 'Roster day deleted successfully'], 200);
         } catch (Exception $exception) {
             PDR\Utility\GeneralUtility::printDebugVariable($exception);
             $this->sendError($exception->getMessage());

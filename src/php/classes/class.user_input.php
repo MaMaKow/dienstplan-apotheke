@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use PDR\Utility\GeneralUtility;
+
 /**
  * Description of class
  *
@@ -81,7 +83,7 @@ abstract class user_input {
      * @return boolean|\roster_item
      * @throws Exception
      */
-    public static function get_Roster_from_POST_secure() {
+    public static function get_Roster_from_POST_secure(): array|bool {
         $Roster_from_post = filter_input(INPUT_POST, 'Roster', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
         $Roster = array();
         if (empty($Roster_from_post)) {
@@ -121,7 +123,7 @@ abstract class user_input {
                      * Daher wird diese Zeile in diesem Fall nicht erreicht.
                      * </p>
                      */
-                    if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
+                    if (NULL === $duty_end_sql or !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                         /**
                          * <p lang=de>
                          * Sowohl Beginn als auch Ende wurden als leer übertragen. Dieses roster item wurde also gelöscht.
@@ -132,7 +134,7 @@ abstract class user_input {
                     }
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql or !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 $Roster[$date_unix][$roster_row_iterator] = new roster_item($date_sql, $employee_key, $branch_id, $duty_start_sql, $duty_end_sql, $break_start_sql, $break_end_sql, $comment);
@@ -140,6 +142,77 @@ abstract class user_input {
             }
         }
         return $Roster;
+    }
+
+    public static function getRosterFromPutSecure(): array {
+        // Raw body lesen
+        $rawInput = file_get_contents('php://input');
+        GeneralUtility::printDebugVariable("Raw input from PUT request: $rawInput");
+        // application/json:
+        $putData = json_decode($rawInput, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidArgumentException('Invalid JSON input: ' . json_last_error_msg());
+        }
+        $rosterRaw = $putData['data'] ?? null;
+        if (!is_array($rosterRaw) || empty($rosterRaw)) {
+            throw new InvalidArgumentException('Missing or empty "data" key in JSON input.');
+        }
+        $roster = array();
+        foreach ($rosterRaw as $dateUnix => $rosterFromPutDayArray) {
+            if (!is_numeric($dateUnix)) {
+                throw new Exception('$date_unix must be an integer representing a unix timestamp!');
+            }
+            foreach ($rosterFromPutDayArray as $rosterRowIterator => $rosterRowArray) {
+                if (!is_numeric($rosterRowIterator)) {
+                    throw new Exception('$roster_row_iterator must be an integer!');
+                }
+                $dateSql = filter_var($rosterRowArray['date_sql'], FILTER_SANITIZE_SPECIAL_CHARS);
+                $employeeKey = filter_var($rosterRowArray['employee_key'], FILTER_SANITIZE_NUMBER_INT);
+                $branchId = filter_var($rosterRowArray['branch_id'], FILTER_SANITIZE_NUMBER_INT);
+                $dutyStartSql = user_input::convert_post_empty_to_php_null(filter_var($rosterRowArray['duty_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $dutyEndSql = user_input::convert_post_empty_to_php_null(filter_var($rosterRowArray['duty_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $breakStartSql = user_input::convert_post_empty_to_php_null(filter_var($rosterRowArray['break_start_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $breakEndSql = user_input::convert_post_empty_to_php_null(filter_var($rosterRowArray['break_end_sql'], FILTER_SANITIZE_SPECIAL_CHARS));
+                $comment = user_input::convert_post_empty_to_php_null(filter_var($rosterRowArray['comment'], FILTER_SANITIZE_SPECIAL_CHARS));
+                if (!is_numeric($branchId)) {
+                    throw new \Exception('$branch_id must be an integer!');
+                }
+                if (!self::isValidDateInFormat($dateSql, 'Y-m-d')) {
+                    throw new \Exception('$date_sql must be a valid date in the format "Y-m-d"!');
+                }
+                if ('' === $employeeKey) {
+                    $roster[$dateUnix][$rosterRowIterator] = new \roster_item_empty($dateSql, $branchId);
+                    continue;
+                }
+                if (!self::isValidDateInFormat($dutyStartSql, 'H:i')) {
+                    /**
+                     * <p lang=de>
+                     * Bei der Übertragung von roster items können leere Items übertragen werden.
+                     * Diese haben aber IMMER eine leere employee_key.
+                     * Daher wird diese Zeile in diesem Fall nicht erreicht.
+                     * </p>
+                     */
+                    if (NULL === $dutyEndSql or !self::isValidDateInFormat($dutyEndSql, 'H:i')) {
+                        /**
+                         * <p lang=de>
+                         * Sowohl Beginn als auch Ende wurden als leer übertragen. Dieses roster item wurde also gelöscht.
+                         * </p>
+                         */
+                        $roster[$dateUnix][$rosterRowIterator] = new roster_item_empty($dateSql, $branchId);
+                        continue;
+                    }
+                    throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
+                }
+                if (NULL === $dutyEndSql or !self::isValidDateInFormat($dutyEndSql, 'H:i')) {
+                    throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
+                }
+                $roster[$dateUnix][$rosterRowIterator] = new roster_item($dateSql, $employeeKey, $branchId, $dutyStartSql, $dutyEndSql, $breakStartSql, $breakEndSql, $comment);
+                $roster[$dateUnix][$rosterRowIterator]->check_roster_item_sequence();
+            }
+        }
+        GeneralUtility::printDebugVariable("Parsed roster from PUT request");
+        GeneralUtility::printDebugVariable($roster);
+        return $roster;
     }
 
     /**
@@ -215,7 +288,7 @@ abstract class user_input {
                      */
                     continue;
                 }
-                if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql or !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
@@ -268,7 +341,7 @@ abstract class user_input {
                 if (!self::isValidDateInFormat($date_sql, 'Y-m-d')) {
                     throw new Exception('$date_sql must be a valid date in the format "Y-m-d"!');
                 }
-                if (NULL === $employee_key OR !is_numeric($employee_key)) {
+                if (NULL === $employee_key or !is_numeric($employee_key)) {
                     /**
                      * Es wurde kein Mitarbeiter übergeben.
                      * Dieses Item ist ungültig und wird übersprungen:
@@ -302,7 +375,7 @@ abstract class user_input {
                      */
                     throw new Exception('duty_start_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_START_INVALID);
                 }
-                if (NULL === $duty_end_sql OR !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
+                if (NULL === $duty_end_sql or !self::isValidDateInFormat($duty_end_sql, 'H:i')) {
                     throw new Exception('duty_end_sql MUST be a valid time!', SELF::EXCEPTION_CODE_DUTY_END_INVALID);
                 }
                 if (!isset($Principle_roster_row_array['primary_key']) or !is_numeric($Principle_roster_row_array['primary_key'])) {
@@ -717,26 +790,31 @@ abstract class user_input {
         return $Inserted_principle_roster_item_list;
     }
 
-    public static function roster_write_user_input_to_database($Roster, $branch_id) {
-        foreach (array_keys($Roster) as $date_unix) {
-            $date_sql = date('Y-m-d', $date_unix);
-            $Roster_old = roster::read_roster_from_database($branch_id, $date_sql);
+    public static function roster_write_user_input_to_database(array $roster): void {
+        foreach (array_keys($roster) as $dateUnix) {
+            $dateSql = date('Y-m-d', $dateUnix);
+            $firstRosterItem = reset($roster[$dateUnix]);
+            if (!$firstRosterItem instanceof roster_item) {
+                throw new Exception('Roster item is not an instance of roster_item class!');
+            }
+            $branchId = $firstRosterItem->get_branch_id();
+            $rosterOld = roster::read_roster_from_database($branchId, $dateSql);
 
             /*
              * Remove deleted data rows:
              * TODO: Find the changed or the deleted rows:
              */
-            $Changed_roster_employee_key_list = user_input::get_changed_roster_employee_key_list($Roster, $Roster_old);
-            $Deleted_roster_employee_key_list = user_input::get_deleted_roster_employee_key_list($Roster, $Roster_old);
-            $Inserted_roster_employee_key_list = user_input::get_inserted_roster_employee_key_list($Roster, $Roster_old);
+            $changedRosterEmployeeKeyList = user_input::get_changed_roster_employee_key_list($roster, $rosterOld);
+            $deletedRosterEmployeeKeyList = user_input::get_deleted_roster_employee_key_list($roster, $rosterOld);
+            $insertedRosterEmployeeKeyList = user_input::get_inserted_roster_employee_key_list($roster, $rosterOld);
             database_wrapper::instance()->beginTransaction();
-            user_input::remove_changed_entries_from_database($branch_id, $Deleted_roster_employee_key_list);
-            user_input::remove_changed_entries_from_database($branch_id, $Changed_roster_employee_key_list);
-            user_input::insert_changed_roster_into_database($Roster, $Changed_roster_employee_key_list);
-            user_input::insert_changed_roster_into_database($Roster, $Inserted_roster_employee_key_list);
+            user_input::remove_changed_entries_from_database($branchId, $deletedRosterEmployeeKeyList);
+            user_input::remove_changed_entries_from_database($branchId, $changedRosterEmployeeKeyList);
+            user_input::insert_changed_roster_into_database($roster, $changedRosterEmployeeKeyList);
+            user_input::insert_changed_roster_into_database($roster, $insertedRosterEmployeeKeyList);
             database_wrapper::instance()->commit();
-            //$user_dialog_email = new user_dialog_email();
-            //$user_dialog_email->create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_key_list, $Changed_roster_employee_key_list, $Deleted_roster_employee_key_list);
+            $user_dialog_email = new user_dialog_email();
+            $user_dialog_email->create_notification_about_changed_roster_to_employees($roster, $rosterOld, $insertedRosterEmployeeKeyList, $changedRosterEmployeeKeyList, $deletedRosterEmployeeKeyList);
         }
     }
 
@@ -753,5 +831,21 @@ abstract class user_input {
         }
         $dateObject = DateTime::createFromFormat($format, $date);
         return $dateObject && $dateObject->format($format) == $date;
+    }
+
+    /**
+     * Deletes a roster day from the database.
+     *
+     * @param int $branchId
+     * @param string $dateString
+     * @return void
+     */
+    public static function deleteRosterDayFromDatabase(int $branchId, string $dateString): void {
+        GeneralUtility::printDebugVariable("Deleting roster day for branch ID: $branchId, date: $dateString");
+        $sqlQuery = "DELETE FROM `Dienstplan`"
+                . " WHERE `Datum` = :date"
+                . " AND `Mandant` = :branch_id";
+        $statement = database_wrapper::instance()->prepare($sqlQuery);
+        $statement->execute(array('date' => $dateString, 'branch_id' => $branchId));
     }
 }
